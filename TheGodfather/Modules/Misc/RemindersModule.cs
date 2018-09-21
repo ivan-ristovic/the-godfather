@@ -184,21 +184,21 @@ namespace TheGodfather.Modules.Misc
         [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
         [UsageExamples("!remind repeat 1h Drink water!")]
         public Task RepeatAsync(CommandContext ctx,
-                               [Description("Time span until reminder.")] TimeSpan timespan,
+                               [Description("Repeat timespan.")] TimeSpan timespan,
                                [Description("Channel to send message to.")] DiscordChannel channel,
                                [RemainingText, Description("What to send?")] string message)
             => this.AddReminderAsync(ctx, timespan, channel, message, true);
 
-        [Command("add"), Priority(1)]
+        [Command("repeat"), Priority(1)]
         public Task RepeatAsync(CommandContext ctx,
                             [Description("Channel to send message to.")] DiscordChannel channel,
-                            [Description("Time span until reminder.")] TimeSpan timespan,
+                            [Description("Repeat timespan.")] TimeSpan timespan,
                             [RemainingText, Description("What to send?")] string message)
             => this.AddReminderAsync(ctx, timespan, channel, message, true);
 
-        [Command("add"), Priority(0)]
+        [Command("repeat"), Priority(0)]
         public Task RepeatAsync(CommandContext ctx,
-                            [Description("Time span until reminder.")] TimeSpan timespan,
+                            [Description("Repeat timespan.")] TimeSpan timespan,
                             [RemainingText, Description("What to send?")] string message)
             => this.AddReminderAsync(ctx, timespan, null, message, true);
         #endregion

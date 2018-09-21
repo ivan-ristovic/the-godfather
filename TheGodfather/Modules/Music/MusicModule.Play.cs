@@ -25,7 +25,8 @@ namespace TheGodfather.Modules.Music
         [Aliases("music", "p")]
         [UsageExamples("!play https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                        "!play what is love?")]
-        [RequireBotPermissions(Permissions.Speak)]
+        [RequireBotPermissions(Permissions.UseVoice | Permissions.Speak)]
+        [RequireOwner]
         public class PlayModule : MusicModule
         {
 
