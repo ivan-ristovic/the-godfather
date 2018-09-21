@@ -40,14 +40,16 @@ namespace TheGodfather.Common
         public ulong ChannelId { get; set; }
         public string Message { get; set; }
         public ulong InitiatorId { get; set; }
+        public bool IsRepeating { get; set; }
 
 
-        public SendMessageTaskInfo(ulong cid, ulong uid, string message, DateTimeOffset when)
+        public SendMessageTaskInfo(ulong cid, ulong uid, string message, DateTimeOffset when, bool repeating = false)
         {
             this.ChannelId = cid;
             this.InitiatorId = uid;
             this.Message = message;
             this.ExecutionTime = when;
+            this.IsRepeating = repeating;
         }
     }
 

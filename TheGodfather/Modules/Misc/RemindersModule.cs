@@ -68,50 +68,24 @@ namespace TheGodfather.Modules.Misc
         [Description("Schedule a new reminder. You can also specify a channel where to send the reminder.")]
         [Aliases("new", "+", "a", "+=", "<", "<<")]
         [UsageExamples("!remind add 1h Drink water!")]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Time span until reminder.")] TimeSpan timespan,
-                                  [Description("Channel to send message to.")] DiscordChannel channel,
-                                  [RemainingText, Description("What to send?")] string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                throw new InvalidCommandUsageException("Missing time or repeat string.");
-
-            if (message.Length > 120)
-                throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
-
-            channel = channel ?? ctx.Channel;
-
-            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
-                throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
-
-            int reminderCount = this.Shared.TaskExecuters.Values
-                .Where(t => t.TaskInfo is SendMessageTaskInfo)
-                .Select(t => (t.Id, t.TaskInfo as SendMessageTaskInfo))
-                .Where(t => t.Item2.InitiatorId == ctx.User.Id)
-                .Count();
-            if (reminderCount >= 20)
-                throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
-
-            DateTimeOffset when = DateTimeOffset.Now + timespan;
-
-            var task = new SendMessageTaskInfo(ctx.Channel.Id, ctx.User.Id, message, when);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
-
-            await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
-        }
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Time span until reminder.")] TimeSpan timespan,
+                            [Description("Channel to send message to.")] DiscordChannel channel,
+                            [RemainingText, Description("What to send?")] string message)
+            => this.AddReminderAsync(ctx, timespan, channel, message);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Channel to send message to.")] DiscordChannel channel,
                             [Description("Time span until reminder.")] TimeSpan timespan,
                             [RemainingText, Description("What to send?")] string message)
-            => this.AddAsync(ctx, timespan, channel, message);
+            => this.AddReminderAsync(ctx, timespan, channel, message);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Time span until reminder.")] TimeSpan timespan,
                             [RemainingText, Description("What to send?")] string message)
-            => this.AddAsync(ctx, timespan, null, message);
+            => this.AddReminderAsync(ctx, timespan, null, message);
         #endregion
 
         #region COMMAND_REMINDERS_DELETE
@@ -201,6 +175,67 @@ namespace TheGodfather.Modules.Misc
                 this.ModuleColor,
                 1
             );
+        }
+        #endregion
+        
+        #region COMMAND_REMINDERS_REPEAT
+        [Command("repeat"), Priority(2)]
+        [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
+        [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
+        [UsageExamples("!remind repeat 1h Drink water!")]
+        public Task RepeatAsync(CommandContext ctx,
+                               [Description("Time span until reminder.")] TimeSpan timespan,
+                               [Description("Channel to send message to.")] DiscordChannel channel,
+                               [RemainingText, Description("What to send?")] string message)
+            => this.AddReminderAsync(ctx, timespan, channel, message, true);
+
+        [Command("add"), Priority(1)]
+        public Task RepeatAsync(CommandContext ctx,
+                            [Description("Channel to send message to.")] DiscordChannel channel,
+                            [Description("Time span until reminder.")] TimeSpan timespan,
+                            [RemainingText, Description("What to send?")] string message)
+            => this.AddReminderAsync(ctx, timespan, channel, message, true);
+
+        [Command("add"), Priority(0)]
+        public Task RepeatAsync(CommandContext ctx,
+                            [Description("Time span until reminder.")] TimeSpan timespan,
+                            [RemainingText, Description("What to send?")] string message)
+            => this.AddReminderAsync(ctx, timespan, null, message, true);
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel, 
+                                            string message, bool repeat = false)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new InvalidCommandUsageException("Missing time or repeat string.");
+
+            if (message.Length > 120)
+                throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
+
+            channel = channel ?? ctx.Channel;
+
+            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+                throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
+
+            int reminderCount = this.Shared.TaskExecuters.Values
+                .Where(t => t.TaskInfo is SendMessageTaskInfo)
+                .Select(t => (t.Id, t.TaskInfo as SendMessageTaskInfo))
+                .Where(t => t.Item2.InitiatorId == ctx.User.Id)
+                .Count();
+            if (reminderCount >= 20)
+                throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
+
+            DateTimeOffset when = DateTimeOffset.Now + timespan;
+
+            var task = new SendMessageTaskInfo(channel.Id, ctx.User.Id, message, when, repeat);
+            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+
+            if (repeat) 
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel.Mention} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);
+            else
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
         }
         #endregion
     }

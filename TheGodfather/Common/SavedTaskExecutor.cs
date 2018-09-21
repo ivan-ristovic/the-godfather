@@ -63,8 +63,8 @@ namespace TheGodfather.Common
         public void Schedule()
         {
             switch (this.TaskInfo) {
-                case SendMessageTaskInfo _:
-                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
+                case SendMessageTaskInfo smti:
+                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, smti.TimeUntilExecution, smti.IsRepeating ? smti.TimeUntilExecution : TimeSpan.FromMilliseconds(-1));
                     break;
                 case UnbanTaskInfo _:
                     this.timer = new Timer(this.UnbanUserCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
@@ -133,7 +133,8 @@ namespace TheGodfather.Common
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                this.Execute(this.UnscheduleAsync());
+                if (!info.IsRepeating)
+                    this.Execute(this.UnscheduleAsync());
             }
         }
 
