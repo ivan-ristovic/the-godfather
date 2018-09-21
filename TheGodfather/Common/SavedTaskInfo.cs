@@ -41,15 +41,20 @@ namespace TheGodfather.Common
         public string Message { get; set; }
         public ulong InitiatorId { get; set; }
         public bool IsRepeating { get; set; }
+        public TimeSpan RepeatingInterval { get; set; }
 
 
-        public SendMessageTaskInfo(ulong cid, ulong uid, string message, DateTimeOffset when, bool repeating = false)
+        public SendMessageTaskInfo(ulong cid, ulong uid, string message, DateTimeOffset when, bool repeating = false, TimeSpan? interval = null)
         {
             this.ChannelId = cid;
             this.InitiatorId = uid;
             this.Message = message;
             this.ExecutionTime = when;
             this.IsRepeating = repeating;
+            if (this.IsRepeating)
+                this.RepeatingInterval = interval ?? TimeSpan.FromMilliseconds(-1);
+            else
+                this.RepeatingInterval = TimeSpan.FromMilliseconds(-1);
         }
     }
 

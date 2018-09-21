@@ -227,19 +227,45 @@ namespace TheGodfather
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
-            IReadOnlyDictionary<int, SavedTaskInfo> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
-            int registeredTasks = 0, missedTasks = 0;
-            foreach ((int tid, SavedTaskInfo task) in tasks_db) {
-                var texec = new SavedTaskExecutor(tid, Shards[0].Client, task, SharedData, DatabaseService);
+            await RegisterSavedTasks(await DatabaseService.GetAllSavedTasksAsync());
+            await RegisterReminders(await DatabaseService.GetAllRemindersAsync());
+
+
+            async Task RegisterSavedTasks(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
+            {
+                int registeredTasks = 0, missedTasks = 0;
+                foreach ((int tid, SavedTaskInfo task) in tasks) {
+                    if (await RegisterTask(tid, task))
+                        registeredTasks++;
+                    else
+                        missedTasks++;
+                }
+                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {registeredTasks} registered; {missedTasks} missed.");
+            }
+
+            async Task RegisterReminders(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
+            {
+                int registeredTasks = 0, missedTasks = 0;
+                foreach ((int tid, SendMessageTaskInfo task) in reminders) {
+                    if (await RegisterTask(tid, task))
+                        registeredTasks++;
+                    else
+                        missedTasks++;
+                }
+                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {registeredTasks} registered; {missedTasks} missed.");
+            }
+
+            async Task<bool> RegisterTask(int id, SavedTaskInfo tinfo)
+            {
+                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, DatabaseService);
                 if (texec.TaskInfo.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
-                    missedTasks++;
+                    return false;
                 } else {
                     texec.Schedule();
-                    registeredTasks++;
+                    return true;
                 }
             }
-            SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Successfully registered {registeredTasks} saved tasks; Missed {missedTasks} tasks.");
         }
 
         private static async Task DisposeAsync()

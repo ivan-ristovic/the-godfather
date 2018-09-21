@@ -178,7 +178,11 @@ namespace TheGodfather.Services
                 return cmd.ExecuteScalarAsync();
             });
             await this.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "SELECT id, type, uid, cid, gid, comment, execution_time FROM gf.saved_tasks LIMIT 1;";
+                cmd.CommandText = "SELECT id, type, uid, gid, execution_time FROM gf.saved_tasks LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await this.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, uid, cid, message, execution_time, repeat, interval FROM gf.reminders LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
             await this.ExecuteCommandAsync(cmd => {
