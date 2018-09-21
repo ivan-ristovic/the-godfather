@@ -183,8 +183,6 @@ namespace TheGodfather.Modules.Misc
             if (message.Length > 120)
                 throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
 
-            channel = channel ?? ctx.Channel;
-
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
             
@@ -193,13 +191,13 @@ namespace TheGodfather.Modules.Misc
 
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
-            var task = new SendMessageTaskInfo(channel.Id, ctx.User.Id, message, when, repeat, timespan);
+            var task = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
             await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
 
             if (repeat) 
-                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel.Mention} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);
             else
-                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel?.Mention ?? "you"} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
         }
         #endregion
     }

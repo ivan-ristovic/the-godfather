@@ -163,7 +163,11 @@ namespace TheGodfather.Common
             var info = _ as SendMessageTaskInfo;
 
             try {
-                DiscordChannel channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
+                DiscordChannel channel;
+                if (info.ChannelId != 0)
+                    channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
+                else
+                    channel = this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
                 this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
                     Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
