@@ -133,7 +133,8 @@ namespace TheGodfather.Modules.Misc
                 $"Your reminders in this channel:",
                 this.Shared.RemindExecuters[ctx.User.Id]
                     .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
-                    .Where(tup => tup.TaskInfo.ChannelId == ctx.Channel.Id),
+                    .Where(tup => tup.TaskInfo.ChannelId == ctx.Channel.Id)
+                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
                     if (tinfo.IsRepeating)
