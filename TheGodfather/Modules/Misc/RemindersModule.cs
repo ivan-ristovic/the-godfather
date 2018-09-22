@@ -181,8 +181,8 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException("Missing time or repeat string.");
 
-            if (message.Length > 120)
-                throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
+            if (message.Length > 250)
+                throw new InvalidCommandUsageException("Message must be shorter than 250 characters.");
 
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
