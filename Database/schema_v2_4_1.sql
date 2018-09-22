@@ -456,7 +456,7 @@ CREATE TABLE gf.reminders (
     id integer NOT NULL,
     uid bigint NOT NULL,
     cid bigint DEFAULT 0 NOT NULL,
-    message character varying(128) NOT NULL,
+    message character varying(256) NOT NULL,
     repeat boolean DEFAULT false NOT NULL,
     execution_time timestamp with time zone NOT NULL,
     "interval" interval
