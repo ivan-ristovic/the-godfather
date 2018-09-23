@@ -102,11 +102,12 @@ namespace TheGodfather.Extensions
             var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id
             );
-            if (mctx == null)
-                return null;
 
             if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
+
+            if (mctx == null)
+                return null;
 
             return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct()
