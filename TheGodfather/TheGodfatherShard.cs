@@ -122,6 +122,7 @@ namespace TheGodfather
                     .AddSingleton(this.SharedData)
                     .AddSingleton(this.DatabaseService)
                     .AddSingleton(new AntifloodService(this))
+                    .AddSingleton(new AntiInstantLeaveService(this))
                     .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                     .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))

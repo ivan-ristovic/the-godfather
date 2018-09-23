@@ -25,6 +25,10 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            if (e.Member.Guild == null)
+                return;
+
             DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
             if (wchn != null) {
                 string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
@@ -79,6 +83,9 @@ namespace TheGodfather.EventListeners
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             if (gcfg.AntifloodEnabled)
                 await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member);
+
+            if (gcfg.AntiInstantLeaveEnabled)
+                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e.Guild, e.Member);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
@@ -87,13 +94,21 @@ namespace TheGodfather.EventListeners
             if (e.Member.IsCurrent)
                 return;
 
-            DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
-            if (lchn != null) {
-                string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
-                if (string.IsNullOrWhiteSpace(msg))
-                    await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
-                else
-                    await lchn.EmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
+            bool punished = false;
+
+            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            if (gcfg.AntiInstantLeaveEnabled)
+                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e.Guild, e.Member);
+
+            if (!punished) {
+                DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
+                if (lchn != null) {
+                    string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
+                    if (string.IsNullOrWhiteSpace(msg))
+                        await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
+                    else
+                        await lchn.EmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
+                }
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);

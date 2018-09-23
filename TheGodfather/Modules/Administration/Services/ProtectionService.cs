@@ -31,11 +31,9 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type)
         {
-            DiscordRole muteRole;
-            SavedTaskInfo task;
-
-            bool failed = false;
             try {
+                DiscordRole muteRole;
+                SavedTaskInfo task;
                 switch (type) {
                     case PunishmentActionType.Kick:
                         await member.RemoveAsync(this.reason);
@@ -64,18 +62,16 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                 }
             } catch {
-                failed = true;
-            }
-
-            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, guild);
-            if (logchn != null) {
-                var emb = new DiscordEmbedBuilder() {
-                    Title = failed ? "User punish attempt failed! Check my permissions" : "User punished",
-                    Color = DiscordColor.Red
-                };
-                emb.AddField("User", member?.ToString() ?? "unknown", inline: true);
-                emb.AddField("Reason", this.reason, inline: false);
-                await logchn.SendMessageAsync(embed: emb.Build());
+                DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, guild);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "User punish attempt failed! Check my permissions",
+                        Color = DiscordColor.Red
+                    };
+                    emb.AddField("User", member?.ToString() ?? "unknown", inline: true);
+                    emb.AddField("Reason", this.reason, inline: false);
+                    await logchn.SendMessageAsync(embed: emb.Build());
+                }
             }
         }
 

@@ -29,6 +29,8 @@ namespace TheGodfather.Common
         public short AntifloodCooldown { get; set; }
         public short AntifloodSensitivity { get; set; }
 
+        public bool AntiInstantLeaveEnabled { get; set; } = true;   // TODO
+
         public bool LoggingEnabled
             => this.LogChannelId != 0;
 
