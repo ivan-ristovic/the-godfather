@@ -26,8 +26,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            short antiInstantLeaveSens = await shard.DatabaseService.GetAntiInstantLeaveSensitivityAsync(e.Guild.Id);
-            await Task.Delay(TimeSpan.FromSeconds(antiInstantLeaveSens + 1));
+            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
+            await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Sensitivity + 1));
             if (e.Member.Guild == null)
                 return;
 
@@ -87,7 +87,8 @@ namespace TheGodfather.EventListeners
             if (antifloodSettings.Enabled)
                 await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member, antifloodSettings);
 
-            if (await shard.DatabaseService.IsAntiInstantLeaveEnabledAsync(e.Guild.Id))
+            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
+            if (antiILSettings.Enabled)
                 await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e.Guild, e.Member);
         }
 
@@ -98,8 +99,9 @@ namespace TheGodfather.EventListeners
                 return;
 
             bool punished = false;
-            
-            if (await shard.DatabaseService.IsAntiInstantLeaveEnabledAsync(e.Guild.Id))
+
+            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
+            if (antiILSettings.Enabled)
                 punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e.Guild, e.Member);
 
             if (!punished) {

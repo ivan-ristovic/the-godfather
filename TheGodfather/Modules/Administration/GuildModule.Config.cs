@@ -52,251 +52,31 @@ namespace TheGodfather.Modules.Administration
             [UsageExamples("!guild cfg setup")]
             public async Task SetupAsync(CommandContext ctx)
             {
-                DiscordChannel channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
-                if (channel == null) {
-                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
-                        try {
-                            channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.");
-                            await channel.AddOverwriteAsync(await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id), allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
-                            await channel.AddOverwriteAsync(ctx.Guild.EveryoneRole, allow: Permissions.None, deny: Permissions.AccessChannels | Permissions.SendMessages);
-                            await channel.AddOverwriteAsync(ctx.Member, allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
-                            await this.InformAsync(ctx, $"Alright, let's move the setup to {channel.Mention}");
-                        } catch {
-                            await this.InformFailureAsync(ctx, $"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...");
-                            return;
-                        }
-                    } else {
-                        channel = ctx.Channel;
-                    }
-                }
+                DiscordChannel channel = await this.ChooseSetupChannelAsync(ctx);
 
                 var gcfg = CachedGuildConfig.Default;
-                await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.");
+                await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you " +
+                                         "through the configuration. You can always re-run this setup or " +
+                                         "manually change the settings so do not worry if you don't do " +
+                                         "everything like you wanted.\n\nThat being said, let's start the " +
+                                         "fun! Note that the changes will apply after the wizard finishes.");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "By default I am sending verbose messages whenever a command is executed. However, I can also silently react. Should I continue with the verbose replies?", reply: false))
-                    gcfg.ReactionResponse = false;
+                await this.SetupVerboseRepliesAsync(gcfg, ctx, channel);
+                await this.SetupPrefixAsync(gcfg, ctx, channel);
+                await this.SetupCommandSuggestionsAsync(gcfg, ctx, channel);
+                await this.SetupLoggingAsync(gcfg, ctx, channel);
+                JoinLeaveSettings msgSettings = await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
+                DiscordRole muteRole = await this.SetupMuteRoleAsync(gcfg, ctx, channel);
+                await this.SetupLinkfilterAsync(gcfg, ctx, channel);
+                await this.SetupRatelimitAsync(gcfg, ctx, channel);
+                AntifloodSettings antifloodSettings = await this.SetupAntifloodAsync(gcfg, ctx, channel);
+                await this.SetupCurrencyAsync(gcfg, ctx, channel);
+                AntiInstantLeaveSettings antiInstantLeaveSettings = await SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
 
-                InteractivityExtension interactivity = ctx.Client.GetInteractivity();
-
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix for the bot?", reply: false)) {
-                    await channel.EmbedAsync("What will the new prefix be?");
-                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
-                    gcfg.Prefix = mctx?.Message.Content;
-                }
-
-                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name?", reply: false);
-
-                if (await channel.WaitForBoolResponseAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log?", reply: false)) {
-                    await channel.EmbedAsync($"Alright, cool. In order for the action logs to work you will need to tell me where to send the log messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")}");
-                    MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
-                    );
-                    gcfg.LogChannelId = mctx.MentionedChannels.FirstOrDefault()?.Id ?? 0;
-                }
-
-                ulong wcid = 0;
-                string wmessage = null;
-                if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature?", reply: false)) {
-                    await channel.EmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
-                    MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
-                    );
-
-                    wcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
-                    if (wcid != 0 && ctx.Guild.GetChannel(wcid).Type != ChannelType.Text) {
-                        await channel.InformFailureAsync("You need to provide a text channel!");
-                        wcid = 0;
-                    }
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the welcome message. Do you want to do that now?", reply: false)) {
-                        await channel.EmbedAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.");
-                        mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
-                        wmessage = mctx?.Message?.Content;
-                    }
-                }
-
-                ulong lcid = 0;
-                string lmessage = null;
-                if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature?", reply: false)) {
-                    await channel.EmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
-                    MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
-                    );
-
-                    lcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
-                    if (lcid != 0 && ctx.Guild.GetChannel(lcid).Type != ChannelType.Text) {
-                        await channel.InformFailureAsync("You need to provide a text channel!");
-                        lcid = 0;
-                    }
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the leave message. Do you want to do that now?", reply: false)) {
-                        await channel.EmbedAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.");
-                        mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
-                        lmessage = mctx?.Message?.Content;
-                    }
-                }
-
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering?", reply: false)) {
-                    gcfg.LinkfilterEnabled = true;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false))
-                        gcfg.BlockDiscordInvites = true;
-                    else
-                        gcfg.BlockDiscordInvites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false))
-                        gcfg.BlockBooterWebsites = true;
-                    else
-                        gcfg.BlockBooterWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false))
-                        gcfg.BlockIpLoggingWebsites = true;
-                    else
-                        gcfg.BlockIpLoggingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false))
-                        gcfg.BlockDisturbingWebsites = true;
-                    else
-                        gcfg.BlockDisturbingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false))
-                        gcfg.BlockUrlShorteners = true;
-                    else
-                        gcfg.BlockUrlShorteners = false;
-                }
-
-                DiscordRole muteRole = null;
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
-                    await channel.EmbedAsync("Which role will it be?");
-                    MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedRoles.Count == 1
-                    );
-                    if (mctx != null)
-                        muteRole = mctx.MentionedRoles.First();
-                }
-
-                muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
-
-                if (await channel.WaitForBoolResponseAsync(ctx, "Ratelimit watch is a feature that automatically punishes users that post more than specified amount of messages in a 5s timespan. Do you wish to enable ratelimit watch?", reply: false)) {
-                    gcfg.RatelimitEnabled = true;
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default ratelimit action ({gcfg.RatelimitAction.ToTypeString()})?", reply: false)) {
-                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
-                        );
-                        if (mctx != null)
-                            gcfg.RatelimitAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
-                    }
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default ratelimit sensitivity aka number of messages in 5s window before the action is triggered ({gcfg.RatelimitSensitivity})?", reply: false)) {
-                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
-                        );
-                        if (mctx != null)
-                            gcfg.RatelimitSensitivity = short.Parse(mctx.Message.Content);
-                    }
-                }
-
-                var antifloodSettings = new AntifloodSettings();
-                if (await channel.WaitForBoolResponseAsync(ctx, "Antiflood watch is a feature that automatically punishes users that flood the guild. Do you wish to enable antiflood watch?", reply: false)) {
-                    antifloodSettings.Enabled = true;
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood action ({antifloodSettings.Action.ToTypeString()})?", reply: false)) {
-                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
-                        );
-                        if (mctx != null)
-                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
-                    }
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood user quota after which the action will be applied ({antifloodSettings.Sensitivity})?", reply: false)) {
-                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
-                        );
-                        if (mctx != null)
-                            antifloodSettings.Sensitivity = short.Parse(mctx.Message.Content);
-                    }
-
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default cooldown time ({antifloodSettings.Cooldown})?", reply: false)) {
-                        await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
-                        );
-                        if (mctx != null)
-                            antifloodSettings.Cooldown = short.Parse(mctx.Message.Content);
-                    }
-                }
-
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the currency for this guild (default: credit)?", reply: false)) {
-                    await channel.EmbedAsync("Please specify the new currency (can also be an emoji). Note: Currency name cannot be longer than 30 characters.");
-                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => m.Length < 30);
-                    if (mctx != null)
-                        gcfg.Currency = mctx.Message.Content;
-                }
-
-                var sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
-                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
-                sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
-                sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
-                sb.Append("Mute role: ").AppendLine(Formatter.Bold(muteRole.Name));
-
-                sb.Append("Action logging: ");
-                if (gcfg.LoggingEnabled)
-                    sb.Append(Formatter.Bold("on")).Append(" in channel ").AppendLine(ctx.Guild.GetChannel(gcfg.LogChannelId).Mention);
-                else
-                    sb.AppendLine(Formatter.Bold("off"));
-
-                sb.AppendLine().Append("Welcome messages: ");
-                if (wcid != 0) {
-                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(wcid).Mention);
-                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(wmessage ?? "default"));
-                } else {
-                    sb.AppendLine(Formatter.Bold("disabled"));
-                }
-
-                sb.AppendLine().Append("Leave messages: ");
-                if (lcid != 0) {
-                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(lcid).Mention);
-                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(lmessage ?? "default"));
-                } else {
-                    sb.AppendLine(Formatter.Bold("disabled"));
-                }
-
-                sb.AppendLine().Append("Ratelimit watch: ");
-                if (gcfg.RatelimitEnabled) {
-                    sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSensitivity).AppendLine(" msgs per 5s.");
-                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
-                } else {
-                    sb.AppendLine(Formatter.Bold("disabled"));
-                }
-
-                sb.AppendLine().Append("Antiflood watch: ");
-                if (antifloodSettings.Enabled) {
-                    sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append("- Sensitivity: ").Append(antifloodSettings.Sensitivity).Append(" users per ").Append(antifloodSettings.Cooldown).AppendLine("s");
-                    sb.Append("- Action: ").AppendLine(antifloodSettings.Action.ToTypeString());
-                } else {
-                    sb.AppendLine(Formatter.Bold("disabled"));
-                }
-
-                sb.AppendLine().Append("Linkfilter ");
-                if (gcfg.LinkfilterEnabled) {
-                    sb.Append(Formatter.Bold("enabled")).AppendLine(" with module settings:");
-                    sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
-                    sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.BlockBooterWebsites ? "on" : "off");
-                    sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.BlockIpLoggingWebsites ? "on" : "off");
-                    sb.Append(" - Disturbing websites blocker: ").AppendLine(gcfg.BlockDisturbingWebsites ? "on" : "off");
-                    sb.Append(" - URL shorteners blocker: ").AppendLine(gcfg.BlockUrlShorteners ? "on" : "off");
-                    sb.AppendLine();
-                } else {
-                    sb.AppendLine(Formatter.Bold("disabled"));
-                }
-
-                await channel.EmbedAsync(sb.ToString());
-
+                await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
-                    await this.ApplySettingsAsync(ctx.Guild.Id, gcfg, muteRole, wcid, lcid, wmessage, lmessage, antifloodSettings);
+                    await this.ApplySettingsAsync(ctx.Guild.Id, gcfg, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null)
@@ -640,26 +420,392 @@ namespace TheGodfather.Modules.Administration
             }
             
             private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole, 
-                                                  ulong wcid, ulong lcid, string wmessage, string lmessage,
-                                                  AntifloodSettings antifloodSettings)
+                                                  JoinLeaveSettings ninfo, AntifloodSettings antifloodSettings, 
+                                                  AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 this.Shared.GuildConfigurations[gid] = gcfg;
 
                 await this.Database.UpdateGuildSettingsAsync(gid, gcfg);
                 await this.Database.SetMuteRoleAsync(gid, muteRole.Id);
-                if (wcid != 0)
-                    await this.Database.SetWelcomeChannelAsync(gid, wcid);
+                if (ninfo.WelcomeChannelId != 0)
+                    await this.Database.SetWelcomeChannelAsync(gid, ninfo.WelcomeChannelId);
                 else
                     await this.Database.RemoveWelcomeChannelAsync(gid);
-                if (!string.IsNullOrWhiteSpace(wmessage))
-                    await this.Database.SetWelcomeMessageAsync(gid, wmessage);
-                if (lcid != 0)
-                    await this.Database.SetLeaveChannelAsync(gid, lcid);
+                if (!string.IsNullOrWhiteSpace(ninfo.WelcomeMessage))
+                    await this.Database.SetWelcomeMessageAsync(gid, ninfo.WelcomeMessage);
+                if (ninfo.LeaveChannelId != 0)
+                    await this.Database.SetLeaveChannelAsync(gid, ninfo.LeaveChannelId);
                 else
                     await this.Database.RemoveLeaveChannelAsync(gid);
-                if (!string.IsNullOrWhiteSpace(lmessage))
-                    await this.Database.SetLeaveMessageAsync(gid, lmessage);
+                if (!string.IsNullOrWhiteSpace(ninfo.LeaveMessage))
+                    await this.Database.SetLeaveMessageAsync(gid, ninfo.LeaveMessage);
                 await this.Database.SetAntifloodSettingsAsync(gid, antifloodSettings);
+                await this.Database.SetAntifloodSettingsAsync(gid, antifloodSettings);
+            }
+
+            private async Task<DiscordChannel> ChooseSetupChannelAsync(CommandContext ctx)
+            {
+                DiscordChannel channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
+
+                if (channel == null) {
+                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
+                        try {
+                            channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.");
+                            await channel.AddOverwriteAsync(await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id), allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
+                            await channel.AddOverwriteAsync(ctx.Guild.EveryoneRole, allow: Permissions.None, deny: Permissions.AccessChannels | Permissions.SendMessages);
+                            await channel.AddOverwriteAsync(ctx.Member, allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
+                            await this.InformAsync(ctx, $"Alright, let's move the setup to {channel.Mention}");
+                        } catch {
+                            throw new CommandFailedException($"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...");
+                        }
+                    } else {
+                        channel = ctx.Channel;
+                    }
+                }
+
+                return channel;
+            }
+
+            private async Task PreviewSettingsAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel, 
+                                                    DiscordRole muteRole, JoinLeaveSettings msgSettings,
+                                                    AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
+            {
+                var sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
+                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
+                sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
+                sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
+                sb.Append("Mute role: ").AppendLine(Formatter.Bold(muteRole.Name));
+
+                sb.Append("Action logging: ");
+                if (gcfg.LoggingEnabled)
+                    sb.Append(Formatter.Bold("on")).Append(" in channel ").AppendLine(ctx.Guild.GetChannel(gcfg.LogChannelId).Mention);
+                else
+                    sb.AppendLine(Formatter.Bold("off"));
+
+                sb.AppendLine().Append("Welcome messages: ");
+                if (msgSettings.WelcomeChannelId != 0) {
+                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(msgSettings.WelcomeChannelId).Mention);
+                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(msgSettings.WelcomeMessage ?? "default"));
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Leave messages: ");
+                if (msgSettings.LeaveChannelId != 0) {
+                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(msgSettings.LeaveChannelId).Mention);
+                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(msgSettings.LeaveMessage ?? "default"));
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Ratelimit watch: ");
+                if (gcfg.RatelimitEnabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSensitivity).AppendLine(" msgs per 5s.");
+                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Antiflood watch: ");
+                if (antifloodSettings.Enabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").Append(antifloodSettings.Sensitivity).Append(" users per ").Append(antifloodSettings.Cooldown).AppendLine("s");
+                    sb.Append("- Action: ").AppendLine(antifloodSettings.Action.ToTypeString());
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Instant leave watch: ");
+                if (antiInstantLeaveSettings.Enabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").Append(antiInstantLeaveSettings.Sensitivity).AppendLine("s");
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Linkfilter ");
+                if (gcfg.LinkfilterEnabled) {
+                    sb.Append(Formatter.Bold("enabled")).AppendLine(" with module settings:");
+                    sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
+                    sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.BlockBooterWebsites ? "on" : "off");
+                    sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.BlockIpLoggingWebsites ? "on" : "off");
+                    sb.Append(" - Disturbing websites blocker: ").AppendLine(gcfg.BlockDisturbingWebsites ? "on" : "off");
+                    sb.Append(" - URL shorteners blocker: ").AppendLine(gcfg.BlockUrlShorteners ? "on" : "off");
+                    sb.AppendLine();
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                await channel.EmbedAsync(sb.ToString());
+            }
+
+            private async Task SetupVerboseRepliesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string query = "By default I am sending verbose messages whenever a command is executed, " +
+                               "but I can also silently react. Should I continue with the verbose replies?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false))
+                    gcfg.ReactionResponse = false;
+            }
+
+            private async Task SetupPrefixAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix?", reply: false)) {
+                    await channel.EmbedAsync("What will the new prefix be?");
+                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
+                    gcfg.Prefix = mctx?.Message.Content;
+                }
+            }
+
+            private async Task SetupCommandSuggestionsAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string query = "Do you wish to enable command suggestions for those nasty times when you " +
+                               "just can't remember the command name?";
+                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, query, reply: false);
+            }
+
+            private async Task SetupLoggingAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string logQuery = "I can log the actions that happen in the guild (such as message deletion, " +
+                                  "channel updates etc.), so you always know what is going on in the guild. " +
+                                  "Do you wish to enable action logging?";
+                string chnQuery = $"Alright, cool. In order for the action logs to work you will need to " +
+                                  $"tell me where to send the log messages. Please reply with a channel " +
+                                  $"mention, for example {Formatter.Bold("#logs")}";
+
+                if (await channel.WaitForBoolResponseAsync(ctx, logQuery, reply: false)) {
+                    await channel.EmbedAsync(chnQuery);
+                    MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                        m => m.ChannelId == channel.Id &&
+                             m.Author.Id == ctx.User.Id &&
+                             m.MentionedChannels.Count == 1
+                    );
+                    gcfg.LogChannelId = mctx.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                }
+            }
+
+            private async Task<JoinLeaveSettings> SetupMemberUpdateMessagesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                var ninfo = new JoinLeaveSettings();
+                await GetChannelIdAndMessageAsync(ninfo, true);
+                await GetChannelIdAndMessageAsync(ninfo, false);
+                return ninfo;
+
+                async Task GetChannelIdAndMessageAsync(JoinLeaveSettings info, bool welcome)
+                {
+                    InteractivityExtension interactivity = ctx.Client.GetInteractivity();
+                    string query = $"I can also send a {(welcome ? "welcome" : "leave")} message when someone " +
+                                   $"{(welcome ? "joins" : "leaves")} the guild. Do you wish to enable this feature?";
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        query = $"I will need a channel where to send the {(welcome ? "welcome" : "leave")}" +
+                                " messages. Please reply with a channel mention, for example: " +
+                                $"{Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}";
+                        await channel.EmbedAsync(query);
+                        MessageContext mctx = await interactivity.WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && 
+                                 m.Author.Id == ctx.User.Id && 
+                                 m.MentionedChannels.Count == 1
+                        );
+
+                        ulong cid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                        if (info.WelcomeChannelId != 0 && ctx.Guild.GetChannel(info.WelcomeChannelId).Type != ChannelType.Text) {
+                            await channel.InformFailureAsync("You need to provide a text channel!");
+                            cid = 0;
+                        }
+
+                        string message = null;
+                        query = $"You can also customize the {(welcome ? "welcome" : "leave")} message. " +
+                                "Do you want to do that now?";
+                        if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                            query = "Tell me what message you want me to send. Note that you can use the " +
+                                    $"wildcard {Formatter.Bold("%user%")} and I will replace it with the " +
+                                    "member mention.";
+                            await channel.EmbedAsync(query);
+                            mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
+                            info.WelcomeMessage = mctx?.Message?.Content;
+                        }
+
+                        if (welcome) {
+                            info.WelcomeChannelId = cid;
+                            info.WelcomeMessage = message;
+                        } else {
+                            info.LeaveChannelId = cid;
+                            info.LeaveMessage = message;
+                        }
+                    }
+                }
+            }
+
+            private async Task SetupLinkfilterAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering?", reply: false)) {
+                    gcfg.LinkfilterEnabled = true;
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false))
+                        gcfg.BlockDiscordInvites = true;
+                    else
+                        gcfg.BlockDiscordInvites = false;
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false))
+                        gcfg.BlockBooterWebsites = true;
+                    else
+                        gcfg.BlockBooterWebsites = false;
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false))
+                        gcfg.BlockIpLoggingWebsites = true;
+                    else
+                        gcfg.BlockIpLoggingWebsites = false;
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false))
+                        gcfg.BlockDisturbingWebsites = true;
+                    else
+                        gcfg.BlockDisturbingWebsites = false;
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false))
+                        gcfg.BlockUrlShorteners = true;
+                    else
+                        gcfg.BlockUrlShorteners = false;
+                }
+            }
+
+            private async Task<DiscordRole> SetupMuteRoleAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                DiscordRole muteRole = null;
+
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
+                    await channel.EmbedAsync("Which role will it be?");
+                    MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                        m => m.ChannelId == channel.Id && 
+                             m.Author.Id == ctx.User.Id && 
+                             m.MentionedRoles.Count == 1
+                    );
+                    if (mctx != null)
+                        muteRole = mctx.MentionedRoles.First();
+                }
+
+                muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+                return muteRole;
+            }
+
+            private async Task SetupRatelimitAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string query = "Ratelimit watch is a feature that automatically punishes users that post " +
+                               "more than specified amount of messages in a 5s timespan. Do you wish to " +
+                               "enable ratelimit watch?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    gcfg.RatelimitEnabled = true;
+
+                    query = $"Do you wish to change the default ratelimit action ({gcfg.RatelimitAction.ToTypeString()})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        );
+                        if (mctx != null)
+                            gcfg.RatelimitAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                    }
+
+                    query = "Do you wish to change the default ratelimit sensitivity aka number of messages " +
+                            $"in 5s window before the action is triggered ({gcfg.RatelimitSensitivity})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
+                        );
+                        if (mctx != null)
+                            gcfg.RatelimitSensitivity = short.Parse(mctx.Message.Content);
+                    }
+                }
+            }
+
+            private async Task<AntifloodSettings> SetupAntifloodAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                var antifloodSettings = new AntifloodSettings();
+
+                string query = "Antiflood watch is a feature that automatically punishes users that flood " +
+                               "(raid) the guild. Do you wish to enable antiflood watch?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    antifloodSettings.Enabled = true;
+
+                    query = $"Do you wish to change the default antiflood action " +
+                            $"({antifloodSettings.Action.ToTypeString()})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        query = "Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan";
+                        await channel.EmbedAsync(query);
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        );
+                        if (mctx != null)
+                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                    }
+
+                    query = $"Do you wish to change the default antiflood user quota after which the " +
+                            $"action will be applied ({antifloodSettings.Sensitivity})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
+                        );
+                        if (mctx != null)
+                            antifloodSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                    }
+
+                    query = $"Do you wish to change the default cooldown time " +
+                            $"({antifloodSettings.Cooldown})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
+                        );
+                        if (mctx != null)
+                            antifloodSettings.Cooldown = short.Parse(mctx.Message.Content);
+                    }
+                }
+
+                return antifloodSettings;
+            }
+
+            private async Task<AntiInstantLeaveSettings> SetupAntiInstantLeaveAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                var antiInstantLeaveSettings = new AntiInstantLeaveSettings();
+
+                string query = "Instant leave watch is a feature that automatically punishes users that enter " +
+                               "and instantly leave the guild (no idea why they do this, I assume ads). " +
+                               "Do you wish to enable instant leave watch?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    antiInstantLeaveSettings.Enabled = true;
+
+                    query = $"Do you wish to change the default time window after which the new user will" +
+                            $"not be punished ({antiInstantLeaveSettings.Sensitivity})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the time window in seconds. Valid range: [2, 20]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
+                        );
+                        if (mctx != null)
+                            antiInstantLeaveSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                    }
+                }
+
+                return antiInstantLeaveSettings;
+            }
+
+            private async Task SetupCurrencyAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string query = "Do you wish to change the currency for this guild (default: credit)?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    query = "Please specify the new currency (can also be an emoji). Note: Currency name " +
+                            "cannot be longer than 30 characters.";
+                    await channel.EmbedAsync(query);
+                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => m.Length < 30);
+                    if (mctx != null)
+                        gcfg.Currency = mctx.Message.Content;
+                }
+            }
+
+
+            private class JoinLeaveSettings
+            {
+                public ulong WelcomeChannelId { get; set; }
+                public ulong LeaveChannelId { get; set; }
+                public string WelcomeMessage { get; set; }
+                public string LeaveMessage { get; set; }
             }
             #endregion
         }

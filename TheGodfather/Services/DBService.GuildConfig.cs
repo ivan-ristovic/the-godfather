@@ -115,8 +115,24 @@ namespace TheGodfather.Services
             return settings;
         }
 
-        public static Task<short> GetAntiInstantLeaveSensitivityAsync(this DBService db, ulong gid)
-            => db.GetValueInternalAsync<short>(gid, "antijoinleave_sens");
+        public static async Task<AntiInstantLeaveSettings> GetAntiInstantLeaveSettingsAsync(this DBService db, ulong gid)
+        {
+            var settings = new AntiInstantLeaveSettings();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT antijoinleave_enabled, antijoinleave_sens FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        settings.Enabled = (bool)reader["antijoinleave_enabled"];
+                        settings.Sensitivity = (short)reader["antijoinleave_sens"];
+                    }
+                }
+            });
+
+            return settings;
+        }
 
         public static async Task<DiscordRole> GetMuteRoleAsync(this DBService db, DiscordGuild guild)
         {
@@ -167,9 +183,6 @@ namespace TheGodfather.Services
 
             return msg;
         }
-
-        public static Task<bool> IsAntiInstantLeaveEnabledAsync(this DBService db, ulong gid)
-            => db.GetValueInternalAsync<bool>(gid, "antijoinleave_enabled");
 
         public static async Task<bool> IsEntityExemptedAsync(this DBService db, ulong gid, ulong xid, EntityType type)
         {
@@ -228,11 +241,18 @@ namespace TheGodfather.Services
             });
         }
 
-        public static Task SetAntiInstantLeaveAsync(this DBService db, ulong gid, bool enabled)
-            => db.SetValueInternalAsync(gid, "antijoinleave_enabled", enabled);
+        public static Task SetAntifloodSettingsAsync(this DBService db, ulong gid, AntiInstantLeaveSettings settings)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET (antijoinleave_enabled, antijoinleave_sens) = " +
+                                  "(antijoinleave_enabled, antijoinleave_sens) WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("antijoinleave_enabled", settings.Enabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antijoinleave_sens", settings.Sensitivity));
 
-        public static Task SetAntiInstantLeaveSensitivityAsync(this DBService db, ulong gid, short sensitivity)
-            => db.SetValueInternalAsync(gid, "antijoinleave_sens", sensitivity);
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
 
         public static Task SetMuteRoleAsync(this DBService db, ulong gid, ulong rid)
             => db.SetValueInternalAsync(gid, "mute_rid", (long)rid);
