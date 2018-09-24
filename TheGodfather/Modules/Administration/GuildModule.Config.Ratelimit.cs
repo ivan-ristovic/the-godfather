@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
                 [UsageExamples("!guild cfg ratelimit sensitivity 9")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
-                                                     [Description("Action type.")] short sensitivity)
+                                                     [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity)
                 {
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");

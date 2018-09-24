@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
@@ -25,7 +26,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            short antiInstantLeaveSens = await shard.DatabaseService.GetAntiInstantLeaveSensitivityAsync(e.Guild.Id);
+            await Task.Delay(TimeSpan.FromSeconds(antiInstantLeaveSens + 1));
             if (e.Member.Guild == null)
                 return;
 
@@ -81,10 +83,11 @@ namespace TheGodfather.EventListeners
                 return;
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
-            if (gcfg.AntifloodEnabled)
-                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member);
+            AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
+            if (antifloodSettings.Enabled)
+                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member, antifloodSettings);
 
-            if (gcfg.AntiInstantLeaveEnabled)
+            if (await shard.DatabaseService.IsAntiInstantLeaveEnabledAsync(e.Guild.Id))
                 await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e.Guild, e.Member);
         }
 
@@ -95,9 +98,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             bool punished = false;
-
-            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
-            if (gcfg.AntiInstantLeaveEnabled)
+            
+            if (await shard.DatabaseService.IsAntiInstantLeaveEnabledAsync(e.Guild.Id))
                 punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e.Guild, e.Member);
 
             if (!punished) {

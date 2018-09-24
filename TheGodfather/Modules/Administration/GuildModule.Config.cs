@@ -41,62 +41,8 @@ namespace TheGodfather.Modules.Administration
 
 
             [GroupCommand]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-            {
-                var emb = new DiscordEmbedBuilder() {
-                    Title = "Guild configuration",
-                    Description = ctx.Guild.ToString(),
-                    Color = this.ModuleColor
-                };
-
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-
-                emb.AddField("Prefix", this.Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
-                emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
-                emb.AddField("Command suggestions active", gcfg.SuggestionsEnabled.ToString(), inline: true);
-                emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
-
-                DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
-                emb.AddField("Welcome messages", wchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
-
-                DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
-                emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
-
-                if (gcfg.RatelimitEnabled)
-                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
-                else
-                    emb.AddField("Ratelimit watch", "off", inline: true);
-
-                if (gcfg.AntifloodEnabled)
-                    emb.AddField("Antiflood watch", $"Sensitivity: {gcfg.AntifloodSensitivity} users per {gcfg.AntifloodCooldown}s\nAction: {gcfg.AntifloodAction.ToTypeString()}", inline: true);
-                else
-                    emb.AddField("Antiflood watch", "off", inline: true);
-
-                DiscordRole muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
-                if (muteRole == null)
-                    muteRole = ctx.Guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
-                if (muteRole != null)
-                    emb.AddField("Mute role", muteRole.Name, inline: true);
-
-                if (gcfg.LinkfilterEnabled) {
-                    var sb = new StringBuilder();
-                    if (gcfg.BlockDiscordInvites)
-                        sb.AppendLine("Invite blocker");
-                    if (gcfg.BlockBooterWebsites)
-                        sb.AppendLine("DDoS/Booter website blocker");
-                    if (gcfg.BlockDisturbingWebsites)
-                        sb.AppendLine("Disturbing website blocker");
-                    if (gcfg.BlockIpLoggingWebsites)
-                        sb.AppendLine("IP logging website blocker");
-                    if (gcfg.BlockUrlShorteners)
-                        sb.AppendLine("URL shortening website blocker");
-                    emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
-                } else {
-                    emb.AddField("Linkfilter", "off", inline: true);
-                }
-
-                await ctx.RespondAsync(embed: emb.Build());
-            }
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => this.PrintGuildConfigAsync(ctx.Guild, ctx.Channel);
 
 
             #region COMMAND_CONFIG_WIZARD
@@ -219,7 +165,7 @@ namespace TheGodfather.Modules.Administration
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
                     await channel.EmbedAsync("Which role will it be?");
                     MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
+                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedRoles.Count == 1
                     );
                     if (mctx != null)
                         muteRole = mctx.MentionedRoles.First();
@@ -249,34 +195,35 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
+                var antifloodSettings = new AntifloodSettings();
                 if (await channel.WaitForBoolResponseAsync(ctx, "Antiflood watch is a feature that automatically punishes users that flood the guild. Do you wish to enable antiflood watch?", reply: false)) {
-                    gcfg.AntifloodEnabled = true;
+                    antifloodSettings.Enabled = true;
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood action ({gcfg.RatelimitAction.ToTypeString()})?", reply: false)) {
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood action ({antifloodSettings.Action.ToTypeString()})?", reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
                         );
                         if (mctx != null)
-                            gcfg.AntifloodAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
                     }
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood user quota after which the action will be applied ({gcfg.AntifloodSensitivity})?", reply: false)) {
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood user quota after which the action will be applied ({antifloodSettings.Sensitivity})?", reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
                         );
                         if (mctx != null)
-                            gcfg.AntifloodSensitivity = short.Parse(mctx.Message.Content);
+                            antifloodSettings.Sensitivity = short.Parse(mctx.Message.Content);
                     }
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default cooldown time ({gcfg.AntifloodSensitivity})?", reply: false)) {
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default cooldown time ({antifloodSettings.Cooldown})?", reply: false)) {
                         await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
                         );
                         if (mctx != null)
-                            gcfg.AntifloodCooldown = short.Parse(mctx.Message.Content);
+                            antifloodSettings.Cooldown = short.Parse(mctx.Message.Content);
                     }
                 }
 
@@ -325,10 +272,10 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 sb.AppendLine().Append("Antiflood watch: ");
-                if (gcfg.AntifloodEnabled) {
+                if (antifloodSettings.Enabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append("- Sensitivity: ").Append(gcfg.AntifloodSensitivity).Append(" users per ").Append(gcfg.AntifloodCooldown).AppendLine("s");
-                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                    sb.Append("- Sensitivity: ").Append(antifloodSettings.Sensitivity).Append(" users per ").Append(antifloodSettings.Cooldown).AppendLine("s");
+                    sb.Append("- Action: ").AppendLine(antifloodSettings.Action.ToTypeString());
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
@@ -349,44 +296,11 @@ namespace TheGodfather.Modules.Administration
                 await channel.EmbedAsync(sb.ToString());
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
-                    this.Shared.GuildConfigurations[ctx.Guild.Id] = gcfg;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
-                    if (wcid != 0)
-                        await this.Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid);
-                    else
-                        await this.Database.RemoveWelcomeChannelAsync(ctx.Guild.Id);
-                    if (!string.IsNullOrWhiteSpace(wmessage))
-                        await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, wmessage);
-                    if (lcid != 0)
-                        await this.Database.SetLeaveChannelAsync(ctx.Guild.Id, lcid);
-                    else
-                        await this.Database.RemoveLeaveChannelAsync(ctx.Guild.Id);
-                    if (!string.IsNullOrWhiteSpace(lmessage))
-                        await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage);
+                    await this.ApplySettingsAsync(ctx.Guild.Id, gcfg, muteRole, wcid, lcid, wmessage, lmessage, antifloodSettings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
-                        var emb = new DiscordEmbedBuilder() {
-                            Title = "Guild config changed",
-                            Color = this.ModuleColor
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Prefix", this.Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
-                        emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
-                        emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
-                        emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
-                        emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter - Block invites", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter - Block booter websites", gcfg.BlockBooterWebsites ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter - Block disturbing websites", gcfg.BlockDisturbingWebsites ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter - Block IP loggers", gcfg.BlockIpLoggingWebsites ? "on" : "off", inline: true);
-                        emb.AddField("Linkfilter - Block URL shorteners", gcfg.BlockUrlShorteners ? "on" : "off", inline: true);
-                        await logchn.SendMessageAsync(embed: emb.Build());
-                    }
+                    if (logchn != null)
+                        await this.PrintGuildConfigAsync(ctx.Guild, logchn, changed: true);
 
                     await channel.EmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess);
                 }
@@ -655,6 +569,97 @@ namespace TheGodfather.Modules.Administration
                     muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
                     await this.InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
                 }
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
+            private async Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
+            {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = $"Guild configuration {(changed ? " changed" : "")}",
+                    Description = guild.ToString(),
+                    Color = this.ModuleColor
+                };
+
+                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(guild.Id);
+
+                emb.AddField("Prefix", this.Shared.GetGuildPrefix(guild.Id), inline: true);
+                emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
+                emb.AddField("Command suggestions active", gcfg.SuggestionsEnabled.ToString(), inline: true);
+                emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
+
+                DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(guild);
+                emb.AddField("Welcome messages", wchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
+
+                DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(guild);
+                emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
+
+                if (gcfg.RatelimitEnabled)
+                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
+                else
+                    emb.AddField("Ratelimit watch", "off", inline: true);
+
+                AntifloodSettings antifloodSettings = await this.Database.GetAntifloodSettingsAsync(guild.Id);
+                if (antifloodSettings.Enabled) 
+                    emb.AddField("Antiflood watch", $"Sensitivity: {antifloodSettings.Sensitivity} users per {antifloodSettings.Cooldown}s\nAction: {antifloodSettings.Action.ToTypeString()}", inline: true);
+                else 
+                    emb.AddField("Antiflood watch", "off", inline: true);
+
+                if (await this.Database.IsAntiInstantLeaveEnabledAsync(guild.Id)) {
+                    short sensitivity = await this.Database.GetAntiInstantLeaveSensitivityAsync(guild.Id);
+                    emb.AddField("Instant leave watch", $"Sensitivity: {sensitivity}", inline: true);
+                } else {
+                    emb.AddField("Instant leave watch", "off", inline: true);
+                }
+
+                DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
+                if (muteRole == null)
+                    muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+                if (muteRole != null)
+                    emb.AddField("Mute role", muteRole.Name, inline: true);
+
+                if (gcfg.LinkfilterEnabled) {
+                    var sb = new StringBuilder();
+                    if (gcfg.BlockDiscordInvites)
+                        sb.AppendLine("Invite blocker");
+                    if (gcfg.BlockBooterWebsites)
+                        sb.AppendLine("DDoS/Booter website blocker");
+                    if (gcfg.BlockDisturbingWebsites)
+                        sb.AppendLine("Disturbing website blocker");
+                    if (gcfg.BlockIpLoggingWebsites)
+                        sb.AppendLine("IP logging website blocker");
+                    if (gcfg.BlockUrlShorteners)
+                        sb.AppendLine("URL shortening website blocker");
+                    emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
+                } else {
+                    emb.AddField("Linkfilter", "off", inline: true);
+                }
+
+                await channel.SendMessageAsync(embed: emb.Build());
+            }
+            
+            private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole, 
+                                                  ulong wcid, ulong lcid, string wmessage, string lmessage,
+                                                  AntifloodSettings antifloodSettings)
+            {
+                this.Shared.GuildConfigurations[gid] = gcfg;
+
+                await this.Database.UpdateGuildSettingsAsync(gid, gcfg);
+                await this.Database.SetMuteRoleAsync(gid, muteRole.Id);
+                if (wcid != 0)
+                    await this.Database.SetWelcomeChannelAsync(gid, wcid);
+                else
+                    await this.Database.RemoveWelcomeChannelAsync(gid);
+                if (!string.IsNullOrWhiteSpace(wmessage))
+                    await this.Database.SetWelcomeMessageAsync(gid, wmessage);
+                if (lcid != 0)
+                    await this.Database.SetLeaveChannelAsync(gid, lcid);
+                else
+                    await this.Database.RemoveLeaveChannelAsync(gid);
+                if (!string.IsNullOrWhiteSpace(lmessage))
+                    await this.Database.SetLeaveMessageAsync(gid, lmessage);
+                await this.Database.SetAntifloodSettingsAsync(gid, antifloodSettings);
             }
             #endregion
         }

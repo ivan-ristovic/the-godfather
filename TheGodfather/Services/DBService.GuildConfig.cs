@@ -91,15 +91,42 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<ulong, CachedGuildConfig>(dict);
         }
 
+        public static async Task<PunishmentActionType> GetAntifloodActionAsync(this DBService db, ulong gid)
+            => (PunishmentActionType)await db.GetValueInternalAsync<short>(gid, "antiflood_action");
+
+        public static async Task<AntifloodSettings> GetAntifloodSettingsAsync(this DBService db, ulong gid)
+        {
+            var settings = new AntifloodSettings();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT antiflood_enabled, antiflood_sens, antiflood_cooldown, antiflood_action FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        settings.Action = (PunishmentActionType)(short)reader["antiflood_action"];
+                        settings.Cooldown = (short)reader["antiflood_cooldown"];
+                        settings.Enabled = (bool)reader["antiflood_enabled"];
+                        settings.Sensitivity = (short)reader["antiflood_sens"];
+                    }
+                }
+            });
+
+            return settings;
+        }
+
+        public static Task<short> GetAntiInstantLeaveSensitivityAsync(this DBService db, ulong gid)
+            => db.GetValueInternalAsync<short>(gid, "antijoinleave_sens");
+
         public static async Task<DiscordRole> GetMuteRoleAsync(this DBService db, DiscordGuild guild)
         {
-            ulong rid = await db.GetEntityIdInternalAsync("mute_rid", guild.Id);
+            ulong rid = (ulong)await db.GetValueInternalAsync<long>(guild.Id, "mute_rid");
             return rid != 0 ? guild.GetRole(rid) : null;
         }
 
         public static async Task<DiscordChannel> GetLeaveChannelAsync(this DBService db, DiscordGuild guild)
         {
-            ulong cid = await db.GetEntityIdInternalAsync("leave_cid", guild.Id);
+            ulong cid = (ulong)await db.GetValueInternalAsync<long>(guild.Id, "leave_cid");
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
@@ -121,7 +148,7 @@ namespace TheGodfather.Services
 
         public static async Task<DiscordChannel> GetWelcomeChannelAsync(this DBService db, DiscordGuild guild)
         {
-            ulong cid = await db.GetEntityIdInternalAsync("welcome_cid", guild.Id);
+            ulong cid = (ulong)await db.GetValueInternalAsync<long>(guild.Id, "welcome_cid");
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
@@ -140,6 +167,9 @@ namespace TheGodfather.Services
 
             return msg;
         }
+
+        public static Task<bool> IsAntiInstantLeaveEnabledAsync(this DBService db, ulong gid)
+            => db.GetValueInternalAsync<bool>(gid, "antijoinleave_enabled");
 
         public static async Task<bool> IsEntityExemptedAsync(this DBService db, ulong gid, ulong xid, EntityType type)
         {
@@ -170,22 +200,45 @@ namespace TheGodfather.Services
         }
 
         public static Task RemoveWelcomeChannelAsync(this DBService db, ulong gid)
-            => db.SetEntityIdInternalAsync("welcome_cid", gid, 0);
+            => db.SetValueInternalAsync(gid, "welcome_cid", 0);
 
         public static Task RemoveWelcomeMessageAsync(this DBService db, ulong gid)
             => db.SetWelcomeMessageAsync(gid, null);
 
         public static Task RemoveLeaveChannelAsync(this DBService db, ulong gid)
-            => db.SetEntityIdInternalAsync("leave_cid", gid, 0);
+            => db.SetValueInternalAsync(gid, "leave_cid", 0);
 
         public static Task RemoveLeaveMessageAsync(this DBService db, ulong gid)
             => db.SetLeaveMessageAsync(gid, null);
 
+        public static Task SetAntifloodSettingsAsync(this DBService db, ulong gid, AntifloodSettings settings)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = $"UPDATE gf.guild_cfg SET " +
+                    $"(antiflood_enabled, antiflood_sens, antiflood_cooldown, antiflood_action) = " +
+                    $"(@antiflood_enabled, @antiflood_sens, @antiflood_cooldown, @antiflood_action) " +
+                    $"WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("antiflood_enabled", settings.Enabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_action", (short)settings.Action));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_cooldown", settings.Cooldown));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_sens", settings.Sensitivity));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task SetAntiInstantLeaveAsync(this DBService db, ulong gid, bool enabled)
+            => db.SetValueInternalAsync(gid, "antijoinleave_enabled", enabled);
+
+        public static Task SetAntiInstantLeaveSensitivityAsync(this DBService db, ulong gid, short sensitivity)
+            => db.SetValueInternalAsync(gid, "antijoinleave_sens", sensitivity);
+
         public static Task SetMuteRoleAsync(this DBService db, ulong gid, ulong rid)
-            => db.SetEntityIdInternalAsync("mute_rid", gid, rid);
+            => db.SetValueInternalAsync(gid, "mute_rid", (long)rid);
 
         public static Task SetLeaveChannelAsync(this DBService db, ulong gid, ulong cid)
-            => db.SetEntityIdInternalAsync("leave_cid", gid, cid);
+            => db.SetValueInternalAsync(gid, "leave_cid", (long)cid);
 
         public static Task SetLeaveMessageAsync(this DBService db, ulong gid, string message)
         {
@@ -199,7 +252,7 @@ namespace TheGodfather.Services
         }
 
         public static Task SetWelcomeChannelAsync(this DBService db, ulong gid, ulong cid)
-            => db.SetEntityIdInternalAsync("welcome_cid", gid, cid);
+            => db.SetValueInternalAsync(gid, "welcome_cid", (long)cid);
 
         public static Task SetWelcomeMessageAsync(this DBService db, ulong gid, string message)
         {
@@ -228,12 +281,10 @@ namespace TheGodfather.Services
                 cmd.CommandText = "UPDATE gf.guild_cfg SET " +
                     "(prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, " +
                     "linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, " +
-                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens," +
-                    "antiflood_enabled, antiflood_sens, antiflood_action, antiflood_cooldown) = " +
+                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens) = " +
                     "(@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, " +
                     "@linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, " +
-                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens," +
-                    "@antiflood_enabled, @antiflood_sens, @antiflood_action, @antiflood_cooldown) " +
+                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens) " +
                     "WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
@@ -256,10 +307,6 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitAction));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSensitivity));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("antiflood_enabled", cfg.AntifloodEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_action", (short)cfg.AntifloodAction));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_sens", cfg.AntifloodSensitivity));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_cooldown", cfg.AntifloodCooldown));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -276,30 +323,30 @@ namespace TheGodfather.Services
                 return cmd.ExecuteNonQueryAsync();
             });
         }
-
-
-        private static async Task<ulong> GetEntityIdInternalAsync(this DBService db, string col, ulong gid)
+        
+        
+        private static async Task<T> GetValueInternalAsync<T>(this DBService db, ulong gid, string col)
         {
-            ulong id = 0;
+            T value = default;
 
-            await  db.ExecuteCommandAsync(async (cmd) => {
+            await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = $"SELECT {col} FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
-                    id = (ulong)(long)res;
+                    value = (T)res;
             });
 
-            return id;
+            return value;
         }
 
-        private static Task SetEntityIdInternalAsync(this DBService db, string col, ulong gid, ulong value)
+        private static Task SetValueInternalAsync<T>(this DBService db, ulong gid, string col, T value)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = $"UPDATE gf.guild_cfg SET {col} = @id WHERE gid = @gid;";
+                cmd.CommandText = $"UPDATE gf.guild_cfg SET {col} = @value WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("id", (long)value));
+                cmd.Parameters.Add(new NpgsqlParameter<T>("value", value));
 
                 return cmd.ExecuteNonQueryAsync();
             });
