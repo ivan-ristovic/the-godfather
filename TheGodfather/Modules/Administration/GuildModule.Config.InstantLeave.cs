@@ -6,9 +6,10 @@ using DSharpPlus.Entities;
 
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -43,8 +44,9 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 2 || sensitivity > 60)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 60]).");
 
-                    await this.Database.SetAntiInstantLeaveAsync(ctx.Guild.Id, enable);
-                    await this.Database.SetAntiInstantLeaveSensitivityAsync(ctx.Guild.Id, sensitivity);
+                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
+                    settings.Enabled = enable;
+                    settings.Sensitivity = sensitivity;
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -56,7 +58,7 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Instant leave sensitivity", sensitivity.ToString(), inline: true);
+                            emb.AddField("Instant leave sensitivity", settings.Sensitivity.ToString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
@@ -72,8 +74,8 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    bool enabled = await this.Database.IsAntiInstantLeaveEnabledAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, $"Instant leave watch for this guild is {Formatter.Bold(enabled ? "enabled" : "disabled")}");
+                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, $"Instant leave watch for this guild is {Formatter.Bold(settings.Enabled ? "enabled" : "disabled")} with senssitivity: {Formatter.Bold(settings.Sensitivity.ToString())}");
                 }
 
                 
@@ -88,7 +90,8 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 2 || sensitivity > 60)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 60]).");
 
-                    await this.Database.SetAntiInstantLeaveSensitivityAsync(ctx.Guild.Id, sensitivity);
+                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
+                    settings.Sensitivity = sensitivity;
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -98,11 +101,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Instant leave sensitivity changed to", $"{sensitivity}s");
+                        emb.AddField("Instant leave sensitivity changed to", $"{settings.Sensitivity}s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Instant leave sensitivity for this guild has been changed to {Formatter.Bold(sensitivity.ToString())}s", important: false);
+                    await this.InformAsync(ctx, $"Instant leave sensitivity for this guild has been changed to {Formatter.Bold(settings.Sensitivity.ToString())}s", important: false);
                 }
                 #endregion
             }

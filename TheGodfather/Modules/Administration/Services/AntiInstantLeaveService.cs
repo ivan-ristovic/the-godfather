@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services

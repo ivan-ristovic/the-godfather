@@ -107,7 +107,7 @@ namespace TheGodfather.EventListeners
             if (!punished) {
                 DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
                 if (lchn != null) {
-                    string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
+                    string msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id);
                     if (string.IsNullOrWhiteSpace(msg))
                         await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
                     else

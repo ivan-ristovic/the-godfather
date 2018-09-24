@@ -14,6 +14,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -74,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     if (gcfg.LoggingEnabled) {
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllExemptedEntitiesAsync(ctx.Guild.Id);
+                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllExemptsAsync(ctx.Guild.Id);
                         var sb = new StringBuilder();
                         foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
                             sb.AppendLine($"{exempt.Type.ToUserFriendlyString()} exempted: {exempt.Id}");
