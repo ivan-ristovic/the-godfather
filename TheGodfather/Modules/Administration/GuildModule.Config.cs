@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                 await this.SetupRatelimitAsync(gcfg, ctx, channel);
                 AntifloodSettings antifloodSettings = await this.SetupAntifloodAsync(gcfg, ctx, channel);
                 await this.SetupCurrencyAsync(gcfg, ctx, channel);
-                AntiInstantLeaveSettings antiInstantLeaveSettings = await SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
+                AntiInstantLeaveSettings antiInstantLeaveSettings = await this.SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
 
                 await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
@@ -386,12 +386,12 @@ namespace TheGodfather.Modules.Administration
                 else 
                     emb.AddField("Antiflood watch", "off", inline: true);
 
-                if (await this.Database.IsAntiInstantLeaveEnabledAsync(guild.Id)) {
-                    short sensitivity = await this.Database.GetAntiInstantLeaveSensitivityAsync(guild.Id);
-                    emb.AddField("Instant leave watch", $"Sensitivity: {sensitivity}", inline: true);
-                } else {
+                AntiInstantLeaveSettings antiILSettings = await this.Database.GetAntiInstantLeaveSettingsAsync(guild.Id);
+                if (antiILSettings.Enabled)
+                    emb.AddField("Instant leave watch", $"Sensitivity: {antiILSettings.Sensitivity}", inline: true);
+                else 
                     emb.AddField("Instant leave watch", "off", inline: true);
-                }
+                
 
                 DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
                 if (muteRole == null)

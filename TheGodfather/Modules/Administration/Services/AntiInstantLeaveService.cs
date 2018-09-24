@@ -41,8 +41,8 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildNewMembers[guild.Id].Add(member))
                 throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
 
-            short sensitivity = await this.shard.DatabaseService.GetAntiInstantLeaveSensitivityAsync(guild.Id);
-            await Task.Delay(TimeSpan.FromSeconds(sensitivity));
+            AntiInstantLeaveSettings settings = await this.shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(guild.Id);
+            await Task.Delay(TimeSpan.FromSeconds(settings.Sensitivity));
 
             if (this.guildNewMembers.ContainsKey(guild.Id) && !this.guildNewMembers[guild.Id].TryRemove(member))
                 throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");

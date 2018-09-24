@@ -241,7 +241,7 @@ namespace TheGodfather.Services
             });
         }
 
-        public static Task SetAntifloodSettingsAsync(this DBService db, ulong gid, AntiInstantLeaveSettings settings)
+        public static Task SetAntiInstantLeaveSettingsAsync(this DBService db, ulong gid, AntiInstantLeaveSettings settings)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET (antijoinleave_enabled, antijoinleave_sens) = " +
