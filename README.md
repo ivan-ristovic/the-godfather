@@ -6,22 +6,22 @@
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
 
 Features:
-- Full administration of the guild, channels, users, emoji etc.
-- Protection commands: antispam, antiraid and many more!
-- Offers activity logging - will log any changes to guild / channels / members etc. It is possible to exempt entities (channels, users) that you do not want to be logged
-- Message filtering: user-defined filters either by raw match or regex match, gorefilter, IP logging websites filter, invite filter, etc.
-- Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching
-- Customizable guild content: memes, ranks, birthdays, currency items and many more!
+- Complete administration of the guild, channels, users, emoji etc via categorized commands.
+- Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection and many more! All of them are customizable to suit your needs.
+- Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
+- Message filtering: user-defined filters either by raw match or regex match, gore websites filter, IP logging websites filter, invite filter, etc.
+- Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching.
+- Customizable guild content: memes, ranks, birthdays, currencies, currency items and many more!
 - Searches of online services: YouTube, Imgur, reddit, Steam, IMDb, OpenWeather etc.
-- RSS feed subscriptions (includes YouTube, reddit and much more) and automatic notifications on the new content release.
+- RSS feed subscriptions (includes YouTube, reddit and many more) - automatic notifications when new content is released.
 - Many games to pass your time: Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc. 
 - Currency commands and games: Poker, BlackJack, Slots etc.
 - Eases your pain with auto-assigned roles and self-assignable roles.
-- Interactive polls and reminders
-- SWAT4 server queries and player database
+- Interactive polls and reminders.
+- SWAT4 server queries and player database.
 
 Upcoming features:
-- Music playback (currently in beta)
+- Music playback (currently in beta).
 - Interactive NLP mode (currently in alpha) - explain what you want and it will be done!
 
 
