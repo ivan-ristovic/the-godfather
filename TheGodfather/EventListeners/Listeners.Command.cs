@@ -72,7 +72,7 @@ namespace TheGodfather.EventListeners
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
                     var ordered = TheGodfatherShard.Commands
-                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
+                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Name))
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);

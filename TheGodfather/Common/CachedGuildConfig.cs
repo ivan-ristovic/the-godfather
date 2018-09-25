@@ -20,9 +20,7 @@ namespace TheGodfather.Common
         public bool BlockIpLoggingWebsites { get; set; }
         public bool BlockUrlShorteners { get; set; }
         
-        public bool RatelimitEnabled { get; set; }
-        public PunishmentActionType RatelimitAction { get; set; }
-        public short RatelimitSensitivity { get; set; }
+        public RatelimitSettings RatelimitSettings { get; set; }
 
         public bool LoggingEnabled
             => this.LogChannelId != 0;
@@ -38,9 +36,7 @@ namespace TheGodfather.Common
             LinkfilterEnabled = false,
             LogChannelId = 0,
             Prefix = null,
-            RatelimitAction = PunishmentActionType.Mute,
-            RatelimitEnabled = false,
-            RatelimitSensitivity = 5,
+            RatelimitSettings = new RatelimitSettings(),
             ReactionResponse = false,
             SuggestionsEnabled = false
         };

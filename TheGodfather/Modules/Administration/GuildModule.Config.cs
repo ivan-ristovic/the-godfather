@@ -377,8 +377,8 @@ namespace TheGodfather.Modules.Administration
                 DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(guild);
                 emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
 
-                if (gcfg.RatelimitEnabled)
-                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
+                if (gcfg.RatelimitSettings.Enabled)
+                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSettings.Sensitivity} msgs per 5s\nAction: {gcfg.RatelimitSettings.Action.ToTypeString()}", inline: true);
                 else
                     emb.AddField("Ratelimit watch", "off", inline: true);
 
@@ -501,10 +501,10 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 sb.AppendLine().Append("Ratelimit watch: ");
-                if (gcfg.RatelimitEnabled) {
+                if (gcfg.RatelimitSettings.Enabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSensitivity).AppendLine(" msgs per 5s.");
-                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                    sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSettings.Sensitivity).AppendLine(" msgs per 5s.");
+                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitSettings.Action.ToTypeString());
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
@@ -691,27 +691,27 @@ namespace TheGodfather.Modules.Administration
                                "more than specified amount of messages in a 5s timespan. Do you wish to " +
                                "enable ratelimit watch?";
                 if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
-                    gcfg.RatelimitEnabled = true;
+                    gcfg.RatelimitSettings.Enabled = true;
 
-                    query = $"Do you wish to change the default ratelimit action ({gcfg.RatelimitAction.ToTypeString()})?";
+                    query = $"Do you wish to change the default ratelimit action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
                         );
                         if (mctx != null)
-                            gcfg.RatelimitAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                            gcfg.RatelimitSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
                     }
 
                     query = "Do you wish to change the default ratelimit sensitivity aka number of messages " +
-                            $"in 5s window before the action is triggered ({gcfg.RatelimitSensitivity})?";
+                            $"in 5s window before the action is triggered ({gcfg.RatelimitSettings.Sensitivity})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
                         );
                         if (mctx != null)
-                            gcfg.RatelimitSensitivity = short.Parse(mctx.Message.Content);
+                            gcfg.RatelimitSettings.Sensitivity = short.Parse(mctx.Message.Content);
                     }
                 }
             }

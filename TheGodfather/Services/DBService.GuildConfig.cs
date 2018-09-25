@@ -38,9 +38,11 @@ namespace TheGodfather.Services
                             LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
-                            RatelimitEnabled = (bool)reader["ratelimit_enabled"],
-                            RatelimitAction = (PunishmentActionType)(short)reader["ratelimit_action"],
-                            RatelimitSensitivity = (short)reader["ratelimit_sens"],
+                            RatelimitSettings = new RatelimitSettings() {
+                                Enabled = (bool)reader["ratelimit_enabled"],
+                                Action = (PunishmentActionType)(short)reader["ratelimit_action"],
+                                Sensitivity = (short)reader["ratelimit_sens"],
+                            },
                             ReactionResponse = (bool)reader["silent_respond"],
                             SuggestionsEnabled = (bool)reader["suggestions_enabled"],
                         });
@@ -100,9 +102,9 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("currency", NpgsqlDbType.Varchar, DBNull.Value);
                 else
                     cmd.Parameters.Add(new NpgsqlParameter<string>("currency", cfg.Currency));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitAction));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitSettings.Enabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitSettings.Action));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSettings.Sensitivity));
 
                 return cmd.ExecuteNonQueryAsync();
             });

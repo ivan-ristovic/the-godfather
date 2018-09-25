@@ -70,7 +70,7 @@ namespace TheGodfather.EventListeners
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
 
-            if (gcfg.RatelimitEnabled)
+            if (gcfg.RatelimitSettings.Enabled)
                 await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e.Guild, e.Author);
         }
 

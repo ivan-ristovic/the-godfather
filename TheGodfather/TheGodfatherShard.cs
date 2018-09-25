@@ -28,7 +28,7 @@ namespace TheGodfather
 {
     public sealed class TheGodfatherShard
     {
-        public static IReadOnlyList<(string, Command)> Commands;
+        public static IReadOnlyList<(string Name, Command Command)> Commands;
 
         public static void UpdateCommandList(CommandsNextExtension cnext)
         {
