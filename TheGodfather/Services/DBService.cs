@@ -141,7 +141,7 @@ namespace TheGodfather.Services
                     linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, 
                     linkfilter_shorteners, silent_respond, currency, ratelimit_enabled, ratelimit_action, 
                     ratelimit_sens, antiflood_enabled, antiflood_sens, antiflood_action, antiflood_cooldown,
-                    mute_rid 
+                    mute_rid, antijoinleave_enabled, antijoinleave_sens
                     FROM gf.guild_cfg LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
@@ -178,7 +178,11 @@ namespace TheGodfather.Services
                 return cmd.ExecuteScalarAsync();
             });
             await this.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "SELECT id, type, uid, cid, gid, comment, execution_time FROM gf.saved_tasks LIMIT 1;";
+                cmd.CommandText = "SELECT id, type, uid, gid, execution_time FROM gf.saved_tasks LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await this.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, uid, cid, message, execution_time, repeat, interval FROM gf.reminders LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
             await this.ExecuteCommandAsync(cmd => {

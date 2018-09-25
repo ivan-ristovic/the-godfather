@@ -211,18 +211,17 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!peniscompare @Someone",
                        "!peniscompare @Someone @SomeoneElse")]
         public Task PenisCompareAsync(CommandContext ctx,
-                                     [Description("User1.")] DiscordUser user1,
-                                     [Description("User2 (def. sender).")] DiscordUser user2 = null)
+                                     [Description("User1.")] params DiscordUser[] users)
         {
-            if (user2 == null)
-                user2 = ctx.User;
+            if (users?.Length < 2 || users?.Length >= 10)
+                throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
 
-            if (user1.Id == ctx.Client.CurrentUser.Id || user2.Id == ctx.Client.CurrentUser.Id)
+            if (users.Any(u => u.IsCurrent))
                 return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
 
             var sb = new StringBuilder();
-            sb.Append('8').Append('=', (int)(user1.Id % 40)).Append("D ").AppendLine(user1.Mention);
-            sb.Append('8').Append('=', (int)(user2.Id % 40)).Append("D ").AppendLine(user2.Mention);
+            foreach (DiscordUser u in users)
+                sb.Append('8').Append('=', (int)(u.Id % 40)).Append("D ").AppendLine(u.Mention);
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
         }

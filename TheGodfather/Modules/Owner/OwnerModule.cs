@@ -540,7 +540,7 @@ namespace TheGodfather.Modules.Owner
         [Command("sudo"), NotBlocked]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [UsageExamples("!owner sudo @Someone !rate")]
+        [UsageExamples("!owner sudo @Someone rate")]
         [RequirePrivilegedUser]
         public Task SudoAsync(CommandContext ctx,
                              [Description("Member to execute as.")] DiscordMember member,

@@ -48,9 +48,9 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitEnabled = enable;
-                    gcfg.RatelimitAction = action;
-                    gcfg.RatelimitSensitivity = sensitivity;
+                    gcfg.RatelimitSettings.Enabled = enable;
+                    gcfg.RatelimitSettings.Action = action;
+                    gcfg.RatelimitSettings.Sensitivity = sensitivity;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
@@ -64,13 +64,13 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Ratelimit sensitivity", gcfg.RatelimitSensitivity.ToString(), inline: true);
-                            emb.AddField("Ratelimit action", gcfg.RatelimitAction.ToTypeString(), inline: true);
+                            emb.AddField("Ratelimit sensitivity", gcfg.RatelimitSettings.Sensitivity.ToString(), inline: true);
+                            emb.AddField("Ratelimit action", gcfg.RatelimitSettings.Action.ToTypeString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
+                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitSettings.Enabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
                 }
 
                 [GroupCommand, Priority(2)]
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                 public Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitEnabled ? "enabled" : "disabled")}");
+                    return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitSettings.Enabled ? "enabled" : "disabled")}");
                 }
 
 
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitAction = action;
+                    gcfg.RatelimitSettings.Action = action;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
@@ -115,11 +115,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Ratelimit action changed to", gcfg.RatelimitAction.ToTypeString());
+                        emb.AddField("Ratelimit action changed to", gcfg.RatelimitSettings.Action.ToTypeString());
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSettings.Action.ToTypeString())}", important: false);
                 }
                 #endregion
 
@@ -129,13 +129,13 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
                 [UsageExamples("!guild cfg ratelimit sensitivity 9")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
-                                                     [Description("Action type.")] short sensitivity)
+                                                     [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity)
                 {
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitSensitivity = sensitivity;
+                    gcfg.RatelimitSettings.Sensitivity = sensitivity;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
@@ -147,11 +147,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Ratelimit sensitivity changed to", $"Max {gcfg.RatelimitSensitivity} msgs per 5s");
+                        emb.AddField("Ratelimit sensitivity changed to", $"Max {gcfg.RatelimitSettings.Sensitivity} msgs per 5s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} msgs per 5s", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSettings.Sensitivity.ToString())} msgs per 5s", important: false);
                 }
                 #endregion
             }

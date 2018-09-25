@@ -6,9 +6,11 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -41,8 +43,13 @@ namespace TheGodfather.Common
             }
         }
 
-        public static Task UnscheduleAsync(SharedData shared, int id)
-            => shared.TaskExecuters.ContainsKey(id) ? shared.TaskExecuters[id].UnscheduleAsync() : Task.CompletedTask;
+        public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
+        {
+            if (shared.RemindExecuters.ContainsKey(uid))
+                return shared.RemindExecuters[uid].FirstOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
+            else
+                return Task.CompletedTask;
+        }
 
 
         public SavedTaskExecutor(int id, DiscordClient client, SavedTaskInfo task, SharedData data, DBService db)
@@ -63,31 +70,50 @@ namespace TheGodfather.Common
         public void Schedule()
         {
             switch (this.TaskInfo) {
-                case SendMessageTaskInfo _:
-                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
+                case SendMessageTaskInfo smti:
+                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, smti.IsRepeating ? smti.RepeatingInterval : smti.TimeUntilExecution, smti.RepeatingInterval);
+                    this.shared.RemindExecuters.AddOrUpdate(
+                        smti.InitiatorId,
+                        new ConcurrentHashSet<SavedTaskExecutor>() { this },
+                        (k, v) => {
+                            v.Add(this);
+                            return v;
+                        }
+                    );
                     break;
                 case UnbanTaskInfo _:
                     this.timer = new Timer(this.UnbanUserCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
+                    if (!this.shared.TaskExecuters.TryAdd(this.Id, this))
+                        throw new ConcurrentOperationException("Failed to schedule the task.");
                     break;
                 case UnmuteTaskInfo _:
                     this.timer = new Timer(this.UnmuteUserCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
+                    if (!this.shared.TaskExecuters.TryAdd(this.Id, this))
+                        throw new ConcurrentOperationException("Failed to schedule the task.");
                     break;
                 default:
                     throw new ArgumentException("Unknown saved task info type!", nameof(this.TaskInfo));
             }
-
-            if (!this.shared.TaskExecuters.TryAdd(this.Id, this))
-                throw new ConcurrentOperationException("Failed to schedule the task.");
         }
 
         public async Task HandleMissedExecutionAsync()
         {
+            bool unschedule = true;
+
             try {
                 switch (this.TaskInfo) {
-                    case SendMessageTaskInfo smi:
-                        DiscordChannel channel = await this.client.GetChannelAsync(smi.ChannelId);
-                        DiscordUser user = await this.client.GetUserAsync(smi.InitiatorId);
-                        await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(smi.Message)}\n\n {smi.ExecutionTime.ToUtcTimestamp()}");
+                    case SendMessageTaskInfo smti:
+                        DiscordChannel channel = await this.client.GetChannelAsync(smti.ChannelId);
+                        DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
+                        if (smti.IsRepeating) {
+                            unschedule = false;
+                            this.Schedule();
+                        } else {
+                            await channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                                Description = $"{StaticDiscordEmoji.BoardPieceX} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
+                                Color = DiscordColor.Red
+                            });
+                        }
                         break;
                     case UnbanTaskInfo _:
                         this.UnbanUserCallback(this.TaskInfo);
@@ -96,22 +122,38 @@ namespace TheGodfather.Common
                         this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
-                this.shared.LogProvider.LogMessage(LogLevel.Warning, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
+                this.shared.LogProvider.LogMessage(LogLevel.Debug, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                await this.UnscheduleAsync();
+                if (unschedule)
+                    await this.UnscheduleAsync();
             }
         }
 
 
         private Task UnscheduleAsync()
         {
-            if (this.shared.TaskExecuters.ContainsKey(this.Id))
-                if (!this.shared.TaskExecuters.TryRemove(this.Id, out var _))
-                    throw new ConcurrentOperationException("Failed to unschedule saved task!");
             this.Dispose();
-            return this.db.RemoveSavedTaskAsync(this.Id);
+
+            switch (this.TaskInfo) {
+                case SendMessageTaskInfo smti:
+                    if (this.shared.RemindExecuters.ContainsKey(smti.InitiatorId)) {
+                        if (!this.shared.RemindExecuters[smti.InitiatorId].TryRemove(this))
+                            throw new ConcurrentOperationException("Failed to unschedule reminder!");
+                        if (this.shared.RemindExecuters[smti.InitiatorId].Count == 0)
+                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
+                    }
+                    return this.db.RemoveReminderAsync(this.Id);
+                case UnbanTaskInfo _:
+                case UnmuteTaskInfo _:
+                    if (this.shared.TaskExecuters.ContainsKey(this.Id))
+                        if (!this.shared.TaskExecuters.TryRemove(this.Id, out var _))
+                            throw new ConcurrentOperationException("Failed to unschedule saved task!");
+                    return this.db.RemoveSavedTaskAsync(this.Id);
+                default:
+                    throw new ArgumentException("Unknown saved task info type!", nameof(this.TaskInfo));
+            }
         }
 
 
@@ -121,16 +163,21 @@ namespace TheGodfather.Common
             var info = _ as SendMessageTaskInfo;
 
             try {
-                DiscordChannel channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
+                DiscordChannel channel;
+                if (info.ChannelId != 0)
+                    channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
+                else
+                    channel = this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
                 this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
-                    Description = $"{StaticDiscordEmoji.AlarmClock} {Formatter.Italic(Formatter.Sanitize(info.Message))}",
+                    Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                this.Execute(this.UnscheduleAsync());
+                if (!info.IsRepeating)
+                    this.Execute(this.UnscheduleAsync());
             }
         }
 

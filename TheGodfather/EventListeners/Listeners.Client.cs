@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+
 using System;
 using System.Threading.Tasks;
 
@@ -36,7 +37,12 @@ namespace TheGodfather.EventListeners
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
             shard.Log(LogLevel.Info, $"| Guild available: {e.Guild.ToString()}");
-            return Task.CompletedTask;
+
+            if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
+                return Task.CompletedTask;
+
+            shard.SharedData.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
+            return shard.DatabaseService.RegisterGuildAsync(e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]

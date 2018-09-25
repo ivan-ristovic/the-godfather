@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Owner
                 await ctx.SendCollectionInPagesAsync(
                     "Statuses:",
                     statuses,
-                    kvp => $"{Formatter.InlineCode($"kvp.Key:D2")}: {kvp.Value}",
+                    kvp => $"{Formatter.InlineCode($"{kvp.Key:D2}")}: {kvp.Value}",
                     this.ModuleColor,
                     10
                 );

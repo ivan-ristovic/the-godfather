@@ -1,11 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TheGodfather.Common;
+
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 #endregion
@@ -50,21 +52,19 @@ namespace TheGodfather.Modules.Administration.Services
             => this.guildSpamInfo.TryRemove(gid, out _);
 
 
-        public async Task HandleNewMessageAsync(DiscordGuild guild, DiscordUser member)
+        public async Task HandleNewMessageAsync(MessageCreateEventArgs e, RatelimitSettings settings)
         {
-            if (!this.guildSpamInfo.ContainsKey(guild.Id) && !this.TryAddGuildToWatch(guild.Id))
+            if (!this.guildSpamInfo.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
                 throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
 
-            CachedGuildConfig gcfg = this.shard.SharedData.GetGuildConfig(guild.Id);
-
-            if (!this.guildSpamInfo[guild.Id].ContainsKey(member.Id)) {
-                if (!this.guildSpamInfo[guild.Id].TryAdd(member.Id, new UserRatelimitInfo(gcfg.RatelimitSensitivity - 1)))
+            if (!this.guildSpamInfo[e.Guild.Id].ContainsKey(e.Author.Id)) {
+                if (!this.guildSpamInfo[e.Guild.Id].TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity - 1)))
                     throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");
                 return;
             }
 
-            if (!this.guildSpamInfo[guild.Id][member.Id].TryDecrementAllowedMessageCount())
-                await this.PunishMemberAsync(guild, member as DiscordMember, gcfg.RatelimitAction);
+            if (!this.guildSpamInfo[e.Guild.Id][e.Author.Id].TryDecrementAllowedMessageCount())
+                await this.PunishMemberAsync(e.Guild, e.Author as DiscordMember, settings.Action);
         }
     }
 }

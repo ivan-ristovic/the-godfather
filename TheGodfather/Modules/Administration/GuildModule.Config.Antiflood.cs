@@ -5,12 +5,14 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -55,13 +57,14 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown?.TotalSeconds < 5 || cooldown?.TotalSeconds > 60)
                         throw new CommandFailedException("The cooldown timespan is not in the valid range ([5, 60] seconds).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntifloodEnabled = enable;
-                    gcfg.AntifloodAction = action;
-                    gcfg.AntifloodSensitivity = sensitivity;
-                    gcfg.AntifloodCooldown = (short?)cooldown?.TotalSeconds ?? 10;
+                    var settings = new AntifloodSettings() {
+                        Action = action,
+                        Cooldown = (short?)cooldown?.TotalSeconds ?? 10,
+                        Enabled = enable,
+                        Sensitivity = sensitivity
+                    };
 
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -73,14 +76,14 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Antiflood sensitivity", gcfg.AntifloodSensitivity.ToString(), inline: true);
-                            emb.AddField("Antiflood cooldown", gcfg.AntifloodCooldown.ToString(), inline: true);
-                            emb.AddField("Antiflood action", gcfg.AntifloodAction.ToTypeString(), inline: true);
+                            emb.AddField("Antiflood sensitivity", settings.Sensitivity.ToString(), inline: true);
+                            emb.AddField("Antiflood cooldown", settings.Cooldown.ToString(), inline: true);
+                            emb.AddField("Antiflood action", settings.Action.ToTypeString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.AntifloodEnabled ? "Enabled" : "Disabled")} antiflood actions.", important: false);
+                    await this.InformAsync(ctx, $"{Formatter.Bold(enable ? "Enabled" : "Disabled")} antiflood actions.", important: false);
                 }
 
                 [GroupCommand, Priority(4)]
@@ -113,10 +116,18 @@ namespace TheGodfather.Modules.Administration
                     => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Kick, null);
 
                 [GroupCommand, Priority(0)]
-                public Task ExecuteGroupAsync(CommandContext ctx)
+                public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold(gcfg.AntifloodEnabled ? "enabled" : "disabled")}");
+                    AntifloodSettings settings = await this.Database.GetAntifloodSettingsAsync(ctx.Guild.Id);
+                    if (settings.Enabled) {
+                        var sb = new StringBuilder();
+                        sb.Append("Sensitivity: ").AppendLine(settings.Sensitivity.ToString());
+                        sb.Append("Cooldown: ").AppendLine(settings.Cooldown.ToString());
+                        sb.Append("Action: ").AppendLine(settings.Action.ToString());
+                        await this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold("enabled")}\n{sb.ToString()}");
+                    } else {
+                        await this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold("disabled")}");
+                    }
                 }
 
 
@@ -129,10 +140,9 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntifloodAction = action;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    AntifloodSettings settings = await this.Database.GetAntifloodSettingsAsync(ctx.Guild.Id);
+                    settings.Action = action;
+                    await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -142,11 +152,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Antiflood action changed to", gcfg.AntifloodAction.ToTypeString());
+                        emb.AddField("Antiflood action changed to", action.ToTypeString());
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Antiflood action for this guild has been changed to {Formatter.Bold(gcfg.AntifloodAction.ToTypeString())}", important: false);
+                    await this.InformAsync(ctx, $"Antiflood action for this guild has been changed to {Formatter.Bold(settings.Action.ToTypeString())}", important: false);
                 }
                 #endregion
 
@@ -157,15 +167,14 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
                 [UsageExamples("!guild cfg antiflood sensitivity 9")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
-                                                     [Description("Action type.")] short sensitivity)
+                                                     [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity)
                 {
                     if (sensitivity < 2 || sensitivity > 20)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 20]).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntifloodSensitivity = sensitivity;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    AntifloodSettings settings = await this.Database.GetAntifloodSettingsAsync(ctx.Guild.Id);
+                    settings.Sensitivity = sensitivity;
+                    await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -175,11 +184,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Antiflood sensitivity changed to", $"Max {gcfg.AntifloodSensitivity} users per {gcfg.AntifloodCooldown}s");
+                        emb.AddField("Antiflood sensitivity changed to", $"Max {settings.Sensitivity} users per {settings.Cooldown}s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.AntifloodSensitivity.ToString())} users per {gcfg.AntifloodCooldown}s", important: false);
+                    await this.InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(sensitivity.ToString())} users per {settings.Cooldown}s", important: false);
                 }
                 #endregion
 
@@ -195,10 +204,9 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown.TotalSeconds < 5 || cooldown.TotalSeconds > 60)
                         throw new CommandFailedException("The cooldown timespan is not in the valid range ([5, 60] seconds).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntifloodCooldown = (short)cooldown.TotalSeconds;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    AntifloodSettings settings = await this.Database.GetAntifloodSettingsAsync(ctx.Guild.Id);
+                    settings.Cooldown = (short)cooldown.TotalSeconds;
+                    await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -208,11 +216,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Antiflood sensitivity changed to", $"Max {gcfg.AntifloodCooldown} users per {gcfg.AntifloodCooldown}");
+                        emb.AddField("Antiflood cooldown changed to", $"{settings.Cooldown}s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.AntifloodSensitivity.ToString())} users per {gcfg.AntifloodCooldown}", important: false);
+                    await this.InformAsync(ctx, $"Antiflood cooldown for this guild has been changed to {settings.Cooldown}s", important: false);
                 }
                 #endregion
             }

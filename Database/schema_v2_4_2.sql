@@ -302,7 +302,10 @@ CREATE TABLE gf.guild_cfg (
     antiflood_enabled boolean DEFAULT false NOT NULL,
     antiflood_sens smallint DEFAULT 5 NOT NULL,
     antiflood_cooldown smallint DEFAULT 10 NOT NULL,
-    antiflood_action smallint DEFAULT 2 NOT NULL
+    antiflood_action smallint DEFAULT 2 NOT NULL,
+    mute_rid bigint DEFAULT 0 NOT NULL,
+    antijoinleave_enabled boolean DEFAULT false NOT NULL,
+    antijoinleave_sens smallint DEFAULT 3 NOT NULL
 );
 
 
@@ -448,6 +451,41 @@ CREATE TABLE gf.ranks (
 
 
 --
+-- Name: reminders; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.reminders (
+    id integer NOT NULL,
+    uid bigint NOT NULL,
+    cid bigint DEFAULT 0 NOT NULL,
+    message character varying(256) NOT NULL,
+    repeat boolean DEFAULT false NOT NULL,
+    execution_time timestamp with time zone NOT NULL,
+    "interval" interval
+);
+
+
+--
+-- Name: reminders_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE gf.reminders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reminders_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE gf.reminders_id_seq OWNED BY gf.reminders.id;
+
+
+--
 -- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -455,9 +493,7 @@ CREATE TABLE gf.saved_tasks (
     id integer NOT NULL,
     type smallint NOT NULL,
     uid bigint,
-    cid bigint,
     gid bigint,
-    comment character varying(128),
     execution_time timestamp with time zone NOT NULL,
     rid bigint DEFAULT 0
 );
@@ -468,6 +504,7 @@ CREATE TABLE gf.saved_tasks (
 --
 
 CREATE SEQUENCE gf.saved_tasks_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -677,6 +714,13 @@ ALTER TABLE ONLY gf.items ALTER COLUMN id SET DEFAULT nextval('gf.items_id_seq':
 --
 
 ALTER TABLE ONLY gf.purchases ALTER COLUMN id SET DEFAULT nextval('gf.purchases_id_seq'::regclass);
+
+
+--
+-- Name: reminders id; Type: DEFAULT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.reminders ALTER COLUMN id SET DEFAULT nextval('gf.reminders_id_seq'::regclass);
 
 
 --
@@ -892,6 +936,14 @@ ALTER TABLE ONLY gf.ranks
 
 
 --
+-- Name: reminders reminders_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.reminders
+    ADD CONSTRAINT reminders_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -991,13 +1043,6 @@ CREATE INDEX emoji_reactions_trigger_idx ON gf.emoji_reactions USING btree (trig
 --
 
 CREATE INDEX fki_items_fkey ON gf.items USING btree (gid);
-
-
---
--- Name: fki_savedtasks_fkey; Type: INDEX; Schema: gf; Owner: -
---
-
-CREATE INDEX fki_savedtasks_fkey ON gf.saved_tasks USING btree (gid);
 
 
 --
@@ -1180,14 +1225,6 @@ ALTER TABLE ONLY gf.ranks
 
 ALTER TABLE ONLY gf.assignable_roles
     ADD CONSTRAINT sar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: saved_tasks st_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY gf.saved_tasks
-    ADD CONSTRAINT st_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

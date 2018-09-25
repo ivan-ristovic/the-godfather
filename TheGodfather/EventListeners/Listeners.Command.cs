@@ -72,7 +72,7 @@ namespace TheGodfather.EventListeners
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
                     var ordered = TheGodfatherShard.Commands
-                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
+                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Name))
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
@@ -84,7 +84,10 @@ namespace TheGodfather.EventListeners
                     sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
                 case BadRequestException brex:
-                    sb.Append(brex.JsonMessage);
+                    sb.Append($"Bad request! Details: {brex.JsonMessage}");
+                    break;
+                case NotFoundException nfe:
+                    sb.Append($"404: Not found! Details: {nfe.JsonMessage}");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");
@@ -95,7 +98,6 @@ namespace TheGodfather.EventListeners
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
                         case CooldownAttribute _:
-                            // await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
                             return;
                         case UsesInteractivityAttribute _:
                             sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");

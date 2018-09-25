@@ -15,6 +15,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
@@ -68,9 +69,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
-
-            if (gcfg.RatelimitEnabled)
-                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e.Guild, e.Author);
+            if (gcfg.RatelimitSettings.Enabled)
+                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -81,6 +81,12 @@ namespace TheGodfather.EventListeners
 
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
+
+            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            if (gcfg.LinkfilterSettings.Enabled) {
+                if (await shard.CNext.Services.GetService<LinkfilterService>().HandleNewMessageAsync(e, gcfg.LinkfilterSettings))
+                    return;
+            }
 
             if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                 return;
@@ -161,7 +167,7 @@ namespace TheGodfather.EventListeners
             if (logchn == null)
                 return;
 
-            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
@@ -170,11 +176,11 @@ namespace TheGodfather.EventListeners
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (entry != null && entry is DiscordAuditLogMessageEntry mentry) {
-                if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
+                if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
                     return;
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
                 foreach (DiscordRole role in member?.Roles)
-                    if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                    if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
                         return;
 
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
@@ -222,13 +228,13 @@ namespace TheGodfather.EventListeners
             if (logchn == null || !e.Message.IsEdited)
                 return;
 
-            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
-            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Author.Id, EntityType.Member))
+            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Author.Id, EntityType.Member))
                 return;
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
             foreach (DiscordRole role in member?.Roles)
-                if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
                     return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);

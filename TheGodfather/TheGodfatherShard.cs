@@ -28,7 +28,7 @@ namespace TheGodfather
 {
     public sealed class TheGodfatherShard
     {
-        public static IReadOnlyList<(string, Command)> Commands;
+        public static IReadOnlyList<(string Name, Command Command)> Commands;
 
         public static void UpdateCommandList(CommandsNextExtension cnext)
         {
@@ -122,9 +122,11 @@ namespace TheGodfather
                     .AddSingleton(this.SharedData)
                     .AddSingleton(this.DatabaseService)
                     .AddSingleton(new AntifloodService(this))
+                    .AddSingleton(new AntiInstantLeaveService(this))
                     .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                     .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
+                    .AddSingleton(new LinkfilterService(this))
                     .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                     .AddSingleton(new RatelimitService(this))
                     .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))

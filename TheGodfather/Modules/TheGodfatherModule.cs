@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-
+using DSharpPlus.Exceptions;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,7 +32,7 @@ namespace TheGodfather.Modules
             _handler = new HttpClientHandler {
                 AllowAutoRedirect = false
             };
-            _http =  new HttpClient(_handler, true);
+            _http = new HttpClient(_handler, true);
         }
 
         protected TheGodfatherModule(SharedData shared, DBService db = null)
@@ -46,12 +46,16 @@ namespace TheGodfather.Modules
         protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = true)
             => this.InformAsync(ctx, (emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
-        protected Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
+        protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
         {
             if (!important && this.Shared.GetGuildConfig(ctx.Guild.Id).ReactionResponse) {
-                return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
+                try {
+                    await ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
+                } catch (NotFoundException) {
+                    await this.InformFailureAsync(ctx, "Action completed!");
+                }
             } else {
-                return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{(emoji ?? StaticDiscordEmoji.CheckMarkSuccess)} {message ?? "Done!"}",
                     Color = this.ModuleColor
                 });
