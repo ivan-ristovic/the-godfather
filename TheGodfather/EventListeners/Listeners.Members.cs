@@ -82,14 +82,13 @@ namespace TheGodfather.EventListeners
             if (e.Member == null || e.Member.IsBot)
                 return;
 
-            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
             if (antifloodSettings.Enabled)
-                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member, antifloodSettings);
+                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, antifloodSettings);
 
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
             if (antiILSettings.Enabled)
-                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e.Guild, e.Member);
+                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, antiILSettings);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
@@ -102,7 +101,7 @@ namespace TheGodfather.EventListeners
 
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
             if (antiILSettings.Enabled)
-                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e.Guild, e.Member);
+                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, antiILSettings);
 
             if (!punished) {
                 DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);

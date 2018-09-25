@@ -69,9 +69,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
-
             if (gcfg.RatelimitSettings.Enabled)
-                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e.Guild, e.Author);
+                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -82,6 +81,12 @@ namespace TheGodfather.EventListeners
 
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
+
+            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            if (gcfg.LinkfilterSettings.Enabled) {
+                if (await shard.CNext.Services.GetService<LinkfilterService>().HandleNewMessageAsync(e, gcfg.LinkfilterSettings))
+                    return;
+            }
 
             if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                 return;

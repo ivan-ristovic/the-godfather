@@ -383,17 +383,17 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Ratelimit watch", "off", inline: true);
 
                 AntifloodSettings antifloodSettings = await this.Database.GetAntifloodSettingsAsync(guild.Id);
-                if (antifloodSettings.Enabled) 
+                if (antifloodSettings.Enabled)
                     emb.AddField("Antiflood watch", $"Sensitivity: {antifloodSettings.Sensitivity} users per {antifloodSettings.Cooldown}s\nAction: {antifloodSettings.Action.ToTypeString()}", inline: true);
-                else 
+                else
                     emb.AddField("Antiflood watch", "off", inline: true);
 
                 AntiInstantLeaveSettings antiILSettings = await this.Database.GetAntiInstantLeaveSettingsAsync(guild.Id);
                 if (antiILSettings.Enabled)
                     emb.AddField("Instant leave watch", $"Sensitivity: {antiILSettings.Sensitivity}", inline: true);
-                else 
+                else
                     emb.AddField("Instant leave watch", "off", inline: true);
-                
+
 
                 DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
                 if (muteRole == null)
@@ -401,17 +401,17 @@ namespace TheGodfather.Modules.Administration
                 if (muteRole != null)
                     emb.AddField("Mute role", muteRole.Name, inline: true);
 
-                if (gcfg.LinkfilterEnabled) {
+                if (gcfg.LinkfilterSettings.Enabled) {
                     var sb = new StringBuilder();
-                    if (gcfg.BlockDiscordInvites)
+                    if (gcfg.LinkfilterSettings.BlockDiscordInvites)
                         sb.AppendLine("Invite blocker");
-                    if (gcfg.BlockBooterWebsites)
+                    if (gcfg.LinkfilterSettings.BlockBooterWebsites)
                         sb.AppendLine("DDoS/Booter website blocker");
-                    if (gcfg.BlockDisturbingWebsites)
+                    if (gcfg.LinkfilterSettings.BlockDisturbingWebsites)
                         sb.AppendLine("Disturbing website blocker");
-                    if (gcfg.BlockIpLoggingWebsites)
+                    if (gcfg.LinkfilterSettings.BlockIpLoggingWebsites)
                         sb.AppendLine("IP logging website blocker");
-                    if (gcfg.BlockUrlShorteners)
+                    if (gcfg.LinkfilterSettings.BlockUrlShorteners)
                         sb.AppendLine("URL shortening website blocker");
                     emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
                 } else {
@@ -420,9 +420,9 @@ namespace TheGodfather.Modules.Administration
 
                 await channel.SendMessageAsync(embed: emb.Build());
             }
-            
-            private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole, 
-                                                  JoinLeaveSettings ninfo, AntifloodSettings antifloodSettings, 
+
+            private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole,
+                                                  JoinLeaveSettings ninfo, AntifloodSettings antifloodSettings,
                                                   AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 this.Shared.GuildConfigurations[gid] = gcfg;
@@ -468,7 +468,7 @@ namespace TheGodfather.Modules.Administration
                 return channel;
             }
 
-            private async Task PreviewSettingsAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel, 
+            private async Task PreviewSettingsAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel,
                                                     DiscordRole muteRole, JoinLeaveSettings msgSettings,
                                                     AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
@@ -527,13 +527,13 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 sb.AppendLine().Append("Linkfilter ");
-                if (gcfg.LinkfilterEnabled) {
+                if (gcfg.LinkfilterSettings.Enabled) {
                     sb.Append(Formatter.Bold("enabled")).AppendLine(" with module settings:");
-                    sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
-                    sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.BlockBooterWebsites ? "on" : "off");
-                    sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.BlockIpLoggingWebsites ? "on" : "off");
-                    sb.Append(" - Disturbing websites blocker: ").AppendLine(gcfg.BlockDisturbingWebsites ? "on" : "off");
-                    sb.Append(" - URL shorteners blocker: ").AppendLine(gcfg.BlockUrlShorteners ? "on" : "off");
+                    sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.LinkfilterSettings.BlockDiscordInvites ? "on" : "off");
+                    sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.LinkfilterSettings.BlockBooterWebsites ? "on" : "off");
+                    sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.LinkfilterSettings.BlockIpLoggingWebsites ? "on" : "off");
+                    sb.Append(" - Disturbing websites blocker: ").AppendLine(gcfg.LinkfilterSettings.BlockDisturbingWebsites ? "on" : "off");
+                    sb.Append(" - URL shorteners blocker: ").AppendLine(gcfg.LinkfilterSettings.BlockUrlShorteners ? "on" : "off");
                     sb.AppendLine();
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
@@ -605,8 +605,8 @@ namespace TheGodfather.Modules.Administration
                                 $"{Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}";
                         await channel.EmbedAsync(query);
                         MessageContext mctx = await interactivity.WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && 
-                                 m.Author.Id == ctx.User.Id && 
+                            m => m.ChannelId == channel.Id &&
+                                 m.Author.Id == ctx.User.Id &&
                                  m.MentionedChannels.Count == 1
                         );
 
@@ -642,27 +642,12 @@ namespace TheGodfather.Modules.Administration
             private async Task SetupLinkfilterAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering?", reply: false)) {
-                    gcfg.LinkfilterEnabled = true;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false))
-                        gcfg.BlockDiscordInvites = true;
-                    else
-                        gcfg.BlockDiscordInvites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false))
-                        gcfg.BlockBooterWebsites = true;
-                    else
-                        gcfg.BlockBooterWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false))
-                        gcfg.BlockIpLoggingWebsites = true;
-                    else
-                        gcfg.BlockIpLoggingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false))
-                        gcfg.BlockDisturbingWebsites = true;
-                    else
-                        gcfg.BlockDisturbingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false))
-                        gcfg.BlockUrlShorteners = true;
-                    else
-                        gcfg.BlockUrlShorteners = false;
+                    gcfg.LinkfilterSettings.Enabled = true;
+                    gcfg.LinkfilterSettings.BlockDiscordInvites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false);
+                    gcfg.LinkfilterSettings.BlockBooterWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false);
+                    gcfg.LinkfilterSettings.BlockIpLoggingWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false);
+                    gcfg.LinkfilterSettings.BlockDisturbingWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false);
+                    gcfg.LinkfilterSettings.BlockUrlShorteners = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false);
                 }
             }
 
@@ -673,8 +658,8 @@ namespace TheGodfather.Modules.Administration
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
                     await channel.EmbedAsync("Which role will it be?");
                     MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && 
-                             m.Author.Id == ctx.User.Id && 
+                        m => m.ChannelId == channel.Id &&
+                             m.Author.Id == ctx.User.Id &&
                              m.MentionedRoles.Count == 1
                     );
                     if (mctx != null)

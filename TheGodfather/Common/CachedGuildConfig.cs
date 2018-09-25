@@ -13,12 +13,7 @@ namespace TheGodfather.Common
         public bool SuggestionsEnabled { get; set; }
         public bool ReactionResponse { get; set; }
 
-        public bool LinkfilterEnabled { get; set; }
-        public bool BlockBooterWebsites { get; set; }
-        public bool BlockDiscordInvites { get; set; }
-        public bool BlockDisturbingWebsites { get; set; }
-        public bool BlockIpLoggingWebsites { get; set; }
-        public bool BlockUrlShorteners { get; set; }
+        public LinkfilterSettings LinkfilterSettings { get; set; }
         
         public RatelimitSettings RatelimitSettings { get; set; }
 
@@ -27,13 +22,8 @@ namespace TheGodfather.Common
 
 
         public static CachedGuildConfig Default => new CachedGuildConfig {
-            BlockBooterWebsites = true,
-            BlockDiscordInvites = false,
-            BlockDisturbingWebsites = true,
-            BlockIpLoggingWebsites = true,
-            BlockUrlShorteners = true,
             Currency = null,
-            LinkfilterEnabled = false,
+            LinkfilterSettings = new LinkfilterSettings(),
             LogChannelId = 0,
             Prefix = null,
             RatelimitSettings = new RatelimitSettings(),

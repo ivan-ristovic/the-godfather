@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
-
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -33,27 +33,26 @@ namespace TheGodfather.Modules.Administration.Services
             => this.guildNewMembers.TryRemove(gid, out _);
 
 
-        public async Task HandleMemberJoinAsync(DiscordGuild guild, DiscordMember member)
+        public async Task HandleMemberJoinAsync(GuildMemberAddEventArgs e, AntiInstantLeaveSettings settings)
         {
-            if (!this.guildNewMembers.ContainsKey(guild.Id) && !this.TryAddGuildToWatch(guild.Id))
+            if (!this.guildNewMembers.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
                 throw new ConcurrentOperationException("Failed to add guild to antiflood watch list!");
 
-            if (!this.guildNewMembers[guild.Id].Add(member))
+            if (!this.guildNewMembers[e.Guild.Id].Add(e.Member))
                 throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
 
-            AntiInstantLeaveSettings settings = await this.shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(guild.Id);
             await Task.Delay(TimeSpan.FromSeconds(settings.Sensitivity));
 
-            if (this.guildNewMembers.ContainsKey(guild.Id) && !this.guildNewMembers[guild.Id].TryRemove(member))
+            if (this.guildNewMembers.ContainsKey(e.Guild.Id) && !this.guildNewMembers[e.Guild.Id].TryRemove(e.Member))
                 throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
         }
 
-        public async Task<bool> HandleMemberLeaveAsync(DiscordGuild guild, DiscordMember member)
+        public async Task<bool> HandleMemberLeaveAsync(GuildMemberRemoveEventArgs e, AntiInstantLeaveSettings settings)
         {
-            if (!this.guildNewMembers.ContainsKey(guild.Id) || !this.guildNewMembers[guild.Id].Contains(member))
+            if (!this.guildNewMembers.ContainsKey(e.Guild.Id) || !this.guildNewMembers[e.Guild.Id].Contains(e.Member))
                 return false;
 
-            await this.PunishMemberAsync(guild, member, PunishmentActionType.PermanentBan);
+            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentActionType.PermanentBan);
             return true;
         }
     }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 #endregion
 
-namespace TheGodfather.EventListeners.Common
+namespace TheGodfather.Modules.Administration.Common
 {
     public class LinkfilterMatch
     {

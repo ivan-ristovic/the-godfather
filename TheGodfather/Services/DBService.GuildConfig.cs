@@ -29,13 +29,15 @@ namespace TheGodfather.Services
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
-                            BlockBooterWebsites = (bool)reader["linkfilter_booters"],
-                            BlockDiscordInvites = (bool)reader["linkfilter_invites"],
-                            BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
-                            BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
-                            BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
                             Currency = reader["currency"] is DBNull ? null : (string)reader["currency"],
-                            LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
+                            LinkfilterSettings = new LinkfilterSettings() {
+                                Enabled = (bool)reader["linkfilter_enabled"],
+                                BlockBooterWebsites = (bool)reader["linkfilter_booters"],
+                                BlockDiscordInvites = (bool)reader["linkfilter_invites"],
+                                BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
+                                BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
+                                BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
+                            },
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
                             RatelimitSettings = new RatelimitSettings() {
@@ -92,12 +94,12 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<long>("log_cid", (long)cfg.LogChannelId));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("silent_respond", cfg.ReactionResponse));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("suggestions_enabled", cfg.SuggestionsEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.BlockDiscordInvites));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_booters", cfg.BlockBooterWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.BlockUrlShorteners));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterSettings.Enabled));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.LinkfilterSettings.BlockDiscordInvites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_booters", cfg.LinkfilterSettings.BlockBooterWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.LinkfilterSettings.BlockDisturbingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.LinkfilterSettings.BlockIpLoggingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.LinkfilterSettings.BlockUrlShorteners));
                 if (string.IsNullOrWhiteSpace(cfg.Currency))
                     cmd.Parameters.AddWithValue("currency", NpgsqlDbType.Varchar, DBNull.Value);
                 else
