@@ -187,8 +187,10 @@ namespace TheGodfather.Modules.Misc
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
             
-            if (this.Shared.RemindExecuters.ContainsKey(ctx.User.Id) && this.Shared.RemindExecuters[ctx.User.Id].Count >= 20)
-                throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
+            if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !await this.Database.IsPrivilegedUserAsync(ctx.User.Id)) {
+                if (this.Shared.RemindExecuters.ContainsKey(ctx.User.Id) && this.Shared.RemindExecuters[ctx.User.Id].Count >= 20)
+                    throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
+            }
 
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 

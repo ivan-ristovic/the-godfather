@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
             [Aliases("joinleave", "instaleave", "il", "jl")]
             [UsageExamples("!guild cfg instaleave",
                            "!guild cfg instaleave on",
-                           "!guild cfg ratelimit on 5")]
+                           "!guild cfg instaleave on 5")]
             public class InstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
             {
 
