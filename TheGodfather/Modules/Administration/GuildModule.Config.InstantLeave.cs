@@ -46,7 +46,9 @@ namespace TheGodfather.Modules.Administration
 
                     AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
                     settings.Enabled = enable;
-                    settings.Sensitivity = sensitivity;
+                    settings.Cooldown = sensitivity;
+
+                    await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -58,7 +60,7 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Instant leave sensitivity", settings.Sensitivity.ToString(), inline: true);
+                            emb.AddField("Instant leave sensitivity", settings.Cooldown.ToString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
@@ -75,23 +77,28 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, $"Instant leave watch for this guild is {Formatter.Bold(settings.Enabled ? "enabled" : "disabled")} with senssitivity: {Formatter.Bold(settings.Sensitivity.ToString())}");
+                    if (settings.Enabled)
+                        await this.InformAsync(ctx, $"Instant leave watch: {Formatter.Bold("enabled")} with {Formatter.Bold(settings.Cooldown.ToString())}s cooldown");
+                    else
+                        await this.InformAsync(ctx, $"Instant leave watch: {Formatter.Bold("disabled")}");
                 }
 
-                
-                #region COMMAND_INSTANTLEAVE_SENSITIVITY
+
+                #region COMMAND_INSTANTLEAVE_COOLDOWN
                 [Command("sensitivity")]
-                [Description("Set the instant leave sensitivity. User will be banned if he leaves in the given sensitivity time window (in seconds).")]
+                [Description("Set the instant leave cooldown. User will be banned if he leaves in the given sensitivity time window (in seconds).")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                [UsageExamples("!guild cfg instaleave sensitivity 9")]
+                [UsageExamples("!guild cfg instaleave cooldown 9")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
-                                                     [Description("Sensitivity.")] short sensitivity)
+                                                     [Description("Cooldown (in seconds).")] short cooldown)
                 {
-                    if (sensitivity < 2 || sensitivity > 60)
+                    if (cooldown < 2 || cooldown > 60)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 60]).");
 
                     AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
-                    settings.Sensitivity = sensitivity;
+                    settings.Cooldown = cooldown;
+
+                    await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
@@ -101,11 +108,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Instant leave sensitivity changed to", $"{settings.Sensitivity}s");
+                        emb.AddField("Instant leave cooldown changed to", $"{settings.Cooldown}s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Instant leave sensitivity for this guild has been changed to {Formatter.Bold(settings.Sensitivity.ToString())}s", important: false);
+                    await this.InformAsync(ctx, $"Instant leave cooldown for this guild has been changed to {Formatter.Bold(settings.Cooldown.ToString())}s", important: false);
                 }
                 #endregion
             }

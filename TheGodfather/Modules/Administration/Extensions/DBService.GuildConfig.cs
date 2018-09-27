@@ -113,13 +113,13 @@ namespace TheGodfather.Modules.Administration.Extensions
             var settings = new AntiInstantLeaveSettings();
 
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = $"SELECT antijoinleave_enabled, antijoinleave_sens FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.CommandText = $"SELECT antijoinleave_enabled, antijoinleave_cooldown FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     if (await reader.ReadAsync().ConfigureAwait(false)) {
                         settings.Enabled = (bool)reader["antijoinleave_enabled"];
-                        settings.Sensitivity = (short)reader["antijoinleave_sens"];
+                        settings.Cooldown = (short)reader["antijoinleave_cooldown"];
                     }
                 }
             });
@@ -147,11 +147,11 @@ namespace TheGodfather.Modules.Administration.Extensions
         public static Task SetAntiInstantLeaveSettingsAsync(this DBService db, ulong gid, AntiInstantLeaveSettings settings)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET (antijoinleave_enabled, antijoinleave_sens) = " +
-                                  "(antijoinleave_enabled, antijoinleave_sens) WHERE gid = @gid;";
+                cmd.CommandText = "UPDATE gf.guild_cfg SET (antijoinleave_enabled, antijoinleave_cooldown) = " +
+                                  "(@antijoinleave_enabled, @antijoinleave_cooldown) WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("antijoinleave_enabled", settings.Enabled));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antijoinleave_sens", settings.Sensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antijoinleave_cooldown", settings.Cooldown));
 
                 return cmd.ExecuteNonQueryAsync();
             });

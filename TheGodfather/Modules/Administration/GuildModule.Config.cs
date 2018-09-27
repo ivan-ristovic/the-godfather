@@ -390,7 +390,7 @@ namespace TheGodfather.Modules.Administration
 
                 AntiInstantLeaveSettings antiILSettings = await this.Database.GetAntiInstantLeaveSettingsAsync(guild.Id);
                 if (antiILSettings.Enabled)
-                    emb.AddField("Instant leave watch", $"Sensitivity: {antiILSettings.Sensitivity}", inline: true);
+                    emb.AddField("Instant leave watch", $"Cooldown: {antiILSettings.Cooldown}s", inline: true);
                 else
                     emb.AddField("Instant leave watch", "off", inline: true);
 
@@ -521,7 +521,7 @@ namespace TheGodfather.Modules.Administration
                 sb.AppendLine().Append("Instant leave watch: ");
                 if (antiInstantLeaveSettings.Enabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append("- Sensitivity: ").Append(antiInstantLeaveSettings.Sensitivity).AppendLine("s");
+                    sb.Append("- Sensitivity: ").Append(antiInstantLeaveSettings.Cooldown).AppendLine("s");
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
@@ -759,14 +759,14 @@ namespace TheGodfather.Modules.Administration
                     antiInstantLeaveSettings.Enabled = true;
 
                     query = $"Do you wish to change the default time window after which the new user will" +
-                            $"not be punished ({antiInstantLeaveSettings.Sensitivity})?";
+                            $"not be punished ({antiInstantLeaveSettings.Cooldown})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the time window in seconds. Valid range: [2, 20]");
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
+                            m => short.TryParse(m, out short cooldown) && cooldown >= 2 && cooldown <= 20
                         );
                         if (mctx != null)
-                            antiInstantLeaveSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                            antiInstantLeaveSettings.Cooldown = short.Parse(mctx.Message.Content);
                     }
                 }
 

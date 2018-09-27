@@ -27,7 +27,7 @@ namespace TheGodfather.EventListeners
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
-            await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Sensitivity + 1));
+            await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
             if (e.Member.Guild == null)
                 return;
 

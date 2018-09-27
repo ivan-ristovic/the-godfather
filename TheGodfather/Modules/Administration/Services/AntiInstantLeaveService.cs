@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildNewMembers[e.Guild.Id].Add(e.Member))
                 throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
 
-            await Task.Delay(TimeSpan.FromSeconds(settings.Sensitivity));
+            await Task.Delay(TimeSpan.FromSeconds(settings.Cooldown));
 
             if (this.guildNewMembers.ContainsKey(e.Guild.Id) && !this.guildNewMembers[e.Guild.Id].TryRemove(e.Member))
                 throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
