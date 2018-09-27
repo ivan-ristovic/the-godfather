@@ -86,19 +86,14 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO",
                        "!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task SubscribeAsync(CommandContext ctx,
-                                        [Description("Channel URL.")] string url,
-                                        [Description("Friendly name.")] string name = null)
+        public Task SubscribeAsync(CommandContext ctx,
+                                  [Description("Channel URL.")] string url,
+                                  [Description("Friendly name.")] string name = null)
         {
-            string chid = await this.Service.ExtractChannelIdAsync(url);
-            if (chid == null)
-                throw new CommandFailedException("Failed retrieving channel ID for that URL.");
-
-            string feedurl = YtService.GetRssUrlForChannel(chid);
-            if (await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name))
-                await this.InformAsync(ctx, "Subscribed!", important: false);
-            else
-                await this.InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!");
+            string command = $"sub yt {url} {name}";
+            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
+            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 
@@ -109,21 +104,13 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO",
                        "!youtube unsubscribe rick")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("Channel URL or subscription name.")] string name_url)
+        public Task UnsubscribeAsync(CommandContext ctx,
+                                    [Description("Channel URL or subscription name.")] string name_url)
         {
-            if (string.IsNullOrWhiteSpace(name_url))
-                throw new InvalidCommandUsageException("Channel URL missing.");
-
-            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url);
-
-            string chid = await this.Service.ExtractChannelIdAsync(name_url);
-            if (chid != null) {
-                string feedurl = YtService.GetRssUrlForChannel(chid);
-                await this.Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl);
-            }
-
-            await this.InformAsync(ctx, "Unsubscribed!", important: false);
+            string command = $"unsub yt {name_url}";
+            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
+            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 

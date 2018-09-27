@@ -48,23 +48,21 @@ namespace TheGodfather.Modules.Search
         }
 
 
+
+
         #region COMMAND_RSS_REDDIT_SUBSCRIBE
         [Command("subscribe")]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
         [UsageExamples("!reddit sub aww")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task SubscribeAsync(CommandContext ctx,
-                                        [Description("Subreddit.")] string sub)
+        public Task SubscribeAsync(CommandContext ctx,
+                                  [Description("Subreddit.")] string sub)
         {
-            string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
-            if (url == null)
-                throw new CommandFailedException("That subreddit doesn't exist.");
-
-            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub))
-                throw new CommandFailedException("You are already subscribed to this subreddit!");
-
-            await this.InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
+            string command = $"sub r {sub}";
+            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
+            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 
@@ -75,14 +73,13 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!reddit unsub aww",
                        "!reddit unsub 12")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("Subreddit.")] string sub)
+        public Task UnsubscribeAsync(CommandContext ctx,
+                                    [Description("Subreddit.")] string sub)
         {
-            if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
-                throw new CommandFailedException("That subreddit doesn't exist.");
-
-            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);
-            await this.InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)}", important: false);
+            string command = $"unsub r {sub}";
+            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
+            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
 
         [Command("unsubscribe"), Priority(0)]
@@ -93,5 +90,7 @@ namespace TheGodfather.Modules.Search
             await this.InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
         }
         #endregion
+
+        // TODO reddit top, all...
     }
 }

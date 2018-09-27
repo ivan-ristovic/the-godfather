@@ -3,6 +3,9 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +59,7 @@ namespace TheGodfather.Modules.Search
         [Group("subscribe")]
         [Description("Commands for managing feed subscriptions. The bot will send a message when the latest topic " +
                      "is changed. Group call subscribes the bot to the given RSS feed URL or lists active subs.")]
-        [Aliases("sub", "add", "+", "subscriptions", "subscription")]
+        [Aliases("sub", "subscriptions", "subscription")]
         [UsageExamples("!subscribe https://news.google.com/news/rss/",
                        "!subscribe https://news.google.com/news/rss/ news")]
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
@@ -111,17 +114,59 @@ namespace TheGodfather.Modules.Search
                 );
             }
             #endregion
+
+            #region COMMAND_SUBSCRIBE_REDDIT
+            [Command("reddit")]
+            [Description("Add new subscription for a subreddit.")]
+            [Aliases("r")]
+            [UsageExamples("!subscribe reddit aww")]
+            public async Task RedditAsync(CommandContext ctx,
+                                         [Description("Subreddit.")] string sub)
+            {
+                string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
+                if (url == null)
+                    throw new CommandFailedException("That subreddit doesn't exist.");
+
+                if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub))
+                    throw new CommandFailedException("You are already subscribed to this subreddit!");
+
+                await this.InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
+            }
+            #endregion
+
+            #region COMMAND_SUBSCRIBE_YOUTUBE
+            [Command("youtube")]
+            [Description("Add a new subscription for a YouTube channel.")]
+            [Aliases("y", "yt", "ytube")]
+            [UsageExamples("!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO",
+                           "!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO rick")]
+            public async Task SubscribeAsync(CommandContext ctx,
+                                            [Description("Channel URL.")] string url,
+                                            [Description("Friendly name.")] string name = null)
+            {
+                string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(url);
+                if (chid == null)
+                    throw new CommandFailedException("Failed retrieving channel ID for that URL.");
+
+                string feedurl = YtService.GetRssUrlForChannel(chid);
+                if (await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name))
+                    await this.InformAsync(ctx, "Subscribed!", important: false);
+                else
+                    await this.InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!");
+            }
+            #endregion
         }
         #endregion
 
         #region GROUP_UNSUBSCRIBE
         [Group("unsubscribe")]
         [Description("Remove an existing feed subscription.")]
-        [Aliases("del", "d", "rm", "-", "unsub")]
+        [Aliases("unsub")]
         [UsageExamples("!unsubscribe 1")]
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class UnsubscribeModule : TheGodfatherModule
         {
+
             public UnsubscribeModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
@@ -130,8 +175,8 @@ namespace TheGodfather.Modules.Search
 
 
             [GroupCommand, Priority(1)]
-            public async Task UnsubscribeAsync(CommandContext ctx,
-                                              [Description("ID of the subscriptions to remove.")] params int[] ids)
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("ID of the subscriptions to remove.")] params int[] ids)
             {
                 if (!ids.Any())
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
@@ -141,12 +186,65 @@ namespace TheGodfather.Modules.Search
             }
 
             [GroupCommand, Priority(0)]
-            public async Task UnsubscribeAsync(CommandContext ctx,
-                                              [RemainingText, Description("Name of the subscription.")] string name)
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [RemainingText, Description("Name of the subscription.")] string name)
             {
                 await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name);
                 await this.InformAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}", important: false);
             }
+
+
+            #region COMMAND_UNSUBSCRIBE_ALL
+            [Command("all")]
+            [Description("Remove all subscriptions for the given channel.")]
+            [Aliases("a")]
+            [UsageExamples("!unsub all")]
+            public async Task AllAsync(CommandContext ctx,
+                                      [Description("Channel.")] DiscordChannel channel = null)
+            {
+                // TODO
+            }
+            #endregion
+
+            #region COMMAND_UNSUBSCRIBE_REDDIT
+            [Command("reddit")]
+            [Description("Remove a subscription using subreddit name or subscription ID (use command ``subscriptions list`` to see IDs).")]
+            [Aliases("r")]
+            [UsageExamples("!unsub reddit aww")]
+            public async Task RedditAsync(CommandContext ctx,
+                                         [Description("Subreddit.")] string sub)
+            {
+                if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
+                    throw new CommandFailedException("That subreddit doesn't exist.");
+
+                await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);
+                await this.InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)}", important: false);
+            }
+            #endregion
+
+            #region COMMAND_UNSUBSCRIBE_YOUTUBE
+            [Command("youtube")]
+            [Description("Remove a YouTube channel subscription.")]
+            [Aliases("y", "yt", "ytube")]
+            [UsageExamples("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO",
+                           "!youtube unsubscribe rick")]
+            public async Task UnsubscribeAsync(CommandContext ctx,
+                                              [Description("Channel URL or subscription name.")] string name_url)
+            {
+                if (string.IsNullOrWhiteSpace(name_url))
+                    throw new InvalidCommandUsageException("Channel URL missing.");
+
+                await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url);
+
+                string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
+                if (chid != null) {
+                    string feedurl = YtService.GetRssUrlForChannel(chid);
+                    await this.Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl);
+                }
+
+                await this.InformAsync(ctx, "Unsubscribed!", important: false);
+            }
+            #endregion
         }
         #endregion
     }

@@ -52,7 +52,7 @@ namespace TheGodfather.Modules
                 try {
                     await ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
                 } catch (NotFoundException) {
-                    await this.InformFailureAsync(ctx, "Action completed!");
+                    await this.InformAsync(ctx, "Action completed!");
                 }
             } else {
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
