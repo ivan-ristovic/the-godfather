@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Search
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
-                string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
+                string url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub);
                 if (url == null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Search
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
-                if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
+                if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) == null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
                 await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);

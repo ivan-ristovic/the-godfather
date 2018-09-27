@@ -3,11 +3,12 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
+using Humanizer;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -20,11 +21,6 @@ namespace TheGodfather.Modules.Search.Services
 {
     public static class RssService
     {
-        private static readonly Regex _subPrefixRegex = new Regex("^/?r?/", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly  Regex _urlRegex = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex _sanitizeRegex = new Regex("[^a-z0-9/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DBService db)
         {
             IReadOnlyList<FeedEntry> feeds = await db.GetAllFeedEntriesAsync();
@@ -64,11 +60,8 @@ namespace TheGodfather.Modules.Search.Services
                                 Color = DiscordColor.White,
                             };
 
-                            if (latest.Content is TextSyndicationContent content) {
-                                var matches = _urlRegex.Match(content.Text);
-                                if (matches.Success)
-                                    emb.WithImageUrl(matches.Groups[1].Value);
-                            }
+                            if (latest.Content is TextSyndicationContent content)
+                                emb.WithImageUrl(RedditService.GetImageUrl(content));
 
                             if (!string.IsNullOrWhiteSpace(sub.QualifiedName))
                                 emb.AddField("From", sub.QualifiedName);
@@ -103,24 +96,6 @@ namespace TheGodfather.Modules.Search.Services
             }
         }
 
-        public static string GetFeedURLForSubreddit(string sub, out string rsub)
-        {
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new ArgumentException("Subreddit missing", nameof(sub));
-
-            if (_sanitizeRegex.IsMatch(sub))
-                throw new ArgumentException("Subreddit is in invalid format (needs to be lowercase and without spaces, for example `/r/rule34`)", nameof(sub));
-
-            sub = _subPrefixRegex.Replace(sub, String.Empty);
-            rsub = "/r/" + sub.ToLowerInvariant();
-
-            string url = $"https://www.reddit.com{rsub}/new/.rss";
-            if (!IsValidFeedURL(url))
-                return null;
-
-            return url;
-        }
-
         public static bool IsValidFeedURL(string url)
         {
             try {
@@ -142,7 +117,7 @@ namespace TheGodfather.Modules.Search.Services
             };
 
             foreach (var res in results)
-                emb.AddField(res.Title.Text, res.Links.First().Uri.ToString());
+                emb.AddField(res.Title.Text.Truncate(255), res.Links.First().Uri.ToString());
 
             await channel.SendMessageAsync(embed: emb.Build());
         }

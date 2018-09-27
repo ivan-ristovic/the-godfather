@@ -18,7 +18,7 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Search
 {
     [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Reddit commands. Group call prints latest posts from given sub.")]
+    [Description("Reddit commands. Group call prints hottest posts from given sub.")]
     [Aliases("r")]
     [UsageExamples("!reddit aww")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -35,20 +35,63 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Subreddit.")] string sub = "all")
-        {
-            string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
-            if (url == null)
-                throw new CommandFailedException("That subreddit doesn't exist.");
-
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
-            if (res == null)
-                throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
-
-            return RssService.SendFeedResultsAsync(ctx.Channel, res);
-        }
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
 
 
+        #region COMMAND_RSS_REDDIT_CONTROVERSIAL
+        [Command("controversial")]
+        [Description("Get newest controversial posts for a subreddit.")]
+        [UsageExamples("!reddit controversial aww")]
+        public Task ControversialAsync(CommandContext ctx,
+                                      [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Controversial);
+        #endregion
 
+        #region COMMAND_RSS_REDDIT_GILDED
+        [Command("gilded")]
+        [Description("Get newest gilded posts for a subreddit.")]
+        [UsageExamples("!reddit gilded aww")]
+        public Task GildedAsync(CommandContext ctx,
+                               [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Gilded);
+        #endregion
+
+        #region COMMAND_RSS_REDDIT_HOT
+        [Command("hot")]
+        [Description("Get newest hot posts for a subreddit.")]
+        [UsageExamples("!reddit hot aww")]
+        public Task HotAsync(CommandContext ctx,
+                            [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
+        #endregion
+
+        #region COMMAND_RSS_REDDIT_NEW
+        [Command("new")]
+        [Description("Get newest posts for a subreddit.")]
+        [Aliases("newest", "latest")]
+        [UsageExamples("!reddit new aww")]
+        public Task NewAsync(CommandContext ctx,
+                            [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.New);
+        #endregion
+
+        #region COMMAND_RSS_REDDIT_RISING
+        [Command("rising")]
+        [Description("Get newest rising posts for a subreddit.")]
+        [UsageExamples("!reddit rising aww")]
+        public Task RisingAsync(CommandContext ctx,
+                               [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Rising);
+        #endregion
+
+        #region COMMAND_RSS_REDDIT_TOP
+        [Command("top")]
+        [Description("Get top posts for a subreddit.")]
+        [UsageExamples("!reddit top aww")]
+        public Task TopAsync(CommandContext ctx,
+                            [Description("Subreddit.")] string sub)
+            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Top);
+        #endregion
 
         #region COMMAND_RSS_REDDIT_SUBSCRIBE
         [Command("subscribe")]
@@ -91,6 +134,22 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
 
-        // TODO reddit top, all...
+
+        #region HELPER_FUNCTIONS
+        private async Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
+        {
+            string url = RedditService.GetFeedURLForSubreddit(sub, category, out string rsub);
+            if (url == null)
+                throw new CommandFailedException("That subreddit doesn't exist.");
+
+            await ctx.RespondAsync(url);
+
+            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
+            if (res == null)
+                throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
+
+            await RssService.SendFeedResultsAsync(ctx.Channel, res);
+        }
+        #endregion
     }
 }
