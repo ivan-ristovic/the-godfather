@@ -96,14 +96,15 @@ namespace TheGodfather.Modules.Music
                     Uri = filename
                 };
 
-                if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                if (MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player)) {
+                    player.Enqueue(si);
                     await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed(this.ModuleColor));
                 } else {
-                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
+                    var newPlayer = new MusicPlayer(ctx.Client, ctx.Channel, vnc);
+                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, newPlayer))
                         throw new ConcurrentOperationException("Failed to initialize music player!");
-                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    await MusicPlayers[ctx.Guild.Id].StartAsync();
+                    newPlayer.Enqueue(si);
+                    await newPlayer.StartAsync();
                 }
             }
             #endregion
@@ -122,14 +123,17 @@ namespace TheGodfather.Modules.Music
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
 
-                if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                if (MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player)) {
+                    player.Enqueue(si);
                     await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed(this.ModuleColor));
                 } else {
-                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
+                    var newPlayer = new MusicPlayer(ctx.Client, ctx.Channel, vnc);
+                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, newPlayer))
                         throw new ConcurrentOperationException("Failed to initialize music player!");
-                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    var t = Task.Run(() => MusicPlayers[ctx.Guild.Id].StartAsync());
+                    newPlayer.Enqueue(si);
+
+                    // TODO
+                    var t = Task.Run(() => newPlayer.StartAsync());
                 }
             }
             #endregion

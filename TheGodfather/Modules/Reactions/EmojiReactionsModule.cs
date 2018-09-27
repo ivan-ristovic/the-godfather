@@ -106,11 +106,11 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             string ename = emoji.GetDiscordName();
-            if (this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.Response == ename) == 0)
+            if (ereactions.RemoveWhere(er => er.Response == ename) == 0)
                 throw new CommandFailedException("No such reactions found!");
 
             var eb = new StringBuilder();
@@ -145,12 +145,12 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var eb = new StringBuilder();
             foreach (int id in ids) {
-                if (!this.Shared.EmojiReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
+                if (!ereactions.Any(tr => tr.Id == id)) {
                     eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
@@ -163,7 +163,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
-            int count = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
+            int count = ereactions.RemoveWhere(tr => ids.Contains(tr.Id));
             
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var eb = new StringBuilder();
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                IEnumerable<EmojiReaction> found = this.Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger));
+                IEnumerable<EmojiReaction> found = ereactions.Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
                     eb.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
@@ -228,7 +228,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            int count = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.RegexCount == 0);
+            int count = ereactions.RemoveWhere(er => er.RegexCount == 0);
             
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -293,24 +293,25 @@ namespace TheGodfather.Modules.Reactions
         [UsageExamples("!emojireaction list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            foreach (EmojiReaction reaction in this.Shared.EmojiReactions[ctx.Guild.Id]) {
+            foreach (EmojiReaction reaction in ereactions) {
                 try {
                     var emoji = DiscordEmoji.FromName(ctx.Client, reaction.Response);
                 } catch (ArgumentException) {
-                    this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.Response == reaction.Response);
+                    ereactions.RemoveWhere(er => er.Response == reaction.Response);
                     await this.Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, reaction.Response);
                 }
             }
 
-            if (!this.Shared.EmojiReactions[ctx.Guild.Id].Any())
+            // In case some of the reactions are deleted above, this check comes after
+            if (!ereactions.Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
             await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
-                this.Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.Id),
+                ereactions.OrderBy(er => er.Id),
                 er => $"{Formatter.InlineCode($"{er.Id:D4}")} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {string.Join(", ", er.TriggerStrings)}",
                 this.ModuleColor
             );
@@ -324,6 +325,10 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+                if (!this.Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>()))
+                    throw new ConcurrentOperationException("Failed to create emoji reaction data structure");
+
             var eb = new StringBuilder();
             foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
                 if (trigger.Length > 120) {
@@ -331,18 +336,15 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
-                    if (!this.Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>()))
-                        throw new ConcurrentOperationException("Failed to create emoji reaction data structure");
-
                 if (regex && !trigger.IsValidRegex()) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
 
-                string ename = emoji.GetDiscordName();
+                var ereactions = this.Shared.EmojiReactions[ctx.Guild.Id];
 
-                if (this.Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {
+                string ename = emoji.GetDiscordName();
+                if (ereactions.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} already exists for this emoji.");
                     continue;
                 }
@@ -355,12 +357,12 @@ namespace TheGodfather.Modules.Reactions
                     eb.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
 
-                EmojiReaction reaction = this.Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
+                EmojiReaction reaction = ereactions.FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
                     if (!reaction.AddTrigger(trigger, isRegex: regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!this.Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
+                    if (!ereactions.Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }

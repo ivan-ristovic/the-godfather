@@ -159,34 +159,32 @@ namespace TheGodfather
             IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetAllCachedGuildConfigurationsAsync();
             var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             foreach ((ulong gid, CachedGuildConfig cfg) in gcfg_db)
-                gcfg.TryAdd(gid, cfg);
+                gcfg[gid] = cfg;
 
             // Guild filters
             IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
-            foreach ((ulong gid, Filter filter) in gfilters_db) {
-                if (!gfilters.ContainsKey(gid))
-                    gfilters.TryAdd(gid, new ConcurrentHashSet<Filter>());
-                gfilters[gid].Add(filter);
-            }
+            foreach ((ulong gid, Filter filter) in gfilters_db)
+                gfilters.AddOrUpdate(gid, new ConcurrentHashSet<Filter>(), (k, v) => { v.Add(filter); return v; });
+            
 
             // Guild text reactions
             IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
             var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
             foreach ((ulong gid, List<TextReaction> reactions) in gtextreactions_db)
-                gtextreactions.TryAdd(gid, new ConcurrentHashSet<TextReaction>(reactions));
+                gtextreactions[gid] = new ConcurrentHashSet<TextReaction>(reactions);
 
             // Guild emoji reactions
             IReadOnlyDictionary<ulong, List<EmojiReaction>> gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
             var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             foreach (KeyValuePair<ulong, List<EmojiReaction>> reaction in gemojireactions_db)
-                gemojireactions.TryAdd(reaction.Key, new ConcurrentHashSet<EmojiReaction>(reaction.Value));
+                gemojireactions[reaction.Key] = new ConcurrentHashSet<EmojiReaction>(reaction.Value);
 
             // User message count (XP)
             IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetXpForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
             foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
-                msgcount.TryAdd(entry.Key, entry.Value);
+                msgcount[entry.Key] = entry.Value;
 
 
             SharedData = new SharedData() {

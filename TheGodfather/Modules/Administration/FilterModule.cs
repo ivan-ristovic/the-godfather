@@ -87,8 +87,8 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (this.Shared.Filters.ContainsKey(ctx.Guild.Id)) {
-                    if (this.Shared.Filters[ctx.Guild.Id].Any(f => regexString == regex.ToString())) {
+                if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters)) {
+                    if (existingFilters.Any(f => regexString == regex.ToString())) {
                         eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                         continue;
                     }
@@ -140,12 +140,12 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {
-            if (!this.Shared.Filters.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
             foreach (int id in ids) {
-                if (this.Shared.Filters[ctx.Guild.Id].RemoveWhere(f => f.Id == id) == 0) {
+                if (filters.RemoveWhere(f => f.Id == id) == 0) {
                     eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
                     continue;
                 }
@@ -182,13 +182,13 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
-            if (!this.Shared.Filters.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
             foreach (string regexString in filters) {
                 string filterString = Filter.Wrap(regexString);
-                if (this.Shared.Filters[ctx.Guild.Id].RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
+                if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
                     eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} does not exist.");
                     continue;
                 }
@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!filter list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.Filters.ContainsKey(ctx.Guild.Id) || !this.Shared.Filters[ctx.Guild.Id].Any())
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters) || !filters.Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
             return ctx.SendCollectionInPagesAsync(

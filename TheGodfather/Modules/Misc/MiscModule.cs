@@ -310,7 +310,6 @@ namespace TheGodfather.Modules.Misc
         [Command("report"), UsesInteractivity]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         [UsageExamples("!report Your bot sucks!")]
-        [UsesInteractivity]
         public async Task SendErrorReportAsync(CommandContext ctx,
                                               [RemainingText, Description("Issue text.")] string issue)
         {

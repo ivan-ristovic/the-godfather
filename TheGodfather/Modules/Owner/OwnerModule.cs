@@ -466,8 +466,8 @@ namespace TheGodfather.Modules.Owner
             var eb = new StringBuilder();
             foreach (ulong gid in gids) {
                 try {
-                    if (ctx.Client.Guilds.ContainsKey(gid))
-                        await ctx.Client.Guilds[gid].LeaveAsync();
+                    if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild guild))
+                        await guild.LeaveAsync();
                     else
                         eb.AppendLine($"Warning: I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 } catch {

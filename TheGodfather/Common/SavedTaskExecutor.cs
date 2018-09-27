@@ -45,8 +45,8 @@ namespace TheGodfather.Common
 
         public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
         {
-            if (shared.RemindExecuters.ContainsKey(uid))
-                return shared.RemindExecuters[uid].FirstOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
+            if (shared.RemindExecuters.TryGetValue(uid, out var texecs))
+                return texecs.FirstOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
             else
                 return Task.CompletedTask;
         }
@@ -138,18 +138,19 @@ namespace TheGodfather.Common
 
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
-                    if (this.shared.RemindExecuters.ContainsKey(smti.InitiatorId)) {
-                        if (!this.shared.RemindExecuters[smti.InitiatorId].TryRemove(this))
+                    if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out var texecs)) {
+                        if (!texecs.TryRemove(this))
                             throw new ConcurrentOperationException("Failed to unschedule reminder!");
-                        if (this.shared.RemindExecuters[smti.InitiatorId].Count == 0)
+                        if (texecs.Count == 0)
                             this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
                     }
                     return this.db.RemoveReminderAsync(this.Id);
                 case UnbanTaskInfo _:
                 case UnmuteTaskInfo _:
-                    if (this.shared.TaskExecuters.ContainsKey(this.Id))
+                    if (this.shared.TaskExecuters.ContainsKey(this.Id)) {
                         if (!this.shared.TaskExecuters.TryRemove(this.Id, out var _))
                             throw new ConcurrentOperationException("Failed to unschedule saved task!");
+                    }
                     return this.db.RemoveSavedTaskAsync(this.Id);
                 default:
                     throw new ArgumentException("Unknown saved task info type!", nameof(this.TaskInfo));

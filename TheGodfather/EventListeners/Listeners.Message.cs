@@ -120,10 +120,10 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            if (!shard.SharedData.EmojiReactions.ContainsKey(e.Guild.Id))
+            if (!shard.SharedData.EmojiReactions.TryGetValue(e.Guild.Id, out var ereactions))
                 return;
 
-            EmojiReaction ereaction = shard.SharedData.EmojiReactions[e.Guild.Id]
+            EmojiReaction ereaction = ereactions?
                 .Where(er => er.IsMatch(e.Message?.Content ?? ""))
                 .Shuffle()
                 .FirstOrDefault();
@@ -149,11 +149,11 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            if (!shard.SharedData.TextReactions.ContainsKey(e.Guild.Id))
+            if (!shard.SharedData.TextReactions.TryGetValue(e.Guild.Id, out var treactions))
                 return;
 
-            TextReaction tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.IsMatch(e.Message.Content));
-            if (tr != null && !tr.IsCooldownActive())
+            TextReaction tr = treactions?.FirstOrDefault(r => r.IsMatch(e.Message.Content));
+            if (!tr?.IsCooldownActive() ?? false)
                 await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
         }
 

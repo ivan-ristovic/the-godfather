@@ -109,11 +109,7 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
         public bool CancelVote(ulong uid)
-        {
-            if (!this.votes.ContainsKey(uid))
-                return true;
-            return this.votes.TryRemove(uid, out _);
-        }
+            => !this.votes.ContainsKey(uid) || this.votes.TryRemove(uid, out _);
 
         public bool IsValidVote(int vote)
             => vote >= 0 && vote < this.Options.Count;
@@ -128,10 +124,6 @@ namespace TheGodfather.Modules.Polls.Common
             => this.votes.ContainsKey(uid);
 
         public bool VoteFor(ulong uid, int vote)
-        {
-            if (this.votes.ContainsKey(uid))
-                return false;
-            return this.votes.TryAdd(uid, vote);
-        }
+            => !this.votes.ContainsKey(uid) && this.votes.TryAdd(uid, vote);
     }
 }

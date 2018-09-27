@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -84,12 +85,12 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
-            if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var eb = new StringBuilder();
             foreach (int id in ids) {
-                if (!this.Shared.TextReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
+                if (!treactions.Any(tr => tr.Id == id)) {
                     eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
@@ -102,7 +103,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
-            int count = this.Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
+            int count = treactions.RemoveWhere(tr => ids.Contains(tr.Id));
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -134,7 +135,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var eb = new StringBuilder();
@@ -147,7 +148,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                var found = this.Shared.TextReactions[ctx.Guild.Id].Where(tr => tr.ContainsTriggerPattern(trigger));
+                IEnumerable<TextReaction> found = treactions.Where(tr => tr.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
                     eb.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
@@ -169,7 +170,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            int count = this.Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.RegexCount == 0);
+            int count = treactions.RemoveWhere(tr => tr.RegexCount == 0);
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -235,12 +236,12 @@ namespace TheGodfather.Modules.Reactions
         [UsageExamples("!textreactions list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id) || !this.Shared.TextReactions[ctx.Guild.Id].Any())
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions) || !treactions.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
             return ctx.SendCollectionInPagesAsync(
                 "Text reactions for this guild",
-                this.Shared.TextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
+                treactions.OrderBy(tr => tr.OrderedTriggerStrings.First()),
                 tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
                 this.ModuleColor
             );
@@ -269,7 +270,7 @@ namespace TheGodfather.Modules.Reactions
             if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && this.Shared.Filters[ctx.Guild.Id].Any(f => f.Trigger.IsMatch(trigger)))
+            if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
             var eb = new StringBuilder();
@@ -281,12 +282,13 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
             }
 
-            var reaction = this.Shared.TextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
+            var treactions = this.Shared.TextReactions[ctx.Guild.Id];
+            var reaction = treactions.FirstOrDefault(tr => tr.Response == response);
             if (reaction != null) {
                 if (!reaction.AddTrigger(trigger, regex))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             } else {
-                if (!this.Shared.TextReactions[ctx.Guild.Id].Add(new TextReaction(id, trigger, response, regex)))
+                if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 

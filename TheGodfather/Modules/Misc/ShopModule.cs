@@ -103,7 +103,6 @@ namespace TheGodfather.Modules.Misc
         [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
         [UsageExamples("!shop sell 3")]
-        [UsesInteractivity]
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {

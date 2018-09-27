@@ -144,8 +144,8 @@ namespace TheGodfather.Modules.Misc
                 }
 
                 ushort rank = this.Shared.CalculateRankForMessageCount(xp);
-                if (ranks.ContainsKey(rank))
-                    emb.AddField(user.Username ?? "<unknown>", $"{ranks[rank]} ({rank}) ({xp} XP)");
+                if (ranks.TryGetValue(rank, out string name))
+                    emb.AddField(user.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
                 else
                     emb.AddField(user.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
             }

@@ -49,8 +49,7 @@ namespace TheGodfather.Modules.Polls
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            if (!PollService.RegisterPollInChannel(poll, ctx.Channel.Id))
-                throw new CommandFailedException("Failed to start the poll. Please try again.");
+            PollService.RegisterPollInChannel(poll, ctx.Channel.Id);
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
                 var options = await ctx.WaitAndParsePollOptionsAsync();
@@ -80,6 +79,7 @@ namespace TheGodfather.Modules.Polls
         #region COMMAND_STOP
         [Command("stop")]
         [Description("Stops a running poll.")]
+        [Aliases("end")]
         [UsageExamples("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
         public Task StopAsync(CommandContext ctx)

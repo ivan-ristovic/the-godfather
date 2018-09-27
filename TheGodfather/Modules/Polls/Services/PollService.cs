@@ -12,20 +12,13 @@ namespace TheGodfather.Modules.Polls.Services
 
 
         public static Poll GetPollInChannel(ulong cid)
-            => _polls.ContainsKey(cid) ? _polls[cid] : null;
+            => _polls.TryGetValue(cid, out Poll poll) ? poll : null;
 
         public static bool IsPollRunningInChannel(ulong cid)
-            => _polls.ContainsKey(cid) && _polls[cid] != null;
+            => GetPollInChannel(cid) != null;
 
-        public static bool RegisterPollInChannel(Poll poll, ulong cid)
-        {
-            if (_polls.ContainsKey(cid)) {
-                _polls[cid] = poll;
-                return true;
-            }
-
-            return _polls.TryAdd(cid, poll);
-        }
+        public static void RegisterPollInChannel(Poll poll, ulong cid) 
+            => _polls[cid] = poll;
 
         public static void UnregisterPollInChannel(ulong cid)
         {

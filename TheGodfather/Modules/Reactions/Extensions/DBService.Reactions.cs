@@ -71,9 +71,9 @@ namespace TheGodfather.Modules.Reactions.Extensions
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         ulong gid = (ulong)(long)reader["gid"];
 
-                        if (ereactions.ContainsKey(gid)) {
-                            if (ereactions[gid] == null)
-                                ereactions[gid] = new List<EmojiReaction>();
+                        if (ereactions.TryGetValue(gid, out var erlist)) {
+                            if (erlist == null)
+                                erlist = new List<EmojiReaction>();
                         } else {
                             ereactions.Add(gid, new List<EmojiReaction>());
                         }
@@ -105,9 +105,9 @@ namespace TheGodfather.Modules.Reactions.Extensions
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         ulong gid = (ulong)(long)reader["gid"];
-                        if (treactions.ContainsKey(gid)) {
-                            if (treactions[gid] == null)
-                                treactions[gid] = new List<TextReaction>();
+                        if (treactions.TryGetValue(gid, out var trlist)) {
+                            if (trlist == null)
+                                trlist = new List<TextReaction>();
                         } else {
                             treactions.Add(gid, new List<TextReaction>());
                         }

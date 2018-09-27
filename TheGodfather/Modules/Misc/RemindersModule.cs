@@ -99,12 +99,12 @@ namespace TheGodfather.Modules.Misc
             if (!ids.Any())
                 throw new InvalidCommandUsageException("Missing IDs of reminders to remove.");
 
-            if (!this.Shared.RemindExecuters.ContainsKey(ctx.User.Id))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs))
                 throw new CommandFailedException("You have no reminders scheduled.");
 
             var eb = new StringBuilder();
             foreach (int id in ids) {
-                if (!this.Shared.RemindExecuters[ctx.User.Id].Any(texec => texec.Id == id)) {
+                if (!texecs.Any(texec => texec.Id == id)) {
                     eb.AppendLine($"Reminder with ID {Formatter.Bold(id.ToString())} does not exist (or is not scheduled by you)!");
                     continue;
                 }
@@ -126,12 +126,12 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!remind list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.ContainsKey(ctx.User.Id) || !this.Shared.RemindExecuters[ctx.User.Id].Any(t => ((SendMessageTaskInfo)t.TaskInfo).ChannelId == ctx.Channel.Id))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Any(t => ((SendMessageTaskInfo)t.TaskInfo).ChannelId == ctx.Channel.Id))
                 throw new CommandFailedException("No reminders meet the speficied criteria.");
 
             return ctx.SendCollectionInPagesAsync(
                 $"Your reminders in this channel:",
-                this.Shared.RemindExecuters[ctx.User.Id]
+                texecs
                     .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
                     .Where(tup => tup.TaskInfo.ChannelId == ctx.Channel.Id)
                     .OrderBy(tup => tup.TaskInfo.ExecutionTime),
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
             
             if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !await this.Database.IsPrivilegedUserAsync(ctx.User.Id)) {
-                if (this.Shared.RemindExecuters.ContainsKey(ctx.User.Id) && this.Shared.RemindExecuters[ctx.User.Id].Count >= 20)
+                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) && texecs.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 

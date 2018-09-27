@@ -81,8 +81,8 @@ namespace TheGodfather.Modules.Music
             if (vnc == null)
                 throw new CommandFailedException("Not connected in this guild.");
 
-            if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                MusicPlayers[ctx.Guild.Id].Stop();
+            if (MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player)) {
+                player.Stop();
                 MusicPlayers.TryRemove(ctx.Guild.Id, out _);
             }
 
@@ -99,10 +99,10 @@ namespace TheGodfather.Modules.Music
         [UsageExamples("!skip")]
         public Task SkipAsync(CommandContext ctx)
         {
-            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player))
                 throw new CommandFailedException("Not playing in this guild");
 
-            MusicPlayers[ctx.Guild.Id].Skip();
+            player.Skip();
             return Task.CompletedTask;
         }
         #endregion
@@ -113,10 +113,10 @@ namespace TheGodfather.Modules.Music
         [UsageExamples("!stop")]
         public Task StopAsync(CommandContext ctx)
         {
-            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player))
                 throw new CommandFailedException("Not playing in this guild");
 
-            MusicPlayers[ctx.Guild.Id].Stop();
+            player.Stop();
             return this.InformAsync(ctx, StaticDiscordEmoji.Headphones, "Stopped.", important: false);
         }
         #endregion

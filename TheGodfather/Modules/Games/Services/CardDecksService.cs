@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Games.Services
 
 
         public static Deck GetDeckInChannel(ulong cid)
-            => _decks.ContainsKey(cid) ? _decks[cid] : null;
+            => _decks.TryGetValue(cid, out Deck deck) ? deck : null;
 
         public static void ResetDeckInChannel(ulong cid)
             => _decks.AddOrUpdate(cid, new Deck(), (k, v) => new Deck());
