@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class MessageModule
     {
-        [Group("delete")]
+        [Group("delete"), UsesInteractivity]
         [Description("Deletes messages from the current channel. Group call deletes given amount of most recent messages.")]
         [Aliases("-", "prune", "del", "d")]
         [UsageExamples("!messages delete 10",

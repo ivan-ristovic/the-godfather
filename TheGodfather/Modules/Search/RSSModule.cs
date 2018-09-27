@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Search
         {
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("http://worldmafia.net/forums/-/index.rss");
             if (res == null)
-                throw new CommandFailedException("An error occured while reaching WM forum. Possibly Pakistani didn't pay this month?");
+                throw new CommandFailedException("An error occured while reaching WM forum.");
 
             return RssService.SendFeedResultsAsync(ctx.Channel, res);
         }
@@ -140,6 +140,6 @@ namespace TheGodfather.Modules.Search
 
         // TODO unsub all
 
-        // TODO better sub/unsub system ... 
+        // TODO better sub/unsub system ...
     }
 }

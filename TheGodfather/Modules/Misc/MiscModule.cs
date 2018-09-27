@@ -307,7 +307,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_REPORT
-        [Command("report")]
+        [Command("report"), UsesInteractivity]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         [UsageExamples("!report Your bot sucks!")]
         [UsesInteractivity]

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    internal sealed class NotBlockedAttribute : CheckBaseAttribute
+    public sealed class NotBlockedAttribute : CheckBaseAttribute
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {

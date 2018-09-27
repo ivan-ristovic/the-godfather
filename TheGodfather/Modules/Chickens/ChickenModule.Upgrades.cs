@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
-        [Group("upgrades")]
+        [Group("upgrades"), UsesInteractivity]
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.")]
         [Aliases("perks", "upgrade", "u")]
         [UsageExamples("!chicken upgrade")]
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Chickens
             }
 
 
-            [GroupCommand, Priority(1), UsesInteractivity]
+            [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the upgrade to buy.")] int id)
             {

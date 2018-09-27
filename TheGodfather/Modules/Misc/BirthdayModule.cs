@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_BIRTHDAY_DELETE
-        [Command("delete"), Priority(1)]
+        [Command("delete"), Priority(1), UsesInteractivity]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
         [UsageExamples("!birthday delete @Someone")]

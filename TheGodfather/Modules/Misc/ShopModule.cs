@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
         
         #region COMMAND_SHOP_SELL
-        [Command("sell")]
+        [Command("sell"), UsesInteractivity]
         [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
         [UsageExamples("!shop sell 3")]

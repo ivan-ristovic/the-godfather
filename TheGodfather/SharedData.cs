@@ -78,18 +78,16 @@ namespace TheGodfather
 
         #region CHANNEL_EVENT_HELPERS
         public ChannelEvent GetEventInChannel(ulong cid)
-            => this.ChannelEvents.ContainsKey(cid) ? this.ChannelEvents[cid] : null;
+            => this.ChannelEvents.TryGetValue(cid, out ChannelEvent e) ? e : null;
 
         public bool IsEventRunningInChannel(ulong cid)
-            => this.ChannelEvents.ContainsKey(cid) && this.ChannelEvents[cid] != null;
+            => this.ChannelEvents.TryGetValue(cid, out ChannelEvent e) && e != null;
 
         public void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
             => this.ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);
 
         public void UnregisterEventInChannel(ulong cid)
         {
-            if (!this.ChannelEvents.ContainsKey(cid))
-                return;
             if (!this.ChannelEvents.TryRemove(cid, out _))
                 this.ChannelEvents[cid] = null;
         }
@@ -100,21 +98,17 @@ namespace TheGodfather
             => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
 
         public ushort CalculateRankForUser(ulong uid)
-            => this.MessageCount.ContainsKey(uid) ? this.CalculateRankForMessageCount(this.MessageCount[uid]) : (ushort)0;
+            => this.MessageCount.TryGetValue(uid, out ulong count) ? this.CalculateRankForMessageCount(count) : (ushort)0;
 
         public uint CalculateXpNeededForRank(ushort index)
             => (uint)(index * index * 10);
 
         public ulong GetMessageCountForUser(ulong uid)
-            => this.MessageCount.ContainsKey(uid) ? this.MessageCount[uid] : 0;
+            => this.MessageCount.TryGetValue(uid, out ulong count) ? count : 0;
 
         public ushort IncrementMessageCountForUser(ulong uid)
         {
-            if (this.MessageCount.ContainsKey(uid)) {
-                this.MessageCount[uid]++;
-            } else if (!this.MessageCount.TryAdd(uid, 1)) {
-                return 0;
-            }
+            this.MessageCount.AddOrUpdate(uid, 1, (k, v) => v + 1);
 
             ushort prev = this.CalculateRankForMessageCount(this.MessageCount[uid] - 1);
             ushort curr = this.CalculateRankForMessageCount(this.MessageCount[uid]);
@@ -129,7 +123,7 @@ namespace TheGodfather
 
         public string GetGuildPrefix(ulong gid)
         {
-            if (this.GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(this.GuildConfigurations[gid].Prefix))
+            if (this.GuildConfigurations.TryGetValue(gid, out CachedGuildConfig gcfg) && !string.IsNullOrWhiteSpace(gcfg.Prefix))
                 return this.GuildConfigurations[gid].Prefix;
             else
                 return this.BotConfiguration.DefaultPrefix;
@@ -137,23 +131,23 @@ namespace TheGodfather
 
         public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
         {
-            var gcfg = this.GetGuildConfig(guild.Id);
+            CachedGuildConfig gcfg = this.GetGuildConfig(guild.Id);
             return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
         }
 
         public bool GuildHasTextReaction(ulong gid, string trigger)
-            => this.TextReactions.ContainsKey(gid) && this.TextReactions[gid] != null && this.TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
+            => this.TextReactions.TryGetValue(gid, out var trs) && (trs?.Any(tr => tr.ContainsTriggerPattern(trigger)) ?? false);
 
         public bool GuildHasEmojiReaction(ulong gid, string trigger)
-            => this.EmojiReactions.ContainsKey(gid) && this.EmojiReactions[gid] != null && this.EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
+            => this.EmojiReactions.TryGetValue(gid, out var ers) && (ers?.Any(er => er.ContainsTriggerPattern(trigger)) ?? false);
 
         public bool MessageContainsFilter(ulong gid, string message)
         {
-            if (!this.Filters.ContainsKey(gid) || this.Filters[gid] == null)
+            if (!this.Filters.TryGetValue(gid, out var filters) || filters == null)
                 return false;
 
             message = message.ToLowerInvariant();
-            return this.Filters[gid].Any(f => f.Trigger.IsMatch(message));
+            return filters.Any(f => f.Trigger.IsMatch(message));
         }
         #endregion
 
@@ -168,11 +162,14 @@ namespace TheGodfather
         }
 
         public bool PendingResponseExists(ulong cid, ulong uid)
-            => this.PendingResponses.ContainsKey(cid) && this.PendingResponses[cid].Contains(uid);
+            => this.PendingResponses.TryGetValue(cid, out var pending) && pending.Contains(uid);
 
         public bool TryRemovePendingResponse(ulong cid, ulong uid)
         {
-            bool success = this.PendingResponses[cid].TryRemove(uid);
+            if (!this.PendingResponses.TryGetValue(cid, out var pending))
+                return true;
+
+            bool success = pending.TryRemove(uid);
             if (!this.PendingResponses[cid].Any())
                 this.PendingResponses.TryRemove(cid, out _);
             return success;

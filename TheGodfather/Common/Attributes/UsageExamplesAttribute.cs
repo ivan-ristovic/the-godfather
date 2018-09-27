@@ -6,7 +6,7 @@ using System.Linq;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    internal sealed class UsageExamplesAttribute : Attribute
+    public sealed class UsageExamplesAttribute : Attribute
     {
         public string[] Examples { get; private set; }
 
