@@ -5,6 +5,8 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +15,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -208,8 +211,29 @@ namespace TheGodfather.Modules.Administration
                                    [Description("Member to mute.")] DiscordMember member,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetMuteAsync(mute, reason: ctx.BuildInvocationDetailsString(reason));
+            DiscordRole muteRole = await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+            if (mute)
+                await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Mute"));
+            else
+                await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Unmute"));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}");
+        }
+        #endregion
+
+        #region COMMAND_USER_MUTEVOICE
+        [Command("mutevoice")]
+        [Description("Mute or unmute a member in the voice channels.")]
+        [Aliases("mv", "voicemute", "vmute", "mutev", "vm")]
+        [UsageExamples("!user mutevoice off @Someone",
+                       "!user mutevoice on @Someone Trashtalk")]
+        [RequirePermissions(Permissions.MuteMembers)]
+        public async Task MuteVoiceAsync(CommandContext ctx,
+                                        [Description("Mute?")] bool mute,
+                                        [Description("Member to mute.")] DiscordMember member,
+                                        [RemainingText, Description("Reason.")] string reason = null)
+        {
+            await member.SetMuteAsync(mute, reason: ctx.BuildInvocationDetailsString(reason));
+            await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} voice of member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
 
