@@ -15,8 +15,8 @@ namespace TheGodfatherTests.Modules.Search.Services
         public void GetFeedURLForSubredditTest()
         {
             string sub = null;
-            string aww = "https://www.reddit.com/r/aww/new/.rss";
-            string csgo = "https://www.reddit.com/r/globaloffensive/new/.rss";
+            string aww = "https://www.reddit.com/r/aww/new.rss";
+            string csgo = "https://www.reddit.com/r/globaloffensive/new.rss";
 
             Assert.AreEqual(aww, RedditService.GetFeedURLForSubreddit("/r/aww", RedditCategory.New, out sub));
             Assert.AreEqual(sub, "/r/aww");

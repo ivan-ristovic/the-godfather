@@ -4,6 +4,7 @@ using DSharpPlus.EventArgs;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,10 +26,9 @@ namespace TheGodfather.Modules.Administration.Services
             var service = _ as RatelimitService;
 
             foreach (ulong gid in service.guildSpamInfo.Keys) {
-                var toRemove = service.guildSpamInfo[gid]
+                IEnumerable<ulong> toRemove = service.guildSpamInfo[gid]
                     .Where(kvp => !kvp.Value.IsActive)
-                    .Select(kvp => kvp.Key)
-                    .ToList();
+                    .Select(kvp => kvp.Key);
 
                 foreach (ulong uid in toRemove)
                     service.guildSpamInfo[gid].TryRemove(uid, out UserRatelimitInfo _);
