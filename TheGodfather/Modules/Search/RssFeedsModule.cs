@@ -195,14 +195,20 @@ namespace TheGodfather.Modules.Search
 
 
             #region COMMAND_UNSUBSCRIBE_ALL
-            [Command("all")]
+            [Command("all"), UsesInteractivity]
             [Description("Remove all subscriptions for the given channel.")]
             [Aliases("a")]
             [UsageExamples("!unsub all")]
             public async Task AllAsync(CommandContext ctx,
                                       [Description("Channel.")] DiscordChannel channel = null)
             {
-                // TODO
+                channel = channel ?? ctx.Channel;
+
+                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to remove all subscriptions for channel {channel.Mention}?"))
+                    return;
+
+                await this.Database.RemoveAllSubscriptionsForChannelAsync(channel.Id);
+                await InformAsync(ctx, $"Removed all subscriptions for channel {channel.Mention}!", important: false);
             }
             #endregion
 

@@ -118,6 +118,16 @@ namespace TheGodfather.Modules.Search.Extensions
             return sid.HasValue;
         }
 
+        public static Task RemoveAllSubscriptionsForChannelAsync(this DBService db, ulong cid)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
         public static Task RemoveFeedEntryAsync(this DBService db, int id)
         {
             return db.ExecuteCommandAsync(cmd => {
