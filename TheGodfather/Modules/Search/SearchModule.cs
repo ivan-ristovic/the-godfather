@@ -2,7 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.ServiceModel.Syndication;
@@ -28,7 +28,6 @@ namespace TheGodfather.Modules.Search
         {
             this.ModuleColor = DiscordColor.MidnightBlue;
         }
-
 
 
         #region COMMAND_CAT
