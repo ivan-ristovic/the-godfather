@@ -1039,10 +1039,31 @@ CREATE INDEX emoji_reactions_trigger_idx ON gf.emoji_reactions USING btree (trig
 
 
 --
+-- Name: fki_accounts_fkey_gid; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX fki_accounts_fkey_gid ON gf.accounts USING btree (gid);
+
+
+--
+-- Name: fki_chickens_fkey_gid; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX fki_chickens_fkey_gid ON gf.chickens USING btree (gid);
+
+
+--
 -- Name: fki_items_fkey; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX fki_items_fkey ON gf.items USING btree (gid);
+
+
+--
+-- Name: fki_saved_tasks_fkey_gid; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX fki_saved_tasks_fkey_gid ON gf.saved_tasks USING btree (gid);
 
 
 --
@@ -1132,11 +1153,27 @@ CREATE INDEX trigger_index ON gf.text_reactions USING btree (trigger);
 
 
 --
+-- Name: accounts accounts_fkey_gid; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.accounts
+    ADD CONSTRAINT accounts_fkey_gid FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: automatic_roles ar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY gf.automatic_roles
     ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: chickens chicken_fkey_gid; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chickens
+    ADD CONSTRAINT chicken_fkey_gid FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1225,6 +1262,14 @@ ALTER TABLE ONLY gf.ranks
 
 ALTER TABLE ONLY gf.assignable_roles
     ADD CONSTRAINT sar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: saved_tasks saved_tasks_fkey_gid; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.saved_tasks
+    ADD CONSTRAINT saved_tasks_fkey_gid FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
