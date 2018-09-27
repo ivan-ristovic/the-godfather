@@ -12,7 +12,7 @@ using TheGodfather.Modules.Search.Services;
 namespace TheGodfatherTests.Modules.Search.Services
 {
     [TestFixture]
-    public class RSSServiceTests
+    public class RssServiceTests
     {
         [Test]
         public void GetFeedResultsTest()
@@ -59,42 +59,6 @@ namespace TheGodfatherTests.Modules.Search.Services
             Assert.Throws<ArgumentException>(() => RssService.GetFeedResults(aww, -1));
             Assert.Throws<ArgumentException>(() => RssService.GetFeedResults(aww, 0));
             Assert.Throws<ArgumentException>(() => RssService.GetFeedResults(aww, 21));
-        }
-
-        [Test]
-        public void GetFeedURLForSubredditTest()
-        {
-            string sub = null;
-            string aww = "https://www.reddit.com/r/aww/new/.rss";
-            string csgo = "https://www.reddit.com/r/globaloffensive/new/.rss";
-
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("/r/aww", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("r/aww", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("/aww", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("/r/aWW", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("/R/aww", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(aww, RssService.GetFeedURLForSubreddit("/AWW", out sub));
-            Assert.AreEqual(sub, "/r/aww");
-            Assert.AreEqual(csgo, RssService.GetFeedURLForSubreddit("GlobalOffensive", out sub));
-            Assert.AreEqual(sub, "/r/globaloffensive");
-
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global.Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global-Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global*Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global?Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global??Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global>Offensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("Global??Off>ensive", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit(".", out sub));
-            Assert.Throws<ArgumentException>(() => RssService.GetFeedURLForSubreddit("---", out sub));
-
-            Assert.IsNull(RssService.GetFeedURLForSubreddit("FOOASDSADSANDJSKANDSKJANDSKAD", out sub));
         }
 
         [Test]
