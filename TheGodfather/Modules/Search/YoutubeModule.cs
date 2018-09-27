@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHVIDEO
         [Command("searchvideo")]
         [Description("Advanced youtube search for videos only.")]
-        [Aliases("sv", "searchv")]
+        [Aliases("sv", "searchv", "video")]
         [UsageExamples("!youtube searchvideo 5 rick astley")]
         public Task SearchVideoAsync(CommandContext ctx,
                                     [RemainingText, Description("Search query.")] string query)
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
         [Command("searchchannel")]
         [Description("Advanced youtube search for channels only.")]
-        [Aliases("sc", "searchc")]
+        [Aliases("sc", "searchc", "channel")]
         [UsageExamples("!youtube searchchannel 5 rick astley")]
         public Task SearchChannelAsync(CommandContext ctx,
                                       [RemainingText, Description("Search query.")] string query)
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
-        [Aliases("sp", "searchplaylist")]
+        [Aliases("sp", "searchplaylist", "playlist")]
         [UsageExamples("!youtube searchplaylist 5 rick astley")]
         public Task SearchPlaylistAsync(CommandContext ctx,
                                        [RemainingText, Description("Search query.")] string query)
