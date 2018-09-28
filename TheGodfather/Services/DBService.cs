@@ -141,7 +141,8 @@ namespace TheGodfather.Services
                     linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, 
                     linkfilter_shorteners, silent_respond, currency, ratelimit_enabled, ratelimit_action, 
                     ratelimit_sens, antiflood_enabled, antiflood_sens, antiflood_action, antiflood_cooldown,
-                    mute_rid, antijoinleave_enabled, antijoinleave_cooldown
+                    mute_rid, antijoinleave_enabled, antijoinleave_cooldown, antispam_enabled, antispam_sens,
+                    antispam_action
                     FROM gf.guild_cfg LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });

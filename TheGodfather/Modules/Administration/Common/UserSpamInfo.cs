@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
 
 using System;
-using System.Collections.Concurrent;
 using System.Threading;
 
 using TheGodfather.Extensions;
@@ -12,7 +10,7 @@ namespace TheGodfather.Modules.Administration.Common
 {
     public sealed class UserSpamInfo
     {
-        private static readonly TimeSpan _resetAfter = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan _resetAfter = TimeSpan.FromHours(1);
 
         public int RemainingUses => Volatile.Read(ref this.remainingUses);
         public bool IsActive => DateTimeOffset.UtcNow <= this.resetsAt;

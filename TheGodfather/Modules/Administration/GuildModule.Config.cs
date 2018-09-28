@@ -68,9 +68,10 @@ namespace TheGodfather.Modules.Administration
                 await this.SetupPrefixAsync(gcfg, ctx, channel);
                 await this.SetupCommandSuggestionsAsync(gcfg, ctx, channel);
                 await this.SetupLoggingAsync(gcfg, ctx, channel);
-                JoinLeaveSettings msgSettings = await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
+                MemberUpdateMessagesSettings msgSettings = await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
                 DiscordRole muteRole = await this.SetupMuteRoleAsync(gcfg, ctx, channel);
                 await this.SetupLinkfilterAsync(gcfg, ctx, channel);
+                await this.SetupAntispamAsync(gcfg, ctx, channel);
                 await this.SetupRatelimitAsync(gcfg, ctx, channel);
                 AntifloodSettings antifloodSettings = await this.SetupAntifloodAsync(gcfg, ctx, channel);
                 await this.SetupCurrencyAsync(gcfg, ctx, channel);
@@ -382,6 +383,11 @@ namespace TheGodfather.Modules.Administration
                 else
                     emb.AddField("Ratelimit watch", "off", inline: true);
 
+                if (gcfg.AntispamSettings.Enabled)
+                    emb.AddField("Antispam watch", $"Sensitivity: {gcfg.AntispamSettings.Sensitivity}\nAction: {gcfg.AntispamSettings.Action.ToTypeString()}", inline: true);
+                else
+                    emb.AddField("Antispam watch", "off", inline: true);
+
                 AntifloodSettings antifloodSettings = await this.Database.GetAntifloodSettingsAsync(guild.Id);
                 if (antifloodSettings.Enabled)
                     emb.AddField("Antiflood watch", $"Sensitivity: {antifloodSettings.Sensitivity} users per {antifloodSettings.Cooldown}s\nAction: {antifloodSettings.Action.ToTypeString()}", inline: true);
@@ -422,7 +428,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole,
-                                                  JoinLeaveSettings ninfo, AntifloodSettings antifloodSettings,
+                                                  MemberUpdateMessagesSettings ninfo, AntifloodSettings antifloodSettings,
                                                   AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 this.Shared.GuildConfigurations[gid] = gcfg;
@@ -469,7 +475,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             private async Task PreviewSettingsAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel,
-                                                    DiscordRole muteRole, JoinLeaveSettings msgSettings,
+                                                    DiscordRole muteRole, MemberUpdateMessagesSettings msgSettings,
                                                     AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 var sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
@@ -505,6 +511,15 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("enabled"));
                     sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSettings.Sensitivity).AppendLine(" msgs per 5s.");
                     sb.Append("- Action: ").AppendLine(gcfg.RatelimitSettings.Action.ToTypeString());
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Antispam watch:");
+                if (gcfg.AntispamSettings.Enabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").AppendLine(gcfg.AntispamSettings.Sensitivity.ToString());
+                    sb.Append("- Action: ").AppendLine(gcfg.AntispamSettings.Action.ToTypeString());
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
@@ -586,14 +601,14 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            private async Task<JoinLeaveSettings> SetupMemberUpdateMessagesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            private async Task<MemberUpdateMessagesSettings> SetupMemberUpdateMessagesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
-                var ninfo = new JoinLeaveSettings();
+                var ninfo = new MemberUpdateMessagesSettings();
                 await GetChannelIdAndMessageAsync(ninfo, true);
                 await GetChannelIdAndMessageAsync(ninfo, false);
                 return ninfo;
 
-                async Task GetChannelIdAndMessageAsync(JoinLeaveSettings info, bool welcome)
+                async Task GetChannelIdAndMessageAsync(MemberUpdateMessagesSettings info, bool welcome)
                 {
                     InteractivityExtension interactivity = ctx.Client.GetInteractivity();
                     string query = $"I can also send a {(welcome ? "welcome" : "leave")} message when someone " +
@@ -701,6 +716,36 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
+            private async Task SetupAntispamAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            {
+                string query = "Antispam is a feature that automatically punishes users that post the same " +
+                               "message more than specified amount of times. Do you wish to enable antispam?";
+                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    gcfg.AntispamSettings.Enabled = true;
+
+                    query = $"Do you wish to change the default antispam action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        );
+                        if (mctx != null)
+                            gcfg.AntispamSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                    }
+
+                    query = "Do you wish to change the default antispam sensitivity aka number of same messages " +
+                            $"allowed before the action is triggered ({gcfg.AntispamSettings.Sensitivity})?";
+                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [3, 10]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 3 && sens <= 10
+                        );
+                        if (mctx != null)
+                            gcfg.AntispamSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                    }
+                }
+            }
+
             private async Task<AntifloodSettings> SetupAntifloodAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
                 var antifloodSettings = new AntifloodSettings();
@@ -784,15 +829,6 @@ namespace TheGodfather.Modules.Administration
                     if (mctx != null)
                         gcfg.Currency = mctx.Message.Content;
                 }
-            }
-
-
-            private class JoinLeaveSettings
-            {
-                public ulong WelcomeChannelId { get; set; }
-                public ulong LeaveChannelId { get; set; }
-                public string WelcomeMessage { get; set; }
-                public string LeaveMessage { get; set; }
             }
             #endregion
         }

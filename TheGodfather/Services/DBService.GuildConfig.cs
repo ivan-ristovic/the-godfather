@@ -29,7 +29,11 @@ namespace TheGodfather.Services
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
-                            AntispamSettings = new AntispamSettings(), // TODO
+                            AntispamSettings = new AntispamSettings() {
+                                Enabled = (bool)reader["antispam_enabled"],
+                                Action = (PunishmentActionType)(short)reader["antispam_action"],
+                                Sensitivity = (short)reader["antispam_sens"],
+                            },
                             Currency = reader["currency"] is DBNull ? null : (string)reader["currency"],
                             LinkfilterSettings = new LinkfilterSettings() {
                                 Enabled = (bool)reader["linkfilter_enabled"],
@@ -82,10 +86,12 @@ namespace TheGodfather.Services
                 cmd.CommandText = "UPDATE gf.guild_cfg SET " +
                     "(prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, " +
                     "linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, " +
-                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens) = " +
+                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens," +
+                    "antispam_enabled, antispam_sens, antispam_action) = " +
                     "(@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, " +
                     "@linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, " +
-                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens) " +
+                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens," +
+                    "@antispam_enabled, @antispam_sens, @antispam_action) " +
                     "WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
@@ -108,6 +114,9 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitSettings.Enabled));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitSettings.Action));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSettings.Sensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("antispam_enabled", cfg.AntispamSettings.Enabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_action", cfg.AntispamSettings.Sensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_sens", (short)cfg.AntispamSettings.Action));
 
                 return cmd.ExecuteNonQueryAsync();
             });
