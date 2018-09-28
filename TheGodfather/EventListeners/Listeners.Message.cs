@@ -71,6 +71,9 @@ namespace TheGodfather.EventListeners
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             if (gcfg.RatelimitSettings.Enabled)
                 await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
+
+            if (gcfg.AntispamSettings.Enabled)
+                await shard.CNext.Services.GetService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]

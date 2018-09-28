@@ -29,6 +29,7 @@ namespace TheGodfather.Services
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
+                            AntispamSettings = new AntispamSettings(), // TODO
                             Currency = reader["currency"] is DBNull ? null : (string)reader["currency"],
                             LinkfilterSettings = new LinkfilterSettings() {
                                 Enabled = (bool)reader["linkfilter_enabled"],
