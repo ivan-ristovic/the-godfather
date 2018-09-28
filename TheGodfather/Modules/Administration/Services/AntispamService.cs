@@ -27,13 +27,11 @@ namespace TheGodfather.Modules.Administration.Services
 
             foreach (ulong gid in service.guildSpamInfo.Keys) {
                 IEnumerable<ulong> toRemove = service.guildSpamInfo[gid]
-                    .Where(kvp => kvp.Value.Count == 0)
+                    .Where(kvp => !kvp.Value.IsActive)
                     .Select(kvp => kvp.Key);
 
-                foreach (ulong uid in toRemove) {
-                    service.guildSpamInfo[gid].TryRemove(uid, out UserSpamInfo info);
-                    info.Dispose();
-                }
+                foreach (ulong uid in toRemove) 
+                    service.guildSpamInfo[gid].TryRemove(uid, out UserSpamInfo _);
             }
         }
 
@@ -65,7 +63,7 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
             }
 
-            if (!this.guildSpamInfo[e.Guild.Id][e.Author.Id].ApplyMessage(e.Message))
+            if (!this.guildSpamInfo[e.Guild.Id][e.Author.Id].TryDecrementAllowedMessageCount(e.Message.Content))
                 await this.PunishMemberAsync(e.Guild, e.Author as DiscordMember, settings.Action);
         }
     }

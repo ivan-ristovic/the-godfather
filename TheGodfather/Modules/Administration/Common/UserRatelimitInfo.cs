@@ -29,8 +29,6 @@ namespace TheGodfather.Modules.Administration.Common
 
         public bool TryDecrementAllowedMessageCount()
         {
-            bool success = false;
-
             lock (this.decrementLock) {
                 var now = DateTimeOffset.UtcNow;
                 if (now >= this.resetsAt) {
@@ -38,13 +36,11 @@ namespace TheGodfather.Modules.Administration.Common
                     this.resetsAt = now + _resetAfter;
                 }
 
-                if (this.RemainingUses > 0) {
+                if (this.RemainingUses > 0)
                     Interlocked.Decrement(ref this.remainingUses);
-                    success = true;
-                }
             }
 
-            return success;
+            return this.remainingUses > 0;
         }
     }
 }

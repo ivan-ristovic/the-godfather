@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Administration.Services
                 throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
 
             if (!this.guildRatelimitInfo[e.Guild.Id].ContainsKey(e.Author.Id)) {
-                if (!this.guildRatelimitInfo[e.Guild.Id].TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity - 1)))
+                if (!this.guildRatelimitInfo[e.Guild.Id].TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity)))
                     throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");
                 return;
             }

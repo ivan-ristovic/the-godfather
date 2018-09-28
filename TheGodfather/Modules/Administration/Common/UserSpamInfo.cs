@@ -10,53 +10,47 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Administration.Common
 {
-    public sealed class UserSpamInfo : IDisposable
+    public sealed class UserSpamInfo
     {
-        public int Count => this.timers.Count;
-        public TimeSpan ResetTimeSpan => TimeSpan.FromMinutes(1/*30*/);
+        private static readonly TimeSpan _resetAfter = TimeSpan.FromSeconds(10);
 
-        private readonly ConcurrentQueue<Timer> timers;
-        private readonly object msgApplyLock;
-        private readonly int maxMessages;
+        public int RemainingUses => Volatile.Read(ref this.remainingUses);
+        public bool IsActive => DateTimeOffset.UtcNow <= this.resetsAt;
 
+        private DateTimeOffset resetsAt;
+        private int remainingUses;
+        private readonly int maxAmount;
+        private readonly object decrementLock;
         private string lastContent;
 
 
-        public UserSpamInfo(int maxMessages)
+        public UserSpamInfo(int maxRepeats)
         {
-            this.timers = new ConcurrentQueue<Timer>();
-            this.msgApplyLock = new object();
-            this.maxMessages = maxMessages;
+            this.maxAmount = maxRepeats;
+            this.remainingUses = maxRepeats;
+            this.resetsAt = DateTimeOffset.UtcNow + _resetAfter;
+            this.decrementLock = new object();
             this.lastContent = string.Empty;
         }
 
 
-        public bool ApplyMessage(DiscordMessage message)
+        public bool TryDecrementAllowedMessageCount(string newContent)
         {
-            lock (this.msgApplyLock) {
-                string content = message.Content?.ToLowerInvariant();
-                if (!string.IsNullOrWhiteSpace(content) && this.lastContent.LevenshteinDistance(content) > 2) {
-                    this.lastContent = content;
-                    this.Dispose();
+            newContent = newContent.ToLowerInvariant();
+
+            lock (this.decrementLock) {
+                var now = DateTimeOffset.UtcNow;
+                if (now >= this.resetsAt || (!string.IsNullOrWhiteSpace(newContent) && this.lastContent.LevenshteinDistance(newContent) > 2)) {
+                    Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
+                    this.resetsAt = now + _resetAfter;
+                    this.lastContent = newContent;
                 }
-                var timer = new Timer(this.TimerCallback, null, this.ResetTimeSpan, this.ResetTimeSpan);
-                this.timers.Enqueue(timer);
+
+                if (this.RemainingUses > 0)
+                    Interlocked.Decrement(ref this.remainingUses);
             }
 
-            return this.Count <= this.maxMessages;
-        }
-
-        public void Dispose()
-        {
-            while (this.timers.TryDequeue(out Timer oldest))
-                oldest.Dispose();
-        }
-
-
-        private void TimerCallback(object _)
-        {
-            if (this.timers.TryDequeue(out Timer oldest))
-                oldest.Dispose();
+            return this.remainingUses > 0;
         }
     }
 }
