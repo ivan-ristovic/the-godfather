@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace TheGodfather.Modules.Administration.Common
 {
-    public class LinkfilterMatch
+    public sealed class LinkfilterMatch
     {
         public bool Success { get; }
         public string Matched { get; }
@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration.Common
         }
     }
 
-    public class LinkfilterMatcher : Regex
+    public sealed class LinkfilterMatcher : Regex
     {
         public LinkfilterMatcher(params string[] items) 
             : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)

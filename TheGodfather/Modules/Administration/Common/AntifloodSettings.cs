@@ -1,6 +1,6 @@
 ﻿namespace TheGodfather.Modules.Administration.Common
 {
-    public class AntifloodSettings
+    public sealed class AntifloodSettings
     {
         public PunishmentActionType Action { get; set; } = PunishmentActionType.PermanentBan;
         public short Cooldown { get; set; } = 10;

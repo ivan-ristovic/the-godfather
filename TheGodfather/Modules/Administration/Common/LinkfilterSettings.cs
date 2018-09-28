@@ -1,6 +1,6 @@
 ﻿namespace TheGodfather.Modules.Administration.Common
 {
-    public class LinkfilterSettings
+    public sealed class LinkfilterSettings
     {
         public bool Enabled { get; set; } = false;
         public bool BlockBooterWebsites { get; set; } = true;
