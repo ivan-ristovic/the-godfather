@@ -305,7 +305,10 @@ CREATE TABLE gf.guild_cfg (
     antiflood_action smallint DEFAULT 2 NOT NULL,
     mute_rid bigint DEFAULT 0 NOT NULL,
     antijoinleave_enabled boolean DEFAULT false NOT NULL,
-    antijoinleave_cooldown smallint DEFAULT 3 NOT NULL
+    antijoinleave_cooldown smallint DEFAULT 3 NOT NULL,
+    antispam_enabled boolean DEFAULT false NOT NULL,
+    antispam_action smallint DEFAULT 1 NOT NULL,
+    antispam_sens smallint DEFAULT 5 NOT NULL
 );
 
 
