@@ -152,30 +152,30 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
 
             using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
-                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.ChannelId));
-                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.UserId));
-                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfigurations.Select(
-                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.GuildId, new CachedGuildConfig() {
+                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.Cid));
+                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.Uid));
+                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildCfg.Select(
+                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.Gid, new CachedGuildConfig() {
                         AntispamSettings = new AntispamSettings() {
                             Action = (PunishmentActionType)entry.AntispamAction,
                             Enabled = entry.AntispamEnabled,
-                            Sensitivity = entry.AntispamSensitivity
+                            Sensitivity = entry.AntispamSens
                         },
                         Currency = entry.Currency,
                         LinkfilterSettings = new LinkfilterSettings() {
                             BlockBooterWebsites = entry.LinkfilterBooters,
-                            BlockDiscordInvites = entry.LinkfilterDiscordInvites,
+                            BlockDiscordInvites = entry.LinkfilterInvites,
                             BlockDisturbingWebsites = entry.LinkfilterDisturbing,
-                            BlockIpLoggingWebsites = entry.LinkfilterIpLoggers,
-                            BlockUrlShorteners = entry.LinkfilterUrlShorteners,
+                            BlockIpLoggingWebsites = entry.LinkfilterIploggers,
+                            BlockUrlShorteners = entry.LinkfilterShorteners,
                             Enabled = entry.LinkfilterEnabled
                         },
-                        LogChannelId = (ulong)entry.LogChannelId,
+                        LogChannelId = (ulong)entry.LogCid,
                         Prefix = entry.Prefix,
                         RatelimitSettings = new RatelimitSettings() {
                             Action = (PunishmentActionType)entry.RatelimitAction,
                             Enabled = entry.RatelimitEnabled,
-                            Sensitivity = entry.RatelimitSensitivity
+                            Sensitivity = entry.RatelimitSens
                         },
                         ReactionResponse = entry.SilentRespond,
                         SuggestionsEnabled = entry.SuggestionsEnabled

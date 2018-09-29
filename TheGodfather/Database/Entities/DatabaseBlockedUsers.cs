@@ -2,10 +2,10 @@
 
 namespace TheGodfather.Database.Entities
 {
-    [Table("blocked_channels")]
-    public partial class DatabaseBlockedChannels
+    [Table("blocked_users")]
+    public partial class DatabaseBlockedUsers
     {
-        public long Cid { get; set; }
+        public long Uid { get; set; }
         public string Reason { get; set; }
     }
 }
