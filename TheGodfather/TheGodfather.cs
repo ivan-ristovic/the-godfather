@@ -150,70 +150,61 @@ namespace TheGodfather
             ConcurrentHashSet<ulong> blockedChannels;
             ConcurrentHashSet<ulong> blockedUsers;
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
-            ConcurrentDictionary<ulong, ulong> msgcount;
-
 
             using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
-                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.Cid));
-                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.Uid));
-                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildCfg.Select(
-                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.Gid, new CachedGuildConfig() {
+                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.ChannelId));
+                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.UserId));
+                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfigurations.Select(
+                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.GuildId, new CachedGuildConfig() {
                         AntispamSettings = new AntispamSettings() {
                             Action = (PunishmentActionType)entry.AntispamAction,
                             Enabled = entry.AntispamEnabled,
-                            Sensitivity = entry.AntispamSens
+                            Sensitivity = entry.AntispamSensitivity
                         },
                         Currency = entry.Currency,
                         LinkfilterSettings = new LinkfilterSettings() {
                             BlockBooterWebsites = entry.LinkfilterBooters,
-                            BlockDiscordInvites = entry.LinkfilterInvites,
+                            BlockDiscordInvites = entry.LinkfilterDiscordInvites,
                             BlockDisturbingWebsites = entry.LinkfilterDisturbing,
-                            BlockIpLoggingWebsites = entry.LinkfilterIploggers,
-                            BlockUrlShorteners = entry.LinkfilterShorteners,
+                            BlockIpLoggingWebsites = entry.LinkfilterIpLoggers,
+                            BlockUrlShorteners = entry.LinkfilterUrlShorteners,
                             Enabled = entry.LinkfilterEnabled
                         },
-                        LogChannelId = (ulong)entry.LogCid,
+                        LogChannelId = (ulong)entry.LogChannelId,
                         Prefix = entry.Prefix,
                         RatelimitSettings = new RatelimitSettings() {
                             Action = (PunishmentActionType)entry.RatelimitAction,
                             Enabled = entry.RatelimitEnabled,
-                            Sensitivity = entry.RatelimitSens
+                            Sensitivity = entry.RatelimitSensitivity
                         },
                         ReactionResponse = entry.SilentRespond,
                         SuggestionsEnabled = entry.SuggestionsEnabled
                     }
                 )));
-                db.Filters.GroupBy(f => (ulong)f.Gid, (k, fs) => new ConcurrentHashSet<Filter>(fs.Select(f => new Filter(f.Id, f.Filter))));
-                filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
-                    db.Filters.
-                );
             }
             
 
             // Guild filters
             IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
-            var gfilters = 
+            var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             foreach ((ulong gid, Filter filter) in gfilters_db)
                 gfilters.AddOrUpdate(gid, new ConcurrentHashSet<Filter>(), (k, v) => { v.Add(filter); return v; });
             
             // Guild text reactions
             IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
-            var gtextreactions = new ();
+            var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
             foreach ((ulong gid, List<TextReaction> reactions) in gtextreactions_db)
                 gtextreactions[gid] = new ConcurrentHashSet<TextReaction>(reactions);
 
             // Guild emoji reactions
             IReadOnlyDictionary<ulong, List<EmojiReaction>> gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
-            var gemojireactions = new ();
+            var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             foreach (KeyValuePair<ulong, List<EmojiReaction>> reaction in gemojireactions_db)
                 gemojireactions[reaction.Key] = new ConcurrentHashSet<EmojiReaction>(reaction.Value);
 
             // User message count (XP)
             IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetXpForAllUsersAsync();
-            var msgcount = ();
+            var msgcount = new ConcurrentDictionary<ulong, ulong>();
             foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
                 msgcount[entry.Key] = entry.Value;
 
@@ -228,8 +219,7 @@ namespace TheGodfather
                 GuildConfigurations = guildConfigurations,
                 LogProvider = new Logger(BotConfiguration),
                 MessageCount = msgcount,
-                TextReactions = gtextreactions,
-                UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
+                TextReactions = gtextreactions
             };
         }
 

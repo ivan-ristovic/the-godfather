@@ -9,7 +9,9 @@ namespace TheGodfather.Database
     public class DatabaseContext : DbContext
     {
         public virtual DbSet<DatabaseBlockedChannel> BlockedChannels { get; set; }
-        
+        public virtual DbSet<DatabaseBlockedUser> BlockedUsers { get; set; }
+        public virtual DbSet<DatabaseGuildConfig> GuildConfigurations { get; set; }
+
         private string ConnectionString { get; }
 
 
