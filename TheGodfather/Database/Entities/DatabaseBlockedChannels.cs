@@ -1,17 +1,11 @@
-﻿#region USING_DIRECTIVES
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-#endregion
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Entities
 {
     [Table("blocked_channels")]
-    public sealed class DatabaseBlockedChannel
+    public partial class DatabaseBlockedChannels
     {
-        [Column("cid"), Key]
-        public long ChannelId { get; set; }
-
-        [Column("reason")]
+        public long Cid { get; set; }
         public string Reason { get; set; }
     }
 }
