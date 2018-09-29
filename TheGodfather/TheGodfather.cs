@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -41,6 +43,7 @@ namespace TheGodfather
 
         private static BotConfig BotConfiguration { get; set; }
         private static DBService DatabaseService { get; set; }
+        private static DatabaseContextBuilder GlobalDatabaseContext { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
 
@@ -129,6 +132,8 @@ namespace TheGodfather
         {
             Console.Write("\r[2/5] Establishing database connection...         ");
 
+            GlobalDatabaseContext = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
+
             DatabaseService = new DBService(BotConfiguration.DatabaseConfig);
             await DatabaseService.InitializeAsync();
 
@@ -143,6 +148,7 @@ namespace TheGodfather
 
             // Placing performance-sensitive data into memory, instead of it being read from the database
 
+            
             // Blocked users
             IReadOnlyList<(ulong, string)> blockedusr_db = await DatabaseService.GetAllBlockedUsersAsync();
             var blockedusr = new ConcurrentHashSet<ulong>();
