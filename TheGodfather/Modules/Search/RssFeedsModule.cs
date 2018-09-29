@@ -208,7 +208,7 @@ namespace TheGodfather.Modules.Search
                     return;
 
                 await this.Database.RemoveAllSubscriptionsForChannelAsync(channel.Id);
-                await InformAsync(ctx, $"Removed all subscriptions for channel {channel.Mention}!", important: false);
+                await this.InformAsync(ctx, $"Removed all subscriptions for channel {channel.Mention}!", important: false);
             }
             #endregion
 

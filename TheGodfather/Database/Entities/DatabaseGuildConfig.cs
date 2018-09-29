@@ -1,98 +1,68 @@
-﻿#region USING_DIRECTIVES
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-#endregion
 
 namespace TheGodfather.Database.Entities
 {
     [Table("guild_cfg")]
-    public sealed class DatabaseGuildConfig
+    public partial class DatabaseGuildConfig
     {
-        [Column("gid"), Key]
-        public long GuildId { get; set; }
+        public DatabaseGuildConfig()
+        {
+            this.Accounts = new HashSet<DatabaseAccounts>();
+            this.AssignableRoles = new HashSet<AssignableRoles>();
+            this.AutomaticRoles = new HashSet<DatabaseAutomaticRoles>();
+            this.Chickens = new HashSet<DatabaseChickens>();
+            this.EmojiReactions = new HashSet<DatabaseEmojiReactions>();
+            this.Filters = new HashSet<DatabaseFilters>();
+            this.Items = new HashSet<DatabaseItems>();
+            this.LogExempt = new HashSet<DatabaseLogExempt>();
+            this.Memes = new HashSet<DatabaseMemes>();
+            this.Ranks = new HashSet<DatabaseRanks>();
+            this.SavedTasks = new HashSet<DatabaseSavedTasks>();
+            this.TextReactions = new HashSet<DatabaseTextReactions>();
+        }
 
-        [Column("welcome_cid")]
-        public long WelcomeChannelId { get; set; }
-
-        [Column("leave_cid")]
-        public long LeaveChannelId { get; set; }
-
-        [Column("welcome_message")]
-        public string WelcomeMessage { get; set; }
-
-        [Column("leave_message")]
-        public string LeaveMessage { get; set; }
-
-        [Column("prefix")]
+        public long Gid { get; set; }
+        public long WelcomeCid { get; set; }
+        public long LeaveCid { get; set; }
+        public string WelcomeMsg { get; set; }
+        public string LeaveMsg { get; set; }
         public string Prefix { get; set; }
-
-        [Column("currency")]
-        public string Currency { get; set; }
-
-        [Column("mute_rid")]
-        public long MuteRoleId { get; set; }
-
-        [Column("suggestions_enabled")]
         public bool SuggestionsEnabled { get; set; }
-
-        [Column("log_cid")]
-        public long LogChannelId { get; set; }
-
-        [Column("linkfilter_enabled")]
+        public long LogCid { get; set; }
         public bool LinkfilterEnabled { get; set; }
-
-        [Column("linkfilter_invites")]
-        public bool LinkfilterDiscordInvites { get; set; }
-
-        [Column("linkfilter_booters")]
+        public bool LinkfilterInvites { get; set; }
         public bool LinkfilterBooters { get; set; }
-
-        [Column("linkfilter_disturbing")]
         public bool LinkfilterDisturbing { get; set; }
-
-        [Column("linkfilter_iploggers")]
-        public bool LinkfilterIpLoggers { get; set; }
-
-        [Column("linkfilter_shorteners")]
-        public bool LinkfilterUrlShorteners { get; set; }
-
-        [Column("silent_respond")]
+        public bool LinkfilterIploggers { get; set; }
+        public bool LinkfilterShorteners { get; set; }
         public bool SilentRespond { get; set; }
-
-        [Column("ratelimit_enabled")]
+        public string Currency { get; set; }
         public bool RatelimitEnabled { get; set; }
-
-        [Column("ratelimit_action")]
         public short RatelimitAction { get; set; }
-
-        [Column("ratelimit_sens")]
-        public short RatelimitSensitivity { get; set; }
-
-        [Column("antiflood_enabled")]
+        public short RatelimitSens { get; set; }
         public bool AntifloodEnabled { get; set; }
-
-        [Column("antiflood_action")]
-        public short AntifloodAction { get; set; }
-
-        [Column("antiflood_sens")]
-        public short AntifloodSensitivity { get; set; }
-
-        [Column("antiflood_cooldown")]
+        public short AntifloodSens { get; set; }
         public short AntifloodCooldown { get; set; }
-
-        [Column("antispam_enabled")]
+        public short AntifloodAction { get; set; }
+        public long MuteRid { get; set; }
+        public bool AntijoinleaveEnabled { get; set; }
+        public short AntijoinleaveCooldown { get; set; }
         public bool AntispamEnabled { get; set; }
-
-        [Column("antispam_action")]
         public short AntispamAction { get; set; }
+        public short AntispamSens { get; set; }
 
-        [Column("antispam_sens")]
-        public short AntispamSensitivity { get; set; }
-
-        [Column("antijoinleave_enabled")]
-        public bool AntiInstantLeaveEnabled { get; set; }
-
-        [Column("antijoinleave_cooldown")]
-        public short AntiInstantLeaveCooldown { get; set; }
+        public virtual ICollection<DatabaseAccounts> Accounts { get; set; }
+        public virtual ICollection<AssignableRoles> AssignableRoles { get; set; }
+        public virtual ICollection<DatabaseAutomaticRoles> AutomaticRoles { get; set; }
+        public virtual ICollection<DatabaseChickens> Chickens { get; set; }
+        public virtual ICollection<DatabaseEmojiReactions> EmojiReactions { get; set; }
+        public virtual ICollection<DatabaseFilters> Filters { get; set; }
+        public virtual ICollection<DatabaseItems> Items { get; set; }
+        public virtual ICollection<DatabaseLogExempt> LogExempt { get; set; }
+        public virtual ICollection<DatabaseMemes> Memes { get; set; }
+        public virtual ICollection<DatabaseRanks> Ranks { get; set; }
+        public virtual ICollection<DatabaseSavedTasks> SavedTasks { get; set; }
+        public virtual ICollection<DatabaseTextReactions> TextReactions { get; set; }
     }
 }
