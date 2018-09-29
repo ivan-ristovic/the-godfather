@@ -823,7 +823,7 @@
 **Examples:**
 
 ```
-!owner sudo @Someone !rate
+!owner sudo @Someone rate
 ```
 </p></details>
 

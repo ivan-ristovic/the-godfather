@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable,
                                                    [Description("Sensitivity (max repeated messages).")] short sensitivity,
-                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Mute)
+                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.TemporaryMute)
                 {
                     if (sensitivity < 3 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([3, 10]).");

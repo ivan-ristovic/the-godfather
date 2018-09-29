@@ -413,6 +413,49 @@
 
 ---
 
+### channel setnsfw
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set whether this channel is NSFW or not. You can also provide a reason for the change.*
+
+**Requires permissions:**
+`Manage channels`
+
+**Aliases:**
+`nsfw`
+
+**Overload 2:**
+
+`[boolean]` : *Set NSFW?*
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 1:**
+
+`[channel]` : *Channel.*
+
+`[boolean]` : *Set NSFW?*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!channel setnsfw #general
+!channel setnsfw false #general
+```
+</p></details>
+
+---
+
 ### channel setparent
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1017,12 +1060,161 @@
 
 **Arguments:**
 
-`[short]` : *Action type.*
+`[short]` : *Sensitivity (number of users allowed to join within a given timespan).*
 
 **Examples:**
 
 ```
 !guild cfg antiflood sensitivity 9
+```
+</p></details>
+
+---
+
+## Group: guild configure antispam
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prevents users from posting more than specified amount of same messages.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`as`
+
+**Overload 3:**
+
+`[boolean]` : *Enable?*
+
+`[short]` : *Sensitivity (max repeated messages).*
+
+(optional) `[PunishmentActionType]` : *Action type.* (def: `TemporaryMute`)
+
+**Overload 2:**
+
+`[boolean]` : *Enable?*
+
+`[PunishmentActionType]` : *Action type.*
+
+(optional) `[short]` : *Sensitivity (max repeated messages).* (def: `5`)
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+**Examples:**
+
+```
+!guild cfg antispam
+!guild cfg antispam on
+!guild cfg antispam on mute
+!guild cfg antispam on 5
+!guild cfg antispam on 6 kick
+```
+</p></details>
+
+---
+
+### guild configure antispam action
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the action to execute when the antispam quota is hit.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setaction, a`
+
+**Arguments:**
+
+`[PunishmentActionType]` : *Action type.*
+
+**Examples:**
+
+```
+!guild cfg antispam action mute
+!guild cfg antispam action temporaryban
+```
+</p></details>
+
+---
+
+### guild configure antispam sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the antispam sensitivity - max amount of repeated messages before an action is taken.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+
+**Arguments:**
+
+`[short]` : *Sensitivity (max repeated messages).*
+
+**Examples:**
+
+```
+!guild cfg antispam sensitivity 9
+```
+</p></details>
+
+---
+
+## Group: guild configure instantleave
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Automatically bans users which leave in certain timespan after joining.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`joinleave, instaleave, il, jl`
+
+**Overload 2:**
+
+`[boolean]` : *Enable?*
+
+`[short]` : *Sensitivity (join-leave max seconds).*
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+**Examples:**
+
+```
+!guild cfg instaleave
+!guild cfg instaleave on
+!guild cfg instaleave on 5
+```
+</p></details>
+
+---
+
+### guild configure instantleave sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the instant leave cooldown. User will be banned if he leaves in the given sensitivity time window (in seconds).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+
+**Arguments:**
+
+`[short]` : *Cooldown (in seconds).*
+
+**Examples:**
+
+```
+!guild cfg instaleave cooldown 9
 ```
 </p></details>
 
@@ -1318,7 +1510,7 @@
 ## Group: guild configure ratelimit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Prevents users from posting more than specified messages in short period of time.*
+*Prevents users from posting more than specified amount of messages in 5s.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1397,7 +1589,7 @@
 
 **Arguments:**
 
-`[short]` : *Action type.*
+`[short]` : *Sensitivity (messages per 5s to trigger action).*
 
 **Examples:**
 
@@ -1625,7 +1817,7 @@
 ### guild prune
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Prune guild members who weren't active in the given amount of days (1-7).*
+*Prune guild members who weren't active in the given amount of days [1-30].*
 
 **Requires permissions:**
 `Kick members`
@@ -1634,7 +1826,7 @@
 `Administrator`
 
 **Aliases:**
-`p, clean`
+`p, clean, purge`
 
 **Arguments:**
 
@@ -2662,6 +2854,35 @@
 ```
 !user mute off @Someone
 !user mute on @Someone Trashtalk
+```
+</p></details>
+
+---
+
+### user mutevoice
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Mute or unmute a member in the voice channels.*
+
+**Requires permissions:**
+`Mute voice chat members`
+
+**Aliases:**
+`mv, voicemute, vmute, mutev, vm`
+
+**Arguments:**
+
+`[boolean]` : *Mute?*
+
+`[member]` : *Member to mute.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!user mutevoice off @Someone
+!user mutevoice on @Someone Trashtalk
 ```
 </p></details>
 

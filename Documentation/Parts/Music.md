@@ -5,8 +5,10 @@
 
 *Commands for playing music. Group call plays given URL or searches YouTube for given query and plays the first result.*
 
+**Owner-only.**
+
 **Requires bot permissions:**
-`Speak`
+`Speak, Use voice chat`
 
 **Aliases:**
 `music, p`
@@ -34,8 +36,10 @@
 
 *Plays an audio file from the server filesystem.*
 
+**Owner-only.**
+
 **Requires bot permissions:**
-`Speak`
+`Speak, Use voice chat`
 
 **Aliases:**
 `f`

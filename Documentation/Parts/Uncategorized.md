@@ -205,7 +205,7 @@
 
 **Arguments:**
 
-`[CustomIPFormat]` : *IP.*
+`[IPAddress]` : *IP.*
 
 **Examples:**
 
@@ -327,9 +327,7 @@
 
 **Arguments:**
 
-`[user]` : *User1.*
-
-(optional) `[user]` : *User2 (def. sender).* (def: `None`)
+`[user...]` : *User1.*
 
 **Examples:**
 
@@ -453,13 +451,52 @@
 
 ---
 
-## remind
+## Group: remind
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Resend a message after some time.*
+*Manage reminders. Group call resends a message after given time span.*
 
-**Requires permissions:**
-`Administrator`
+**Aliases:**
+`reminders, reminder, todo`
+
+**Overload 3:**
+
+`[time span]` : *Time span until reminder.*
+
+`[channel]` : *Channel to send message to.*
+
+`[string...]` : *What to send?*
+
+**Overload 2:**
+
+`[channel]` : *Channel to send message to.*
+
+`[time span]` : *Time span until reminder.*
+
+`[string...]` : *What to send?*
+
+**Overload 1:**
+
+`[time span]` : *Time span until reminder.*
+
+`[string...]` : *What to send?*
+
+**Examples:**
+
+```
+!remind 1h Drink water!
+```
+</p></details>
+
+---
+
+### remind add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Schedule a new reminder. You can also specify a channel where to send the reminder.*
+
+**Aliases:**
+`new, +, a, +=, <, <<`
 
 **Overload 2:**
 
@@ -486,7 +523,84 @@
 **Examples:**
 
 ```
-!remind 1h Drink water!
+!remind add 1h Drink water!
+```
+</p></details>
+
+---
+
+### remind delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Unschedule a reminder.*
+
+**Aliases:**
+`-, remove, rm, del, -=, >, >>, unschedule`
+
+**Arguments:**
+
+`[int...]` : *Reminder ID.*
+
+**Examples:**
+
+```
+!remind delete 1
+```
+</p></details>
+
+---
+
+### remind list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List your registered reminders in the current channel.*
+
+**Aliases:**
+`ls`
+
+**Examples:**
+
+```
+!remind list
+```
+</p></details>
+
+---
+
+### remind repeat
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Schedule a new repeating reminder. You can also specify a channel where to send the reminder.*
+
+**Aliases:**
+`newrep, +r, ar, +=r, <r, <<r`
+
+**Overload 2:**
+
+`[time span]` : *Repeat timespan.*
+
+`[channel]` : *Channel to send message to.*
+
+`[string...]` : *What to send?*
+
+**Overload 1:**
+
+`[channel]` : *Channel to send message to.*
+
+`[time span]` : *Repeat timespan.*
+
+`[string...]` : *What to send?*
+
+**Overload 0:**
+
+`[time span]` : *Repeat timespan.*
+
+`[string...]` : *What to send?*
+
+**Examples:**
+
+```
+!remind repeat 1h Drink water!
 ```
 </p></details>
 
@@ -505,6 +619,27 @@
 
 ```
 !report Your bot sucks!
+```
+</p></details>
+
+---
+
+## rss
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get the latest topics from the given RSS feed URL.*
+
+**Aliases:**
+`feed`
+
+**Arguments:**
+
+`[URL]` : *RSS feed URL.*
+
+**Examples:**
+
+```
+!rss https://news.google.com/news/rss/
 ```
 </p></details>
 
@@ -569,6 +704,104 @@
 
 ---
 
+## Group: subscribe
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Commands for managing feed subscriptions. The bot will send a message when the latest topic is changed. Group call subscribes the bot to the given RSS feed URL or lists active subs.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`sub, subscriptions, subscription`
+
+**Overload 1:**
+
+`[URL]` : *URL.*
+
+(optional) `[string...]` : *Friendly name.* (def: `None`)
+
+**Examples:**
+
+```
+!subscribe https://news.google.com/news/rss/
+!subscribe https://news.google.com/news/rss/ news
+```
+</p></details>
+
+---
+
+### subscribe list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get feed list for the current channel.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`ls, listsubs, listfeeds`
+
+**Examples:**
+
+```
+!subscribe list
+```
+</p></details>
+
+---
+
+### subscribe reddit
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add new subscription for a subreddit.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`r`
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!subscribe reddit aww
+```
+</p></details>
+
+---
+
+### subscribe youtube
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a new subscription for a YouTube channel.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`y, yt, ytube`
+
+**Arguments:**
+
+`[string]` : *Channel URL.*
+
+(optional) `[string]` : *Friendly name.* (def: `None`)
+
+**Examples:**
+
+```
+!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO
+!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO rick
+```
+</p></details>
+
+---
+
 ## tts
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -585,6 +818,128 @@
 
 ```
 !tts I am gay.
+```
+</p></details>
+
+---
+
+## unleet
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Translates a message from leetspeak (expecting only letters in translated output).*
+
+**Aliases:**
+`unl33t`
+
+**Arguments:**
+
+`[string...]` : *Text to unleet.*
+
+**Examples:**
+
+```
+!unleet w0W 5uCh C0oL
+```
+</p></details>
+
+---
+
+## Group: unsubscribe
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove an existing feed subscription.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`unsub`
+
+**Overload 1:**
+
+`[int...]` : *ID of the subscriptions to remove.*
+
+**Overload 0:**
+
+`[string...]` : *Name of the subscription.*
+
+**Examples:**
+
+```
+!unsubscribe 1
+```
+</p></details>
+
+---
+
+### unsubscribe all
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove all subscriptions for the given channel.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`a`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+**Examples:**
+
+```
+!unsub all
+```
+</p></details>
+
+---
+
+### unsubscribe reddit
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove a subscription using subreddit name or subscription ID (use command ``subscriptions list`` to see IDs).*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`r`
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!unsub reddit aww
+```
+</p></details>
+
+---
+
+### unsubscribe youtube
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove a YouTube channel subscription.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`y, yt, ytube`
+
+**Arguments:**
+
+`[string]` : *Channel URL or subscription name.*
+
+**Examples:**
+
+```
+!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
+!youtube unsubscribe rick
 ```
 </p></details>
 

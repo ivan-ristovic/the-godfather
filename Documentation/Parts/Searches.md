@@ -352,7 +352,7 @@
 ## Group: reddit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Reddit commands. Group call prints latest posts from given sub.*
+*Reddit commands. Group call prints hottest posts from given sub.*
 
 **Aliases:**
 `r`
@@ -365,6 +365,99 @@
 
 ```
 !reddit aww
+```
+</p></details>
+
+---
+
+### reddit controversial
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get newest controversial posts for a subreddit.*
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit controversial aww
+```
+</p></details>
+
+---
+
+### reddit gilded
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get newest gilded posts for a subreddit.*
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit gilded aww
+```
+</p></details>
+
+---
+
+### reddit hot
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get newest hot posts for a subreddit.*
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit hot aww
+```
+</p></details>
+
+---
+
+### reddit new
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get newest posts for a subreddit.*
+
+**Aliases:**
+`newest, latest`
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit new aww
+```
+</p></details>
+
+---
+
+### reddit rising
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get newest rising posts for a subreddit.*
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit rising aww
 ```
 </p></details>
 
@@ -394,6 +487,24 @@
 
 ---
 
+### reddit top
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get top posts for a subreddit.*
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit top aww
+```
+</p></details>
+
+---
+
 ### reddit unsubscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -418,113 +529,6 @@
 ```
 !reddit unsub aww
 !reddit unsub 12
-```
-</p></details>
-
----
-
-## Group: rss
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Commands for RSS feed querying or subscribing. Group call prints the latest topics from the given RSS URL or prints the subscriptions for the given channel.*
-
-**Aliases:**
-`feed`
-
-**Overload 1:**
-
-`[URL]` : *RSS URL.*
-
-**Examples:**
-
-```
-!rss https://news.google.com/news/rss/
-```
-</p></details>
-
----
-
-### rss list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get feed list for the current channel.*
-
-**Aliases:**
-`ls, listsubs, listfeeds`
-
-**Examples:**
-
-```
-!feed list
-```
-</p></details>
-
----
-
-### rss subscribe
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`sub, add, +`
-
-**Arguments:**
-
-`[URL]` : *URL.*
-
-(optional) `[string...]` : *Friendly name.* (def: `None`)
-
-**Examples:**
-
-```
-!rss subscribe https://news.google.com/news/rss/
-!rss subscribe https://news.google.com/news/rss/ news
-```
-</p></details>
-
----
-
-### rss unsubscribe
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove an existing feed subscription.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`del, d, rm, -, unsub`
-
-**Overload 1:**
-
-`[int...]` : *ID of the subscriptions to remove.*
-
-**Overload 0:**
-
-`[string...]` : *Name of the subscription.*
-
-**Examples:**
-
-```
-!rss unsubscribe 1
-```
-</p></details>
-
----
-
-### rss wm
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get newest topics from WM forum.*
-
-**Examples:**
-
-```
-!rss wm
 ```
 </p></details>
 
@@ -756,7 +760,7 @@
 *Advanced youtube search for channels only.*
 
 **Aliases:**
-`sc, searchc`
+`sc, searchc, channel`
 
 **Arguments:**
 
@@ -777,7 +781,7 @@
 *Advanced youtube search for playlists only.*
 
 **Aliases:**
-`sp, searchplaylist`
+`sp, searchplaylist, playlist`
 
 **Arguments:**
 
@@ -798,7 +802,7 @@
 *Advanced youtube search for videos only.*
 
 **Aliases:**
-`sv, searchv`
+`sv, searchv, video`
 
 **Arguments:**
 

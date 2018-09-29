@@ -39,6 +39,9 @@
 **Requires user permissions:**
 `Administrator`
 
+**Aliases:**
+`end`
+
 **Examples:**
 
 ```
@@ -72,7 +75,7 @@
 ### vote cancel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Vote for an option in the current running poll.*
+*Cancel your vote in the current poll.*
 
 **Aliases:**
 `c, reset`
