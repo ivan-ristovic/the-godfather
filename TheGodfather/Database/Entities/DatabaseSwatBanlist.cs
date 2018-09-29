@@ -2,10 +2,11 @@
 
 namespace TheGodfather.Database.Entities
 {
-    [Table("blocked_channels")]
-    public partial class DatabaseBlockedChannels
+    [Table("swat_banlist")]
+    public partial class DatabaseSwatBanlist
     {
-        public long Cid { get; set; }
+        public string Name { get; set; }
+        public string Ip { get; set; }
         public string Reason { get; set; }
     }
 }
