@@ -147,25 +147,42 @@ namespace TheGodfather
             Console.Write("\r[3/5] Loading data from database...               ");
 
             // Placing performance-sensitive data into memory, instead of it being read from the database
+            ConcurrentHashSet<ulong> blockedChannels;
+            ConcurrentHashSet<ulong> blockedUsers;
+            ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
 
+            using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
+                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.ChannelId));
+                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.UserId));
+                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfigurations.Select(
+                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.GuildId, new CachedGuildConfig() {
+                        AntispamSettings = new AntispamSettings() {
+                            Action = (PunishmentActionType)entry.AntispamAction,
+                            Enabled = entry.AntispamEnabled,
+                            Sensitivity = entry.AntispamSensitivity
+                        },
+                        Currency = entry.Currency,
+                        LinkfilterSettings = new LinkfilterSettings() {
+                            BlockBooterWebsites = entry.LinkfilterBooters,
+                            BlockDiscordInvites = entry.LinkfilterDiscordInvites,
+                            BlockDisturbingWebsites = entry.LinkfilterDisturbing,
+                            BlockIpLoggingWebsites = entry.LinkfilterIpLoggers,
+                            BlockUrlShorteners = entry.LinkfilterUrlShorteners,
+                            Enabled = entry.LinkfilterEnabled
+                        },
+                        LogChannelId = (ulong)entry.LogChannelId,
+                        Prefix = entry.Prefix,
+                        RatelimitSettings = new RatelimitSettings() {
+                            Action = (PunishmentActionType)entry.RatelimitAction,
+                            Enabled = entry.RatelimitEnabled,
+                            Sensitivity = entry.RatelimitSensitivity
+                        },
+                        ReactionResponse = entry.SilentRespond,
+                        SuggestionsEnabled = entry.SuggestionsEnabled
+                    }
+                )));
+            }
             
-            // Blocked users
-            IReadOnlyList<(ulong, string)> blockedusr_db = await DatabaseService.GetAllBlockedUsersAsync();
-            var blockedusr = new ConcurrentHashSet<ulong>();
-            foreach ((ulong uid, string reason) in blockedusr_db)
-                blockedusr.Add(uid);
-
-            // Blocked channels
-            IReadOnlyList<(ulong, string)> blockedchn_db = await DatabaseService.GetAllBlockedChannelsAsync();
-            var blockedchn = new ConcurrentHashSet<ulong>();
-            foreach ((ulong cid, string reason) in blockedchn_db)
-                blockedchn.Add(cid);
-
-            // Guild config
-            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetAllCachedGuildConfigurationsAsync();
-            var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
-            foreach ((ulong gid, CachedGuildConfig cfg) in gcfg_db)
-                gcfg[gid] = cfg;
 
             // Guild filters
             IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
@@ -173,7 +190,6 @@ namespace TheGodfather
             foreach ((ulong gid, Filter filter) in gfilters_db)
                 gfilters.AddOrUpdate(gid, new ConcurrentHashSet<Filter>(), (k, v) => { v.Add(filter); return v; });
             
-
             // Guild text reactions
             IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
             var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
@@ -194,13 +210,13 @@ namespace TheGodfather
 
 
             SharedData = new SharedData() {
-                BlockedChannels = blockedchn,
-                BlockedUsers = blockedusr,
+                BlockedChannels = blockedChannels,
+                BlockedUsers = blockedUsers,
                 BotConfiguration = BotConfiguration,
                 MainLoopCts = new CancellationTokenSource(),
                 EmojiReactions = gemojireactions,
                 Filters = gfilters,
-                GuildConfigurations = gcfg,
+                GuildConfigurations = guildConfigurations,
                 LogProvider = new Logger(BotConfiguration),
                 MessageCount = msgcount,
                 TextReactions = gtextreactions,

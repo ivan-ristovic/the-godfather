@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Entities
 {
-    [Table("blocked_channels")]
-    public sealed class DatabaseBlockedChannel
+    [Table("blocked_users")]
+    public sealed class DatabaseBlockedUser
     {
-        [Column("cid"), Key]
-        public long ChannelId { get; set; }
+        [Column("uid"), Key]
+        public long UserId { get; set; }
 
         [Column("reason")]
         public string Reason { get; set; }
