@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 #endregion
 
-namespace TheGodfather.Services.Common
+namespace TheGodfather.Database
 {
     public sealed class DatabaseConfig
     {

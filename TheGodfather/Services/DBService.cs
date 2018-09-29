@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
-using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Services
