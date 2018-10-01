@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -89,7 +89,15 @@ namespace TheGodfather.Modules.Administration
                 public Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitSettings.Enabled ? "enabled" : "disabled")}");
+
+                    if (gcfg.RatelimitSettings.Enabled) {
+                        var sb = new StringBuilder();
+                        sb.Append("Sensitivity: ").AppendLine(gcfg.RatelimitSettings.Sensitivity.ToString());
+                        sb.Append("Action: ").AppendLine(gcfg.RatelimitSettings.Action.ToString());
+                        return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("enabled")}\n{sb.ToString()}");
+                    } else {
+                        return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("disabled")}");
+                    }
                 }
 
 
