@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 "Custom ranks for this guild",
                 ranks,
-                kvp => $"{Formatter.InlineCode($"{kvp.Key:D2}")} : | XP needed: {Formatter.InlineCode($"this.Shared.CalculateXpNeededForRank(kvp.Key):D5")} | {Formatter.Bold(kvp.Value)}",
+                kvp => $"{Formatter.InlineCode($"{kvp.Key:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(kvp.Key)}:D5")} | {Formatter.Bold(kvp.Value)}",
                 this.ModuleColor
             );
         }
