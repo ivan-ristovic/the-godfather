@@ -150,6 +150,11 @@ namespace TheGodfather
             ConcurrentHashSet<ulong> blockedChannels;
             ConcurrentHashSet<ulong> blockedUsers;
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
+            ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
+            ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
+            ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
+            ConcurrentDictionary<ulong, ulong> msgcount;
+
 
             using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.Cid));
@@ -181,30 +186,34 @@ namespace TheGodfather
                         SuggestionsEnabled = entry.SuggestionsEnabled
                     }
                 )));
+                db.Filters.GroupBy(f => (ulong)f.Gid, (k, fs) => new ConcurrentHashSet<Filter>(fs.Select(f => new Filter(f.Id, f.Filter))));
+                filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
+                    db.Filters.
+                );
             }
             
 
             // Guild filters
             IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
-            var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
+            var gfilters = 
             foreach ((ulong gid, Filter filter) in gfilters_db)
                 gfilters.AddOrUpdate(gid, new ConcurrentHashSet<Filter>(), (k, v) => { v.Add(filter); return v; });
             
             // Guild text reactions
             IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
-            var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
+            var gtextreactions = new ();
             foreach ((ulong gid, List<TextReaction> reactions) in gtextreactions_db)
                 gtextreactions[gid] = new ConcurrentHashSet<TextReaction>(reactions);
 
             // Guild emoji reactions
             IReadOnlyDictionary<ulong, List<EmojiReaction>> gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
-            var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
+            var gemojireactions = new ();
             foreach (KeyValuePair<ulong, List<EmojiReaction>> reaction in gemojireactions_db)
                 gemojireactions[reaction.Key] = new ConcurrentHashSet<EmojiReaction>(reaction.Value);
 
             // User message count (XP)
             IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetXpForAllUsersAsync();
-            var msgcount = new ConcurrentDictionary<ulong, ulong>();
+            var msgcount = ();
             foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
                 msgcount[entry.Key] = entry.Value;
 
