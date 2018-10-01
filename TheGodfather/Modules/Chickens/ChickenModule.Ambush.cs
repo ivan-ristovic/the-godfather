@@ -49,11 +49,11 @@ namespace TheGodfather.Modules.Chickens
                 }
 
                 Chicken ambushed = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
-                if (ambushed == null)
+                if (ambushed is null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
                 Chicken ambusher = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (ambusher == null)
+                if (ambusher is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (ambusher.Stats.TotalStrength > ambushed.Stats.TotalStrength)
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (chicken.Stats.TotalVitality < 25)

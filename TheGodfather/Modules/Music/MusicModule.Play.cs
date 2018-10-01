@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Music
                                                [Description("URL to play.")] Uri url)
             {
                 SongInfo si = await this.Service.GetSongInfoAsync(url.AbsoluteUri);
-                if (si == null)
+                if (si is null)
                     throw new CommandFailedException("Failed to retrieve song information for that URL.");
                 si.Queuer = ctx.User.Mention;
 
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Music
                     throw new CommandFailedException("No results found!");
 
                 SongInfo si = await this.Service.GetSongInfoAsync(result);
-                if (si == null)
+                if (si is null)
                     throw new CommandFailedException("Failed to retrieve song information for that query.");
 
                 si.Queuer = ctx.User.Mention;
@@ -76,11 +76,11 @@ namespace TheGodfather.Modules.Music
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
             {
                 VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-                if (vnext == null)
+                if (vnext is null)
                     throw new CommandFailedException("VNext is not enabled or configured.");
 
                 VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-                if (vnc == null) {
+                if (vnc is null) {
                     await this.ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
@@ -114,11 +114,11 @@ namespace TheGodfather.Modules.Music
             private async Task ConnectAndAddToQueueAsync(CommandContext ctx, SongInfo si)
             {
                 VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-                if (vnext == null)
+                if (vnext is null)
                     throw new CommandFailedException("VNext is not enabled or configured.");
 
                 VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-                if (vnc == null) {
+                if (vnc is null) {
                     await this.ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }

@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Search
         {
             UrbanDictData data = await UrbanDictService.GetDefinitionForTermAsync(query);
 
-            if (data == null) {
+            if (data is null) {
                 await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }

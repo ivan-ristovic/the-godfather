@@ -15,7 +15,7 @@ namespace TheGodfather.Extensions
             try {
                 var entry = (await guild.GetAuditLogsAsync(1, action_type: type))
                     ?.FirstOrDefault();
-                if (entry == null || DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() > TimeSpan.FromSeconds(5))
+                if (entry is null || DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() > TimeSpan.FromSeconds(5))
                     return null;
                 return entry;
             } catch {

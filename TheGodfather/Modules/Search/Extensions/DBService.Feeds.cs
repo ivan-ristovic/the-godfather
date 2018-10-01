@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Search.Extensions
         public static async Task<bool> TryAddSubscriptionAsync(this DBService db, ulong cid, string url, string qname = null)
         {
             var newest = RssService.GetFeedResults(url)?.FirstOrDefault();
-            if (newest == null)
+            if (newest is null)
                 return false;
 
             int? sid = null;

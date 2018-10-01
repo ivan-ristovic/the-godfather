@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Polls
                                            [Description("Option to vote for.")] int option)
         {
             Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
-            if (poll == null || !poll.IsRunning || poll is ReactionsPoll)
+            if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no polls running in this channel.");
 
             option--;
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Polls
         public Task CancelAsync(CommandContext ctx)
         {
             Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
-            if (poll == null || !poll.IsRunning || poll is ReactionsPoll)
+            if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no polls running in this channel.");
             
             if (!poll.UserVoted(ctx.User.Id))

@@ -204,7 +204,7 @@ namespace TheGodfather.Common
                 DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 DiscordRole role = guild.GetRole(info.MuteRoleId);
                 DiscordMember member = this.Execute(guild.GetMemberAsync(info.UserId));
-                if (role == null)
+                if (role is null)
                     return;
                 this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
             } catch (Exception e) {

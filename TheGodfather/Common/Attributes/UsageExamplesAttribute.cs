@@ -13,7 +13,7 @@ namespace TheGodfather.Common.Attributes
 
         public UsageExamplesAttribute(params string[] examples)
         {
-            if (examples == null)
+            if (examples is null)
                 throw new ArgumentException($"No examples provided to {this.GetType().Name}!");
 
             this.Examples = examples

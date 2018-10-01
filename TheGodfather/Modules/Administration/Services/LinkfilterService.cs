@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Administration.Services
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
         {
             DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = Listeners.FormEmbedBuilder(EventOrigin.Linkfilter, "Linkfilter action triggered", desc);

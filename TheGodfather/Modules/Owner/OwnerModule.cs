@@ -332,7 +332,7 @@ namespace TheGodfather.Modules.Owner
                 sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine().AppendLine();
                 
                 foreach (Command cmd in cmdlist) {
-                    if (cmd is CommandGroup || cmd.Parent == null)
+                    if (cmd is CommandGroup || cmd.Parent is null)
                         sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
                     else
                         sb.Append("### ").AppendLine(cmd.QualifiedName);
@@ -501,7 +501,7 @@ namespace TheGodfather.Modules.Owner
 
             if (desc == "u") {
                 DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(xid);
-                if (dm == null)
+                if (dm is null)
                     throw new CommandFailedException("I can't talk to that user...");
                 await dm.SendMessageAsync(message);
             } else if (desc == "c") {
@@ -551,7 +551,7 @@ namespace TheGodfather.Modules.Owner
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
-            return cmd == null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
+            return cmd is null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 

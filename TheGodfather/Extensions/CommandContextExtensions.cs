@@ -106,7 +106,7 @@ namespace TheGodfather.Extensions
             if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
-            if (mctx == null)
+            if (mctx is null)
                 return null;
 
             return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries)

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Music
                                       [Description("Channel.")] DiscordChannel channel = null)
         {
             VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-            if (vnext == null)
+            if (vnext is null)
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
             VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
@@ -54,10 +54,10 @@ namespace TheGodfather.Modules.Music
                 throw new CommandFailedException("Already connected in this guild.");
 
             DiscordVoiceState vstat = ctx.Member?.VoiceState;
-            if ((vstat == null || vstat.Channel == null) && channel == null)
+            if ((vstat is null || vstat.Channel is null) && channel is null)
                 throw new CommandFailedException("You are not in a voice channel.");
 
-            if (channel == null)
+            if (channel is null)
                 channel = vstat.Channel;
 
             vnc = await vnext.ConnectAsync(channel);
@@ -74,11 +74,11 @@ namespace TheGodfather.Modules.Music
         public Task DisconnectAsync(CommandContext ctx)
         {
             VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-            if (vnext == null) 
+            if (vnext is null) 
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
             VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc == null)
+            if (vnc is null)
                 throw new CommandFailedException("Not connected in this guild.");
 
             if (MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player)) {

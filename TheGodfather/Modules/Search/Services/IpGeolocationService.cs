@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public static async Task<IpInfo> GetInfoForIpAsync(IPAddress ip)
         {
-            if (ip == null)
+            if (ip is null)
                 throw new ArgumentNullException(nameof(ip));
 
             string response = await _http.GetStringAsync($"{_url}/{ip.ToString()}").ConfigureAwait(false);

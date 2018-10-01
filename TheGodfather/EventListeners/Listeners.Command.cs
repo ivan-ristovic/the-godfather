@@ -38,7 +38,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandErrored)]
         public static async Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
-            if (e.Exception == null)
+            if (e.Exception is null)
                 return;
 
             var ex = e.Exception;

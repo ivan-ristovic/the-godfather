@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Currency.Common
             this.bid = bid;
             this.currency = currency;
             this.index = GFRandom.Generator.Next(_multipliers.Length);
-            if (_wheel == null) {
+            if (_wheel is null) {
                 try {
                     _wheel = new Bitmap("Resources/wof.png");
                 } catch (FileNotFoundException e) {

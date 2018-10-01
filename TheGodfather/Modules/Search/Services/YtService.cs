@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
             IReadOnlyList<SearchResult> results = await this.SearchAsync(query, amount, type);
-            if (results == null || !results.Any())
+            if (results is null || !results.Any())
                 return null;
 
             var pages = new List<Page>();
@@ -169,14 +169,14 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             var video = await this.ytExplode.GetVideoAsync(id).ConfigureAwait(false);
-            if (video == null)
+            if (video is null)
                 return null;
 
             var streamInfo = await this.ytExplode.GetVideoMediaStreamInfosAsync(video.Id).ConfigureAwait(false);
             var stream = streamInfo.Audio
                 .OrderByDescending(x => x.Bitrate)
                 .FirstOrDefault();
-            if (stream == null)
+            if (stream is null)
                 return null;
 
             return new SongInfo {
@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Search.Services
                         data = str.Split('\n');
                 }
 
-                if (data == null || data.Length < 6)
+                if (data is null || data.Length < 6)
                     return null;
 
                 if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out var time))

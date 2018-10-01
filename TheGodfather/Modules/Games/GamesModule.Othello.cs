@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Games
 
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Othello against {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
-                if (opponent == null)
+                if (opponent is null)
                     return;
 
                 if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)

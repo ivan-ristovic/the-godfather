@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query);
-            if (pages == null) {
+            if (pages is null) {
                 await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             MovieInfo info = await this.Service.GetSingleResultAsync(type, query);
-            if (info == null) {
+            if (info is null) {
                 await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }

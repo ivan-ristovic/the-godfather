@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Administration
                                                   [RemainingText, Description("Reason.")] string reason = null)
             {
                 message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)).FirstOrDefault();
-                if (message == null)
+                if (message is null)
                     throw new CommandFailedException("Cannot find the specified message.");
 
                 await message.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));

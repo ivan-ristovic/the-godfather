@@ -23,13 +23,13 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel created", e.Channel.ToString());
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
-            if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
+            if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
@@ -46,7 +46,7 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
@@ -57,7 +57,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Channel type", e.Channel?.Type.ToString() ?? _unknown, inline: true);
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
-            if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
+            if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
@@ -73,7 +73,7 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             if (await shard.DatabaseService.IsExemptedAsync(e.Channel.Guild.Id, e.Channel.Id, EntityType.Channel))
@@ -101,7 +101,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.ChannelAfter.Id, EntityType.Channel))

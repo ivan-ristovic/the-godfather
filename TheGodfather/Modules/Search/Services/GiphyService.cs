@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search.Services
 
 
         public bool IsDisabled()
-            => this.giphy == null;
+            => this.giphy is null;
 
 
         public async Task<ImageData[]> SearchAsync(string query, int amount = 1)

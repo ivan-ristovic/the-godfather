@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Games
             user = user ?? ctx.User;
 
             GameStats stats = await this.Database.GetGameStatsForUserAsync(user.Id);
-            if (stats == null) {
+            if (stats is null) {
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                     Title = $"Stats for {user.Username}",
                     Description = "No games played yet!",

@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
                     object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
-                    if (res == null || res is DBNull)
+                    if (res is null || res is DBNull)
                         await db.OpenBankAccountAsync(target, gid);
                 }
 
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Currency.Extensions
                         cmd2.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                         object res = await cmd2.ExecuteScalarAsync().ConfigureAwait(false);
-                        if (res == null || res is DBNull || (long)res < amount) {
+                        if (res is null || res is DBNull || (long)res < amount) {
                             await transaction.RollbackAsync().ConfigureAwait(false);
                             throw new DatabaseOperationException("Source user's currency amount is insufficient for the transfer.");
                         }

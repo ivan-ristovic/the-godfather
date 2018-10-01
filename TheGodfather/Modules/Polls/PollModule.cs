@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Polls
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
                 var options = await ctx.WaitAndParsePollOptionsAsync();
-                if (options == null || options.Count < 2 || options.Count > 10)
+                if (options is null || options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
                 poll.Options = options;
 
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Polls
         public Task StopAsync(CommandContext ctx)
         {
             var poll = PollService.GetPollInChannel(ctx.Channel.Id);
-            if (poll == null || poll is ReactionsPoll)
+            if (poll is null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
 
             poll.Stop();

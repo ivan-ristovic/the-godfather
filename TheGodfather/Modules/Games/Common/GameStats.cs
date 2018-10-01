@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games.Common
 
         public GameStats(IReadOnlyDictionary<string, string> statdict)
         {
-            if (statdict == null || !statdict.Any()) {
+            if (statdict is null || !statdict.Any()) {
                 this.stats = new Dictionary<string, string>() {
                     { "duels_won" , "0" },
                     { "duels_lost" , "0" },

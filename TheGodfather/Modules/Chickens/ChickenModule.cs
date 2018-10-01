@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Chickens
             }
 
             Chicken chicken2 = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
-            if (chicken2 == null)
+            if (chicken2 is null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
             if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 50)
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
             Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-            if (chicken == null)
+            if (chicken is null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             chicken.Stats.BareVitality += 100;
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Chickens
 
             Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            if (chicken == null)
+            if (chicken is null)
                 throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
             await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(member));
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
             Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-            if (chicken == null)
+            if (chicken is null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             chicken.Name = newname;
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Chickens
         {
             Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            if (chicken == null)
+            if (chicken is null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task TopAsync(CommandContext ctx)
         {
             IReadOnlyList<Chicken> chickens = await this.Database.GetStrongestChickensAsync(ctx.Guild.Id);
-            if (chickens == null || !chickens.Any())
+            if (chickens is null || !chickens.Any())
                 throw new CommandFailedException("No chickens bought in this guild.");
 
             foreach (Chicken chicken in chickens) {
@@ -261,7 +261,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task GlobalTopAsync(CommandContext ctx)
         {
             IReadOnlyList<Chicken> chickens = await this.Database.GetStrongestChickensAsync();
-            if (chickens == null || !chickens.Any())
+            if (chickens is null || !chickens.Any())
                 throw new CommandFailedException("No chickens bought.");
 
             foreach (Chicken chicken in chickens) {

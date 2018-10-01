@@ -19,13 +19,13 @@ namespace TheGodfather.EventListeners
         public static async Task GuildBanEventHandlerAsync(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member banned");
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.Ban);
-            if (entry == null || !(entry is DiscordAuditLogBanEntry bentry)) {
+            if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
                 emb.WithDescription(e.Member?.ToString() ?? _unknown);
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -43,13 +43,13 @@ namespace TheGodfather.EventListeners
         public static async Task GuildUnbanEventHandlerAsync(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member unbanned");
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.Unban);
-            if (entry == null || !(entry is DiscordAuditLogBanEntry bentry)) {
+            if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
                 emb.WithDescription(e.Member?.ToString() ?? _unknown);
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -76,7 +76,7 @@ namespace TheGodfather.EventListeners
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Emoji, "Guild emojis updated");
@@ -91,7 +91,7 @@ namespace TheGodfather.EventListeners
             DiscordAuditLogEntry entry = await e.Guild.GetFirstAuditLogEntryAsync(action);
 
             emb.WithTitle($"Guild emoji action occured: {action.ToString()}");
-            if (entry == null || !(entry is DiscordAuditLogEmojiEntry eentry)) {
+            if (entry is null || !(entry is DiscordAuditLogEmojiEntry eentry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 emb.AddField("Emojis before", e.EmojisBefore?.Count.ToString() ?? _unknown, inline: true);
                 emb.AddField("Emojis after", e.EmojisAfter?.Count.ToString() ?? _unknown, inline: true);
@@ -125,7 +125,7 @@ namespace TheGodfather.EventListeners
         public static async Task GuildIntegrationsUpdateEventHandlerAsync(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Guild integrations updated");
@@ -137,7 +137,7 @@ namespace TheGodfather.EventListeners
         public static async Task GuildRoleCreateEventHandlerAsync(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role created", e.Role.ToString());
@@ -171,7 +171,7 @@ namespace TheGodfather.EventListeners
         public static async Task GuildRoleDeleteEventHandlerAsync(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role deleted", e.Role.ToString());
@@ -195,7 +195,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role updated");
@@ -230,7 +230,7 @@ namespace TheGodfather.EventListeners
         public static async Task GuildUpdateEventHandlerAsync(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.GuildAfter);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Guild settings updated");
@@ -264,7 +264,7 @@ namespace TheGodfather.EventListeners
         public static async Task VoiceServerUpdateEventHandlerAsync(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Voice server updated");
@@ -277,7 +277,7 @@ namespace TheGodfather.EventListeners
         public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Webhooks updated", $"For {e.Channel.ToString()}");

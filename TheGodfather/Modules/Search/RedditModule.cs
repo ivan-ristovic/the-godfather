@@ -139,13 +139,13 @@ namespace TheGodfather.Modules.Search
         private async Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
         {
             string url = RedditService.GetFeedURLForSubreddit(sub, category, out string rsub);
-            if (url == null)
+            if (url is null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
             await ctx.RespondAsync(url);
 
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
-            if (res == null)
+            if (res is null)
                 throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
 
             await RssService.SendFeedResultsAsync(ctx.Channel, res);

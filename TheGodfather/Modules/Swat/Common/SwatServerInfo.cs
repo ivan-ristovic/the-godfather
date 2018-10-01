@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Swat.Common
         {
             byte[] receivedData = null;
 
-            for (int i = 0; receivedData == null && i < RetryAttempts; i++) {
+            for (int i = 0; receivedData is null && i < RetryAttempts; i++) {
                 try {
                     using (var client = new UdpClient()) {
                         var ep = new IPEndPoint(IPAddress.Parse(ip), port);
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Swat.Common
                 }
             }
 
-            if (receivedData == null)
+            if (receivedData is null)
                 return null;
 
             string data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);

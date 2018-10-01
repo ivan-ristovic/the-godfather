@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
         public async Task RandomCatAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomCatImageAsync();
-            if (url == null)
+            if (url is null)
                 throw new CommandFailedException("Connection to random.cat failed!");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
         public async Task RandomDogAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomDogImageAsync();
-            if (url == null)
+            if (url is null)
                 throw new CommandFailedException("Connection to random.dog failed!");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Search
         public Task NewsRssAsync(CommandContext ctx)
         {
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
-            if (res == null)
+            if (res is null)
                 throw new CommandFailedException("Error getting world news.");
 
             return RssService.SendFeedResultsAsync(ctx.Channel, res);
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Search
                                    [Description("Category.")] string category = null)
         {
             Quote quote = await QuoteService.GetQuoteOfTheDayAsync(category);
-            if (quote == null)
+            if (quote is null)
                 throw new CommandFailedException("Failed to retrieve quote! Possibly the given quote category does not exist.");
 
             await ctx.RespondAsync(embed: quote.ToDiscordEmbed($"Quote of the day{(string.IsNullOrWhiteSpace(category) ? "" : $" in category {category}")}"));

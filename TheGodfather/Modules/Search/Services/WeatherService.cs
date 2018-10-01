@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public static string GetCityUrl(City city)
         {
-            if (city == null)
+            if (city is null)
                 throw new ArgumentException("City missing", nameof(city));
 
             return $"https://openweathermap.org/city/{ city.Id }";
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public static string GetWeatherIconUrl(Weather weather)
         {
-            if (weather == null)
+            if (weather is null)
                 throw new ArgumentException("Weather missing", nameof(weather));
 
             return $"http://openweathermap.org/img/w/{ weather.Icon }.png";

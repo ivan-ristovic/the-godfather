@@ -29,7 +29,7 @@ namespace TheGodfather.Common.Attributes
             if (ctx.User.Id == ctx.Client.CurrentUser.Id)
                 return Task.FromResult(true);
 
-            if (ctx.Member == null)
+            if (ctx.Member is null)
                 return Task.FromResult(false);
 
             Permissions mperms = ctx.Channel.PermissionsFor(ctx.Member);

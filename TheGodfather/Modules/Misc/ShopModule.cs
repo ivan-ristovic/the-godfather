@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
                                   [Description("Item ID.")] int id)
         {
             PurchasableItem item = await this.Database.GetPurchasableItemAsync(ctx.Guild.Id, id);
-            if (item == null)
+            if (item is null)
                 throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
             if (await this.Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Misc
                                    [Description("Item ID.")] int id)
         {
             PurchasableItem item = await this.Database.GetPurchasableItemAsync(ctx.Guild.Id, id);
-            if (item == null)
+            if (item is null)
                 throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
             if (!await this.Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))

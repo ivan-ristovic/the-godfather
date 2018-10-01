@@ -28,7 +28,7 @@ namespace TheGodfather.EventListeners
         {
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
             await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
-            if (e.Member.Guild == null)
+            if (e.Member.Guild is null)
                 return;
 
             DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
@@ -64,7 +64,7 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member joined", e.Member.ToString());
@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            if (e.Member == null || e.Member.IsBot)
+            if (e.Member is null || e.Member.IsBot)
                 return;
 
             AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
@@ -115,7 +115,7 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
@@ -131,7 +131,7 @@ namespace TheGodfather.EventListeners
         public static async Task MemberUpdateEventHandlerAsync(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member updated", e.Member.ToString());

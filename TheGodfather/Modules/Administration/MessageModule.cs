@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Administration
         {
             message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-            if (message == null)
+            if (message is null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             var emb = new DiscordEmbedBuilder() {
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration
         {
             message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-            if (message == null)
+            if (message is null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             await message.PinAsync();

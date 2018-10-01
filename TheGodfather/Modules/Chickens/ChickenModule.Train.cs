@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task StrengthAsync(CommandContext ctx)
             {
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task VitalityAsync(CommandContext ctx)
             {
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)

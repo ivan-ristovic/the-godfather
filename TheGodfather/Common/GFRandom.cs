@@ -10,7 +10,7 @@ namespace TheGodfather.Common
         private static GFRandom _instance;
         public static GFRandom Generator {
             get {
-                if (_instance == null)
+                if (_instance is null)
                     _instance = new GFRandom();
                 return _instance;
             }

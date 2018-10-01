@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                                    [Description("Amount (in range [1, 10]).")] int amount = 1)
         {
             Deck deck = CardDecksService.GetDeckInChannel(ctx.Channel.Id);
-            if (deck == null)
+            if (deck is null)
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a new deck.");
             
             if (amount < 1|| amount > 10)

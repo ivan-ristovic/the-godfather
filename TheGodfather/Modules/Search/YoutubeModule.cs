@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Search
                 throw new InvalidCommandUsageException("Search query missing.");
 
             IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query, amount, type);
-            if (pages == null) {
+            if (pages is null) {
                 await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }

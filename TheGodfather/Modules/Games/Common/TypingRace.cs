@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Games.Common
         public override async Task RunAsync()
         {
             string quote = await QuoteService.GetRandomQuoteAsync();
-            if (quote == null)
+            if (quote is null)
                 return;
             quote.Truncate(230);
 

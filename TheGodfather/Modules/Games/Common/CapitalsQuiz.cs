@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Games.Common
                     }, 
                     TimeSpan.FromSeconds(10)
                 );
-                if (mctx == null) {
+                if (mctx is null) {
                     if (timeout)
                         timeouts++;
                     else

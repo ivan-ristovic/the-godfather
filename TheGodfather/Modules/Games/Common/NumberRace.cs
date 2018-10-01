@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games.Common
                     TimeSpan.FromSeconds(20)
                 );
 
-                if (mctx == null) {
+                if (mctx is null) {
                     this.IsTimeoutReached = true;
                     return;
                 } else if (guess == num + 1) {

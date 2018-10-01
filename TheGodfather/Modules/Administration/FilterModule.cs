@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
         {
-            if (filters == null || !filters.Any())
+            if (filters is null || !filters.Any())
                 throw new InvalidCommandUsageException("Filter regexes missing.");
 
             var eb = new StringBuilder();

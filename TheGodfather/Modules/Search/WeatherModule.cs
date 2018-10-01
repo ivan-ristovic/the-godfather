@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
             DiscordEmbed em = await this.Service.GetEmbeddedCurrentWeatherDataAsync(query);
-            if (em == null)
+            if (em is null)
                 throw new CommandFailedException("Cannot find weather data for given query.");
 
             await ctx.RespondAsync(embed: em);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Search
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
             IReadOnlyList<DiscordEmbed> ems = await this.Service.GetEmbeddedWeatherForecastAsync(query, amount);
-            if (ems == null || !ems.Any())
+            if (ems is null || !ems.Any())
                 throw new CommandFailedException("Cannot find weather data for given query.");
 
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, ems.Select(e => new Page() { Embed = e }));

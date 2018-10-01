@@ -402,7 +402,7 @@ namespace TheGodfather.Modules.Administration
 
 
                 DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
-                if (muteRole == null)
+                if (muteRole is null)
                     muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
                 if (muteRole != null)
                     emb.AddField("Mute role", muteRole.Name, inline: true);
@@ -455,7 +455,7 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordChannel channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
 
-                if (channel == null) {
+                if (channel is null) {
                     if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
                         try {
                             channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.");

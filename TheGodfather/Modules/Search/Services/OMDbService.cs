@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search.Services
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&s={query}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
             IReadOnlyList<MovieInfo> results = data.Success ? data.Results?.AsReadOnly() : null;
-            if (results == null || !results.Any())
+            if (results is null || !results.Any())
                 return null;
 
             return results

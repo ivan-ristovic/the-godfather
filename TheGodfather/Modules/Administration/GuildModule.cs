@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] Uri url)
         {
-            if (url == null)
+            if (url is null)
                 throw new InvalidCommandUsageException("URL missing.");
 
             if (!await this.IsValidImageUriAsync(url))

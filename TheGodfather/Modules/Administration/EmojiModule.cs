@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length < 2 || name.Length > 50)
                 throw new InvalidCommandUsageException("Emoji name length must be between 2 and 50 characters.");
 
-            if (url == null) {
+            if (url is null) {
                 if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
                     throw new InvalidCommandUsageException("Please specify a name and URL pointing to an emoji image or attach an image.");
             }

@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Misc
             }
 
             string insult = await this.Database.GetRandomInsultAsync();
-            if (insult == null)
+            if (insult is null)
                 throw new CommandFailedException("No available insults.");
 
             await this.InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:");
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ListInsultsAsync(CommandContext ctx)
         {
             IReadOnlyDictionary<int, string> insults = await this.Database.GetAllInsultsAsync();
-            if (insults == null || !insults.Any())
+            if (insults is null || !insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
             await ctx.SendCollectionInPagesAsync(

@@ -143,7 +143,7 @@ namespace TheGodfather
 
         public bool MessageContainsFilter(ulong gid, string message)
         {
-            if (!this.Filters.TryGetValue(gid, out var filters) || filters == null)
+            if (!this.Filters.TryGetValue(gid, out var filters) || filters is null)
                 return false;
 
             message = message.ToLowerInvariant();

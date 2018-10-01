@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
                                  [Description("Comic ID.")] int? id = null)
         {
             XkcdComic comic = await XkcdService.GetComicAsync(id);
-            if (comic == null)
+            if (comic is null)
                 throw new CommandFailedException("Failed to retrieve comic from xkcd.");
 
             await ctx.RespondAsync(embed: comic.ToDiscordEmbed(this.ModuleColor));
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Search
         public async Task RandomAsync(CommandContext ctx)
         {
             XkcdComic comic = await XkcdService.GetRandomComicAsync();
-            if (comic == null)
+            if (comic is null)
                 throw new CommandFailedException("Failed to retrieve comic from xkcd.");
 
             await ctx.RespondAsync(embed: comic.ToDiscordEmbed(this.ModuleColor));

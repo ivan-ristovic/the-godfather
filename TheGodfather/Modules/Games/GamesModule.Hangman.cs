@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
-                if (dm == null)
+                if (dm is null)
                     throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
 
                 await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Games
                     xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                     TimeSpan.FromMinutes(1)
                 );
-                if (mctx == null) {
+                if (mctx is null) {
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {

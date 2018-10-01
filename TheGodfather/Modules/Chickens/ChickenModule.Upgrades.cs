@@ -44,14 +44,14 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
                 if (chicken.Stats.Upgrades.Any(u => u.Id == id))
                     throw new CommandFailedException("Your chicken already has that upgrade!");
 
                 ChickenUpgrade upgrade = await this.Database.GetChickenUpgradeAsync(id);
-                if (upgrade == null)
+                if (upgrade is null)
                     throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))

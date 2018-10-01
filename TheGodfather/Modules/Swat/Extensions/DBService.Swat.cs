@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Swat.Extensions
         
         public static async Task<SwatServer> GetSwatServerFromDatabaseAsync(this DBService db, string name)
         {
-            if (name == null)
+            if (name is null)
                 return null;
 
             SwatServer server = null;

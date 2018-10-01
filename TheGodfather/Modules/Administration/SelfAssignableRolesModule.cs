@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
-            if (roles == null || !roles.Any())
+            if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             foreach (DiscordRole role in roles)
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to delete.")] params DiscordRole[] roles)
         {
-            if (roles == null || !roles.Any())
+            if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
             foreach (DiscordRole role in roles)
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Administration
             var roles = new List<DiscordRole>();
             foreach (ulong rid in rids) {
                 DiscordRole role = ctx.Guild.GetRole(rid);
-                if (role == null)
+                if (role is null)
                     await this.Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, rid);
                 else
                     roles.Add(role);

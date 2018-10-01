@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games.Common
                 },
                 this.moveTime
             );
-            if (mctx == null) {
+            if (mctx is null) {
                 this.IsTimeoutReached = true;
                 this.Winner = player1plays ? this.player2 : this.player1;
                 return;

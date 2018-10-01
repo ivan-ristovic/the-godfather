@@ -165,7 +165,7 @@ namespace TheGodfather.Common.Collections
         public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : this(comparer)
         {
-            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (collection is null) throw new ArgumentNullException(nameof(collection));
 
             this.InitializeFromCollection(collection);
         }
@@ -194,8 +194,8 @@ namespace TheGodfather.Common.Collections
         public ConcurrentHashSet(int concurrencyLevel, IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : this(concurrencyLevel, DefaultCapacity, false, comparer)
         {
-            if (collection == null) throw new ArgumentNullException(nameof(collection));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+            if (collection is null) throw new ArgumentNullException(nameof(collection));
+            if (comparer is null) throw new ArgumentNullException(nameof(comparer));
 
             this.InitializeFromCollection(collection);
         }
@@ -226,7 +226,7 @@ namespace TheGodfather.Common.Collections
         {
             if (concurrencyLevel < 1) throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+            if (comparer is null) throw new ArgumentNullException(nameof(comparer));
 
             // The capacity should be at least as large as the concurrency level. Otherwise, we would have locks that don't guard
             // any buckets.
@@ -328,10 +328,10 @@ namespace TheGodfather.Common.Collections
 
                     Node previous = null;
                     for (var current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
-                        Debug.Assert((previous == null && current == tables.Buckets[bucketNo]) || previous.Next == current);
+                        Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
 
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
-                            if (previous == null) {
+                            if (previous is null) {
                                 Volatile.Write(ref tables.Buckets[bucketNo], current.Next);
                             } else {
                                 previous.Next = current.Next;
@@ -380,7 +380,7 @@ namespace TheGodfather.Common.Collections
 
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (array is null) throw new ArgumentNullException(nameof(array));
             if (arrayIndex < 0) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 
             var locksAcquired = 0;
@@ -440,7 +440,7 @@ namespace TheGodfather.Common.Collections
                     // Try to find this item in the bucket
                     Node previous = null;
                     for (var current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
-                        Debug.Assert((previous == null && current == tables.Buckets[bucketNo]) || previous.Next == current);
+                        Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
                             return false;
                         }

@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Games
                 if (!this.guesses.Contains(char.ToLowerInvariant(xm.Content[0]))) return true;
                 return false;
             });
-            if (mctx == null) {
+            if (mctx is null) {
                 this.gameOver = true;
                 this.IsTimeoutReached = true;
                 return;

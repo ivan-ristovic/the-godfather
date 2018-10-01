@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
-            if (triggers == null)
+            if (triggers is null)
                 throw new InvalidCommandUsageException("Triggers missing.");
 
             if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))

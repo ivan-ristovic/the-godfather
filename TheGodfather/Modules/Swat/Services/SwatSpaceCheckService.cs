@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Swat.Services
 
         private static void Start()
         {
-            if (_ticker == null)
+            if (_ticker is null)
                 _ticker = new Timer(CheckCallback, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
             else
                 _ticker.Change(TimeSpan.Zero, TimeSpan.FromSeconds(5));
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Swat.Services
             lock (_lock) {
                 foreach (SwatServer server in _listeners.Keys) {
                     SwatServerInfo info = _async.Execute(SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort));
-                    if (info == null) {
+                    if (info is null) {
                         foreach (DiscordChannel channel in _listeners[server]) {
                             try {
                                 _async.Execute(channel.InformFailureAsync($"No reply from {server.Ip}:{server.JoinPort}"));

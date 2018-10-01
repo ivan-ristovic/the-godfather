@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 IReadOnlyList<QuizQuestion> questions = await QuizService.GetQuestionsAsync(id, amount, difficulty);
-                if (questions == null || !questions.Any())
+                if (questions is null || !questions.Any())
                     throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
 
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);

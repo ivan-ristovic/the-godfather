@@ -33,7 +33,7 @@ namespace TheGodfather
         public static void UpdateCommandList(CommandsNextExtension cnext)
         {
             Commands = cnext.GetAllRegisteredCommands()
-                .Where(cmd => cmd.Parent == null)
+                .Where(cmd => cmd.Parent is null)
                 .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
                 .ToList()
                 .AsReadOnly();

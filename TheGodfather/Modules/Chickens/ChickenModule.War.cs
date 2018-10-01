@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (chicken.Stats.TotalVitality < 25)
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                if (chicken == null)
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
                 if (chicken.Stats.TotalVitality < 25)

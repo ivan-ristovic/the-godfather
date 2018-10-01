@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Name missing.");
 
             SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
-            if (server == null)
+            if (server is null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
             await this.InformAsync(ctx, $"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}");
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
             SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
-            if (server == null)
+            if (server is null)
                 throw new CommandFailedException("Server with given name is not registered.");
 
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Swat
             };
 
             IReadOnlyList<SwatServer> servers = await this.Database.GetAllSwatServersAsync();
-            if (servers == null || !servers.Any())
+            if (servers is null || !servers.Any())
                 throw new CommandFailedException("No servers found in the database.");
 
             SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.Ip, s.QueryPort)));
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Swat
                 throw new CommandFailedException("Already checking space in this channel!");
             
             SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
-            if (server == null)
+            if (server is null)
                 throw new CommandFailedException("Server with given name is not registered.");
 
             SwatSpaceCheckService.AddListener(server, ctx.Channel);

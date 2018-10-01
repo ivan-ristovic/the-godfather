@@ -31,7 +31,7 @@ namespace TheGodfather.EventListeners
         public static async Task BulkDeleteEventHandlerAsync(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
             
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
@@ -100,7 +100,7 @@ namespace TheGodfather.EventListeners
             await e.Message.DeleteAsync("_gf: Filter hit");
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Filter triggered");
@@ -163,11 +163,11 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageDeleted)]
         public static async Task MessageDeleteEventHandlerAsync(TheGodfatherShard shard, MessageDeleteEventArgs e)
         {
-            if (e.Channel.IsPrivate || e.Message == null)
+            if (e.Channel.IsPrivate || e.Message is null)
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null)
+            if (logchn is null)
                 return;
 
             if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
@@ -213,7 +213,7 @@ namespace TheGodfather.EventListeners
         public static async Task MessageUpdateEventHandlerAsync(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
 
-            if (e.Author == null || e.Author.IsBot || e.Channel == null || e.Channel.IsPrivate || e.Message == null)
+            if (e.Author is null || e.Author.IsBot || e.Channel is null || e.Channel.IsPrivate || e.Message is null)
                 return;
 
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
@@ -228,7 +228,7 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null || !e.Message.IsEdited)
+            if (logchn is null || !e.Message.IsEdited)
                 return;
 
             if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))

@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string url = await this.Database.GetRandomMemeAsync(ctx.Guild.Id);
-            if (url == null)
+            if (url is null)
                 throw new CommandFailedException("No memes registered in this guild!");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
@@ -56,9 +56,9 @@ namespace TheGodfather.Modules.Misc
         {
             string text = "DANK MEME YOU ASKED FOR";
             string url = await this.Database.GetMemeAsync(ctx.Guild.Id, name);
-            if (url == null) {
+            if (url is null) {
                 url = await this.Database.GetRandomMemeAsync(ctx.Guild.Id);
-                if (url == null)
+                if (url is null)
                     throw new CommandFailedException("No memes registered in this guild!");
                 text = "No meme registered with that name, here is a random one";
             }
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
                                       [Description("Short name (case insensitive).")] string name,
                                       [Description("URL.")] Uri url = null)
         {
-            if (url == null) {
+            if (url is null) {
                 if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
                     throw new InvalidCommandUsageException("Please specify a name and a URL pointing to a meme image or attach it manually.");
             }
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Misc
         public async Task TemplatesAsync(CommandContext ctx)
         {
             IReadOnlyList<string> templates = await MemeGenService.GetMemeTemplatesAsync();
-            if (templates == null)
+            if (templates is null)
                 throw new CommandFailedException("Failed to retrieve meme templates.");
 
             await ctx.SendCollectionInPagesAsync(

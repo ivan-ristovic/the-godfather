@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search.Services
 
 
         public bool IsDisabled() 
-            => this.user == null;
+            => this.user is null;
 
 
         public DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Search.Services
 
             }
 
-            if (profile == null || summary == null || summary.Data == null)
+            if (profile is null || summary is null || summary.Data is null)
                 return null;
 
             return this.EmbedSteamResult(profile, summary.Data);

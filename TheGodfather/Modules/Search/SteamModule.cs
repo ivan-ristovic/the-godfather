@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             DiscordEmbed em = await this.Service.GetEmbeddedInfoAsync(id);
-            if (em == null) {
+            if (em is null) {
                 await this.InformFailureAsync(ctx, "User with such ID does not exist!");
                 return;
             }

@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
                 throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url.AbsoluteUri);
-            if (res == null)
+            if (res is null)
                 throw new CommandFailedException("Error getting feed from given URL.");
 
             return RssService.SendFeedResultsAsync(ctx.Channel, res);
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Search
                                          [Description("Subreddit.")] string sub)
             {
                 string url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub);
-                if (url == null)
+                if (url is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
                 if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub))
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Search
                                             [Description("Friendly name.")] string name = null)
             {
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(url);
-                if (chid == null)
+                if (chid is null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 string feedurl = YtService.GetRssUrlForChannel(chid);
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Search
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
-                if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) == null)
+                if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
                 await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);

@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search.Services
 
 
         public bool IsDisabled()
-            => this.imgur == null;
+            => this.imgur is null;
 
 
         public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub, int amount,

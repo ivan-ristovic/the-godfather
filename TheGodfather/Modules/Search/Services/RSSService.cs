@@ -32,11 +32,11 @@ namespace TheGodfather.Modules.Search.Services
                     }
 
                     SyndicationItem latest = GetFeedResults(feed.Url)?.FirstOrDefault();
-                    if (latest == null)
+                    if (latest is null)
                         continue;
 
                     string url = latest.Links.FirstOrDefault()?.Uri.ToString();
-                    if (url == null)
+                    if (url is null)
                         continue;
 
                     if (string.Compare(url, feed.SavedUrl, true) != 0) {
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public static async Task SendFeedResultsAsync(DiscordChannel channel, IEnumerable<SyndicationItem> results)
         {
-            if (results == null)
+            if (results is null)
                 return;
 
             var emb = new DiscordEmbedBuilder() {
