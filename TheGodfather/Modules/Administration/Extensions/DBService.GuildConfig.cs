@@ -87,6 +87,23 @@ namespace TheGodfather.Modules.Administration.Extensions
         }
 
 
+        public static async Task<IReadOnlyList<ulong>> GetAntispamExemptsForGuildAsync(this DBService db, ulong gid)
+        {
+            var exempts = new List<ulong>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT cid FROM gf.antispam_exempt WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false))
+                        exempts.Add((ulong)(long)reader["cid"]);
+                }
+            });
+
+            return exempts.AsReadOnly();
+        }
+
         public static async Task<AntifloodSettings> GetAntifloodSettingsAsync(this DBService db, ulong gid)
         {
             var settings = new AntifloodSettings();

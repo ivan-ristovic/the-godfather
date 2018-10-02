@@ -42,5 +42,10 @@ namespace TheGodfather.Modules.Administration.Common
 
             return this.remainingUses > 0;
         }
+
+        public void Reset()
+        {
+            this.resetsAt = DateTimeOffset.UtcNow;
+        }
     }
 }

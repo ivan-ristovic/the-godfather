@@ -47,6 +47,7 @@ namespace TheGodfather.Modules.Administration.Services
                     await Task.Delay(TimeSpan.FromMilliseconds(500));
                 }
                 this.guildFloodUsers[e.Guild.Id].Clear();
+                return;
             }
 
             await Task.Delay(TimeSpan.FromSeconds(settings.Cooldown));

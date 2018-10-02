@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Mute);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.TemporaryMute);
 
                 [GroupCommand, Priority(0)]
                 public Task ExecuteGroupAsync(CommandContext ctx)

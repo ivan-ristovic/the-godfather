@@ -115,8 +115,8 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitSettings.Action));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSettings.Sensitivity));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("antispam_enabled", cfg.AntispamSettings.Enabled));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_action", cfg.AntispamSettings.Sensitivity));
-                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_sens", (short)cfg.AntispamSettings.Action));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_action", (short)cfg.AntispamSettings.Action));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antispam_sens", cfg.AntispamSettings.Sensitivity));
 
                 return cmd.ExecuteNonQueryAsync();
             });

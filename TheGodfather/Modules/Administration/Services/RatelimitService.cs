@@ -57,14 +57,17 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildRatelimitInfo.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
                 throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
 
-            if (!this.guildRatelimitInfo[e.Guild.Id].ContainsKey(e.Author.Id)) {
-                if (!this.guildRatelimitInfo[e.Guild.Id].TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity)))
+            var gRateInfo = this.guildRatelimitInfo[e.Guild.Id];
+            if (!gRateInfo.ContainsKey(e.Author.Id)) {
+                if (!gRateInfo.TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity)))
                     throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");
                 return;
             }
 
-            if (!this.guildRatelimitInfo[e.Guild.Id][e.Author.Id].TryDecrementAllowedMessageCount())
+            if (gRateInfo.TryGetValue(e.Author.Id, out UserRatelimitInfo rateInfo) && !rateInfo.TryDecrementAllowedMessageCount()) {
                 await this.PunishMemberAsync(e.Guild, e.Author as DiscordMember, settings.Action);
+                rateInfo.Reset();
+            }
         }
     }
 }
