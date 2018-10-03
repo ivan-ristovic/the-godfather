@@ -131,6 +131,34 @@ namespace TheGodfather.Modules.Administration
                 }
                 #endregion
 
+                #region COMMAND_ANTISPAM_EXEMPT
+                [Command("exempt")]
+                [Description("Disable the antispam for certain channels.")]
+                [Aliases("ex", "exc")]
+                [UsageExamples("!guild cfg antispam exempt #spam")]
+                public async Task ExemptAsync(CommandContext ctx,
+                                             [Description("Channel to exempt.")] DiscordChannel channel = null)
+                {
+                    channel = channel ?? ctx.Channel;
+                    await this.Database.ExemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                    await this.InformAsync(ctx, $"Successfully exempted channel {Formatter.Bold(channel.Name)} from antispam watch", important: false);
+                }
+                #endregion
+
+                #region COMMAND_ANTISPAM_UNEXEMPT
+                [Command("unexempt"), Priority(2)]
+                [Description("Remove an exempted channel and enable antispam in that channel.")]
+                [Aliases("unex", "uex")]
+                [UsageExamples("!guild cfg antispam unexempt #spam")]
+                public async Task UnxemptAsync(CommandContext ctx,
+                                              [Description("Channel to unexempt.")] DiscordChannel channel = null)
+                {
+                    channel = channel ?? ctx.Channel;
+                    await this.Database.UnexemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                    await this.InformAsync(ctx, $"Successfully unexempted channel {Formatter.Bold(channel.Name)} from antispam watch", important: false);
+                }
+                #endregion
+
                 #region COMMAND_ANTISPAM_SENSITIVITY
                 [Command("sensitivity")]
                 [Description("Set the antispam sensitivity - max amount of repeated messages before an action is taken.")]

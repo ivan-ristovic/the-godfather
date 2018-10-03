@@ -170,7 +170,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
@@ -179,11 +179,11 @@ namespace TheGodfather.EventListeners
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (entry != null && entry is DiscordAuditLogMessageEntry mentry) {
-                if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
+                if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
                     return;
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
                 foreach (DiscordRole role in member?.Roles)
-                    if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                    if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, role.Id, EntityType.Role))
                         return;
 
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
@@ -231,13 +231,13 @@ namespace TheGodfather.EventListeners
             if (logchn is null || !e.Message.IsEdited)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
-            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Author.Id, EntityType.Member))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Author.Id, EntityType.Member))
                 return;
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
             foreach (DiscordRole role in member?.Roles)
-                if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, role.Id, EntityType.Role))
                     return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);

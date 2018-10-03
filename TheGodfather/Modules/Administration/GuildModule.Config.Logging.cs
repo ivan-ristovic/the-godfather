@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     if (gcfg.LoggingEnabled) {
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllExemptsAsync(ctx.Guild.Id);
+                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllLoggingExemptsAsync(ctx.Guild.Id);
                         var sb = new StringBuilder();
                         foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
                             sb.AppendLine($"{exempt.Type.ToUserFriendlyString()} exempted: {exempt.Id}");
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("User to exempt.")] DiscordUser user)
                 {
-                    await this.Database.ExemptAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
                     await this.InformAsync(ctx, $"Successfully exempted user {Formatter.Bold(user.Username)}", important: false);
                 }
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Role to exempt.")] DiscordRole role)
                 {
-                    await this.Database.ExemptAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
                     await this.InformAsync(ctx, $"Successfully exempted role {Formatter.Bold(role.Name)}", important: false);
                 }
 
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Channel to exempt.")] DiscordChannel channel = null)
                 {
                     channel = channel ?? ctx.Channel;
-                    await this.Database.ExemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
                     await this.InformAsync(ctx, $"Successfully exempted channel {Formatter.Bold(channel.Name)}", important: false);
                 }
                 #endregion
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("User to unexempt.")] DiscordUser user)
                 {
-                    await this.Database.UnexemptAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
                     await this.InformAsync(ctx, $"Successfully unexempted user {Formatter.Bold(user.Username)}", important: false);
                 }
 
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Role to unexempt.")] DiscordRole role)
                 {
-                    await this.Database.UnexemptAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
                     await this.InformAsync(ctx, $"Successfully unexempted role {Formatter.Bold(role.Name)}", important: false);
                 }
 
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Channel to unexempt.")] DiscordChannel channel = null)
                 {
                     channel = channel ?? ctx.Channel;
-                    await this.Database.UnexemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
                     await this.InformAsync(ctx, $"Successfully unexempted channel {Formatter.Bold(channel.Name)}", important: false);
                 }
                 #endregion

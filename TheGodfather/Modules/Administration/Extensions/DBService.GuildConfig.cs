@@ -16,77 +16,35 @@ namespace TheGodfather.Modules.Administration.Extensions
 {
     internal static class DBServiceGuildConfigExtensions
     {
-        public static async Task<IReadOnlyList<ExemptedEntity>> GetAllExemptsAsync(this DBService db, ulong gid)
-        {
-            var exempted = new List<ExemptedEntity>();
+        #region LOG_EXEMPTS
+        public static Task<IReadOnlyList<ExemptedEntity>> GetAllLoggingExemptsAsync(this DBService db, ulong gid)
+            => db.GetAllExemptsAsync("log_exempt", gid);
 
-            await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT id, type FROM gf.log_exempt WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+        public static Task<bool> IsExemptedFromLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.IsExemptedAsync("log_exempt", gid, xid, type);
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        EntityType t = EntityType.Channel;
-                        switch (((string)reader["type"]).First()) {
-                            case 'c': t = EntityType.Channel; break;
-                            case 'm': t = EntityType.Member; break;
-                            case 'r': t = EntityType.Role; break;
-                        }
-                        exempted.Add(new ExemptedEntity() {
-                            GuildId = gid,
-                            Id = (ulong)(long)reader["id"],
-                            Type = t
-                        });
-                    }
-                }
-            });
+        public static Task ExemptLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.ExemptAsync("log_exempt", gid, xid, type);
 
-            return exempted.AsReadOnly();
-        }
+        public static Task UnexemptLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.UnexemptAsync("log_exempt", gid, xid, type);
+        #endregion
 
-        public static async Task<bool> IsExemptedAsync(this DBService db, ulong gid, ulong xid, EntityType type)
-        {
-            bool exempted = false;
+        #region ANTISPAM_EXEMPTS
+        public static Task<IReadOnlyList<ExemptedEntity>> GetAllAntispamExemptsAsync(this DBService db, ulong gid)
+            => db.GetAllExemptsAsync("antispam_exempt", gid);
 
-            await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT id FROM gf.log_exempt WHERE gid = @gid AND id = @xid AND type = @type LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+        public static Task<bool> IsExemptedFromAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type) 
+            => db.IsExemptedAsync("antispam_exempt", gid, xid, type);
 
-                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    exempted = true;
-            });
+        public static Task ExemptAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.ExemptAsync("antispam_exempt", gid, xid, type);
 
-            return exempted;
-        }
+        public static Task UnexemptAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.UnexemptAsync("antispam_exempt", gid, xid, type);
+        #endregion
 
-        public static Task ExemptAsync(this DBService db, ulong gid, ulong xid, EntityType type)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "INSERT INTO gf.log_exempt(gid, id, type) VALUES (@gid, @xid, @type) ON CONFLICT DO NOTHING;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
-
-        public static Task UnexemptAsync(this DBService db, ulong gid, ulong xid, EntityType type)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "DELETE FROM gf.log_exempt WHERE gid = @gid AND id = @xid AND type = @type;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
-
-
+        #region GUILD_PROTECTION
         public static async Task<IReadOnlyList<ulong>> GetAntispamExemptsForGuildAsync(this DBService db, ulong gid)
         {
             var exempts = new List<ulong>();
@@ -173,8 +131,9 @@ namespace TheGodfather.Modules.Administration.Extensions
                 return cmd.ExecuteNonQueryAsync();
             });
         }
+        #endregion
 
-
+        #region GUILD_CONFIG
         public static async Task<DiscordRole> GetMuteRoleAsync(this DBService db, DiscordGuild guild)
         {
             ulong rid = (ulong)await db.GetValueInternalAsync<long>(guild.Id, "mute_rid");
@@ -267,8 +226,10 @@ namespace TheGodfather.Modules.Administration.Extensions
                 return cmd.ExecuteNonQueryAsync();
             });
         }
+        #endregion
 
 
+        #region HELPER_FUNCTIONS
         private static async Task<T> GetValueInternalAsync<T>(this DBService db, ulong gid, string col)
         {
             T value = default;
@@ -295,5 +256,76 @@ namespace TheGodfather.Modules.Administration.Extensions
                 return cmd.ExecuteNonQueryAsync();
             });
         }
+
+        private static async Task<IReadOnlyList<ExemptedEntity>> GetAllExemptsAsync(this DBService db, string table, ulong gid)
+        {
+            var exempted = new List<ExemptedEntity>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT id, type FROM gf.{table} WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        EntityType t = EntityType.Channel;
+                        switch (((string)reader["type"]).First()) {
+                            case 'c': t = EntityType.Channel; break;
+                            case 'm': t = EntityType.Member; break;
+                            case 'r': t = EntityType.Role; break;
+                        }
+                        exempted.Add(new ExemptedEntity() {
+                            GuildId = gid,
+                            Id = (ulong)(long)reader["id"],
+                            Type = t
+                        });
+                    }
+                }
+            });
+
+            return exempted.AsReadOnly();
+        }
+
+        private static async Task<bool> IsExemptedAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        {
+            bool exempted = false;
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT id FROM gf.{table} WHERE gid = @gid AND id = @xid AND type = @type LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    exempted = true;
+            });
+
+            return exempted;
+        }
+
+        private static Task ExemptAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = $"INSERT INTO gf.{table}(gid, id, type) VALUES (@gid, @xid, @type) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        private static Task UnexemptAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = $"DELETE FROM gf.{table} WHERE gid = @gid AND id = @xid AND type = @type;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+        #endregion
     }
 }

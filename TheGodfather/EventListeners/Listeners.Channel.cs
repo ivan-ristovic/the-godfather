@@ -49,7 +49,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel deleted", e.Channel.ToString());
@@ -76,7 +76,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedAsync(e.Channel.Guild.Id, e.Channel.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Channel.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
@@ -104,7 +104,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedAsync(e.Guild.Id, e.ChannelAfter.Id, EntityType.Channel))
+            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.ChannelAfter.Id, EntityType.Channel))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel updated");
