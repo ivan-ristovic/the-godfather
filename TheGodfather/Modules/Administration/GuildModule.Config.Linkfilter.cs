@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
                 protected Task LogConfigChangeAsync(CommandContext ctx, string module, bool value)
                 {
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor

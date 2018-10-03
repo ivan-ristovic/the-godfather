@@ -19,7 +19,7 @@ namespace TheGodfather.Extensions
 
         public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, ulong cid, ulong uid, SharedData shared = null)
         {
-            if (shared != null)
+            if (!(shared is null))
                 shared.AddPendingResponse(cid, uid);
 
             bool response = false;
@@ -33,7 +33,7 @@ namespace TheGodfather.Extensions
                 }
             );
 
-            if (shared != null && !shared.TryRemovePendingResponse(cid, uid))
+            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return response;

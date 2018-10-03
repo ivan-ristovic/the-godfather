@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Search.Common
                 Title = $"IP geolocation info for {this.Ip}",
             };
             
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             emb.AddField("Location", $"{this.City}, {this.RegionName} {this.RegionCode}, {this.CountryName} {this.CountryCode}");

@@ -71,7 +71,7 @@ namespace TheGodfather.Common
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
                 PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}");
-                if (e.InnerException != null)
+                if (!(e.InnerException is null))
                     PrintLogMessage($"| Inner exception: {e.InnerException}");
                 PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
                 if (filelog && this.filelog)
@@ -139,7 +139,7 @@ namespace TheGodfather.Common
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
                     sw.WriteLine($"| Exception occured: {e.GetType()}");
                     sw.WriteLine($"| Details: {e.Message}");
-                    if (e.InnerException != null)
+                    if (!(e.InnerException is null))
                         sw.WriteLine($"| Inner exception: {e.InnerException}");
                     sw.WriteLine($"| Stack trace: {e.StackTrace}");
                     sw.WriteLine();

@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Currency.Common
                                 MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
                                     m => m.Channel.Id == this.Channel.Id && m.Author.Id == participant.Id && int.TryParse(m.Content, out raise) && bet + raise <= participant.Balance
                                 );
-                                if (mctx != null) {
+                                if (!(mctx is null)) {
                                     bet += raise;
                                 }
                             }
@@ -118,9 +118,8 @@ namespace TheGodfather.Modules.Currency.Common
             foreach (HoldemParticipant p in this.ActiveParticipants)
                 p.HandRank = _evaluator.GetBestHand(new List<Card>(this.drawn) { p.Card1, p.Card2 }).RankType;
 
-
             var winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
-            if (winner != null)
+            if (!(winner is null))
                 winner.Balance += this.Pot;
             this.Winner = winner?.User;
         }
@@ -139,6 +138,7 @@ namespace TheGodfather.Modules.Currency.Common
 
         public bool IsParticipating(DiscordUser user)
             => this.Participants.Any(p => p.Id == user.Id);
+
 
         private Task PrintGameAsync(DiscordMessage msg, int bet, HoldemParticipant tomove = null, bool showhands = false)
         {
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Currency.Common
                 Color = DiscordColor.DarkGreen
             };
 
-            if (!this.GameOver && tomove != null)
+            if (!this.GameOver && !(tomove is null))
                 emb.AddField("Deciding whether to call (type yes/no):", tomove.User.Mention);
 
             return msg.ModifyAsync(embed: emb.Build());

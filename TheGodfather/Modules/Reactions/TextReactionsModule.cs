@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Reactions
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several text reactions have been deleted",
                         Color = this.ModuleColor
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Reactions
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several text reactions have been deleted",
                         Color = this.ModuleColor
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Reactions
             await this.Database.RemoveAllGuildTextReactionsAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All text reactions have been deleted",
                     Color = this.ModuleColor
@@ -284,16 +284,16 @@ namespace TheGodfather.Modules.Reactions
 
             var treactions = this.Shared.TextReactions[ctx.Guild.Id];
             var reaction = treactions.FirstOrDefault(tr => tr.Response == response);
-            if (reaction != null) {
-                if (!reaction.AddTrigger(trigger, regex))
+            if (reaction is null) {
+                if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             } else {
-                if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
+                if (!reaction.AddTrigger(trigger, regex))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
             var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New text reaction added",
                     Color = this.ModuleColor

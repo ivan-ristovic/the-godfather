@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     url = (string)res;
             });
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     url = (string)res;
             });
 

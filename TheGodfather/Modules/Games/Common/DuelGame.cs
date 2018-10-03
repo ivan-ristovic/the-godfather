@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Games.Common
                 },
                 TimeSpan.FromSeconds(2)
             );
-            if (mctx != null) {
+            if (!(mctx is null)) {
                 if (mctx.User.Id == this.player1.Id) {
                     this.hp1 = (this.hp1 + 1 > 5) ? 5 : this.hp1 + 1;
                     this.potionUsed1 = true;
@@ -119,10 +119,10 @@ namespace TheGodfather.Modules.Games.Common
                 m => m.ChannelId == this.Channel.Id && m.Author.Id == this.Winner.Id
             );
 
-            if (mctx != null && !string.IsNullOrWhiteSpace(mctx.Message?.Content))
-                return mctx.Message.Content.Trim();
-            else
+            if (string.IsNullOrWhiteSpace(mctx?.Message?.Content))
                 return null;
+
+            return mctx.Message.Content.Trim();
         }
     }
 }

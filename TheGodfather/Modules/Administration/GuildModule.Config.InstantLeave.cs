@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Description = $"AntiInstantLeave {(enable ? "enabled" : "disabled")}",
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor

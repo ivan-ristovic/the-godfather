@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games
                         await Task.Delay(TimeSpan.FromSeconds(10));
                         await race.RunAsync();
 
-                        if (race.Winner != null) 
+                        if (!(race.Winner is null)) 
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.");

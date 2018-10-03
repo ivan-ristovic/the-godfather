@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await connect4.RunAsync();
 
-                    if (connect4.Winner != null) {
+                    if (!(connect4.Winner is null)) {
                         if (connect4.IsTimeoutReached)
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
                         else

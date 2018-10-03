@@ -58,12 +58,11 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("You can't fight against your own chicken!");
 
             Chicken chicken1 = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
-            if (chicken1 != null) {
-                if (chicken1.Stats.TotalVitality < 25)
-                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
-            } else {
+            if (chicken1 is null)
                 throw new CommandFailedException("You do not own a chicken!");
-            }
+
+            if (chicken1.Stats.TotalVitality < 25)
+                throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
 
             Chicken chicken2 = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
             if (chicken2 is null)

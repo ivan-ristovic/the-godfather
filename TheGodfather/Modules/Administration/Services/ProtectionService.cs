@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration.Services
                 }
             } catch {
                 DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "User punish attempt failed! Check my permissions",
                         Color = DiscordColor.Red

@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Search.Common
                 Url = $"http://www.imdb.com/title/{ this.IMDbId }",
             };
 
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             if (!string.IsNullOrWhiteSpace(this.Type))

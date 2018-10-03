@@ -68,10 +68,10 @@ namespace TheGodfather.Modules.Swat
 
             var server = SwatServer.FromIP(ip.Content, queryport);
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
-            if (info != null)
-                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
-            else
+            if (info is null)
                 await this.InformFailureAsync(ctx, "No reply from server.");
+            else
+                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
         }
 
         [Command("query"), Priority(0)]
@@ -87,10 +87,10 @@ namespace TheGodfather.Modules.Swat
                 throw new CommandFailedException("Server with given name is not registered.");
 
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
-            if (info != null)
-                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
-            else
+            if (info is null)
                 await this.InformFailureAsync(ctx, "No reply from server.");
+            else
+                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
         }
         #endregion
 
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Swat
                 throw new CommandFailedException("No servers found in the database.");
 
             SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.Ip, s.QueryPort)));
-            foreach (SwatServerInfo info in infos.Where(i => i != null).OrderByDescending(i => int.Parse(i.Players)))
+            foreach (SwatServerInfo info in infos.Where(i => !(i is null)).OrderByDescending(i => int.Parse(i.Players)))
                 em.AddField(info.HostName, $"{Formatter.Bold(info.Players + " / " + info.MaxPlayers)} | {info.Ip}:{info.JoinPort}");
 
             await ctx.RespondAsync(embed: em.Build());

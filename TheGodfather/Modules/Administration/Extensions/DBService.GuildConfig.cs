@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     msg = (string)res;
             });
 
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     msg = (string)res;
             });
 
@@ -222,7 +222,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     value = (T)res;
             });
 
@@ -279,7 +279,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     exempted = true;
             });
 

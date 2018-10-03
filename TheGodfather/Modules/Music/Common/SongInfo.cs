@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Music.Common
                 Url = Query
             };
             
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             emb.AddField("Duration", $"{this.TotalTime:hh\\:mm\\:ss}", inline: true);

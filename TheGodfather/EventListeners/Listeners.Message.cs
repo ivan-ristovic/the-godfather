@@ -130,7 +130,7 @@ namespace TheGodfather.EventListeners
                 .Where(er => er.IsMatch(e.Message?.Content ?? ""))
                 .Shuffle()
                 .FirstOrDefault();
-            if (ereaction != null) {
+            if (!(ereaction is null)) {
                 try {
                     var emoji = DiscordEmoji.FromName(shard.Client, ereaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
@@ -178,7 +178,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
-            if (entry != null && entry is DiscordAuditLogMessageEntry mentry) {
+            if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
                 if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
                     return;
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
@@ -203,7 +203,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Reactions", string.Join(" ", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName())), inline: true);
             if (e.Message.Attachments.Any())
                 emb.AddField("Attachments", string.Join("\n", e.Message.Attachments.Select(a => a.FileName)), inline: true);
-            if (e.Message.CreationTimestamp != null)
+            if (!(e.Message.CreationTimestamp != null))
                 emb.AddField("Message creation time", e.Message.CreationTimestamp.ToUtcTimestamp(), inline: true);
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -219,7 +219,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (e.Message.Content != null && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update");
                 } catch {
@@ -242,8 +242,8 @@ namespace TheGodfather.EventListeners
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);
-            string ctime = e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUtcTimestamp() : _unknown;
-            string etime = e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.Value.ToUtcTimestamp() : _unknown;
+            string ctime = e.Message.CreationTimestamp == null ? _unknown : e.Message.CreationTimestamp.ToUtcTimestamp();
+            string etime = e.Message.EditedTimestamp is null ? _unknown: e.Message.EditedTimestamp.Value.ToUtcTimestamp();
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 

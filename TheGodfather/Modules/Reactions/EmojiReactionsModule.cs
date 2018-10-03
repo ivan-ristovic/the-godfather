@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Reactions
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several emoji reactions have been deleted",
                     Color = this.ModuleColor
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Reactions
             
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several emoji reactions have been deleted",
                         Color = this.ModuleColor
@@ -232,7 +232,7 @@ namespace TheGodfather.Modules.Reactions
             
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several emoji reactions have been deleted",
                         Color = this.ModuleColor
@@ -272,7 +272,7 @@ namespace TheGodfather.Modules.Reactions
             await this.Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All emoji reactions have been deleted",
                     Color = this.ModuleColor
@@ -358,17 +358,17 @@ namespace TheGodfather.Modules.Reactions
                 }
 
                 EmojiReaction reaction = ereactions.FirstOrDefault(tr => tr.Response == ename);
-                if (reaction != null) {
-                    if (!reaction.AddTrigger(trigger, isRegex: regex))
+                if (reaction is null) {
+                    if (!ereactions.Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!ereactions.Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
+                    if (!reaction.AddTrigger(trigger, isRegex: regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New emoji reactions added",
                     Color = this.ModuleColor

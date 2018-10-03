@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Description = $"Antiflood {(enable ? "enabled" : "disabled")}",
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetAntifloodSettingsAsync(ctx.Guild.Id, settings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor

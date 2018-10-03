@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     name = (string)res;
             });
 

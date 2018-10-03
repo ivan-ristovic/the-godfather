@@ -30,7 +30,7 @@ namespace TheGodfather.EventListeners
                 Title = title
             };
 
-            if (desc != null)
+            if (!(desc is null))
                 emb.WithDescription(desc);
 
             switch (origin) {

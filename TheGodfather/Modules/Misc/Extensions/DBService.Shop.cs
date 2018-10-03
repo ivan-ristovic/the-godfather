@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     purchased = true;
             });
 

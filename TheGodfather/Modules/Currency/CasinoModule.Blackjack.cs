@@ -61,14 +61,14 @@ namespace TheGodfather.Modules.Currency
                     await game.RunAsync();
 
                     if (game.Winners.Any()) {
-                        if (game.Winner != null) {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
-                            await this.Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid);
-                        } else {
+                        if (game.Winner is null) {
                             await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
                             foreach (var winner in game.Winners)
                                 await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2);
+                        } else {
+                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
+                            await this.Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid);
                         }
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");

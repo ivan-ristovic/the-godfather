@@ -56,15 +56,15 @@ namespace TheGodfather.Modules.Games
                         await race.RunAsync();
 
                         if (race.IsTimeoutReached) {
-                            if (race.Winner != null)
-                                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{race.Winner.Mention} won due to no replies from other users!");
-                            else
+                            if (race.Winner is null)
                                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "No replies, aborting the game...");
+                            else
+                                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{race.Winner.Mention} won due to no replies from other users!");
                         } else {
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner is: {race.Winner.Mention}! GGWP!");
                         }
 
-                        if (race.Winner != null)
+                        if (!(race.Winner is null))
                             await this.Database.UpdateUserStatsAsync(race.Winner.Id, GameStatsType.NumberRacesWon);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");

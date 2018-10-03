@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length > 100)
                 throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
 
-            if (parent != null && parent.Type != ChannelType.Category)
+            if (!(parent is null) && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
             
             if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be shorter than 100 characters.");
 
-            if (parent != null && parent.Type != ChannelType.Category)
+            if (!(parent is null) && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
             
             if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
@@ -554,7 +554,7 @@ namespace TheGodfather.Modules.Administration
                 Color = this.ModuleColor
             };
 
-            if (overwrite != null) {
+            if (!(overwrite is null)) {
                 emb.AddField("Allowed", overwrite.Allowed.ToPermissionString())
                    .AddField("Denied", overwrite.Denied.ToPermissionString());
             } else {

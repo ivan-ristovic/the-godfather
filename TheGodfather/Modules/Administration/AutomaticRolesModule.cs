@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.AddAutomaticRoleAsync(ctx.Guild.Id, role.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Automatic roles change occured",
                     Color = this.ModuleColor
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Automatic roles change occured",
                     Color = this.ModuleColor
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Administration
             await this.Database.RemoveAllAutomaticRolesForGuildAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All automatic roles have been deleted",
                     Color = this.ModuleColor

@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                 cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     insult = (string)res;
             });
 

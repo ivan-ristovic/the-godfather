@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Search
                 foreach (var im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
-                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
+                        if (!(img.Nsfw is null) && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                             Color = this.ModuleColor,
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Search
                         }.Build());
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
-                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
+                        if (!(img.Nsfw is null) && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                             Color = this.ModuleColor,

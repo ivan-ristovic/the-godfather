@@ -27,7 +27,7 @@ namespace TheGodfather.EventListeners
                 LogLevel.Critical, 
                 $"| Client errored with exception: {ex.GetType()}\n" +
                 $"| Message: {ex.Message}" +
-                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}" : "")
+                (ex.InnerException is null ? "" : $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
             );
 
             return Task.CompletedTask;

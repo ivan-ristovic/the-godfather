@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Search.Common
         {
             var emb = new DiscordEmbedBuilder();
 
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             emb.AddField($"{StaticDiscordEmoji.Globe} Location", $"[{this.Name + ", " + this.Sys.Country}](https://openweathermap.org/city/{ this.Id })", inline: true);

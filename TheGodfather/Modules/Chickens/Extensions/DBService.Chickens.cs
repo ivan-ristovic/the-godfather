@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
                 }
             });
 
-            if (chicken != null) {
+            if (!(chicken is null)) {
                 IReadOnlyList<ChickenUpgrade> upgrades = await db.GetUpgradesForChickenAsync(uid, gid);
                 chicken.Stats.Upgrades = upgrades;
             }

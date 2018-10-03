@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Owner.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     found = true;
             });
 

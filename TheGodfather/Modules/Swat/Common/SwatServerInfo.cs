@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Swat.Common
                 Description = $"{this.Ip}:{this.JoinPort}"
             };
 
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             emb.AddField("Players", this.Players + "/" + this.MaxPlayers, inline: true);

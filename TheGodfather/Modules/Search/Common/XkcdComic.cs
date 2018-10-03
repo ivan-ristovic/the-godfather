@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search.Common
                 Url = XkcdService.CreateUrlForComic(this.Id)
             };
 
-            if (color != null)
+            if (!(color is null))
                 emb.WithColor(color.Value);
 
             emb.WithFooter($"Publish date: {this.Month}/{this.Year}");

@@ -81,7 +81,7 @@ namespace TheGodfather
             => this.ChannelEvents.TryGetValue(cid, out ChannelEvent e) ? e : null;
 
         public bool IsEventRunningInChannel(ulong cid)
-            => this.GetEventInChannel(cid) != null;
+            => !(this.GetEventInChannel(cid) is null);
 
         public void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
             => this.ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);

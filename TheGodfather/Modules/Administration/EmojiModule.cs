@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
             };
 
             emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
-            emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
+            emb.AddField("Created by", gemoji.User is null ? "<unknown>" : gemoji.User.Username, inline: true);
             emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: emb.Build());

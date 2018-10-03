@@ -106,7 +106,7 @@ namespace TheGodfather.EventListeners
                         break;
                     case AuditLogActionType.EmojiUpdate:
                         emb.WithDescription(eentry.Target.Name ?? _unknown);
-                        if (eentry.NameChange != null)
+                        if (!(eentry.NameChange is null))
                             emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
                         break;
                     default:
@@ -143,19 +143,19 @@ namespace TheGodfather.EventListeners
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role created", e.Role.ToString());
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleCreate);
-            if (entry != null && entry is DiscordAuditLogRoleUpdateEntry rentry) {
+            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
-                if (rentry.NameChange != null)
+                if (!(rentry.NameChange is null))
                     emb.AddField("Name change", $"{rentry.NameChange.Before ?? _unknown} -> {rentry.NameChange.After ?? _unknown}", inline: true);
-                if (rentry.ColorChange != null)
+                if (!(rentry.ColorChange is null))
                     emb.AddField("Color change", $"{rentry.ColorChange.Before?.ToString() ?? _unknown} -> {rentry.ColorChange.After?.ToString() ?? _unknown}", inline: true);
-                if (rentry.HoistChange != null)
+                if (!(rentry.HoistChange is null))
                     emb.AddField("Hoist changed to", rentry.HoistChange.After?.ToString() ?? _unknown, inline: true);
-                if (rentry.MentionableChange != null)
+                if (!(rentry.MentionableChange is null))
                     emb.AddField("Mentionable changed to", rentry.MentionableChange.After?.ToString() ?? _unknown, inline: true);
-                if (rentry.PermissionChange != null)
+                if (!(rentry.PermissionChange is null))
                     emb.AddField("Permissions changed to", rentry.PermissionChange.After?.ToPermissionString() ?? _unknown, inline: true);
-                if (rentry.PositionChange != null)
+                if (!(rentry.PositionChange is null))
                     emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
@@ -177,7 +177,7 @@ namespace TheGodfather.EventListeners
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role deleted", e.Role.ToString());
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleDelete);
-            if (entry != null && entry is DiscordAuditLogRoleUpdateEntry rentry) {
+            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true); if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
                 emb.WithFooter(rentry.CreationTimestamp.ToUtcTimestamp(), rentry.UserResponsible.AvatarUrl);
@@ -200,20 +200,20 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role updated");
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleUpdate);
-            if (entry != null && entry is DiscordAuditLogRoleUpdateEntry rentry) {
+            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.WithDescription(rentry.Target.Id.ToString());
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
-                if (rentry.NameChange != null)
+                if (!(rentry.NameChange is null))
                     emb.AddField("Name change", $"{rentry.NameChange.Before ?? _unknown} -> {rentry.NameChange.After ?? _unknown}", inline: true);
-                if (rentry.ColorChange != null)
+                if (!(rentry.ColorChange is null))
                     emb.AddField("Color changed", $"{rentry.ColorChange.Before?.ToString() ?? _unknown} -> {rentry.ColorChange.After?.ToString() ?? _unknown}", inline: true);
-                if (rentry.HoistChange != null)
+                if (!(rentry.HoistChange is null))
                     emb.AddField("Hoist", rentry.HoistChange.After?.ToString() ?? _unknown, inline: true);
-                if (rentry.MentionableChange != null)
+                if (!(rentry.MentionableChange is null))
                     emb.AddField("Mentionable", rentry.MentionableChange.After?.ToString() ?? _unknown, inline: true);
-                if (rentry.PermissionChange != null)
+                if (!(rentry.PermissionChange is null))
                     emb.AddField("Permissions changed to", rentry.PermissionChange.After?.ToPermissionString() ?? _unknown, inline: true);
-                if (rentry.PositionChange != null)
+                if (!(rentry.PositionChange is null))
                     emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
@@ -236,19 +236,19 @@ namespace TheGodfather.EventListeners
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Guild settings updated");
 
             var entry = await e.GuildAfter.GetFirstAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
-            if (entry != null && entry is DiscordAuditLogGuildEntry gentry) {
+            if (!(entry is null) && entry is DiscordAuditLogGuildEntry gentry) {
                 emb.AddField("User responsible", gentry.UserResponsible.Mention, inline: true);
-                if (gentry.NameChange != null)
+                if (!(gentry.NameChange is null))
                     emb.AddField("Name change", $"{gentry.NameChange.Before ?? _unknown} -> {gentry.NameChange.After ?? _unknown}", inline: true);
-                if (gentry.AfkChannelChange != null)
+                if (!(gentry.AfkChannelChange is null))
                     emb.AddField("AFK channel changed to", gentry.AfkChannelChange.After?.ToString() ?? _unknown, inline: true);
-                if (gentry.EmbedChannelChange != null)
+                if (!(gentry.EmbedChannelChange is null))
                     emb.AddField("Embed channel changed to", gentry.EmbedChannelChange.After?.ToString() ?? _unknown, inline: true);
-                if (gentry.IconChange != null)
+                if (!(gentry.IconChange is null))
                     emb.AddField("Icon changed to", gentry.IconChange.After ?? _unknown, inline: true);
-                if (gentry.NotificationSettingsChange != null)
+                if (!(gentry.NotificationSettingsChange is null))
                     emb.AddField("Notifications changed to", gentry.NotificationSettingsChange.After.HasFlag(DefaultMessageNotifications.AllMessages) ? "All messages" : "Mentions only", inline: true);
-                if (gentry.OwnerChange != null)
+                if (!(gentry.OwnerChange is null))
                     emb.AddField("Owner changed to", gentry.OwnerChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(gentry.Reason))
                     emb.AddField("Reason", gentry.Reason);

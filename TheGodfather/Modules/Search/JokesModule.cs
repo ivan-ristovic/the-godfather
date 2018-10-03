@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
                                      [RemainingText, Description("Query.")] string query)
         {
             IReadOnlyList<string> jokes = await JokesService.SearchForJokesAsync(query);
-            if (jokes != null)
+            if (!(jokes is null))
                 await this.InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:");
             else
                 await this.InformFailureAsync(ctx, "No results...");

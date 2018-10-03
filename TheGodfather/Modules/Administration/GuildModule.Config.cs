@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
                     await this.ApplySettingsAsync(ctx.Guild.Id, gcfg, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null)
+                    if (!(logchn is null))
                         await this.PrintGuildConfigAsync(ctx.Guild, logchn, changed: true);
 
                     await channel.EmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess);
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Administration
             public async Task WelcomeAsync(CommandContext ctx)
             {
                 DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
-                await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn != null ? $"enabled @ {wchn.Mention}" : "disabled")}!");
+                await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
 
             [Command("welcome"), Priority(2)]
@@ -201,7 +201,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.RemoveWelcomeChannelAsync(ctx.Guild.Id);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, message);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -262,7 +262,7 @@ namespace TheGodfather.Modules.Administration
             public async Task LeaveAsync(CommandContext ctx)
             {
                 DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
-                await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn != null ? $"enabled @ {lchn.Mention}" : "disabled")}!");
+                await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
 
             [Command("leave"), Priority(2)]
@@ -288,7 +288,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.RemoveLeaveChannelAsync(ctx.Guild.Id);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -322,7 +322,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, message);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
+                if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
@@ -346,7 +346,7 @@ namespace TheGodfather.Modules.Administration
             public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {
-                if (muteRole != null) {
+                if (!(muteRole is null)) {
                     await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
                 } else {
                     muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
@@ -373,10 +373,10 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
 
                 DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(guild);
-                emb.AddField("Welcome messages", wchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
+                emb.AddField("Welcome messages", wchn is null ? "off" : $"on @ {wchn.Mention}", inline: true);
 
                 DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(guild);
-                emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
+                emb.AddField("Leave messages", lchn is null ? "off" : $"on @ {lchn.Mention}", inline: true);
 
                 if (gcfg.RatelimitSettings.Enabled)
                     emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSettings.Sensitivity} msgs per 5s\nAction: {gcfg.RatelimitSettings.Action.ToTypeString()}", inline: true);
@@ -404,7 +404,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
                 if (muteRole is null)
                     muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
-                if (muteRole != null)
+                if (!(muteRole is null))
                     emb.AddField("Mute role", muteRole.Name, inline: true);
 
                 if (gcfg.LinkfilterSettings.Enabled) {
@@ -677,7 +677,7 @@ namespace TheGodfather.Modules.Administration
                              m.Author.Id == ctx.User.Id &&
                              m.MentionedRoles.Count == 1
                     );
-                    if (mctx != null)
+                    if (!(mctx is null))
                         muteRole = mctx.MentionedRoles.First();
                 }
 
@@ -699,7 +699,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             gcfg.RatelimitSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
                     }
 
@@ -710,7 +710,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             gcfg.RatelimitSettings.Sensitivity = short.Parse(mctx.Message.Content);
                     }
                 }
@@ -729,7 +729,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             gcfg.AntispamSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
                     }
 
@@ -740,7 +740,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short sens) && sens >= 3 && sens <= 10
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             gcfg.AntispamSettings.Sensitivity = short.Parse(mctx.Message.Content);
                     }
                 }
@@ -763,7 +763,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
                     }
 
@@ -774,7 +774,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             antifloodSettings.Sensitivity = short.Parse(mctx.Message.Content);
                     }
 
@@ -785,7 +785,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             antifloodSettings.Cooldown = short.Parse(mctx.Message.Content);
                     }
                 }
@@ -810,7 +810,7 @@ namespace TheGodfather.Modules.Administration
                         MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
                             m => short.TryParse(m, out short cooldown) && cooldown >= 2 && cooldown <= 20
                         );
-                        if (mctx != null)
+                        if (!(mctx is null))
                             antiInstantLeaveSettings.Cooldown = short.Parse(mctx.Message.Content);
                     }
                 }
@@ -826,7 +826,7 @@ namespace TheGodfather.Modules.Administration
                             "cannot be longer than 30 characters.";
                     await channel.EmbedAsync(query);
                     MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => m.Length < 30);
-                    if (mctx != null)
+                    if (!(mctx is null))
                         gcfg.Currency = mctx.Message.Content;
                 }
             }

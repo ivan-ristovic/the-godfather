@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Reactions.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<string>("reaction", reaction));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     id = (int)res;
             });
 
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Reactions.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<string>("response", response));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     id = (int)res;
             });
 
@@ -83,10 +83,10 @@ namespace TheGodfather.Modules.Reactions.Extensions
                         string emoji = (string)reader["reaction"];
 
                         EmojiReaction conflict = ereactions[gid].FirstOrDefault(tr => tr.Response == emoji);
-                        if (conflict != null) {
-                            conflict.AddTrigger(trigger, isRegex: true);
-                        } else {
+                        if (conflict is null) {
                             ereactions[gid].Add(new EmojiReaction(id, trigger, emoji, isRegex: true));
+                        } else {
+                            conflict.AddTrigger(trigger, isRegex: true);
                         }
                     }
                 }
@@ -117,10 +117,10 @@ namespace TheGodfather.Modules.Reactions.Extensions
                         string response = (string)reader["response"];
 
                         TextReaction conflict = treactions[gid].FirstOrDefault(tr => tr.Response == response);
-                        if (conflict != null) {
-                            conflict.AddTrigger(trigger, isRegex: true);
-                        } else {
+                        if (conflict is null) {
                             treactions[gid].Add(new TextReaction(id, trigger, response, isRegex: true));
+                        } else {
+                            conflict.AddTrigger(trigger, isRegex: true);
                         }
                     }
                 }

@@ -37,7 +37,7 @@ namespace TheGodfather.Common
 
             this.sem.Release();
 
-            if (tex != null)
+            if (!(tex is null))
                 throw tex;
         }
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Common
 
             this.sem.Release();
 
-            if (tex != null)
+            if (!(tex is null))
                 throw tex;
 
             return result;

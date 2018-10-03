@@ -35,10 +35,10 @@ namespace TheGodfather.Modules.Games.Services
                 ?.OrderBy(c => category.LevenshteinDistance(c.Name.ToLowerInvariant()))
                 .FirstOrDefault();
 
-            if (result != null && category.LevenshteinDistance(result.Name.ToLowerInvariant()) < 3)
-                return result.Id;
-            else
+            if (result is null || category.LevenshteinDistance(result.Name.ToLowerInvariant()) > 2)
                 return null;
+
+            return result.Id;
         }
 
         public static async Task<IReadOnlyList<QuizCategory>> GetCategoriesAsync()

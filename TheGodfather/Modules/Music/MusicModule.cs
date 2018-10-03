@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Music
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
             VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc != null)
+            if (!(vnc is null))
                 throw new CommandFailedException("Already connected in this guild.");
 
             DiscordVoiceState vstat = ctx.Member?.VoiceState;

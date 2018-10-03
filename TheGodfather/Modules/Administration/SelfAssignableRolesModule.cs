@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Self-assignable roles change occured",
                     Color = this.ModuleColor
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Self-assignable roles change occured",
                     Color = this.ModuleColor
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Administration
             await this.Database.RemoveAllSelfAssignableRolesForGuildAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (logchn != null) {
+            if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All self-assignable roles have been deleted",
                     Color = this.ModuleColor

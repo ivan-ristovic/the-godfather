@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 cmd.Parameters.Add(new NpgsqlParameter<string>("filter", filter));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
+                if (!(res is null) && !(res is DBNull))
                     id = (int)res;
             });
 

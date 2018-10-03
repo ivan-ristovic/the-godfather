@@ -243,7 +243,7 @@ namespace TheGodfather.Modules.Search
                 await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url);
 
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
-                if (chid != null) {
+                if (!(chid is null)) {
                     string feedurl = YtService.GetRssUrlForChannel(chid);
                     await this.Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl);
                 }

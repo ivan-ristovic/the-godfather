@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Games
                 this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync();
-                    if (hangman.Winner != null)
+                    if (!(hangman.Winner is null))
                         await this.Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);

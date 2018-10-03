@@ -163,14 +163,14 @@ namespace TheGodfather.Modules.Administration
             emb.AddField("ID", user.Id.ToString(), inline: true);
             if (!string.IsNullOrWhiteSpace(user.Email))
                 emb.AddField("E-mail", user.Email, inline: true);
-            if (user.Verified != null)
+            if (!(user.Verified is null))
                 emb.AddField("Verified", user.Verified.Value.ToString(), inline: true);
-            if (user.Presence?.Activity != null) {
+            if (!(user.Presence?.Activity is null)) {
                 if (!string.IsNullOrWhiteSpace(user.Presence.Activity?.Name))
                     emb.AddField("Activity", $"{user.Presence.Activity.ActivityType.ToString()} : {user.Presence.Activity.Name}", inline: false);
                 if (!string.IsNullOrWhiteSpace(user.Presence.Activity?.StreamUrl))
                     emb.AddField("Stream URL", $"{user.Presence.Activity.StreamUrl}", inline: false);
-                if (user.Presence.Activity.RichPresence != null) {
+                if (!(user.Presence.Activity.RichPresence is null)) {
                     if (!string.IsNullOrWhiteSpace(user.Presence.Activity.RichPresence?.Details))
                         emb.AddField("Details", $"{user.Presence.Activity.RichPresence.Details}", inline: false);
                 }

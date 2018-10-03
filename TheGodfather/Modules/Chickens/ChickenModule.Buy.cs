@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-                if (await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id) != null)
+                if (!(await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id) is null))
                     throw new CommandFailedException("You already own a chicken!");
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))

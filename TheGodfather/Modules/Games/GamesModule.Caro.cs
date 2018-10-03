@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await caro.RunAsync();
 
-                    if (caro.Winner != null) {
+                    if (!(caro.Winner is null)) {
                         if (caro.IsTimeoutReached)
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!");
                         else

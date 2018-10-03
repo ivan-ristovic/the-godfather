@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Search.Extensions
                     cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
 
                     object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
+                    if (!(res is null) && !(res is DBNull))
                         id = (int)res;
                 }
 
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Search.Extensions
                     cmd.Parameters.Add(new NpgsqlParameter<string>("qname", qname));
 
                     object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
+                    if (!(res is null) && !(res is DBNull))
                         sid = (int)res;
                 }
             });

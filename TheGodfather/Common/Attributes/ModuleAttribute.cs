@@ -30,7 +30,7 @@ namespace TheGodfather.Common.Attributes
         public static ModuleAttribute ForCommand(Command cmd)
         {
             var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
-            return mattr ?? (cmd.Parent != null ? ForCommand(cmd.Parent) : new ModuleAttribute(ModuleType.Uncategorized));
+            return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : ForCommand(cmd.Parent));
         }
 
 

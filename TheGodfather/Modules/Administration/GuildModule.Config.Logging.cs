@@ -27,9 +27,9 @@ namespace TheGodfather.Modules.Administration
             [Group("logging")]
             [Description("Action logging configuration.")]
             [Aliases("log", "modlog")]
-            [UsageExamples("!guild cfg logging",
-                           "!guild cfg logging on #log",
-                           "!guild cfg logging off")]
+            [UsageExamples("!guild cfg log",
+                           "!guild cfg log on #log",
+                           "!guild cfg log off")]
             public class LoggingModule : TheGodfatherModule
             {
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                    if (logchn != null) {
+                    if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
@@ -96,31 +96,45 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the logs for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                [UsageExamples("!guild cfg exempt @Someone",
-                               "!guild cfg exempt #spam",
-                               "!guild cfg exempt Role")]
+                [UsageExamples("!guild cfg log exempt @Someone",
+                               "!guild cfg log exempt #spam",
+                               "!guild cfg log exempt Role")]
                 public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("User to exempt.")] DiscordUser user)
+                                             [Description("Users to exempt.")] params DiscordUser[] users)
                 {
-                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
-                    await this.InformAsync(ctx, $"Successfully exempted user {Formatter.Bold(user.Username)}", important: false);
+                    if (!users.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordUser user in users)
+                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+
+                    await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
                 }
 
                 [Command("exempt"), Priority(1)]
                 public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Role to exempt.")] DiscordRole role)
+                                             [Description("Roles to exempt.")] params DiscordRole[] roles)
                 {
-                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
-                    await this.InformAsync(ctx, $"Successfully exempted role {Formatter.Bold(role.Name)}", important: false);
+                    if (!roles.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordRole role in roles)
+                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+
+                    await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
 
                 [Command("exempt"), Priority(0)]
                 public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Channel to exempt.")] DiscordChannel channel = null)
+                                             [Description("Channels to exempt.")] params DiscordChannel[] channels)
                 {
-                    channel = channel ?? ctx.Channel;
-                    await this.Database.ExemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
-                    await this.InformAsync(ctx, $"Successfully exempted channel {Formatter.Bold(channel.Name)}", important: false);
+                    if (!channels.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordChannel channel in channels)
+                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+
+                    await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
                 }
                 #endregion
 
@@ -128,31 +142,45 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow logging for actions regarding that entity.")]
                 [Aliases("unex", "uex")]
-                [UsageExamples("!guild cfg unexempt @Someone",
-                               "!guild cfg unexempt #spam",
-                               "!guild cfg unexempt Role")]
+                [UsageExamples("!guild cfg log unexempt @Someone",
+                               "!guild cfg log unexempt #spam",
+                               "!guild cfg log unexempt Role")]
                 public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("User to unexempt.")] DiscordUser user)
+                                              [Description("User to unexempt.")] params DiscordUser[] users)
                 {
-                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
-                    await this.InformAsync(ctx, $"Successfully unexempted user {Formatter.Bold(user.Username)}", important: false);
+                    if (!users.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordUser user in users)
+                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+
+                    await this.InformAsync(ctx, "Successfully unexempted given users.", important: false);
                 }
 
                 [Command("unexempt"), Priority(1)]
                 public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Role to unexempt.")] DiscordRole role)
+                                              [Description("Roles to unexempt.")] params DiscordRole[] roles)
                 {
-                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
-                    await this.InformAsync(ctx, $"Successfully unexempted role {Formatter.Bold(role.Name)}", important: false);
+                    if (!roles.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordRole role in roles)
+                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+
+                    await this.InformAsync(ctx, "Successfully unexempted given roles.", important: false);
                 }
 
                 [Command("unexempt"), Priority(0)]
                 public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Channel to unexempt.")] DiscordChannel channel = null)
+                                              [Description("Channels to unexempt.")] params DiscordChannel[] channels)
                 {
-                    channel = channel ?? ctx.Channel;
-                    await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
-                    await this.InformAsync(ctx, $"Successfully unexempted channel {Formatter.Bold(channel.Name)}", important: false);
+                    if (!channels.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordChannel channel in channels)
+                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+
+                    await this.InformAsync(ctx, "Successfully unexempted given channels.", important: false);
                 }
                 #endregion
             }

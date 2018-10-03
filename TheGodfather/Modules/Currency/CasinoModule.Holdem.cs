@@ -64,12 +64,11 @@ namespace TheGodfather.Modules.Currency
                     if (game.Participants.Count > 1) {
                         await game.RunAsync();
 
-                        if (game.Winner != null)
+                        if (!(game.Winner is null))
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
                         foreach (HoldemParticipant participant in game.Participants)
                             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance);
-
                     } else {
                         await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded);
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");

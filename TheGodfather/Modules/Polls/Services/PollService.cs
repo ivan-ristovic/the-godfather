@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Polls.Services
             => _polls.TryGetValue(cid, out Poll poll) ? poll : null;
 
         public static bool IsPollRunningInChannel(ulong cid)
-            => GetPollInChannel(cid) != null;
+            => !(GetPollInChannel(cid) is null);
 
         public static void RegisterPollInChannel(Poll poll, ulong cid) 
             => _polls[cid] = poll;

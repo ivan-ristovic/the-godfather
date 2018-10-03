@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Search.Services
                 string getUrl = $"{_apiUrl}/channels?key={this.key}&forUsername={id}&part=id";
                 string response = await _http.GetStringAsync(getUrl).ConfigureAwait(false);
                 var items = JObject.Parse(response)["items"].ToObject<List<Dictionary<string, string>>>();
-                if (items != null && items.Any())
+                if (!(items is null) && items.Any())
                     return items.First()["id"];
             } catch {
 

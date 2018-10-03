@@ -32,7 +32,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
-            if (wchn != null) {
+            if (!(wchn is null)) {
                 string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
                 if (string.IsNullOrWhiteSpace(msg))
                     await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
@@ -46,7 +46,7 @@ namespace TheGodfather.EventListeners
                 foreach (ulong rid in rids) {
                     try {
                         DiscordRole role = e.Guild.GetRole(rid);
-                        if (role != null)
+                        if (!(role is null))
                             await e.Member.GrantRoleAsync(role);
                         else
                             await shard.DatabaseService.RemoveAutomaticRoleAsync(e.Guild.Id, rid);
@@ -105,7 +105,7 @@ namespace TheGodfather.EventListeners
 
             if (!punished) {
                 DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
-                if (lchn != null) {
+                if (!(lchn is null)) {
                     string msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id);
                     if (string.IsNullOrWhiteSpace(msg))
                         await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
@@ -142,13 +142,13 @@ namespace TheGodfather.EventListeners
                 entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MemberUpdate);
             else
                 entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MemberRoleUpdate);
-            if (entry != null && entry is DiscordAuditLogMemberUpdateEntry mentry) {
+            if (!(entry is null) && entry is DiscordAuditLogMemberUpdateEntry mentry) {
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
-                if (mentry.NicknameChange != null)
+                if (!(mentry.NicknameChange is null))
                     emb.AddField("Nickname change", $"{mentry.NicknameChange.Before} -> {mentry.NicknameChange.After}", inline: true);
-                if (mentry.AddedRoles != null && mentry.AddedRoles.Any())
+                if (!(mentry.AddedRoles is null) && mentry.AddedRoles.Any())
                     emb.AddField("Added roles", string.Join(",", mentry.AddedRoles.Select(r => r.Name)), inline: true);
-                if (mentry.RemovedRoles != null && mentry.RemovedRoles.Any())
+                if (!(mentry.RemovedRoles is null) && mentry.RemovedRoles.Any())
                     emb.AddField("Removed roles", string.Join(",", mentry.RemovedRoles.Select(r => r.Name)), inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
                     emb.AddField("Reason", mentry.Reason);

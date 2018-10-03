@@ -20,7 +20,7 @@ namespace TheGodfather.Common
                 from types in Assembly.GetExecutingAssembly().GetTypes()
                 from methods in types.GetMethods()
                 let attribute = methods.GetCustomAttribute(typeof(AsyncEventListenerAttribute), inherit: true)
-                where attribute != null
+                where !(attribute is null)
                 select new ListenerMethod {
                     Method = methods,
                     Attribute = attribute as AsyncEventListenerAttribute

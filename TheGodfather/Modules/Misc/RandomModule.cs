@@ -59,9 +59,9 @@ namespace TheGodfather.Modules.Misc
                                [Description("Role.")] DiscordRole role = null)
         {
             IEnumerable<DiscordMember> online = ctx.Guild.Members
-                .Where(m => m.Presence != null && m.Presence.Status != UserStatus.Offline);
+                .Where(m => !(m.Presence is null) && m.Presence.Status != UserStatus.Offline);
 
-            if (role != null)
+            if (!(role is null))
                 online = online.Where(m => m.Roles.Any(r => r.Id == role.Id));
 
             if (online.Count() == 0)

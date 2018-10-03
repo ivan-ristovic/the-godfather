@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
                 $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}\n" +
                 $"| Exception: {ex.GetType()}\n" +
                 $"| Message: {ex.Message ?? "<no message provided>"}\n" +
-                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}" : "")
+                (ex.InnerException is null ? "" : $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
             );
 
             var emb = new DiscordEmbedBuilder {
@@ -150,7 +150,7 @@ namespace TheGodfather.EventListeners
                     sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
                     sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
                     sb.AppendLine($"Details: {Formatter.Italic(ex.Message)}");
-                    if (ex.InnerException != null) {
+                    if (!(ex.InnerException is null)) {
                         sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
                         sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
                     }

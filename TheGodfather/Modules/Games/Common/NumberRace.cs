@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Games.Common
                     this.Winner = mctx.User;
                 } else {
                     await this.Channel.EmbedAsync($"{mctx.User.Mention} lost!", StaticDiscordEmoji.Dead);
-                    if (this.Winner != null && this.Winner.Id == mctx.User.Id)
+                    if (!(this.Winner is null) && this.Winner.Id == mctx.User.Id)
                         this.Winner = null;
                     this.participants.RemoveWhere(u => mctx.User.Id == u.Id);
                 }

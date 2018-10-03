@@ -232,7 +232,7 @@ namespace TheGodfather.Modules.Owner
                     emb.AddField("Some errors were omitted", $"{diag.Length - 3} errors not displayed");
                 }
 
-                if (msg != null)
+                if (!(msg is null))
                     msg = await msg.ModifyAsync(embed: emb.Build());
                 return;
             }
@@ -248,14 +248,14 @@ namespace TheGodfather.Modules.Owner
             }
             sw2.Stop();
 
-            if (exc != null) {
+            if (!(exc is null)) {
                 emb = new DiscordEmbedBuilder {
                     Title = "Execution failed",
                     Description = $"Execution failed after {sw2.ElapsedMilliseconds.ToString("#,##0")}ms with {Formatter.InlineCode($"{exc.GetType()} : {exc.Message}")}.",
                     Color = this.ModuleColor
                 };
 
-                if (msg != null)
+                if (!(msg is null))
                     msg = await msg.ModifyAsync(embed: emb.Build());
                 return;
             }
@@ -265,14 +265,14 @@ namespace TheGodfather.Modules.Owner
                 Color = DiscordColor.Aquamarine
             };
 
-            emb.AddField("Result", css.ReturnValue != null ? css.ReturnValue.ToString() : "No value returned", false);
+            emb.AddField("Result", css.ReturnValue is null ? "No value returned" : css.ReturnValue.ToString(), false);
             emb.AddField("Compilation time", string.Concat(sw1.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
             emb.AddField("Execution time", string.Concat(sw2.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
 
-            if (css.ReturnValue != null)
+            if (!(css.ReturnValue is null))
                 emb.AddField("Return type", css.ReturnValue.GetType().ToString(), true);
 
-            if (msg != null)
+            if (!(msg is null))
                 await msg.ModifyAsync(embed: emb.Build());
             else
                 await ctx.RespondAsync(embed: emb.Build());
@@ -346,7 +346,7 @@ namespace TheGodfather.Modules.Owner
 
                     IEnumerable<CheckBaseAttribute> execChecks = cmd.ExecutionChecks.AsEnumerable();
                     CommandGroup parent = cmd.Parent;
-                    while (parent != null) {
+                    while (!(parent is null)) {
                         execChecks = execChecks.Union(parent.ExecutionChecks);
                         parent = parent.Parent;
                     }
@@ -412,7 +412,7 @@ namespace TheGodfather.Modules.Owner
                             sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
 
                             if (arg.IsOptional)
-                                sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
+                                sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue is null ? "None" : arg.DefaultValue.ToString())).Append(")");
 
                             sb.AppendLine().AppendLine();
                         }

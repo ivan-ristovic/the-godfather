@@ -77,7 +77,7 @@ namespace TheGodfather
                 await DisposeAsync();
             } catch (Exception e) {
                 Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");
-                if (e.InnerException != null)
+                if (!(e.InnerException is null))
                     Console.WriteLine($"Inner exception: {e.InnerException.GetType()} :\n{e.InnerException.Message}");
             }
             Console.WriteLine("\nPress any key to exit...");
