@@ -75,12 +75,17 @@ namespace TheGodfather.Modules.Administration
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     if (gcfg.LoggingEnabled) {
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllLoggingExemptsAsync(ctx.Guild.Id);
                         var sb = new StringBuilder();
-                        foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
-                            sb.AppendLine($"{exempt.Type.ToUserFriendlyString()} exempted: {exempt.Id}");
-
-                        await this.InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("enabled")} at {ctx.Guild.GetChannel(gcfg.LogChannelId)?.Mention ?? "(unknown)"}!\n{sb.ToString()}");
+                        sb.Append(Formatter.Bold("Exempts:"));
+                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllLoggingExemptsAsync(ctx.Guild.Id);
+                        if (exempted.Any()) {
+                            sb.AppendLine();
+                            foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
+                                sb.AppendLine($"{exempt.Type.ToUserFriendlyString()}: {exempt.Id}");
+                        } else {
+                            sb.Append(" None");
+                        }
+                        await this.InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("enabled")} at {ctx.Guild.GetChannel(gcfg.LogChannelId)?.Mention ?? "(unknown)"}!\n\n{sb.ToString()}");
                     } else {
                         await this.InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("disabled")}!");
                     }
@@ -93,7 +98,7 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("ex", "exc")]
                 [UsageExamples("!guild cfg exempt @Someone",
                                "!guild cfg exempt #spam",
-                               "!guild cfg exempt Category")]
+                               "!guild cfg exempt Role")]
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("User to exempt.")] DiscordUser user)
                 {
@@ -125,7 +130,7 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("unex", "uex")]
                 [UsageExamples("!guild cfg unexempt @Someone",
                                "!guild cfg unexempt #spam",
-                               "!guild cfg unexempt Category")]
+                               "!guild cfg unexempt Role")]
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("User to unexempt.")] DiscordUser user)
                 {

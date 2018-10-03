@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public sealed class AntispamService : ProtectionService
     {
-        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> exemptedChannels;
+        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>> guildExempts;
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserSpamInfo>> guildSpamInfo;
         private readonly Timer refreshTimer;
 
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
         public AntispamService(TheGodfatherShard shard)
             : base(shard)
         {
-            this.exemptedChannels = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
+            this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildSpamInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserSpamInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(3));
             this.reason = "_gf: Antispam";
@@ -49,26 +49,21 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         public override bool TryAddGuildToWatch(ulong gid)
-        {
-            bool success = true;
-            success &= this.exemptedChannels.TryAdd(gid, new ConcurrentHashSet<ulong>());
-            success &= this.guildSpamInfo.TryAdd(gid, new ConcurrentDictionary<ulong, UserSpamInfo>());
-            return success;
-        }
+            => this.guildSpamInfo.TryAdd(gid, new ConcurrentDictionary<ulong, UserSpamInfo>());
 
         public override bool TryRemoveGuildFromWatch(ulong gid)
         {
             bool success = true;
-            success &= this.exemptedChannels.TryRemove(gid, out _);
+            success &= this.guildExempts.TryRemove(gid, out _);
             success &= this.guildSpamInfo.TryRemove(gid, out _);
             return success;
         }
 
 
-        public async Task LoadExemptedChannelsForGuildAsync(ulong gid)
+        public async Task UpdateExemptsForGuildAsync(ulong gid)
         {
-            IReadOnlyList<ulong> exempts = await this.shard.DatabaseService.GetAntispamExemptsForGuildAsync(gid);
-            this.exemptedChannels[gid] = new ConcurrentHashSet<ulong>(exempts);
+            IReadOnlyList<ExemptedEntity> exempts = await this.shard.DatabaseService.GetAllAntispamExemptsAsync(gid);
+            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(exempts);
         }
 
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, AntispamSettings settings)
@@ -76,11 +71,18 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildSpamInfo.ContainsKey(e.Guild.Id)) {
                 if (!this.TryAddGuildToWatch(e.Guild.Id))
                     throw new ConcurrentOperationException("Failed to add guild to antispam watch list!");
-                await this.LoadExemptedChannelsForGuildAsync(e.Guild.Id);
+                await this.UpdateExemptsForGuildAsync(e.Guild.Id);
             }
 
-            if (this.exemptedChannels.TryGetValue(e.Guild.Id, out var exempts) && exempts.Contains(e.Channel.Id))
-                return;
+            var member = e.Author as DiscordMember;
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out var exempts)) {
+                if (
+                    exempts.Any(ee => ee.Type == EntityType.Channel && ee.Id == e.Channel.Id) ||
+                    exempts.Any(ee => ee.Type == EntityType.Member && ee.Id == e.Author.Id) ||
+                    exempts.Any(ee => ee.Type == EntityType.Role && member.Roles.Any(r => r.Id == ee.Id))
+                )
+                    return;
+            }
 
             var gSpamInfo = this.guildSpamInfo[e.Guild.Id];
             if (!gSpamInfo.ContainsKey(e.Author.Id)) {
@@ -90,7 +92,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
-                await this.PunishMemberAsync(e.Guild, e.Author as DiscordMember, settings.Action);
+                await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 spamInfo.Reset();
             }
         }

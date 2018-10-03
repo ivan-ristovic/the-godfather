@@ -44,24 +44,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             => db.UnexemptAsync("antispam_exempt", gid, xid, type);
         #endregion
 
-        #region GUILD_PROTECTION
-        public static async Task<IReadOnlyList<ulong>> GetAntispamExemptsForGuildAsync(this DBService db, ulong gid)
-        {
-            var exempts = new List<ulong>();
-
-            await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = $"SELECT cid FROM gf.antispam_exempt WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    if (await reader.ReadAsync().ConfigureAwait(false))
-                        exempts.Add((ulong)(long)reader["cid"]);
-                }
-            });
-
-            return exempts.AsReadOnly();
-        }
-
+        #region PROTECTION_SETTINGS
         public static async Task<AntifloodSettings> GetAntifloodSettingsAsync(this DBService db, ulong gid)
         {
             var settings = new AntifloodSettings();
@@ -133,7 +116,7 @@ namespace TheGodfather.Modules.Administration.Extensions
         }
         #endregion
 
-        #region GUILD_CONFIG
+        #region CONFIG
         public static async Task<DiscordRole> GetMuteRoleAsync(this DBService db, DiscordGuild guild)
         {
             ulong rid = (ulong)await db.GetValueInternalAsync<long>(guild.Id, "mute_rid");

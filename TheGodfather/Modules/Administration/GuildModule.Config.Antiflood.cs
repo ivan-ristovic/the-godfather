@@ -121,10 +121,10 @@ namespace TheGodfather.Modules.Administration
                     AntifloodSettings settings = await this.Database.GetAntifloodSettingsAsync(ctx.Guild.Id);
                     if (settings.Enabled) {
                         var sb = new StringBuilder();
-                        sb.Append("Sensitivity: ").AppendLine(settings.Sensitivity.ToString());
-                        sb.Append("Cooldown: ").AppendLine(settings.Cooldown.ToString());
-                        sb.Append("Action: ").AppendLine(settings.Action.ToString());
-                        await this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold("enabled")}\n{sb.ToString()}");
+                        sb.Append(Formatter.Bold("Sensitivity: ")).AppendLine(settings.Sensitivity.ToString());
+                        sb.Append(Formatter.Bold("Cooldown: ")).AppendLine(settings.Cooldown.ToString());
+                        sb.Append(Formatter.Bold("Action: ")).AppendLine(settings.Action.ToString());
+                        await this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold("enabled")}\n\n{sb.ToString()}");
                     } else {
                         await this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold("disabled")}");
                     }
