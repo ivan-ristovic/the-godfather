@@ -232,6 +232,10 @@ namespace TheGodfather.Services
                 cmd.CommandText = "SELECT gid, id, type FROM gf.antispam_exempt LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await this.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, id, type FROM gf.ratelimit_exempt LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 
