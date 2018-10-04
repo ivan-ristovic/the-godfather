@@ -23,9 +23,9 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseGuildConfig> GuildCfg { get; set; }
         public virtual DbSet<DatabaseInsults> Insults { get; set; }
         public virtual DbSet<DatabaseItems> Items { get; set; }
-        public virtual DbSet<DatabaseLogExempt> LogExempt { get; set; }
+        public virtual DbSet<DatabaseExempt> LogExempt { get; set; }
         public virtual DbSet<DatabaseMemes> Memes { get; set; }
-        public virtual DbSet<DatabaseMessageCount> Msgcount { get; set; }
+        public virtual DbSet<DatabaseMessageCount> MessageCount { get; set; }
         public virtual DbSet<DatabasePrivileged> Privileged { get; set; }
         public virtual DbSet<DatabasePurchases> Purchases { get; set; }
         public virtual DbSet<DatabaseRanks> Ranks { get; set; }
@@ -465,7 +465,7 @@ namespace TheGodfather.Database
                     .HasForeignKey(d => d.Gid)
                     .HasConstraintName("items_fkey");
             });
-            model.Entity<DatabaseLogExempt>(entity => {
+            model.Entity<DatabaseExempt>(entity => {
                 entity.HasKey(e => new { e.Id, e.Type, e.Gid })
                     .HasName("log_exempt_pkey");
 
