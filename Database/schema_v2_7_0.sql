@@ -66,6 +66,17 @@ CREATE TABLE gf.accounts (
 
 
 --
+-- Name: antispam_exempt; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.antispam_exempt (
+    id bigint NOT NULL,
+    type character(1) NOT NULL,
+    gid bigint NOT NULL
+);
+
+
+--
 -- Name: assignable_roles; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -454,6 +465,17 @@ CREATE TABLE gf.ranks (
 
 
 --
+-- Name: ratelimit_exempt; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.ratelimit_exempt (
+    id bigint NOT NULL,
+    type character(1) NOT NULL,
+    gid bigint NOT NULL
+);
+
+
+--
 -- Name: reminders; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -763,6 +785,14 @@ ALTER TABLE ONLY gf.accounts
 
 
 --
+-- Name: antispam_exempt antispam_exempt_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.antispam_exempt
+    ADD CONSTRAINT antispam_exempt_pkey PRIMARY KEY (id, type, gid);
+
+
+--
 -- Name: assignable_roles assignable_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -936,6 +966,14 @@ ALTER TABLE ONLY gf.purchases
 
 ALTER TABLE ONLY gf.ranks
     ADD CONSTRAINT ranks_pkey PRIMARY KEY (gid, rank);
+
+
+--
+-- Name: ratelimit_exempt ratelimit_exempt_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.ratelimit_exempt
+    ADD CONSTRAINT ratelimit_exempt_pkey PRIMARY KEY (id, type, gid);
 
 
 --
@@ -1164,6 +1202,14 @@ ALTER TABLE ONLY gf.accounts
 
 
 --
+-- Name: antispam_exempt antispam_exempt_gid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.antispam_exempt
+    ADD CONSTRAINT antispam_exempt_gid_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: automatic_roles ar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -1257,6 +1303,14 @@ ALTER TABLE ONLY gf.purchases
 
 ALTER TABLE ONLY gf.ranks
     ADD CONSTRAINT ranks_gid_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: ratelimit_exempt ratelimit_exempt_gid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.ratelimit_exempt
+    ADD CONSTRAINT ratelimit_exempt_gid_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

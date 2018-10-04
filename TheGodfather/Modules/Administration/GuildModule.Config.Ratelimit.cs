@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
-
+                
                 [Command("exempt"), Priority(0)]
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Channels to exempt.")] params DiscordChannel[] channels)
