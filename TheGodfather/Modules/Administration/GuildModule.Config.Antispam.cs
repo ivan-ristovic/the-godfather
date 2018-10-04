@@ -228,11 +228,11 @@ namespace TheGodfather.Modules.Administration
 
                 #region COMMAND_ANTISPAM_UNEXEMPT
                 [Command("unexempt"), Priority(2)]
-                [Description("Remove an exempted entity and allow logging for actions regarding that entity.")]
+                [Description("Remove an exempted entity and allow antispam watch for that entity.")]
                 [Aliases("unex", "uex")]
-                [UsageExamples("!guild cfg unexempt @Someone",
-                               "!guild cfg unexempt #spam",
-                               "!guild cfg unexempt Category")]
+                [UsageExamples("!guild cfg antispam unexempt @Someone",
+                               "!guild cfg antispam unexempt #spam",
+                               "!guild cfg antispam unexempt Category")]
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Users to unexempt.")] params DiscordUser[] users)
                 {

@@ -3,6 +3,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +12,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -86,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                     => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Mute);
 
                 [GroupCommand, Priority(0)]
-                public Task ExecuteGroupAsync(CommandContext ctx)
+                public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
 
@@ -94,9 +97,20 @@ namespace TheGodfather.Modules.Administration
                         var sb = new StringBuilder();
                         sb.Append("Sensitivity: ").AppendLine(gcfg.RatelimitSettings.Sensitivity.ToString());
                         sb.Append("Action: ").AppendLine(gcfg.RatelimitSettings.Action.ToString());
-                        return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("enabled")}\n{sb.ToString()}");
+
+                        sb.AppendLine().Append(Formatter.Bold("Exempts:"));
+                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllRatelimitExemptsAsync(ctx.Guild.Id);
+                        if (exempted.Any()) {
+                            sb.AppendLine();
+                            foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
+                                sb.AppendLine($"{exempt.Type.ToUserFriendlyString()}: {exempt.Id}");
+                        } else {
+                            sb.Append(" None");
+                        }
+
+                        await this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("enabled")}\n{sb.ToString()}");
                     } else {
-                        return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("disabled")}");
+                        await this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold("disabled")}");
                     }
                 }
 
@@ -160,6 +174,104 @@ namespace TheGodfather.Modules.Administration
                     }
 
                     await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSettings.Sensitivity.ToString())} msgs per 5s", important: false);
+                }
+                #endregion
+
+                #region COMMAND_RATELIMIT_EXEMPT
+                [Command("exempt"), Priority(2)]
+                [Description("Disable the ratelimit watch for some entities (users, channels, etc).")]
+                [Aliases("ex", "exc")]
+                [UsageExamples("!guild cfg ratelimit exempt @Someone",
+                               "!guild cfg ratelimit exempt #spam",
+                               "!guild cfg ratelimit exempt Role")]
+                public async Task ExemptAsync(CommandContext ctx,
+                                             [Description("Users to exempt.")] params DiscordUser[] users)
+                {
+                    if (!users.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordUser user in users)
+                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
+                }
+
+                [Command("exempt"), Priority(1)]
+                public async Task ExemptAsync(CommandContext ctx,
+                                             [Description("Roles to exempt.")] params DiscordRole[] roles)
+                {
+                    if (!roles.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordRole role in roles)
+                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
+                }
+
+                [Command("exempt"), Priority(0)]
+                public async Task ExemptAsync(CommandContext ctx,
+                                             [Description("Channels to exempt.")] params DiscordChannel[] channels)
+                {
+                    if (!channels.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordChannel channel in channels)
+                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
+                }
+                #endregion
+
+                #region COMMAND_ANTISPAM_UNEXEMPT
+                [Command("unexempt"), Priority(2)]
+                [Description("Remove an exempted entity and allow ratelimit watch for that entity.")]
+                [Aliases("unex", "uex")]
+                [UsageExamples("!guild cfg ratelimit unexempt @Someone",
+                               "!guild cfg ratelimit unexempt #spam",
+                               "!guild cfg ratelimit unexempt Category")]
+                public async Task UnxemptAsync(CommandContext ctx,
+                                              [Description("Users to unexempt.")] params DiscordUser[] users)
+                {
+                    if (!users.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordUser user in users)
+                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, $"Successfully unexempted given users.", important: false);
+                }
+
+                [Command("unexempt"), Priority(1)]
+                public async Task UnxemptAsync(CommandContext ctx,
+                                              [Description("Roles to unexempt.")] params DiscordRole[] roles)
+                {
+                    if (!roles.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordRole role in roles)
+                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, $"Successfully unexempted given roles.", important: false);
+                }
+
+                [Command("unexempt"), Priority(0)]
+                public async Task UnxemptAsync(CommandContext ctx,
+                                              [Description("Channels to unexempt.")] params DiscordChannel[] channels)
+                {
+                    if (!channels.Any())
+                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
+
+                    foreach (DiscordChannel channel in channels)
+                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+
+                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    await this.InformAsync(ctx, $"Successfully unexempted given channel.", important: false);
                 }
                 #endregion
             }

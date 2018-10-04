@@ -8,15 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
     public sealed class RatelimitService : ProtectionService
     {
+        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>> guildExempts;
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>> guildRatelimitInfo;
         private readonly Timer refreshTimer;
 
@@ -39,6 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
         public RatelimitService(TheGodfatherShard shard)
             : base(shard)
         {
+            this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildRatelimitInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
             this.reason = "_gf: Ratelimit hit";
@@ -52,10 +55,29 @@ namespace TheGodfather.Modules.Administration.Services
             => this.guildRatelimitInfo.TryRemove(gid, out _);
 
 
+        public async Task UpdateExemptsForGuildAsync(ulong gid)
+        {
+            IReadOnlyList<ExemptedEntity> exempts = await this.shard.DatabaseService.GetAllRatelimitExemptsAsync(gid);
+            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(exempts);
+        }
+
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, RatelimitSettings settings)
         {
-            if (!this.guildRatelimitInfo.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
-                throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
+            if (!this.guildRatelimitInfo.ContainsKey(e.Guild.Id)) {
+                if (!this.TryAddGuildToWatch(e.Guild.Id))
+                    throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
+                await this.UpdateExemptsForGuildAsync(e.Guild.Id);
+            }
+
+            var member = e.Author as DiscordMember;
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out var exempts)) {
+                if (exempts.Any(ee => ee.Type == EntityType.Channel && ee.Id == e.Channel.Id))
+                    return;
+                if (exempts.Any(ee => ee.Type == EntityType.Member && ee.Id == e.Author.Id))
+                    return;
+                if (exempts.Any(ee => ee.Type == EntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
+                    return;
+            }
 
             var gRateInfo = this.guildRatelimitInfo[e.Guild.Id];
             if (!gRateInfo.ContainsKey(e.Author.Id)) {
@@ -65,7 +87,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             if (gRateInfo.TryGetValue(e.Author.Id, out UserRatelimitInfo rateInfo) && !rateInfo.TryDecrementAllowedMessageCount()) {
-                await this.PunishMemberAsync(e.Guild, e.Author as DiscordMember, settings.Action);
+                await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 rateInfo.Reset();
             }
         }
