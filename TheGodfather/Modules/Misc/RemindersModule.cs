@@ -126,14 +126,13 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!remind list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Any(t => ((SendMessageTaskInfo)t.TaskInfo).ChannelId == ctx.Channel.Id))
-                throw new CommandFailedException("No reminders meet the speficied criteria.");
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
+                throw new CommandFailedException("You haven't issued any reminders.");
 
             return ctx.SendCollectionInPagesAsync(
-                $"Your reminders in this channel:",
+                "Your reminders:",
                 texecs
                     .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
-                    .Where(tup => tup.TaskInfo.ChannelId == ctx.Channel.Id)
                     .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
@@ -195,7 +194,7 @@ namespace TheGodfather.Modules.Misc
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
             var task = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database.ContextBuilder, ctx.Client, task);
 
             if (repeat) 
                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);

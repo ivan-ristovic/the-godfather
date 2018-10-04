@@ -68,6 +68,7 @@ namespace TheGodfather
                 LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
+                await Task.Delay(TimeSpan.FromSeconds(10));
                 await RegisterPeriodicTasksAsync();
 
                 try {
@@ -134,7 +135,9 @@ namespace TheGodfather
 
             GlobalDatabaseContext = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
 
-            DatabaseService = new DBService(BotConfiguration.DatabaseConfig);
+            DatabaseService = new DBService(BotConfiguration.DatabaseConfig) {
+                ContextBuilder = GlobalDatabaseContext
+            };
         }
 
         private static void LoadSharedDataFromDatabase()
@@ -246,7 +249,7 @@ namespace TheGodfather
 
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, DatabaseService, SharedData);
+                var shard = new TheGodfatherShard(i, DatabaseService, GlobalDatabaseContext, SharedData);
                 shard.Initialize();
                 Shards.Add(shard);
             }
@@ -264,8 +267,25 @@ namespace TheGodfather
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
-            await RegisterSavedTasks(await DatabaseService.GetAllSavedTasksAsync());
-            await RegisterReminders(await DatabaseService.GetAllRemindersAsync());
+            using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
+                await RegisterSavedTasks(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
+                    t => t.Id, 
+                    t => {
+                        switch ((SavedTaskType)t.Type) {
+                            case SavedTaskType.Unban:
+                                return new UnbanTaskInfo((ulong)t.Gid, (ulong)t.Uid, t.ExecutionTime);
+                            case SavedTaskType.Unmute:
+                                return new UnmuteTaskInfo((ulong)t.Gid, (ulong)t.Uid, (ulong)t.Rid, t.ExecutionTime);
+                            default:
+                                return null;
+                        }
+                    })
+                );
+                await RegisterReminders(db.Reminders.ToDictionary(
+                    t => t.Id,
+                    t => new SendMessageTaskInfo((ulong)t.Cid, (ulong)t.Uid, t.Message, t.ExecutionTime, t.Repeat, t.Interval)
+                ));
+            }
 
 
             async Task RegisterSavedTasks(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
@@ -294,7 +314,7 @@ namespace TheGodfather
 
             async Task<bool> RegisterTask(int id, SavedTaskInfo tinfo)
             {
-                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, DatabaseService);
+                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, GlobalDatabaseContext);
                 if (texec.TaskInfo.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
                     return false;

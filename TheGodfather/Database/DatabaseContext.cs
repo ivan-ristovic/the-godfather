@@ -31,8 +31,8 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabasePurchases> Purchases { get; set; }
         public virtual DbSet<DatabaseRanks> Ranks { get; set; }
         public virtual DbSet<DatabaseRatelimitExempt> RatelimitExempts { get; set; }
-        public virtual DbSet<DatabaseReminders> Reminders { get; set; }
-        public virtual DbSet<DatabaseSavedTasks> SavedTasks { get; set; }
+        public virtual DbSet<DatabaseReminder> Reminders { get; set; }
+        public virtual DbSet<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual DbSet<DatabaseStats> Stats { get; set; }
         public virtual DbSet<DatabaseStatuses> Statuses { get; set; }
         public virtual DbSet<DatabaseSubscriptions> Subscriptions { get; set; }
@@ -581,7 +581,7 @@ namespace TheGodfather.Database
                     .HasForeignKey(d => d.Gid)
                     .HasConstraintName("ranks_gid_fkey");
             });
-            model.Entity<DatabaseReminders>(entity => {
+            model.Entity<DatabaseReminder>(entity => {
                 entity.ToTable("reminders", "gf");
 
                 entity.Property(e => e.Id)
@@ -605,7 +605,7 @@ namespace TheGodfather.Database
 
                 entity.Property(e => e.Uid).HasColumnName("uid");
             });
-            model.Entity<DatabaseSavedTasks>(entity => {
+            model.Entity<DatabaseSavedTask>(entity => {
                 entity.ToTable("saved_tasks", "gf");
 
                 entity.HasIndex(e => e.Gid)

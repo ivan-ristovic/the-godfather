@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -25,16 +27,27 @@ namespace TheGodfather.Common
 
         private readonly DiscordClient client;
         private readonly SharedData shared;
-        private readonly DBService db;
+        private readonly DatabaseContextBuilder dbb;
         private Timer timer;
 
         
-        public static async Task ScheduleAsync(SharedData shared, DBService db, DiscordClient client, SavedTaskInfo task)
+        public static async Task ScheduleAsync(SharedData shared, DatabaseContextBuilder dbb, DiscordClient client, SavedTaskInfo task)
         {
             SavedTaskExecutor texec = null;
             try {
-                int id = await db.AddSavedTaskAsync(task);
-                texec = new SavedTaskExecutor(id, client, task, shared, db);
+                using (DatabaseContext db = dbb.CreateContext()) {
+                    if (task is SendMessageTaskInfo) {
+                        var dbtask = DatabaseReminder.FromSavedTaskInfo(task);
+                        db.Reminders.Add(dbtask);
+                        await db.SaveChangesAsync();
+                        texec = new SavedTaskExecutor(dbtask.Id, client, task, shared, dbb);
+                    } else {
+                        var dbtask = DatabaseSavedTask.FromSavedTaskInfo(task);
+                        db.SavedTasks.Add(dbtask);
+                        await db.SaveChangesAsync();
+                        texec = new SavedTaskExecutor(dbtask.Id, client, task, shared, dbb);
+                    }
+                }
                 texec.Schedule();
             } catch (Exception e) {
                 await texec?.UnscheduleAsync();
@@ -52,13 +65,13 @@ namespace TheGodfather.Common
         }
 
 
-        public SavedTaskExecutor(int id, DiscordClient client, SavedTaskInfo task, SharedData data, DBService db)
+        public SavedTaskExecutor(int id, DiscordClient client, SavedTaskInfo task, SharedData data, DatabaseContextBuilder dbb)
         {
             this.Id = id;
             this.client = client;
             this.TaskInfo = task;
             this.shared = data;
-            this.db = db;
+            this.dbb = dbb;
         }
 
 
@@ -103,13 +116,17 @@ namespace TheGodfather.Common
             try {
                 switch (this.TaskInfo) {
                     case SendMessageTaskInfo smti:
-                        DiscordChannel channel = await this.client.GetChannelAsync(smti.ChannelId);
+                        DiscordChannel channel;
+                        if (smti.ChannelId != 0)
+                            channel = await this.client.GetChannelAsync(smti.ChannelId);
+                        else
+                            channel = await this.client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
                         if (smti.IsRepeating) {
                             unschedule = false;
                             this.Schedule();
                         } else {
-                            await channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                            await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
                                 Description = $"{StaticDiscordEmoji.BoardPieceX} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
                                 Color = DiscordColor.Red
                             });
@@ -132,7 +149,7 @@ namespace TheGodfather.Common
         }
 
 
-        private Task UnscheduleAsync()
+        private async Task UnscheduleAsync()
         {
             this.Dispose();
 
@@ -144,14 +161,22 @@ namespace TheGodfather.Common
                         if (texecs.Count == 0)
                             this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
                     }
-                    return this.db.RemoveReminderAsync(this.Id);
+                    using (DatabaseContext db = this.dbb.CreateContext()) {
+                        db.Reminders.RemoveRange(db.Reminders.Where(t => t.Id == this.Id));
+                        await db.SaveChangesAsync();
+                    }
+                    break;
                 case UnbanTaskInfo _:
                 case UnmuteTaskInfo _:
                     if (this.shared.TaskExecuters.ContainsKey(this.Id)) {
                         if (!this.shared.TaskExecuters.TryRemove(this.Id, out var _))
                             throw new ConcurrentOperationException("Failed to unschedule saved task!");
                     }
-                    return this.db.RemoveSavedTaskAsync(this.Id);
+                    using (DatabaseContext db = this.dbb.CreateContext()) {
+                        db.SavedTasks.RemoveRange(db.SavedTasks.Where(t => t.Id == this.Id));
+                        await db.SaveChangesAsync();
+                    }
+                    break;
                 default:
                     throw new ArgumentException("Unknown saved task info type!", nameof(this.TaskInfo));
             }

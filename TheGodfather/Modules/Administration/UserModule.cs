@@ -361,7 +361,7 @@ namespace TheGodfather.Modules.Administration
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToString())} UTC!");
 
             var task = new UnbanTaskInfo(ctx.Guild.Id, member.Id, until);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database.ContextBuilder, ctx.Client, task);
         }
 
         [Command("tempban"), Priority(2)]
@@ -386,7 +386,7 @@ namespace TheGodfather.Modules.Administration
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(user.ToString())} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
 
             var task = new UnbanTaskInfo(ctx.Guild.Id, user.Id, until);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database.ContextBuilder, ctx.Client, task);
         }
 
         [Command("tempban"), Priority(0)]
