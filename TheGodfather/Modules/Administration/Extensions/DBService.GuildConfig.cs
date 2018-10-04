@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Administration.Extensions
 {
     internal static class DBServiceGuildConfigExtensions
     {
-        #region LOG_EXEMPTS
+        #region EXEMPTS
         public static Task<IReadOnlyList<ExemptedEntity>> GetAllLoggingExemptsAsync(this DBService db, ulong gid)
             => db.GetAllExemptsAsync("log_exempt", gid);
 
@@ -28,9 +28,8 @@ namespace TheGodfather.Modules.Administration.Extensions
 
         public static Task UnexemptLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
             => db.UnexemptAsync("log_exempt", gid, xid, type);
-        #endregion
 
-        #region ANTISPAM_EXEMPTS
+
         public static Task<IReadOnlyList<ExemptedEntity>> GetAllAntispamExemptsAsync(this DBService db, ulong gid)
             => db.GetAllExemptsAsync("antispam_exempt", gid);
 
@@ -42,6 +41,19 @@ namespace TheGodfather.Modules.Administration.Extensions
 
         public static Task UnexemptAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type)
             => db.UnexemptAsync("antispam_exempt", gid, xid, type);
+
+
+        public static Task<IReadOnlyList<ExemptedEntity>> GetAllRatelimitExemptsAsync(this DBService db, ulong gid)
+            => db.GetAllExemptsAsync("ratelimit_exempt", gid);
+
+        public static Task<bool> IsExemptedFromRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.IsExemptedAsync("ratelimit_exempt", gid, xid, type);
+
+        public static Task ExemptRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.ExemptAsync("ratelimit_exempt", gid, xid, type);
+
+        public static Task UnexemptRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+            => db.UnexemptAsync("ratelimit_exempt", gid, xid, type);
         #endregion
 
         #region PROTECTION_SETTINGS
