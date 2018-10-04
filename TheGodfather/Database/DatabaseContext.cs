@@ -9,6 +9,7 @@ namespace TheGodfather.Database
     public class DatabaseContext : DbContext
     {
         public virtual DbSet<DatabaseAccounts> Accounts { get; set; }
+        public virtual DbSet<DatabaseAntispamExempt> AntispamExempts { get; set; }
         public virtual DbSet<AssignableRoles> AssignableRoles { get; set; }
         public virtual DbSet<DatabaseAutomaticRoles> AutomaticRoles { get; set; }
         public virtual DbSet<DatabaseBirthdays> Birthdays { get; set; }
@@ -23,12 +24,13 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseGuildConfig> GuildCfg { get; set; }
         public virtual DbSet<DatabaseInsults> Insults { get; set; }
         public virtual DbSet<DatabaseItems> Items { get; set; }
-        public virtual DbSet<DatabaseExempt> LogExempt { get; set; }
+        public virtual DbSet<DatabaseLogExempt> LogExempts { get; set; }
         public virtual DbSet<DatabaseMemes> Memes { get; set; }
         public virtual DbSet<DatabaseMessageCount> MessageCount { get; set; }
         public virtual DbSet<DatabasePrivileged> Privileged { get; set; }
         public virtual DbSet<DatabasePurchases> Purchases { get; set; }
         public virtual DbSet<DatabaseRanks> Ranks { get; set; }
+        public virtual DbSet<DatabaseRatelimitExempt> RatelimitExempts { get; set; }
         public virtual DbSet<DatabaseReminders> Reminders { get; set; }
         public virtual DbSet<DatabaseSavedTasks> SavedTasks { get; set; }
         public virtual DbSet<DatabaseStats> Stats { get; set; }

@@ -64,7 +64,7 @@ namespace TheGodfather
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
-                await InitializeDatabaseServiceAsync();
+                InitializeDatabaseContext();
                 LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
@@ -128,18 +128,13 @@ namespace TheGodfather
             BotConfiguration = JsonConvert.DeserializeObject<BotConfig>(json);
         }
 
-        private static async Task InitializeDatabaseServiceAsync()
+        private static void InitializeDatabaseContext()
         {
             Console.Write("\r[2/5] Establishing database connection...         ");
 
             GlobalDatabaseContext = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
 
             DatabaseService = new DBService(BotConfiguration.DatabaseConfig);
-            await DatabaseService.InitializeAsync();
-
-            Console.Write("\r[2/5] Checking database integrity...              ");
-
-            await DatabaseService.CheckIntegrityAsync();
         }
 
         private static void LoadSharedDataFromDatabase()
