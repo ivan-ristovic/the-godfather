@@ -15,7 +15,7 @@ namespace TheGodfather.Database.Entities
             this.EmojiReactions = new HashSet<DatabaseEmojiReactions>();
             this.Filters = new HashSet<DatabaseFilters>();
             this.Items = new HashSet<DatabaseItems>();
-            this.LogExempt = new HashSet<DatabaseLogExempt>();
+            this.LogExempt = new HashSet<DatabaseExempt>();
             this.Memes = new HashSet<DatabaseMemes>();
             this.Ranks = new HashSet<DatabaseRanks>();
             this.SavedTasks = new HashSet<DatabaseSavedTasks>();
@@ -59,7 +59,7 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseEmojiReactions> EmojiReactions { get; set; }
         public virtual ICollection<DatabaseFilters> Filters { get; set; }
         public virtual ICollection<DatabaseItems> Items { get; set; }
-        public virtual ICollection<DatabaseLogExempt> LogExempt { get; set; }
+        public virtual ICollection<DatabaseExempt> LogExempt { get; set; }
         public virtual ICollection<DatabaseMemes> Memes { get; set; }
         public virtual ICollection<DatabaseRanks> Ranks { get; set; }
         public virtual ICollection<DatabaseSavedTasks> SavedTasks { get; set; }

@@ -65,7 +65,7 @@ namespace TheGodfather
 
                 await LoadBotConfigAsync();
                 await InitializeDatabaseServiceAsync();
-                await LoadSharedDataFromDatabaseAsync();
+                LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
                 await RegisterPeriodicTasksAsync();
@@ -117,7 +117,7 @@ namespace TheGodfather
 
                 Console.WriteLine("New default configuration file has been created at:");
                 Console.WriteLine(fi.FullName);
-                Console.WriteLine("Please fill it with appropriate values then re-run the bot.");
+                Console.WriteLine("Please fill it with appropriate values and re-run the bot.");
 
                 throw new IOException("Configuration file not found!");
             }
@@ -142,7 +142,7 @@ namespace TheGodfather
             await DatabaseService.CheckIntegrityAsync();
         }
 
-        private static async Task LoadSharedDataFromDatabaseAsync()
+        private static void LoadSharedDataFromDatabase()
         {
             Console.Write("\r[3/5] Loading data from database...               ");
 
@@ -154,7 +154,6 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
             ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
             ConcurrentDictionary<ulong, ulong> msgcount;
-
 
             using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.Cid));
@@ -186,49 +185,63 @@ namespace TheGodfather
                         SuggestionsEnabled = entry.SuggestionsEnabled
                     }
                 )));
-                db.Filters.GroupBy(f => (ulong)f.Gid, (k, fs) => new ConcurrentHashSet<Filter>(fs.Select(f => new Filter(f.Id, f.Filter))));
                 filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
-                    db.Filters.
+                    db.Filters
+                        .GroupBy(f => (ulong)f.Gid)
+                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Filter))))
                 );
+                msgcount = new ConcurrentDictionary<ulong, ulong>(
+                    db.MessageCount
+                        .GroupBy(mc => (ulong)mc.Uid)
+                        .ToDictionary(g => g.Key, g => (ulong)g.First().Count)
+                );
+
+                treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
+                foreach (DatabaseTextReactions dbtr in db.TextReactions) {
+                    ulong gid = (ulong)dbtr.Gid;
+                    if (treactions.TryGetValue(gid, out var trlist)) {
+                        if (trlist is null)
+                            trlist = new ConcurrentHashSet<TextReaction>();
+                    } else {
+                        treactions.TryAdd(gid, new ConcurrentHashSet<TextReaction>());
+                    }
+                    TextReaction conflict = treactions[gid].FirstOrDefault(tr => tr.Response == dbtr.Response);
+                    if (conflict is null) {
+                        treactions[gid].Add(new TextReaction(dbtr.Id, dbtr.Trigger, dbtr.Response, isRegex: true));
+                    } else {
+                        conflict.AddTrigger(dbtr.Trigger, isRegex: true);
+                    }
+                }
+
+                ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
+                foreach (DatabaseEmojiReactions dber in db.EmojiReactions) {
+                    ulong gid = (ulong)dber.Gid;
+                    if (ereactions.TryGetValue(gid, out var erlist)) {
+                        if (erlist is null)
+                            erlist = new ConcurrentHashSet<EmojiReaction>();
+                    } else {
+                        ereactions.TryAdd(gid, new ConcurrentHashSet<EmojiReaction>());
+                    }
+                    EmojiReaction conflict = ereactions[gid].FirstOrDefault(er => er.Response == dber.Reaction);
+                    if (conflict is null) {
+                        ereactions[gid].Add(new EmojiReaction(dber.Id, dber.Trigger, dber.Reaction, isRegex: true));
+                    } else {
+                        conflict.AddTrigger(dber.Trigger, isRegex: true);
+                    }
+                }
             }
-            
-
-            // Guild filters
-            IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
-            var gfilters = 
-            foreach ((ulong gid, Filter filter) in gfilters_db)
-                gfilters.AddOrUpdate(gid, new ConcurrentHashSet<Filter>(), (k, v) => { v.Add(filter); return v; });
-            
-            // Guild text reactions
-            IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
-            var gtextreactions = new ();
-            foreach ((ulong gid, List<TextReaction> reactions) in gtextreactions_db)
-                gtextreactions[gid] = new ConcurrentHashSet<TextReaction>(reactions);
-
-            // Guild emoji reactions
-            IReadOnlyDictionary<ulong, List<EmojiReaction>> gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
-            var gemojireactions = new ();
-            foreach (KeyValuePair<ulong, List<EmojiReaction>> reaction in gemojireactions_db)
-                gemojireactions[reaction.Key] = new ConcurrentHashSet<EmojiReaction>(reaction.Value);
-
-            // User message count (XP)
-            IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetXpForAllUsersAsync();
-            var msgcount = ();
-            foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
-                msgcount[entry.Key] = entry.Value;
-
 
             SharedData = new SharedData() {
                 BlockedChannels = blockedChannels,
                 BlockedUsers = blockedUsers,
                 BotConfiguration = BotConfiguration,
                 MainLoopCts = new CancellationTokenSource(),
-                EmojiReactions = gemojireactions,
-                Filters = gfilters,
+                EmojiReactions = ereactions,
+                Filters = filters,
                 GuildConfigurations = guildConfigurations,
                 LogProvider = new Logger(BotConfiguration),
                 MessageCount = msgcount,
-                TextReactions = gtextreactions
+                TextReactions = treactions
             };
         }
 
