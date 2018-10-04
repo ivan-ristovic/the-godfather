@@ -18,7 +18,7 @@ namespace TheGodfather.Database.Entities
             this.LogExempt = new HashSet<DatabaseExempt>();
             this.Memes = new HashSet<DatabaseMemes>();
             this.Ranks = new HashSet<DatabaseRanks>();
-            this.SavedTasks = new HashSet<DatabaseSavedTasks>();
+            this.SavedTasks = new HashSet<DatabaseSavedTask>();
             this.TextReactions = new HashSet<DatabaseTextReactions>();
         }
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseExempt> LogExempt { get; set; }
         public virtual ICollection<DatabaseMemes> Memes { get; set; }
         public virtual ICollection<DatabaseRanks> Ranks { get; set; }
-        public virtual ICollection<DatabaseSavedTasks> SavedTasks { get; set; }
+        public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual ICollection<DatabaseTextReactions> TextReactions { get; set; }
     }
 }

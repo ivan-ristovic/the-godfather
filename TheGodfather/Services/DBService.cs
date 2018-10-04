@@ -95,5 +95,9 @@ namespace TheGodfather.Services
             await connection.OpenAsync().ConfigureAwait(false);
             return connection;
         }
+
+
+        // TEMP
+        public DatabaseContextBuilder ContextBuilder { get; internal set; }
     }
 }

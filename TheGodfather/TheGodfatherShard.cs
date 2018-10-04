@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
+using TheGodfather.Database;
 using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
@@ -47,14 +48,16 @@ namespace TheGodfather
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
         public DBService DatabaseService { get; private set; }
+        public DatabaseContextBuilder Database { get; private set; }
 
         public bool IsListening => this.SharedData.ListeningStatus;
 
 
-        public TheGodfatherShard(int sid, DBService db, SharedData shared)
+        public TheGodfatherShard(int sid, DBService db, DatabaseContextBuilder dbb, SharedData shared)
         {
             this.Id = sid;
             this.DatabaseService = db;
+            this.Database = dbb;
             this.SharedData = shared;
         }
 

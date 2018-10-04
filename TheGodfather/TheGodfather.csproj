@@ -34,6 +34,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Services\DBService.SavedTasks.cs~RF19ac8dbb.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00537" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00537" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00537" />
