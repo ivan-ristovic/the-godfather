@@ -7,24 +7,24 @@ namespace TheGodfather.Database
     public sealed class DatabaseConfig
     {
         [JsonProperty("database")]
-        public string DatabaseName { get; private set; }
+        public string DatabaseName { get; set; }
 
         [JsonProperty("hostname")]
-        public string Hostname { get; private set; }
+        public string Hostname { get; set; }
 
         [JsonProperty("password")]
-        public string Password { get; private set; }
+        public string Password { get; set; }
 
         [JsonProperty("port")]
-        public int Port { get; private set; }
+        public int Port { get; set; }
 
         [JsonProperty("username")]
-        public string Username { get; private set; }
+        public string Username { get; set; }
 
 
         [JsonIgnore]
         public static DatabaseConfig Default => new DatabaseConfig {
-            DatabaseName = "gf",
+            DatabaseName = "gfdb",
             Hostname = "localhost",
             Password = "<insert password>",
             Port = 5432,

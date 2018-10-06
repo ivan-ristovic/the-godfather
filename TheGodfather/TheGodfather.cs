@@ -154,79 +154,55 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, ulong> msgcount;
 
             using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
-                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(entry => (ulong)entry.Cid));
-                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(entry => (ulong)entry.Uid));
-                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildCfg.Select(
-                    entry => new KeyValuePair<ulong, CachedGuildConfig>((ulong)entry.Gid, new CachedGuildConfig() {
+                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
+                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
+                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
+                    gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig() {
                         AntispamSettings = new AntispamSettings() {
-                            Action = (PunishmentActionType)entry.AntispamAction,
-                            Enabled = entry.AntispamEnabled,
-                            Sensitivity = entry.AntispamSens
+                            Action = gcfg.AntispamAction,
+                            Enabled = gcfg.AntispamEnabled,
+                            Sensitivity = gcfg.AntispamSensitivity
                         },
-                        Currency = entry.Currency,
+                        Currency = gcfg.Currency,
                         LinkfilterSettings = new LinkfilterSettings() {
-                            BlockBooterWebsites = entry.LinkfilterBooters,
-                            BlockDiscordInvites = entry.LinkfilterInvites,
-                            BlockDisturbingWebsites = entry.LinkfilterDisturbing,
-                            BlockIpLoggingWebsites = entry.LinkfilterIploggers,
-                            BlockUrlShorteners = entry.LinkfilterShorteners,
-                            Enabled = entry.LinkfilterEnabled
+                            BlockBooterWebsites = gcfg.LinkfilterBootersEnabled,
+                            BlockDiscordInvites = gcfg.LinkfilterDiscordInvitesEnabled,
+                            BlockDisturbingWebsites = gcfg.LinkfilterDisturbingWebsitesEnabled,
+                            BlockIpLoggingWebsites = gcfg.LinkfilterIpLoggersEnabled,
+                            BlockUrlShorteners = gcfg.LinkfilterUrlShortenersEnabled,
+                            Enabled = gcfg.LinkfilterEnabled
                         },
-                        LogChannelId = (ulong)entry.LogCid,
-                        Prefix = entry.Prefix,
+                        LogChannelId = gcfg.LogChannelId,
+                        Prefix = gcfg.Prefix,
                         RatelimitSettings = new RatelimitSettings() {
-                            Action = (PunishmentActionType)entry.RatelimitAction,
-                            Enabled = entry.RatelimitEnabled,
-                            Sensitivity = entry.RatelimitSens
+                            Action = gcfg.RatelimitAction,
+                            Enabled = gcfg.RatelimitEnabled,
+                            Sensitivity = gcfg.RatelimitSensitivity
                         },
-                        ReactionResponse = entry.SilentRespond,
-                        SuggestionsEnabled = entry.SuggestionsEnabled
+                        ReactionResponse = gcfg.ReactionResponse,
+                        SuggestionsEnabled = gcfg.SuggestionsEnabled
                     }
                 )));
                 filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
                     db.Filters
-                        .GroupBy(f => (ulong)f.Gid)
-                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Filter))))
+                        .GroupBy(f => f.GuildId)
+                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
                 );
                 msgcount = new ConcurrentDictionary<ulong, ulong>(
-                    db.MessageCount
-                        .GroupBy(mc => (ulong)mc.Uid)
-                        .ToDictionary(g => g.Key, g => (ulong)g.First().Count)
+                    db.UsersInfo
+                        .GroupBy(ui => ui.UserId)
+                        .ToDictionary(g => g.Key, g => (ulong)g.First().MessageCount)
                 );
-
-                treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
-                foreach (DatabaseTextReactions dbtr in db.TextReactions) {
-                    ulong gid = (ulong)dbtr.Gid;
-                    if (treactions.TryGetValue(gid, out var trlist)) {
-                        if (trlist is null)
-                            trlist = new ConcurrentHashSet<TextReaction>();
-                    } else {
-                        treactions.TryAdd(gid, new ConcurrentHashSet<TextReaction>());
-                    }
-                    TextReaction conflict = treactions[gid].FirstOrDefault(tr => tr.Response == dbtr.Response);
-                    if (conflict is null) {
-                        treactions[gid].Add(new TextReaction(dbtr.Id, dbtr.Trigger, dbtr.Response, isRegex: true));
-                    } else {
-                        conflict.AddTrigger(dbtr.Trigger, isRegex: true);
-                    }
-                }
-
-                ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
-                foreach (DatabaseEmojiReactions dber in db.EmojiReactions) {
-                    ulong gid = (ulong)dber.Gid;
-                    if (ereactions.TryGetValue(gid, out var erlist)) {
-                        if (erlist is null)
-                            erlist = new ConcurrentHashSet<EmojiReaction>();
-                    } else {
-                        ereactions.TryAdd(gid, new ConcurrentHashSet<EmojiReaction>());
-                    }
-                    EmojiReaction conflict = ereactions[gid].FirstOrDefault(er => er.Response == dber.Reaction);
-                    if (conflict is null) {
-                        ereactions[gid].Add(new EmojiReaction(dber.Id, dber.Trigger, dber.Reaction, isRegex: true));
-                    } else {
-                        conflict.AddTrigger(dber.Trigger, isRegex: true);
-                    }
-                }
+                treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
+                    db.TextReactions
+                        .GroupBy(tr => tr.GuildId)
+                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g.Select(tr => new TextReaction(tr.Id, tr.Triggers, tr.Response, true))))
+                );
+                ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>(
+                    db.EmojiReactions
+                        .GroupBy(tr => tr.GuildId)
+                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g.Select(er => new EmojiReaction(er.Id, er.Triggers, er.Reaction, true))))
+                );
             }
 
             SharedData = new SharedData() {
@@ -271,11 +247,11 @@ namespace TheGodfather
                 await RegisterSavedTasks(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
                     t => t.Id, 
                     t => {
-                        switch ((SavedTaskType)t.Type) {
+                        switch (t.Type) {
                             case SavedTaskType.Unban:
-                                return new UnbanTaskInfo((ulong)t.Gid, (ulong)t.Uid, t.ExecutionTime);
+                                return new UnbanTaskInfo(t.GuildId, t.UserId, t.ExecutionTime);
                             case SavedTaskType.Unmute:
-                                return new UnmuteTaskInfo((ulong)t.Gid, (ulong)t.Uid, (ulong)t.Rid, t.ExecutionTime);
+                                return new UnmuteTaskInfo(t.GuildId, t.UserId, t.RoleId, t.ExecutionTime);
                             default:
                                 return null;
                         }
@@ -283,7 +259,7 @@ namespace TheGodfather
                 );
                 await RegisterReminders(db.Reminders.ToDictionary(
                     t => t.Id,
-                    t => new SendMessageTaskInfo((ulong)t.Cid, (ulong)t.Uid, t.Message, t.ExecutionTime, t.Repeat, t.Interval)
+                    t => new SendMessageTaskInfo(t.ChannelId, t.UserId, t.Message, t.ExecutionTime, t.IsRepeating, t.RepeatInterval)
                 ));
             }
 

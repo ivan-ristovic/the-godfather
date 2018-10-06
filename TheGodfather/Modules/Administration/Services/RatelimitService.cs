@@ -71,11 +71,11 @@ namespace TheGodfather.Modules.Administration.Services
 
             var member = e.Author as DiscordMember;
             if (this.guildExempts.TryGetValue(e.Guild.Id, out var exempts)) {
-                if (exempts.Any(ee => ee.Type == EntityType.Channel && ee.Id == e.Channel.Id))
+                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
-                if (exempts.Any(ee => ee.Type == EntityType.Member && ee.Id == e.Author.Id))
+                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
                     return;
-                if (exempts.Any(ee => ee.Type == EntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
+                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
                     return;
             }
 

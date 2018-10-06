@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Common
 {
-    public enum SavedTaskType
+    public enum SavedTaskType : byte
     {
         SendMessage = 0,
         Unban = 1,

@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordUser user in users) 
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordRole role in roles)
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
@@ -219,7 +219,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordChannel channel in channels)
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
@@ -240,7 +240,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordUser user in users)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, user.Id, EntityType.Member);
+                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given users.", important: false);
@@ -254,7 +254,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordRole role in roles)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, role.Id, EntityType.Role);
+                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given roles.", important: false);
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     foreach (DiscordChannel channel in channels)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
+                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
 
                     await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given channel.", important: false);

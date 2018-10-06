@@ -20,39 +20,39 @@ namespace TheGodfather.Modules.Administration.Extensions
         public static Task<IReadOnlyList<ExemptedEntity>> GetAllLoggingExemptsAsync(this DBService db, ulong gid)
             => db.GetAllExemptsAsync("log_exempt", gid);
 
-        public static Task<bool> IsExemptedFromLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task<bool> IsExemptedFromLoggingAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.IsExemptedAsync("log_exempt", gid, xid, type);
 
-        public static Task ExemptLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task ExemptLoggingAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.ExemptAsync("log_exempt", gid, xid, type);
 
-        public static Task UnexemptLoggingAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task UnexemptLoggingAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.UnexemptAsync("log_exempt", gid, xid, type);
 
 
         public static Task<IReadOnlyList<ExemptedEntity>> GetAllAntispamExemptsAsync(this DBService db, ulong gid)
             => db.GetAllExemptsAsync("antispam_exempt", gid);
 
-        public static Task<bool> IsExemptedFromAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type) 
+        public static Task<bool> IsExemptedFromAntispamAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type) 
             => db.IsExemptedAsync("antispam_exempt", gid, xid, type);
 
-        public static Task ExemptAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task ExemptAntispamAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.ExemptAsync("antispam_exempt", gid, xid, type);
 
-        public static Task UnexemptAntispamAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task UnexemptAntispamAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.UnexemptAsync("antispam_exempt", gid, xid, type);
 
 
         public static Task<IReadOnlyList<ExemptedEntity>> GetAllRatelimitExemptsAsync(this DBService db, ulong gid)
             => db.GetAllExemptsAsync("ratelimit_exempt", gid);
 
-        public static Task<bool> IsExemptedFromRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task<bool> IsExemptedFromRatelimitAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.IsExemptedAsync("ratelimit_exempt", gid, xid, type);
 
-        public static Task ExemptRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task ExemptRatelimitAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.ExemptAsync("ratelimit_exempt", gid, xid, type);
 
-        public static Task UnexemptRatelimitAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        public static Task UnexemptRatelimitAsync(this DBService db, ulong gid, ulong xid, ExemptedEntityType type)
             => db.UnexemptAsync("ratelimit_exempt", gid, xid, type);
         #endregion
 
@@ -262,11 +262,11 @@ namespace TheGodfather.Modules.Administration.Extensions
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        EntityType t = EntityType.Channel;
+                        ExemptedEntityType t = ExemptedEntityType.Channel;
                         switch (((string)reader["type"]).First()) {
-                            case 'c': t = EntityType.Channel; break;
-                            case 'm': t = EntityType.Member; break;
-                            case 'r': t = EntityType.Role; break;
+                            case 'c': t = ExemptedEntityType.Channel; break;
+                            case 'm': t = ExemptedEntityType.Member; break;
+                            case 'r': t = ExemptedEntityType.Role; break;
                         }
                         exempted.Add(new ExemptedEntity() {
                             GuildId = gid,
@@ -280,7 +280,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             return exempted.AsReadOnly();
         }
 
-        private static async Task<bool> IsExemptedAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        private static async Task<bool> IsExemptedAsync(this DBService db, string table, ulong gid, ulong xid, ExemptedEntityType type)
         {
             bool exempted = false;
 
@@ -298,7 +298,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             return exempted;
         }
 
-        private static Task ExemptAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        private static Task ExemptAsync(this DBService db, string table, ulong gid, ulong xid, ExemptedEntityType type)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = $"INSERT INTO gf.{table}(gid, id, type) VALUES (@gid, @xid, @type) ON CONFLICT DO NOTHING;";
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             });
         }
 
-        private static Task UnexemptAsync(this DBService db, string table, ulong gid, ulong xid, EntityType type)
+        private static Task UnexemptAsync(this DBService db, string table, ulong gid, ulong xid, ExemptedEntityType type)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = $"DELETE FROM gf.{table} WHERE gid = @gid AND id = @xid AND type = @type;";

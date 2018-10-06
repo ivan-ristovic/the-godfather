@@ -31,6 +31,15 @@ namespace TheGodfather.Modules.Reactions.Common
             this.AddTrigger(trigger, isRegex);
         }
 
+        protected Reaction(int id, string[] triggers, string response, bool isRegex = false)
+        {
+            this.Id = id;
+            this.Response = response;
+            this.triggerRegexes = new ConcurrentHashSet<Regex>();
+            foreach (string trigger in triggers)
+                this.AddTrigger(trigger, isRegex);
+        }
+
 
         public bool AddTrigger(string trigger, bool isRegex = false)
         {
