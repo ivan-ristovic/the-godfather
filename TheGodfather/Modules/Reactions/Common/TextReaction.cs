@@ -10,15 +10,19 @@ namespace TheGodfather.Modules.Reactions.Common
 
         private bool cooldown;
         private DateTimeOffset resetTime;
-        private readonly object cooldownLock;
+        private object cooldownLock;
 
 
         public TextReaction(int id, string trigger, string response, bool isRegex = false)
             : base(id, trigger, response, isRegex)
         {
-            this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
-            this.cooldownLock = new object();
-            this.cooldown = false;
+            this.Init();
+        }
+
+        public TextReaction(int id, string[] triggers, string response, bool isRegex = false)
+            : base(id, triggers, response, isRegex)
+        {
+            this.Init();
         }
 
 
@@ -40,6 +44,14 @@ namespace TheGodfather.Modules.Reactions.Common
             }
             
             return !success;
+        }
+
+
+        private void Init()
+        {
+            this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
+            this.cooldownLock = new object();
+            this.cooldown = false;
         }
     }
 }

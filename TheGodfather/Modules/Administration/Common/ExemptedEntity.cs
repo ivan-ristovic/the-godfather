@@ -1,30 +1,30 @@
 ﻿namespace TheGodfather.Modules.Administration.Common
 {
-    public enum EntityType
+    public enum ExemptedEntityType : byte
     {
-        Channel,
-        Member,
-        Role
+        Channel = 0,
+        Member = 1,
+        Role = 2
     }
 
     public static class EntityTypeExtensions
     {
-        public static char ToFlag(this EntityType entity)
+        public static char ToFlag(this ExemptedEntityType entity)
         {
             switch (entity) {
-                case EntityType.Channel: return 'c';
-                case EntityType.Member: return 'm';
-                case EntityType.Role: return 'r';
+                case ExemptedEntityType.Channel: return 'c';
+                case ExemptedEntityType.Member: return 'm';
+                case ExemptedEntityType.Role: return 'r';
                 default: return '?';
             }
         }
 
-        public static string ToUserFriendlyString(this EntityType entity)
+        public static string ToUserFriendlyString(this ExemptedEntityType entity)
         {
             switch (entity) {
-                case EntityType.Channel: return "Channel";
-                case EntityType.Member: return "User";
-                case EntityType.Role: return "Role";
+                case ExemptedEntityType.Channel: return "Channel";
+                case ExemptedEntityType.Member: return "User";
+                case ExemptedEntityType.Role: return "Role";
                 default: return "Unknown";
             }
         }
@@ -34,6 +34,6 @@
     {
         public ulong GuildId { get; set; }
         public ulong Id { get; set; }
-        public EntityType Type { get; set; }
+        public ExemptedEntityType Type { get; set; }
     }
 }

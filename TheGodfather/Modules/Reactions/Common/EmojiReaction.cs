@@ -7,5 +7,11 @@
         {
 
         }
+
+        public EmojiReaction(int id, string[] triggers, string reaction, bool isRegex = false)
+            : base(id, triggers, reaction, isRegex)
+        {
+
+        }
     }
 }

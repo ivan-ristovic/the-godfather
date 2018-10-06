@@ -1,6 +1,6 @@
 ﻿namespace TheGodfather.Modules.Administration.Common
 {
-    public enum PunishmentActionType
+    public enum PunishmentActionType : byte
     {
         Mute = 0,
         TemporaryMute = 1,

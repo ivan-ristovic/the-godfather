@@ -1,23 +1,13 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 using TheGodfather.Common;
-#endregion
 
 namespace TheGodfather.Database.Entities
 {
     [Table("reminders")]
-    public partial class DatabaseReminder
+    public class DatabaseReminder
     {
-        public int Id { get; set; }
-        public long Uid { get; set; }
-        public long Cid { get; set; }
-        public string Message { get; set; }
-        public bool Repeat { get; set; }
-        public DateTime ExecutionTime { get; set; }
-        public TimeSpan? Interval { get; set; }
-
 
         public static DatabaseReminder FromSavedTaskInfo(SavedTaskInfo tinfo)
         {
@@ -26,15 +16,44 @@ namespace TheGodfather.Database.Entities
                 return null;
 
             var dbr = new DatabaseReminder() {
-                Cid = (long)smti.ChannelId,
+                ChannelIdDb = (long)smti.ChannelId,
                 ExecutionTime = tinfo.ExecutionTime.UtcDateTime,
-                Interval = smti.RepeatingInterval,
+                IsRepeating = smti.IsRepeating,
                 Message = smti.Message,
-                Repeat = smti.IsRepeating,
-                Uid = (long)smti.InitiatorId
+                RepeatIntervalDb = smti.RepeatingInterval,
+                UserIdDb = (long)smti.InitiatorId
             };
 
             return dbr;
         }
+
+
+        [Key]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [Column("uid")]
+        public long UserIdDb { get; set; }
+        [NotMapped]
+        public ulong UserId => (ulong)this.UserIdDb;
+
+        [Column("cid")]
+        public long? ChannelIdDb { get; set; }
+        [NotMapped]
+        public ulong ChannelId => (ulong)this.ChannelIdDb.GetValueOrDefault();
+
+        [Column("message"), Required]
+        public string Message { get; set; }
+
+        [Column("execution_time", TypeName = "timestamptz")]
+        public DateTimeOffset ExecutionTime { get; set; }
+
+        [Column("is_repeating")]
+        public bool IsRepeating { get; set; } = false;
+
+        [Column("repeat_interval", TypeName = "interval")]
+        public TimeSpan? RepeatIntervalDb { get; set; }
+        [NotMapped]
+        public TimeSpan RepeatInterval => this.RepeatIntervalDb ?? TimeSpan.FromMilliseconds(-1);
     }
 }

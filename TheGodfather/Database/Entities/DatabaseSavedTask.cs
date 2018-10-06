@@ -1,24 +1,14 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using TheGodfather.Common;
-#endregion
 
 namespace TheGodfather.Database.Entities
 {
     [Table("saved_tasks")]
-    public partial class DatabaseSavedTask
+    public class DatabaseSavedTask
     {
-        public int Id { get; set; }
-        public short Type { get; set; }
-        public long Uid { get; set; }
-        public long Gid { get; set; }
-        public DateTime ExecutionTime { get; set; }
-        public long? Rid { get; set; }
-
-        public virtual DatabaseGuildConfig G { get; set; }
-
 
         public static DatabaseSavedTask FromSavedTaskInfo(SavedTaskInfo tinfo)
         {
@@ -28,15 +18,15 @@ namespace TheGodfather.Database.Entities
 
             switch (tinfo) {
                 case UnbanTaskInfo ubti:
-                    dbti.Gid = (long)ubti.GuildId;
-                    dbti.Uid = (long)ubti.UnbanId;
-                    dbti.Type = (short)SavedTaskType.Unban;
+                    dbti.GuildIdDb = (long)ubti.GuildId;
+                    dbti.UserIdDb = (long)ubti.UnbanId;
+                    dbti.Type = SavedTaskType.Unban;
                     break;
                 case UnmuteTaskInfo umti:
-                    dbti.Gid = (long)umti.GuildId;
-                    dbti.Uid = (long)umti.UserId;
-                    dbti.Rid = (long)umti.MuteRoleId;
-                    dbti.Type = (short)SavedTaskType.Unmute;
+                    dbti.GuildIdDb = (long)umti.GuildId;
+                    dbti.UserIdDb = (long)umti.UserId;
+                    dbti.RoleIdDb = (long)umti.MuteRoleId;
+                    dbti.Type = SavedTaskType.Unmute;
                     break;
                 default:
                     return null;
@@ -44,5 +34,35 @@ namespace TheGodfather.Database.Entities
 
             return dbti;
         }
+
+
+        [Key]
+        [Column("id")]
+        public int Id { get; set; }
+
+        [ForeignKey("DbGuildConfig")]
+        [Column("gid")]
+        public long GuildIdDb { get; set; }
+        [NotMapped]
+        public ulong GuildId => (ulong)this.GuildIdDb;
+
+        [Column("uid")]
+        public long UserIdDb { get; set; }
+        [NotMapped]
+        public ulong UserId => (ulong)this.UserIdDb;
+
+        [Column("rid")]
+        public long? RoleIdDb { get; set; }
+        [NotMapped]
+        public ulong RoleId => (ulong)this.RoleIdDb.GetValueOrDefault();
+
+        [Column("type")]
+        public SavedTaskType Type { get; set; }
+
+        [Column("execution_time", TypeName = "timestamptz")]
+        public DateTimeOffset ExecutionTime { get; set; }
+        
+
+        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
     }
 }
