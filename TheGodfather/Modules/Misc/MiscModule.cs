@@ -4,8 +4,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
-using Humanizer;
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,9 +14,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Services;
@@ -79,8 +78,10 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            if (!await this.Database.IsSelfAssignableRoleAsync(ctx.Guild.Id, role.Id))
-                throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
+                    throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+            }
 
             await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("Granted self-assignable role."));
             await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
@@ -253,15 +254,12 @@ namespace TheGodfather.Modules.Misc
 
             if (prefix.Length > 12)
                 throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
-            
-            if (prefix == this.Shared.BotConfiguration.DefaultPrefix)
-                this.Shared.GetGuildConfig(ctx.Guild.Id).Prefix = null;
-            else
-                this.Shared.GetGuildConfig(ctx.Guild.Id).Prefix = prefix;
 
-            await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GetGuildConfig(ctx.Guild.Id));
+            DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                cfg.Prefix = (prefix == this.Shared.BotConfiguration.DefaultPrefix) ? null : prefix;
+            });
 
-            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}", important: false);
+            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix)}", important: false);
         }
         #endregion
 

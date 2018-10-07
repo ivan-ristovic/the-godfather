@@ -9,9 +9,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -60,8 +61,13 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
-            foreach (DiscordRole role in roles)
-                await this.Database.AddAutomaticRoleAsync(ctx.Guild.Id, role.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.AutoAssignableRoles.AddRange(roles.Select(r => new DatabaseAutoRole() {
+                    RoleIdDb = (long)r.Id,
+                    GuildIdDb = (long)ctx.Guild.Id
+                }));
+                await db.SaveChangesAsync();
+            }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
@@ -92,8 +98,13 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
-            foreach (DiscordRole role in roles)
-                await this.Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.AutoAssignableRoles.RemoveRange(roles.Select(r => new DatabaseAutoRole() {
+                    RoleIdDb = (long)r.Id,
+                    GuildIdDb = (long)ctx.Guild.Id
+                }));
+                await db.SaveChangesAsync();
+            }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
@@ -122,7 +133,10 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all automatic roles for this guild?"))
                 return;
 
-            await this.Database.RemoveAllAutomaticRolesForGuildAsync(ctx.Guild.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.AutoAssignableRoles.RemoveRange(db.AutoAssignableRoles.Where(r => r.GuildId == ctx.Guild.Id));
+                await db.SaveChangesAsync();
+            }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
@@ -147,17 +161,30 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!ar list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<ulong> rids = await this.Database.GetAutomaticRolesForGuildAsync(ctx.Guild.Id);
-            if (!rids.Any())
-                throw new CommandFailedException("This guild doesn't have any automatic roles set.");
-
             var roles = new List<DiscordRole>();
-            foreach (ulong rid in rids) {
-                DiscordRole role = ctx.Guild.GetRole(rid);
-                if (role is null)
-                    await this.Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, rid);
-                else
-                    roles.Add(role);
+
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                IReadOnlyList<ulong> rids = db.AutoAssignableRoles
+                    .Where(r => r.GuildId == ctx.Guild.Id)
+                    .Select(r => r.RoleId)
+                    .ToList()
+                    .AsReadOnly();
+                if (!rids.Any())
+                    throw new CommandFailedException("This guild doesn't have any automatic roles set.");
+
+                foreach (ulong rid in rids) {
+                    DiscordRole role = ctx.Guild.GetRole(rid);
+                    if (role is null) {
+                        db.AutoAssignableRoles.Remove(new DatabaseAutoRole() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            RoleIdDb = (long)rid
+                        });
+                    } else {
+                        roles.Add(role);
+                    }
+                }
+
+                await db.SaveChangesAsync();
             }
 
             await ctx.SendCollectionInPagesAsync(

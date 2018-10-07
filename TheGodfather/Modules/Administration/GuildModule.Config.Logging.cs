@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -50,10 +51,9 @@ namespace TheGodfather.Modules.Administration
                     if (channel.Type != ChannelType.Text)
                         throw new CommandFailedException("Action logging channel must be a text channel.");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.LogChannelId = enable ? channel.Id : 0;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.LogChannelIdDb = enable ? (long?)channel.Id : null;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -77,11 +77,15 @@ namespace TheGodfather.Modules.Administration
                     if (gcfg.LoggingEnabled) {
                         var sb = new StringBuilder();
                         sb.Append(Formatter.Bold("Exempts:"));
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllLoggingExemptsAsync(ctx.Guild.Id);
+
+                        IEnumerable<DatabaseExemptedEntity> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                            exempted = db.LoggingExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+
                         if (exempted.Any()) {
                             sb.AppendLine();
-                            foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
-                                sb.AppendLine($"{exempt.Type.ToUserFriendlyString()}: {exempt.Id}");
+                            foreach (DatabaseExemptedEntity ee in exempted)
+                                sb.AppendLine($"{ee.Type.ToUserFriendlyString()}: {ee.Id}");
                         } else {
                             sb.Append(" None");
                         }
@@ -105,8 +109,14 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users)
-                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.AddRange(users.Select(u => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
                 }
@@ -118,8 +128,14 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.AddRange(roles.Select(r => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
@@ -131,8 +147,14 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.ExemptLoggingAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.AddRange(channels.Select(c => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
                 }
@@ -151,8 +173,14 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users)
-                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.RemoveRange(users.Select(u => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully unexempted given users.", important: false);
                 }
@@ -164,8 +192,14 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.RemoveRange(roles.Select(r => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully unexempted given roles.", important: false);
                 }
@@ -177,8 +211,14 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.UnexemptLoggingAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.LoggingExempts.RemoveRange(channels.Select(c => new DatabaseExemptLogging() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
                     await this.InformAsync(ctx, "Successfully unexempted given channels.", important: false);
                 }

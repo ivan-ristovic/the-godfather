@@ -12,10 +12,11 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -61,52 +62,51 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Filter regexes missing.");
 
             var eb = new StringBuilder();
-            foreach (string regexString in filters) {
-                if (regexString.Contains('%')) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot contain '%' character.");
-                    continue;
-                }
 
-                if (regexString.Length < 3 || regexString.Length > 60) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 60 characters.");
-                    continue;
-                }
-
-                if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, regexString)) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot be added because of a conflict with an existing text reaction trigger.");
-                    continue;
-                }
-
-                if (!regexString.TryParseRegex(out var regex)) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} is not a valid regular expression.");
-                    continue;
-                }
-
-                if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} collides with an existing bot command.");
-                    continue;
-                }
-
-                if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters)) {
-                    if (existingFilters.Any(f => regexString == regex.ToString())) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                foreach (string regexString in filters) {
+                    if (regexString.Contains('%')) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot contain '%' character.");
                         continue;
                     }
-                } else {
-                    if (!this.Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>()))
-                        throw new ConcurrentOperationException("Failed to create filter data structure for this guild. This is bad!");
-                }
 
-                int fid = 0;
-                try {
-                    fid = await this.Database.AddFilterAsync(ctx.Guild.Id, regexString);
-                } catch (Exception e) {
-                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                    eb.AppendLine($"Warning: Failed to add filter {Formatter.InlineCode(regexString)} to the database.");
-                }
+                    if (regexString.Length < 3 || regexString.Length > 60) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 60 characters.");
+                        continue;
+                    }
 
-                if (fid == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(fid, regex)))
-                    eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
+                    if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, regexString)) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot be added because of a conflict with an existing text reaction trigger.");
+                        continue;
+                    }
+
+                    if (!regexString.TryParseRegex(out var regex)) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} is not a valid regular expression.");
+                        continue;
+                    }
+
+                    if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} collides with an existing bot command.");
+                        continue;
+                    }
+
+                    if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters)) {
+                        if (existingFilters.Any(f => regexString == regex.ToString())) {
+                            eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
+                            continue;
+                        }
+                    } else {
+                        if (!this.Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>()))
+                            throw new ConcurrentOperationException("Failed to create filter data structure for this guild. This is bad!");
+                    }
+
+                    var filter = new DatabaseFilter() { GuildIdDb = (long)ctx.Guild.Id, Trigger = regexString };
+                    db.Filters.Add(filter);
+                    await db.SaveChangesAsync();
+
+                    if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regex)))
+                        eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
+                }
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -144,18 +144,16 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
-            foreach (int id in ids) {
-                if (filters.RemoveWhere(f => f.Id == id) == 0) {
-                    eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
-                    continue;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                foreach (int id in ids) {
+                    if (filters.RemoveWhere(f => f.Id == id) == 0) {
+                        eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
+                        continue;
+                    }
+                    db.Filters.Remove(new DatabaseFilter() { GuildIdDb = (long)ctx.Guild.Id, Id = id });
                 }
 
-                try {
-                    await this.Database.RemoveFilterAsync(ctx.Guild.Id, id);
-                } catch (Exception e) {
-                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                    eb.AppendLine($"Warning: Failed to remove filter with ID {Formatter.Bold(id.ToString())} from the database.");
-                }
+                await db.SaveChangesAsync();
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -186,19 +184,18 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
-            foreach (string regexString in filters) {
-                string filterString = Filter.Wrap(regexString);
-                if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
-                    eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} does not exist.");
-                    continue;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                foreach (string regexString in filters) {
+                    string filterString = Filter.Wrap(regexString);
+                    if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} does not exist.");
+                        continue;
+                    }
+
+                    db.Filters.Remove(new DatabaseFilter() { GuildIdDb = (long)ctx.Guild.Id, Trigger = regexString });
                 }
 
-                try {
-                    await this.Database.RemoveFilterAsync(ctx.Guild.Id, regexString);
-                } catch (Exception e) {
-                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                    eb.AppendLine($"Warning: Failed to remove filter {Formatter.InlineCode(regexString)} from the database.");
-                }
+                await db.SaveChangesAsync();
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -238,11 +235,9 @@ namespace TheGodfather.Modules.Administration
             if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && !this.Shared.Filters.TryRemove(ctx.Guild.Id, out _))
                 throw new ConcurrentOperationException("Failed to remove filter data structure for this guild. This is bad!");
 
-            try {
-                await this.Database.RemoveFiltersForGuildAsync(ctx.Guild.Id);
-            } catch (Exception e) {
-                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                throw new CommandFailedException("Failed to delete filters from the database.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id));
+                await db.SaveChangesAsync();
             }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);

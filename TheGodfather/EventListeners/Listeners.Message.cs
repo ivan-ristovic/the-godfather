@@ -13,14 +13,13 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -170,8 +169,9 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Channel.Id, ExemptedEntityType.Channel))
-                return;
+            using (DatabaseContext db = shard.Database.CreateContext())
+                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
+                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
             emb.AddField("Location", e.Channel.Mention, inline: true);
@@ -179,12 +179,14 @@ namespace TheGodfather.EventListeners
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
-                if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, mentry.UserResponsible.Id, ExemptedEntityType.Member))
-                    return;
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
-                foreach (DiscordRole role in member?.Roles)
-                    if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, role.Id, ExemptedEntityType.Role))
+
+                using (DatabaseContext db = shard.Database.CreateContext()) {
+                    if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == mentry.UserResponsible.Id))
                         return;
+                    if (member?.Roles.Any(r => db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Role && ee.Id == r.Id)) ?? false)
+                        return;
+                }
 
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
@@ -231,14 +233,16 @@ namespace TheGodfather.EventListeners
             if (logchn is null || !e.Message.IsEdited)
                 return;
 
-            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Channel.Id, ExemptedEntityType.Channel))
-                return;
-            if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, e.Author.Id, ExemptedEntityType.Member))
-                return;
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
-            foreach (DiscordRole role in member?.Roles)
-                if (await shard.DatabaseService.IsExemptedFromLoggingAsync(e.Guild.Id, role.Id, ExemptedEntityType.Role))
+
+            using (DatabaseContext db = shard.Database.CreateContext()) {
+                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
+                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
+                    return;
+                if (member?.Roles.Any(r => db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Role && ee.Id == r.Id)) ?? false)
+                    return;
+            }
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);

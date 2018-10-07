@@ -6,17 +6,15 @@ using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -26,37 +24,39 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
-            await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
+            DatabaseGuildConfig gcfg = e.Guild.GetGuildSettings(shard.Database);
+            await Task.Delay(TimeSpan.FromSeconds(gcfg.AntiInstantLeaveSettings.Cooldown + 1));
             if (e.Member.Guild is null)
                 return;
 
-            DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
+            DiscordChannel wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
             if (!(wchn is null)) {
-                string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
-                if (string.IsNullOrWhiteSpace(msg))
+                if (string.IsNullOrWhiteSpace(gcfg.WelcomeMessage))
                     await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
                 else
-                    await wchn.EmbedAsync(msg.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
+                    await wchn.EmbedAsync(gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
             }
 
             try {
-                IReadOnlyList<ulong> rids = await shard.DatabaseService.GetAutomaticRolesForGuildAsync(e.Guild.Id)
-                    .ConfigureAwait(false);
-                foreach (ulong rid in rids) {
-                    try {
-                        DiscordRole role = e.Guild.GetRole(rid);
-                        if (!(role is null))
-                            await e.Member.GrantRoleAsync(role);
-                        else
-                            await shard.DatabaseService.RemoveAutomaticRoleAsync(e.Guild.Id, rid);
-                    } catch (Exception exc) {
-                        shard.Log(LogLevel.Debug,
-                            $"| Failed to assign an automatic role to a new member!\n" +
-                            $"| {e.Guild.ToString()}\n" +
-                            $"| Exception: {exc.GetType()}\n" +
-                            $"| Message: {exc.Message}"
-                        );
+                using (DatabaseContext db = shard.Database.CreateContext()) {
+                    IQueryable<ulong> rids = db.AutoAssignableRoles
+                        .Where(dbr => dbr.GuildId == e.Guild.Id)
+                        .Select(dbr => dbr.RoleId);
+                    foreach (ulong rid in rids.ToList()) {
+                        try {
+                            DiscordRole role = e.Guild.GetRole(rid);
+                            if (!(role is null))
+                                await e.Member.GrantRoleAsync(role);
+                            else
+                                db.AutoAssignableRoles.Remove(db.AutoAssignableRoles.Single(r => r.GuildId == e.Guild.Id && r.RoleId == rid));
+                        } catch (Exception exc) {
+                            shard.Log(LogLevel.Debug,
+                                $"| Failed to assign an automatic role to a new member!\n" +
+                                $"| {e.Guild.ToString()}\n" +
+                                $"| Exception: {exc.GetType()}\n" +
+                                $"| Message: {exc.Message}"
+                            );
+                        }
                     }
                 }
             } catch (Exception exc) {
@@ -82,13 +82,13 @@ namespace TheGodfather.EventListeners
             if (e.Member is null || e.Member.IsBot)
                 return;
 
-            AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
-            if (antifloodSettings.Enabled)
-                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, antifloodSettings);
+            DatabaseGuildConfig gcfg = e.Guild.GetGuildSettings(shard.Database);
 
-            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
-            if (antiILSettings.Enabled)
-                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, antiILSettings);
+            if (gcfg.AntifloodEnabled)
+                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
+
+            if (gcfg.AntiInstantLeaveEnabled)
+                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
@@ -97,20 +97,19 @@ namespace TheGodfather.EventListeners
             if (e.Member.IsCurrent)
                 return;
 
+            DatabaseGuildConfig gcfg = e.Guild.GetGuildSettings(shard.Database);
             bool punished = false;
 
-            AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
-            if (antiILSettings.Enabled)
-                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, antiILSettings);
+            if (gcfg.AntiInstantLeaveEnabled)
+                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, gcfg.AntiInstantLeaveSettings);
 
             if (!punished) {
-                DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
+                DiscordChannel lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
                 if (!(lchn is null)) {
-                    string msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id);
-                    if (string.IsNullOrWhiteSpace(msg))
+                    if (string.IsNullOrWhiteSpace(gcfg.LeaveMessage))
                         await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
                     else
-                        await lchn.EmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
+                        await lchn.EmbedAsync(gcfg.LeaveMessage.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
                 }
             }
 

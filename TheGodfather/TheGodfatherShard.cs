@@ -18,7 +18,6 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
-using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Search.Services;

@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -99,10 +99,9 @@ namespace TheGodfather.Modules.Administration
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                gcfg.ReactionResponse = !enable;
-
-                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.ReactionResponse = !enable;
+                });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -136,10 +135,9 @@ namespace TheGodfather.Modules.Administration
             public async Task SuggestionsAsync(CommandContext ctx,
                                               [Description("Enable suggestions?")] bool enable)
             {
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                gcfg.SuggestionsEnabled = enable;
-
-                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.SuggestionsEnabled = enable;
+                });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -159,7 +157,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(0)]
             public Task SuggestionsAsync(CommandContext ctx)
             {
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
                 return this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
@@ -174,7 +172,8 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg welcome off")]
             public async Task WelcomeAsync(CommandContext ctx)
             {
-                DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
+                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
+                DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
                 await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
 
@@ -189,16 +188,13 @@ namespace TheGodfather.Modules.Administration
                 if (wchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Welcome channel must be a text channel.");
 
-                if (!string.IsNullOrWhiteSpace(message)) {
-                    if (message.Length < 3 || message.Length > 120)
-                        throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-                    await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, message);
-                }
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
+                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                if (enable)
-                    await this.Database.SetWelcomeChannelAsync(ctx.Guild.Id, wchn.Id);
-                else
-                    await this.Database.RemoveWelcomeChannelAsync(ctx.Guild.Id);
+                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.WelcomeChannelIdDb = enable ? (long)wchn.Id : (long?)null;
+                    cfg.WelcomeMessage = message;
+                });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -229,10 +225,10 @@ namespace TheGodfather.Modules.Administration
             public async Task WelcomeAsync(CommandContext ctx,
                                           [RemainingText, Description("Welcome message.")] string message)
             {
-                if (message.Length < 3 || message.Length > 120)
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, message);
+                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -261,7 +257,8 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg leave off")]
             public async Task LeaveAsync(CommandContext ctx)
             {
-                DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
+                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
+                DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
                 await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
 
@@ -276,16 +273,13 @@ namespace TheGodfather.Modules.Administration
                 if (lchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Leave channel must be a text channel.");
 
-                if (!string.IsNullOrWhiteSpace(message)) {
-                    if (message.Length < 3 || message.Length > 120)
-                        throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-                    await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, message);
-                }
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
+                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                if (enable)
-                    await this.Database.SetLeaveChannelAsync(ctx.Guild.Id, lchn.Id);
-                else
-                    await this.Database.RemoveLeaveChannelAsync(ctx.Guild.Id);
+                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.LeaveChannelIdDb = enable ? (long)lchn.Id : (long?)null;
+                    cfg.LeaveMessage = message;
+                });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -316,10 +310,10 @@ namespace TheGodfather.Modules.Administration
             public async Task LeaveAsync(CommandContext ctx,
                                         [RemainingText, Description("Leave message.")] string message)
             {
-                if (message.Length < 3 || message.Length > 120)
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, message);
+                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => cfg.LeaveMessage = message);
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
@@ -346,18 +340,22 @@ namespace TheGodfather.Modules.Administration
             public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {
-                if (!(muteRole is null)) {
-                    await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
-                } else {
-                    muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
+                DiscordRole mr = null;
+                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    if (muteRole is null)
+                        mr = ctx.Guild.GetRole(cfg.MuteRoleId);
+                    else
+                        cfg.MuteRoleIdDb = (long)muteRole.Id;
+                });
+
+                if (!(mr is null))
                     await this.InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
-                }
             }
             #endregion
 
 
             #region HELPER_FUNCTIONS
-            private async Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
+            private Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
             {
                 var emb = new DiscordEmbedBuilder() {
                     Title = $"Guild configuration {(changed ? " changed" : "")}",
@@ -365,17 +363,17 @@ namespace TheGodfather.Modules.Administration
                     Color = this.ModuleColor
                 };
 
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(guild.Id);
+                DatabaseGuildConfig gcfg = this.GetGuildConfig(guild.Id);
 
                 emb.AddField("Prefix", this.Shared.GetGuildPrefix(guild.Id), inline: true);
                 emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
                 emb.AddField("Command suggestions active", gcfg.SuggestionsEnabled.ToString(), inline: true);
                 emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
 
-                DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(guild);
+                DiscordChannel wchn = guild.GetChannel(gcfg.WelcomeChannelId);
                 emb.AddField("Welcome messages", wchn is null ? "off" : $"on @ {wchn.Mention}", inline: true);
 
-                DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(guild);
+                DiscordChannel lchn = guild.GetChannel(gcfg.LeaveChannelId);
                 emb.AddField("Leave messages", lchn is null ? "off" : $"on @ {lchn.Mention}", inline: true);
 
                 if (gcfg.RatelimitSettings.Enabled)
@@ -388,20 +386,20 @@ namespace TheGodfather.Modules.Administration
                 else
                     emb.AddField("Antispam watch", "off", inline: true);
 
-                AntifloodSettings antifloodSettings = await this.Database.GetAntifloodSettingsAsync(guild.Id);
+                AntifloodSettings antifloodSettings = gcfg.AntifloodSettings;
                 if (antifloodSettings.Enabled)
                     emb.AddField("Antiflood watch", $"Sensitivity: {antifloodSettings.Sensitivity} users per {antifloodSettings.Cooldown}s\nAction: {antifloodSettings.Action.ToTypeString()}", inline: true);
                 else
                     emb.AddField("Antiflood watch", "off", inline: true);
 
-                AntiInstantLeaveSettings antiILSettings = await this.Database.GetAntiInstantLeaveSettingsAsync(guild.Id);
+                AntiInstantLeaveSettings antiILSettings = gcfg.AntiInstantLeaveSettings;
                 if (antiILSettings.Enabled)
                     emb.AddField("Instant leave watch", $"Cooldown: {antiILSettings.Cooldown}s", inline: true);
                 else
                     emb.AddField("Instant leave watch", "off", inline: true);
 
 
-                DiscordRole muteRole = await this.Database.GetMuteRoleAsync(guild);
+                DiscordRole muteRole = guild.GetRole(gcfg.MuteRoleId);
                 if (muteRole is null)
                     muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
                 if (!(muteRole is null))
@@ -424,31 +422,23 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Linkfilter", "off", inline: true);
                 }
 
-                await channel.SendMessageAsync(embed: emb.Build());
+                return channel.SendMessageAsync(embed: emb.Build());
             }
 
-            private async Task ApplySettingsAsync(ulong gid, CachedGuildConfig gcfg, DiscordRole muteRole,
-                                                  MemberUpdateMessagesSettings ninfo, AntifloodSettings antifloodSettings,
-                                                  AntiInstantLeaveSettings antiInstantLeaveSettings)
+            private Task ApplySettingsAsync(ulong gid, CachedGuildConfig cgcfg, DiscordRole muteRole,
+                                            MemberUpdateMessagesSettings ninfo, AntifloodSettings antifloodSettings,
+                                            AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
-                this.Shared.GuildConfigurations[gid] = gcfg;
-
-                await this.Database.UpdateGuildSettingsAsync(gid, gcfg);
-                await this.Database.SetMuteRoleAsync(gid, muteRole.Id);
-                if (ninfo.WelcomeChannelId != 0)
-                    await this.Database.SetWelcomeChannelAsync(gid, ninfo.WelcomeChannelId);
-                else
-                    await this.Database.RemoveWelcomeChannelAsync(gid);
-                if (!string.IsNullOrWhiteSpace(ninfo.WelcomeMessage))
-                    await this.Database.SetWelcomeMessageAsync(gid, ninfo.WelcomeMessage);
-                if (ninfo.LeaveChannelId != 0)
-                    await this.Database.SetLeaveChannelAsync(gid, ninfo.LeaveChannelId);
-                else
-                    await this.Database.RemoveLeaveChannelAsync(gid);
-                if (!string.IsNullOrWhiteSpace(ninfo.LeaveMessage))
-                    await this.Database.SetLeaveMessageAsync(gid, ninfo.LeaveMessage);
-                await this.Database.SetAntifloodSettingsAsync(gid, antifloodSettings);
-                await this.Database.SetAntifloodSettingsAsync(gid, antifloodSettings);
+                return this.ModifyGuildConfigAsync(gid, cfg => {
+                    cfg.AntifloodSettings = antifloodSettings;
+                    cfg.AntiInstantLeaveSettings = antiInstantLeaveSettings;
+                    cfg.CachedConfig = cgcfg;
+                    cfg.LeaveChannelIdDb = (ninfo.LeaveChannelId != 0 ? (long?)ninfo.LeaveChannelId : null);
+                    cfg.LeaveMessage = ninfo.LeaveMessage;
+                    cfg.MuteRoleIdDb = (long)muteRole.Id;
+                    cfg.WelcomeChannelIdDb = (ninfo.WelcomeChannelId != 0 ? (long?)ninfo.WelcomeChannelId : null);
+                    cfg.WelcomeMessage = ninfo.WelcomeMessage;
+                });
             }
 
             private async Task<DiscordChannel> ChooseSetupChannelAsync(CommandContext ctx)
