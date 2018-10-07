@@ -9,9 +9,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
@@ -60,10 +60,15 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public async Task UpdateExemptsForGuildAsync(ulong gid)
+        public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            IReadOnlyList<ExemptedEntity> exempts = await this.shard.DatabaseService.GetAllAntispamExemptsAsync(gid);
-            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(exempts);
+            using (DatabaseContext db = this.shard.Database.CreateContext()) {
+                this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
+                    db.AntispamExempts
+                        .Where(ee => ee.GuildId == gid)
+                        .Select(ee => new ExemptedEntity() { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+                );
+            }
         }
 
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, AntispamSettings settings)
@@ -71,7 +76,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildSpamInfo.ContainsKey(e.Guild.Id)) {
                 if (!this.TryAddGuildToWatch(e.Guild.Id))
                     throw new ConcurrentOperationException("Failed to add guild to antispam watch list!");
-                await this.UpdateExemptsForGuildAsync(e.Guild.Id);
+                this.UpdateExemptsForGuildAsync(e.Guild.Id);
             }
 
             var member = e.Author as DiscordMember;

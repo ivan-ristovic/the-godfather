@@ -2,13 +2,13 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -69,7 +69,10 @@ namespace TheGodfather.EventListeners
             shard.Log(LogLevel.Info, $"| Left guild: {e.Guild.ToString()}");
 
             shard.SharedData.GuildConfigurations.TryRemove(e.Guild.Id, out _);
-            await shard.DatabaseService.UnregisterGuildAsync(e.Guild.Id);
+            using (DatabaseContext db = shard.Database.CreateContext()) {
+                db.GuildConfig.Remove(db.GuildConfig.Where(gcfg => gcfg.GuildId == e.Guild.Id).Single());
+                await db.SaveChangesAsync();
+            }
         }
 
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]

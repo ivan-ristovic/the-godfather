@@ -4,12 +4,14 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -41,8 +43,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
                 return Task.CompletedTask;
 
-            shard.SharedData.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
-            return shard.DatabaseService.RegisterGuildAsync(e.Guild.Id);
+            return RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]
@@ -50,8 +51,7 @@ namespace TheGodfather.EventListeners
         {
             shard.Log(LogLevel.Info, $"| Joined guild: {e.Guild.ToString()}");
 
-            await shard.DatabaseService.RegisterGuildAsync(e.Guild.Id);
-            shard.SharedData.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
+            await RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
 
             DiscordChannel defChannel = e.Guild.GetDefaultChannel();
 
@@ -73,6 +73,19 @@ namespace TheGodfather.EventListeners
         {
             await Task.Yield();
             shard.SharedData.UptimeInformation.SocketStartTime = DateTimeOffset.UtcNow;
+        }
+
+
+        private static async Task RegisterGuildAsync(SharedData shared, DatabaseContextBuilder dbb, ulong gid)
+        {
+            shared.GuildConfigurations.TryAdd(gid, CachedGuildConfig.Default);
+            using (DatabaseContext db = dbb.CreateContext()) {
+                var gcfg = new DatabaseGuildConfig() { GuildIdDb = (long)gid };
+                if (!db.GuildConfig.Contains(gcfg)) {
+                    db.GuildConfig.Add(gcfg);
+                    await db.SaveChangesAsync();
+                }
+            }
         }
     }
 }

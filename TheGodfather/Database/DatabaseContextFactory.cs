@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Text;
-using TheGodfather.Common;
 
 namespace TheGodfather.Database
 {

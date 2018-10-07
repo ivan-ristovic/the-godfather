@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -50,12 +51,11 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 3 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([3, 10]).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntispamSettings.Enabled = enable;
-                    gcfg.AntispamSettings.Action = action;
-                    gcfg.AntispamSettings.Sensitivity = sensitivity;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.AntispamSettings.Enabled = enable;
+                        cfg.AntispamSettings.Action = action;
+                        cfg.AntispamSettings.Sensitivity = sensitivity;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -99,11 +99,15 @@ namespace TheGodfather.Modules.Administration
                         sb.Append(Formatter.Bold("Action: ")).AppendLine(gcfg.AntispamSettings.Action.ToString());
                         
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllAntispamExemptsAsync(ctx.Guild.Id);
+
+                        IEnumerable<DatabaseExemptedEntity> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                            exempted = db.AntispamExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+
                         if (exempted.Any()) {
                             sb.AppendLine();
-                            foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
-                                sb.AppendLine($"{exempt.Type.ToUserFriendlyString()}: {exempt.Id}");
+                            foreach (DatabaseExemptedEntity ee in exempted)
+                                sb.AppendLine($"{ee.Type.ToUserFriendlyString()}: {ee.Id}");
                         } else {
                             sb.Append(" None");
                         }
@@ -124,10 +128,9 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntispamSettings.Action = action;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.AntispamSettings.Action = action;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -156,10 +159,9 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 3 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.AntispamSettings.Sensitivity = sensitivity;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.AntispamSettings.Sensitivity = sensitivity;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -190,10 +192,16 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users) 
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.AddRange(users.Select(u => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
                 }
 
@@ -204,10 +212,16 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.AddRange(roles.Select(r => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
 
@@ -218,10 +232,16 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.ExemptAntispamAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.AddRange(channels.Select(c => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
                 }
                 #endregion
@@ -239,10 +259,16 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.RemoveRange(users.Select(u => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given users.", important: false);
                 }
 
@@ -253,10 +279,15 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
-
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.RemoveRange(roles.Select(r => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given roles.", important: false);
                 }
 
@@ -267,10 +298,16 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.UnexemptAntispamAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.AntispamExempts.RemoveRange(channels.Select(c => new DatabaseExemptAntispam() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given channel.", important: false);
                 }
                 #endregion

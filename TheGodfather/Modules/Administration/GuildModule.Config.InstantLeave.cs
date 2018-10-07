@@ -7,9 +7,9 @@ using DSharpPlus.Entities;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -39,16 +39,15 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(2)]
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable,
-                                                   [Description("Sensitivity (join-leave max seconds).")] short sensitivity)
+                                                   [Description("Cooldown (join-leave max seconds).")] short cooldown)
                 {
-                    if (sensitivity < 2 || sensitivity > 60)
-                        throw new CommandFailedException("The sensitivity is not in the valid range ([2, 60]).");
+                    if (cooldown < 2 || cooldown > 60)
+                        throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
-                    settings.Enabled = enable;
-                    settings.Cooldown = sensitivity;
-
-                    await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.AntiInstantLeaveCooldown = cooldown;
+                        cfg.AntiInstantLeaveEnabled = enable;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -60,7 +59,7 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Instant leave sensitivity", settings.Cooldown.ToString(), inline: true);
+                            emb.AddField("Instant leave cooldown", gcfg.AntiInstantLeaveCooldown.ToString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
@@ -76,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
+                    AntiInstantLeaveSettings settings = this.GetGuildConfig(ctx.Guild.Id).AntiInstantLeaveSettings;
                     if (settings.Enabled)
                         await this.InformAsync(ctx, $"Instant leave watch: {Formatter.Bold("enabled")} with {Formatter.Bold(settings.Cooldown.ToString())}s cooldown");
                     else
@@ -84,22 +83,21 @@ namespace TheGodfather.Modules.Administration
                 }
 
 
-                #region COMMAND_INSTANTLEAVE_COOLDOWN
-                [Command("sensitivity")]
-                [Description("Set the instant leave cooldown. User will be banned if he leaves in the given sensitivity time window (in seconds).")]
-                [Aliases("setsensitivity", "setsens", "sens", "s")]
-                [UsageExamples("!guild cfg instaleave cooldown 9")]
+                #region COMMAND_INSTANTLEAVE_SENSITIVITY
+                [Command("cooldown")]
+                [Description("Set the instant leave sensitivity. User will be banned if he leaves within the given time window (in seconds).")]
+                [Aliases("setcooldown", "setcool", "cool", "c")]
+                [UsageExamples("!guild cfg instaleave cooldown 5")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Cooldown (in seconds).")] short cooldown)
                 {
                     if (cooldown < 2 || cooldown > 60)
-                        throw new CommandFailedException("The sensitivity is not in the valid range ([2, 60]).");
+                        throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    AntiInstantLeaveSettings settings = await this.Database.GetAntiInstantLeaveSettingsAsync(ctx.Guild.Id);
-                    settings.Cooldown = cooldown;
-
-                    await this.Database.SetAntiInstantLeaveSettingsAsync(ctx.Guild.Id, settings);
-
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.AntiInstantLeaveCooldown = cooldown;
+                    });
+                    
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder() {
@@ -108,11 +106,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Instant leave cooldown changed to", $"{settings.Cooldown}s");
+                        emb.AddField("Instant leave cooldown changed to", $"{gcfg.AntiInstantLeaveCooldown}s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Instant leave cooldown for this guild has been changed to {Formatter.Bold(settings.Cooldown.ToString())}s", important: false);
+                    await this.InformAsync(ctx, $"Instant leave cooldown for this guild has been changed to {Formatter.Bold(gcfg.AntiInstantLeaveCooldown.ToString())}s", important: false);
                 }
                 #endregion
             }

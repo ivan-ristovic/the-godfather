@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TheGodfather.Migrations
 {
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -106,7 +106,7 @@ namespace TheGodfather.Migrations
                     antiflood_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5),
                     antiflood_cooldown = table.Column<short>(nullable: false, defaultValue: (short)10),
                     antilnstantleave_enabled = table.Column<bool>(nullable: false, defaultValue: false),
-                    antiinstantleave_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)3),
+                    antiinstantleave_cooldown = table.Column<short>(nullable: false, defaultValue: (short)3),
                     antispam_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     antispam_action = table.Column<byte>(nullable: false, defaultValue: (byte)0),
                     antispam_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5),

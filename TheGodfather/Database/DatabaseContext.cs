@@ -12,7 +12,7 @@ namespace TheGodfather.Database
     public class DatabaseContext : DbContext
     {
         public virtual DbSet<DatabaseExemptAntispam> AntispamExempts { get; set; }
-        public virtual DbSet<DatabaseSelfRole> AutoAssignableRoles { get; set; }
+        public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
         public virtual DbSet<DatabaseBankAccount> BankAccounts { get; set; }
         public virtual DbSet<DatabaseBirthday> Birthdays { get; set; }
         public virtual DbSet<DatabaseBlockedChannel> BlockedChannels { get; set; }
@@ -37,7 +37,7 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseRssFeed> RssFeeds { get; set; }
         public virtual DbSet<DatabaseRssSubscription> RssSubscriptions { get; set; }
         public virtual DbSet<DatabaseSavedTask> SavedTasks { get; set; }
-        public virtual DbSet<DatabaseAutoRole> SelfAssignableRoles { get; set; }
+        public virtual DbSet<DatabaseSelfRole> SelfAssignableRoles { get; set; }
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
@@ -99,7 +99,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodSensitivity).HasDefaultValue(5);
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveCooldown).HasDefaultValue(3);
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveEnabled).HasDefaultValue(false);
-            model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(PunishmentActionType.Mute);
+            model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(PunishmentActionType.PermanentMute);
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamEnabled).HasDefaultValue(false);
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamSensitivity).HasDefaultValue(5);
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.Currency).HasDefaultValue(null);

@@ -3,10 +3,13 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Services;
 #endregion
 
@@ -17,8 +20,9 @@ namespace TheGodfather.Modules
         protected static readonly HttpClient _http;
         private static readonly HttpClientHandler _handler;
 
-        protected SharedData Shared { get; private set; }
+        protected SharedData Shared { get; }
         protected DBService Database { get; }
+        protected DatabaseContextBuilder DatabaseBuilder { get; }
         protected DiscordColor ModuleColor {
             get { return this.moduleColor ?? DiscordColor.Green; }
             set { this.moduleColor = value; }
@@ -40,6 +44,7 @@ namespace TheGodfather.Modules
             this.Shared = shared;
             this.Database = db;
             this.ModuleColor = DiscordColor.Green;
+            this.DatabaseBuilder = new DatabaseContextBuilder(shared.BotConfiguration.DatabaseConfig);
         }
 
 
@@ -81,6 +86,29 @@ namespace TheGodfather.Modules
             }
 
             return false;
+        }
+
+        public DatabaseGuildConfig GetGuildConfig(ulong gid)
+        {
+            DatabaseGuildConfig gcfg = null;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                gcfg = db.GuildConfig.SingleOrDefault(cfg => cfg.GuildId == gid) ?? new DatabaseGuildConfig();
+            return gcfg;
+        }
+
+        public async Task<DatabaseGuildConfig> ModifyGuildConfigAsync(ulong gid, Action<DatabaseGuildConfig> action)
+        {
+            DatabaseGuildConfig gcfg = null;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                gcfg = db.GuildConfig.SingleOrDefault(cfg => cfg.GuildId == gid) ?? new DatabaseGuildConfig();
+                action(gcfg);
+                await db.SaveChangesAsync();
+            }
+
+            CachedGuildConfig cgcfg = this.Shared.GetGuildConfig(gid);
+            cgcfg = gcfg.CachedConfig;
+
+            return gcfg;
         }
     }
 }

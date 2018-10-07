@@ -4,6 +4,9 @@ using DSharpPlus.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 #endregion
 
 namespace TheGodfather.Extensions
@@ -23,5 +26,16 @@ namespace TheGodfather.Extensions
             }
             return null;
         }
+
+        public static DatabaseGuildConfig GetGuildSettings(this DiscordGuild guild, DatabaseContextBuilder dbb)
+        {
+            DatabaseGuildConfig gcfg = null;
+            using (DatabaseContext db = dbb.CreateContext())
+                gcfg = guild.GetGuildConfig(db);
+            return gcfg;
+        }
+
+        public static DatabaseGuildConfig GetGuildConfig(this DiscordGuild guild, DatabaseContext db)
+            => db.GuildConfig.SingleOrDefault(cfg => cfg.GuildId == guild.Id);
     }
 }

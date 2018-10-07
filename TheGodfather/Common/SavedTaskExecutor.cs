@@ -1,12 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 
-using Microsoft.Extensions.DependencyInjection;
-
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +11,6 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Common

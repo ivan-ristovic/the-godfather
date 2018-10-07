@@ -7,8 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -39,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
                     case PunishmentActionType.Kick:
                         await member.RemoveAsync(this.reason);
                         break;
-                    case PunishmentActionType.Mute:
+                    case PunishmentActionType.PermanentMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
@@ -82,15 +84,20 @@ namespace TheGodfather.Modules.Administration.Services
 
             await this.csem.WaitAsync();
             try {
-                muteRole = await this.shard.DatabaseService.GetMuteRoleAsync(guild);
-                if (muteRole is null)
-                    muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
-                if (muteRole is null) {
-                    muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
-                    await this.shard.DatabaseService.SetMuteRoleAsync(guild.Id, muteRole.Id);
-                    foreach (DiscordChannel channel in guild.Channels.Where(c => c.Type == ChannelType.Text)) {
-                        await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
-                        await Task.Delay(200);
+                using (DatabaseContext db = this.shard.Database.CreateContext()) {
+                    DatabaseGuildConfig gcfg = guild.GetGuildConfig(db);
+                    muteRole = guild.GetRole(gcfg.MuteRoleId);
+                    if (muteRole is null)
+                        muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+                    if (muteRole is null) {
+                        muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
+                        foreach (DiscordChannel channel in guild.Channels.Where(c => c.Type == ChannelType.Text)) {
+                            await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
+                            await Task.Delay(200);
+                        }
+                        gcfg.MuteRoleIdDb = (long)muteRole.Id;
+                        db.GuildConfig.Update(gcfg);
+                        await db.SaveChangesAsync();
                     }
                 }
             } finally {

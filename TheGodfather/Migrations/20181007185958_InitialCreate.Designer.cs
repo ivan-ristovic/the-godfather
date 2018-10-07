@@ -11,8 +11,8 @@ using TheGodfather.Modules.Administration.Common;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181006224822_Init")]
-    partial class Init
+    [Migration("20181007185958_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -361,7 +361,7 @@ namespace TheGodfather.Migrations
 
                     b.Property<short>("AntiInstantLeaveCooldown")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("antiinstantleave_sensitivity")
+                        .HasColumnName("antiinstantleave_cooldown")
                         .HasDefaultValue((short)3);
 
                     b.Property<bool>("AntiInstantLeaveEnabled")

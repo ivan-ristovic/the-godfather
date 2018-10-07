@@ -49,9 +49,11 @@ namespace TheGodfather.Database.Entities
         public bool SuggestionsEnabled { get; set; }
 
         [Column("log_cid")]
-        public long? LogChannelIdDb { get; set; }
+        public long? LogChannelIdDb { get; set; } 
         [NotMapped]
         public ulong LogChannelId => (ulong)this.LogChannelIdDb.GetValueOrDefault();
+        [NotMapped]
+        public bool LoggingEnabled => this.LogChannelId != 0;
 
         [Column("mute_rid")]
         public long? MuteRoleIdDb { get; set; }
@@ -84,19 +86,19 @@ namespace TheGodfather.Database.Entities
         public bool LinkfilterEnabled { get; set; }
 
         [Column("linkfilter_booters")]
-        public bool LinkfilterBootersEnabled { get; set; }
+        public bool LinkfilterBootersEnabled { get; set; } = true;
 
         [Column("linkfilter_disturbing")]
-        public bool LinkfilterDisturbingWebsitesEnabled { get; set; }
+        public bool LinkfilterDisturbingWebsitesEnabled { get; set; } = true;
 
         [Column("linkfilter_invites")]
         public bool LinkfilterDiscordInvitesEnabled { get; set; }
 
         [Column("linkfilter_loggers")]
-        public bool LinkfilterIpLoggersEnabled { get; set; }
+        public bool LinkfilterIpLoggersEnabled { get; set; } = true;
 
         [Column("linkfilter_shorteners")]
-        public bool LinkfilterUrlShortenersEnabled { get; set; }
+        public bool LinkfilterUrlShortenersEnabled { get; set; } = true;
 
         [NotMapped]
         public LinkfilterSettings LinkfilterSettings {
@@ -124,13 +126,13 @@ namespace TheGodfather.Database.Entities
         public bool AntifloodEnabled { get; set; }
 
         [Column("antiflood_action")]
-        public PunishmentActionType AntifloodAction { get; set; }
+        public PunishmentActionType AntifloodAction { get; set; } = PunishmentActionType.PermanentBan;
 
         [Column("antiflood_sensitivity")]
-        public short AntifloodSensitivity { get; set; }
+        public short AntifloodSensitivity { get; set; } = 5;
 
         [Column("antiflood_cooldown")]
-        public short AntifloodCooldown { get; set; }
+        public short AntifloodCooldown { get; set; } = 10;
 
         [NotMapped]
         public AntifloodSettings AntifloodSettings {
@@ -153,8 +155,8 @@ namespace TheGodfather.Database.Entities
         [Column("antilnstantleave_enabled")]
         public bool AntiInstantLeaveEnabled { get; set; }
 
-        [Column("antiinstantleave_sensitivity")]
-        public short AntiInstantLeaveCooldown { get; set; }
+        [Column("antiinstantleave_cooldown")]
+        public short AntiInstantLeaveCooldown { get; set; } = 3;
 
         [NotMapped]
         public AntiInstantLeaveSettings AntiInstantLeaveSettings {
@@ -174,10 +176,10 @@ namespace TheGodfather.Database.Entities
         public bool AntispamEnabled { get; set; }
 
         [Column("antispam_action")]
-        public PunishmentActionType AntispamAction { get; set; }
+        public PunishmentActionType AntispamAction { get; set; } = PunishmentActionType.TemporaryMute;
 
         [Column("antispam_sensitivity")]
-        public short AntispamSensitivity { get; set; }
+        public short AntispamSensitivity { get; set; } = 5;
 
         [NotMapped]
         public AntispamSettings AntispamSettings {
@@ -199,10 +201,10 @@ namespace TheGodfather.Database.Entities
         public bool RatelimitEnabled { get; set; }
 
         [Column("ratelimit_action")]
-        public PunishmentActionType RatelimitAction { get; set; }
+        public PunishmentActionType RatelimitAction { get; set; } = PunishmentActionType.TemporaryMute;
 
         [Column("ratelimit_sensitivity")]
-        public short RatelimitSensitivity { get; set; }
+        public short RatelimitSensitivity { get; set; } = 5;
 
         [NotMapped]
         public RatelimitSettings RatelimitSettings {

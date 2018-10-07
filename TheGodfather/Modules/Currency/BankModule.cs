@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
@@ -87,10 +88,11 @@ namespace TheGodfather.Modules.Currency
                 if (currency.Length > 30)
                     throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
 
-                this.Shared.GetGuildConfig(ctx.Guild.Id).Currency = currency;
-                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GetGuildConfig(ctx.Guild.Id));
-
-                await this.InformAsync(ctx, $"Changed the currency to: {currency}", important: false);
+                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.Currency = currency;
+                });
+                
+                await this.InformAsync(ctx, $"Changed the currency to: {gcfg.Currency}", important: false);
             }
         }
         #endregion

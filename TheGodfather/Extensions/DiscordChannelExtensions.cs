@@ -1,10 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;

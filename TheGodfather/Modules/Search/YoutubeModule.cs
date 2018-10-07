@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 #endregion

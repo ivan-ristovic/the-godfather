@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -45,17 +46,16 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable,
                                                    [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity,
-                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Mute)
+                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.PermanentMute)
                 {
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitSettings.Enabled = enable;
-                    gcfg.RatelimitSettings.Action = action;
-                    gcfg.RatelimitSettings.Sensitivity = sensitivity;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.RatelimitSettings.Enabled = enable;
+                        cfg.RatelimitSettings.Action = action;
+                        cfg.RatelimitSettings.Sensitivity = sensitivity;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -67,13 +67,13 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         if (enable) {
-                            emb.AddField("Ratelimit sensitivity", gcfg.RatelimitSettings.Sensitivity.ToString(), inline: true);
-                            emb.AddField("Ratelimit action", gcfg.RatelimitSettings.Action.ToTypeString(), inline: true);
+                            emb.AddField("Ratelimit sensitivity", gcfg.RatelimitSensitivity.ToString(), inline: true);
+                            emb.AddField("Ratelimit action", gcfg.RatelimitAction.ToTypeString(), inline: true);
                         }
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitSettings.Enabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
+                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
                 }
 
                 [GroupCommand, Priority(2)]
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Mute);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.PermanentMute);
 
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -99,11 +99,15 @@ namespace TheGodfather.Modules.Administration
                         sb.Append("Action: ").AppendLine(gcfg.RatelimitSettings.Action.ToString());
 
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
-                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllRatelimitExemptsAsync(ctx.Guild.Id);
+
+                        IEnumerable<DatabaseExemptedEntity> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                            exempted = db.RatelimitExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+
                         if (exempted.Any()) {
                             sb.AppendLine();
-                            foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
-                                sb.AppendLine($"{exempt.Type.ToUserFriendlyString()}: {exempt.Id}");
+                            foreach (DatabaseExemptedEntity ee in exempted)
+                                sb.AppendLine($"{ee.Type.ToUserFriendlyString()}: {ee.Id}");
                         } else {
                             sb.Append(" None");
                         }
@@ -124,10 +128,9 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitSettings.Action = action;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.RatelimitSettings.Action = action;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -137,11 +140,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Ratelimit action changed to", gcfg.RatelimitSettings.Action.ToTypeString());
+                        emb.AddField("Ratelimit action changed to", gcfg.RatelimitAction.ToTypeString());
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSettings.Action.ToTypeString())}", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
                 }
                 #endregion
 
@@ -156,10 +159,9 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.RatelimitSettings.Sensitivity = sensitivity;
-
-                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                        cfg.RatelimitSettings.Sensitivity = sensitivity;
+                    });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
@@ -169,11 +171,11 @@ namespace TheGodfather.Modules.Administration
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Ratelimit sensitivity changed to", $"Max {gcfg.RatelimitSettings.Sensitivity} msgs per 5s");
+                        emb.AddField("Ratelimit sensitivity changed to", $"Max {gcfg.RatelimitSensitivity} msgs per 5s");
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSettings.Sensitivity.ToString())} msgs per 5s", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} msgs per 5s", important: false);
                 }
                 #endregion
 
@@ -190,10 +192,16 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users)
-                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.AddRange(users.Select(u => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
                 }
 
@@ -204,10 +212,16 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.AddRange(roles.Select(r => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
                 
@@ -218,10 +232,16 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.ExemptRatelimitAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.AddRange(channels.Select(c => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
                 }
                 #endregion
@@ -239,10 +259,16 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordUser user in users)
-                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, user.Id, ExemptedEntityType.Member);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.RemoveRange(users.Select(u => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)u.Id,
+                            Type = ExemptedEntityType.Member
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given users.", important: false);
                 }
 
@@ -253,10 +279,16 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordRole role in roles)
-                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, role.Id, ExemptedEntityType.Role);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.RemoveRange(roles.Select(r => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)r.Id,
+                            Type = ExemptedEntityType.Role
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given roles.", important: false);
                 }
 
@@ -267,10 +299,16 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    foreach (DiscordChannel channel in channels)
-                        await this.Database.UnexemptRatelimitAsync(ctx.Guild.Id, channel.Id, ExemptedEntityType.Channel);
+                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        db.RatelimitExempts.RemoveRange(channels.Select(c => new DatabaseExemptRatelimit() {
+                            GuildIdDb = (long)ctx.Guild.Id,
+                            IdDb = (long)c.Id,
+                            Type = ExemptedEntityType.Channel
+                        }));
+                        await db.SaveChangesAsync();
+                    }
 
-                    await this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
+                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, $"Successfully unexempted given channel.", important: false);
                 }
                 #endregion

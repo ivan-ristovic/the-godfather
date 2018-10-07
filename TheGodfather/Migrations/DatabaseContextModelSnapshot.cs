@@ -359,7 +359,7 @@ namespace TheGodfather.Migrations
 
                     b.Property<short>("AntiInstantLeaveCooldown")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("antiinstantleave_sensitivity")
+                        .HasColumnName("antiinstantleave_cooldown")
                         .HasDefaultValue((short)3);
 
                     b.Property<bool>("AntiInstantLeaveEnabled")

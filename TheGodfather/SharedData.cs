@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;

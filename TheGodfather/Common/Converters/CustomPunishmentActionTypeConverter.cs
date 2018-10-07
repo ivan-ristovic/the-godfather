@@ -20,7 +20,7 @@ namespace TheGodfather.Common.Converters
                 case "silence":
                 case "mute":
                 case "m":
-                    result = PunishmentActionType.Mute;
+                    result = PunishmentActionType.PermanentMute;
                     break;
                 case "temporarymute":
                 case "tempmute":
