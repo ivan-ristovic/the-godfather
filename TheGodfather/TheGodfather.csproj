@@ -73,4 +73,12 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\R6Siege\Api\" />
+    <Folder Include="Modules\R6Siege\Exception\" />
+    <Folder Include="Modules\R6Siege\Http\" />
+    <Folder Include="Modules\R6Siege\Security\" />
+    <Folder Include="Modules\R6Siege\Routing\" />
+  </ItemGroup>
+
 </Project>
