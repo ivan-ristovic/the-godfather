@@ -104,6 +104,7 @@ namespace TheGodfather.EventListeners
                 punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, antiILSettings);
 
             if (!punished) {
+                await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
                 DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
                 if (!(lchn is null)) {
                     string msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id);

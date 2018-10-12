@@ -157,8 +157,7 @@ namespace TheGodfather.Modules.Chickens
         {
             member = member ?? ctx.Member;
 
-            Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
             if (chicken is null)
                 throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
@@ -246,7 +245,7 @@ namespace TheGodfather.Modules.Chickens
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens in this guild:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
         }
@@ -276,7 +275,7 @@ namespace TheGodfather.Modules.Chickens
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens globally:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
         }

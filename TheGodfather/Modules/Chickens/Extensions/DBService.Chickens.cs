@@ -145,15 +145,20 @@ namespace TheGodfather.Modules.Chickens.Extensions
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        chickens.Add(new Chicken() {
+                        ulong uid = (ulong)(long)reader["uid"];
+                        gid = (ulong)(long)reader["gid"];
+                        var chicken = new Chicken() {
                             Name = (string)reader["name"],
-                            OwnerId = (ulong)(long)reader["uid"],
+                            OwnerId = uid,
                             Stats = new ChickenStats() {
                                 BareMaxVitality = (int)reader["max_vitality"],
                                 BareStrength = (int)reader["strength"],
                                 BareVitality = (int)reader["vitality"]
                             }
-                        });
+                        };
+                        IReadOnlyList <ChickenUpgrade> upgrades = await db.GetUpgradesForChickenAsync(uid, gid);
+                        chicken.Stats.Upgrades = upgrades;
+                        chickens.Add(chicken);
                     }
                 }
             });
