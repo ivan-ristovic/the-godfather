@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Games
                 if (xm.Channel.Id != this.Channel.Id || xm.Author.IsBot) return false;
                 if (xm.Author.Id == this.initiator.Id) return false;
                 if (xm.Content.ToLowerInvariant() == this.word) return true;
-                if (xm.Content.Length != 1 || !Char.IsLetterOrDigit(xm.Content[0])) return false;
+                if (xm.Content.Length != 1 || !char.IsLetterOrDigit(xm.Content[0])) return false;
                 if (!this.guesses.Contains(char.ToLowerInvariant(xm.Content[0]))) return true;
                 return false;
             });

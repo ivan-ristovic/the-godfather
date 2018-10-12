@@ -66,11 +66,11 @@ namespace TheGodfather.Extensions
                 return false;
 
             string rstr = pattern.ToLowerInvariant();
-            if (Char.IsLetterOrDigit(pattern.First()))
+            if (char.IsLetterOrDigit(pattern.First()))
                 rstr = $@"\b{rstr}";
             else
                 rstr = $@"(^|\s){rstr}";
-            if (Char.IsLetterOrDigit(pattern.Last()))
+            if (char.IsLetterOrDigit(pattern.Last()))
                 rstr = $@"{rstr}\b";
             else
                 rstr = $@"{rstr}($|\s)";

@@ -8,6 +8,10 @@ namespace TheGodfather.Database.Entities
     public class DatabaseChicken
     {
 
+        public static DatabaseChicken CreateDummy(ulong gid, ulong uid)
+            => new DatabaseChicken() { GuildIdDb = (long)gid, UserIdDb = (long)uid };
+
+
         public DatabaseChicken()
         {
             this.DbUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();

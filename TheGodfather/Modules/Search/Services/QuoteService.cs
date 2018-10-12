@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search.Services
         {
             string response = await _http.GetStringAsync("http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1").ConfigureAwait(false);
             string data = JArray.Parse(response).First["content"].ToString();
-            data = _tagMatcher.Replace(data, String.Empty);
+            data = _tagMatcher.Replace(data, string.Empty);
             return WebUtility.HtmlDecode(data).Trim();
         }
     }

@@ -18,12 +18,12 @@ namespace TheGodfather.Extensions
                 var list = items.ToList();
                 int n = list.Count;
                 while (n > 1) {
-                    byte[] box = new byte[(n / Byte.MaxValue) + 1];
+                    byte[] box = new byte[(n / byte.MaxValue) + 1];
                     int boxSum;
                     do {
                         provider.GetBytes(box);
                         boxSum = box.Sum(b => b);
-                    } while (!(boxSum < n * ((Byte.MaxValue * box.Length) / n)));
+                    } while (!(boxSum < n * ((byte.MaxValue * box.Length) / n)));
                     int k = (boxSum % n);
                     n--;
                     T value = list[k];

@@ -12,6 +12,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
 {
     internal static class DBServiceChickenExtensions
     {
+        /*
         public static Task AddChickenAsync(this DBService db, ulong uid, ulong gid, string name, ChickenStats stats)
         {
             return db.ExecuteCommandAsync(cmd => {
@@ -217,5 +218,6 @@ namespace TheGodfather.Modules.Chickens.Extensions
                 return cmd.ExecuteNonQueryAsync();
             });
         }
+        */
     }
 }

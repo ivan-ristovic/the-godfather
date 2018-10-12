@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
@@ -124,10 +126,10 @@ namespace TheGodfather.Modules.Chickens
                 if (name.Length < 2 || name.Length > 30)
                     throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
-                if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
+                if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
-
-                if (!(await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id) is null))
+                
+                if (!(Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id) is null))
                     throw new CommandFailedException("You already own a chicken!");
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
@@ -136,8 +138,19 @@ namespace TheGodfather.Modules.Chickens
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)))
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 
-                await this.Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type]);
-
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    var stats = Chicken.StartingStats[type];
+                    db.Chickens.Add(new DatabaseChicken() {
+                        GuildIdDb = (long)ctx.Guild.Id,
+                        MaxVitality = stats.BareMaxVitality,
+                        Name = name,
+                        Strength = stats.BareStrength,
+                        UserIdDb = (long)ctx.User.Id,
+                        Vitality = stats.BareVitality
+                    });
+                    await db.SaveChangesAsync();
+                }
+                    
                 await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
             }
             #endregion

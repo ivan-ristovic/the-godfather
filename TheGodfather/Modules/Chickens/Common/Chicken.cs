@@ -7,6 +7,8 @@ using System.Collections.Immutable;
 using System.Linq;
 
 using TheGodfather.Common;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Chickens.Common
@@ -35,8 +37,44 @@ namespace TheGodfather.Modules.Chickens.Common
         private static long PriceForAttribute(int attr)
             => (long)Math.Pow(10, 2 + attr / (double)50);
 
+
+        public static Chicken FromDatabase(DatabaseContextBuilder dbb, ulong gid, ulong uid)
+        {
+            Chicken chicken = null;
+            using (DatabaseContext db = dbb.CreateContext()) {
+                DatabaseChicken dbc = db.Chickens.SingleOrDefault(c => c.GuildId == gid && c.UserId == uid);
+                chicken = FromDatabaseChicken(dbc);
+            }
+            return chicken;
+        }
+
+        public static Chicken FromDatabaseChicken(DatabaseChicken dbc)
+        {
+            if (dbc == null)
+                return null;
+
+            return new Chicken() {
+                GuildId = dbc.GuildId,
+                Name = dbc.Name,
+                OwnerId = dbc.UserId,
+                Stats = new ChickenStats() {
+                    BareStrength = dbc.Strength,
+                    BareMaxVitality = dbc.MaxVitality,
+                    BareVitality = dbc.Vitality,
+                    Upgrades = dbc.DbUpgrades.Select(u => new ChickenUpgrade() {
+                        Id = u.Id,
+                        Modifier = u.DbChickenUpgrade.Modifier,
+                        Name = u.DbChickenUpgrade.Name,
+                        Price = u.DbChickenUpgrade.Cost,
+                        UpgradesStat = u.DbChickenUpgrade.UpgradesStat
+                    }).ToList().AsReadOnly()
+                }
+            };
+        }
+
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
+        public ulong GuildId { get; set; }
         public string Name { get; set; }
         public ChickenStats Stats { get; set; }
         public long SellPrice => PriceForAttribute(this.Stats.BareStrength);
@@ -112,6 +150,22 @@ namespace TheGodfather.Modules.Chickens.Common
             emb.WithFooter("Chickens will rule the world someday", owner.AvatarUrl);
 
             return emb.Build();
+        }
+
+        public DatabaseChicken ToDatabaseChicken()
+        {
+            return new DatabaseChicken() {
+                DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
+                    GuildIdDb = (long)this.GuildId,
+                    Id = u.Id,
+                    UserIdDb = (long)this.OwnerId
+                }).ToList(),
+                GuildIdDb = (long)this.GuildId,
+                MaxVitality = this.Stats.BareMaxVitality,
+                Strength = this.Stats.BareStrength,
+                UserIdDb = (long)this.OwnerId,
+                Vitality = this.Stats.BareVitality
+            };
         }
     }
 }

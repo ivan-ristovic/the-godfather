@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Chickens.Extensions;
@@ -48,11 +50,11 @@ namespace TheGodfather.Modules.Chickens
                     return;
                 }
 
-                Chicken ambushed = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
+                var ambushed = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, member.Id);
                 if (ambushed is null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
-
-                Chicken ambusher = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                
+                var ambusher = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
                 if (ambusher is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -72,22 +74,26 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        foreach (Chicken chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
-                            chicken.Stats.BareStrength += 5;
-                            chicken.Stats.BareVitality -= 10;
-                            await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 5 STR and lost 10 HP!");
-                        }
-
-                        foreach (Chicken chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
-                            chicken.Stats.BareVitality -= 50;
-                            if (chicken.Stats.TotalVitality > 0) {
-                                await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
-                            } else {
-                                await this.Database.RemoveChickenAsync(chicken.OwnerId, ctx.Guild.Id);
-                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            foreach (Chicken chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
+                                chicken.Stats.BareStrength += 5;
+                                chicken.Stats.BareVitality -= 10;
+                                db.Chickens.Update(chicken.ToDatabaseChicken());
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 5 STR and lost 10 HP!");
                             }
+
+                            foreach (Chicken chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
+                                chicken.Stats.BareVitality -= 50;
+                                if (chicken.Stats.TotalVitality > 0) {
+                                    db.Chickens.Update(chicken.ToDatabaseChicken());
+                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
+                                } else {
+                                    db.Chickens.Remove(DatabaseChicken.CreateDummy(ctx.User.Id, chicken.OwnerId));
+                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
                         }
 
                         await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
@@ -103,10 +109,10 @@ namespace TheGodfather.Modules.Chickens
             [Description("Join a pending chicken ambush as one of the ambushers.")]
             [Aliases("+", "compete", "enter", "j", "<", "<<")]
             [UsageExamples("!chicken ambush join")]
-            public async Task JoinAsync(CommandContext ctx)
+            public Task JoinAsync(CommandContext ctx)
             {
-                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: true);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
+                Chicken chicken = this.TryJoinInternal(ctx, team2: true);
+                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
             }
             #endregion
 
@@ -115,21 +121,22 @@ namespace TheGodfather.Modules.Chickens
             [Description("Join a pending chicken ambush and help the ambushed chicken.")]
             [Aliases("h", "halp", "hlp", "ha")]
             [UsageExamples("!chicken ambush help")]
-            public async Task HelpAsync(CommandContext ctx)
+            public Task HelpAsync(CommandContext ctx)
             {
-                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: false);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
+                Chicken chicken = this.TryJoinInternal(ctx, team2: false);
+                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
             }
             #endregion
 
 
             #region HELPER_FUNCTIONS
-            private async Task<Chicken> TryJoinInternalAsync(CommandContext ctx, bool team2 = true)
+            private Chicken TryJoinInternal(CommandContext ctx, bool team2 = true)
             {
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
-                Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 

@@ -433,14 +433,14 @@ namespace TheGodfather.Modules.Misc
             text = text.ToLowerInvariant();
             var sb = new StringBuilder();
             foreach (char c in text) {
-                if (Char.IsLetter(c)) {
+                if (char.IsLetter(c)) {
                     sb.Append(DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{c}:"));
-                } else if (Char.IsDigit(c)) {
+                } else if (char.IsDigit(c)) {
                     if (c == '0')
                         sb.Append(DiscordEmoji.FromName(ctx.Client, ":zero:"));
                     else
                         sb.Append(StaticDiscordEmoji.Numbers[c - '0' - 1]);
-                } else if (Char.IsWhiteSpace(c)) {
+                } else if (char.IsWhiteSpace(c)) {
                     sb.Append(DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:"));
                 } else if (c == '?')
                     sb.Append(StaticDiscordEmoji.Question);
