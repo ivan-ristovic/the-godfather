@@ -100,7 +100,6 @@ namespace TheGodfather.EventListeners
             bool punished = false;
 
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
-            await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
             if (antiILSettings.Enabled)
                 punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, antiILSettings);
 
