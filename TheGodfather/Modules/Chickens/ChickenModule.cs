@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
             if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 50)
-                throw new CommandFailedException("The bare strength difference is too big (50 max)! Please find a more suitable opponent.");
+                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
 
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
