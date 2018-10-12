@@ -233,8 +233,6 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("No chickens bought in this guild.");
 
             foreach (Chicken chicken in chickens) {
-                IReadOnlyList<ChickenUpgrade> upgrades = await this.Database.GetUpgradesForChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                chicken.Stats.Upgrades = upgrades;
                 try {
                     chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
                 } catch (Exception e) {
@@ -263,8 +261,6 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("No chickens bought.");
 
             foreach (Chicken chicken in chickens) {
-                IReadOnlyList<ChickenUpgrade> upgrades = await this.Database.GetUpgradesForChickenAsync(ctx.User.Id, ctx.Guild.Id);
-                chicken.Stats.Upgrades = upgrades;
                 try {
                     chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
                 } catch (Exception e) {
