@@ -28,7 +28,7 @@ namespace TheGodfather.EventListeners
         {
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
             await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
-            if (e.Member.Guild is null)
+            if (!e.Guild.Members.Contains(e.Member))
                 return;
 
             DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
@@ -79,16 +79,16 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            if (e.Member is null || e.Member.IsBot)
+            if (e.Member is null)
                 return;
-
-            AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
-            if (antifloodSettings.Enabled)
-                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, antifloodSettings);
 
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
             if (antiILSettings.Enabled)
                 await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, antiILSettings);
+
+            AntifloodSettings antifloodSettings = await shard.DatabaseService.GetAntifloodSettingsAsync(e.Guild.Id);
+            if (antifloodSettings.Enabled)
+                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, antifloodSettings);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
