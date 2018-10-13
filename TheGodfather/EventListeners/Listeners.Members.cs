@@ -96,7 +96,9 @@ namespace TheGodfather.EventListeners
         {
             if (e.Member.IsCurrent)
                 return;
-            
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
             bool punished = false;
 
             AntiInstantLeaveSettings antiILSettings = await shard.DatabaseService.GetAntiInstantLeaveSettingsAsync(e.Guild.Id);
@@ -104,7 +106,7 @@ namespace TheGodfather.EventListeners
                 punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, antiILSettings);
 
             if (!punished) {
-                await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown + 1));
+                await Task.Delay(TimeSpan.FromSeconds(antiILSettings.Cooldown));
                 DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
                 if (!(lchn is null)) {
                     string msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id);
@@ -113,19 +115,19 @@ namespace TheGodfather.EventListeners
                     else
                         await lchn.EmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
                 }
+
+                DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+                if (logchn is null)
+                    return;
+
+                DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
+                emb.WithThumbnailUrl(e.Member.AvatarUrl);
+                emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
+                if (!string.IsNullOrWhiteSpace(e.Member.Email))
+                    emb.AddField("Email", e.Member.Email);
+
+                await logchn.SendMessageAsync(embed: emb.Build());
             }
-
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
-                return;
-
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
-            if (!string.IsNullOrWhiteSpace(e.Member.Email))
-                emb.AddField("Email", e.Member.Email);
-
-            await logchn.SendMessageAsync(embed: emb.Build());
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberUpdated)]
