@@ -37,9 +37,16 @@ namespace TheGodfather.Modules.Chickens
 
 
             [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => this.ListAsync(ctx);
+
+            [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("ID of the upgrade to buy.")] int id)
+                                               [Description("IDs of the upgrades to buy.")] params int[] ids)
             {
+                if (!ids.Any())
+                    throw new CommandFailedException("You need to specify the IDs of the upgrades you wish to purchase.");
+
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
@@ -47,26 +54,24 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken is null)
                     throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
-                if (chicken.Stats.Upgrades.Any(u => u.Id == id))
-                    throw new CommandFailedException("Your chicken already has that upgrade!");
+                if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
+                    throw new CommandFailedException("Your chicken already one of those upgrades!");
 
-                ChickenUpgrade upgrade = await this.Database.GetChickenUpgradeAsync(id);
-                if (upgrade is null)
-                    throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
+                foreach (int id in ids) {
+                    ChickenUpgrade upgrade = await this.Database.GetChickenUpgradeAsync(id);
+                    if (upgrade is null)
+                        throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(ids.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
-                    return;
+                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+                        return;
 
-                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price))
-                    throw new CommandFailedException($"You do not have enought {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
+                    if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price))
+                        throw new CommandFailedException($"You do not have enought {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
 
-                await this.Database.AddChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
+                    await this.Database.AddChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade);
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
+                }
             }
-
-            [GroupCommand, Priority(0)]
-            public Task ExecuteGroupAsync(CommandContext ctx)
-                => this.ListAsync(ctx);
 
 
             #region COMMAND_CHICKEN_UPGRADE_LIST
