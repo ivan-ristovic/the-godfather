@@ -20,14 +20,7 @@ namespace TheGodfather.Extensions
     internal static class CommandContextExtensions
     {
         public static string BuildInvocationDetailsString(this CommandContext ctx, string reason = null)
-        {
-            var utf8 = Encoding.UTF8;
-            var ascii = Encoding.ASCII;            
-            string ustr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(ctx.User.ToString())));
-            string cstr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(ctx.Channel.ToString())));
-            string rstr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(reason ?? "No reason provided.")));
-            return $"{ustr} : {rstr} | Invoked in: {cstr}";
-        }
+            => $"{ctx.User} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel}";
 
         public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string title, 
             IEnumerable<T> collection, Func<T, string> selector, DiscordColor? color = null, int pageSize = 10)
