@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
-using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 
 using System;
 using System.Collections.Generic;
@@ -398,6 +398,24 @@ namespace TheGodfather.Modules.Misc
             }
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
+        }
+        #endregion
+
+        #region COMMAND_UPTIME
+        [Command("uptime")]
+        [Description("Prints out bot runtime information.")]
+        [UsageExamples("!uptime")]
+        public Task UptimeAsync(CommandContext ctx)
+        {
+            TimeSpan processUptime = this.Shared.UptimeInformation.ProgramUptime;
+            TimeSpan socketUptime = this.Shared.UptimeInformation.SocketUptime;
+
+            return this.InformAsync(ctx, StaticDiscordEmoji.Information,
+                Formatter.Bold($"Uptime information:") +
+                $"\n\n{Formatter.Bold("Shard:")} {ctx.Services.GetService<TheGodfatherShard>().Id}\n" +
+                $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
+                $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
+            );
         }
         #endregion
 

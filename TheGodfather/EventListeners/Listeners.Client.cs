@@ -24,7 +24,7 @@ namespace TheGodfather.EventListeners
                 ex = ex.InnerException;
 
             shard.Log(
-                LogLevel.Critical, 
+                LogLevel.Critical,
                 $"| Client errored with exception: {ex.GetType()}\n" +
                 $"| Message: {ex.Message}" +
                 (ex.InnerException is null ? "" : $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
@@ -66,6 +66,13 @@ namespace TheGodfather.EventListeners
                 $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia discord server for quick support (https://discord.me/worldmafia)."
                 , StaticDiscordEmoji.Wave
             );
+        }
+
+        [AsyncEventListener(DiscordEventType.SocketOpened)]
+        public static async Task SocketOpeneEventHandlerAsync(TheGodfatherShard shard)
+        {
+            await Task.Yield();
+            shard.SharedData.UptimeInformation.SocketStartTime = DateTimeOffset.UtcNow;
         }
     }
 }

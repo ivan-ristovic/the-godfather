@@ -36,6 +36,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
+        public UptimeInformation UptimeInformation { get; internal set; }
 
         private ConcurrentDictionary<ulong, ChannelEvent> ChannelEvents { get; }
         private ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
