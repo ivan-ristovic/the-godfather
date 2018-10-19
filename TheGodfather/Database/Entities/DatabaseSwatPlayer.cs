@@ -10,10 +10,10 @@ namespace TheGodfather.Database.Entities
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("names"), Required]
+        [Column("name"), Required]
         public string[] Names { get; set; }
 
-        [Column("ips"), Required]
+        [Column("ip"), Required]
         public string[] IPs { get; set; }
 
         [Column("additional_info")]

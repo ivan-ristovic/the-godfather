@@ -68,13 +68,6 @@ namespace TheGodfather.EventListeners
             );
         }
 
-        [AsyncEventListener(DiscordEventType.SocketOpened)]
-        public static async Task SocketOpeneEventHandlerAsync(TheGodfatherShard shard)
-        {
-            await Task.Yield();
-            shard.SharedData.UptimeInformation.SocketStartTime = DateTimeOffset.UtcNow;
-        }
-
 
         private static async Task RegisterGuildAsync(SharedData shared, DatabaseContextBuilder dbb, ulong gid)
         {
