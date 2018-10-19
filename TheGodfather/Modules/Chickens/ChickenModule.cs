@@ -242,7 +242,7 @@ namespace TheGodfather.Modules.Chickens
 
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens in this guild:",
-                chickens,
+                chickens.OrderBy(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
@@ -270,7 +270,7 @@ namespace TheGodfather.Modules.Chickens
 
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens globally:",
-                chickens,
+                chickens.OrderBy(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );

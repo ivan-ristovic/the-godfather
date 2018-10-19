@@ -47,6 +47,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("threshold", threshold));
 
                 return cmd.ExecuteNonQueryAsync();
             });
