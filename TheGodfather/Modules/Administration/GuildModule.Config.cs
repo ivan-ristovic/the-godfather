@@ -155,10 +155,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("suggestions"), Priority(0)]
-            public Task SuggestionsAsync(CommandContext ctx)
+            public async Task SuggestionsAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
-                return this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
+                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
+                await this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
 
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg welcome off")]
             public async Task WelcomeAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
                 DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
                 await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
@@ -257,7 +257,7 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg leave off")]
             public async Task LeaveAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = this.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
                 DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
                 await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
@@ -355,7 +355,7 @@ namespace TheGodfather.Modules.Administration
 
 
             #region HELPER_FUNCTIONS
-            private Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
+            private async Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
             {
                 var emb = new DiscordEmbedBuilder() {
                     Title = $"Guild configuration {(changed ? " changed" : "")}",
@@ -363,7 +363,7 @@ namespace TheGodfather.Modules.Administration
                     Color = this.ModuleColor
                 };
 
-                DatabaseGuildConfig gcfg = this.GetGuildConfig(guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfig(guild.Id);
 
                 emb.AddField("Prefix", this.Shared.GetGuildPrefix(guild.Id), inline: true);
                 emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
@@ -422,7 +422,7 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Linkfilter", "off", inline: true);
                 }
 
-                return channel.SendMessageAsync(embed: emb.Build());
+                await channel.SendMessageAsync(embed: emb.Build());
             }
 
             private Task ApplySettingsAsync(ulong gid, CachedGuildConfig cgcfg, DiscordRole muteRole,

@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         public static Task BulkIncreaseAllBankAccountsAsync(this DBService db)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
+                cmd.CommandText = "UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -26,10 +26,10 @@ namespace TheGodfather.Modules.Currency.Extensions
         {
             return db.ExecuteCommandAsync(cmd => {
                 if (gid.HasValue) {
-                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
+                    cmd.CommandText = "DELETE FROM gf.bank_accounts WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid.Value));
                 } else {
-                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid;";
+                    cmd.CommandText = "DELETE FROM gf.bank_accounts WHERE uid = @uid;";
                 }
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Currency.Extensions
                 return false;
 
             await db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
+                cmd.CommandText = "UPDATE gf.bank_accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Currency.Extensions
             long? balance = null;
 
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
+                cmd.CommandText = "SELECT balance FROM gf.bank_accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
             if (gid.HasValue) {
                 await db.ExecuteCommandAsync(async (cmd) => {
-                    cmd.CommandText = $"SELECT * FROM gf.accounts WHERE gid = @gid ORDER BY balance DESC LIMIT 10";
+                    cmd.CommandText = $"SELECT * FROM gf.bank_accounts WHERE gid = @gid ORDER BY balance DESC LIMIT 10";
                     cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid.Value));
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency.Extensions
                 });
             } else {
                 await db.ExecuteCommandAsync(async (cmd) => {
-                    cmd.CommandText = $"SELECT uid, COALESCE(SUM(balance), 0)::bigint AS total_balance FROM gf.accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10";
+                    cmd.CommandText = $"SELECT uid, COALESCE(SUM(balance), 0)::bigint AS total_balance FROM gf.bank_accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                         while (await reader.ReadAsync().ConfigureAwait(false))
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         public static Task IncreaseBankAccountBalanceAsync(this DBService db, ulong uid, ulong gid, long amount)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
+                cmd.CommandText = "UPDATE gf.bank_accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         public static Task OpenBankAccountAsync(this DBService db, ulong uid, ulong gid)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
+                cmd.CommandText = "INSERT INTO gf.bank_accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         {
             await db.ExecuteTransactionAsync(async (con, tsem) => {
                 using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @target AND gid = @gid;";
+                    cmd.CommandText = "SELECT balance FROM gf.bank_accounts WHERE uid = @target AND gid = @gid;";
                     cmd.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
                     cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Currency.Extensions
                     using (var transaction = con.BeginTransaction()) {
                         var cmd1 = con.CreateCommand();
                         cmd1.Transaction = transaction;
-                        cmd1.CommandText = "SELECT balance FROM gf.accounts WHERE (uid = @source OR uid = @target) AND gid = @gid FOR UPDATE;";
+                        cmd1.CommandText = "SELECT balance FROM gf.bank_accounts WHERE (uid = @source OR uid = @target) AND gid = @gid FOR UPDATE;";
                         cmd1.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
                         cmd1.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
                         cmd1.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
                         var cmd2 = con.CreateCommand();
                         cmd2.Transaction = transaction;
-                        cmd2.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @source AND gid = @gid;";
+                        cmd2.CommandText = "SELECT balance FROM gf.bank_accounts WHERE uid = @source AND gid = @gid;";
                         cmd2.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
                         cmd2.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
                         var cmd3 = con.CreateCommand();
                         cmd3.Transaction = transaction;
-                        cmd3.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @source AND gid = @gid;";
+                        cmd3.CommandText = "UPDATE gf.bank_accounts SET balance = balance - @amount WHERE uid = @source AND gid = @gid;";
                         cmd3.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
                         cmd3.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
                         cmd3.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
                         var cmd4 = con.CreateCommand();
                         cmd4.Transaction = transaction;
-                        cmd4.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @target AND gid = @gid;";
+                        cmd4.CommandText = "UPDATE gf.bank_accounts SET balance = balance + @amount WHERE uid = @target AND gid = @gid;";
                         cmd4.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
                         cmd4.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
                         cmd4.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));

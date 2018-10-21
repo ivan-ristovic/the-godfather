@@ -102,11 +102,12 @@ namespace TheGodfather.Modules.Administration
 
                     var filter = new DatabaseFilter() { GuildIdDb = (long)ctx.Guild.Id, Trigger = regexString };
                     db.Filters.Add(filter);
-                    await db.SaveChangesAsync();
 
                     if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regex)))
                         eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
                 }
+
+                await db.SaveChangesAsync();
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);

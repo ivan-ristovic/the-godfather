@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Chickens
         {
             member = member ?? ctx.Member;
 
-            var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+            var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, member.Id);
             if (chicken is null)
                 throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
@@ -243,12 +243,15 @@ namespace TheGodfather.Modules.Chickens
         [UsageExamples("!chicken top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            IReadOnlyList<Chicken> chickens;
+            List<Chicken> chickens;
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                chickens = db.Chickens
+                chickens = await db.Chickens
+                    .Where(c => c.GuildId == ctx.Guild.Id)
+                    .Include(c => c.DbUpgrades)
+                        .ThenInclude(u => u.DbChickenUpgrade)
                     .Select(c => Chicken.FromDatabaseChicken(c))
-                    .ToList()
-                    .AsReadOnly();
+                    .OrderBy(c => c.Stats.TotalStrength)
+                    .ToListAsync();
             }
             
             if (!chickens.Any())
@@ -264,7 +267,7 @@ namespace TheGodfather.Modules.Chickens
 
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens in this guild:",
-                chickens.OrderBy(c => c.Stats.TotalStrength),
+                chickens.OrderByDescending(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
@@ -278,13 +281,15 @@ namespace TheGodfather.Modules.Chickens
         [UsageExamples("!chicken topglobal")]
         public async Task GlobalTopAsync(CommandContext ctx)
         {
-            IReadOnlyList<Chicken> chickens;
+            List<Chicken> chickens;
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                chickens = db.Chickens
+                chickens = await db.Chickens
+                    .Where(c => c.GuildId > 0)  // TODO ....
+                    .Include(c => c.DbUpgrades)
+                        .ThenInclude(u => u.DbChickenUpgrade)
                     .Select(c => Chicken.FromDatabaseChicken(c))
                     .OrderBy(c => c.Stats.TotalStrength)
-                    .ToList()
-                    .AsReadOnly();
+                    .ToListAsync();
             }
 
             if (!chickens.Any())
@@ -300,7 +305,7 @@ namespace TheGodfather.Modules.Chickens
 
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens globally:",
-                chickens.OrderBy(c => c.Stats.TotalStrength),
+                chickens.OrderByDescending(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );

@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -42,7 +42,10 @@ namespace TheGodfather.Modules.Chickens.Common
         {
             Chicken chicken = null;
             using (DatabaseContext db = dbb.CreateContext()) {
-                DatabaseChicken dbc = db.Chickens.SingleOrDefault(c => c.GuildId == gid && c.UserId == uid);
+                DatabaseChicken dbc = db.Chickens
+                    .Include(c => c.DbUpgrades)
+                        .ThenInclude(u => u.DbChickenUpgrade)
+                    .SingleOrDefault(c => c.GuildId == gid && c.UserId == uid);
                 chicken = FromDatabaseChicken(dbc);
             }
             return chicken;
@@ -162,6 +165,7 @@ namespace TheGodfather.Modules.Chickens.Common
                 }).ToList(),
                 GuildIdDb = (long)this.GuildId,
                 MaxVitality = this.Stats.BareMaxVitality,
+                Name = this.Name,
                 Strength = this.Stats.BareStrength,
                 UserIdDb = (long)this.OwnerId,
                 Vitality = this.Stats.BareVitality

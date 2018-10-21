@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -100,13 +101,17 @@ namespace TheGodfather.Modules.Administration
                         
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
-                        IEnumerable<DatabaseExemptedEntity> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                            exempted = db.AntispamExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+                        List<DatabaseExemptAntispam> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            exempted = await db.AntispamExempts
+                                .Where(ee => ee.GuildId == ctx.Guild.Id)
+                                .OrderBy(ee => ee.Type)
+                                .ToListAsync();
+                        }
 
                         if (exempted.Any()) {
                             sb.AppendLine();
-                            foreach (DatabaseExemptedEntity ee in exempted)
+                            foreach (DatabaseExemptAntispam ee in exempted)
                                 sb.AppendLine($"{ee.Type.ToUserFriendlyString()}: {ee.Id}");
                         } else {
                             sb.Append(" None");

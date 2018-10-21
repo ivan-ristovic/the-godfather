@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Chickens.Extensions;
@@ -56,23 +57,27 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
-                            chicken.Stats.BareStrength += war.Gain;
-                            chicken.Stats.BareVitality -= 10;
-                            await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                            await this.Database.IncreaseBankAccountBalanceAsync(chicken.OwnerId, ctx.Guild.Id, 100000);
-                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
-                        }
-
-                        foreach (Chicken chicken in war.Team1Won ? war.Team2 : war.Team1) {
-                            chicken.Stats.BareVitality -= 50;
-                            if (chicken.Stats.TotalVitality > 0) {
-                                await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 25 HP!");
-                            } else {
-                                await this.Database.RemoveChickenAsync(chicken.OwnerId, ctx.Guild.Id);
-                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
+                                chicken.Stats.BareStrength += war.Gain;
+                                chicken.Stats.BareVitality -= 10;
+                                db.Chickens.Update(chicken.ToDatabaseChicken());
+                                await this.Database.IncreaseBankAccountBalanceAsync(chicken.OwnerId, ctx.Guild.Id, 100000);
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                             }
+
+                            foreach (Chicken chicken in war.Team1Won ? war.Team2 : war.Team1) {
+                                chicken.Stats.BareVitality -= 50;
+                                if (chicken.Stats.TotalVitality > 0) {
+                                    db.Chickens.Update(chicken.ToDatabaseChicken());
+                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 25 HP!");
+                                } else {
+                                    db.Chickens.Remove(chicken.ToDatabaseChicken());
+                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                                }
+                            }
+
+                            await db.SaveChangesAsync();
                         }
 
                         await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.\n\n{sb.ToString()}");
@@ -103,7 +108,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -133,7 +138,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 

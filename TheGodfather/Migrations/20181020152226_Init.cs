@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TheGodfather.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -608,8 +608,8 @@ namespace TheGodfather.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_chicken_bought_upgrades_chickens_uid_gid",
-                        columns: x => new { x.uid, x.gid },
+                        name: "FK_chicken_bought_upgrades_chickens_gid_uid",
+                        columns: x => new { x.gid, x.uid },
                         principalSchema: "gf",
                         principalTable: "chickens",
                         principalColumns: new[] { "gid", "uid" },
@@ -637,16 +637,10 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_chicken_bought_upgrades_gid",
+                name: "IX_chicken_bought_upgrades_gid_uid",
                 schema: "gf",
                 table: "chicken_bought_upgrades",
-                column: "gid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_chicken_bought_upgrades_uid_gid",
-                schema: "gf",
-                table: "chicken_bought_upgrades",
-                columns: new[] { "uid", "gid" });
+                columns: new[] { "gid", "uid" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_exempt_antispam_gid",

@@ -144,9 +144,7 @@ namespace TheGodfather.Migrations
 
                     b.HasKey("Id", "GuildIdDb", "UserIdDb");
 
-                    b.HasIndex("GuildIdDb");
-
-                    b.HasIndex("UserIdDb", "GuildIdDb");
+                    b.HasIndex("GuildIdDb", "UserIdDb");
 
                     b.ToTable("chicken_bought_upgrades");
                 });
@@ -846,7 +844,7 @@ namespace TheGodfather.Migrations
 
                     b.HasOne("TheGodfather.Database.Entities.DatabaseChicken", "DbChicken")
                         .WithMany("DbUpgrades")
-                        .HasForeignKey("UserIdDb", "GuildIdDb")
+                        .HasForeignKey("GuildIdDb", "UserIdDb")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

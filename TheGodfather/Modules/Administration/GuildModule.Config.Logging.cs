@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -78,9 +78,13 @@ namespace TheGodfather.Modules.Administration
                         var sb = new StringBuilder();
                         sb.Append(Formatter.Bold("Exempts:"));
 
-                        IEnumerable<DatabaseExemptedEntity> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                            exempted = db.LoggingExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+                        List<DatabaseExemptLogging> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            exempted = await db.LoggingExempts
+                                .Where(ee => ee.GuildId == ctx.Guild.Id)
+                                .OrderBy(ee => ee.Type)
+                                .ToListAsync();
+                        }
 
                         if (exempted.Any()) {
                             sb.AppendLine();

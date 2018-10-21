@@ -31,6 +31,7 @@ namespace TheGodfather.Database.Entities
         public ulong GuildId => (ulong)this.GuildIdDb;
 
         [Column("name"), Required]
+        [MaxLength(32)]
         public string Name { get; set; }
 
         [Column("str")]

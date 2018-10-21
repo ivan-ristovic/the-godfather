@@ -88,11 +88,11 @@ namespace TheGodfather.Modules
             return false;
         }
 
-        public DatabaseGuildConfig GetGuildConfig(ulong gid)
+        public async Task<DatabaseGuildConfig> GetGuildConfig(ulong gid)
         {
             DatabaseGuildConfig gcfg = null;
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                gcfg = db.GuildConfig.SingleOrDefault(cfg => cfg.GuildId == gid) ?? new DatabaseGuildConfig();
+                gcfg = await db.GuildConfig.FindAsync(gid) ?? new DatabaseGuildConfig();
             return gcfg;
         }
 
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules
         {
             DatabaseGuildConfig gcfg = null;
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                gcfg = db.GuildConfig.SingleOrDefault(cfg => cfg.GuildId == gid) ?? new DatabaseGuildConfig();
+                gcfg = await db.GuildConfig.FindAsync(gid) ?? new DatabaseGuildConfig();
                 action(gcfg);
                 await db.SaveChangesAsync();
             }

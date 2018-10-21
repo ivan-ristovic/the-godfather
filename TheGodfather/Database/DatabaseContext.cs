@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 
 using TheGodfather.Database.Entities;
@@ -18,7 +18,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseBlockedChannel> BlockedChannels { get; set; }
         public virtual DbSet<DatabaseBlockedUser> BlockedUsers { get; set; }
         public virtual DbSet<DatabaseChicken> Chickens { get; set; }
-        public virtual DbSet<DatabaseChickenUpgrade> ChickensUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
@@ -59,6 +58,10 @@ namespace TheGodfather.Database
 
             // optionsBuilder.EnableSensitiveDataLogging(true);
 
+            // TODO
+            // optionsBuilder.UseLazyLoadingProxies();
+            // optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
+
             optionsBuilder.UseNpgsql(this.ConnectionString);
         }
 
@@ -75,7 +78,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseChicken>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
             model.Entity<DatabaseChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
             model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
-            model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.UserIdDb, bu.GuildIdDb });
+            model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             model.Entity<DatabaseExemptAntispam>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptLogging>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptRatelimit>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });

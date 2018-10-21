@@ -11,8 +11,8 @@ using TheGodfather.Modules.Administration.Common;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181007185958_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20181020152226_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -146,9 +146,7 @@ namespace TheGodfather.Migrations
 
                     b.HasKey("Id", "GuildIdDb", "UserIdDb");
 
-                    b.HasIndex("GuildIdDb");
-
-                    b.HasIndex("UserIdDb", "GuildIdDb");
+                    b.HasIndex("GuildIdDb", "UserIdDb");
 
                     b.ToTable("chicken_bought_upgrades");
                 });
@@ -848,7 +846,7 @@ namespace TheGodfather.Migrations
 
                     b.HasOne("TheGodfather.Database.Entities.DatabaseChicken", "DbChicken")
                         .WithMany("DbUpgrades")
-                        .HasForeignKey("UserIdDb", "GuildIdDb")
+                        .HasForeignKey("GuildIdDb", "UserIdDb")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

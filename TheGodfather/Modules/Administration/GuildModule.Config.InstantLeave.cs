@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    AntiInstantLeaveSettings settings = this.GetGuildConfig(ctx.Guild.Id).AntiInstantLeaveSettings;
+                    AntiInstantLeaveSettings settings = (await this.GetGuildConfig(ctx.Guild.Id)).AntiInstantLeaveSettings;
                     if (settings.Enabled)
                         await this.InformAsync(ctx, $"Instant leave watch: {Formatter.Bold("enabled")} with {Formatter.Bold(settings.Cooldown.ToString())}s cooldown");
                     else

@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -100,9 +101,13 @@ namespace TheGodfather.Modules.Administration
 
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
-                        IEnumerable<DatabaseExemptedEntity> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                            exempted = db.RatelimitExempts.Where(ee => ee.GuildId == ctx.Guild.Id).OrderBy(ee => ee.Type);
+                        List<DatabaseExemptRatelimit> exempted;
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            exempted = await db.RatelimitExempts
+                                .Where(ee => ee.GuildId == ctx.Guild.Id)
+                                .OrderBy(ee => ee.Type)
+                                .ToListAsync();
+                        }
 
                         if (exempted.Any()) {
                             sb.AppendLine();
@@ -246,7 +251,7 @@ namespace TheGodfather.Modules.Administration
                 }
                 #endregion
 
-                #region COMMAND_ANTISPAM_UNEXEMPT
+                #region COMMAND_RATELIMIT_UNEXEMPT
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow ratelimit watch for that entity.")]
                 [Aliases("unex", "uex")]
