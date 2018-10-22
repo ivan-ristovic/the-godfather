@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
@@ -62,7 +63,15 @@ namespace TheGodfather.Modules.Currency
             if (price <1  || price > 100_000_000_000)
                 throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
 
-            await this.Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.PurchasableItems.Add(new DatabasePurchasableItem() {
+                    GuildIdDb = (long)ctx.Guild.Id,
+                    Name = name,
+                    Price = price
+                });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
         }
 
@@ -81,12 +90,15 @@ namespace TheGodfather.Modules.Currency
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
-            PurchasableItem item = await this.Database.GetPurchasableItemAsync(ctx.Guild.Id, id);
-            if (item is null)
-                throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+            DatabasePurchasableItem item;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                item = await db.PurchasableItems.FindAsync(id);
+                if (item is null)
+                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
-            if (await this.Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
-                throw new CommandFailedException("You have already purchased this item!");
+                if (db.PurchasedItems.Any(i => item.Id == id && i.UserId == ctx.User.Id))
+                    throw new CommandFailedException("You have already purchased this item!");
+            }
 
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
@@ -94,10 +106,15 @@ namespace TheGodfather.Modules.Currency
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
+
+                db.PurchasedItems.Add(new DatabasePurchasedItem() {
+                    ItemId = item.Id,
+                    UserIdDb = (long)ctx.User.Id
+                });
+
                 await db.SaveChangesAsync();
             }
 
-            await this.Database.AddPurchaseAsync(ctx.User.Id, item.Id);
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
         #endregion
@@ -110,23 +127,28 @@ namespace TheGodfather.Modules.Currency
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {
-            PurchasableItem item = await this.Database.GetPurchasableItemAsync(ctx.Guild.Id, id);
-            if (item is null)
-                throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+            DatabasePurchasableItem item;
+            DatabasePurchasedItem purchased;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                item = await db.PurchasableItems.FindAsync(id);
+                if (item is null)
+                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
-            if (!await this.Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
-                throw new CommandFailedException("You did not purchase this item!");
+                purchased = await db.PurchasedItems.FindAsync(item.Id, (long)ctx.User.Id);
+                if (purchased == null)
+                    throw new CommandFailedException("You did not purchase this item!");
+            }
 
             long retval = item.Price / 2;
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.PurchasedItems.Remove(purchased);
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + retval);
                 await db.SaveChangesAsync();
             }
-
-            await this.Database.RemovePurchaseAsync(ctx.User.Id, item.Id);
+            
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
         #endregion
@@ -145,7 +167,15 @@ namespace TheGodfather.Modules.Currency
             if (!ids.Any())
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
-            await this.Database.RemovePurchasableItemsAsync(ctx.Guild.Id, ids);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                foreach (int id in ids.Distinct()) {
+                    var item = new DatabasePurchasableItem() { Id = id, GuildIdDb = (long)ctx.Guild.Id };
+                    if (db.PurchasableItems.Contains(item))
+                        db.PurchasableItems.Remove(item);
+                }
+                await db.SaveChangesAsync();
+            }
+            
             await this.InformAsync(ctx, $"Removed items with the following IDs: {string.Join(", ", ids)}", important: false);
         }
         #endregion
@@ -157,17 +187,24 @@ namespace TheGodfather.Modules.Currency
         [UsageExamples("!shop list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<PurchasableItem> items = await this.Database.GetAllPurchasableItemsAsync(ctx.Guild.Id);
+            List<DatabasePurchasableItem> items;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                items = await db.PurchasableItems
+                    .Where(i => i.GuildId == ctx.Guild.Id)
+                    .OrderBy(i => i.Price)
+                    .ToListAsync();
+            }
+
             if (!items.Any())
                 throw new CommandFailedException("No items in shop!");
 
             await ctx.SendCollectionInPagesAsync(
                 $"Items for guild {ctx.Guild.Name}",
-                items.OrderBy(item => item.Price),
+                items,
                 item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}",
                 this.ModuleColor,
                 5
-            ).ConfigureAwait(false);
+            );
         }
         #endregion
     }

@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -121,14 +121,22 @@ namespace TheGodfather.Modules.Misc
         {
             user = user ?? ctx.User;
 
-            IReadOnlyList<PurchasableItem> items = await this.Database.GetPurchasedItemsAsync(user.Id);
+            List<DatabasePurchasedItem> items;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                items = await db.PurchasedItems
+                        .Include(i => i.DbPurchasableItem)
+                    .Where(i => i.UserId == ctx.User.Id && i.DbPurchasableItem.GuildId == ctx.Guild.Id)
+                    .OrderBy(i => i.DbPurchasableItem.Price)
+                    .ToListAsync();
+            }
+            
             if (!items.Any())
                 throw new CommandFailedException("No items purchased!");
 
             await ctx.SendCollectionInPagesAsync(
                 $"Items owned by {user.Username}",
                 items,
-                item => $"{Formatter.Bold(item.Name)} | {item.Price}",
+                item => $"{Formatter.Bold(item.DbPurchasableItem.Name)} | {item.DbPurchasableItem.Price}",
                 this.ModuleColor,
                 5
             );
