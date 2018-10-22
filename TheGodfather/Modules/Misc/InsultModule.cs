@@ -3,13 +3,15 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Extensions;
@@ -44,11 +46,14 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            string insult = await this.Database.GetRandomInsultAsync();
-            if (insult is null)
-                throw new CommandFailedException("No available insults.");
-
-            await this.InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:");
+            DatabaseInsult insult;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!db.Insults.Any())
+                    throw new CommandFailedException("No available insults.");
+                insult = db.Insults.Shuffle().First();
+            }
+                
+            await this.InformAsync(ctx, insult.Content.Replace("%user%", user.Mention), ":middle_finger:");
         }
 
 
@@ -59,19 +64,25 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!insult add %user% is lowering the IQ of the entire street!")]
         [RequirePrivilegedUser]
         public async Task AddInsultAsync(CommandContext ctx,
-                                        [RemainingText, Description("Insult (must contain ``%user%``).")] string insult)
+                                        [RemainingText, Description("Insult (must contain ``%user%``).")] string content)
         {
-            if (string.IsNullOrWhiteSpace(insult))
+            if (string.IsNullOrWhiteSpace(content))
                 throw new InvalidCommandUsageException("Missing insult string.");
 
-            if (insult.Length >= 120)
+            if (content.Length >= 120)
                 throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 120 characters please.");
 
-            if (insult.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
+            if (content.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
-            await this.Database.AddInsultAsync(insult);
-            await this.InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(insult)}", important: false);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Insults.Add(new DatabaseInsult() {
+                    Content = content
+                });
+                await db.SaveChangesAsync();
+            }
+
+            await this.InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(content)}", important: false);
         }
         #endregion
         
@@ -86,22 +97,30 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all insults?"))
                 return;
 
-            await this.Database.RemoveAllInsultsAsync();
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Insults.RemoveRange(db.Insults);
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, "All insults successfully removed.", important: false);
         }
         #endregion
 
         #region COMMAND_INSULTS_DELETE
         [Command("delete")]
-        [Description("Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).")]
+        [Description("Remove insult with a given ID from list. (use command ``insults list`` to view insult indexes).")]
         [Aliases("-", "remove", "del", "rm", "rem", "d", ">", ">>", "-=")]
         [UsageExamples("!insult delete 2")]
         [RequirePrivilegedUser]
         public async Task DeleteInsultAsync(CommandContext ctx, 
-                                           [Description("Index of the insult to remove.")] int index)
+                                           [Description("ID of the insult to remove.")] int id)
         {
-            await this.Database.RemoveInsultAsync(index);
-            await this.InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(index.ToString())}");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Insults.Remove(new DatabaseInsult() { Id = id });
+                await db.SaveChangesAsync();
+            }
+            
+            await this.InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(id.ToString())}");
         }
         #endregion
 
@@ -112,14 +131,17 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!insult list")]
         public async Task ListInsultsAsync(CommandContext ctx)
         {
-            IReadOnlyDictionary<int, string> insults = await this.Database.GetAllInsultsAsync();
-            if (insults is null || !insults.Any())
+            List<DatabaseInsult> insults;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                insults = await db.Insults.ToListAsync();
+
+            if (!insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
             await ctx.SendCollectionInPagesAsync(
                 "Available insults",
                 insults,
-                kvp => $"{Formatter.InlineCode($"{kvp.Key:D3}")} | {Formatter.Italic(kvp.Value)}",
+                insult => $"{Formatter.InlineCode($"{insult.Id:D3}")} | {Formatter.Italic(insult.Content)}",
                 this.ModuleColor
             ).ConfigureAwait(false);
         }
