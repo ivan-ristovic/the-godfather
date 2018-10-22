@@ -6,13 +6,15 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
 using Humanizer;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Extensions;
@@ -53,7 +55,11 @@ namespace TheGodfather.Modules.Currency
         {
             user = user ?? ctx.User;
 
-            long? balance = await this.Database.GetBankAccountBalanceAsync(user.Id, ctx.Guild.Id);
+            long? balance;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
+                balance = account?.Balance;
+            }
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.MoneyBag} Bank account for {user.Username}",
@@ -111,10 +117,15 @@ namespace TheGodfather.Modules.Currency
             if (amount < 0 || amount > 1_000_000_000_000)
                 throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1_000_000_000_000:n0}]");
 
-            if (!await this.Database.HasBankAccountAsync(user.Id, ctx.Guild.Id))
-                throw new CommandFailedException("Given user does not have a WM bank account!");
-
-            await this.Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
+                if (account is null)
+                    throw new CommandFailedException("Given user does not have a WM bank account!");
+                account.Balance += amount;
+                db.BankAccounts.Update(account);
+                await db.SaveChangesAsync();
+            }
+            
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on the lottery! (seems legit)");
         }
         
@@ -132,10 +143,15 @@ namespace TheGodfather.Modules.Currency
         [UsageExamples("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            if (await this.Database.HasBankAccountAsync(ctx.User.Id, ctx.Guild.Id))
-                throw new CommandFailedException("You already own an account in WM bank!");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
+                    db.BankAccounts.Add(new DatabaseBankAccount(ctx.Guild.Id, ctx.User.Id));
+                else
+                    throw new CommandFailedException("You already own an account in WM bank!");
 
-            await this.Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id);
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
         }
         #endregion
@@ -147,15 +163,23 @@ namespace TheGodfather.Modules.Currency
         [UsageExamples("!bank top")]
         public async Task GetLeaderboardAsync(CommandContext ctx)
         {
-            IReadOnlyList<(ulong, long)> top = await this.Database.GetTopBankAccountsAsync(ctx.Guild.Id);
+            List<DatabaseBankAccount> topAccounts;
+
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                topAccounts = await db.BankAccounts
+                    .Where(a => a.GuildId == ctx.Guild.Id)
+                    .OrderByDescending(a => a.Balance)
+                    .Take(10)
+                    .ToListAsync();
+            }
 
             var sb = new StringBuilder();
-            foreach ((ulong uid, long balance) in top) {
+            foreach (DatabaseBankAccount account in topAccounts) {
                 try {
-                    DiscordUser u = await ctx.Client.GetUserAsync(uid);
-                    sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{balance:n0}")}");
+                    DiscordUser u = await ctx.Client.GetUserAsync(account.UserId);
+                    sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
                 } catch (NotFoundException) {
-                    await this.Database.CloseBankAccountAsync(uid);
+
                 }
             }
 
@@ -174,15 +198,22 @@ namespace TheGodfather.Modules.Currency
         [UsageExamples("!bank gtop")]
         public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
         {
-            IReadOnlyList<(ulong, long)> top = await this.Database.GetTopBankAccountsAsync();
+            List<DatabaseBankAccount> topAccounts;
+
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                topAccounts = await db.BankAccounts
+                    .OrderByDescending(a => a.Balance)
+                    .Take(10)
+                    .ToListAsync();
+            }
 
             var sb = new StringBuilder();
-            foreach ((ulong uid, long balance) in top) {
+            foreach (DatabaseBankAccount account in topAccounts) {
                 try {
-                    DiscordUser u = await ctx.Client.GetUserAsync(uid);
-                    sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{balance:n0}")}");
+                    DiscordUser u = await ctx.Client.GetUserAsync(account.UserId);
+                    sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
                 } catch (NotFoundException) {
-                    await this.Database.CloseBankAccountAsync(uid);
+
                 }
             }
 
@@ -210,7 +241,13 @@ namespace TheGodfather.Modules.Currency
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
-            await this.Database.TransferBetweenBankAccountsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, amount))
+                    throw new CommandFailedException("You have insufficient funds.");
+                await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, important: false);
         }
 
@@ -231,13 +268,13 @@ namespace TheGodfather.Modules.Currency
                                          [Description("User whose account to delete.")] DiscordUser user,
                                          [Description("Globally delete?")] bool global = false)
         {
-            if (!await this.Database.HasBankAccountAsync(user.Id, ctx.Guild.Id))
-                throw new CommandFailedException("There is no account registered for that user in WM bank!");
-
-            if (global)
-                await this.Database.CloseBankAccountAsync(user.Id);
-            else
-                await this.Database.CloseBankAccountAsync(user.Id, ctx.Guild.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (global)
+                    db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
+                else
+                    db.BankAccounts.Remove(new DatabaseBankAccount(user.Id, ctx.Guild.Id));
+                await db.SaveChangesAsync();
+            }
 
             await this.InformAsync(ctx, important: false);
         }

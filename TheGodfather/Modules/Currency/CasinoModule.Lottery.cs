@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
@@ -28,7 +29,7 @@ namespace TheGodfather.Modules.Currency
         public class LotteryModule : TheGodfatherModule
         {
 
-            public LotteryModule(SharedData shared, DBService db) 
+            public LotteryModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
@@ -47,10 +48,6 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? balance = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
-                if (!balance.HasValue || balance < LotteryGame.TicketPrice)
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
-
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
@@ -58,15 +55,28 @@ namespace TheGodfather.Modules.Currency
                     await this.JoinAsync(ctx, numbers);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    await game.RunAsync();
+                    if (game.ParticipantCount > 1) {
+                        await game.RunAsync();
 
-                    if (game.Winners.Any()) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
+                        if (game.Winners.Any()) {
+                            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
-                        foreach (var winner in game.Winners)
-                            await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount);
+                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                foreach (var winner in game.Winners)
+                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
+                                await db.SaveChangesAsync();
+                            }
+                        } else {
+                            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!");
+                        }
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!");
+                        if (game.IsParticipating(ctx.User)) {
+                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + LotteryGame.TicketPrice);
+                                await db.SaveChangesAsync();
+                            }
+                        }
+                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -100,8 +110,11 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
+                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
+                    await db.SaveChangesAsync();
+                }
 
                 game.AddParticipant(ctx.User, numbers);
                 await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");

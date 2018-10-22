@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
@@ -66,13 +67,20 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                await db.SaveChangesAsync();
+            }
 
             await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits", out long won));
 
-            if (won > 0)
-                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won);
+            if (won > 0) {
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + won);
+                    await db.SaveChangesAsync();
+                }
+            }
         }
 
         [Command("slot"), Priority(0)]
@@ -102,14 +110,21 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                await db.SaveChangesAsync();
+            }
 
             var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
             await wof.RunAsync();
 
-            if (wof.WonAmount > 0)
-                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount);
+            if (wof.WonAmount > 0) { 
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + wof.WonAmount);
+                    await db.SaveChangesAsync();
+                }
+            }
         }
 
         [Command("wheeloffortune"), Priority(0)]

@@ -70,8 +70,8 @@ namespace TheGodfather.Modules.Chickens
             if (chicken2 is null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
-            if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 50)
-                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
+            if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 75)
+                throw new CommandFailedException("The strength difference is too big (75 max)! Please find a more suitable opponent.");
 
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
@@ -80,9 +80,9 @@ namespace TheGodfather.Modules.Chickens
             Chicken loser = winner == chicken1 ? chicken2 : chicken1;
             int gain = winner.DetermineStrengthGain(loser);
             winner.Stats.BareStrength += gain;
-            winner.Stats.BareMaxVitality -= gain;
+            winner.Stats.BareVitality -= gain;
             if (winner.Stats.TotalVitality == 0)
-                winner.Stats.BareVitality = 1;
+                winner.Stats.BareVitality++;
             loser.Stats.BareVitality -= 50;
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
@@ -90,11 +90,12 @@ namespace TheGodfather.Modules.Chickens
                 if (loser.Stats.TotalVitality > 0)
                     db.Chickens.Update(loser.ToDatabaseChicken());
                 else
-                    db.Chickens.Remove(DatabaseChicken.CreateDummy(ctx.User.Id, loser.OwnerId));
+                    db.Chickens.Remove(loser.ToDatabaseChicken());
+
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + gain * 2000);
+
                 await db.SaveChangesAsync();
             }
-
-            await this.Database.IncreaseBankAccountBalanceAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000);
 
             await this.InformAsync(ctx, StaticDiscordEmoji.Chicken,
                 header +
@@ -120,12 +121,13 @@ namespace TheGodfather.Modules.Chickens
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to create a disease?"))
                 return;
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
-                throw new CommandFailedException($"You do not have enought {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to pay for the disease creation!");
-
             short threshold = (short)GFRandom.Generator.Next(50, 100);
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to pay for the disease creation!");
+
                 db.Chickens.RemoveRange(db.Chickens.Where(c => c.Vitality < threshold));
+
                 await db.SaveChangesAsync();
             }
 
@@ -227,10 +229,10 @@ namespace TheGodfather.Modules.Chickens
                 return;
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                db.Chickens.Remove(DatabaseChicken.CreateDummy(ctx.User.Id, ctx.Guild.Id));
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + price);
+                db.Chickens.Remove(new DatabaseChicken(ctx.User.Id, ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
-            await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price);
 
             await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
         }
@@ -273,7 +275,7 @@ namespace TheGodfather.Modules.Chickens
             );
         }
         #endregion
-
+        
         #region COMMAND_CHICKEN_TOPGLOBAL
         [Command("topglobal")]
         [Description("View the list of strongest chickens globally.")]

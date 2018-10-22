@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Chickens
                                     db.Chickens.Update(chicken.ToDatabaseChicken());
                                     sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
                                 } else {
-                                    db.Chickens.Remove(DatabaseChicken.CreateDummy(ctx.User.Id, chicken.OwnerId));
+                                    db.Chickens.Remove(new DatabaseChicken(ctx.User.Id, chicken.OwnerId));
                                     sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
                                 }
                             }

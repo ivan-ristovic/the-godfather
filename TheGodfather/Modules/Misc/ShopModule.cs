@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
@@ -90,8 +91,11 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
-                throw new CommandFailedException("You do not have enough money to purchase that item!");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
+                    throw new CommandFailedException("You do not have enough money to purchase that item!");
+                await db.SaveChangesAsync();
+            }
 
             await this.Database.AddPurchaseAsync(ctx.User.Id, item.Id);
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
@@ -117,7 +121,11 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
 
-            await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, retval);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + retval);
+                await db.SaveChangesAsync();
+            }
+
             await this.Database.RemovePurchaseAsync(ctx.User.Id, item.Id);
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }

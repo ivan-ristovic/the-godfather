@@ -31,12 +31,9 @@ namespace TheGodfather.Modules.Chickens.Common
             { ChickenType.SteroidEmpowered, new ChickenStats() { BareStrength = 200, BareMaxVitality = 250, BareVitality = 250 } },
             { ChickenType.Alien, new ChickenStats() { BareStrength = 250, BareMaxVitality = 300, BareVitality = 300 } },
         }.ToImmutableDictionary();
+
         public static long Price(ChickenType type)
             => PriceForAttribute(StartingStats[type].BareStrength);
-
-        private static long PriceForAttribute(int attr)
-            => (long)Math.Pow(10, 2 + attr / (double)50);
-
 
         public static Chicken FromDatabase(DatabaseContextBuilder dbb, ulong gid, ulong uid)
         {
@@ -74,6 +71,9 @@ namespace TheGodfather.Modules.Chickens.Common
                 }
             };
         }
+
+        private static long PriceForAttribute(int attr)
+            => (long)Math.Pow(10, 2 + attr / (double)50);
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
@@ -155,21 +155,36 @@ namespace TheGodfather.Modules.Chickens.Common
             return emb.Build();
         }
 
-        public DatabaseChicken ToDatabaseChicken()
+        public DatabaseChicken ToDatabaseChicken(DatabaseChicken target = null)
         {
-            return new DatabaseChicken() {
-                DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
+            if (target is null) {
+                return new DatabaseChicken() {
+                    DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
+                        GuildIdDb = (long)this.GuildId,
+                        Id = u.Id,
+                        UserIdDb = (long)this.OwnerId
+                    }).ToList(),
+                    GuildIdDb = (long)this.GuildId,
+                    MaxVitality = this.Stats.BareMaxVitality,
+                    Name = this.Name,
+                    Strength = this.Stats.BareStrength,
+                    UserIdDb = (long)this.OwnerId,
+                    Vitality = this.Stats.BareVitality
+                };
+            } else {
+                target.DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
                     GuildIdDb = (long)this.GuildId,
                     Id = u.Id,
                     UserIdDb = (long)this.OwnerId
-                }).ToList(),
-                GuildIdDb = (long)this.GuildId,
-                MaxVitality = this.Stats.BareMaxVitality,
-                Name = this.Name,
-                Strength = this.Stats.BareStrength,
-                UserIdDb = (long)this.OwnerId,
-                Vitality = this.Stats.BareVitality
-            };
+                }).ToList();
+                target.GuildIdDb = (long)this.GuildId;
+                target.MaxVitality = this.Stats.BareMaxVitality;
+                target.Name = this.Name;
+                target.Strength = this.Stats.BareStrength;
+                target.UserIdDb = (long)this.OwnerId;
+                target.Vitality = this.Stats.BareVitality;
+                return target;
+            }
         }
     }
 }

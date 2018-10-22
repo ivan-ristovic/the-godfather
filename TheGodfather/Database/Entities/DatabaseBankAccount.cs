@@ -5,6 +5,19 @@ namespace TheGodfather.Database.Entities
     [Table("bank_accounts")]
     public class DatabaseBankAccount
     {
+
+        public DatabaseBankAccount()
+        {
+
+        }
+
+        public DatabaseBankAccount(ulong gid, ulong uid)
+        {
+            this.GuildIdDb = (long)gid;
+            this.UserIdDb = (long)uid;
+        }
+
+
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
@@ -19,7 +32,7 @@ namespace TheGodfather.Database.Entities
         public ulong GuildId => (ulong)this.GuildIdDb;
 
         [Column("balance")]
-        public long Balance { get; set; }
+        public long Balance { get; set; } = 10000;
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

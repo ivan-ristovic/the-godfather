@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
@@ -49,11 +50,7 @@ namespace TheGodfather.Modules.Currency
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
-
-                long? total = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
-                if (!total.HasValue || total < amount)
-                    throw new CommandFailedException($"You do not have that many {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on your account! Specify a smaller entering amount.");
-
+                
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
@@ -67,10 +64,18 @@ namespace TheGodfather.Modules.Currency
                         if (!(game.Winner is null))
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        foreach (HoldemParticipant participant in game.Participants)
-                            await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance);
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            foreach (HoldemParticipant participant in game.Participants)
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
+                            await db.SaveChangesAsync();
+                        }
                     } else {
-                        await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded);
+                        if (game.IsParticipating(ctx.User)) {
+                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
+                                await db.SaveChangesAsync();
+                            }
+                        }
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }
                 } finally {
@@ -106,9 +111,12 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
-
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
+                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    await db.SaveChangesAsync();
+                }
+                
                 game.AddParticipant(ctx.User, handle);
                 await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
             }

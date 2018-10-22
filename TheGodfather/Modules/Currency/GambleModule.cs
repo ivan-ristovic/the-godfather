@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
@@ -65,8 +66,11 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
             }
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                await db.SaveChangesAsync();
+            }
 
             bool rnd = GFRandom.Generator.GetBool();
 
@@ -79,8 +83,12 @@ namespace TheGodfather.Modules.Currency
             sb.Append(Formatter.Bold(bid.ToString()));
             sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
 
-            if (rnd == guess)
-                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2);
+            if (rnd == guess) {
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 2);
+                    await db.SaveChangesAsync();
+                }
+            }
 
             await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
         }
@@ -121,8 +129,11 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                await db.SaveChangesAsync();
+            }
 
             int rnd = GFRandom.Generator.Next(1, 7);
 
@@ -136,8 +147,12 @@ namespace TheGodfather.Modules.Currency
 
             await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 
-            if (rnd == guess_int)
-                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6);
+            if (rnd == guess_int) {
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 6);
+                    await db.SaveChangesAsync();
+                }
+            }
         }
 
         [Command("dice"), Priority(0)]

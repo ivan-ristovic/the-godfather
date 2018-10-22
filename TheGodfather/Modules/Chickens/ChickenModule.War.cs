@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Chickens
                                 chicken.Stats.BareStrength += war.Gain;
                                 chicken.Stats.BareVitality -= 10;
                                 db.Chickens.Update(chicken.ToDatabaseChicken());
-                                await this.Database.IncreaseBankAccountBalanceAsync(chicken.OwnerId, ctx.Guild.Id, 100000);
+                                await db.ModifyBankAccountAsync(chicken.OwnerId, ctx.Guild.Id, v => v + 100000);
                                 sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                             }
 

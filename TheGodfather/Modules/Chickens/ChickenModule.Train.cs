@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                    DatabaseChicken dbc = db.Chickens.SingleOrDefault(c => c.GuildId == ctx.Guild.Id && c.UserId == ctx.User.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync(ctx.User.Id, ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");
@@ -66,9 +66,9 @@ namespace TheGodfather.Modules.Chickens
                     if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                         return;
 
-                    if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
-
+                    
                     if (chicken.TrainStrength())
                         result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.TotalStrength}";
                     else
@@ -78,6 +78,7 @@ namespace TheGodfather.Modules.Chickens
                     dbc.Strength = chicken.Stats.BareStrength;
                     dbc.Vitality--;
                     db.Chickens.Update(dbc);
+
                     await db.SaveChangesAsync();
                 }
 
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                    DatabaseChicken dbc = db.Chickens.SingleOrDefault(c => c.GuildId == ctx.Guild.Id && c.UserId == ctx.User.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync(ctx.User.Id, ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");
@@ -110,7 +111,7 @@ namespace TheGodfather.Modules.Chickens
                     if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                         return;
 
-                    if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
 
                     if (chicken.TrainVitality())

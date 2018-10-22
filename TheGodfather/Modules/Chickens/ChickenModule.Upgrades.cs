@@ -67,8 +67,8 @@ namespace TheGodfather.Modules.Chickens
                         if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost :n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                             return;
 
-                        if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
-                            throw new CommandFailedException($"You do not have enought {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
+                        if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
+                            throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
 
                         db.ChickensBoughtUpgrades.Add(new DatabaseChickenBoughtUpgrade() {
                             Id = upgrade.Id,

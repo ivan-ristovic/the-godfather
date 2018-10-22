@@ -134,11 +134,11 @@ namespace TheGodfather.Modules.Chickens
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                     return;
-
-                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
-
+                
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
+                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
+
                     var stats = Chicken.StartingStats[type];
                     db.Chickens.Add(new DatabaseChicken() {
                         GuildIdDb = (long)ctx.Guild.Id,
@@ -148,6 +148,7 @@ namespace TheGodfather.Modules.Chickens
                         UserIdDb = (long)ctx.User.Id,
                         Vitality = stats.BareVitality
                     });
+
                     await db.SaveChangesAsync();
                 }
                     

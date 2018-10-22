@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
@@ -28,7 +29,7 @@ namespace TheGodfather.Modules.Currency
         public class BlackjackModule : TheGodfatherModule
         {
 
-            public BlackjackModule(SharedData shared, DBService db) 
+            public BlackjackModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
@@ -46,11 +47,7 @@ namespace TheGodfather.Modules.Currency
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
-
-                long? balance = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
-                if (!balance.HasValue || balance < bid)
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
-
+                
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
@@ -58,20 +55,36 @@ namespace TheGodfather.Modules.Currency
                     await this.JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    await game.RunAsync();
+                    if (game.ParticipantCount > 1) {
+                        await game.RunAsync();
 
-                    if (game.Winners.Any()) {
-                        if (game.Winner is null) {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
+                        if (game.Winners.Any()) {
+                            if (game.Winner is null) {
+                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
-                            foreach (var winner in game.Winners)
-                                await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2);
+                                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                    foreach (var winner in game.Winners)
+                                        await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
+                                    await db.SaveChangesAsync();
+                                }
+                            } else {
+                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
+                                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
+                                    await db.SaveChangesAsync();
+                                }
+                            }
                         } else {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
-                            await this.Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid);
+                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");
                         }
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");
+                        if (game.IsParticipating(ctx.User)) {
+                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
+                                await db.SaveChangesAsync();
+                            }
+                        }
+                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -95,12 +108,15 @@ namespace TheGodfather.Modules.Currency
 
                 if (game.ParticipantCount >= 5)
                     throw new CommandFailedException("Blackjack slots are full (max 5 participants), kthxbye.");
-                
+
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                if (bid <= 0 || !await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    if (bid <= 0 || !await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    await db.SaveChangesAsync();
+                }
 
                 game.AddParticipant(ctx.User, bid);
                 await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.");
