@@ -40,7 +40,7 @@ namespace TheGodfather
 
         private static BotConfig BotConfiguration { get; set; }
         private static DBService DatabaseService { get; set; }
-        private static DatabaseContextBuilder GlobalDatabaseContext { get; set; }
+        private static DatabaseContextBuilder GlobalDatabaseContextBuilder { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
 
@@ -130,10 +130,10 @@ namespace TheGodfather
         {
             Console.Write("\r[2/5] Establishing database connection...         ");
 
-            GlobalDatabaseContext = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
+            GlobalDatabaseContextBuilder = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
 
             DatabaseService = new DBService(BotConfiguration.DatabaseConfig) {
-                ContextBuilder = GlobalDatabaseContext
+                ContextBuilder = GlobalDatabaseContextBuilder
             };
         }
 
@@ -150,7 +150,7 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
             ConcurrentDictionary<ulong, ulong> msgcount;
 
-            using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
+            using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
                 blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
                 guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
@@ -222,7 +222,7 @@ namespace TheGodfather
 
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, DatabaseService, GlobalDatabaseContext, SharedData);
+                var shard = new TheGodfatherShard(i, DatabaseService, GlobalDatabaseContextBuilder, SharedData);
                 shard.Initialize();
                 Shards.Add(shard);
             }
@@ -236,12 +236,14 @@ namespace TheGodfather
         private static async Task RegisterPeriodicTasksAsync()
         {
             // TODO change back
+            // 10s
             BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10000), TimeSpan.FromMinutes(10));
+            // 1m
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1000), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(50000), TimeSpan.FromHours(12));
+            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
-            using (DatabaseContext db = GlobalDatabaseContext.CreateContext()) {
+            using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                 await RegisterSavedTasks(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
                     t => t.Id, 
                     t => {
@@ -288,7 +290,7 @@ namespace TheGodfather
 
             async Task<bool> RegisterTask(int id, SavedTaskInfo tinfo)
             {
-                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, GlobalDatabaseContext);
+                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, GlobalDatabaseContextBuilder);
                 if (texec.TaskInfo.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
                     return false;
@@ -357,15 +359,25 @@ namespace TheGodfather
             var client = _ as DiscordClient;
 
             try {
-                IReadOnlyList<Birthday> birthdays = SharedData.AsyncExecutor.Execute(DatabaseService.GetTodayBirthdaysAsync());
-                foreach (Birthday birthday in birthdays) {
+                List<DatabaseBirthday> todayBirthdays;
+                using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
+                    todayBirthdays = db.Birthdays
+                        .Where(b => b.Date == DateTime.Now.Date && b.LastUpdateYear < DateTime.Now.Year)
+                        .ToList();
+                }
+                foreach (DatabaseBirthday birthday in todayBirthdays) {
                     DiscordChannel channel = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(birthday.ChannelId));
                     DiscordUser user = SharedData.AsyncExecutor.Execute(client.GetUserAsync(birthday.UserId));
                     SharedData.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder() {
                         Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
                         Color = DiscordColor.Aquamarine
                     }));
-                    SharedData.AsyncExecutor.Execute(DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id));
+
+                    using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
+                        birthday.LastUpdateYear = DateTime.Now.Year;
+                        db.Birthdays.Update(birthday);
+                        db.SaveChanges();
+                    }
                 }
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);
