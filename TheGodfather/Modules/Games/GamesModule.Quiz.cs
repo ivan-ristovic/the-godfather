@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -206,7 +207,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopQuizPlayersStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopQuizStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}");
             }
             #endregion
@@ -224,7 +226,7 @@ namespace TheGodfather.Modules.Games
                     }.Build());
 
                     if (results.Count > 1)
-                        await this.Database.UpdateUserStatsAsync(ordered.First().Key.Id, GameStatsType.QuizesWon);
+                        await this.DatabaseBuilder.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizesWon++);
                 }
             }
             #endregion

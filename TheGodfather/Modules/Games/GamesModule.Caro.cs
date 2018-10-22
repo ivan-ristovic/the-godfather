@@ -2,13 +2,19 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
-
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
@@ -63,11 +69,11 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {caro.Winner.Mention}!");
 
-                        await this.Database.UpdateUserStatsAsync(caro.Winner.Id, GameStatsType.CarosWon);
+                        await this.DatabaseBuilder.UpdateStatsAsync(caro.Winner.Id, s => s.CaroWon++);
                         if (caro.Winner.Id == ctx.User.Id)
-                            await this.Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.CarosLost);
+                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.CaroLost++);
                         else
-                            await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.CarosLost);
+                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.CaroLost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     } 
@@ -101,7 +107,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game caro stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopCaroPlayersStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopCaroStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Caro:\n\n{top}");
             }
             #endregion

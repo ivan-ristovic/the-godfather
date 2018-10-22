@@ -3,12 +3,14 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -61,8 +63,11 @@ namespace TheGodfather.Modules.Games
 
                     await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
 
-                    await this.Database.UpdateUserStatsAsync(duel.Winner.Id, GameStatsType.DuelsWon);
-                    await this.Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost);
+                    await this.DatabaseBuilder.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
+                    if (duel.Winner.Id == ctx.User.Id)
+                        await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);
+                    else
+                        await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -91,7 +96,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopDuelistsStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopChain4StatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
             }
             #endregion

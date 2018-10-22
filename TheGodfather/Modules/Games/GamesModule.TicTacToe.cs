@@ -5,10 +5,12 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
@@ -52,22 +54,22 @@ namespace TheGodfather.Modules.Games
                 if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
-                var game = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                var ttt = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
+                this.Shared.RegisterEventInChannel(ttt, ctx.Channel.Id);
                 try {
-                    await game.RunAsync();
+                    await ttt.RunAsync();
 
-                    if (!(game.Winner is null)) {
-                        if (game.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
+                    if (!(ttt.Winner is null)) {
+                        if (ttt.IsTimeoutReached)
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!");
 
-                        await this.Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.TicTacToesWon);
-                        if (game.Winner.Id == ctx.User.Id)
-                            await this.Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.TicTacToesWon);
+                        await this.DatabaseBuilder.UpdateStatsAsync(ttt.Winner.Id, s => s.TicTacToeWon++);
+                        if (ttt.Winner.Id == ctx.User.Id)
+                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.TicTacToeLost++);
                         else
-                            await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon);
+                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.TicTacToeLost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
@@ -101,7 +103,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopTTTPlayersStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopTicTacToeStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
             }
             #endregion

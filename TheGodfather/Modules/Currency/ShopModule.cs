@@ -19,9 +19,9 @@ using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Services;
 #endregion
 
-namespace TheGodfather.Modules.Misc
+namespace TheGodfather.Modules.Currency
 {
-    [Group("shop"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("shop"), Module(ModuleType.Currency), NotBlocked]
     [Description("Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.")]
     [Aliases("store")]
     [UsageExamples("!shop")]

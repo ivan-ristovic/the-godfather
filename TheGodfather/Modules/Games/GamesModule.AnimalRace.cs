@@ -3,13 +3,19 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
-
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -56,7 +62,7 @@ namespace TheGodfather.Modules.Games
                         await game.RunAsync();
 
                         foreach (ulong uid in game.WinnerIds)
-                            await this.Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon);
+                            await this.DatabaseBuilder.UpdateStatsAsync(uid, s => s.AnimalRacesWon++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
                     }
@@ -96,8 +102,9 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game animalrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopRacersStringAsync(ctx.Client);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{top}");
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopAnimalRaceStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
+                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{topStats}");
             }
             #endregion
         }

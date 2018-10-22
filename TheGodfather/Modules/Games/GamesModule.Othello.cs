@@ -5,10 +5,12 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
@@ -50,22 +52,22 @@ namespace TheGodfather.Modules.Games
                 if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
-                var game = new OthelloGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                var othello = new OthelloGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
+                this.Shared.RegisterEventInChannel(othello, ctx.Channel.Id);
                 try {
-                    await game.RunAsync();
+                    await othello.RunAsync();
                     
-                    if (!(game.Winner is null)) {
-                        if (game.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
+                    if (!(othello.Winner is null)) {
+                        if (othello.IsTimeoutReached)
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {othello.Winner.Mention}!");
 
-                        await this.Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.OthellosWon);
-                        if (game.Winner.Id == ctx.User.Id)
-                            await this.Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.OthellosLost);
+                        await this.DatabaseBuilder.UpdateStatsAsync(othello.Winner.Id, s => s.OthelloWon++);
+                        if (othello.Winner.Id == ctx.User.Id)
+                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.OthelloLost++);
                         else
-                            await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.OthellosLost);
+                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.OthelloLost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
@@ -103,7 +105,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game othello stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopOthelloPlayersStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopOthelloStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Othello:\n\n{top}");
             }
             #endregion

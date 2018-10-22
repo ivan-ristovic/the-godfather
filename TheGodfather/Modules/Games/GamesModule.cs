@@ -2,12 +2,16 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -64,8 +68,51 @@ namespace TheGodfather.Modules.Games
         [UsageExamples("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            DiscordEmbed em = await this.Database.GetStatsLeaderboardEmbedAsync(ctx.Client);
-            await ctx.RespondAsync(embed: em);
+            var emb = new DiscordEmbedBuilder {
+                Title = $"{StaticDiscordEmoji.Trophy} HALL OF FAME {StaticDiscordEmoji.Trophy}",
+                Color = DiscordColor.Chartreuse
+            };
+
+            IReadOnlyList<DatabaseGameStats> topStats;
+            string top;
+
+            topStats = await this.DatabaseBuilder.GetTopAnimalRaceStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
+            emb.AddField("Top players in Animal Race", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopCaroStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
+            emb.AddField("Top players in Caro", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopChain4StatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
+            emb.AddField("Top players in Connect4", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopDuelStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
+            emb.AddField("Top players in Duel", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopHangmanStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
+            emb.AddField("Top players in Hangman", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopNumberRaceStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
+            emb.AddField("Top players in Number Race", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopOthelloStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
+            emb.AddField("Top players in Othello", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopQuizStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
+            emb.AddField("Top players in Quiz", top, inline: true);
+
+            topStats = await this.DatabaseBuilder.GetTopTicTacToeStatsAsync();
+            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
+            emb.AddField("Top players in TicTacToe", top, inline: true);
+
+            await ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
@@ -117,18 +164,20 @@ namespace TheGodfather.Modules.Games
         {
             user = user ?? ctx.User;
 
-            GameStats stats = await this.Database.GetGameStatsForUserAsync(user.Id);
-            if (stats is null) {
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Stats for {user.Username}",
-                    Description = "No games played yet!",
-                    ThumbnailUrl = user.AvatarUrl,
-                    Color = this.ModuleColor
-                }.Build());
-                return;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                DatabaseGameStats stats = await db.GameStats.FindAsync((long)user.Id);
+                if (stats is null) {
+                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                        Title = $"Stats for {user.Username}",
+                        Description = "No games played yet!",
+                        ThumbnailUrl = user.AvatarUrl,
+                        Color = this.ModuleColor
+                    }.Build());
+                    return;
+                } else {
+                    await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user));
+                }
             }
-
-            await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user));
         }
         #endregion
     }

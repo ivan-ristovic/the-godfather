@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Entities
@@ -6,6 +7,18 @@ namespace TheGodfather.Database.Entities
     [Table("game_stats")]
     public class DatabaseGameStats
     {
+
+        public DatabaseGameStats()
+        {
+
+        }
+
+        public DatabaseGameStats(ulong uid)
+        {
+            this.UserIdDb = (long)uid;
+        }
+
+
         [Key]
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -20,16 +33,16 @@ namespace TheGodfather.Database.Entities
         public int DuelsLost { get; set; } 
 
         [Column("hangman_won")]
-        public int HangmanWon { get; set; } 
+        public int HangmanWon { get; set; }
 
-        [Column("numraces_won")]
-        public int HangmanLost { get; set; } 
+        [Column("quizes_won")]
+        public int QuizesWon { get; set; } 
 
-        [Column("quiz_won")]
-        public int QuizWon { get; set; } 
+        [Column("animalraces_won")]
+        public int AnimalRacesWon { get; set; }
 
-        [Column("animalrace_won")]
-        public int AnimalRaceWon { get; set; } 
+        [Column("numberraces_won")]
+        public int NumberRacesWon { get; set; }
 
         [Column("ttt_won")]
         public int TicTacToeWon { get; set; } 
@@ -53,6 +66,15 @@ namespace TheGodfather.Database.Entities
         public int OthelloWon { get; set; } 
 
         [Column("othello_lost")]
-        public int OthelloLost { get; set; } 
+        public int OthelloLost { get; set; }
+
+
+        public int CalculateWinPercentage(int won, int lost)
+        {
+            if (won + lost == 0)
+                return 0;
+
+            return (int)Math.Round((double)won / (won + lost) * 100);
+        }
     }
 }

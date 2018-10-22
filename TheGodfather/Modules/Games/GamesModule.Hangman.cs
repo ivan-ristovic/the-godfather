@@ -6,10 +6,13 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
@@ -62,8 +65,9 @@ namespace TheGodfather.Modules.Games
                 this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync();
+
                     if (!(hangman.Winner is null))
-                        await this.Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon);
+                        await this.DatabaseBuilder.UpdateStatsAsync(hangman.Winner.Id, s => s.HangmanWon++);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -92,7 +96,8 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game hangman stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await this.Database.GetTopHangmanPlayersStringAsync(ctx.Client);
+                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopHangmanStatsAsync();
+                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
             }
             #endregion
