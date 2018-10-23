@@ -97,17 +97,6 @@ namespace TheGodfather.EventListeners
                 return;
 
             await e.Message.DeleteAsync("_gf: Filter hit");
-
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
-                return;
-
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Filter triggered");
-            emb.AddField("User responsible", e.Message.Author.Mention);
-            emb.AddField("Channel", e.Channel.Mention);
-            emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(e.Message.Content.Truncate(1020))));
-
-            await logchn.SendMessageAsync(embed: emb.Build());
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]

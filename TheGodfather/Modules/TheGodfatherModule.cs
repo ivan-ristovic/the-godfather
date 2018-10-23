@@ -2,14 +2,13 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Services;
 #endregion
 
@@ -20,10 +19,10 @@ namespace TheGodfather.Modules
         protected static readonly HttpClient _http;
         private static readonly HttpClientHandler _handler;
 
-        protected SharedData Shared { get; }
-        protected DBService Database { get; }
-        protected DatabaseContextBuilder DatabaseBuilder { get; }
-        protected DiscordColor ModuleColor {
+        public SharedData Shared { get; }
+        public DBService Database { get; }
+        public DatabaseContextBuilder DatabaseBuilder { get; }
+        public DiscordColor ModuleColor {
             get { return this.moduleColor ?? DiscordColor.Green; }
             set { this.moduleColor = value; }
         }
@@ -86,29 +85,6 @@ namespace TheGodfather.Modules
             }
 
             return false;
-        }
-
-        public async Task<DatabaseGuildConfig> GetGuildConfig(ulong gid)
-        {
-            DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                gcfg = await db.GuildConfig.FindAsync(gid) ?? new DatabaseGuildConfig();
-            return gcfg;
-        }
-
-        public async Task<DatabaseGuildConfig> ModifyGuildConfigAsync(ulong gid, Action<DatabaseGuildConfig> action)
-        {
-            DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                gcfg = await db.GuildConfig.FindAsync(gid) ?? new DatabaseGuildConfig();
-                action(gcfg);
-                await db.SaveChangesAsync();
-            }
-
-            CachedGuildConfig cgcfg = this.Shared.GetGuildConfig(gid);
-            cgcfg = gcfg.CachedConfig;
-
-            return gcfg;
         }
     }
 }

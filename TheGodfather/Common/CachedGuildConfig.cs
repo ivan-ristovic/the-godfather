@@ -16,14 +16,14 @@ namespace TheGodfather.Common
         public AntispamSettings AntispamSettings { get; set; }
         public RatelimitSettings RatelimitSettings { get; set; }
 
-        public bool LoggingEnabled => this.LogChannelId != 0;
+        public bool LoggingEnabled => this.LogChannelId != default;
 
 
         public static CachedGuildConfig Default => new CachedGuildConfig {
             AntispamSettings = new AntispamSettings(),
             Currency = null,
             LinkfilterSettings = new LinkfilterSettings(),
-            LogChannelId = 0,
+            LogChannelId = default,
             Prefix = null,
             RatelimitSettings = new RatelimitSettings(),
             ReactionResponse = false,

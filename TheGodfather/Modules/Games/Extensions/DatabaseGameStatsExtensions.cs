@@ -2,13 +2,10 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 #endregion
 

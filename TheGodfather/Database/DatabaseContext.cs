@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 
 using TheGodfather.Database.Entities;

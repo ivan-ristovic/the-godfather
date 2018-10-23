@@ -124,9 +124,11 @@ namespace TheGodfather.Modules.Search.Services
                 var emb = new DiscordEmbedBuilder() {
                     Title = res.Snippet.Title,
                     Description = Formatter.Italic(string.IsNullOrWhiteSpace(res.Snippet.Description) ? "No description provided" : res.Snippet.Description),
-                    Color = DiscordColor.Red,
-                    ThumbnailUrl = res.Snippet.Thumbnails.Default__.Url
+                    Color = DiscordColor.Red
                 };
+
+                if (!(res.Snippet.Thumbnails is null))
+                    emb.WithThumbnailUrl(res.Snippet.Thumbnails.Default__.Url);
 
                 emb.AddField("Channel", res.Snippet.ChannelTitle, inline: true);
                 emb.AddField("Published at", $"{res.Snippet.PublishedAt ?? DateTime.Now}", inline: true);

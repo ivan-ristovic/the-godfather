@@ -15,8 +15,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
-using TheGodfather.Modules.Misc.Common;
-using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Services;
 #endregion
 

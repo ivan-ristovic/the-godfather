@@ -3,8 +3,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +13,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 #endregion

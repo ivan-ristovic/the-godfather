@@ -53,7 +53,7 @@ namespace TheGodfather.Database.Entities
         [NotMapped]
         public ulong LogChannelId => (ulong)this.LogChannelIdDb.GetValueOrDefault();
         [NotMapped]
-        public bool LoggingEnabled => this.LogChannelId != 0;
+        public bool LoggingEnabled => this.LogChannelId != default;
 
         [Column("mute_rid")]
         public long? MuteRoleIdDb { get; set; }

@@ -149,6 +149,9 @@ namespace TheGodfather
             message = message.ToLowerInvariant();
             return filters.Any(f => f.Trigger.IsMatch(message));
         }
+
+        public void UpdateGuildConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifier)
+            => this.GuildConfigurations[gid] = modifier(this.GuildConfigurations[gid]);
         #endregion
 
         #region PENDING_RESPONSES_HELPERS

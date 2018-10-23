@@ -14,7 +14,6 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 #endregion

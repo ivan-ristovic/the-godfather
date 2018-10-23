@@ -3,7 +3,9 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +17,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
@@ -53,9 +56,9 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("The sensitivity is not in the valid range ([3, 10]).");
 
                     DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
-                        cfg.AntispamSettings.Enabled = enable;
-                        cfg.AntispamSettings.Action = action;
-                        cfg.AntispamSettings.Sensitivity = sensitivity;
+                        cfg.AntispamEnabled = enable;
+                        cfg.AntispamAction = action;
+                        cfg.AntispamSensitivity = sensitivity;
                     });
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);

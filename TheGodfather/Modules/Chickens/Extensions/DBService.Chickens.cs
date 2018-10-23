@@ -1,11 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using Npgsql;
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens.Extensions

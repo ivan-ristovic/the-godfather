@@ -3,7 +3,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -13,7 +12,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 #endregion
@@ -54,7 +52,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync(ctx.User.Id, ctx.Guild.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");
@@ -99,7 +97,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync(ctx.User.Id, ctx.Guild.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");

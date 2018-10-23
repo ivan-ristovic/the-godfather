@@ -3,16 +3,17 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Services;
 #endregion
@@ -37,15 +38,22 @@ namespace TheGodfather.Modules.Misc
 
 
         [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
+        public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string url = await this.Database.GetRandomMemeAsync(ctx.Guild.Id);
-            if (url is null)
-                throw new CommandFailedException("No memes registered in this guild!");
+            DatabaseMeme meme;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!db.Memes.Where(m => m.GuildId == ctx.Guild.Id).Any())
+                    throw new CommandFailedException("No memes registered in this guild!");
+                meme = db.Memes
+                    .Where(m => m.GuildId == ctx.Guild.Id)
+                    .Shuffle()
+                    .First();
+            }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "RANDOM DANK MEME FROM THIS GUILD MEME LIST",
-                ImageUrl = url,
+                Description = meme.Name,
+                ImageUrl = meme.Url,
                 Color = this.ModuleColor
             }.Build());
         }
@@ -54,18 +62,27 @@ namespace TheGodfather.Modules.Misc
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Meme name.")] string name)
         {
+            name = name.ToLowerInvariant();
             string text = "DANK MEME YOU ASKED FOR";
-            string url = await this.Database.GetMemeAsync(ctx.Guild.Id, name);
-            if (url is null) {
-                url = await this.Database.GetRandomMemeAsync(ctx.Guild.Id);
-                if (url is null)
+
+            DatabaseMeme meme;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                if (!db.Memes.Where(m => m.GuildId == ctx.Guild.Id).Any())
                     throw new CommandFailedException("No memes registered in this guild!");
-                text = "No meme registered with that name, here is a random one";
+                meme = await db.Memes.FindAsync((long)ctx.Guild.Id, name);
+                if (meme is null) {
+                    text = "No meme registered with that name, here is a random one";
+                    meme = db.Memes
+                        .Where(m => m.GuildId == ctx.Guild.Id)
+                        .Shuffle()
+                        .First();
+                }
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = text,
-                ImageUrl = url,
+                Description = meme.Name,
+                ImageUrl = meme.Url,
                 Color = this.ModuleColor
             }.Build());
         }
@@ -92,7 +109,15 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30 || url.OriginalString.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            await this.Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Memes.Add(new DatabaseMeme() {
+                    GuildIdDb = (long)ctx.Guild.Id,
+                    Name = name.ToLowerInvariant(),
+                    Url = url.AbsoluteUri
+                });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!", important: false);
         }
 
@@ -135,7 +160,14 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Meme name is missing.");
 
-            await this.Database.RemoveMemeAsync(ctx.Guild.Id, name);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Memes.Remove(new DatabaseMeme() {
+                    GuildIdDb = (long)ctx.Guild.Id,
+                    Name = name.ToLowerInvariant(),
+                });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!", important: false);
         }
         #endregion
@@ -151,7 +183,11 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all memes for this guild?"))
                 return;
 
-            await this.Database.RemoveAllMemesForGuildAsync(ctx.Guild.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.Memes.RemoveRange(db.Memes.Where(m => m.GuildId == ctx.Guild.Id));
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, "Removed all guild memes!", important: false);
         }
         #endregion
@@ -163,14 +199,21 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyDictionary<string, string> memes = await this.Database.GetAllMemesAsync(ctx.Guild.Id);
+            List<DatabaseMeme> memes;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                memes = await db.Memes
+                    .Where(m => m.GuildId == ctx.Guild.Id)
+                    .OrderBy(m => m.Name)
+                    .ToListAsync();
+            }
+
             if (!memes.Any())
                 throw new CommandFailedException("No memes registered in this guild!");
 
             await ctx.SendCollectionInPagesAsync(
                 "Memes registered in this guild",
-                memes.OrderBy(kvp => kvp.Key),
-                kvp => $"{Formatter.Bold(kvp.Key)} | ({Formatter.InlineCode(kvp.Value)})",
+                memes,
+                meme => $"{Formatter.Bold(meme.Name)} | ({Formatter.InlineCode(meme.Url)})",
                 this.ModuleColor
             );
         }

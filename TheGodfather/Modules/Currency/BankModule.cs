@@ -6,7 +6,9 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
 using Humanizer;
+
 using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +19,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 #endregion
