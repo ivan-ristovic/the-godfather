@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 
 using TheGodfather.Database.Entities;
@@ -27,6 +28,7 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
         public virtual DbSet<DatabaseExemptLogging> LoggingExempts { get; set; }
         public virtual DbSet<DatabaseMeme> Memes { get; set; }
+        public virtual DbSet<DatabaseMessageCount> MessageCount { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
         public virtual DbSet<DatabasePurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<DatabasePurchasedItem> PurchasedItems { get; set; }
@@ -39,7 +41,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
-        public virtual DbSet<DatabaseUserInfo> UsersInfo { get; set; }
 
         private string ConnectionString { get; }
 
@@ -47,6 +48,28 @@ namespace TheGodfather.Database
         public DatabaseContext(string connectionString)
         {
             this.ConnectionString = connectionString;
+        }
+
+
+        public void InsertOrUpdate(object entity)
+        {
+            EntityEntry entry = this.Entry(entity);
+            switch (entry.State) {
+                case EntityState.Detached:
+                    this.Add(entity);
+                    break;
+                case EntityState.Modified:
+                    this.Update(entity);
+                    break;
+                case EntityState.Added:
+                    this.Add(entity);
+                    break;
+                case EntityState.Unchanged: 
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
 
@@ -132,7 +155,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             model.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
-            model.Entity<DatabaseUserInfo>().Property(ui => ui.MessageCount).HasDefaultValue(1);
+            model.Entity<DatabaseMessageCount>().Property(ui => ui.MessageCount).HasDefaultValue(1);
         }
     }
 }

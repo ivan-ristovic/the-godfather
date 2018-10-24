@@ -6,14 +6,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather
@@ -30,7 +27,7 @@ namespace TheGodfather
         public Logger LogProvider { get; internal set; }
         public bool ListeningStatus { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
-        public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
+        public ConcurrentDictionary<ulong, int> MessageCount { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
@@ -53,7 +50,7 @@ namespace TheGodfather
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             this.ListeningStatus = true;
             this.MainLoopCts = new CancellationTokenSource();
-            this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
+            this.MessageCount = new ConcurrentDictionary<ulong, int>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.RemindExecuters = new ConcurrentDictionary<ulong, ConcurrentHashSet<SavedTaskExecutor>>();
             this.StatusRotationEnabled = true;
@@ -67,12 +64,6 @@ namespace TheGodfather
             this.MainLoopCts.Dispose();
             foreach ((int tid, SavedTaskExecutor texec) in this.TaskExecuters)
                 texec.Dispose();
-        }
-
-        public async Task SyncDataWithDatabaseAsync(DBService db)
-        {
-            foreach ((ulong uid, ulong count) in this.MessageCount)
-                await db.ModifyXpAsync(uid, count);
         }
 
 
@@ -94,26 +85,26 @@ namespace TheGodfather
         #endregion
 
         #region RANK_HELPERS
-        public ushort CalculateRankForMessageCount(ulong msgcount)
-            => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
+        public short CalculateRankForMessageCount(int msgcount)
+            => (short)Math.Floor(Math.Sqrt(msgcount / 10));
 
-        public ushort CalculateRankForUser(ulong uid)
-            => this.MessageCount.TryGetValue(uid, out ulong count) ? this.CalculateRankForMessageCount(count) : (ushort)0;
+        public short CalculateRankForUser(ulong uid)
+            => this.MessageCount.TryGetValue(uid, out int count) ? this.CalculateRankForMessageCount(count) : (short)0;
 
-        public uint CalculateXpNeededForRank(ushort index)
-            => (uint)(index * index * 10);
+        public int CalculateXpNeededForRank(short index)
+            => index * index * 10;
 
-        public ulong GetMessageCountForUser(ulong uid)
-            => this.MessageCount.TryGetValue(uid, out ulong count) ? count : 0;
+        public int GetMessageCountForUser(ulong uid)
+            => this.MessageCount.TryGetValue(uid, out int count) ? count : 0;
 
-        public ushort IncrementMessageCountForUser(ulong uid)
+        public short IncrementMessageCountForUser(ulong uid)
         {
             this.MessageCount.AddOrUpdate(uid, 1, (k, v) => v + 1);
 
-            ushort prev = this.CalculateRankForMessageCount(this.MessageCount[uid] - 1);
-            ushort curr = this.CalculateRankForMessageCount(this.MessageCount[uid]);
+            short prev = this.CalculateRankForMessageCount(this.MessageCount[uid] - 1);
+            short curr = this.CalculateRankForMessageCount(this.MessageCount[uid]);
 
-            return curr != prev ? curr : (ushort)0;
+            return curr != prev ? curr : (short)0;
         }
         #endregion
 

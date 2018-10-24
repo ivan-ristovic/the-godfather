@@ -14,10 +14,10 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Extensions;
 #endregion
@@ -50,10 +50,12 @@ namespace TheGodfather.EventListeners
                 return;
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id))) {
-                ushort rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
-                if (rank != 0) {
-                    string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
-                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
+                short rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
+                if (rank != 0) { 
+                    DatabaseGuildRank rankInfo;
+                    using (DatabaseContext db = shard.Database.CreateContext())
+                        rankInfo = db.GuildRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
+                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", StaticDiscordEmoji.Medal);
                 }
             }
         }

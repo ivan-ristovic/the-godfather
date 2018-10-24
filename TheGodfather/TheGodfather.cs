@@ -146,7 +146,7 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
             ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
             ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
-            ConcurrentDictionary<ulong, ulong> msgcount;
+            ConcurrentDictionary<ulong, int> msgcount;
 
             using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
@@ -183,10 +183,10 @@ namespace TheGodfather
                         .GroupBy(f => f.GuildId)
                         .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
                 );
-                msgcount = new ConcurrentDictionary<ulong, ulong>(
-                    db.UsersInfo
+                msgcount = new ConcurrentDictionary<ulong, int>(
+                    db.MessageCount
                         .GroupBy(ui => ui.UserId)
-                        .ToDictionary(g => g.Key, g => (ulong)g.First().MessageCount)
+                        .ToDictionary(g => g.Key, g => g.First().MessageCount)
                 );
                 treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                     db.TextReactions
@@ -236,8 +236,7 @@ namespace TheGodfather
             // TODO change back
             // 10s
             BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10000), TimeSpan.FromMinutes(10));
-            // 1m
-            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1000), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
+            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
@@ -335,7 +334,22 @@ namespace TheGodfather
         private static void DatabaseSyncCallback(object _)
         {
             try {
-                SharedData.AsyncExecutor.Execute(SharedData.SyncDataWithDatabaseAsync(DatabaseService));
+                using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
+                    foreach ((ulong uid, int count) in SharedData.MessageCount) {
+                        DatabaseMessageCount msgcount = db.MessageCount.Find((long)uid);
+                        if (msgcount is null) {
+                            db.MessageCount.Add(new DatabaseMessageCount() {
+                                MessageCount = count,
+                                UserIdDb = (long)uid
+                            });
+                        } else {
+                            msgcount.MessageCount += count;
+                            db.MessageCount.Update(msgcount);
+                        }
+                    }
+                    db.SaveChanges();
+                    SharedData.MessageCount.Clear();
+                }
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);
             }

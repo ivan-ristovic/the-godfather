@@ -4,14 +4,16 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -39,16 +41,19 @@ namespace TheGodfather.Modules.Misc
         {
             user = user ?? ctx.User;
 
-            ushort rank = this.Shared.CalculateRankForUser(user.Id);
-            ulong msgcount = this.Shared.GetMessageCountForUser(user.Id);
-            string rankName = await this.Database.GetRankAsync(ctx.Guild.Id, rank);
+            short rank = this.Shared.CalculateRankForUser(user.Id);
+            int msgcount = this.Shared.GetMessageCountForUser(user.Id);
+
+            DatabaseGuildRank rankInfo;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                rankInfo = await db.GuildRanks.FindAsync((long)ctx.Guild.Id, (short)rank);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = user.Username,
                 Color = this.ModuleColor,
                 ThumbnailUrl = user.AvatarUrl
             };
-            emb.AddField("Rank", $"{Formatter.Bold($"#{rank}")} : {Formatter.Italic(rankName ?? "No custom rank name set for this rank in this guild")}");
+            emb.AddField("Rank", $"{Formatter.Bold($"#{rank}")} : {Formatter.Italic(rankInfo?.Name ?? "No custom rank name set for this rank in this guild")}");
             emb.AddField("XP", $"{msgcount}", inline: true);
             emb.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
 
@@ -75,7 +80,15 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30)
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
-            await this.Database.AddOrUpdateRankAsync(ctx.Guild.Id, rank, name);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.GuildRanks.Add(new DatabaseGuildRank() {
+                    GuildIdDb = (long)ctx.Guild.Id,
+                    Name = name,
+                    Rank = (short)rank
+                });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Successfully added rank {Formatter.Bold(name)} as an alias for rank {Formatter.Bold(rank.ToString())}.", important: false);
         }
         #endregion
@@ -89,7 +102,14 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
         {
-            await this.Database.RemoveRankAsync(ctx.Guild.Id, rank);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.GuildRanks.Remove(new DatabaseGuildRank() {
+                    GuildIdDb = (long)ctx.Guild.Id,
+                    Rank = (short)rank
+                });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Removed an alias for rank {Formatter.Bold(rank.ToString())}", important: false);
         }
         #endregion
@@ -101,14 +121,21 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
-            IReadOnlyDictionary<ushort, string> ranks = await this.Database.GetAllRanksAsync(ctx.Guild.Id);
+            List<DatabaseGuildRank> ranks;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                ranks = await db.GuildRanks
+                    .Where(r => r.GuildId == ctx.Guild.Id)
+                    .OrderBy(r => r.Rank)
+                    .ToListAsync();
+            }
+
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
 
             await ctx.SendCollectionInPagesAsync(
                 "Custom ranks for this guild",
                 ranks,
-                kvp => $"{Formatter.InlineCode($"{kvp.Key:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(kvp.Key)}:D5")} | {Formatter.Bold(kvp.Value)}",
+                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank)}:D5")} | {Formatter.Bold(rank.Name)}",
                 this.ModuleColor
             );
         }
@@ -120,7 +147,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            IEnumerable<KeyValuePair<ulong, ulong>> top = this.Shared.MessageCount
+            IEnumerable<KeyValuePair<ulong, int>> top = this.Shared.MessageCount
                 .OrderByDescending(v => v.Value)
                 .Take(10);
 
@@ -128,24 +155,28 @@ namespace TheGodfather.Modules.Misc
                 Title = "Top ranked users (globally)",
                 Color = this.ModuleColor
             };
+            
+            Dictionary<short, string> ranks;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                ranks = await db.GuildRanks
+                    .Where(r => r.GuildId == ctx.Guild.Id)
+                    .OrderBy(r => r.Rank)
+                    .ToDictionaryAsync(r => r.Rank, r => r.Name);
+            }
 
-            IReadOnlyDictionary<ushort, string> ranks = await this.Database.GetAllRanksAsync(ctx.Guild.Id);
-
-            foreach ((ulong uid, ulong xp) in top) {
+            foreach ((ulong uid, int xp) in top) {
                 DiscordUser user = null;
                 try {
                     user = await ctx.Client.GetUserAsync(uid);
                 } catch (NotFoundException) {
-                    user = null;
                     this.Shared.MessageCount.TryRemove(uid, out _);
-                    await this.Database.RemoveUserXpAsync(user.Id);
                 }
 
-                ushort rank = this.Shared.CalculateRankForMessageCount(xp);
-                if (ranks.TryGetValue(rank, out string name))
-                    emb.AddField(user.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
+                short rank = this.Shared.CalculateRankForMessageCount(xp);
+                if (ranks.TryGetValue((short)rank, out string name))
+                    emb.AddField(user?.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
                 else
-                    emb.AddField(user.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
+                    emb.AddField(user?.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
             }
 
             await ctx.RespondAsync(embed: emb.Build());

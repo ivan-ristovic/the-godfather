@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheGodfather.Database.Entities
 {
     [Table("user_info")]
-    public class DatabaseUserInfo
+    public class DatabaseMessageCount
     {
         [Key]
         [Column("uid")]
