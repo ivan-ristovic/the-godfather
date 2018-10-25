@@ -343,12 +343,13 @@ namespace TheGodfather
                                 UserIdDb = (long)uid
                             });
                         } else {
-                            msgcount.MessageCount += count;
-                            db.MessageCount.Update(msgcount);
+                            if (count != msgcount.MessageCount) {
+                                msgcount.MessageCount = count;
+                                db.MessageCount.Update(msgcount);
+                            }
                         }
                     }
                     db.SaveChanges();
-                    SharedData.MessageCount.Clear();
                 }
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);

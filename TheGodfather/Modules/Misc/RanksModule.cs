@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Misc
 
             DatabaseGuildRank rankInfo;
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
-                rankInfo = await db.GuildRanks.FindAsync((long)ctx.Guild.Id, (short)rank);
+                rankInfo = await db.GuildRanks.FindAsync((long)ctx.Guild.Id, rank);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = user.Username,
@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Misc
                 }
 
                 short rank = this.Shared.CalculateRankForMessageCount(xp);
-                if (ranks.TryGetValue((short)rank, out string name))
+                if (ranks.TryGetValue(rank, out string name))
                     emb.AddField(user?.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
                 else
                     emb.AddField(user?.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
