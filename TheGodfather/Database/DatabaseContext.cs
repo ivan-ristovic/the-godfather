@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 using System;
 
 using TheGodfather.Database.Entities;
@@ -48,28 +48,6 @@ namespace TheGodfather.Database
         public DatabaseContext(string connectionString)
         {
             this.ConnectionString = connectionString;
-        }
-
-
-        public void InsertOrUpdate(object entity)
-        {
-            EntityEntry entry = this.Entry(entity);
-            switch (entry.State) {
-                case EntityState.Detached:
-                    this.Add(entity);
-                    break;
-                case EntityState.Modified:
-                    this.Update(entity);
-                    break;
-                case EntityState.Added:
-                    this.Add(entity);
-                    break;
-                case EntityState.Unchanged: 
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
 

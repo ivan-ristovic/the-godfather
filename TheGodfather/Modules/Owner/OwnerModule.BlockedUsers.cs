@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Extensions;
@@ -83,24 +85,25 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();
-                foreach (var user in users) {
-                    if (this.Shared.BlockedUsers.Contains(user.Id)) {
-                        eb.AppendLine($"Error: {user.ToString()} is already blocked!");
-                        continue;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    foreach (DiscordUser user in users) {
+                        if (this.Shared.BlockedUsers.Contains(user.Id)) {
+                            eb.AppendLine($"Error: {user.ToString()} is already blocked!");
+                            continue;
+                        }
+
+                        if (!this.Shared.BlockedUsers.Add(user.Id)) {
+                            eb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
+                            continue;
+                        }
+
+                        db.BlockedUsers.Add(new DatabaseBlockedUser() {
+                            UserIdDb = (long)user.Id,
+                            Reason = reason
+                        });
                     }
 
-                    if (!this.Shared.BlockedUsers.Add(user.Id)) {
-                        eb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
-                        continue;
-                    }
-
-                    try {
-                        await this.Database.AddBlockedUserAsync(user.Id, reason);
-                    } catch (Exception e) {
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        eb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
-                        continue;
-                    }
+                    await db.SaveChangesAsync();
                 }
 
                 if (eb.Length > 0)
@@ -130,24 +133,22 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();
-                foreach (DiscordUser user in users) {
-                    if (!this.Shared.BlockedUsers.Contains(user.Id)) {
-                        eb.AppendLine($"Warning: {user.ToString()} is not blocked!");
-                        continue;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    foreach (DiscordUser user in users) {
+                        if (!this.Shared.BlockedUsers.Contains(user.Id)) {
+                            eb.AppendLine($"Warning: {user.ToString()} is not blocked!");
+                            continue;
+                        }
+
+                        if (!this.Shared.BlockedUsers.TryRemove(user.Id)) {
+                            eb.AppendLine($"Error: Failed to remove {user.ToString()} from blocked users list!");
+                            continue;
+                        }
+
+                        db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserIdDb = (long)user.Id });
                     }
 
-                    if (!this.Shared.BlockedUsers.TryRemove(user.Id)) {
-                        eb.AppendLine($"Error: Failed to remove {user.ToString()} from blocked users list!");
-                        continue;
-                    }
-
-                    try {
-                        await this.Database.RemoveBlockedUserAsync(user.Id);
-                    } catch (Exception e) {
-                        eb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        continue;
-                    }
+                    await db.SaveChangesAsync();
                 }
 
                 if (eb.Length > 0)
@@ -164,16 +165,21 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<(ulong, string)> blocked = await this.Database.GetAllBlockedUsersAsync();
+                List<DatabaseBlockedUser> blocked;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    blocked = await db.BlockedUsers.ToListAsync();
 
                 var lines = new List<string>();
-                foreach ((ulong uid, string reason) in blocked) {
+                foreach (DatabaseBlockedUser usr in blocked) {
                     try {
-                        var user = await ctx.Client.GetUserAsync(uid);
-                        lines.Add($"{user.ToString()} ({Formatter.Italic(reason ?? "No reason provided.")})");
+                        DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
+                        lines.Add($"{user.ToString()} ({Formatter.Italic(usr.Reason ?? "No reason provided.")})");
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked user with ID {uid}");
-                        await this.Database.RemoveBlockedUserAsync(uid);
+                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked user with ID {usr.UserId}");
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserIdDb = usr.UserIdDb });
+                            await db.SaveChangesAsync();
+                        }
                     }
                 }
 

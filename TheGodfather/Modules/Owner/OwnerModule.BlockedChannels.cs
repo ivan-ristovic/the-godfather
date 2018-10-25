@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Extensions;
@@ -83,24 +85,25 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();
-                foreach (DiscordChannel channel in channels) {
-                    if (this.Shared.BlockedChannels.Contains(channel.Id)) {
-                        eb.AppendLine($"Error: {channel.ToString()} is already blocked!");
-                        continue;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    foreach (DiscordChannel channel in channels) {
+                        if (this.Shared.BlockedChannels.Contains(channel.Id)) {
+                            eb.AppendLine($"Error: {channel.ToString()} is already blocked!");
+                            continue;
+                        }
+
+                        if (!this.Shared.BlockedChannels.Add(channel.Id)) {
+                            eb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked users list!");
+                            continue;
+                        }
+
+                        db.BlockedChannels.Add(new DatabaseBlockedChannel() {
+                            ChannelIdDb = (long)channel.Id,
+                            Reason = reason
+                        });
                     }
 
-                    if (!this.Shared.BlockedChannels.Add(channel.Id)) {
-                        eb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked users list!");
-                        continue;
-                    }
-
-                    try {
-                        await this.Database.AddBlockedChannelAsync(channel.Id, reason);
-                    } catch (Exception e) {
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        eb.AppendLine($"Warning: Failed to add blocked {channel.ToString()} to the database!");
-                        continue;
-                    }
+                    await db.SaveChangesAsync();
                 }
 
                 if (eb.Length > 0)
@@ -130,24 +133,22 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();
-                foreach (DiscordChannel channel in channels) {
-                    if (!this.Shared.BlockedChannels.Contains(channel.Id)) {
-                        eb.AppendLine($"Warning: {channel.ToString()} is not blocked!");
-                        continue;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    foreach (DiscordChannel channel in channels) {
+                        if (!this.Shared.BlockedChannels.Contains(channel.Id)) {
+                            eb.AppendLine($"Warning: {channel.ToString()} is not blocked!");
+                            continue;
+                        }
+
+                        if (!this.Shared.BlockedChannels.TryRemove(channel.Id)) {
+                            eb.AppendLine($"Error: Failed to remove {channel.ToString()} from blocked channels list!");
+                            continue;
+                        }
+
+                        db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = (long)channel.Id });
                     }
 
-                    if (!this.Shared.BlockedChannels.TryRemove(channel.Id)) {
-                        eb.AppendLine($"Error: Failed to remove {channel.ToString()} from blocked channels list!");
-                        continue;
-                    }
-
-                    try {
-                        await this.Database.RemoveBlockedChannelAsync(channel.Id);
-                    } catch (Exception e) {
-                        eb.AppendLine($"Warning: Failed to remove {channel.ToString()} from the database!");
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        continue;
-                    }
+                    await db.SaveChangesAsync();
                 }
 
                 if (eb.Length > 0)
@@ -164,21 +165,29 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<(ulong, string)> blocked = await this.Database.GetAllBlockedChannelsAsync();
-
+                List<DatabaseBlockedChannel> blocked;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) 
+                    blocked = await db.BlockedChannels.ToListAsync();
+                
                 var lines = new List<string>();
-                foreach ((ulong cid, string reason) in blocked) {
+                foreach (DatabaseBlockedChannel chn in blocked) {
                     try {
-                        DiscordChannel channel = await ctx.Client.GetChannelAsync(cid);
-                        lines.Add($"{channel.ToString()} ({Formatter.Italic(reason ?? "No reason provided.")}");
+                        DiscordChannel channel = await ctx.Client.GetChannelAsync(chn.ChannelId);
+                        lines.Add($"{channel.ToString()} ({Formatter.Italic(chn.Reason ?? "No reason provided.")}");
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked channel with ID {cid}");
-                        this.Shared.BlockedChannels.TryRemove(cid);
-                        await this.Database.RemoveBlockedChannelAsync(cid);
+                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked channel with ID {chn.ChannelId}");
+                        this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb });
+                            await db.SaveChangesAsync();
+                        }
                     } catch (UnauthorizedException) {
-                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 403 blocked channel with ID {cid}");
-                        this.Shared.BlockedChannels.TryRemove(cid);
-                        await this.Database.RemoveBlockedChannelAsync(cid);
+                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 403 blocked channel with ID {chn.ChannelId}");
+                        this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb});
+                            await db.SaveChangesAsync();
+                        }
                     }
                 }
 
