@@ -5,16 +5,17 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
-using System;
+using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -57,22 +58,15 @@ namespace TheGodfather.Modules.Owner
             {
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
-
-                var eb = new StringBuilder();
-                foreach (DiscordUser user in users) {
-                    try {
-                        await this.Database.AddPrivilegedUserAsync(user.Id);
-                    } catch (Exception e) {
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        eb.AppendLine($"Warning: Failed to add {user.ToString()} to the privileged users list!");
-                        continue;
-                    }
+                
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    db.PrivilegedUsers.AddRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
+                        UserIdDb = (long)u.Id
+                    }));
+                    await db.SaveChangesAsync();
                 }
 
-                if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-                else
-                    await this.InformAsync(ctx, "Granted privilege to all given users.", important: false);
+                await this.InformAsync(ctx, "Granted privilege to all given users.", important: false);
             }
             #endregion
 
@@ -89,21 +83,14 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                var eb = new StringBuilder();
-                foreach (DiscordUser user in users) {
-                    try {
-                        await this.Database.RemovePrivileedUserAsync(user.Id);
-                    } catch (Exception e) {
-                        eb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                        continue;
-                    }
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    db.PrivilegedUsers.RemoveRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
+                        UserIdDb = (long)u.Id
+                    }));
+                    await db.SaveChangesAsync();
                 }
 
-                if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-                else
-                    await this.InformAsync(ctx, "Revoked privilege from all given users.", important: false);
+                await this.InformAsync(ctx, "Revoked privilege from all given users.", important: false);
             }
             #endregion
 
@@ -114,24 +101,30 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner privilegedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<ulong> privileged = await this.Database.GetAllPrivilegedUsersAsync();
+                List<DatabasePrivilegedUser> privileged;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    privileged = await db.PrivilegedUsers.ToListAsync();
 
-                var users = new List<DiscordUser>();
-                foreach (ulong uid in privileged) {
+                var valid = new List<DiscordUser>();
+                foreach (DatabasePrivilegedUser usr in privileged) {
                     try {
-                        users.Add(await ctx.Client.GetUserAsync(uid));
+                        DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
+                        valid.Add(user);
                     } catch (NotFoundException) {
-                        await this.Database.RemovePrivileedUserAsync(uid);
-                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 privileged user with ID {uid}");
+                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 privileged user with ID {usr.UserId}");
+                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            db.PrivilegedUsers.Remove(new DatabasePrivilegedUser() { UserIdDb = usr.UserIdDb });
+                            await db.SaveChangesAsync();
+                        }
                     }
                 }
 
-                if (!users.Any())
+                if (!valid.Any())
                     throw new CommandFailedException("No privileged users registered!");
 
                 await ctx.SendCollectionInPagesAsync(
                     "Privileged users",
-                    users,
+                    valid,
                     user => user.ToString(),
                     this.ModuleColor,
                     10

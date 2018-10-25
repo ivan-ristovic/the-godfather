@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Extensions;
@@ -145,7 +146,7 @@ namespace TheGodfather.Modules.Misc
             );
         }
         #endregion
-        
+
         #region COMMAND_REMINDERS_REPEAT
         [Command("repeat"), Priority(2)]
         [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
@@ -173,7 +174,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region HELPER_FUNCTIONS
-        private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel, 
+        private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel,
                                             string message, bool repeat = false)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -184,8 +185,12 @@ namespace TheGodfather.Modules.Misc
 
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
-            
-            if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !await this.Database.IsPrivilegedUserAsync(ctx.User.Id)) {
+
+            bool privileged;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
+
+            if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !privileged) {
                 if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) && texecs.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
@@ -195,7 +200,7 @@ namespace TheGodfather.Modules.Misc
             var task = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
             await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database.ContextBuilder, ctx.Client, task);
 
-            if (repeat) 
+            if (repeat)
                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);
             else
                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel?.Mention ?? "you"} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);

@@ -5,10 +5,10 @@ using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Modules.Owner.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Database;
 #endregion
 
 namespace TheGodfather.Common.Attributes
@@ -21,7 +21,8 @@ namespace TheGodfather.Common.Attributes
             if (ctx.User.Id == ctx.Client.CurrentApplication.Owner.Id)
                 return Task.FromResult(true);
 
-            return ctx.Services.GetService<DBService>().IsPrivilegedUserAsync(ctx.User.Id);
+            using (DatabaseContext db = ctx.Services.GetService<DatabaseContextBuilder>().CreateContext())
+                return Task.FromResult(db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id));
         }
     }
 }
