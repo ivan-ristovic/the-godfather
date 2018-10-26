@@ -104,6 +104,24 @@ namespace TheGodfather.Migrations
                     b.ToTable("blocked_users");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseBotStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("Activity")
+                        .HasColumnName("activity_type");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("bot_statuses");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseChicken", b =>
                 {
                     b.Property<long>("GuildIdDb")
@@ -549,6 +567,21 @@ namespace TheGodfather.Migrations
                     b.ToTable("memes");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseMessageCount", b =>
+                {
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid");
+
+                    b.Property<int>("MessageCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("message_count")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("UserIdDb");
+
+                    b.ToTable("user_info");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabasePrivilegedUser", b =>
                 {
                     b.Property<long>("UserIdDb")
@@ -781,21 +814,6 @@ namespace TheGodfather.Migrations
                     b.HasIndex("GuildIdDb");
 
                     b.ToTable("reactions_text");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseUserInfo", b =>
-                {
-                    b.Property<long>("UserIdDb")
-                        .HasColumnName("uid");
-
-                    b.Property<int>("MessageCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("message_count")
-                        .HasDefaultValue(1);
-
-                    b.HasKey("UserIdDb");
-
-                    b.ToTable("user_info");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>

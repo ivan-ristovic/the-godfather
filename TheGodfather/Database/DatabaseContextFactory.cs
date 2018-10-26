@@ -9,15 +9,11 @@ namespace TheGodfather.Database
         {
             Console.WriteLine("Enter db name:");
             string db = Console.ReadLine();
-            Console.WriteLine("Enter username:");
-            string user = Console.ReadLine();
-            Console.WriteLine("Enter password:");
-            string pass = Console.ReadLine();
 
             var dbb = new DatabaseContextBuilder(new DatabaseConfig() {
                 DatabaseName = db,
-                Username = user,
-                Password = pass,
+                Username = "postgres",
+                Password = "",
                 Hostname = "localhost",
                 Port = 5432
             });

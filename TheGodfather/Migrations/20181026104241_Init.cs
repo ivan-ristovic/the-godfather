@@ -38,6 +38,21 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "bot_statuses",
+                schema: "gf",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    status = table.Column<string>(nullable: false),
+                    activity_type = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_bot_statuses", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "chicken_upgrades",
                 schema: "gf",
                 columns: table => new
@@ -62,9 +77,9 @@ namespace TheGodfather.Migrations
                     duel_won = table.Column<int>(nullable: false, defaultValue: 0),
                     duel_lost = table.Column<int>(nullable: false, defaultValue: 0),
                     hangman_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    numraces_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    quiz_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    animalrace_won = table.Column<int>(nullable: false, defaultValue: 0),
+                    quizes_won = table.Column<int>(nullable: false, defaultValue: 0),
+                    animalraces_won = table.Column<int>(nullable: false, defaultValue: 0),
+                    numberraces_won = table.Column<int>(nullable: false, defaultValue: 0),
                     ttt_won = table.Column<int>(nullable: false, defaultValue: 0),
                     ttt_lost = table.Column<int>(nullable: false, defaultValue: 0),
                     chain4_won = table.Column<int>(nullable: false, defaultValue: 0),
@@ -295,7 +310,7 @@ namespace TheGodfather.Migrations
                 {
                     uid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
-                    name = table.Column<string>(nullable: false),
+                    name = table.Column<string>(maxLength: 32, nullable: false),
                     str = table.Column<int>(nullable: false),
                     vit = table.Column<int>(nullable: false),
                     max_vit = table.Column<int>(nullable: false)
@@ -717,6 +732,10 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "blocked_users",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "bot_statuses",
                 schema: "gf");
 
             migrationBuilder.DropTable(

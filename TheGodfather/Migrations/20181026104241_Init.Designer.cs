@@ -6,12 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
-using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181020152226_Init")]
+    [Migration("20181026104241_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +19,7 @@ namespace TheGodfather.Migrations
             modelBuilder
                 .HasDefaultSchema("gf")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.0-preview2-35157")
+                .HasAnnotation("ProductVersion", "2.2.0-preview3-35497")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
@@ -107,6 +106,24 @@ namespace TheGodfather.Migrations
                     b.ToTable("blocked_users");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseBotStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("Activity")
+                        .HasColumnName("activity_type");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("bot_statuses");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseChicken", b =>
                 {
                     b.Property<long>("GuildIdDb")
@@ -120,7 +137,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.Property<int>("Strength")
                         .HasColumnName("str");
@@ -277,9 +295,9 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<int>("AnimalRaceWon")
+                    b.Property<int>("AnimalRacesWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("animalrace_won")
+                        .HasColumnName("animalraces_won")
                         .HasDefaultValue(0);
 
                     b.Property<int>("CaroLost")
@@ -312,14 +330,14 @@ namespace TheGodfather.Migrations
                         .HasColumnName("duel_won")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("HangmanLost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("numraces_won")
-                        .HasDefaultValue(0);
-
                     b.Property<int>("HangmanWon")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("hangman_won")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("NumberRacesWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("numberraces_won")
                         .HasDefaultValue(0);
 
                     b.Property<int>("OthelloLost")
@@ -332,9 +350,9 @@ namespace TheGodfather.Migrations
                         .HasColumnName("othello_won")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("QuizWon")
+                    b.Property<int>("QuizesWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("quiz_won")
+                        .HasColumnName("quizes_won")
                         .HasDefaultValue(0);
 
                     b.Property<int>("TicTacToeLost")
@@ -549,6 +567,21 @@ namespace TheGodfather.Migrations
                     b.HasKey("GuildIdDb", "Name");
 
                     b.ToTable("memes");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseMessageCount", b =>
+                {
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid");
+
+                    b.Property<int>("MessageCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("message_count")
+                        .HasDefaultValue(1);
+
+                    b.HasKey("UserIdDb");
+
+                    b.ToTable("user_info");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabasePrivilegedUser", b =>
@@ -783,21 +816,6 @@ namespace TheGodfather.Migrations
                     b.HasIndex("GuildIdDb");
 
                     b.ToTable("reactions_text");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseUserInfo", b =>
-                {
-                    b.Property<long>("UserIdDb")
-                        .HasColumnName("uid");
-
-                    b.Property<int>("MessageCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("message_count")
-                        .HasDefaultValue(1);
-
-                    b.HasKey("UserIdDb");
-
-                    b.ToTable("user_info");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
