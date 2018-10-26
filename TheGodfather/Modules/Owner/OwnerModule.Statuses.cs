@@ -3,14 +3,15 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -40,7 +41,7 @@ namespace TheGodfather.Modules.Owner
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                          [RemainingText, Description("Status.")] string status)
-                => this.AddAsync(ctx, activity, status);
+                => this.SetAsync(ctx, activity, status);
 
 
             #region COMMAND_STATUS_ADD
@@ -59,7 +60,11 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                await this.Database.AddBotStatusAsync(status, activity);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    db.BotStatuses.Add(new DatabaseBotStatus() { Activity = activity, Status = status });
+                    await db.SaveChangesAsync();
+                }
+
                 await this.InformAsync(ctx, $"Added new status: {Formatter.InlineCode(status)}", important: false);
             }
             #endregion
@@ -72,7 +77,11 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await this.Database.RemoveBotStatusAsync(id);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    db.BotStatuses.Remove(new DatabaseBotStatus() { Id = id });
+                    await db.SaveChangesAsync();
+                }
+
                 await this.InformAsync(ctx, $"Removed status with ID {Formatter.Bold(id.ToString())}", important: false);
             }
             #endregion
@@ -84,11 +93,14 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyDictionary<int, string> statuses = await this.Database.GetAllBotStatusesAsync();
+                List<DatabaseBotStatus> statuses;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    statuses = await db.BotStatuses.ToListAsync();
+
                 await ctx.SendCollectionInPagesAsync(
                     "Statuses:",
                     statuses,
-                    kvp => $"{Formatter.InlineCode($"{kvp.Key:D2}")}: {kvp.Value}",
+                    status => $"{Formatter.InlineCode($"{status.Id:D2}")}: {status.Activity} - {status.Status}",
                     this.ModuleColor,
                     10
                 );
@@ -136,11 +148,14 @@ namespace TheGodfather.Modules.Owner
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Status ID.")] int id)
             {
-                (ActivityType type, string status) = await this.Database.GetBotStatusByIdAsync(id);
-                if (string.IsNullOrWhiteSpace(status))
+                DatabaseBotStatus status;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    status = await db.BotStatuses.FindAsync(id);
+
+                if (status is null)
                     throw new CommandFailedException("Status with given ID doesn't exist!");
 
-                var activity = new DiscordActivity(status, type);
+                var activity = new DiscordActivity(status.Status, status.Activity);
 
                 this.Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(activity);

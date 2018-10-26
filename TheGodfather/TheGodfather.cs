@@ -20,8 +20,8 @@ using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -233,9 +233,7 @@ namespace TheGodfather
 
         private static async Task RegisterPeriodicTasksAsync()
         {
-            // TODO change back
-            // 10s
-            BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10000), TimeSpan.FromMinutes(10));
+            BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
@@ -324,7 +322,12 @@ namespace TheGodfather
             var client = _ as DiscordClient;
 
             try {
-                DiscordActivity activity = SharedData.AsyncExecutor.Execute(DatabaseService.GetRandomBotActivityAsync());
+                DatabaseBotStatus status;
+                using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext())
+                    status = db.BotStatuses.Shuffle().FirstOrDefault();
+
+                var activity = new DiscordActivity(status?.Status ?? "@TheGodfather help", status?.Activity ?? ActivityType.Playing);
+
                 SharedData.AsyncExecutor.Execute(client.UpdateStatusAsync(activity));
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);

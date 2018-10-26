@@ -16,7 +16,6 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Services;
 #endregion
 

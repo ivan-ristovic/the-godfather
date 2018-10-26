@@ -17,6 +17,7 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseBirthday> Birthdays { get; set; }
         public virtual DbSet<DatabaseBlockedChannel> BlockedChannels { get; set; }
         public virtual DbSet<DatabaseBlockedUser> BlockedUsers { get; set; }
+        public virtual DbSet<DatabaseBotStatus> BotStatuses { get; set; }
         public virtual DbSet<DatabaseChicken> Chickens { get; set; }
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
