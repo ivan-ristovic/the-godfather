@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -7,7 +9,7 @@ namespace TheGodfather.Database.Entities
     public class DatabaseSwatServer
     {
         [Key]
-        [Column("ip"), Required]
+        [Column("ip"), Required, MaxLength(16)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string IP { get; set; }
 
@@ -17,7 +19,7 @@ namespace TheGodfather.Database.Entities
         [Column("query_port")]
         public int QueryPort { get; set; }
         
-        [Column("name"), Required]
+        [Column("name"), Required, MaxLength(32)]
         public string Name { get; set; }
     }
 }

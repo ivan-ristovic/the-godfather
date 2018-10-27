@@ -73,7 +73,6 @@ namespace TheGodfather.Database
             model.Entity<DatabaseAutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             model.Entity<DatabaseBankAccount>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
             model.Entity<DatabaseBirthday>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.UserIdDb });
-            model.Entity<DatabaseBirthday>().Property(b => b.LastUpdateYear).HasDefaultValue(0);
             model.Entity<DatabaseBlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             model.Entity<DatabaseBlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);
             model.Entity<DatabaseChicken>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });

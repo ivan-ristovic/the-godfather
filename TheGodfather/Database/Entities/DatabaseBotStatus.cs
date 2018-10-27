@@ -1,7 +1,9 @@
-﻿using DSharpPlus.Entities;
+﻿#region USING_DIRECTIVES
+using DSharpPlus.Entities;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -12,10 +14,10 @@ namespace TheGodfather.Database.Entities
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("status"), Required]
+        [Column("status"), Required, MaxLength(64)]
         public string Status { get; set; }
 
         [Column("activity_type"), Required]
-        public ActivityType Activity { get; set; }
+        public ActivityType Activity { get; set; } = ActivityType.Playing;
     }
 }

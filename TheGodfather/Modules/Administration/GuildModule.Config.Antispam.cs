@@ -202,8 +202,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.AddRange(users.Select(u => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -222,8 +222,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.AddRange(roles.Select(r => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -242,8 +242,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.AddRange(channels.Select(c => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();
@@ -269,8 +269,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.RemoveRange(users.Select(u => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -289,8 +289,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.RemoveRange(roles.Select(r => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -308,8 +308,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.AntispamExempts.RemoveRange(channels.Select(c => new DatabaseExemptAntispam() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();

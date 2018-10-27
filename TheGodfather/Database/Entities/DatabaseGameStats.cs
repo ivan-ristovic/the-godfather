@@ -1,30 +1,20 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
     [Table("game_stats")]
     public class DatabaseGameStats
     {
-
-        public DatabaseGameStats()
-        {
-
-        }
-
-        public DatabaseGameStats(ulong uid)
-        {
-            this.UserIdDb = (long)uid;
-        }
-
-
         [Key]
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
         [NotMapped]
-        public ulong UserId => (ulong)this.UserIdDb;
+        public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("duel_won")]
         public int DuelsWon { get; set; } 

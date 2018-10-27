@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Misc
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.Memes.Add(new DatabaseMeme() {
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                     Url = url.AbsoluteUri
                 });
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Misc
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.Memes.Remove(new DatabaseMeme() {
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                 });
                 await db.SaveChangesAsync();

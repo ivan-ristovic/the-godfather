@@ -72,8 +72,8 @@ namespace TheGodfather.Modules.Chickens
 
                         db.ChickensBoughtUpgrades.Add(new DatabaseChickenBoughtUpgrade() {
                             Id = upgrade.Id,
-                            GuildIdDb = (long)chicken.GuildId,
-                            UserIdDb = (long)chicken.OwnerId
+                            GuildId = chicken.GuildId,
+                            UserId = chicken.OwnerId
                         });
                         await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
                     }

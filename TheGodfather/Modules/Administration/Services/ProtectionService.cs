@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration.Services
                             await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
                             await Task.Delay(200);
                         }
-                        gcfg.MuteRoleIdDb = (long)muteRole.Id;
+                        gcfg.MuteRoleId = muteRole.Id;
                         db.GuildConfig.Update(gcfg);
                         await db.SaveChangesAsync();
                     }

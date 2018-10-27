@@ -1,7 +1,9 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TheGodfather.Common;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -16,12 +18,12 @@ namespace TheGodfather.Database.Entities
                 return null;
 
             var dbr = new DatabaseReminder() {
-                ChannelIdDb = (long)smti.ChannelId,
+                ChannelId = smti.ChannelId,
                 ExecutionTime = tinfo.ExecutionTime.UtcDateTime,
                 IsRepeating = smti.IsRepeating,
                 Message = smti.Message,
                 RepeatIntervalDb = smti.RepeatingInterval,
-                UserIdDb = (long)smti.InitiatorId
+                UserId = smti.InitiatorId
             };
 
             return dbr;
@@ -35,14 +37,14 @@ namespace TheGodfather.Database.Entities
         [Column("uid")]
         public long UserIdDb { get; set; }
         [NotMapped]
-        public ulong UserId => (ulong)this.UserIdDb;
+        public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("cid")]
         public long? ChannelIdDb { get; set; }
         [NotMapped]
-        public ulong ChannelId => (ulong)this.ChannelIdDb.GetValueOrDefault();
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb.GetValueOrDefault(); set => this.ChannelIdDb = (long)value; }
 
-        [Column("message"), Required]
+        [Column("message"), Required, MaxLength(256)]
         public string Message { get; set; }
 
         [Column("execution_time", TypeName = "timestamptz")]

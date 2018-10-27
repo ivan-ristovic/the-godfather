@@ -73,7 +73,7 @@ namespace TheGodfather.EventListeners
         {
             shared.GuildConfigurations.TryAdd(gid, CachedGuildConfig.Default);
             using (DatabaseContext db = dbb.CreateContext()) {
-                var gcfg = new DatabaseGuildConfig() { GuildIdDb = (long)gid };
+                var gcfg = new DatabaseGuildConfig() { GuildId = gid };
                 if (!db.GuildConfig.Contains(gcfg)) {
                     db.GuildConfig.Add(gcfg);
                     await db.SaveChangesAsync();

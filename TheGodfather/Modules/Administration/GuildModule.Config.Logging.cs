@@ -118,8 +118,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.AddRange(users.Select(u => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -137,8 +137,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.AddRange(roles.Select(r => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -156,8 +156,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.AddRange(channels.Select(c => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();
@@ -182,8 +182,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.RemoveRange(users.Select(u => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -201,8 +201,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.RemoveRange(roles.Select(r => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -220,8 +220,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.LoggingExempts.RemoveRange(channels.Select(c => new DatabaseExemptLogging() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();

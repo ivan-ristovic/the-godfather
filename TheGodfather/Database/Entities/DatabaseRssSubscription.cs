@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -14,13 +16,13 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
         [NotMapped]
-        public ulong GuildId => (ulong)this.GuildIdDb;
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("cid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ChannelIdDb { get; set; }
         [NotMapped]
-        public ulong ChannelId => (ulong)this.ChannelIdDb;
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelId = value; }
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

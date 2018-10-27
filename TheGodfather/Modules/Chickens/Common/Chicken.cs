@@ -160,28 +160,28 @@ namespace TheGodfather.Modules.Chickens.Common
             if (target is null) {
                 return new DatabaseChicken() {
                     DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
-                        GuildIdDb = (long)this.GuildId,
+                        GuildId = this.GuildId,
                         Id = u.Id,
-                        UserIdDb = (long)this.OwnerId
+                        UserId = this.OwnerId
                     }).ToList(),
-                    GuildIdDb = (long)this.GuildId,
+                    GuildId = this.GuildId,
                     MaxVitality = this.Stats.BareMaxVitality,
                     Name = this.Name,
                     Strength = this.Stats.BareStrength,
-                    UserIdDb = (long)this.OwnerId,
+                    UserId = this.OwnerId,
                     Vitality = this.Stats.BareVitality
                 };
             } else {
                 target.DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
-                    GuildIdDb = (long)this.GuildId,
+                    GuildId = this.GuildId,
                     Id = u.Id,
-                    UserIdDb = (long)this.OwnerId
+                    UserId = this.OwnerId
                 }).ToList();
-                target.GuildIdDb = (long)this.GuildId;
+                target.GuildId = this.GuildId;
                 target.MaxVitality = this.Stats.BareMaxVitality;
                 target.Name = this.Name;
                 target.Strength = this.Stats.BareStrength;
-                target.UserIdDb = (long)this.OwnerId;
+                target.UserId = this.OwnerId;
                 target.Vitality = this.Stats.BareVitality;
                 return target;
             }

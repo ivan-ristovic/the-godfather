@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -37,12 +39,12 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
         [NotMapped]
-        public ulong GuildId => (ulong)this.GuildIdDb;
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("prefix")]
+        [Column("prefix"), MaxLength(16)]
         public string Prefix { get; set; }
 
-        [Column("currency")]
+        [Column("currency"), MaxLength(32)]
         public string Currency { get; set; }
 
         [Column("suggestions_enabled")]
@@ -51,14 +53,14 @@ namespace TheGodfather.Database.Entities
         [Column("log_cid")]
         public long? LogChannelIdDb { get; set; } 
         [NotMapped]
-        public ulong LogChannelId => (ulong)this.LogChannelIdDb.GetValueOrDefault();
+        public ulong LogChannelId { get => (ulong)this.LogChannelIdDb.GetValueOrDefault(); set => this.LogChannelIdDb = (long)value; }
         [NotMapped]
         public bool LoggingEnabled => this.LogChannelId != default;
 
         [Column("mute_rid")]
         public long? MuteRoleIdDb { get; set; }
         [NotMapped]
-        public ulong MuteRoleId => (ulong)this.MuteRoleIdDb.GetValueOrDefault();
+        public ulong MuteRoleId { get => (ulong) this.MuteRoleIdDb.GetValueOrDefault(); set => this.MuteRoleIdDb = (long)value; }
 
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
@@ -74,10 +76,10 @@ namespace TheGodfather.Database.Entities
         [NotMapped]
         public ulong LeaveChannelId => (ulong)this.LeaveChannelIdDb.GetValueOrDefault();
 
-        [Column("welcome_msg")]
+        [Column("welcome_msg"), MaxLength(128)]
         public string WelcomeMessage { get; set; }
 
-        [Column("leave_msg")]
+        [Column("leave_msg"), MaxLength(128)]
         public string LeaveMessage { get; set; }
         #endregion
 
@@ -237,7 +239,7 @@ namespace TheGodfather.Database.Entities
                 this.AntispamSettings = value.AntispamSettings;
                 this.Currency = value.Currency;
                 this.LinkfilterSettings = value.LinkfilterSettings;
-                this.LogChannelIdDb = (long)value.LogChannelId;
+                this.LogChannelId = value.LogChannelId;
                 this.Prefix = value.Prefix;
                 this.RatelimitSettings = value.RatelimitSettings;
                 this.ReactionResponse = value.ReactionResponse;

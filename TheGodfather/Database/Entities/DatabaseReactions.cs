@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -13,7 +15,7 @@ namespace TheGodfather.Database.Entities
         [Column("gid")]
         public long GuildIdDb { get; set; }
         [NotMapped]
-        public ulong GuildId => (ulong)this.GuildIdDb;
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("triggers"), Required]
         public string[] Triggers { get; set; }
@@ -25,14 +27,14 @@ namespace TheGodfather.Database.Entities
     [Table("reactions_emoji")]
     public class DatabaseEmojiReaction : DatabaseReaction
     {
-        [Column("reaction"), Required]
+        [Column("reaction"), Required, MaxLength(128)]
         public string Reaction { get; set; }
     }
 
     [Table("reactions_text")]
     public class DatabaseTextReaction : DatabaseReaction
     {
-        [Column("response"), Required]
+        [Column("response"), Required, MaxLength(128)]
         public string Response { get; set; }
     }
 }

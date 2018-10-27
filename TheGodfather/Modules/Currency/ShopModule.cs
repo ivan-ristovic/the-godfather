@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Currency
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.PurchasableItems.Add(new DatabasePurchasableItem() {
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     Name = name,
                     Price = price
                 });
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Currency
 
                 db.PurchasedItems.Add(new DatabasePurchasedItem() {
                     ItemId = item.Id,
-                    UserIdDb = (long)ctx.User.Id
+                    UserId = ctx.User.Id
                 });
 
                 await db.SaveChangesAsync();
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Currency
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 foreach (int id in ids.Distinct()) {
-                    var item = new DatabasePurchasableItem() { Id = id, GuildIdDb = (long)ctx.Guild.Id };
+                    var item = new DatabasePurchasableItem() { Id = id, GuildId = ctx.Guild.Id };
                     if (db.PurchasableItems.Contains(item))
                         db.PurchasableItems.Remove(item);
                 }

@@ -148,14 +148,14 @@ namespace TheGodfather.Modules.Currency
         {
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
-                    db.BankAccounts.Add(new DatabaseBankAccount(ctx.Guild.Id, ctx.User.Id));
+                    db.BankAccounts.Add(new DatabaseBankAccount() { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
                 else
                     throw new CommandFailedException("You already own an account in WM bank!");
 
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {DatabaseBankAccount.StartingBalance} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
         }
         #endregion
 
@@ -275,7 +275,7 @@ namespace TheGodfather.Modules.Currency
                 if (global)
                     db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
                 else
-                    db.BankAccounts.Remove(new DatabaseBankAccount(user.Id, ctx.Guild.Id));
+                    db.BankAccounts.Remove(new DatabaseBankAccount() { GuildId = ctx.Guild.Id, UserId = user.Id });
                 await db.SaveChangesAsync();
             }
 

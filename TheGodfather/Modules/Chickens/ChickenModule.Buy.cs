@@ -138,11 +138,11 @@ namespace TheGodfather.Modules.Chickens
 
                     var stats = Chicken.StartingStats[type];
                     db.Chickens.Add(new DatabaseChicken() {
-                        GuildIdDb = (long)ctx.Guild.Id,
+                        GuildId = ctx.Guild.Id,
                         MaxVitality = stats.BareMaxVitality,
                         Name = name,
                         Strength = stats.BareStrength,
-                        UserIdDb = (long)ctx.User.Id,
+                        UserId = ctx.User.Id,
                         Vitality = stats.BareVitality
                     });
 

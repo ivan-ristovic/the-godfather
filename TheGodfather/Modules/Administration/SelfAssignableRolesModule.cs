@@ -63,8 +63,8 @@ namespace TheGodfather.Modules.Administration
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.SelfAssignableRoles.AddRange(roles.Select(r => new DatabaseSelfRole() {
-                    RoleIdDb = (long)r.Id,
-                    GuildIdDb = (long)ctx.Guild.Id
+                    RoleId = r.Id,
+                    GuildId = ctx.Guild.Id
                 }));
                 await db.SaveChangesAsync();
             }
@@ -100,8 +100,8 @@ namespace TheGodfather.Modules.Administration
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.SelfAssignableRoles.RemoveRange(roles.Select(r => new DatabaseSelfRole() {
-                    RoleIdDb = (long)r.Id,
-                    GuildIdDb = (long)ctx.Guild.Id
+                    RoleId = r.Id,
+                    GuildId = ctx.Guild.Id
                 }));
                 await db.SaveChangesAsync();
             }
@@ -174,8 +174,8 @@ namespace TheGodfather.Modules.Administration
                     DiscordRole role = ctx.Guild.GetRole(rid);
                     if (role is null) {
                         db.SelfAssignableRoles.Remove(new DatabaseSelfRole() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            RoleIdDb = (long)rid
+                            GuildId = ctx.Guild.Id,
+                            RoleId = rid
                         });
                     } else {
                         roles.Add(role);

@@ -22,7 +22,10 @@ namespace TheGodfather.Modules.Currency.Extensions
         {
             DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)gid, (long)uid);
             if (account is null) {
-                account = new DatabaseBankAccount(uid, gid);
+                account = new DatabaseBankAccount() {
+                    GuildId = gid,
+                    UserId = uid
+                };
                 db.Add(account);
             }
             account.Balance = balanceModifier(account.Balance);

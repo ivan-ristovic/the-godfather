@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Owner
                         }
 
                         db.BlockedUsers.Add(new DatabaseBlockedUser() {
-                            UserIdDb = (long)user.Id,
+                            UserId = user.Id,
                             Reason = reason
                         });
                     }
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserIdDb = (long)user.Id });
+                        db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserId = user.Id });
                     }
 
                     await db.SaveChangesAsync();

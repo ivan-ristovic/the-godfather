@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Owner
                         }
 
                         db.BlockedChannels.Add(new DatabaseBlockedChannel() {
-                            ChannelIdDb = (long)channel.Id,
+                            ChannelId = channel.Id,
                             Reason = reason
                         });
                     }
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = (long)channel.Id });
+                        db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelId = channel.Id });
                     }
 
                     await db.SaveChangesAsync();

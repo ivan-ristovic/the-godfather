@@ -81,11 +81,11 @@ namespace TheGodfather.Modules.Misc
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.Birthdays.Add(new DatabaseBirthday() {
-                    ChannelIdDb = (long)channel.Id,
+                    ChannelId = channel.Id,
                     Date = date,
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     LastUpdateYear = DateTime.Now.Year,
-                    UserIdDb = (long)user.Id
+                    UserId = user.Id
                 });
 
                 await db.SaveChangesAsync();

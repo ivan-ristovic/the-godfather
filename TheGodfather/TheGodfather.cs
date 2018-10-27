@@ -343,7 +343,7 @@ namespace TheGodfather
                         if (msgcount is null) {
                             db.MessageCount.Add(new DatabaseMessageCount() {
                                 MessageCount = count,
-                                UserIdDb = (long)uid
+                                UserId = uid
                             });
                         } else {
                             if (count != msgcount.MessageCount) {

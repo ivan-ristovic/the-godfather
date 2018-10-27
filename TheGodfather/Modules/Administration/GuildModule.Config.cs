@@ -346,7 +346,7 @@ namespace TheGodfather.Modules.Administration
                     if (muteRole is null)
                         mr = ctx.Guild.GetRole(cfg.MuteRoleId);
                     else
-                        cfg.MuteRoleIdDb = (long)muteRole.Id;
+                        cfg.MuteRoleId = muteRole.Id;
                 });
 
                 if (!(mr is null))
@@ -436,7 +436,7 @@ namespace TheGodfather.Modules.Administration
                     cfg.CachedConfig = cgcfg;
                     cfg.LeaveChannelIdDb = (ninfo.LeaveChannelId != 0 ? (long?)ninfo.LeaveChannelId : null);
                     cfg.LeaveMessage = ninfo.LeaveMessage;
-                    cfg.MuteRoleIdDb = (long)muteRole.Id;
+                    cfg.MuteRoleId = muteRole.Id;
                     cfg.WelcomeChannelIdDb = (ninfo.WelcomeChannelId != 0 ? (long?)ninfo.WelcomeChannelId : null);
                     cfg.WelcomeMessage = ninfo.WelcomeMessage;
                 });

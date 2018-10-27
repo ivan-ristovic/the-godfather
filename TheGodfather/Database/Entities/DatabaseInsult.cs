@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -10,7 +12,7 @@ namespace TheGodfather.Database.Entities
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("content"), Required]
+        [Column("content"), Required, MaxLength(128)]
         public string Content { get; set; }
     }
 }

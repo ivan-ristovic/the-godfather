@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using TheGodfather.Modules.Chickens.Common;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -19,7 +22,7 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         
-        [Column("name"), Required]
+        [Column("name"), Required, MaxLength(32)]
         public string Name { get; set; }
 
         [Column("cost")]

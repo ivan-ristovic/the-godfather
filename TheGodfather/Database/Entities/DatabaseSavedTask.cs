@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using TheGodfather.Common;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -18,14 +20,14 @@ namespace TheGodfather.Database.Entities
 
             switch (tinfo) {
                 case UnbanTaskInfo ubti:
-                    dbti.GuildIdDb = (long)ubti.GuildId;
-                    dbti.UserIdDb = (long)ubti.UnbanId;
+                    dbti.GuildId = ubti.GuildId;
+                    dbti.UserId = ubti.UnbanId;
                     dbti.Type = SavedTaskType.Unban;
                     break;
                 case UnmuteTaskInfo umti:
-                    dbti.GuildIdDb = (long)umti.GuildId;
-                    dbti.UserIdDb = (long)umti.UserId;
-                    dbti.RoleIdDb = (long)umti.MuteRoleId;
+                    dbti.GuildId = umti.GuildId;
+                    dbti.UserId = umti.UserId;
+                    dbti.RoleId = umti.MuteRoleId;
                     dbti.Type = SavedTaskType.Unmute;
                     break;
                 default:
@@ -44,17 +46,17 @@ namespace TheGodfather.Database.Entities
         [Column("gid")]
         public long GuildIdDb { get; set; }
         [NotMapped]
-        public ulong GuildId => (ulong)this.GuildIdDb;
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("uid")]
         public long UserIdDb { get; set; }
         [NotMapped]
-        public ulong UserId => (ulong)this.UserIdDb;
+        public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("rid")]
         public long? RoleIdDb { get; set; }
         [NotMapped]
-        public ulong RoleId => (ulong)this.RoleIdDb.GetValueOrDefault();
+        public ulong RoleId { get => (ulong)this.RoleIdDb.GetValueOrDefault(); set => this.RoleIdDb = (long)value; }
 
         [Column("type")]
         public SavedTaskType Type { get; set; }

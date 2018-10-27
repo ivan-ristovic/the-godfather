@@ -229,7 +229,10 @@ namespace TheGodfather.Modules.Chickens
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + price);
-                db.Chickens.Remove(new DatabaseChicken(ctx.User.Id, ctx.Guild.Id));
+                db.Chickens.Remove(new DatabaseChicken() {
+                    GuildId = ctx.Guild.Id,
+                    UserId = ctx.User.Id
+                });
                 await db.SaveChangesAsync();
             }
 

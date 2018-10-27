@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner
                 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                     db.PrivilegedUsers.AddRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
-                        UserIdDb = (long)u.Id
+                        UserId = u.Id
                     }));
                     await db.SaveChangesAsync();
                 }
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Owner
 
                 using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                     db.PrivilegedUsers.RemoveRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
-                        UserIdDb = (long)u.Id
+                        UserId = u.Id
                     }));
                     await db.SaveChangesAsync();
                 }

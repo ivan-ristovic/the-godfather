@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -13,27 +15,20 @@ namespace TheGodfather.Database.Entities
             this.DbUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
         }
 
-        public DatabaseChicken(ulong gid, ulong uid)
-        {
-            this.GuildIdDb = (long)gid;
-            this.UserIdDb = (long)uid;
-        }
-
 
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
         [NotMapped]
-        public ulong UserId => (ulong)this.UserIdDb;
+        public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
         [NotMapped]
-        public ulong GuildId => (ulong)this.GuildIdDb;
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("name"), Required]
-        [MaxLength(32)]
+        [Column("name"), Required, MaxLength(32)]
         public string Name { get; set; }
 
         [Column("str")]

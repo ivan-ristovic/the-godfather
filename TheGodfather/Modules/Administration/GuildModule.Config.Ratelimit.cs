@@ -202,8 +202,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.AddRange(users.Select(u => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -222,8 +222,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.AddRange(roles.Select(r => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -242,8 +242,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.AddRange(channels.Select(c => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();
@@ -269,8 +269,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(users.Select(u => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)u.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = u.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -289,8 +289,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(roles.Select(r => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)r.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = r.Id,
                             Type = ExemptedEntityType.Role
                         }));
                         await db.SaveChangesAsync();
@@ -309,8 +309,8 @@ namespace TheGodfather.Modules.Administration
 
                     using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(channels.Select(c => new DatabaseExemptRatelimit() {
-                            GuildIdDb = (long)ctx.Guild.Id,
-                            IdDb = (long)c.Id,
+                            GuildId = ctx.Guild.Id,
+                            Id = c.Id,
                             Type = ExemptedEntityType.Channel
                         }));
                         await db.SaveChangesAsync();

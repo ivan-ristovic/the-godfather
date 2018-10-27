@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+#endregion
 
 namespace TheGodfather.Database.Entities
 {
@@ -10,9 +12,9 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
         [NotMapped]
-        public ulong UserId => (ulong)this.UserIdDb;
+        public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
-        [Column("reason")]
+        [Column("reason"), MaxLength(64)]
         public string Reason { get; set; }
     }
 
@@ -23,9 +25,9 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ChannelIdDb { get; set; }
         [NotMapped]
-        public ulong ChannelId => (ulong)this.ChannelIdDb;
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelId = value; }
 
-        [Column("reason")]
+        [Column("reason"), MaxLength(64)]
         public string Reason { get; set; }
     }
 }

@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Misc
 
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.GuildRanks.Add(new DatabaseGuildRank() {
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     Name = name,
                     Rank = (short)rank
                 });
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Misc
         {
             using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
                 db.GuildRanks.Remove(new DatabaseGuildRank() {
-                    GuildIdDb = (long)ctx.Guild.Id,
+                    GuildId = ctx.Guild.Id,
                     Rank = (short)rank
                 });
                 await db.SaveChangesAsync();
