@@ -1,14 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
 
-using Npgsql;
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Owner.Extensions

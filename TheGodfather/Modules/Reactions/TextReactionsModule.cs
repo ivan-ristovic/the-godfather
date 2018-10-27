@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Modules.Reactions.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -96,11 +97,9 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            try {
-                await this.Database.RemoveTextReactionsAsync(ctx.Guild.Id, ids);
-            } catch (Exception e) {
-                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                eb.AppendLine($"Warning: Failed to remove some reactions from the database.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id && ids.Contains(tr.Id)));
+                await db.SaveChangesAsync();
             }
 
             int count = treactions.RemoveWhere(tr => ids.Contains(tr.Id));
@@ -138,7 +137,10 @@ namespace TheGodfather.Modules.Reactions
             if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
+            var trIds = new List<int>();
+
             var eb = new StringBuilder();
+            triggers = triggers.Select(t => t.ToLowerInvariant()).ToArray();
             foreach (string trigger in triggers) {
                 if (string.IsNullOrWhiteSpace(trigger))
                     continue;
@@ -155,19 +157,30 @@ namespace TheGodfather.Modules.Reactions
                 }
 
                 bool success = true;
-                foreach (TextReaction tr in found)
+                foreach (TextReaction tr in found) {
                     success |= tr.RemoveTrigger(trigger);
+                    trIds.Add(tr.Id);
+                }
+
                 if (!success) {
                     eb.AppendLine($"Warning: Failed to remove some text reactions for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
             }
 
-            try {
-                await this.Database.RemoveTextReactionTriggersAsync(ctx.Guild.Id, triggers);
-            } catch (Exception e) {
-                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                eb.AppendLine($"Warning: Failed to remove some triggers from the database.");
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                List<DatabaseTextReaction> toUpdate = await db.TextReactions
+                    .Where(tr => tr.GuildId == ctx.Guild.Id && trIds.Contains(tr.Id))
+                    .ToListAsync();
+                foreach (DatabaseTextReaction tr in toUpdate) {
+                    tr.Triggers = tr.Triggers.Except(triggers).ToArray();
+                    if (tr.Triggers.Any())
+                        db.TextReactions.Update(tr);
+                    else
+                        db.TextReactions.Remove(tr);
+                }
+
+                await db.SaveChangesAsync();
             }
 
             int count = treactions.RemoveWhere(tr => tr.RegexCount == 0);
@@ -193,7 +206,7 @@ namespace TheGodfather.Modules.Reactions
             if (eb.Length > 0)
                 await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
             else
-                await this.InformAsync(ctx, $"Removed {count} reactions matching given triggers.", important: false);
+                await this.InformAsync(ctx, $"Done! {count} reactions were removed completely.", important: false);
         }
         #endregion
 
@@ -212,7 +225,10 @@ namespace TheGodfather.Modules.Reactions
                 if (!this.Shared.TextReactions.TryRemove(ctx.Guild.Id, out _))
                     throw new ConcurrentOperationException("Failed to remove text reaction collection!");
 
-            await this.Database.RemoveAllGuildTextReactionsAsync(ctx.Guild.Id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id));
+                await db.SaveChangesAsync();
+            }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
@@ -273,14 +289,27 @@ namespace TheGodfather.Modules.Reactions
             if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
-            var eb = new StringBuilder();
-            int id = 0;
-            try {
-                id = await this.Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex);
-            } catch (Exception e) {
-                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
-                eb.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
+            int id;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
+                if (dbtr is null) {
+                    var er = new DatabaseTextReaction() {
+                        GuildId = ctx.Guild.Id,
+                        Response = response,
+                        Triggers = new string[] { regex ? trigger : Regex.Escape(trigger) }
+                    };
+                    db.TextReactions.Add(er);
+                    await db.SaveChangesAsync();
+                    id = er.Id;
+                } else {
+                    dbtr.Triggers = dbtr.Triggers.Concat(new[] { regex ? trigger : Regex.Escape(trigger) }).ToArray();
+                    id = dbtr.Id;
+                    db.TextReactions.Update(dbtr);
+                    await db.SaveChangesAsync();
+                }
             }
+
+            var eb = new StringBuilder();
 
             var treactions = this.Shared.TextReactions[ctx.Guild.Id];
             var reaction = treactions.FirstOrDefault(tr => tr.Response == response);

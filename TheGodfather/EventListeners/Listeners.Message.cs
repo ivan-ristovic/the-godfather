@@ -19,7 +19,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Modules.Reactions.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -125,7 +124,10 @@ namespace TheGodfather.EventListeners
                     var emoji = DiscordEmoji.FromName(shard.Client, ereaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
-                    await shard.DatabaseService.RemoveAllTriggersForEmojiReactionAsync(e.Guild.Id, ereaction.Response);
+                    using (DatabaseContext db = shard.Database.CreateContext()) {
+                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.Reaction == ereaction.Response));
+                        await db.SaveChangesAsync();
+                    }
                 }
             }
         }
