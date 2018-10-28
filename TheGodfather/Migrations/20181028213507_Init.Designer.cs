@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181026104241_Init")]
+    [Migration("20181028213507_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,9 +67,7 @@ namespace TheGodfather.Migrations
                         .HasColumnType("date");
 
                     b.Property<int>("LastUpdateYear")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("last_update_year")
-                        .HasDefaultValue(0);
+                        .HasColumnName("last_update_year");
 
                     b.HasKey("GuildIdDb", "ChannelIdDb", "UserIdDb");
 
@@ -84,6 +82,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("Reason")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("reason")
+                        .HasMaxLength(64)
                         .HasDefaultValue(null);
 
                     b.HasKey("ChannelIdDb");
@@ -99,6 +98,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("Reason")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("reason")
+                        .HasMaxLength(64)
                         .HasDefaultValue(null);
 
                     b.HasKey("UserIdDb");
@@ -117,7 +117,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnName("status");
+                        .HasColumnName("status")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
 
@@ -182,7 +183,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.Property<int>("UpgradesStat")
                         .HasColumnName("stat");
@@ -203,7 +205,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Reaction")
                         .IsRequired()
-                        .HasColumnName("reaction");
+                        .HasColumnName("reaction")
+                        .HasMaxLength(128);
 
                     b.Property<string[]>("Triggers")
                         .IsRequired()
@@ -281,7 +284,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Trigger")
                         .IsRequired()
-                        .HasColumnName("trigger");
+                        .HasColumnName("trigger")
+                        .HasMaxLength(128);
 
                     b.HasKey("Id");
 
@@ -423,6 +427,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("Currency")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("currency")
+                        .HasMaxLength(32)
                         .HasDefaultValue(null);
 
                     b.Property<long?>("LeaveChannelIdDb")
@@ -433,6 +438,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("LeaveMessage")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("leave_msg")
+                        .HasMaxLength(128)
                         .HasDefaultValue(null);
 
                     b.Property<bool>("LinkfilterBootersEnabled")
@@ -478,6 +484,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("Prefix")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("prefix")
+                        .HasMaxLength(16)
                         .HasDefaultValue(null);
 
                     b.Property<byte>("RatelimitAction")
@@ -513,6 +520,7 @@ namespace TheGodfather.Migrations
                     b.Property<string>("WelcomeMessage")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("welcome_msg")
+                        .HasMaxLength(128)
                         .HasDefaultValue(null);
 
                     b.HasKey("GuildIdDb");
@@ -530,7 +538,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.HasKey("GuildIdDb", "Rank");
 
@@ -545,7 +554,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnName("content");
+                        .HasColumnName("content")
+                        .HasMaxLength(128);
 
                     b.HasKey("Id");
 
@@ -558,11 +568,13 @@ namespace TheGodfather.Migrations
                         .HasColumnName("gid");
 
                     b.Property<string>("Name")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnName("url");
+                        .HasColumnName("url")
+                        .HasMaxLength(128);
 
                     b.HasKey("GuildIdDb", "Name");
 
@@ -605,7 +617,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(64);
 
                     b.Property<long>("Price")
                         .HasColumnName("price");
@@ -650,7 +663,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnName("message");
+                        .HasColumnName("message")
+                        .HasMaxLength(256);
 
                     b.Property<TimeSpan?>("RepeatIntervalDb")
                         .ValueGeneratedOnAdd()
@@ -695,6 +709,11 @@ namespace TheGodfather.Migrations
 
                     b.Property<long>("ChannelIdDb")
                         .HasColumnName("cid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id", "GuildIdDb", "ChannelIdDb");
 
@@ -775,7 +794,8 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatServer", b =>
                 {
                     b.Property<string>("IP")
-                        .HasColumnName("ip");
+                        .HasColumnName("ip")
+                        .HasMaxLength(16);
 
                     b.Property<int>("JoinPort")
                         .ValueGeneratedOnAdd()
@@ -784,7 +804,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.Property<int>("QueryPort")
                         .HasColumnName("query_port");
@@ -805,7 +826,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("Response")
                         .IsRequired()
-                        .HasColumnName("response");
+                        .HasColumnName("response")
+                        .HasMaxLength(128);
 
                     b.Property<string[]>("Triggers")
                         .IsRequired()

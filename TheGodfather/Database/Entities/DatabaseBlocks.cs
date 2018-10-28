@@ -25,7 +25,7 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ChannelIdDb { get; set; }
         [NotMapped]
-        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelId = value; }
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
 
         [Column("reason"), MaxLength(64)]
         public string Reason { get; set; }

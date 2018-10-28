@@ -4,14 +4,15 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
 using Humanizer;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using System.Xml;
-
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
@@ -21,13 +22,19 @@ namespace TheGodfather.Modules.Search.Services
 {
     public static class RssService
     {
-        public static async Task CheckFeedsForChangesAsync(DiscordClient client, DBService db)
+        public static async Task CheckFeedsForChangesAsync(DiscordClient client, DatabaseContextBuilder dbb)
         {
-            IReadOnlyList<FeedEntry> feeds = await db.GetAllFeedEntriesAsync();
-            foreach (var feed in feeds) {
+            IReadOnlyList<DatabaseRssFeed> feeds;
+            using (DatabaseContext db = dbb.CreateContext())
+                feeds = await db.RssFeeds.Include(f => f.Subscriptions).ToListAsync();
+            
+            foreach (DatabaseRssFeed feed in feeds) {
                 try {
                     if (!feed.Subscriptions.Any()) {
-                        await db.RemoveFeedEntryAsync(feed.Id);
+                        using (DatabaseContext db = dbb.CreateContext()) {
+                            db.RssFeeds.Remove(feed);
+                            await db.SaveChangesAsync();
+                        }
                         continue;
                     }
 
@@ -39,15 +46,22 @@ namespace TheGodfather.Modules.Search.Services
                     if (url is null)
                         continue;
 
-                    if (string.Compare(url, feed.SavedUrl, true) != 0) {
-                        await db.UpdateFeedSavedURLAsync(feed.Id, url);
+                    if (string.Compare(url, feed.LastPostUrl, true) != 0) {
+                        using (DatabaseContext db = dbb.CreateContext()) {
+                            feed.LastPostUrl = url;
+                            db.RssFeeds.Update(feed);
+                            await db.SaveChangesAsync();
+                        }
 
-                        foreach (var sub in feed.Subscriptions) {
+                        foreach (DatabaseRssSubscription sub in feed.Subscriptions) {
                             DiscordChannel chn;
                             try {
                                 chn = await client.GetChannelAsync(sub.ChannelId);
                             } catch (NotFoundException) {
-                                await db.RemoveSubscriptionByIdAsync(sub.ChannelId, feed.Id);
+                                using (DatabaseContext db = dbb.CreateContext()) {
+                                    db.RssSubscriptions.Remove(sub);
+                                    await db.SaveChangesAsync();
+                                }
                                 continue;
                             } catch {
                                 continue;
@@ -63,8 +77,8 @@ namespace TheGodfather.Modules.Search.Services
                             if (latest.Content is TextSyndicationContent content)
                                 emb.WithImageUrl(RedditService.GetImageUrl(content));
 
-                            if (!string.IsNullOrWhiteSpace(sub.QualifiedName))
-                                emb.AddField("From", sub.QualifiedName);
+                            if (!string.IsNullOrWhiteSpace(sub.Name))
+                                emb.AddField("From", sub.Name);
                             emb.AddField("Content link", url);
 
                             await chn.SendMessageAsync(embed: emb.Build());

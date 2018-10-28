@@ -17,7 +17,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     cid = table.Column<long>(nullable: false),
-                    reason = table.Column<string>(nullable: true)
+                    reason = table.Column<string>(maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     uid = table.Column<long>(nullable: false),
-                    reason = table.Column<string>(nullable: true)
+                    reason = table.Column<string>(maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,7 +44,7 @@ namespace TheGodfather.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    status = table.Column<string>(nullable: false),
+                    status = table.Column<string>(maxLength: 64, nullable: false),
                     activity_type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -58,7 +58,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false),
-                    name = table.Column<string>(nullable: false),
+                    name = table.Column<string>(maxLength: 32, nullable: false),
                     cost = table.Column<long>(nullable: false),
                     stat = table.Column<int>(nullable: false),
                     mod = table.Column<int>(nullable: false)
@@ -100,16 +100,16 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     gid = table.Column<long>(nullable: false),
-                    prefix = table.Column<string>(nullable: true),
-                    currency = table.Column<string>(nullable: true),
+                    prefix = table.Column<string>(maxLength: 16, nullable: true),
+                    currency = table.Column<string>(maxLength: 32, nullable: true),
                     suggestions_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     log_cid = table.Column<long>(nullable: true),
                     mute_rid = table.Column<long>(nullable: true),
                     silent_response_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     welcome_cid = table.Column<long>(nullable: true),
                     leave_cid = table.Column<long>(nullable: true),
-                    welcome_msg = table.Column<string>(nullable: true),
-                    leave_msg = table.Column<string>(nullable: true),
+                    welcome_msg = table.Column<string>(maxLength: 128, nullable: true),
+                    leave_msg = table.Column<string>(maxLength: 128, nullable: true),
                     linkfilter_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     linkfilter_booters = table.Column<bool>(nullable: false, defaultValue: true),
                     linkfilter_disturbing = table.Column<bool>(nullable: false, defaultValue: true),
@@ -141,7 +141,7 @@ namespace TheGodfather.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    content = table.Column<string>(nullable: false)
+                    content = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,7 +169,7 @@ namespace TheGodfather.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     uid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: true),
-                    message = table.Column<string>(nullable: false),
+                    message = table.Column<string>(maxLength: 256, nullable: false),
                     execution_time = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false),
                     is_repeating = table.Column<bool>(nullable: false, defaultValue: false),
                     repeat_interval = table.Column<TimeSpan>(type: "interval", nullable: true, defaultValue: new TimeSpan(0, 0, 0, 0, -1))
@@ -216,10 +216,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    ip = table.Column<string>(nullable: false),
+                    ip = table.Column<string>(maxLength: 16, nullable: false),
                     join_port = table.Column<int>(nullable: false, defaultValue: 10480),
                     query_port = table.Column<int>(nullable: false),
-                    name = table.Column<string>(nullable: false)
+                    name = table.Column<string>(maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -289,7 +289,7 @@ namespace TheGodfather.Migrations
                     uid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: false),
                     date = table.Column<DateTime>(type: "date", nullable: false),
-                    last_update_year = table.Column<int>(nullable: false, defaultValue: 0)
+                    last_update_year = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -398,7 +398,7 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
-                    trigger = table.Column<string>(nullable: false)
+                    trigger = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -419,7 +419,7 @@ namespace TheGodfather.Migrations
                 {
                     gid = table.Column<long>(nullable: false),
                     rank = table.Column<short>(nullable: false),
-                    name = table.Column<string>(nullable: false)
+                    name = table.Column<string>(maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -439,8 +439,8 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     gid = table.Column<long>(nullable: false),
-                    name = table.Column<string>(nullable: false),
-                    url = table.Column<string>(nullable: false)
+                    name = table.Column<string>(maxLength: 32, nullable: false),
+                    url = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -462,7 +462,7 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
-                    name = table.Column<string>(nullable: false),
+                    name = table.Column<string>(maxLength: 64, nullable: false),
                     price = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
@@ -486,7 +486,7 @@ namespace TheGodfather.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
                     triggers = table.Column<string[]>(nullable: false),
-                    reaction = table.Column<string>(nullable: false)
+                    reaction = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -509,7 +509,7 @@ namespace TheGodfather.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
                     triggers = table.Column<string[]>(nullable: false),
-                    response = table.Column<string>(nullable: false)
+                    response = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -575,7 +575,8 @@ namespace TheGodfather.Migrations
                 {
                     id = table.Column<int>(nullable: false),
                     gid = table.Column<long>(nullable: false),
-                    cid = table.Column<long>(nullable: false)
+                    cid = table.Column<long>(nullable: false),
+                    name = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {

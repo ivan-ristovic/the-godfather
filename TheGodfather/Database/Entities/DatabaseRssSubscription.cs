@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 #endregion
 
@@ -22,7 +23,10 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ChannelIdDb { get; set; }
         [NotMapped]
-        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelId = value; }
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
+
+        [Column("name"), Required, MaxLength(64)]
+        public string Name { get; set; }
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

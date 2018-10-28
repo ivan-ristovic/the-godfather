@@ -364,7 +364,7 @@ namespace TheGodfather
             var client = _ as DiscordClient;
 
             try {
-                SharedData.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, DatabaseService));
+                SharedData.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, GlobalDatabaseContextBuilder));
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);
             }

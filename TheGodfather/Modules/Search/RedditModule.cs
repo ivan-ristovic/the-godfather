@@ -9,6 +9,8 @@ using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -129,7 +131,11 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Id = id });
+                await db.SaveChangesAsync();
+            }
+
             await this.InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
         }
         #endregion

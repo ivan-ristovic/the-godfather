@@ -17,6 +17,7 @@ namespace TheGodfather.Modules.Search.Extensions
 {
     internal static class DBServiceFeedExtensions
     {
+        /*
         public static async Task<IReadOnlyList<FeedEntry>> GetAllFeedEntriesAsync(this DBService db)
         {
             var subscriptions = new Dictionary<int, FeedEntry>();
@@ -181,5 +182,6 @@ namespace TheGodfather.Modules.Search.Extensions
                 return cmd.ExecuteNonQueryAsync();
             });
         }
+        */
     }
 }
