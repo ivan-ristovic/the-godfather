@@ -3,17 +3,18 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Swat.Common;
-using TheGodfather.Modules.Swat.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -57,8 +58,12 @@ namespace TheGodfather.Modules.Swat
 
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
-                
-                await this.Database.AddSwatServerAsync(SwatServer.FromIP(ip.Content, queryport, name));
+
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    db.SwatServers.Add(DatabaseSwatServer.FromIP(ip.Content, queryport, name));
+                    await db.SaveChangesAsync();
+                }
+
                 await this.InformAsync(ctx, "Server added. You can now query it using the name provided.", important: false);
             }
 
@@ -80,8 +85,16 @@ namespace TheGodfather.Modules.Swat
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
+                name = name.ToLowerInvariant();
 
-                await this.Database.RemoveSwatServerAsync(name);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatServer server = db.SwatServers.SingleOrDefault(s => s.Name == name);
+                    if (!(server is null)) {
+                        db.SwatServers.Remove(server);
+                        await db.SaveChangesAsync();
+                    }
+                }
+
                 await this.InformAsync(ctx, "Server successfully removed.", important: false);
             }
             #endregion
@@ -93,14 +106,16 @@ namespace TheGodfather.Modules.Swat
             [UsageExamples("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<SwatServer> servers = await this.Database.GetAllSwatServersAsync();
+                List<DatabaseSwatServer> servers;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    servers = await db.SwatServers.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Available servers",
-                    servers,
-                    server => $"{Formatter.Bold(server.Name)} : {server.Ip}:{server.JoinPort}",
-                    this.ModuleColor
-                );
+                "Available servers",
+                servers,
+                server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
+                this.ModuleColor
+            );
             }
             #endregion
         }

@@ -21,7 +21,7 @@ namespace TheGodfather.Common
             }
         }
 
-        public readonly string path;
+        private readonly string path;
         private bool filelog;
         private readonly object writeLock;
 

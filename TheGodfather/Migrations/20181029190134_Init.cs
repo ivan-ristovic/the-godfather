@@ -201,7 +201,8 @@ namespace TheGodfather.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    name = table.Column<string[]>(nullable: false),
+                    name = table.Column<string>(maxLength: 32, nullable: false),
+                    aliases = table.Column<string[]>(nullable: true),
                     ip = table.Column<string[]>(nullable: false),
                     additional_info = table.Column<string>(nullable: true),
                     is_blacklisted = table.Column<bool>(nullable: false, defaultValue: false)
@@ -711,6 +712,13 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 table: "saved_tasks",
                 column: "gid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_swat_players_name",
+                schema: "gf",
+                table: "swat_players",
+                column: "name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,9 +11,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Swat.Common;
-using TheGodfather.Modules.Swat.Extensions;
 using TheGodfather.Modules.Swat.Services;
 using TheGodfather.Services;
 #endregion
@@ -38,17 +40,21 @@ namespace TheGodfather.Modules.Swat
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
         [UsageExamples("!s4 ip wm")]
-        public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Registered name.")] string name)
+        public Task QueryAsync(CommandContext ctx,
+                              [Description("Registered name.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
+            name = name.ToLowerInvariant();
 
-            SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
+            DatabaseSwatServer server;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                server = db.SwatServers.FirstOrDefault(s => s.Name == name);
+
             if (server is null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            await this.InformAsync(ctx, $"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}");
+            return this.InformAsync(ctx, $"IP: {Formatter.Bold($"{server.IP}:{server.JoinPort}")}");
         }
         #endregion
 
@@ -66,8 +72,8 @@ namespace TheGodfather.Modules.Swat
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            var server = SwatServer.FromIP(ip.Content, queryport);
-            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
+            var server = DatabaseSwatServer.FromIP(ip.Content, queryport);
+            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
             if (info is null)
                 await this.InformFailureAsync(ctx, "No reply from server.");
             else
@@ -82,11 +88,15 @@ namespace TheGodfather.Modules.Swat
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
-            if (server is null)
-                throw new CommandFailedException("Server with given name is not registered.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name missing.");
+            name = name.ToLowerInvariant();
 
-            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
+            DatabaseSwatServer server;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                server = db.SwatServers.FirstOrDefault(s => s.Name == name);
+
+            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
             if (info is null)
                 await this.InformFailureAsync(ctx, "No reply from server.");
             else
@@ -122,11 +132,14 @@ namespace TheGodfather.Modules.Swat
                 Color = this.ModuleColor
             };
 
-            IReadOnlyList<SwatServer> servers = await this.Database.GetAllSwatServersAsync();
+            List<DatabaseSwatServer> servers;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                servers = await db.SwatServers.ToListAsync();
+
             if (servers is null || !servers.Any())
                 throw new CommandFailedException("No servers found in the database.");
 
-            SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.Ip, s.QueryPort)));
+            SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.IP, s.QueryPort)));
             foreach (SwatServerInfo info in infos.Where(i => !(i is null)).OrderByDescending(i => int.Parse(i.Players)))
                 em.AddField(info.HostName, $"{Formatter.Bold(info.Players + " / " + info.MaxPlayers)} | {info.Ip}:{info.JoinPort}");
 
@@ -151,10 +164,10 @@ namespace TheGodfather.Modules.Swat
             if (SwatSpaceCheckService.IsListening(ctx.Channel))
                 throw new CommandFailedException("Already checking space in this channel!");
             
-            var server = SwatServer.FromIP(ip.Content, queryport);
+            var server = DatabaseSwatServer.FromIP(ip.Content, queryport);
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            await this.InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
+            await this.InformAsync(ctx, $"Starting space listening on {server.IP}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
 
         }
 
@@ -167,14 +180,21 @@ namespace TheGodfather.Modules.Swat
 
             if (SwatSpaceCheckService.IsListening(ctx.Channel))
                 throw new CommandFailedException("Already checking space in this channel!");
-            
-            SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name missing.");
+            name = name.ToLowerInvariant();
+
+            DatabaseSwatServer server;
+            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                server = db.SwatServers.FirstOrDefault(s => s.Name == name);
+
             if (server is null)
                 throw new CommandFailedException("Server with given name is not registered.");
 
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            await this.InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
+            await this.InformAsync(ctx, $"Starting space listening on {server.IP}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
         }
         #endregion
 

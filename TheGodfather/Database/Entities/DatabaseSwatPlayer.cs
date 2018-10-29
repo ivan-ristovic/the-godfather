@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 #endregion
 
 namespace TheGodfather.Database.Entities
@@ -12,8 +13,13 @@ namespace TheGodfather.Database.Entities
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("name"), Required]
-        public string[] Names { get; set; }
+        [Column("name"), Required, MaxLength(32)]
+        public string Name { get; set; }
+
+        [Column("aliases")]
+        public string[] AliasesDb { get; set; }
+        [NotMapped]
+        public string[] Aliases => (this.AliasesDb?.Any() ?? false) ? this.AliasesDb : new string[] { "" };
 
         [Column("ip"), Required]
         public string[] IPs { get; set; }

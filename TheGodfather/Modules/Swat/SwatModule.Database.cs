@@ -3,17 +3,18 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Swat.Common;
-using TheGodfather.Modules.Swat.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Swat
 
 
             #region COMMAND_DATABASE_ADD
-            [Command("add")]
+            [Command("add"), Priority(2)]
             [Description("Add a player to IP database.")]
             [Aliases("+", "a", "+=", "<", "<<")]
             [UsageExamples("!swat db add Name 109.70.149.158")]
@@ -50,11 +51,51 @@ namespace TheGodfather.Modules.Swat
                                       [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
-                if (info?.Length > 120)
-                    throw new InvalidCommandUsageException("Info cannot exceed 120 characters.");
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name || p.IPs.Contains(ip.Content));
+                    if (player is null) {
+                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
+                            Info = info,
+                            IPs = new string[] { ip.Content },
+                            IsBlacklisted = false,
+                            Name = name
+                        });
+                    } else {
+                        if (player.Name != name && !player.Aliases.Contains(name)) {
+                            if (player.AliasesDb is null || !player.AliasesDb.Any())
+                                player.AliasesDb = new string[1];
+                            player.AliasesDb[0] = name;
+                        }
+                        player.IPs = player.IPs.Concat(new string[] { ip.Content }).Distinct().ToArray();
+                        db.SwatPlayers.Update(player);
+                    }
+                    await db.SaveChangesAsync();
+                }
 
-                await this.Database.AddSwatIpEntryAsync(ip.Content, name, info);
                 await this.InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
+            }
+
+            [Command("add"), Priority(1)]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Player name.")] string name,
+                                      [Description("IPs.")] params CustomIPFormat[] ips)
+            {
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
+                    if (player is null) {
+                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
+                            IPs = ips.Select(ip => ip.Content).ToArray(),
+                            IsBlacklisted = false,
+                            Name = name
+                        });
+                    } else {
+                        player.IPs = player.IPs.Concat(ips.Select(ip => ip.Content)).Distinct().ToArray();
+                        db.SwatPlayers.Update(player);
+                    }
+                    await db.SaveChangesAsync();
+                }
+
+                await this.InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)}", important: false);
             }
 
             [Command("add"), Priority(0)]
@@ -66,33 +107,73 @@ namespace TheGodfather.Modules.Swat
             #endregion
 
             #region COMMAND_DATABASE_DELETE
-            [Command("delete")]
-            [Description("Remove ban entry from database.")]
+            [Command("delete"), Priority(1)]
+            [Description("Remove IP entry from database.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
             [UsageExamples("!swat db remove 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP or range.")] CustomIPFormat ip)
             {
-                await this.Database.RemoveSwatIpEntryAsync(ip.Content);
-                await this.InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from database.", important: false);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                    if (!(player is null)) {
+                        player.IPs = player.IPs.Except(new string[] { ip.Content }).ToArray();
+                        if (player.IPs.Any())
+                            db.SwatPlayers.Update(player);
+                        else
+                            db.SwatPlayers.Remove(player);
+                    }
+                    await db.SaveChangesAsync();
+                }
+
+                await this.InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from the database.", important: false);
+            }
+            
+            [Command("delete"), Priority(0)]
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [RemainingText, Description("Name.")] string name)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new CommandFailedException("Name missing or invalid.");
+                name = name.ToLowerInvariant();
+
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
+                    if (!(player is null)) {
+                        db.SwatPlayers.Remove(player);
+                        await db.SaveChangesAsync();
+                    }
+                }
+
+                await this.InformAsync(ctx, $"Removed {Formatter.Bold(name)} from the database.", important: false);
             }
             #endregion
 
             #region COMMAND_DATABASE_LIST
             [Command("list")]
-            [Description("View the banlist.")]
-            [Aliases("ls", "l")]
+            [Description("View the IP list.")]
+            [Aliases("ls", "l", "print")]
             [UsageExamples("!swat db list")]
-            public async Task ListAsync(CommandContext ctx)
+            public async Task ListAsync(CommandContext ctx,
+                                       [Description("From which index to view.")] int from = 1,
+                                       [Description("How many results to view.")] int amount = 10)
             {
-                IReadOnlyList<SwatDatabaseEntry> entries = await this.Database.GetAllSwatIpEntriesAsync();
+                if (from < 1 || amount < 1)
+                    throw new InvalidCommandUsageException("Index or amount invalid.");
+
+                List<DatabaseSwatPlayer> players;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    players = await db.SwatPlayers.OrderBy(p => p.Name).Skip(from - 1).Take(amount).ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Player IP database",
-                    entries,
-                    entry => $"{Formatter.InlineCode(entry.Ip)} | {Formatter.InlineCode(entry.Name)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
+                    "Player database",
+                    players,
+                    p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
+                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
+                         $"IPs: {Formatter.BlockCode(string.Join('\n', p.IPs))}\n" +
+                         $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
                     this.ModuleColor,
-                    15
+                    1
                 );
             }
             #endregion

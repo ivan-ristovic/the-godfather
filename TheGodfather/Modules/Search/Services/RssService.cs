@@ -13,9 +13,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
-using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search.Services

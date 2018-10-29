@@ -12,7 +12,6 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 #endregion

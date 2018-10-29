@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181028213507_Init")]
+    [Migration("20181029190134_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -770,6 +770,9 @@ namespace TheGodfather.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<string[]>("Aliases")
+                        .HasColumnName("aliases");
+
                     b.Property<string[]>("IPs")
                         .IsRequired()
                         .HasColumnName("ip");
@@ -782,11 +785,15 @@ namespace TheGodfather.Migrations
                         .HasColumnName("is_blacklisted")
                         .HasDefaultValue(false);
 
-                    b.Property<string[]>("Names")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("swat_players");
                 });

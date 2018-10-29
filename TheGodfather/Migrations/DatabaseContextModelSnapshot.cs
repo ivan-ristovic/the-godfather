@@ -768,6 +768,9 @@ namespace TheGodfather.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<string[]>("Aliases")
+                        .HasColumnName("aliases");
+
                     b.Property<string[]>("IPs")
                         .IsRequired()
                         .HasColumnName("ip");
@@ -780,11 +783,15 @@ namespace TheGodfather.Migrations
                         .HasColumnName("is_blacklisted")
                         .HasDefaultValue(false);
 
-                    b.Property<string[]>("Names")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasMaxLength(32);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("swat_players");
                 });

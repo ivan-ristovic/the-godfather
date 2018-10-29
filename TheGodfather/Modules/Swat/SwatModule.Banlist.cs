@@ -3,16 +3,17 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Swat.Common;
-using TheGodfather.Modules.Swat.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -50,7 +51,22 @@ namespace TheGodfather.Modules.Swat
                                       [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                await this.Database.AddSwatIpBanAsync(ip.Content, name, reason);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
+                    if (player is null) {
+                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
+                            Info = reason,
+                            IPs = new string[] { ip.Content },
+                            IsBlacklisted = true,
+                            Name = name
+                        });
+                    } else {
+                        player.IsBlacklisted = true;
+                        db.SwatPlayers.Update(player);
+                    }
+                    await db.SaveChangesAsync();
+                }
+
                 await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
 
@@ -70,7 +86,15 @@ namespace TheGodfather.Modules.Swat
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip)
             {
-                await this.Database.RemoveSwatIpBanAsync(ip.Content);
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                    if (!(player is null) && player.IsBlacklisted) {
+                        player.IsBlacklisted = false;
+                        db.SwatPlayers.Update(player);
+                    }
+                    await db.SaveChangesAsync();
+                }
+
                 await this.InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
             }
             #endregion
@@ -82,15 +106,20 @@ namespace TheGodfather.Modules.Swat
             [UsageExamples("!swat banlist list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<SwatDatabaseEntry> bans = await this.Database.GetAllSwatBanlistEntriesAsync();
+                List<DatabaseSwatPlayer> banned;
+                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                    banned = await db.SwatPlayers.Where(p => p.IsBlacklisted).ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Banlist",
-                    bans,
-                    ban => $"{Formatter.InlineCode(ban.Ip)} | {Formatter.Bold(ban.Name)} : {Formatter.Italic(ban.AdditionalInfo ?? "No reason provided.")}",
+                    "Blacklist",
+                    banned,
+                    p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
+                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
+                         $"IPs: {Formatter.BlockCode(string.Join('\n', p.IPs))}\n" +
+                         $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
                     this.ModuleColor,
-                    10
-                ).ConfigureAwait(false);
+                    1
+                );
             }
             #endregion
         }
