@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -32,7 +33,7 @@ namespace TheGodfather.Modules.Games
         public class TicTacToeModule : TheGodfatherModule
         {
 
-            public TicTacToeModule(SharedData shared, DBService db) 
+            public TicTacToeModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -65,11 +66,11 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!");
 
-                        await this.DatabaseBuilder.UpdateStatsAsync(ttt.Winner.Id, s => s.TicTacToeWon++);
+                        await this.Database.UpdateStatsAsync(ttt.Winner.Id, s => s.TicTacToeWon++);
                         if (ttt.Winner.Id == ctx.User.Id)
-                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.TicTacToeLost++);
+                            await this.Database.UpdateStatsAsync(opponent.Id, s => s.TicTacToeLost++);
                         else
-                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.TicTacToeLost++);
+                            await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.TicTacToeLost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopTicTacToeStatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopTicTacToeStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
             }

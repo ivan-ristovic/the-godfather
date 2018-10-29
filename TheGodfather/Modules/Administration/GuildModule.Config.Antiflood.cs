@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration
             public class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
             {
 
-                public AntifloodModule(AntifloodService service, SharedData shared, DBService db)
+                public AntifloodModule(AntifloodService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
                     this.ModuleColor = DiscordColor.HotPink;
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
                         Sensitivity = sensitivity
                     };
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
                         gcfg.AntifloodSettings = settings;
                         db.GuildConfig.Update(gcfg);

@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Currency
     public class ShopModule : TheGodfatherModule
     {
 
-        public ShopModule(SharedData shared, DBService db)
+        public ShopModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.SpringGreen;
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency
             if (price <1  || price > 100_000_000_000)
                 throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.PurchasableItems.Add(new DatabasePurchasableItem() {
                     GuildId = ctx.Guild.Id,
                     Name = name,
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Currency
                                   [Description("Item ID.")] int id)
         {
             DatabasePurchasableItem item;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 item = await db.PurchasableItems.FindAsync(id);
                 if (item is null)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
 
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Currency
         {
             DatabasePurchasableItem item;
             DatabasePurchasedItem purchased;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 item = await db.PurchasableItems.FindAsync(id);
                 if (item is null)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                 return;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.PurchasedItems.Remove(purchased);
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + retval);
                 await db.SaveChangesAsync();
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Currency
             if (!ids.Any())
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (int id in ids.Distinct()) {
                     var item = new DatabasePurchasableItem() { Id = id, GuildId = ctx.Guild.Id };
                     if (db.PurchasableItems.Contains(item))
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Currency
         public async Task ListAsync(CommandContext ctx)
         {
             List<DatabasePurchasableItem> items;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 items = await db.PurchasableItems
                     .Where(i => i.GuildId == ctx.Guild.Id)
                     .OrderBy(i => i.Price)

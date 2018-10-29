@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration
             public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
             {
 
-                public RatelimitModule(RatelimitService service, SharedData shared, DBService db)
+                public RatelimitModule(RatelimitService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
                     this.ModuleColor = DiscordColor.Rose;
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
                         List<DatabaseExemptRatelimit> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             exempted = await db.RatelimitExempts
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.AddRange(users.Select(u => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.AddRange(roles.Select(r => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -240,7 +240,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.AddRange(channels.Select(c => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,
@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(users.Select(u => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(roles.Select(r => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -307,7 +307,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.RatelimitExempts.RemoveRange(channels.Select(c => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,

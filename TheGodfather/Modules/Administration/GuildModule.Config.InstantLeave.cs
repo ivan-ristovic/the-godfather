@@ -7,6 +7,7 @@ using DSharpPlus.Entities;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -30,7 +31,7 @@ namespace TheGodfather.Modules.Administration
             public class InstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
             {
 
-                public InstantLeaveModule(AntiInstantLeaveService service, SharedData shared, DBService db)
+                public InstantLeaveModule(AntiInstantLeaveService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
                     this.ModuleColor = DiscordColor.IndianRed;

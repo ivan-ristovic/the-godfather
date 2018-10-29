@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
@@ -24,7 +25,7 @@ namespace TheGodfather.Modules.Search
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
 
-        public OMDbModule(OMDbService omdb, SharedData shared, DBService db)
+        public OMDbModule(OMDbService omdb, SharedData shared, DatabaseContextBuilder db)
             : base(omdb, shared, db)
         {
             this.ModuleColor = DiscordColor.Yellow;

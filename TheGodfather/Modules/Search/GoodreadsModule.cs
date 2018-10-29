@@ -7,6 +7,7 @@ using DSharpPlus.Interactivity;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
 
-        public GoodreadsModule(GoodreadsService goodreads, SharedData shared, DBService db)
+        public GoodreadsModule(GoodreadsService goodreads, SharedData shared, DatabaseContextBuilder db)
             : base(goodreads, shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGray;

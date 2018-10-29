@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search
     public class RedditModule : TheGodfatherModule
     {
 
-        public RedditModule(SharedData shared, DBService db)
+        public RedditModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Id = id });
                 await db.SaveChangesAsync();
             }

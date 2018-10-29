@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using TheGodfather.Database;
 using TheGodfather.Services;
 #endregion
 
@@ -9,7 +10,7 @@ namespace TheGodfather.Modules
         protected TService Service { get; }
 
 
-        protected TheGodfatherServiceModule(TService service, SharedData shared, DBService db)
+        protected TheGodfatherServiceModule(TService service, SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.Service = service;

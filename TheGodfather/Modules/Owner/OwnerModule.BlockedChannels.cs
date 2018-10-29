@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Owner
         public class BlockedChannelsModule : TheGodfatherModule
         {
 
-            public BlockedChannelsModule(SharedData shared, DBService db) 
+            public BlockedChannelsModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.NotQuiteBlack;
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     foreach (DiscordChannel channel in channels) {
                         if (this.Shared.BlockedChannels.Contains(channel.Id)) {
                             eb.AppendLine($"Error: {channel.ToString()} is already blocked!");
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     foreach (DiscordChannel channel in channels) {
                         if (!this.Shared.BlockedChannels.Contains(channel.Id)) {
                             eb.AppendLine($"Warning: {channel.ToString()} is not blocked!");
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Owner
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseBlockedChannel> blocked;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) 
+                using (DatabaseContext db = this.Database.CreateContext()) 
                     blocked = await db.BlockedChannels.ToListAsync();
                 
                 var lines = new List<string>();
@@ -175,14 +175,14 @@ namespace TheGodfather.Modules.Owner
                     } catch (NotFoundException) {
                         this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked channel with ID {chn.ChannelId}");
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb });
                             await db.SaveChangesAsync();
                         }
                     } catch (UnauthorizedException) {
                         this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 403 blocked channel with ID {chn.ChannelId}");
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb});
                             await db.SaveChangesAsync();
                         }

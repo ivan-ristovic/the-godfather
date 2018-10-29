@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Polls
     public class PollModule : TheGodfatherModule
     {
 
-        public PollModule(SharedData shared, DBService db)
+        public PollModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;

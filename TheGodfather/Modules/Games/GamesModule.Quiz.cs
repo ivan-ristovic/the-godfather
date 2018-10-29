@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -39,7 +40,7 @@ namespace TheGodfather.Modules.Games
         public class QuizModule : TheGodfatherModule
         {
 
-            public QuizModule(SharedData shared, DBService db) 
+            public QuizModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -207,7 +208,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopQuizStatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopQuizStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}");
             }
@@ -226,7 +227,7 @@ namespace TheGodfather.Modules.Games
                     }.Build());
 
                     if (results.Count > 1)
-                        await this.DatabaseBuilder.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizesWon++);
+                        await this.Database.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizesWon++);
                 }
             }
             #endregion

@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Currency
         public class HoldemModule : TheGodfatherModule
         {
 
-            public HoldemModule(SharedData shared, DBService db)
+            public HoldemModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
@@ -64,14 +64,14 @@ namespace TheGodfather.Modules.Currency
                         if (!(game.Winner is null))
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             foreach (HoldemParticipant participant in game.Participants)
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
                             await db.SaveChangesAsync();
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            using (DatabaseContext db = this.Database.CreateContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
                                 await db.SaveChangesAsync();
                             }
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();

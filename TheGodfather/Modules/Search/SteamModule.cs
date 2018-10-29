@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 
-        public SteamModule(SteamService steam, SharedData shared, DBService db)
+        public SteamModule(SteamService steam, SharedData shared, DatabaseContextBuilder db)
             : base(steam, shared, db)
         {
             this.ModuleColor = DiscordColor.Blue;

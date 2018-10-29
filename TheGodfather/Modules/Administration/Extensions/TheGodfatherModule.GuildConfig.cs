@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Administration.Extensions
         public static async Task<DatabaseGuildConfig> GetGuildConfig(this TheGodfatherModule module, ulong gid)
         {
             DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = module.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = module.Database.CreateContext())
                 gcfg = await db.GuildConfig.FindAsync((long)gid) ?? new DatabaseGuildConfig();
             return gcfg;
         }
@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             ulong gid, Action<DatabaseGuildConfig> action)
         {
             DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = module.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = module.Database.CreateContext()) {
                 gcfg = await db.GuildConfig.FindAsync((long)gid) ?? new DatabaseGuildConfig();
                 action(gcfg);
                 db.GuildConfig.Update(gcfg);

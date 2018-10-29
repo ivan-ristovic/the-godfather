@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Chickens
         public class UpgradeModule : TheGodfatherModule
         {
 
-            public UpgradeModule(SharedData shared, DBService db) 
+            public UpgradeModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
@@ -51,14 +51,14 @@ namespace TheGodfather.Modules.Chickens
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
-                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
 
                 if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
                     throw new CommandFailedException("Your chicken already one of those upgrades!");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     foreach (int id in ids) {
                         DatabaseChickenUpgrade upgrade = db.ChickenUpgrades.FirstOrDefault(u => u.Id == id);
                         if (upgrade is null)
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken upgrade list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     await ctx.SendCollectionInPagesAsync(
                         "Available chicken upgrades",
                         db.ChickenUpgrades.OrderByDescending(u => u.Cost),

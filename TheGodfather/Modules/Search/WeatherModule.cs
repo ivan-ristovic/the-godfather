@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -24,7 +25,7 @@ namespace TheGodfather.Modules.Search
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
 
-        public WeatherModule(WeatherService weather, SharedData shared, DBService db)
+        public WeatherModule(WeatherService weather, SharedData shared, DatabaseContextBuilder db)
             : base(weather, shared, db)
         {
             this.ModuleColor = DiscordColor.Aquamarine;

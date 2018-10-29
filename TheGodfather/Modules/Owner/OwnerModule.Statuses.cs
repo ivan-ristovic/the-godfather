@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Owner
         public class StatusModule : TheGodfatherModule
         {
 
-            public StatusModule(SharedData shared, DBService db) 
+            public StatusModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.NotQuiteBlack;
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.BotStatuses.Add(new DatabaseBotStatus() { Activity = activity, Status = status });
                     await db.SaveChangesAsync();
                 }
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.BotStatuses.Remove(new DatabaseBotStatus() { Id = id });
                     await db.SaveChangesAsync();
                 }
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Owner
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseBotStatus> statuses;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     statuses = await db.BotStatuses.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Owner
                                       [Description("Status ID.")] int id)
             {
                 DatabaseBotStatus status;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     status = await db.BotStatuses.FindAsync(id);
 
                 if (status is null)

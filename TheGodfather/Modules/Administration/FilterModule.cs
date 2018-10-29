@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
     public class FilterModule : TheGodfatherModule
     {
 
-        public FilterModule(SharedData shared, DBService db) 
+        public FilterModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.DarkRed;
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
 
             var eb = new StringBuilder();
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (string regexString in filters) {
                     if (regexString.Contains('%')) {
                         eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot contain '%' character.");
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (int id in ids) {
                     if (filters.RemoveWhere(f => f.Id == id) == 0) {
                         eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (string regexString in filters) {
                     string filterString = Filter.Wrap(regexString);
                     if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
@@ -234,7 +234,7 @@ namespace TheGodfather.Modules.Administration
             if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && !this.Shared.Filters.TryRemove(ctx.Guild.Id, out _))
                 throw new ConcurrentOperationException("Failed to remove filter data structure for this guild. This is bad!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }

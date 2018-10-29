@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
         public class TrainModule : TheGodfatherModule
         {
 
-            public TrainModule(SharedData shared, DBService db) 
+            public TrainModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Chickens
 
                 string result;
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Chickens
 
                 string result;
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)

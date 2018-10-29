@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -32,7 +33,7 @@ namespace TheGodfather.Modules.Owner
         public class CommandsModule : TheGodfatherModule
         {
 
-            public CommandsModule(SharedData shared, DBService db)
+            public CommandsModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.NotQuiteBlack;

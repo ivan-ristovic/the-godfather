@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Owner
         public class PrivilegedUsersModule : TheGodfatherModule
         {
 
-            public PrivilegedUsersModule(SharedData shared, DBService db) 
+            public PrivilegedUsersModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.NotQuiteBlack;
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
                 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.PrivilegedUsers.AddRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
                         UserId = u.Id
                     }));
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.PrivilegedUsers.RemoveRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
                         UserId = u.Id
                     }));
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Owner
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabasePrivilegedUser> privileged;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     privileged = await db.PrivilegedUsers.ToListAsync();
 
                 var valid = new List<DiscordUser>();
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Owner
                         valid.Add(user);
                     } catch (NotFoundException) {
                         this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 privileged user with ID {usr.UserId}");
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             db.PrivilegedUsers.Remove(new DatabasePrivilegedUser() { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();
                         }

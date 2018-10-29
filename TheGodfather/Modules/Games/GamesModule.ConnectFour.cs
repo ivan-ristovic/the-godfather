@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -31,7 +32,7 @@ namespace TheGodfather.Modules.Games
         public class ConnectFourModule : TheGodfatherModule
         {
 
-            public ConnectFourModule(SharedData shared, DBService db)
+            public ConnectFourModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -64,11 +65,11 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
 
-                        await this.DatabaseBuilder.UpdateStatsAsync(connect4.Winner.Id, s => s.Chain4Won++);
+                        await this.Database.UpdateStatsAsync(connect4.Winner.Id, s => s.Chain4Won++);
                         if (connect4.Winner.Id == ctx.User.Id)
-                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.Chain4Lost++);
+                            await this.Database.UpdateStatsAsync(opponent.Id, s => s.Chain4Lost++);
                         else
-                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.Chain4Lost++);
+                            await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.Chain4Lost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game connect4 stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopChain4StatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Connect4:\n\n{top}");
             }

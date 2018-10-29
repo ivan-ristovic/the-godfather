@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -32,7 +33,7 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        public ImgurModule(ImgurService imgur, SharedData shared, DBService db)
+        public ImgurModule(ImgurService imgur, SharedData shared, DatabaseContextBuilder db)
             : base(imgur, shared, db)
         {
             this.ModuleColor = DiscordColor.Green;

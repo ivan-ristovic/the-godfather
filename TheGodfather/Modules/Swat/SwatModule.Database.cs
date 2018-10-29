@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatDatabaseModule : TheGodfatherModule
         {
 
-            public SwatDatabaseModule(SharedData shared, DBService db)
+            public SwatDatabaseModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Black;
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Swat
                                       [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name || p.IPs.Contains(ip.Content));
                     if (player is null) {
                         db.SwatPlayers.Add(new DatabaseSwatPlayer() {
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Swat
                                       [Description("Player name.")] string name,
                                       [Description("IPs.")] params CustomIPFormat[] ips)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (player is null) {
                         db.SwatPlayers.Add(new DatabaseSwatPlayer() {
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Swat
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP or range.")] CustomIPFormat ip)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (!(player is null)) {
                         player.IPs = player.IPs.Except(new string[] { ip.Content }).ToArray();
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Swat
                     throw new CommandFailedException("Name missing or invalid.");
                 name = name.ToLowerInvariant();
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (!(player is null)) {
                         db.SwatPlayers.Remove(player);
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Index or amount invalid.");
 
                 List<DatabaseSwatPlayer> players;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     players = await db.SwatPlayers.OrderBy(p => p.Name).Skip(from - 1).Take(amount).ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(

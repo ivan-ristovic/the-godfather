@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -26,7 +27,7 @@ namespace TheGodfather.Modules.Administration
     public class ChannelModule : TheGodfatherModule
     {
 
-        public ChannelModule(SharedData shared, DBService db)
+        public ChannelModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Turquoise;

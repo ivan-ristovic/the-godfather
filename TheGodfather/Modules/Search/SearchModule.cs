@@ -7,6 +7,7 @@ using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
@@ -20,7 +21,7 @@ namespace TheGodfather.Modules.Search
     public class SearchModule : TheGodfatherModule
     {
 
-        public SearchModule(SharedData shared, DBService db)
+        public SearchModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.MidnightBlue;

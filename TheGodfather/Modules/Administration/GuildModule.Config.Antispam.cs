@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration
             public class AntispamModule : TheGodfatherServiceModule<AntispamService>
             {
 
-                public AntispamModule(AntispamService service, SharedData shared, DBService db)
+                public AntispamModule(AntispamService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
                     this.ModuleColor = DiscordColor.DarkRed;
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
                         List<DatabaseExemptAntispam> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             exempted = await db.AntispamExempts
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.AddRange(users.Select(u => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.AddRange(roles.Select(r => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -240,7 +240,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.AddRange(channels.Select(c => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,
@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.RemoveRange(users.Select(u => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.RemoveRange(roles.Select(r => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -306,7 +306,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.AntispamExempts.RemoveRange(channels.Select(c => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,

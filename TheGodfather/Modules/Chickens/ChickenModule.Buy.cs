@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Chickens
         public class BuyModule : TheGodfatherModule
         {
 
-            public BuyModule(SharedData shared, DBService db)
+            public BuyModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
@@ -126,13 +126,13 @@ namespace TheGodfather.Modules.Chickens
                 if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
                 
-                if (!(Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id) is null))
+                if (!(Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id) is null))
                     throw new CommandFailedException("You already own a chicken!");
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                     return;
                 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 

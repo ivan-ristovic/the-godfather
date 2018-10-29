@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Currency
     public class BankModule : TheGodfatherModule
     {
 
-        public BankModule(SharedData shared, DBService db)
+        public BankModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGreen;
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Currency
             user = user ?? ctx.User;
 
             long? balance;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
                 balance = account?.Balance;
             }
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Currency
             if (amount < 0 || amount > 1_000_000_000_000)
                 throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1_000_000_000_000:n0}]");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
                 if (account is null)
                     throw new CommandFailedException("Given user does not have a WM bank account!");
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Currency
         [UsageExamples("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
                     db.BankAccounts.Add(new DatabaseBankAccount() { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
                 else
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Currency
         {
             List<DatabaseBankAccount> topAccounts;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 topAccounts = await db.BankAccounts
                     .Where(a => a.GuildId == ctx.Guild.Id)
                     .OrderByDescending(a => a.Balance)
@@ -203,7 +203,7 @@ namespace TheGodfather.Modules.Currency
         {
             List<DatabaseBankAccount> topAccounts;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 topAccounts = await db.BankAccounts
                     .OrderByDescending(a => a.Balance)
                     .Take(10)
@@ -244,7 +244,7 @@ namespace TheGodfather.Modules.Currency
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, amount))
                     throw new CommandFailedException("You have insufficient funds.");
                 await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
@@ -271,7 +271,7 @@ namespace TheGodfather.Modules.Currency
                                          [Description("User whose account to delete.")] DiscordUser user,
                                          [Description("Globally delete?")] bool global = false)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (global)
                     db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
                 else

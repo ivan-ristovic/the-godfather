@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatSearchModule : TheGodfatherModule
         {
 
-            public SwatSearchModule(SharedData shared, DBService db)
+            public SwatSearchModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Black;
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 100].");
 
                 List<DatabaseSwatPlayer> matches;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     matches = await db.SwatPlayers.Where(p => p.IPs.Any(dbip => dbip.StartsWith(ip.Content))).ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 20].");
 
                 var matches = new List<DatabaseSwatPlayer>();
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     matches = await db.SwatPlayers
                         .Where(p => p.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase) ||
                                p.Aliases.Any(a => a.Contains(name, StringComparison.InvariantCultureIgnoreCase)))

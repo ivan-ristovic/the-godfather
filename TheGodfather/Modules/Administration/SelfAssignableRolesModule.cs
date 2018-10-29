@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
     public class SelfAssignableRolesModule : TheGodfatherModule
     {
 
-        public SelfAssignableRolesModule(SharedData shared, DBService db) 
+        public SelfAssignableRolesModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Goldenrod;
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.SelfAssignableRoles.AddRange(roles.Select(r => new DatabaseSelfRole() {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.SelfAssignableRoles.RemoveRange(roles.Select(r => new DatabaseSelfRole() {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
                 return;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.SelfAssignableRoles.RemoveRange(db.SelfAssignableRoles.Where(r => r.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
         public async Task ListAsync(CommandContext ctx)
         {
             var roles = new List<DiscordRole>();
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 IReadOnlyList<ulong> rids = db.SelfAssignableRoles
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .Select(r => r.RoleId)

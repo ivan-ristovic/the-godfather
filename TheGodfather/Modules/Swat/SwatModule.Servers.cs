@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatServersModule : TheGodfatherModule
         {
 
-            public SwatServersModule(SharedData shared, DBService db)
+            public SwatServersModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Black;
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Swat
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.SwatServers.Add(DatabaseSwatServer.FromIP(ip.Content, queryport, name));
                     await db.SaveChangesAsync();
                 }
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Name missing.");
                 name = name.ToLowerInvariant();
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatServer server = db.SwatServers.SingleOrDefault(s => s.Name == name);
                     if (!(server is null)) {
                         db.SwatServers.Remove(server);
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Swat
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseSwatServer> servers;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     servers = await db.SwatServers.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(

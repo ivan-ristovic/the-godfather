@@ -46,16 +46,14 @@ namespace TheGodfather
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
-        public DBService DatabaseService { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
 
         public bool IsListening => this.SharedData.ListeningStatus;
 
 
-        public TheGodfatherShard(int sid, DBService db, DatabaseContextBuilder dbb, SharedData shared)
+        public TheGodfatherShard(int sid, DatabaseContextBuilder dbb, SharedData shared)
         {
             this.Id = sid;
-            this.DatabaseService = db;
             this.Database = dbb;
             this.SharedData = shared;
         }
@@ -122,7 +120,7 @@ namespace TheGodfather
                 Services = new ServiceCollection()
                     .AddSingleton(this)
                     .AddSingleton(this.SharedData)
-                    .AddSingleton(this.DatabaseService)
+                    .AddSingleton(this.Database)
                     .AddSingleton(new AntifloodService(this))
                     .AddSingleton(new AntiInstantLeaveService(this))
                     .AddSingleton(new AntispamService(this))

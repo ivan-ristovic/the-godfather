@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 #endregion
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Misc
     public class RandomModule : TheGodfatherModule
     {
         
-        public RandomModule(SharedData shared, DBService db)
+        public RandomModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.HotPink;

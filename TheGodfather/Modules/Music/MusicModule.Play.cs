@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Search.Services;
@@ -30,7 +31,7 @@ namespace TheGodfather.Modules.Music
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YtService yt, SharedData shared, DBService db) 
+            public PlayModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
                 : base(yt, shared, db)
             {
                 this.ModuleColor = DiscordColor.Grayple;

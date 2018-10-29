@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Games
         public class NumberRaceModule : TheGodfatherModule
         {
 
-            public NumberRaceModule(SharedData shared, DBService db) 
+            public NumberRaceModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -67,7 +68,7 @@ namespace TheGodfather.Modules.Games
                         }
 
                         if (!(race.Winner is null))
-                            await this.DatabaseBuilder.UpdateStatsAsync(race.Winner.Id, s => s.NumberRacesWon++);
+                            await this.Database.UpdateStatsAsync(race.Winner.Id, s => s.NumberRacesWon++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
                     }
@@ -124,7 +125,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game numberrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopNumberRaceStatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopNumberRaceStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Number Race:\n\n{top}");
             }

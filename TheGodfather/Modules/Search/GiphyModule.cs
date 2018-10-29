@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
 
-        public GiphyModule(GiphyService giphy, SharedData shared, DBService db) 
+        public GiphyModule(GiphyService giphy, SharedData shared, DatabaseContextBuilder db) 
             : base(giphy, shared, db)
         {
             this.ModuleColor = DiscordColor.Violet;

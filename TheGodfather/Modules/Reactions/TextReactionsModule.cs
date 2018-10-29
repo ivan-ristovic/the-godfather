@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Reactions
     public class TextReactionsModule : TheGodfatherModule
     {
 
-        public TextReactionsModule(SharedData shared, DBService db)
+        public TextReactionsModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGray;
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id && ids.Contains(tr.Id)));
                 await db.SaveChangesAsync();
             }
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 List<DatabaseTextReaction> toUpdate = await db.TextReactions
                     .Where(tr => tr.GuildId == ctx.Guild.Id && trIds.Contains(tr.Id))
                     .ToListAsync();
@@ -225,7 +225,7 @@ namespace TheGodfather.Modules.Reactions
                 if (!this.Shared.TextReactions.TryRemove(ctx.Guild.Id, out _))
                     throw new ConcurrentOperationException("Failed to remove text reaction collection!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -290,7 +290,7 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
             int id;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
                 if (dbtr is null) {
                     var er = new DatabaseTextReaction() {

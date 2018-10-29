@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -23,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     public class RoleModule : TheGodfatherModule
     {
 
-        public RoleModule(SharedData shared, DBService db)
+        public RoleModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Lilac;

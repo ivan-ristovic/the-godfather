@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Misc
     public class InsultModule : TheGodfatherModule
     {
 
-        public InsultModule(SharedData shared, DBService db)
+        public InsultModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Brown;
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Misc
             }
 
             DatabaseInsult insult;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!db.Insults.Any())
                     throw new CommandFailedException("No available insults.");
                 insult = db.Insults.Shuffle().First();
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Misc
             if (content.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.Insults.Add(new DatabaseInsult() {
                     Content = content
                 });
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all insults?"))
                 return;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.Insults.RemoveRange(db.Insults);
                 await db.SaveChangesAsync();
             }
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("ID of the insult to remove.")] int id)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.Insults.Remove(new DatabaseInsult() { Id = id });
                 await db.SaveChangesAsync();
             }
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ListInsultsAsync(CommandContext ctx)
         {
             List<DatabaseInsult> insults;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 insults = await db.Insults.ToListAsync();
 
             if (!insults.Any())

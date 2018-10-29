@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
     public class AutomaticRolesModule : TheGodfatherModule
     { 
 
-        public AutomaticRolesModule(SharedData shared, DBService db) 
+        public AutomaticRolesModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Goldenrod;
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.AddRange(roles.Select(r => new DatabaseAutoRole() {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.RemoveRange(roles.Select(r => new DatabaseAutoRole() {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all automatic roles for this guild?"))
                 return;
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.RemoveRange(db.AutoAssignableRoles.Where(r => r.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -163,7 +163,7 @@ namespace TheGodfather.Modules.Administration
         {
             var roles = new List<DiscordRole>();
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 IReadOnlyList<ulong> rids = db.AutoAssignableRoles
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .Select(r => r.RoleId)

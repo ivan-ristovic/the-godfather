@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Owner
         public class BlockedUsersModule : TheGodfatherModule
         {
 
-            public BlockedUsersModule(SharedData shared, DBService db) 
+            public BlockedUsersModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.NotQuiteBlack;
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     foreach (DiscordUser user in users) {
                         if (this.Shared.BlockedUsers.Contains(user.Id)) {
                             eb.AppendLine($"Error: {user.ToString()} is already blocked!");
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     foreach (DiscordUser user in users) {
                         if (!this.Shared.BlockedUsers.Contains(user.Id)) {
                             eb.AppendLine($"Warning: {user.ToString()} is not blocked!");
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Owner
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseBlockedUser> blocked;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     blocked = await db.BlockedUsers.ToListAsync();
 
                 var lines = new List<string>();
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Owner
                         lines.Add($"{user.ToString()} ({Formatter.Italic(usr.Reason ?? "No reason provided.")})");
                     } catch (NotFoundException) {
                         this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 blocked user with ID {usr.UserId}");
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();
                         }

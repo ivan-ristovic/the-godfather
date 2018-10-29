@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -30,7 +31,7 @@ namespace TheGodfather.Modules.Games
         public class OthelloModule : TheGodfatherModule
         {
 
-            public OthelloModule(SharedData shared, DBService db)
+            public OthelloModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -63,11 +64,11 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {othello.Winner.Mention}!");
 
-                        await this.DatabaseBuilder.UpdateStatsAsync(othello.Winner.Id, s => s.OthelloWon++);
+                        await this.Database.UpdateStatsAsync(othello.Winner.Id, s => s.OthelloWon++);
                         if (othello.Winner.Id == ctx.User.Id)
-                            await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.OthelloLost++);
+                            await this.Database.UpdateStatsAsync(opponent.Id, s => s.OthelloLost++);
                         else
-                            await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.OthelloLost++);
+                            await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.OthelloLost++);
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
@@ -105,7 +106,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game othello stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopOthelloStatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopOthelloStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Othello:\n\n{top}");
             }

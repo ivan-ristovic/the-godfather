@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Misc
     public class RanksModule : TheGodfatherModule
     {
 
-        public RanksModule(SharedData shared, DBService db) 
+        public RanksModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Gold;
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Misc
             int msgcount = this.Shared.GetMessageCountForUser(user.Id);
 
             DatabaseGuildRank rankInfo;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 rankInfo = await db.GuildRanks.FindAsync((long)ctx.Guild.Id, rank);
 
             var emb = new DiscordEmbedBuilder() {
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30)
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.GuildRanks.Add(new DatabaseGuildRank() {
                     GuildId = ctx.Guild.Id,
                     Name = name,
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.GuildRanks.Remove(new DatabaseGuildRank() {
                     GuildId = ctx.Guild.Id,
                     Rank = (short)rank
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Misc
         public async Task RankListAsync(CommandContext ctx)
         {
             List<DatabaseGuildRank> ranks;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 ranks = await db.GuildRanks
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .OrderBy(r => r.Rank)
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules.Misc
             };
             
             Dictionary<short, string> ranks;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 ranks = await db.GuildRanks
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .OrderBy(r => r.Rank)

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
@@ -23,7 +24,7 @@ namespace TheGodfather.Modules.Polls
     public class ReactionsPollModule : TheGodfatherModule
     {
 
-        public ReactionsPollModule(SharedData shared, DBService db)
+        public ReactionsPollModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;

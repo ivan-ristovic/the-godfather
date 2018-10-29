@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
@@ -26,7 +27,7 @@ namespace TheGodfather.Modules.Games
         public class TypingRaceModule : TheGodfatherModule
         {
 
-            public TypingRaceModule(SharedData shared, DBService db) 
+            public TypingRaceModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;

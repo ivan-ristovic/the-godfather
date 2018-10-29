@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Reactions
     public class EmojiReactionsModule : TheGodfatherModule
     {
 
-        public EmojiReactionsModule(SharedData shared, DBService db) 
+        public EmojiReactionsModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.VeryDarkGray;
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Reactions
             if (ereactions.RemoveWhere(er => er.Response == ename) == 0)
                 throw new CommandFailedException("No such reactions found!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id && er.Reaction == ename));
                 await db.SaveChangesAsync();
             }
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Reactions
 
             var eb = new StringBuilder();
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (int id in ids) {
                     if (!ereactions.Any(er => er.Id == id)) {
                         eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
@@ -219,7 +219,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 List<DatabaseEmojiReaction> toUpdate = await db.EmojiReactions
                     .Where(er => er.GuildId == ctx.Guild.Id && erIds.Contains(er.Id))
                     .ToListAsync();
@@ -275,7 +275,7 @@ namespace TheGodfather.Modules.Reactions
                 if (!this.Shared.EmojiReactions.TryRemove(ctx.Guild.Id, out _))
                     throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Reactions
                     var emoji = DiscordEmoji.FromName(ctx.Client, reaction.Response);
                 } catch (ArgumentException) {
                     ereactions.RemoveWhere(er => er.Response == reaction.Response);
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id && er.Reaction == reaction.Response));
                         await db.SaveChangesAsync();
                     }
@@ -342,7 +342,7 @@ namespace TheGodfather.Modules.Reactions
                     throw new ConcurrentOperationException("Failed to create emoji reaction data structure");
 
             int id;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == ctx.Guild.Id && er.Reaction == emoji.GetDiscordName());
                 if (dber is null) {
                     var er = new DatabaseEmojiReaction() {

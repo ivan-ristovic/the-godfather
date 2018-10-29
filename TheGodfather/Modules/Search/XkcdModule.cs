@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class XkcdModule : TheGodfatherModule
     {
 
-        public XkcdModule(SharedData shared, DBService db)
+        public XkcdModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Blue;

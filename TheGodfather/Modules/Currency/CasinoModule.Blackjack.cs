@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Currency
         public class BlackjackModule : TheGodfatherModule
         {
 
-            public BlackjackModule(SharedData shared, DBService db)
+            public BlackjackModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
@@ -62,14 +62,14 @@ namespace TheGodfather.Modules.Currency
                             if (game.Winner is null) {
                                 await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
-                                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                using (DatabaseContext db = this.Database.CreateContext()) {
                                     foreach (var winner in game.Winners)
                                         await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
                             } else {
                                 await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
-                                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                                using (DatabaseContext db = this.Database.CreateContext()) {
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Currency
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                            using (DatabaseContext db = this.Database.CreateContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
                                 await db.SaveChangesAsync();
                             }
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     if (bid <= 0 || !await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();

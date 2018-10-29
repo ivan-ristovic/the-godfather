@@ -7,9 +7,12 @@ using DSharpPlus.Entities;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -19,8 +22,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Services;
 #endregion
@@ -34,7 +39,7 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule : TheGodfatherModule
     {
 
-        public OwnerModule(SharedData shared, DBService db) 
+        public OwnerModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.NotQuiteBlack;
@@ -150,7 +155,20 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            IReadOnlyList<IReadOnlyDictionary<string, string>> res = await this.Database.ExecuteRawQueryAsync(query);
+            var res = new List<IReadOnlyDictionary<string, string>>();
+            using (DatabaseContext db = this.Database.CreateContext())
+            using (var dr = await db.Database.ExecuteSqlQueryAsync(query)) {
+                DbDataReader reader = dr.DbDataReader;
+                while (await reader.ReadAsync()) {
+                    var dict = new Dictionary<string, string>();
+
+                    for (int i = 0; i < reader.FieldCount; i++)
+                        dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
+
+                    res.Add(new ReadOnlyDictionary<string, string>(dict));
+                }
+            }
+            
             if (!res.Any() || !res.First().Any()) {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
                 return;
@@ -205,9 +223,9 @@ namespace TheGodfather.Modules.Owner
 
             var globals = new EvaluationEnvironment(ctx);
             var sopts = ScriptOptions.Default
-                .WithImports("System", "System.Collections.Generic", "System.Linq", "System.Net.Http", 
-                    "System.Net.Http.Headers", "System.Reflection", "System.Text", "System.Text.RegularExpressions", 
-                    "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities", 
+                .WithImports("System", "System.Collections.Generic", "System.Linq", "System.Net.Http",
+                    "System.Net.Http.Headers", "System.Reflection", "System.Text", "System.Text.RegularExpressions",
+                    "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities",
                     "DSharpPlus.Interactivity")
                 .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
@@ -330,7 +348,7 @@ namespace TheGodfather.Modules.Owner
 
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine().AppendLine();
-                
+
                 foreach (Command cmd in cmdlist) {
                     if (cmd is CommandGroup || cmd.Parent is null)
                         sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
@@ -439,7 +457,7 @@ namespace TheGodfather.Modules.Owner
                 string mname = mattr.Module.ToString();
                 sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
             }
-            
+
             try {
                 File.WriteAllText(Path.Combine(current.FullName, $"README.md"), sb.ToString());
             } catch (IOException e) {

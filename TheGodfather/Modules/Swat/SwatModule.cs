@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Swat
     public partial class SwatModule : TheGodfatherModule
     {
 
-        public SwatModule(SharedData shared, DBService db) 
+        public SwatModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Black;
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Swat
             name = name.ToLowerInvariant();
 
             DatabaseSwatServer server;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             if (server is null)
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Swat
             name = name.ToLowerInvariant();
 
             DatabaseSwatServer server;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Swat
             };
 
             List<DatabaseSwatServer> servers;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 servers = await db.SwatServers.ToListAsync();
 
             if (servers is null || !servers.Any())
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Swat
             name = name.ToLowerInvariant();
 
             DatabaseSwatServer server;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             if (server is null)

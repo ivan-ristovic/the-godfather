@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Chickens
         public class WarModule : TheGodfatherModule
         {
 
-            public WarModule(SharedData shared, DBService db) 
+            public WarModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
                                 chicken.Stats.BareStrength += war.Gain;
                                 chicken.Stats.BareVitality -= 10;
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
 

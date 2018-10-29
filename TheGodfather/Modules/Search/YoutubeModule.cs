@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -24,7 +25,7 @@ namespace TheGodfather.Modules.Search
     public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
 
-        public YoutubeModule(YtService yt, SharedData shared, DBService db) 
+        public YoutubeModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
             : base(yt, shared, db)
         {
             this.ModuleColor = DiscordColor.Red;

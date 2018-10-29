@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Games
         public class RussianRouletteModule : TheGodfatherModule
         {
 
-            public RussianRouletteModule(SharedData shared, DBService db) 
+            public RussianRouletteModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;

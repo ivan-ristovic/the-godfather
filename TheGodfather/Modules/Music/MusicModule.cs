@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Search.Services;
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Music
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService yt, SharedData shared, DBService db) 
+        public MusicModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
             : base(yt, shared, db)
         {
             this.ModuleColor = DiscordColor.Grayple;

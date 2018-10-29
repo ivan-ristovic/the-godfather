@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Games
         public class DuelModule : TheGodfatherModule
         {
 
-            public DuelModule(SharedData shared, DBService db) 
+            public DuelModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
@@ -62,11 +63,11 @@ namespace TheGodfather.Modules.Games
 
                     await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
 
-                    await this.DatabaseBuilder.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
+                    await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
                     if (duel.Winner.Id == ctx.User.Id)
-                        await this.DatabaseBuilder.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);
+                        await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);
                     else
-                        await this.DatabaseBuilder.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
+                        await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -95,7 +96,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.DatabaseBuilder.GetTopChain4StatsAsync();
+                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
                 await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
             }

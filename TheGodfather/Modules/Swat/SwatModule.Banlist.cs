@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatBanlistModule : TheGodfatherModule
         {
 
-            public SwatBanlistModule(SharedData shared, DBService db)
+            public SwatBanlistModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Black;
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Swat
                                       [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (player is null) {
                         db.SwatPlayers.Add(new DatabaseSwatPlayer() {
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Swat
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (!(player is null) && player.IsBlacklisted) {
                         player.IsBlacklisted = false;
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Swat
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseSwatPlayer> banned;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     banned = await db.SwatPlayers.Where(p => p.IsBlacklisted).ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(

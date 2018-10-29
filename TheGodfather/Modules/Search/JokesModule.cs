@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 #endregion
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class JokesModule : TheGodfatherModule
     {
 
-        public JokesModule(SharedData shared, DBService db)
+        public JokesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.PhthaloBlue;

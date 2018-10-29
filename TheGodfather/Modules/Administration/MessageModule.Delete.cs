@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Administration
         public class MessageDeleteModule : TheGodfatherModule
         {
 
-            public MessageDeleteModule(SharedData shared, DBService db)
+            public MessageDeleteModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Azure;

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
         private static readonly long _maxBet = 5_000_000_000;
 
 
-        public GambleModule(SharedData shared, DBService db)
+        public GambleModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGreen;
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
             }
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
 
             if (rnd == guess) {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 2);
                     await db.SaveChangesAsync();
                 }
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Currency
             await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 
             if (rnd == guess_int) {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 6);
                     await db.SaveChangesAsync();
                 }

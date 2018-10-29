@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Misc
     public class MiscModule : TheGodfatherModule
     {
 
-        public MiscModule(SharedData shared, DBService db) 
+        public MiscModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.LightGray;
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Misc
             user = user ?? ctx.User;
 
             List<DatabasePurchasedItem> items;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+            using (DatabaseContext db = this.Database.CreateContext()) {
                 items = await db.PurchasedItems
                         .Include(i => i.DbPurchasableItem)
                     .Where(i => i.UserId == ctx.User.Id && i.DbPurchasableItem.GuildId == ctx.Guild.Id)

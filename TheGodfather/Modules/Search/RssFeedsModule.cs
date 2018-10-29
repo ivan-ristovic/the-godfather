@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Search
     public class RssFeedsModule : TheGodfatherModule
     {
 
-        public RssFeedsModule(SharedData shared, DBService db)
+        public RssFeedsModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Search
         public class SubscribeModule : TheGodfatherModule
         {
 
-            public SubscribeModule(SharedData shared, DBService db)
+            public SubscribeModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Orange;
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Search
                 if (!RssService.IsValidFeedURL(url.AbsoluteUri))
                     throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-                await this.DatabaseBuilder.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url.AbsoluteUri, name);
+                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url.AbsoluteUri, name);
                 await this.InformAsync(ctx, $"Subscribed to {url}!", important: false);
             }
 
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Search
             public async Task ListAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseRssSubscription> subs;
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+                using (DatabaseContext db = this.Database.CreateContext())
                     subs = await db.RssSubscriptions.Where(s => s.ChannelId == ctx.Channel.Id).ToListAsync();
 
                 if (!subs.Any())
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Search
                 if (url is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
-                await this.DatabaseBuilder.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub);
+                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub);
                 await this.InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
             }
             #endregion
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 string feedurl = YtService.GetRssUrlForChannel(chid);
-                await this.DatabaseBuilder.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name);
+                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name);
                 await this.InformAsync(ctx, "Subscribed!", important: false);
             }
             #endregion
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Search
         public class UnsubscribeModule : TheGodfatherModule
         {
 
-            public UnsubscribeModule(SharedData shared, DBService db)
+            public UnsubscribeModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Orange;
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Search
                 if (!ids.Any())
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.ChannelId == ctx.Channel.Id && ids.Contains(s.Id)));
                     await db.SaveChangesAsync();
                 }
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Search
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Name of the subscription.")] string name)
             {
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = name });
                     await db.SaveChangesAsync();
                 }
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Search
                 if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to remove all subscriptions for channel {channel.Mention}?"))
                     return;
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.ChannelId == ctx.Guild.Id));
                     await db.SaveChangesAsync();
                 }
@@ -233,7 +233,7 @@ namespace TheGodfather.Modules.Search
                 if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = rsub });
                     await db.SaveChangesAsync();
                 }
@@ -254,7 +254,7 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(name_url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = name_url });
                     await db.SaveChangesAsync();
                 }
@@ -262,7 +262,7 @@ namespace TheGodfather.Modules.Search
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
                 if (!(chid is null)) {
                     string feedurl = YtService.GetRssUrlForChannel(chid);
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         DatabaseRssSubscription sub = db.RssSubscriptions
                             .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.DbRssFeed.Url == feedurl);
                         if (!(sub is null)) {

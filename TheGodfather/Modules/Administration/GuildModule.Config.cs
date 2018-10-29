@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Administration
         public partial class GuildConfigModule : TheGodfatherModule
         {
 
-            public GuildConfigModule(SharedData shared, DBService db)
+            public GuildConfigModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;

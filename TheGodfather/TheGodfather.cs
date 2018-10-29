@@ -37,7 +37,6 @@ namespace TheGodfather
             => Shards.AsReadOnly();
 
         private static BotConfig BotConfiguration { get; set; }
-        private static DBService DatabaseService { get; set; }
         private static DatabaseContextBuilder GlobalDatabaseContextBuilder { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
@@ -129,10 +128,6 @@ namespace TheGodfather
             Console.Write("\r[2/5] Establishing database connection...         ");
 
             GlobalDatabaseContextBuilder = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
-
-            DatabaseService = new DBService(BotConfiguration.DatabaseConfig) {
-                ContextBuilder = GlobalDatabaseContextBuilder
-            };
         }
 
         private static void LoadSharedDataFromDatabase()
@@ -220,7 +215,7 @@ namespace TheGodfather
 
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, DatabaseService, GlobalDatabaseContextBuilder, SharedData);
+                var shard = new TheGodfatherShard(i, GlobalDatabaseContextBuilder, SharedData);
                 shard.Initialize();
                 Shards.Add(shard);
             }

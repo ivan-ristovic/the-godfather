@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Administration
             public class LoggingModule : TheGodfatherModule
             {
 
-                public LoggingModule(SharedData shared, DBService db)
+                public LoggingModule(SharedData shared, DatabaseContextBuilder db)
                     : base(shared, db)
                 {
                     this.ModuleColor = DiscordColor.DarkRed;
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
                         sb.Append(Formatter.Bold("Exempts:"));
 
                         List<DatabaseExemptLogging> exempted;
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             exempted = await db.LoggingExempts
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.AddRange(users.Select(u => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.AddRange(roles.Select(r => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.AddRange(channels.Select(c => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                     if (!users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.RemoveRange(users.Select(u => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = u.Id,
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Administration
                     if (!roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.RemoveRange(roles.Select(r => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = r.Id,
@@ -218,7 +218,7 @@ namespace TheGodfather.Modules.Administration
                     if (!channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
                         db.LoggingExempts.RemoveRange(channels.Select(c => new DatabaseExemptLogging() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,

@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Misc
     public class RemindersModule : TheGodfatherModule
     {
 
-        public RemindersModule(SharedData shared, DBService db)
+        public RemindersModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.LightGray;
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
 
             bool privileged;
-            using (DatabaseContext db = this.DatabaseBuilder.CreateContext())
+            using (DatabaseContext db = this.Database.CreateContext())
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
             if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !privileged) {
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Misc
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
             var task = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database.ContextBuilder, ctx.Client, task);
+            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
 
             if (repeat)
                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);

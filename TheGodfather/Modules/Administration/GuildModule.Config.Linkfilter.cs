@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -28,7 +29,7 @@ namespace TheGodfather.Modules.Administration
             public class LinkfilterModule : TheGodfatherModule
             {
 
-                public LinkfilterModule(SharedData shared, DBService db) 
+                public LinkfilterModule(SharedData shared, DatabaseContextBuilder db) 
                     : base(shared, db)
                 {
                     this.ModuleColor = DiscordColor.DarkRed;

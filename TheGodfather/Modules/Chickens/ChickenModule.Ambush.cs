@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Chickens
         public class AmbushModule : TheGodfatherModule
         {
 
-            public AmbushModule(SharedData shared, DBService db) 
+            public AmbushModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
@@ -49,11 +49,11 @@ namespace TheGodfather.Modules.Chickens
                     return;
                 }
 
-                var ambushed = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, member.Id);
+                var ambushed = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
                 if (ambushed is null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
                 
-                var ambusher = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+                var ambusher = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (ambusher is null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        using (DatabaseContext db = this.DatabaseBuilder.CreateContext()) {
+                        using (DatabaseContext db = this.Database.CreateContext()) {
                             foreach (Chicken chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
                                 chicken.Stats.BareStrength += 5;
                                 chicken.Stats.BareVitality -= 10;
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
-                var chicken = Chicken.FromDatabase(this.DatabaseBuilder, ctx.Guild.Id, ctx.User.Id);
+                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
 
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");

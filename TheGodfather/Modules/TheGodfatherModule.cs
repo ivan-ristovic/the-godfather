@@ -20,8 +20,7 @@ namespace TheGodfather.Modules
         private static readonly HttpClientHandler _handler;
 
         public SharedData Shared { get; }
-        public DBService Database { get; }
-        public DatabaseContextBuilder DatabaseBuilder { get; }
+        public DatabaseContextBuilder Database { get; }
         public DiscordColor ModuleColor {
             get { return this.moduleColor ?? DiscordColor.Green; }
             set { this.moduleColor = value; }
@@ -38,12 +37,11 @@ namespace TheGodfather.Modules
             _http = new HttpClient(_handler, true);
         }
 
-        protected TheGodfatherModule(SharedData shared, DBService db = null)
+        protected TheGodfatherModule(SharedData shared, DatabaseContextBuilder dbb = null)
         {
             this.Shared = shared;
-            this.Database = db;
+            this.Database = dbb;
             this.ModuleColor = DiscordColor.Green;
-            this.DatabaseBuilder = new DatabaseContextBuilder(shared.BotConfiguration.DatabaseConfig);
         }
 
 
