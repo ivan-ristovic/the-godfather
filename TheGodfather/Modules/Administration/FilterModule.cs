@@ -100,12 +100,11 @@ namespace TheGodfather.Modules.Administration
 
                     var filter = new DatabaseFilter() { GuildId = ctx.Guild.Id, Trigger = regexString };
                     db.Filters.Add(filter);
+                    await db.SaveChangesAsync();
 
                     if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regex)))
                         eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
                 }
-
-                await db.SaveChangesAsync();
             }
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -191,7 +190,7 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    db.Filters.Remove(new DatabaseFilter() { GuildId = ctx.Guild.Id, Trigger = regexString });
+                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id && f.Trigger == regexString));
                 }
 
                 await db.SaveChangesAsync();

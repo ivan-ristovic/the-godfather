@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (e.Channel.PermissionsFor(e.Author as DiscordMember).HasPermission(Permissions.Administrator))
                 return false;
 
-            if (settings.BlockDiscordInvites && await this.ScanForInvitesInvitesAsync(e))
+            if (settings.BlockDiscordInvites && await this.ScanForDiscordInvitesAsync(e))
                 return true;
 
             if (settings.BlockBooterWebsites && await this.ScanForBootersAsync(e))
@@ -47,22 +47,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private async Task<bool> ScanForInvitesInvitesAsync(MessageCreateEventArgs e)
+        private async Task<bool> ScanForDiscordInvitesAsync(MessageCreateEventArgs e)
         {
             if (!LinkfilterMatcherCollection.InviteRegex.IsMatch(e.Message.Content))
                 return false;
 
-            try {
-                await e.Message.DeleteAsync("_gf: Invite linkfilter");
-                await this.LogLinkfilterMatchAsync(e, "Discord invite matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a Discord invite."
-                );
-            } catch {
-
-            }
-
+            await this.DeleteAsync(e, "Discord invite");
             return true;
         }
 
@@ -72,16 +62,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!match.Success)
                 return false;
 
-            try {
-                await e.Message.DeleteAsync("_gf: Booter linkfilter");
-                await this.LogLinkfilterMatchAsync(e, "DDoS/Booter website matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a link to a DDoS/Booter website: {Formatter.InlineCode(match.Matched)}"
-                );
-            } catch {
-
-            }
+            await this.DeleteAsync(e, "DDoS/Booter website", Formatter.InlineCode(match.Matched));
             return true;
         }
 
@@ -91,17 +72,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!match.Success)
                 return false;
 
-            try {
-                await e.Message.DeleteAsync("_gf: IP logger linkfilter");
-                await this.LogLinkfilterMatchAsync(e, "IP logging website matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a link to a IP logger website: {Formatter.InlineCode(match.Matched)}"
-                );
-            } catch {
-
-            }
-
+            await this.DeleteAsync(e, "IP logging website", Formatter.InlineCode(match.Matched));
             return true;
         }
 
@@ -111,16 +82,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!match.Success)
                 return false;
 
-            try {
-                await e.Message.DeleteAsync("_gf: Disturbing content linkfilter");
-                await this.LogLinkfilterMatchAsync(e, "Disturbing content website matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a link to a website marked as disturbing: {Formatter.InlineCode(match.Matched)}"
-                );
-            } catch {
-
-            }
+            await this.DeleteAsync(e, "Disturbing content website", Formatter.InlineCode(match.Matched));
             return true;
         }
 
@@ -130,19 +92,22 @@ namespace TheGodfather.Modules.Administration.Services
             if (!match.Success)
                 return false;
 
+            await this.DeleteAsync(e, "URL shortener website", $"{Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]}).\n\nIf you think this is a false detection, please report.");
+            return true;
+        }
+
+        private async Task DeleteAsync(MessageCreateEventArgs e, string cause, string additionalText = null)
+        {
             try {
-                await e.Message.DeleteAsync("_gf: URL shortener linkfilter");
-                await this.LogLinkfilterMatchAsync(e, "URL shortener website matched");
+                await e.Message.DeleteAsync($"_gf: {cause} linkfilter");
+                await this.LogLinkfilterMatchAsync(e, $"{cause} matched");
                 await (e.Author as DiscordMember).SendMessageAsync(
                     $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it is suspected to contain a link to a link shortener website: {Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]})" +
-                    $"If you think this is a false detection, please report."
+                    $"{Formatter.Bold(e.Guild.Name)} because it contained a {cause}{(string.IsNullOrWhiteSpace(additionalText) ? "." : $": {additionalText}")}"
                 );
-            } catch (UnauthorizedException) {
+            } catch {
 
             }
-
-            return true;
         }
 
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)

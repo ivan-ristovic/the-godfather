@@ -17,7 +17,7 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long RoleIdDb { get; set; }
         [NotMapped]
-        public ulong RoleId { get => (ulong)this.RoleIdDb; set => this.RoleId = value; }
+        public ulong RoleId { get => (ulong)this.RoleIdDb; set => this.RoleIdDb = (long)value; }
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

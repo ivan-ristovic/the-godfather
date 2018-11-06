@@ -58,10 +58,9 @@ namespace TheGodfather.Database
                 return;
 
             // optionsBuilder.EnableSensitiveDataLogging(true);
-
-            // TODO
-            // optionsBuilder.UseLazyLoadingProxies();
-            // optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
+            
+            optionsBuilder.UseLazyLoadingProxies();
+            //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
 
             optionsBuilder.UseNpgsql(this.ConnectionString);
         }

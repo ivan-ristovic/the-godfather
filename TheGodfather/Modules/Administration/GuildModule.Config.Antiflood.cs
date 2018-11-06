@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Administration
                 [Description("Set the antiflood sensitivity. Antiflood action will be executed if the specified " +
                              "amount of users join the guild in the given cooldown period.")]
                 [Aliases("setcooldown", "setcool", "cool", "c")]
-                [UsageExamples("!guild cfg antiflood sensitivity 9")]
+                [UsageExamples("!guild cfg antiflood cooldown 9s")]
                 public async Task SetCooldownAsync(CommandContext ctx,
                                                   [Description("Cooldown.")] TimeSpan cooldown)
                 {

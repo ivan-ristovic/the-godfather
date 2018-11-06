@@ -147,8 +147,6 @@ namespace TheGodfather.Modules.Search
             if (url is null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            await ctx.RespondAsync(url);
-
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
             if (res is null)
                 throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");

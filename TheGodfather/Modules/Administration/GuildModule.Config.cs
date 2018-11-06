@@ -76,8 +76,8 @@ namespace TheGodfather.Modules.Administration
                 await this.SetupAntispamAsync(gcfg, ctx, channel);
                 await this.SetupRatelimitAsync(gcfg, ctx, channel);
                 AntifloodSettings antifloodSettings = await this.SetupAntifloodAsync(gcfg, ctx, channel);
-                await this.SetupCurrencyAsync(gcfg, ctx, channel);
                 AntiInstantLeaveSettings antiInstantLeaveSettings = await this.SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
+                await this.SetupCurrencyAsync(gcfg, ctx, channel);
 
                 await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {

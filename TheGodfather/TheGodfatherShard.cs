@@ -135,8 +135,11 @@ namespace TheGodfather
                     .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
                     .BuildServiceProvider()
             });
+
             this.CNext.SetHelpFormatter<CustomHelpFormatter>();
+
             this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());
+
             this.CNext.RegisterConverter(new CustomActivityTypeConverter());
             this.CNext.RegisterConverter(new CustomBoolConverter());
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());

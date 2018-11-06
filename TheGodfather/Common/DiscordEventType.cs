@@ -16,6 +16,7 @@
         GuildBanRemoved,
         GuildCreated,
         GuildDeleted,
+        GuildDownloadCompleted,
         GuildEmojisUpdated,
         GuildIntegrationsUpdated,
         GuildMemberAdded,
