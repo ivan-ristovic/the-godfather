@@ -38,12 +38,19 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildAvailable)]
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"| Guild available: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Debug, $"| Guild available: {e.Guild.ToString()}");
 
             if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
                 return Task.CompletedTask;
 
             return RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
+        }
+
+        [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
+        public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs e)
+        {
+            shard.Log(LogLevel.Info, $"| All guilds are now available.");
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]
@@ -62,8 +69,8 @@ namespace TheGodfather.EventListeners
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(shard.SharedData.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
-                $"{StaticDiscordEmoji.SmallBlueDiamond} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather\n" +
-                $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia discord server for quick support (https://discord.me/worldmafia)."
+                $"{StaticDiscordEmoji.SmallBlueDiamond} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather \n" +
+                $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order to send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia Discord server for quick support (https://discord.me/worldmafia)."
                 , StaticDiscordEmoji.Wave
             );
         }

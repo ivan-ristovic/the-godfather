@@ -35,15 +35,15 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task HandleMemberJoinAsync(GuildMemberAddEventArgs e, AntiInstantLeaveSettings settings)
         {
             if (!this.guildNewMembers.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
-                throw new ConcurrentOperationException("Failed to add guild to antiflood watch list!");
+                throw new ConcurrentOperationException("Failed to add guild to instant-leave watch list!");
 
             if (!this.guildNewMembers[e.Guild.Id].Add(e.Member))
-                throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
+                throw new ConcurrentOperationException("Failed to add member to instant-leave watch list!");
 
             await Task.Delay(TimeSpan.FromSeconds(settings.Cooldown));
 
             if (this.guildNewMembers.ContainsKey(e.Guild.Id) && !this.guildNewMembers[e.Guild.Id].TryRemove(e.Member))
-                throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
+                throw new ConcurrentOperationException("Failed to remove member from instant-leave watch list!");
         }
 
         public async Task<bool> HandleMemberLeaveAsync(GuildMemberRemoveEventArgs e, AntiInstantLeaveSettings settings)
