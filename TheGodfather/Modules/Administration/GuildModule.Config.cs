@@ -474,6 +474,7 @@ namespace TheGodfather.Modules.Administration
                 sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
                 sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
+                sb.Append("Silent responses: ").AppendLine(Formatter.Bold((gcfg.ReactionResponse ? "on" : "off")));
                 sb.Append("Mute role: ").AppendLine(Formatter.Bold(muteRole.Name));
 
                 sb.Append("Action logging: ");

@@ -299,7 +299,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_SETNAME
         [Command("setname")]
-        [Description("Gives someone a new nickname.")]
+        [Description("Gives someone a new nickname in the current guild.")]
         [Aliases("nick", "newname", "name", "rename")]
         [UsageExamples("!user setname @Someone Newname")]
         [RequirePermissions(Permissions.ManageNicknames)]
@@ -316,7 +316,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildInvocationDetailsString();
             }));
 
-            await this.InformAsync(ctx, $"Renamed member {name} to {Formatter.Bold(member.DisplayName)}");
+            await this.InformAsync(ctx, $"Renamed member {name} to {Formatter.Bold(nickname)}", important: false);
         }
         #endregion
 
