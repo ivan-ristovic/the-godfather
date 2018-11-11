@@ -129,7 +129,8 @@ namespace TheGodfather.Modules.Swat
         {
             var em = new DiscordEmbedBuilder() {
                 Title = "Servers",
-                Color = this.ModuleColor
+                Color = this.ModuleColor,
+                Url = "https://swat4stats.com/servers/"
             };
 
             List<DatabaseSwatServer> servers;

@@ -24,7 +24,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Search.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather
@@ -32,7 +31,7 @@ namespace TheGodfather
     internal static class TheGodfather
     {
         public static readonly string ApplicationName = "TheGodfather";
-        public static readonly string ApplicationVersion = "v3.0";
+        public static readonly string ApplicationVersion = "v4.0";
         public static IReadOnlyList<TheGodfatherShard> ActiveShards
             => Shards.AsReadOnly();
 
@@ -235,7 +234,7 @@ namespace TheGodfather
 
             using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                 await RegisterSavedTasks(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
-                    t => t.Id, 
+                    t => t.Id,
                     t => {
                         switch (t.Type) {
                             case SavedTaskType.Unban:

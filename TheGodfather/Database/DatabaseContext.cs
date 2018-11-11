@@ -63,6 +63,7 @@ namespace TheGodfather.Database
             //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
 
             optionsBuilder.UseNpgsql(this.ConnectionString);
+            //optionsBuilder.UseSqlite(this.ConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder model)

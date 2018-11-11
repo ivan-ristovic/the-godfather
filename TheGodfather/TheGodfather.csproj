@@ -12,10 +12,10 @@
     <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ivan-ristovic/the-godfather</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/ivan-ristovic/the-godfather/master/TheGodfather/icon.ico</PackageIconUrl>
-    <Version>3.0.0</Version>
+    <Version>4.0.0</Version>
     <PackageVersion>3.0.0.0</PackageVersion>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>3.0.0</FileVersion>
+    <AssemblyVersion>4.0.0</AssemblyVersion>
+    <FileVersion>4.0.0</FileVersion>
     <Copyright />
   </PropertyGroup>
   
@@ -49,6 +49,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0-preview3-35497" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0-preview3-35497" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.0-preview3-35497" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0-preview3-35497" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0-preview1" />
