@@ -59,8 +59,8 @@ namespace TheGodfather.Database
 
             // optionsBuilder.EnableSensitiveDataLogging(true);
             
-            optionsBuilder.UseLazyLoadingProxies();
-            //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
+            //optionsBuilder.UseLazyLoadingProxies();
+            //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.DetachedLazyLoadingWarning));
 
             optionsBuilder.UseNpgsql(this.ConnectionString);
             //optionsBuilder.UseSqlite(this.ConnectionString);

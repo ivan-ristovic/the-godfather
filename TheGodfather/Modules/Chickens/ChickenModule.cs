@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Chickens
                 DatabaseChicken dbc = db.Chickens.FirstOrDefault(c => c.GuildId == ctx.Guild.Id && c.UserId == ctx.User.Id);
                 if (dbc is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
-                dbc.Vitality += 100;
+                dbc.Vitality = (dbc.Vitality + 100) % dbc.MaxVitality;
                 db.Update(dbc);
                 await db.SaveChangesAsync();
             }
@@ -193,7 +193,7 @@ namespace TheGodfather.Modules.Chickens
             if (!newname.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {

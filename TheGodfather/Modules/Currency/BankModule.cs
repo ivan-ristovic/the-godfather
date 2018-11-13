@@ -245,10 +245,19 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, amount))
-                    throw new CommandFailedException("You have insufficient funds.");
-                await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
-                await db.SaveChangesAsync();
+                try {
+                    await db.Database.BeginTransactionAsync();
+
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, amount))
+                        throw new CommandFailedException("You have insufficient funds.");
+                    await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
+                    await db.SaveChangesAsync();
+                    
+                    db.Database.CommitTransaction();
+                } catch {
+                    db.Database.RollbackTransaction();
+                    throw;
+                }
             }
 
             await this.InformAsync(ctx, important: false);
