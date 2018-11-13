@@ -201,7 +201,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_MUTE
-        [Command("mute")]
+        [Command("mute"), Priority(1)]
         [Description("Mute or unmute a member.")]
         [Aliases("m")]
         [UsageExamples("!user mute off @Someone",
@@ -219,6 +219,12 @@ namespace TheGodfather.Modules.Administration
                 await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Unmute"));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}");
         }
+
+        [Command("mute"), Priority(0)]
+        public Task MuteAsync(CommandContext ctx,
+                             [Description("Member to mute.")] DiscordMember member,
+                             [RemainingText, Description("Reason.")] string reason = null)
+            => this.MuteAsync(ctx, true, member, reason);
         #endregion
 
         #region COMMAND_USER_MUTEVOICE
@@ -236,6 +242,12 @@ namespace TheGodfather.Modules.Administration
             await member.SetMuteAsync(mute, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} voice of member {Formatter.Bold(member.DisplayName)}");
         }
+
+        [Command("mutevoice"), Priority(0)]
+        public Task MuteVoiceAsync(CommandContext ctx,
+                                  [Description("Member to mute.")] DiscordMember member,
+                                  [RemainingText, Description("Reason.")] string reason = null)
+            => this.MuteVoiceAsync(ctx, true, member, reason);
         #endregion
 
         #region COMMAND_USER_REMOVEROLE
@@ -416,6 +428,30 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!");
         }
+        #endregion
+
+        #region COMMAND_USER_UNMUTE
+        [Command("unmute"), Priority(1)]
+        [Description("Unmute a member.")]
+        [Aliases("um")]
+        [UsageExamples("!user unmute @Someone")]
+        [RequirePermissions(Permissions.MuteMembers)]
+        public Task UnmuteAsync(CommandContext ctx,
+                               [Description("Member to unmute.")] DiscordMember member,
+                               [RemainingText, Description("Reason.")] string reason = null)
+            => this.MuteAsync(ctx, false, member, reason);
+        #endregion
+
+        #region COMMAND_USER_UNMUTEVOICE
+        [Command("unmutevoice")]
+        [Description("Unmute a member in the voice channels.")]
+        [Aliases("umv", "voiceunmute", "vunmute", "unmutev", "vum")]
+        [UsageExamples("!user unmutevoice @Someone")]
+        [RequirePermissions(Permissions.MuteMembers)]
+        public Task UnmuteVoiceAsync(CommandContext ctx,
+                                    [Description("Member to unmute.")] DiscordMember member,
+                                    [RemainingText, Description("Reason.")] string reason = null)
+            => this.MuteVoiceAsync(ctx, false, member, reason);
         #endregion
 
         #region COMMAND_USER_WARN

@@ -554,7 +554,7 @@ namespace TheGodfather.Modules.Administration
             {
                 string query = "By default I am sending verbose messages whenever a command is executed, " +
                                "but I can also silently react. Should I continue with the verbose replies?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false))
+                if (!await channel.WaitForBoolResponseAsync(ctx, query, reply: false))
                     gcfg.ReactionResponse = false;
             }
 

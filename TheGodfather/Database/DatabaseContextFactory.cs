@@ -1,14 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using System;
+using System.Linq;
 
 namespace TheGodfather.Database
 {
     public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {
-        public DatabaseContext CreateDbContext(string[] args)
+        public DatabaseContext CreateDbContext(params string[] args)
         {
-            Console.WriteLine("Enter db name:");
-            string db = Console.ReadLine();
+            string db;
+            if (string.IsNullOrWhiteSpace(args?.First())) {
+                Console.WriteLine("Enter db name:");
+                db = Console.ReadLine();
+            } else {
+                db = args.First();
+            }
 
             var dbb = new DatabaseContextBuilder(new DatabaseConfig() {
                 DatabaseName = db,

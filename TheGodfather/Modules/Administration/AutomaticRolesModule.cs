@@ -13,7 +13,6 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -21,16 +20,16 @@ namespace TheGodfather.Modules.Administration
     [Group("automaticroles"), Module(ModuleType.Administration), NotBlocked]
     [Description("Automatic roles management. Automatic roles are automatically granted to a new member " +
                  "of the guild. Group call lists all automatic roles for the guild. Group call with an " +
-                 "arbitrary amount of roles will add those roles to the automatic roles list for this " +
+                 "arbitrary amount of roles will add those roles to the automatic roles list for the " +
                  "guild, effective immediately.")]
     [Aliases("autoroles", "automaticr", "autorole", "aroles", "arole", "arl", "ar")]
-    [UsageExamples("!ar", 
+    [UsageExamples("!ar",
                    "!ar @Guests")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class AutomaticRolesModule : TheGodfatherModule
-    { 
+    {
 
-        public AutomaticRolesModule(SharedData shared, DatabaseContextBuilder db) 
+        public AutomaticRolesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Goldenrod;
@@ -50,9 +49,9 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_AR_ADD
         [Command("add")]
-        [Description("Adds an automatic role(s).")]
+        [Description("Add automatic role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
-        [UsageExamples("!ar add @Notifications", 
+        [UsageExamples("!ar add @Notifications",
                        "!ar add @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task AddAsync(CommandContext ctx,
@@ -89,7 +88,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove automatic role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!ar delete @Notifications", 
+        [UsageExamples("!ar delete @Notifications",
                        "!ar delete @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAsync(CommandContext ctx,
@@ -120,7 +119,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.InformAsync(ctx, $"Removed automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
-        #endregion=
+        #endregion
 
         #region COMMAND_AR_DELETEALL
         [Command("deleteall"), UsesInteractivity]
