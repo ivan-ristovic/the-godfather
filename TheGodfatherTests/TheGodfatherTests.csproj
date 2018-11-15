@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00553" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00553" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00553" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00553" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00554" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00554" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00554" />
+    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00554" />
     <PackageReference Include="GiphyDotNet" Version="1.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.36.1.1226" />
     <PackageReference Include="Humanizer.Core" Version="2.5.1" />
