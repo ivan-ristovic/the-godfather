@@ -9,7 +9,7 @@ namespace TheGodfather.Database
         public DatabaseContext CreateDbContext(params string[] args)
         {
             string db;
-            if (string.IsNullOrWhiteSpace(args?.First())) {
+            if (string.IsNullOrWhiteSpace(args?.FirstOrDefault())) {
                 Console.WriteLine("Enter db name:");
                 db = Console.ReadLine();
             } else {
