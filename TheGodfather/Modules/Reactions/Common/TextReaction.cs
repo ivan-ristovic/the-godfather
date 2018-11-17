@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Modules.Reactions.Common
@@ -19,7 +20,7 @@ namespace TheGodfather.Modules.Reactions.Common
             this.Init();
         }
 
-        public TextReaction(int id, string[] triggers, string response, bool isRegex = false)
+        public TextReaction(int id, IEnumerable<string> triggers, string response, bool isRegex = false)
             : base(id, triggers, response, isRegex)
         {
             this.Init();

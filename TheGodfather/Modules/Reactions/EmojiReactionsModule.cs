@@ -224,14 +224,14 @@ namespace TheGodfather.Modules.Reactions
                     .Where(er => er.GuildId == ctx.Guild.Id && erIds.Contains(er.Id))
                     .ToListAsync();
                 foreach (DatabaseEmojiReaction er in toUpdate) {
-                    er.Triggers = er.Triggers.Except(triggers).ToArray();
-                    if (er.Triggers.Any())
-                        db.EmojiReactions.Update(er);
-                    else
-                        db.EmojiReactions.Remove(er);
-                }
+                    db.EmojiReactionTriggers.RemoveRange(triggers.Select(t => new DatabaseEmojiReactionTrigger() { ReactionId = er.Id, Trigger = t }));
+                    await db.SaveChangesAsync();
 
-                await db.SaveChangesAsync();
+                    if (er.Triggers.Any()) {
+                        db.EmojiReactions.Remove(er);
+                        await db.SaveChangesAsync();
+                    }
+                }
             }
 
             int count = ereactions.RemoveWhere(er => er.RegexCount == 0);
@@ -347,18 +347,17 @@ namespace TheGodfather.Modules.Reactions
                 if (dber is null) {
                     var er = new DatabaseEmojiReaction() {
                         GuildId = ctx.Guild.Id,
-                        Reaction = emoji.GetDiscordName(),
-                        Triggers = triggers.Select(t => regex ? t : Regex.Escape(t)).ToArray()
+                        Reaction = emoji.GetDiscordName()
                     };
                     db.EmojiReactions.Add(er);
                     await db.SaveChangesAsync();
                     id = er.Id;
+                    db.EmojiReactionTriggers.AddRange(triggers.Select(t => new DatabaseEmojiReactionTrigger() { ReactionId = id, Trigger = regex ? t : Regex.Escape(t) }));
                 } else {
-                    dber.Triggers = dber.Triggers.Concat(triggers.Select(t => regex ? t : Regex.Escape(t))).ToArray();
+                    db.EmojiReactionTriggers.AddRange(triggers.Select(t => new DatabaseEmojiReactionTrigger() { ReactionId = dber.Id, Trigger = regex ? t : Regex.Escape(t) }));
                     id = dber.Id;
-                    db.EmojiReactions.Update(dber);
-                    await db.SaveChangesAsync();
                 }
+                await db.SaveChangesAsync();
             }
 
             var eb = new StringBuilder();

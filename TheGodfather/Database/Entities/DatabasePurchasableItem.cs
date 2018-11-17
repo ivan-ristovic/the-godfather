@@ -34,7 +34,6 @@ namespace TheGodfather.Database.Entities
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
-
         public virtual ICollection<DatabasePurchasedItem> Purchases { get; set; }
     }
 }

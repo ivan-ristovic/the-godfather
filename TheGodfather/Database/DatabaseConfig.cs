@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using Newtonsoft.Json;
+using static TheGodfather.Database.DatabaseContextBuilder;
 #endregion
 
 namespace TheGodfather.Database
@@ -8,6 +9,9 @@ namespace TheGodfather.Database
     {
         [JsonProperty("database")]
         public string DatabaseName { get; set; }
+
+        [JsonProperty("provider")]
+        public DatabaseProvider Provider { get; set; }
 
         [JsonProperty("hostname")]
         public string Hostname { get; set; }
@@ -25,6 +29,7 @@ namespace TheGodfather.Database
         [JsonIgnore]
         public static DatabaseConfig Default => new DatabaseConfig {
             DatabaseName = "gfdb",
+            Provider = DatabaseProvider.SQLite,
             Hostname = "localhost",
             Password = "<insert password>",
             Port = 5432,

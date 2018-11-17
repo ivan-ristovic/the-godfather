@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181029190134_Init")]
+    [Migration("20181117144557_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,15 +208,25 @@ namespace TheGodfather.Migrations
                         .HasColumnName("reaction")
                         .HasMaxLength(128);
 
-                    b.Property<string[]>("Triggers")
-                        .IsRequired()
-                        .HasColumnName("triggers");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GuildIdDb");
 
                     b.ToTable("reactions_emoji");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseEmojiReactionTrigger", b =>
+                {
+                    b.Property<int>("ReactionId")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Trigger")
+                        .HasColumnName("trigger")
+                        .HasMaxLength(128);
+
+                    b.HasKey("ReactionId", "Trigger");
+
+                    b.ToTable("reactions_emoji_triggers");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseExemptAntispam", b =>
@@ -770,7 +780,7 @@ namespace TheGodfather.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
-                    b.Property<string[]>("Aliases")
+                    b.Property<string[]>("AliasesDb")
                         .HasColumnName("aliases");
 
                     b.Property<string[]>("IPs")
@@ -836,15 +846,25 @@ namespace TheGodfather.Migrations
                         .HasColumnName("response")
                         .HasMaxLength(128);
 
-                    b.Property<string[]>("Triggers")
-                        .IsRequired()
-                        .HasColumnName("triggers");
-
                     b.HasKey("Id");
 
                     b.HasIndex("GuildIdDb");
 
                     b.ToTable("reactions_text");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseTextReactionTrigger", b =>
+                {
+                    b.Property<int>("ReactionId")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Trigger")
+                        .HasColumnName("trigger")
+                        .HasMaxLength(128);
+
+                    b.HasKey("ReactionId", "Trigger");
+
+                    b.ToTable("reactions_text_triggers");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
@@ -902,6 +922,14 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("EmojiReactions")
                         .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseEmojiReactionTrigger", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Entities.DatabaseEmojiReaction", "DbReaction")
+                        .WithMany("DbTriggers")
+                        .HasForeignKey("ReactionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -1003,6 +1031,14 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("TextReactions")
                         .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseTextReactionTrigger", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Entities.DatabaseTextReaction", "DbReaction")
+                        .WithMany("DbTriggers")
+                        .HasForeignKey("ReactionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

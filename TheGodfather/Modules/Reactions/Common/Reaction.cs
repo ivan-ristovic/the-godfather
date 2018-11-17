@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Reactions.Common
             this.AddTrigger(trigger, isRegex);
         }
 
-        protected Reaction(int id, string[] triggers, string response, bool isRegex = false)
+        protected Reaction(int id, IEnumerable<string> triggers, string response, bool isRegex = false)
         {
             this.Id = id;
             this.Response = response;

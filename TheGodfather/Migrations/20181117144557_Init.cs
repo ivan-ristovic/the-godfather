@@ -486,7 +486,6 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
-                    triggers = table.Column<string[]>(nullable: false),
                     reaction = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
@@ -509,7 +508,6 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     gid = table.Column<long>(nullable: false),
-                    triggers = table.Column<string[]>(nullable: false),
                     response = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
@@ -653,6 +651,46 @@ namespace TheGodfather.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "reactions_emoji_triggers",
+                schema: "gf",
+                columns: table => new
+                {
+                    trigger = table.Column<string>(maxLength: 128, nullable: false),
+                    id = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_reactions_emoji_triggers", x => new { x.id, x.trigger });
+                    table.ForeignKey(
+                        name: "FK_reactions_emoji_triggers_reactions_emoji_id",
+                        column: x => x.id,
+                        principalSchema: "gf",
+                        principalTable: "reactions_emoji",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reactions_text_triggers",
+                schema: "gf",
+                columns: table => new
+                {
+                    trigger = table.Column<string>(maxLength: 128, nullable: false),
+                    id = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_reactions_text_triggers", x => new { x.id, x.trigger });
+                    table.ForeignKey(
+                        name: "FK_reactions_text_triggers_reactions_text_id",
+                        column: x => x.id,
+                        principalSchema: "gf",
+                        principalTable: "reactions_text",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_chicken_bought_upgrades_gid_uid",
                 schema: "gf",
@@ -792,11 +830,11 @@ namespace TheGodfather.Migrations
                 schema: "gf");
 
             migrationBuilder.DropTable(
-                name: "reactions_emoji",
+                name: "reactions_emoji_triggers",
                 schema: "gf");
 
             migrationBuilder.DropTable(
-                name: "reactions_text",
+                name: "reactions_text_triggers",
                 schema: "gf");
 
             migrationBuilder.DropTable(
@@ -837,6 +875,14 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "purchasable_items",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "reactions_emoji",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "reactions_text",
                 schema: "gf");
 
             migrationBuilder.DropTable(

@@ -5,6 +5,7 @@ using System;
 
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
+using static TheGodfather.Database.DatabaseContextBuilder;
 #endregion
 
 namespace TheGodfather.Database
@@ -22,6 +23,7 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
+        public virtual DbSet<DatabaseEmojiReactionTrigger> EmojiReactionTriggers { get; set; }
         public virtual DbSet<DatabaseFilter> Filters { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseGuildConfig> GuildConfig { get; set; }
@@ -42,12 +44,15 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
+        public virtual DbSet<DatabaseTextReactionTrigger> TextReactionTriggers { get; set; }
 
         private string ConnectionString { get; }
+        private DatabaseProvider Provider { get; }
 
 
-        public DatabaseContext(string connectionString)
+        public DatabaseContext(DatabaseProvider provider, string connectionString)
         {
+            this.Provider = provider;
             this.ConnectionString = connectionString;
         }
 
@@ -58,12 +63,16 @@ namespace TheGodfather.Database
                 return;
 
             // optionsBuilder.EnableSensitiveDataLogging(true);
-            
-            //optionsBuilder.UseLazyLoadingProxies();
-            //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.DetachedLazyLoadingWarning));
 
-            optionsBuilder.UseNpgsql(this.ConnectionString);
-            //optionsBuilder.UseSqlite(this.ConnectionString);
+            // optionsBuilder.UseLazyLoadingProxies();
+            // optionsBuilder.ConfigureWarnings(wb => wb.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.DetachedLazyLoadingWarning));
+
+            switch (this.Provider) {
+                case DatabaseProvider.PostgreSQL: optionsBuilder.UseNpgsql(this.ConnectionString); break;
+                case DatabaseProvider.SQLite: optionsBuilder.UseSqlite(this.ConnectionString); break;
+                case DatabaseProvider.SQLServer: optionsBuilder.UseSqlServer(this.ConnectionString); break;
+                default: throw new NotSupportedException("Provider not supported!");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder model)
@@ -79,6 +88,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
             model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
+            model.Entity<DatabaseEmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             model.Entity<DatabaseExemptAntispam>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptLogging>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptRatelimit>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
@@ -126,6 +136,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
             model.Entity<DatabaseGuildRank>().HasKey(e => new { e.GuildIdDb, e.Rank });
             model.Entity<DatabaseMeme>().HasKey(e => new { e.GuildIdDb, e.Name });
+            model.Entity<DatabaseMessageCount>().Property(ui => ui.MessageCount).HasDefaultValue(1);
             model.Entity<DatabasePurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
             model.Entity<DatabaseReminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             model.Entity<DatabaseReminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
@@ -134,7 +145,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
             model.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
-            model.Entity<DatabaseMessageCount>().Property(ui => ui.MessageCount).HasDefaultValue(1);
+            model.Entity<DatabaseTextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
         }
     }
 }
