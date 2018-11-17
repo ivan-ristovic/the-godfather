@@ -18,7 +18,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reactions

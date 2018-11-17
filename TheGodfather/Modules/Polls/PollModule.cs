@@ -15,7 +15,6 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Modules.Polls.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Polls

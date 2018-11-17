@@ -18,7 +18,6 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search

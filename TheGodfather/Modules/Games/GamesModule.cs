@@ -12,7 +12,6 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games

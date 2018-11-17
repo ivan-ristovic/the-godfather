@@ -16,7 +16,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Swat.Common;
 using TheGodfather.Modules.Swat.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Swat

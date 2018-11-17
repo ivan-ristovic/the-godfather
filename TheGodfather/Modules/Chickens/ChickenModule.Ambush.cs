@@ -16,7 +16,6 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

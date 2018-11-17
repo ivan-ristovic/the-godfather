@@ -14,7 +14,6 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Swat

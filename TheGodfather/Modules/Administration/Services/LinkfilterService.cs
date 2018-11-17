@@ -2,7 +2,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Exceptions;
 using System.Threading.Tasks;
 using TheGodfather.EventListeners;
 using TheGodfather.Modules.Administration.Common;

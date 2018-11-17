@@ -12,7 +12,6 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency

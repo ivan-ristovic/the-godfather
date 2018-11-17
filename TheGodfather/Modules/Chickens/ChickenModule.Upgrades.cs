@@ -16,7 +16,6 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

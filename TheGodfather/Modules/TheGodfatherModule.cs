@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules

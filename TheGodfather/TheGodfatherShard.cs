@@ -21,7 +21,6 @@ using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Search.Services;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather

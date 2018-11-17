@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
-
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 using System;
@@ -183,12 +183,16 @@ namespace TheGodfather
                 );
                 treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                     db.TextReactions
+                        .Include(t => t.DbTriggers)
+                        .AsEnumerable()
                         .GroupBy(tr => tr.GuildId)
                         .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g.Select(tr => new TextReaction(tr.Id, tr.Triggers, tr.Response, true))))
                 );
                 ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>(
                     db.EmojiReactions
-                        .GroupBy(tr => tr.GuildId)
+                        .Include(t => t.DbTriggers)
+                        .AsEnumerable()
+                        .GroupBy(er => er.GuildId)
                         .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g.Select(er => new EmojiReaction(er.Id, er.Triggers, er.Reaction, true))))
                 );
             }
