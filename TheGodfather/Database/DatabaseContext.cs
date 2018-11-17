@@ -23,7 +23,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
-        public virtual DbSet<DatabaseEmojiReactionTrigger> EmojiReactionTriggers { get; set; }
         public virtual DbSet<DatabaseFilter> Filters { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseGuildConfig> GuildConfig { get; set; }
@@ -44,7 +43,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
-        public virtual DbSet<DatabaseTextReactionTrigger> TextReactionTriggers { get; set; }
 
         private string ConnectionString { get; }
         private DatabaseProvider Provider { get; }
@@ -143,7 +141,6 @@ namespace TheGodfather.Database
             model.Entity<DatabaseRssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
             model.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             model.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
-            model.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
             model.Entity<DatabaseTextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
         }

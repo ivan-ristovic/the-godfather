@@ -168,14 +168,17 @@ namespace TheGodfather.Modules.Reactions
             }
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                List<DatabaseTextReaction> toUpdate = await db.TextReactions
+                var toUpdate = db.TextReactions
+                    .Include(t => t.DbTriggers)
+                    .AsEnumerable()
                     .Where(tr => tr.GuildId == ctx.Guild.Id && trIds.Contains(tr.Id))
-                    .ToListAsync();
+                    .ToList();
                 foreach (DatabaseTextReaction tr in toUpdate) {
-                    db.TextReactionTriggers.RemoveRange(triggers.Select(t => new DatabaseTextReactionTrigger() { ReactionId = tr.Id, Trigger = t }));
+                    foreach (string trigger in triggers)
+                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger() { ReactionId = tr.Id, Trigger = trigger });
                     await db.SaveChangesAsync();
 
-                    if (tr.Triggers.Any()) {
+                    if (tr.DbTriggers.Any()) {
                         db.TextReactions.Remove(tr);
                         await db.SaveChangesAsync();
                     }
@@ -292,19 +295,18 @@ namespace TheGodfather.Modules.Reactions
             using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
                 if (dbtr is null) {
-                    var tr = new DatabaseTextReaction() {
+                    dbtr = new DatabaseTextReaction() {
                         GuildId = ctx.Guild.Id,
                         Response = response,
                     };
-                    db.TextReactions.Add(tr);
+                    db.TextReactions.Add(dbtr);
                     await db.SaveChangesAsync();
-                    id = tr.Id;
-                } else {
-                    id = dbtr.Id;
                 }
 
-                db.TextReactionTriggers.Add(new DatabaseTextReactionTrigger() { ReactionId = id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger() { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+
                 await db.SaveChangesAsync();
+                id = dbtr.Id;
             }
 
             var eb = new StringBuilder();
