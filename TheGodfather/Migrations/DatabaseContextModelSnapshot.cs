@@ -778,13 +778,6 @@ namespace TheGodfather.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
-                    b.Property<string[]>("AliasesDb")
-                        .HasColumnName("aliases");
-
-                    b.Property<string[]>("IPs")
-                        .IsRequired()
-                        .HasColumnName("ip");
-
                     b.Property<string>("Info")
                         .HasColumnName("additional_info");
 
@@ -800,10 +793,39 @@ namespace TheGodfather.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.ToTable("swat_players");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerAlias", b =>
+                {
+                    b.Property<string>("Alias")
+                        .HasColumnName("alias")
+                        .HasMaxLength(32);
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnName("id");
+
+                    b.HasKey("Alias", "PlayerId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("swat_aliases");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerIP", b =>
+                {
+                    b.Property<string>("IP")
+                        .HasColumnName("ip")
+                        .HasMaxLength(16);
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnName("id");
+
+                    b.HasKey("IP", "PlayerId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("swat_ips");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatServer", b =>
@@ -1021,6 +1043,22 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("SelfRoles")
                         .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerAlias", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Entities.DatabaseSwatPlayer", "DbSwatPlayer")
+                        .WithMany("DbAliases")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerIP", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Entities.DatabaseSwatPlayer", "DbSwatPlayer")
+                        .WithMany("DbIPs")
+                        .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

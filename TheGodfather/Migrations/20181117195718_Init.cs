@@ -202,8 +202,6 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     name = table.Column<string>(maxLength: 32, nullable: false),
-                    aliases = table.Column<string[]>(nullable: true),
-                    ip = table.Column<string[]>(nullable: false),
                     additional_info = table.Column<string>(nullable: true),
                     is_blacklisted = table.Column<bool>(nullable: false, defaultValue: false)
                 },
@@ -597,6 +595,46 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "swat_aliases",
+                schema: "gf",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false),
+                    alias = table.Column<string>(maxLength: 32, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_swat_aliases", x => new { x.alias, x.id });
+                    table.ForeignKey(
+                        name: "FK_swat_aliases_swat_players_id",
+                        column: x => x.id,
+                        principalSchema: "gf",
+                        principalTable: "swat_players",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "swat_ips",
+                schema: "gf",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false),
+                    ip = table.Column<string>(maxLength: 16, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_swat_ips", x => new { x.ip, x.id });
+                    table.ForeignKey(
+                        name: "FK_swat_ips_swat_players_id",
+                        column: x => x.id,
+                        principalSchema: "gf",
+                        principalTable: "swat_players",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "chicken_bought_upgrades",
                 schema: "gf",
                 columns: table => new
@@ -752,11 +790,16 @@ namespace TheGodfather.Migrations
                 column: "gid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_swat_players_name",
+                name: "IX_swat_aliases_id",
                 schema: "gf",
-                table: "swat_players",
-                column: "name",
-                unique: true);
+                table: "swat_aliases",
+                column: "id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_swat_ips_id",
+                schema: "gf",
+                table: "swat_ips",
+                column: "id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -854,7 +897,11 @@ namespace TheGodfather.Migrations
                 schema: "gf");
 
             migrationBuilder.DropTable(
-                name: "swat_players",
+                name: "swat_aliases",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "swat_ips",
                 schema: "gf");
 
             migrationBuilder.DropTable(
@@ -887,6 +934,10 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "rss_feeds",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "swat_players",
                 schema: "gf");
 
             migrationBuilder.DropTable(

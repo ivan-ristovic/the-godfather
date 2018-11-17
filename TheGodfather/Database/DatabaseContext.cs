@@ -1,10 +1,12 @@
 ﻿#region USING_DIRECTIVES
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 using System;
 
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
+
 using static TheGodfather.Database.DatabaseContextBuilder;
 #endregion
 
@@ -60,10 +62,11 @@ namespace TheGodfather.Database
             if (optionsBuilder.IsConfigured)
                 return;
 
-            // optionsBuilder.EnableSensitiveDataLogging(true);
+            //optionsBuilder.EnableSensitiveDataLogging(true);
+            //optionsBuilder.UseLazyLoadingProxies();
 
-            // optionsBuilder.UseLazyLoadingProxies();
-            // optionsBuilder.ConfigureWarnings(wb => wb.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.DetachedLazyLoadingWarning));
+            //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
+            optionsBuilder.ConfigureWarnings(warnings => warnings.Throw(CoreEventId.IncludeIgnoredWarning));
 
             switch (this.Provider) {
                 case DatabaseProvider.PostgreSQL: optionsBuilder.UseNpgsql(this.ConnectionString); break;
@@ -141,6 +144,8 @@ namespace TheGodfather.Database
             model.Entity<DatabaseRssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
             model.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             model.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
+            model.Entity<DatabaseSwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });
+            model.Entity<DatabaseSwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
             model.Entity<DatabaseTextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
         }

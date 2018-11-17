@@ -56,8 +56,17 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 100].");
 
                 List<DatabaseSwatPlayer> matches;
-                using (DatabaseContext db = this.Database.CreateContext())
-                    matches = await db.SwatPlayers.Where(p => p.IPs.Any(dbip => dbip.StartsWith(ip.Content))).ToListAsync();
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    matches = db.SwatPlayers
+                        .Include(p => p.DbAliases)
+                        .Include(p => p.DbIPs)
+                        .AsEnumerable()
+                        .Where(p => p.IPs.Any(dbip => dbip.StartsWith(ip.Content)))
+                        .ToList();
+                }
+
+                if (!matches.Any())
+                    throw new CommandFailedException("No results.");
 
                 await ctx.SendCollectionInPagesAsync(
                     $"Search matches for {ip.Content}",
@@ -86,13 +95,21 @@ namespace TheGodfather.Modules.Swat
 
                 var matches = new List<DatabaseSwatPlayer>();
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    matches = await db.SwatPlayers
+                    matches = db.SwatPlayers
+                        .Include(p => p.DbAliases)
+                        .Include(p => p.DbIPs)
+                        .AsEnumerable()
                         .Where(p => p.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase) ||
                                p.Aliases.Any(a => a.Contains(name, StringComparison.InvariantCultureIgnoreCase)))
-                        .OrderBy(p => Math.Min(Math.Abs(p.Name.LevenshteinDistance(name)), p.Aliases.Min(a => Math.Abs(a.LevenshteinDistance(name)))))
-                        .Take(amount)
-                        .ToListAsync();
+                        .OrderBy(p => p.Aliases.Any() ? 
+                            Math.Min(Math.Abs(p.Name.LevenshteinDistance(name)), p.Aliases.Min(a => Math.Abs(a.LevenshteinDistance(name)))) :
+                            Math.Abs(p.Name.LevenshteinDistance(name))
+                        ).Take(amount)
+                        .ToList();
                 }
+
+                if (!matches.Any())
+                    throw new CommandFailedException("No results.");
 
                 await ctx.SendCollectionInPagesAsync(
                     $"Search matches for {name}",

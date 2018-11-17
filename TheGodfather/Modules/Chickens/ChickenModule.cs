@@ -286,13 +286,13 @@ namespace TheGodfather.Modules.Chickens
         {
             List<Chicken> chickens;
             using (DatabaseContext db = this.Database.CreateContext()) {
-                chickens = await db.Chickens
-                    .Where(c => c.GuildId > 0)  // TODO ....
+                chickens = db.Chickens
                     .Include(c => c.DbUpgrades)
                         .ThenInclude(u => u.DbChickenUpgrade)
+                    .AsEnumerable()
                     .Select(c => Chicken.FromDatabaseChicken(c))
                     .OrderBy(c => c.Stats.TotalStrength)
-                    .ToListAsync();
+                    .ToList();
             }
 
             if (!chickens.Any())

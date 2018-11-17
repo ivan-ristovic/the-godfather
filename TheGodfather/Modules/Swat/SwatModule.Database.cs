@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -40,7 +41,7 @@ namespace TheGodfather.Modules.Swat
                 => this.ListAsync(ctx);
 
 
-            #region COMMAND_DATABASE_ADD
+            #region COMMAND_SWAT_DATABASE_ADD
             [Command("add"), Priority(2)]
             [Description("Add a player to IP database.")]
             [Aliases("+", "a", "+=", "<", "<<")]
@@ -51,21 +52,21 @@ namespace TheGodfather.Modules.Swat
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name || p.IPs.Contains(ip.Content));
+                    DatabaseSwatPlayer player = db.SwatPlayers
+                        .Include(p => p.DbIPs)
+                        .FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase) || p.IPs.Contains(ip.Content));
                     if (player is null) {
-                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
+                        var toAdd = new DatabaseSwatPlayer() {
                             Info = info,
-                            IPs = new string[] { ip.Content },
                             IsBlacklisted = false,
                             Name = name
-                        });
+                        };
+                        toAdd.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = toAdd.Id, IP = ip.Content });
+                        db.SwatPlayers.Add(toAdd);
                     } else {
-                        if (player.Name != name && !player.Aliases.Contains(name)) {
-                            if (player.AliasesDb is null || !player.AliasesDb.Any())
-                                player.AliasesDb = new string[1];
-                            player.AliasesDb[0] = name;
-                        }
-                        player.IPs = player.IPs.Concat(new string[] { ip.Content }).Distinct().ToArray();
+                        if (player.Name != name && !player.Aliases.Contains(name))
+                            player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = name, PlayerId = player.Id });
+                        player.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = player.Id, IP = ip.Content });
                         db.SwatPlayers.Update(player);
                     }
                     await db.SaveChangesAsync();
@@ -82,13 +83,16 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (player is null) {
-                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
-                            IPs = ips.Select(ip => ip.Content).ToArray(),
+                        var toAdd = new DatabaseSwatPlayer() {
                             IsBlacklisted = false,
                             Name = name
-                        });
+                        };
+                        foreach (string ip in ips.Select(i => i.Content))
+                            toAdd.DbIPs.Add(new DatabaseSwatPlayerIP() { IP = ip, PlayerId = toAdd.Id });
+                        db.SwatPlayers.Add(toAdd);
                     } else {
-                        player.IPs = player.IPs.Concat(ips.Select(ip => ip.Content)).Distinct().ToArray();
+                        foreach (string ip in ips.Select(i => i.Content))
+                            player.DbIPs.Add(new DatabaseSwatPlayerIP() { IP = ip, PlayerId = player.Id });
                         db.SwatPlayers.Update(player);
                     }
                     await db.SaveChangesAsync();
@@ -105,7 +109,62 @@ namespace TheGodfather.Modules.Swat
                 => this.AddAsync(ctx, name, ip, reason);
             #endregion
 
-            #region COMMAND_DATABASE_DELETE
+            #region COMMAND_SWAT_DATABASE_ALIAS
+            [Command("alias"), Priority(2)]
+            [Description("Add a player alias to the database.")]
+            [Aliases("+a", "aa", "+=a", "<a", "<<a")]
+            [UsageExamples("!swat db alias Name Alias")]
+            public async Task AliasAsync(CommandContext ctx,
+                                        [Description("Player name.")] string name,
+                                        [Description("Player alias.")] string alias)
+            {
+                if (alias.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
+
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (player is null)
+                        throw new CommandFailedException($"Name {Formatter.Bold(name)} is not present in the database!");
+                    if (!player.Aliases.Contains(name))
+                        player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = alias, PlayerId = player.Id });
+                    db.SwatPlayers.Update(player);
+                    await db.SaveChangesAsync();
+                    await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
+                }
+            }
+
+            [Command("alias"), Priority(1)]
+            public async Task AliasAsync(CommandContext ctx,
+                                        [Description("Player alias.")] string alias,
+                                        [Description("Player IP.")] CustomIPFormat ip)
+            {
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers
+                        .Include(p => p.DbAliases)
+                        .Include(p => p.DbIPs)
+                        .FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                    if (player is null)
+                        throw new CommandFailedException($"A player with IP {Formatter.Bold(ip.Content)} is not present in the database!");
+
+                    if (alias.Equals(player.Name, StringComparison.InvariantCultureIgnoreCase))
+                        throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
+
+                    if (!player.Aliases.Contains(alias))
+                        player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = alias, PlayerId = player.Id });
+                    db.SwatPlayers.Update(player);
+                    await db.SaveChangesAsync();
+                    await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
+                }
+            }
+
+            [Command("alias"), Priority(0)]
+            public Task AliasAsync(CommandContext ctx,
+                                  [Description("Player IP.")] CustomIPFormat ip,
+                                  [Description("Player alias.")] string alias)
+                => this.AliasAsync(ctx, alias, ip);
+            #endregion
+
+            #region COMMAND_SWAT_DATABASE_DELETE
             [Command("delete"), Priority(1)]
             [Description("Remove IP entry from database.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
@@ -114,10 +173,10 @@ namespace TheGodfather.Modules.Swat
                                          [Description("IP or range.")] CustomIPFormat ip)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                    DatabaseSwatPlayer player = db.SwatPlayers.Include(p => p.DbIPs).FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (!(player is null)) {
-                        player.IPs = player.IPs.Except(new string[] { ip.Content }).ToArray();
-                        if (player.IPs.Any())
+                        player.DbIPs.Remove(new DatabaseSwatPlayerIP() { IP = ip.Content, PlayerId = player.Id });
+                        if (player.DbIPs.Any())
                             db.SwatPlayers.Update(player);
                         else
                             db.SwatPlayers.Remove(player);
@@ -127,7 +186,7 @@ namespace TheGodfather.Modules.Swat
 
                 await this.InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from the database.", important: false);
             }
-            
+
             [Command("delete"), Priority(0)]
             public async Task DeleteAsync(CommandContext ctx,
                                          [RemainingText, Description("Name.")] string name)
@@ -148,7 +207,7 @@ namespace TheGodfather.Modules.Swat
             }
             #endregion
 
-            #region COMMAND_DATABASE_LIST
+            #region COMMAND_SWAT_DATABASE_LIST
             [Command("list")]
             [Description("View the IP list.")]
             [Aliases("ls", "l", "print")]
@@ -161,8 +220,18 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Index or amount invalid.");
 
                 List<DatabaseSwatPlayer> players;
-                using (DatabaseContext db = this.Database.CreateContext())
-                    players = await db.SwatPlayers.OrderBy(p => p.Name).Skip(from - 1).Take(amount).ToListAsync();
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    players = await db.SwatPlayers
+                        .Include(p => p.DbAliases)
+                        .Include(p => p.DbIPs)
+                        .OrderBy(p => p.Name)
+                        .Skip(from - 1)
+                        .Take(amount)
+                        .ToListAsync();
+                }
+
+                if (!players.Any())
+                    throw new CommandFailedException("Player database is empty.");
 
                 await ctx.SendCollectionInPagesAsync(
                     "Player database",

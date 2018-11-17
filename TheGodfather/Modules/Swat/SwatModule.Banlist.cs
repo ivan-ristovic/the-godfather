@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 #endregion
 
@@ -39,8 +41,8 @@ namespace TheGodfather.Modules.Swat
                 => this.ListAsync(ctx);
 
 
-            #region COMMAND_BANLIST_ADD
-            [Command("add"), Priority(1)]
+            #region COMMAND_SWAT_BANLIST_ADD
+            [Command("add"), Priority(2)]
             [Description("Add a player to banlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
             [UsageExamples("!swat banlist add Name 109.70.149.158",
@@ -51,13 +53,11 @@ namespace TheGodfather.Modules.Swat
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                     if (player is null) {
                         db.SwatPlayers.Add(new DatabaseSwatPlayer() {
                             Info = reason,
-                            IPs = new string[] { ip.Content },
-                            IsBlacklisted = true,
-                            Name = name
+                            IsBlacklisted = true
                         });
                     } else {
                         player.IsBlacklisted = true;
@@ -69,16 +69,32 @@ namespace TheGodfather.Modules.Swat
                 await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
 
-            [Command("add"), Priority(0)]
+            [Command("add"), Priority(1)]
             public Task AddAsync(CommandContext ctx,
                                 [Description("IP.")] CustomIPFormat ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Reason for ban.")] string reason = null)
                 => this.AddAsync(ctx, name, ip, reason);
+
+            [Command("add"), Priority(1)]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Player name.")] string name,
+                                      [RemainingText, Description("Reason for ban.")] string reason = null)
+            {
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (player is null)
+                        throw new CommandFailedException($"Player with name {Formatter.Bold(name)} is not present in the database!");
+                    player.IsBlacklisted = true;
+                    db.SwatPlayers.Update(player);
+                    await db.SaveChangesAsync();
+                    await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(player.Name)}.", important: false);
+                }
+            }
             #endregion
 
-            #region COMMAND_BANLIST_DELETE
-            [Command("delete")]
+            #region COMMAND_SWAT_BANLIST_DELETE
+            [Command("delete"), Priority(1)]
             [Description("Remove ban entry from database.")]
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
             [UsageExamples("!swat banlist delete 123.123.123.123")]
@@ -86,7 +102,9 @@ namespace TheGodfather.Modules.Swat
                                          [Description("IP.")] CustomIPFormat ip)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                    DatabaseSwatPlayer player = db.SwatPlayers
+                        .Include(p => p.DbIPs)
+                        .FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (!(player is null) && player.IsBlacklisted) {
                         player.IsBlacklisted = false;
                         db.SwatPlayers.Update(player);
@@ -96,9 +114,24 @@ namespace TheGodfather.Modules.Swat
 
                 await this.InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
             }
+
+            [Command("delete"), Priority(1)]
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [Description("Player name.")] string name)
+            {
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                    if (!(player is null) && player.IsBlacklisted) {
+                        player.IsBlacklisted = false;
+                        db.SwatPlayers.Update(player);
+                    }
+                    await db.SaveChangesAsync();
+                    await this.InformAsync(ctx, $"Removed a ban entry for {Formatter.Bold(player.Name)}.", important: false);
+                }
+            }
             #endregion
 
-            #region COMMAND_BANLIST_LIST
+            #region COMMAND_SWAT_BANLIST_LIST
             [Command("list")]
             [Description("View the banlist.")]
             [Aliases("ls", "l", "print")]
@@ -106,8 +139,16 @@ namespace TheGodfather.Modules.Swat
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseSwatPlayer> banned;
-                using (DatabaseContext db = this.Database.CreateContext())
-                    banned = await db.SwatPlayers.Where(p => p.IsBlacklisted).ToListAsync();
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    banned = await db.SwatPlayers
+                        .Include(p => p.DbIPs)
+                        .Include(p => p.DbAliases)
+                        .Where(p => p.IsBlacklisted)
+                        .ToListAsync();
+                }
+
+                if (!banned.Any())
+                    throw new CommandFailedException("Banlist is empty.");
 
                 await ctx.SendCollectionInPagesAsync(
                     "Blacklist",
