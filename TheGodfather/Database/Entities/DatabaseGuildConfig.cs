@@ -154,7 +154,7 @@ namespace TheGodfather.Database.Entities
         #endregion
 
         #region ANTIINSTANTLEAVE
-        [Column("antilnstantleave_enabled")]
+        [Column("antiinstantleave_enabled")]
         public bool AntiInstantLeaveEnabled { get; set; }
 
         [Column("antiinstantleave_cooldown")]

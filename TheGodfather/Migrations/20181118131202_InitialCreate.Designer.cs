@@ -10,8 +10,8 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20181117195718_Init")]
-    partial class Init
+    [Migration("20181118131202_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -396,7 +396,7 @@ namespace TheGodfather.Migrations
 
                     b.Property<bool>("AntiInstantLeaveEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("antilnstantleave_enabled")
+                        .HasColumnName("antiinstantleave_enabled")
                         .HasDefaultValue(false);
 
                     b.Property<byte>("AntifloodAction")

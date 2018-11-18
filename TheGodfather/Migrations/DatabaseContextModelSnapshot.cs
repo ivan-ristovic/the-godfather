@@ -394,7 +394,7 @@ namespace TheGodfather.Migrations
 
                     b.Property<bool>("AntiInstantLeaveEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("antilnstantleave_enabled")
+                        .HasColumnName("antiinstantleave_enabled")
                         .HasDefaultValue(false);
 
                     b.Property<byte>("AntifloodAction")
