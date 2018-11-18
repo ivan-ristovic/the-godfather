@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Search.Services
     {
         private static readonly string _apiUrl = "https://www.googleapis.com/youtube/v3";
         private static readonly string _ytUrl = "https://www.youtube.com";
-        private static readonly Regex _sanitizeRegex = new Regex("[^a-z0-9-]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex _sanitizeRegex = new Regex("[^a-z0-9_-]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex _ytRegex = new Regex(@"\.(youtu(be)?)\.", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly YoutubeClient ytExplode;

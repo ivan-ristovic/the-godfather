@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.ChannelId == ctx.Channel.Id && ids.Contains(s.Id)));
+                    db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && ids.Contains(s.Id)));
                     await db.SaveChangesAsync();
                 }
 
@@ -191,7 +191,10 @@ namespace TheGodfather.Modules.Search
                                                [RemainingText, Description("Name of the subscription.")] string name)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = name });
+                    DatabaseRssSubscription sub = db.RssSubscriptions.SingleOrDefault(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name);
+                    if (sub == null)
+                        throw new CommandFailedException("Not subscribed to a feed with that name!");
+                    db.RssSubscriptions.Remove(sub);
                     await db.SaveChangesAsync();
                 }
 
