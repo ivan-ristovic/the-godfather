@@ -46,7 +46,7 @@ namespace TheGodfather.Database
                     }.ConnectionString;
                     break;
                 case DatabaseProvider.SQLite:
-                    this.ConnectionString = $"Data Source={cfg.DatabaseName}";
+                    this.ConnectionString = $"Data Source={cfg.DatabaseName}.db;";
                     break;
                 case DatabaseProvider.SQLServer:
                     this.ConnectionString = $@"Data Source=(localdb)\ProjectsV13;Initial Catalog={cfg.DatabaseName};Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";

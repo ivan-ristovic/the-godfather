@@ -69,10 +69,17 @@ namespace TheGodfather.Database
             optionsBuilder.ConfigureWarnings(warnings => warnings.Throw(CoreEventId.IncludeIgnoredWarning));
 
             switch (this.Provider) {
-                case DatabaseProvider.PostgreSQL: optionsBuilder.UseNpgsql(this.ConnectionString); break;
-                case DatabaseProvider.SQLite: optionsBuilder.UseSqlite(this.ConnectionString); break;
-                case DatabaseProvider.SQLServer: optionsBuilder.UseSqlServer(this.ConnectionString); break;
-                default: throw new NotSupportedException("Provider not supported!");
+                case DatabaseProvider.PostgreSQL:
+                    optionsBuilder.UseNpgsql(this.ConnectionString);
+                    break;
+                case DatabaseProvider.SQLite:
+                    optionsBuilder.UseSqlite(this.ConnectionString);
+                    break;
+                case DatabaseProvider.SQLServer:
+                    optionsBuilder.UseSqlServer(this.ConnectionString);
+                    break;
+                default:
+                    throw new NotSupportedException("Provider not supported!");
             }
         }
 

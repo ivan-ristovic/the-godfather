@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Database
 {
-    public class DesignDatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
+    public class DesignTimeDatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {
         public DatabaseContext CreateDbContext(params string[] args)
         {
