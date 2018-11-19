@@ -24,7 +24,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member banned");
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.Ban);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
             if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
                 emb.WithDescription(e.Member?.ToString() ?? _unknown);
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
@@ -48,7 +48,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member unbanned");
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.Unban);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Unban);
             if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
                 emb.WithDescription(e.Member?.ToString() ?? _unknown);
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
@@ -91,7 +91,7 @@ namespace TheGodfather.EventListeners
                 action = AuditLogActionType.EmojiDelete;
             else
                 action = AuditLogActionType.EmojiUpdate;
-            DiscordAuditLogEntry entry = await e.Guild.GetFirstAuditLogEntryAsync(action);
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(action);
 
             emb.WithTitle($"Guild emoji action occured: {action.ToString()}");
             if (entry is null || !(entry is DiscordAuditLogEmojiEntry eentry)) {
@@ -145,7 +145,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role created", e.Role.ToString());
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleCreate);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleCreate);
             if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
                 if (!(rentry.NameChange is null))
@@ -179,7 +179,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role deleted", e.Role.ToString());
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleDelete);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleDelete);
             if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true); if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
@@ -202,7 +202,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role updated");
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.RoleUpdate);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleUpdate);
             if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.WithDescription(rentry.Target.Id.ToString());
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
@@ -238,7 +238,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Guild settings updated");
 
-            var entry = await e.GuildAfter.GetFirstAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
+            var entry = await e.GuildAfter.GetLatestAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
             if (!(entry is null) && entry is DiscordAuditLogGuildEntry gentry) {
                 emb.AddField("User responsible", gentry.UserResponsible.Mention, inline: true);
                 if (!(gentry.NameChange is null))

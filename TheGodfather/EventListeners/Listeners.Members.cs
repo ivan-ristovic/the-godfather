@@ -118,6 +118,19 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
+
+            DiscordAuditLogEntry kickEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Kick);
+            DiscordAuditLogEntry banEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
+            if (!(kickEntry is null)) {
+                emb.WithTitle("Member kicked");
+                emb.AddField("User responsible", kickEntry.UserResponsible.Mention);
+                emb.AddField("Reason", kickEntry.Reason ?? "No reason provided.");
+            } else if (!(banEntry is null)) {
+                emb.WithTitle("Member BANNED");
+                emb.AddField("User responsible", banEntry.UserResponsible.Mention);
+                emb.AddField("Reason", banEntry.Reason ?? "No reason provided.");
+            }
+
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
@@ -138,9 +151,9 @@ namespace TheGodfather.EventListeners
 
             DiscordAuditLogEntry entry = null;
             if (e.RolesBefore.Count == e.RolesAfter.Count)
-                entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MemberUpdate);
+                entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MemberUpdate);
             else
-                entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MemberRoleUpdate);
+                entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MemberRoleUpdate);
             if (!(entry is null) && entry is DiscordAuditLogMemberUpdateEntry mentry) {
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                 if (!(mentry.NicknameChange is null))

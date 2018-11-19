@@ -28,7 +28,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel created", e.Channel.ToString());
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
             if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -57,7 +57,7 @@ namespace TheGodfather.EventListeners
 
             emb.AddField("Channel type", e.Channel?.Type.ToString() ?? _unknown, inline: true);
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
             if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -111,7 +111,7 @@ namespace TheGodfather.EventListeners
                     return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel updated");
-            DiscordAuditLogEntry entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);            
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);            
             if (!(entry is null) && entry is DiscordAuditLogChannelEntry centry) {     // Regular update
                 emb.WithDescription(centry.Target.ToString());
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
@@ -137,17 +137,17 @@ namespace TheGodfather.EventListeners
                 AuditLogActionType type;
                 if (e.ChannelBefore.PermissionOverwrites.Count > e.ChannelAfter.PermissionOverwrites.Count) {
                     type = AuditLogActionType.OverwriteCreate;
-                    entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.OverwriteCreate);
+                    entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteCreate);
                 } else if (e.ChannelBefore.PermissionOverwrites.Count < e.ChannelAfter.PermissionOverwrites.Count) {
                     type = AuditLogActionType.OverwriteDelete;
-                    entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.OverwriteDelete);
+                    entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteDelete);
                 } else {
                     if (e.ChannelBefore.PermissionOverwrites.Zip(e.ChannelAfter.PermissionOverwrites, (o1, o2) => o1.Allowed != o1.Allowed && o2.Denied != o2.Denied).Any()) {
                         type = AuditLogActionType.OverwriteUpdate;
-                        entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.OverwriteUpdate);
+                        entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteUpdate);
                     } else {
                         type = AuditLogActionType.ChannelUpdate;
-                        entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);
+                        entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);
                     }
                 }
 

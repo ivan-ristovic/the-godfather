@@ -170,7 +170,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
+            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
 

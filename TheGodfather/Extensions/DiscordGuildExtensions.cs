@@ -13,7 +13,7 @@ namespace TheGodfather.Extensions
 {
     internal static class DiscordGuildExtensions
     {
-        public static async Task<DiscordAuditLogEntry> GetFirstAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType type)
+        public static async Task<DiscordAuditLogEntry> GetLatestAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType type)
         {
             try {
                 var entry = (await guild.GetAuditLogsAsync(1, action_type: type))
