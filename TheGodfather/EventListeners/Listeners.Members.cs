@@ -121,14 +121,14 @@ namespace TheGodfather.EventListeners
 
             DiscordAuditLogEntry kickEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Kick);
             DiscordAuditLogEntry banEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
-            if (!(kickEntry is null)) {
+            if (!(kickEntry is null) && kickEntry is DiscordAuditLogKickEntry ke && ke.Target.Id == e.Member.Id) {
                 emb.WithTitle("Member kicked");
-                emb.AddField("User responsible", kickEntry.UserResponsible.Mention);
-                emb.AddField("Reason", kickEntry.Reason ?? "No reason provided.");
-            } else if (!(banEntry is null)) {
+                emb.AddField("User responsible", ke.UserResponsible.Mention);
+                emb.AddField("Reason", ke.Reason ?? "No reason provided.");
+            } else if (!(banEntry is null) && banEntry is DiscordAuditLogBanEntry be && be.Target.Id == e.Member.Id) {
                 emb.WithTitle("Member BANNED");
-                emb.AddField("User responsible", banEntry.UserResponsible.Mention);
-                emb.AddField("Reason", banEntry.Reason ?? "No reason provided.");
+                emb.AddField("User responsible", be.UserResponsible.Mention);
+                emb.AddField("Reason", be.Reason ?? "No reason provided.");
             }
 
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
