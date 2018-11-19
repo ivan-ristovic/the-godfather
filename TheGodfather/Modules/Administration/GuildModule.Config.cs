@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordChannel channel = await this.ChooseSetupChannelAsync(ctx);
 
-                var gcfg = CachedGuildConfig.Default;
+                CachedGuildConfig gcfg = CachedGuildConfig.Default;
                 await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you " +
                                          "through the configuration. You can always re-run this setup or " +
                                          "manually change the settings so do not worry if you don't do " +
@@ -469,7 +469,7 @@ namespace TheGodfather.Modules.Administration
                                                     DiscordRole muteRole, MemberUpdateMessagesSettings msgSettings,
                                                     AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
-                var sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
+                StringBuilder sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
                 sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
                 sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
@@ -665,12 +665,15 @@ namespace TheGodfather.Modules.Administration
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
                     await channel.EmbedAsync("Which role will it be?");
                     MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id &&
-                             m.Author.Id == ctx.User.Id &&
-                             m.MentionedRoles.Count == 1
+                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id &&
+                             (m.MentionedRoles.Count == 1 || ctx.Guild.Roles.Any(r => r.Name.Equals(m.Content, StringComparison.InvariantCultureIgnoreCase)))
                     );
-                    if (!(mctx is null))
-                        muteRole = mctx.MentionedRoles.First();
+                    if (!(mctx is null)) {
+                        if (mctx.MentionedRoles.Any())
+                            muteRole = mctx.MentionedRoles.First();
+                        else
+                            muteRole = ctx.Guild.Roles.FirstOrDefault(r => r.Name.Equals(mctx.Message.Content, StringComparison.InvariantCultureIgnoreCase));
+                    }
                 }
 
                 muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
