@@ -207,7 +207,8 @@ namespace TheGodfather
                 GuildConfigurations = guildConfigurations,
                 LogProvider = new Logger(BotConfiguration),
                 MessageCount = msgcount,
-                TextReactions = treactions
+                TextReactions = treactions,
+                UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
             };
         }
 
