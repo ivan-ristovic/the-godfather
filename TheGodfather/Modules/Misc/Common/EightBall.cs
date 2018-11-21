@@ -44,12 +44,12 @@ namespace TheGodfather.Modules.Misc.Common
         }.ToImmutableArray();
 
 
-        public static string GenerateAnswer(string question, IReadOnlyCollection<DiscordMember> members)
+        public static string GenerateAnswer(string question, IEnumerable<DiscordMember> members)
         {
             if (question.StartsWith("when", StringComparison.InvariantCultureIgnoreCase))
                 return GetRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
-                return members.ElementAt(GFRandom.Generator.Next(members.Count)).DisplayName;
+                return members.ElementAt(GFRandom.Generator.Next(members.Count())).DisplayName;
             else
                 return GetRandomElement(_regularAnswers);
         }
