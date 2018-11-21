@@ -5,7 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 using System;
@@ -140,6 +140,9 @@ namespace TheGodfather.EventListeners
                     break;
                 case UnauthorizedException _:
                     sb.Append("I am not authorized to do that.");
+                    break;
+                case DbUpdateException _:
+                    sb.Append("A database update error has occured, possibly due to large amount of update requests. Please try again later.");
                     break;
                 case TargetInvocationException _:
                     sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
