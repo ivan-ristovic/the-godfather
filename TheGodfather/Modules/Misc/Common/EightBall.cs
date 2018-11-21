@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Misc.Common
             "Next month.",
             "Next year.",
             "Never.",
-            "When I grow beard."
+            "When I grow a beard."
         }.ToImmutableArray();
 
 
