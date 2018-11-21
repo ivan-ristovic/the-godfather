@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
 
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,8 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ChannelModule : TheGodfatherModule
     {
+        private static ImmutableArray<int> _ratelimitValues = new int[] { 0, 5, 10, 15, 30, 45, 60, 75, 90, 120 }.ToImmutableArray();
+
 
         public ChannelModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
@@ -255,6 +258,8 @@ namespace TheGodfather.Modules.Administration
             emb.AddField("NSFW", channel.IsNSFW.ToString(), inline: true);
             emb.AddField("Private", channel.IsPrivate.ToString(), inline: true);
             emb.AddField("Position", channel.Position.ToString(), inline: true);
+            if (channel.PerUserRateLimit.HasValue)
+                emb.AddField("Per-user rate limit", channel.PerUserRateLimit.ToString(), inline: true);
             if (channel.Type == ChannelType.Voice) {
                 emb.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
                 emb.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
@@ -454,6 +459,48 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Position.")] int position,
                                        [RemainingText, Description("Reason.")] string reason = null)
             => this.ReorderChannelAsync(ctx, null, position, reason);
+        #endregion
+
+        #region COMMAND_CHANNEL_SETRATELIMIT
+        [Command("setratelimit"), Priority(1)]
+        [Description("Set the per-user ratelimit for given channel. Setting the value to 0 will disable ratelimit.")]
+        [Aliases("setrl", "setrate", "setrlimit")]
+        [UsageExamples("!channel setratelimit #general 5",
+                       "!channel setratelimit 5 #general Reason")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task SetRatelimitAsync(CommandContext ctx,
+                                           [Description("Channel to affect.")] DiscordChannel channel,
+                                           [Description("New ratelimit.")] int ratelimit,
+                                           [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (ratelimit < 0)
+                throw new InvalidCommandUsageException("Ratelimit value cannot be negative.");
+
+            if (!_ratelimitValues.Contains(ratelimit))
+                throw new InvalidCommandUsageException($"Ratelimit value must be one of the following: {Formatter.InlineCode(string.Join(", ", _ratelimitValues))}");
+
+            channel = channel ?? ctx.Channel;
+
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                m.PerUserRateLimit = ratelimit;
+                m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
+            }));
+
+            await this.InformAsync(ctx, $"Changed the ratemilit setting of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(ratelimit.ToString())}", important: false);
+        }
+
+        [Command("setratelimit"), Priority(0)]
+        public Task SetRatelimitAsync(CommandContext ctx,
+                                     [Description("New ratelimit.")] int ratelimit,
+                                     [Description("Channel to affect.")] DiscordChannel channel,
+                                     [RemainingText, Description("Reason.")] string reason = null)
+            => this.SetRatelimitAsync(ctx, channel, ratelimit, reason);
+
+        [Command("setratelimit"), Priority(0)]
+        public Task SetRatelimitAsync(CommandContext ctx,
+                                     [Description("New ratelimit.")] int ratelimit,
+                                     [RemainingText, Description("Reason.")] string reason = null)
+            => this.SetRatelimitAsync(ctx, ctx.Channel, ratelimit, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETTOPIC

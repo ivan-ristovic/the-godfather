@@ -130,6 +130,8 @@ namespace TheGodfather.EventListeners
                 }
                 if (!(centry.TypeChange is null))
                     emb.AddField("Type changed to", centry.TypeChange.After.Value.ToString());
+                if (!(centry.PerUserRateLimitChange is null))
+                    emb.AddField("Per-user rate limit changed to", centry.PerUserRateLimitChange.After.Value.ToString());
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
                 emb.WithFooter($"At {centry.CreationTimestamp.ToUniversalTime().ToString()} UTC", centry.UserResponsible.AvatarUrl);
