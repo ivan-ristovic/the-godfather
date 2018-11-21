@@ -10,10 +10,17 @@ namespace TheGodfather.Modules.Misc.Common
     {
         private static ImmutableArray<string> _answers = new string[] {
             "Definitely NO.",
+            "Are you crazy? No.",
+            "As I see it, no.",
+            "Unlikely.",
             "No.",
             "I don't think so.",
+            "I need time to think, ask me later."
             "I think so.",
             "Yes.",
+            "As I see it, yes.",
+            "Hell yeah!",
+            "Most likely.",
             "Definitely YES.",
             "More than you can imagine."
         }.ToImmutableArray();
