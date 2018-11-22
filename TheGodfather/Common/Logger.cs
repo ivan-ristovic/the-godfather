@@ -5,6 +5,7 @@ using DSharpPlus.EventArgs;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common
@@ -33,6 +34,7 @@ namespace TheGodfather.Common
             this.LogLevel = cfg.LogLevel;
             this.LogToFile = cfg.LogToFile;
             this.path = cfg.LogPath ?? "gf_log.txt";
+            TaskScheduler.UnobservedTaskException += this.LogUnobservedTaskException;
         }
 
 
@@ -100,6 +102,12 @@ namespace TheGodfather.Common
                 return;
 
             this.ElevatedLog(level, message, shard, timestamp, filelog);
+        }
+
+
+        private void LogUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            this.LogException(LogLevel.Error, e.Exception);
         }
 
 
