@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Swat
         #region COMMAND_STARTCHECK
         [Command("startcheck"), Priority(1), UsesInteractivity]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
-        [Aliases("checkspace", "spacecheck")]
+        [Aliases("checkspace", "spacecheck", "sc")]
         [UsageExamples("!s4 startcheck 109.70.149.158",
                        "!s4 startcheck 109.70.149.158:10480",
                        "!swat startcheck wm")]
