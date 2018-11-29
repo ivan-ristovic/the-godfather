@@ -551,6 +551,7 @@ namespace TheGodfather.Modules.Administration
 
             private async Task SetupVerboseRepliesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
+                gcfg.ReactionResponse = true;
                 string query = "By default I am sending verbose messages whenever a command is executed, " +
                                "but I can also silently react. Should I continue with the verbose replies?";
                 if (!await channel.WaitForBoolResponseAsync(ctx, query, reply: false))
