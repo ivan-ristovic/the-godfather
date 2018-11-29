@@ -395,7 +395,7 @@ namespace TheGodfather
                 }
 
                 using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
-                    db.Database.ExecuteSqlCommand("UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                    db.Database.ExecuteSqlCommand("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                     db.SaveChanges();
                 }
             } catch (Exception e) {

@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -677,7 +678,12 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+                try {
+                    muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+                } catch (UnauthorizedException) {
+                    await channel.InformFailureAsync("I am not authorized to create roles!");
+                }
+
                 return muteRole;
             }
 
