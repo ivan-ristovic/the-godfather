@@ -166,7 +166,6 @@ namespace TheGodfather.Modules.Administration
                        "!guild rename \"Reason for renaming\" New guild name")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
-                                          [Description("Reason.")] string reason,
                                           [RemainingText, Description("New name.")] string newname)
         {
             if (string.IsNullOrWhiteSpace(newname))
@@ -177,15 +176,10 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = newname;
-                m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
+                m.AuditLogReason = ctx.BuildInvocationDetailsString();
             }));
             await this.InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}", important: false);
         }
-
-        [Command("rename")]
-        public Task RenameGuildAsync(CommandContext ctx,
-                                    [RemainingText, Description("New name.")] string newname)
-            => this.RenameGuildAsync(ctx, null, newname);
         #endregion
 
         #region COMMAND_GUILD_SETICON
