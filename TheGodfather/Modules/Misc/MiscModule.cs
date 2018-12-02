@@ -71,25 +71,6 @@ namespace TheGodfather.Modules.Misc
             => this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
         #endregion
 
-        #region COMMAND_GIVEME
-        [Command("giveme")]
-        [Description("Grants you a role from this guild's self-assignable roles list.")]
-        [Aliases("giverole", "gimme", "grantme")]
-        [UsageExamples("!giveme @Announcements")]
-        [RequireBotPermissions(Permissions.ManageRoles)]
-        public async Task GiveRoleAsync(CommandContext ctx,
-                                       [Description("Role to grant.")] DiscordRole role)
-        {
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
-                    throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
-            }
-
-            await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("Granted self-assignable role."));
-            await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
-        }
-        #endregion
-
         #region COMMAND_INVITE
         [Command("invite")]
         [Description("Get an instant invite link for the current guild.")]
