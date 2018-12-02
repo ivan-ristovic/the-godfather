@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency
                     await this.JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    if (game.ParticipantCount > 1) {
+                    if (game.ParticipantCount > 0) {
                         await game.RunAsync();
 
                         if (game.Winners.Any()) {

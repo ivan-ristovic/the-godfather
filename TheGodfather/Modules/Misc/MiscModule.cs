@@ -172,6 +172,29 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_NSFW
+        [Command("nsfw")]
+        [Description("Wraps the URL into a special NSFW block.")]
+        [UsageExamples("!nsfw some_nasty_nsfw_url_here")]
+        [RequireBotPermissions(Permissions.ManageMessages)]
+        public async Task NsfwAsync(CommandContext ctx,
+                                   [Description("URL to wrap.")] Uri url,
+                                   [RemainingText, Description("Additional info")] string info = null)
+        {
+            await ctx.Message.DeleteAsync();
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = $"{StaticDiscordEmoji.NoEntry} NSFW link from {ctx.Member.DisplayName} {StaticDiscordEmoji.NoEntry}",
+                Description = Formatter.EmbedlessUrl(url),
+                Color = DiscordColor.Red
+            };
+            if (!string.IsNullOrWhiteSpace(info))
+                emb.AddField("Additional info", Formatter.BlockCode(Formatter.Sanitize(info)));
+
+            await ctx.RespondAsync(embed: emb.Build());
+        }
+        #endregion
+
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate measurement.")]
