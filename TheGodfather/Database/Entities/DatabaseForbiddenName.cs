@@ -9,6 +9,9 @@ namespace TheGodfather.Database.Entities
     public class DatabaseForbiddenName
     {
         [Key]
+        [Column("id")]
+        public int Id { get; set; }
+
         [ForeignKey("DbGuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -16,7 +19,7 @@ namespace TheGodfather.Database.Entities
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("name_regex")]
+        [Column("name_regex"), Required, MaxLength(64)]
         public string ForbiddenNamesRegexString { get; set; }
 
 

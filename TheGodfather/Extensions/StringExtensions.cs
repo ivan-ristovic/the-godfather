@@ -65,6 +65,12 @@ namespace TheGodfather.Extensions
             if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
                 return false;
 
+            result = CreateRegex(pattern, escape: false);
+            return true;
+        }
+
+        public static Regex CreateRegex(this string pattern, bool escape = false)
+        {
             string rstr = pattern.ToLowerInvariant();
             if (char.IsLetterOrDigit(pattern.First()))
                 rstr = $@"\b{rstr}";
@@ -75,9 +81,7 @@ namespace TheGodfather.Extensions
             else
                 rstr = $@"{rstr}($|\s)";
 
-            result = new Regex(rstr, RegexOptions.IgnoreCase);
-
-            return true;
+            return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
         }
     }
 }

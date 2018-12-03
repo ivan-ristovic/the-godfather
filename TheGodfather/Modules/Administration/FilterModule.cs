@@ -67,8 +67,8 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    if (regexString.Length < 3 || regexString.Length > 60) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 60 characters.");
+                    if (regexString.Length < 3 || regexString.Length > 120) {
+                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 120 characters.");
                         continue;
                     }
 
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_FILTER_DELETE
         [Command("delete"), Priority(1)]
-        [Description("Removes filter either by ID or plain text.")]
+        [Description("Removes filter either by ID or plain text match.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!filter delete fuck f+u+c+k+",
                        "!filter delete 3 4")]
@@ -137,6 +137,9 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {
+            if (!ids.Any())
+                throw new CommandFailedException("No IDs given.");
+
             if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
@@ -177,6 +180,9 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
+            if (!filters.Any())
+                throw new CommandFailedException("No filters given.");
+
             if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters))
                 throw new CommandFailedException("This guild has no filters registered.");
 

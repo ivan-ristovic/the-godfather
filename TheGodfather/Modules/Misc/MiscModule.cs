@@ -175,8 +175,8 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_NSFW
         [Command("nsfw")]
         [Description("Wraps the URL into a special NSFW block.")]
-        [UsageExamples("!nsfw some_nasty_nsfw_url_here")]
-        [UsageExamples("!nsfw some_nasty_nsfw_url_here additional info")]
+        [UsageExamples("!nsfw some_nasty_nsfw_url_here", 
+                       "!nsfw some_nasty_nsfw_url_here additional info")]
         [RequireBotPermissions(Permissions.ManageMessages)]
         public async Task NsfwAsync(CommandContext ctx,
                                    [Description("URL to wrap.")] Uri url,
