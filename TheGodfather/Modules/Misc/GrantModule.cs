@@ -45,5 +45,29 @@ namespace TheGodfather.Modules.Misc
             await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
         }
         #endregion
+
+        #region COMMAND_GRANT_NAME
+        [Command("nickname")]
+        [Description("Grants you a given nickname.")]
+        [Aliases("nick", "name", "n")]
+        [UsageExamples("!grant name My New Display Name")]
+        [RequireBotPermissions(Permissions.ManageNicknames)]
+        public async Task GiveNameAsync(CommandContext ctx,
+                                       [RemainingText, Description("Nickname to set.")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Nickname missing.");
+            
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                // TODO check db forbidden names when added
+            }
+
+            await ctx.Member.ModifyAsync(m => {
+                m.Nickname = name;
+                m.AuditLogReason = "Self-rename";
+            });
+            await this.InformAsync(ctx, "Successfully granted the required nickname.", important: false);
+        }
+        #endregion
     }
 }
