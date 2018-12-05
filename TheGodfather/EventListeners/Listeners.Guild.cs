@@ -263,19 +263,6 @@ namespace TheGodfather.EventListeners
             await logchn.SendMessageAsync(embed: emb.Build());
         }
 
-        [AsyncEventListener(DiscordEventType.VoiceServerUpdated)]
-        public static async Task VoiceServerUpdateEventHandlerAsync(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
-        {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
-                return;
-
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Voice server updated");
-            emb.AddField("Endpoint", Formatter.Bold(e.Endpoint));
-
-            await logchn.SendMessageAsync(embed: emb.Build());
-        }
-
         [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
         public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
