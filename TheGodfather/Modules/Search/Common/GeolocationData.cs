@@ -70,9 +70,9 @@ namespace TheGodfather.Modules.Search.Common
 
             emb.AddField("Location", $"{this.City}, {this.RegionName} {this.RegionCode}, {this.CountryName} {this.CountryCode}");
             emb.AddField("Exact location", $"({this.Latitude}, {this.Longitude})", inline: true);
-            emb.AddField("ISP", this.Isp ?? _unknown, inline: true);
-            emb.AddField("Organization", this.Organization ?? _unknown, inline: true);
-            emb.AddField("AS number", this.As ?? _unknown, inline: true);
+            emb.AddField("ISP", string.IsNullOrWhiteSpace(this.Isp) ? _unknown : this.Isp, inline: true);
+            emb.AddField("Organization", string.IsNullOrWhiteSpace(this.Organization) ? _unknown : this.Organization, inline: true);
+            emb.AddField("AS number", string.IsNullOrWhiteSpace(this.As) ? _unknown : this.As, inline: true);
 
             emb.WithFooter("Powered by ip-api.");
 
