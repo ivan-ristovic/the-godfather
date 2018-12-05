@@ -35,7 +35,12 @@ namespace TheGodfather.Modules.Administration
         }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Guild member.")] DiscordMember member = null)
+            => this.InfoAsync(ctx, member);
+
+        [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("User.")] DiscordUser user = null)
             => this.InfoAsync(ctx, user);
@@ -142,10 +147,49 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_INFO
-        [Command("info")]
+        [Command("info"), Priority(1)]
         [Description("Print the information about the given user.")]
         [Aliases("i", "information")]
         [UsageExamples("!user info @Someone")]
+        public Task InfoAsync(CommandContext ctx,
+                             [Description("Guild member.")] DiscordMember member = null)
+        {
+            member = member ?? ctx.Member;
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = $"Member: {Formatter.Bold(member.DisplayName)} ({Formatter.Bold(member.Username)})",
+                ThumbnailUrl = member.AvatarUrl,
+                Color = this.ModuleColor
+            };
+
+            emb.AddField("Joined at", member.JoinedAt.ToUtcTimestamp(), inline: true);
+            emb.AddField("Hierarchy", member.Hierarchy.ToString(), inline: true);
+            emb.AddField("Status", member.Presence?.Status.ToString() ?? "Offline", inline: true);
+            emb.AddField("Discriminator", member.Discriminator, inline: true);
+            emb.AddField("Avatar hash", member.AvatarHash, inline: true);
+            emb.AddField("Created", member.CreationTimestamp.ToUtcTimestamp(), inline: true);
+            emb.AddField("ID", member.Id.ToString(), inline: true);
+            if (!string.IsNullOrWhiteSpace(member.Email))
+                emb.AddField("E-mail", member.Email, inline: true);
+            if (!(member.Verified is null))
+                emb.AddField("Verified", member.Verified.Value.ToString(), inline: true);
+            if (!(member.Presence?.Activity is null)) {
+                if (!string.IsNullOrWhiteSpace(member.Presence.Activity?.Name))
+                    emb.AddField("Activity", $"{member.Presence.Activity.ActivityType.ToString()} : {member.Presence.Activity.Name}", inline: false);
+                if (!string.IsNullOrWhiteSpace(member.Presence.Activity?.StreamUrl))
+                    emb.AddField("Stream URL", $"{member.Presence.Activity.StreamUrl}", inline: false);
+                if (!(member.Presence.Activity.RichPresence is null)) {
+                    if (!string.IsNullOrWhiteSpace(member.Presence.Activity.RichPresence?.Details))
+                        emb.AddField("Details", $"{member.Presence.Activity.RichPresence.Details}", inline: false);
+                }
+            }
+            if (member.Roles.Any())
+                emb.AddField("Roles", string.Join(", ", member.Roles.Select(r => r.Name)));
+
+            return ctx.RespondAsync(embed: emb.Build());
+        }
+
+        [Command("info"), Priority(0)]
         public Task InfoAsync(CommandContext ctx,
                              [Description("User.")] DiscordUser user = null)
         {
@@ -159,6 +203,7 @@ namespace TheGodfather.Modules.Administration
 
             emb.AddField("Status", user.Presence?.Status.ToString() ?? "Offline", inline: true);
             emb.AddField("Discriminator", user.Discriminator, inline: true);
+            emb.AddField("Avatar hash", user.AvatarHash, inline: true);
             emb.AddField("Created", user.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("ID", user.Id.ToString(), inline: true);
             if (!string.IsNullOrWhiteSpace(user.Email))
