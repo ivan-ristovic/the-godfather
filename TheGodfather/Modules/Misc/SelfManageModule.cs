@@ -72,4 +72,38 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
     }
+
+    [Group("revoke"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Description("Requests to revoke a certain object from the sender (role for example).")]
+    [Aliases("take")]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
+    public class RevokeModule : TheGodfatherModule
+    {
+
+        public RevokeModule(SharedData shared, DatabaseContextBuilder db)
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.Wheat;
+        }
+
+
+        #region COMMAND_REVOKE_ROLE
+        [Command("role")]
+        [Description("Revokes from your role list a role from this guild's self-assignable roles list.")]
+        [Aliases("rl", "r")]
+        [UsageExamples("!revoke role @Announcements")]
+        [RequireBotPermissions(Permissions.ManageRoles)]
+        public async Task GiveRoleAsync(CommandContext ctx,
+                                       [Description("Role to revoke.")] DiscordRole role)
+        {
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
+                    throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+            }
+
+            await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("Revoked self-assignable role."));
+            await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
+        }
+        #endregion
+    }
 }
