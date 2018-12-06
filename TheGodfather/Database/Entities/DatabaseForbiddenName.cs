@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Database.Entities
@@ -24,7 +25,7 @@ namespace TheGodfather.Database.Entities
         public string RegexString { get; set; }
 
         [NotMapped]
-        public Regex Regex => new Regex(this.RegexString, RegexOptions.IgnoreCase);
+        public Regex Regex => this.RegexString.CreateRegex();
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

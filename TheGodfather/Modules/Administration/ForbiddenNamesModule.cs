@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -53,6 +52,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
         [UsageExamples("!forbiddennames add fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
+        [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Name list.")] params string[] names)
         {
@@ -62,19 +62,36 @@ namespace TheGodfather.Modules.Administration
             var eb = new StringBuilder();
 
             using (DatabaseContext db = this.Database.CreateContext()) {
+                var dbNames = new List<DatabaseForbiddenName>();
                 foreach (string regexString in names) {
                     if (regexString.Length < 3 || regexString.Length > 60) {
                         eb.AppendLine($"Error: Name or regex {Formatter.InlineCode(regexString)} doesn't fit the size requirement (3-60).");
                         continue;
                     }
 
-                    if (!regexString.TryParseRegex(out var regex))
+                    if (!regexString.TryParseRegex(out Regex regex))
                         regex = regexString.CreateRegex(escape: true);
 
-                    var name = new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, RegexString = regexString };
-                    db.ForbiddenNames.Add(name);
+                    dbNames.Add(new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, RegexString = regexString });
                 }
+                db.ForbiddenNames.AddRange(dbNames);
                 await db.SaveChangesAsync();
+
+                DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+                // TODO D#+ DiscordMember.Hierarchy throws if member has no roles, waiting for a fix.
+                foreach (DiscordMember member in ctx.Guild.Members.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
+                    if (dbNames.Any(name => name.Regex.IsMatch(member.DisplayName))) {
+                        try {
+                            await member.ModifyAsync(m => {
+                                m.Nickname = "Temporary nickname";
+                                m.AuditLogReason = "_gf: Forbidden name match";
+                            });
+                            await member.SendMessageAsync($"The nickname you have in the guild {ctx.Guild.Name} is now forbidden by the guild administrator and I have set a temporary nickname for you. Please set a different name.");
+                        } catch (UnauthorizedException) {
+
+                        }
+                    }
+                }
             }
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -109,7 +126,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
-            
+
             using (DatabaseContext db = this.Database.CreateContext()) {
                 db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(fn => fn.GuildId == ctx.Guild.Id && ids.Any(id => id == fn.Id)));
                 await db.SaveChangesAsync();
@@ -126,7 +143,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Tried deleting forbidden names with IDs", string.Join("\n", ids.Select(id => id.ToString())));
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
-            
+
             await this.InformAsync(ctx, "Done!", important: false);
         }
         #endregion

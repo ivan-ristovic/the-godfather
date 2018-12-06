@@ -81,12 +81,11 @@ namespace TheGodfather.EventListeners
                             m.AuditLogReason = "_gf: Forbidden name match";
                         });
                         emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                        if (!e.Member.IsBot)
+                            await e.Member.SendMessageAsync($"Your nickname in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
                     } catch (UnauthorizedException) {
                         emb.AddField("Additional actions taken", "Matched forbidden name, but I failed to remove it. Check my permissions");
                     }
-
-                    if (!e.Member.IsBot)
-                        await e.Member.SendMessageAsync($"Your nickname in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
                 }
             }
 
@@ -198,12 +197,11 @@ namespace TheGodfather.EventListeners
                             m.AuditLogReason = "_gf: Forbidden name match";
                         });
                         emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                        if (!e.Member.IsBot)
+                            await e.Member.SendMessageAsync($"The nickname you tried to set in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
                     } catch (UnauthorizedException) {
                         emb.AddField("Additional actions taken", "Matched forbidden name, but I failed to remove it. Check my permissions");
                     }
-
-                    if (!e.Member.IsBot)
-                        await e.Member.SendMessageAsync($"The nickname you tried to set in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
                 }
             }
 
