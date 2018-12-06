@@ -57,6 +57,9 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Member.")] DiscordMember member,
                                          [Description("Roles to grant.")] params DiscordRole[] roles)
         {
+            if (roles is null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to provide atleast one role to grant.");
+
             if (roles.Max(r => r.Position) >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You are not authorised to grant some of these roles.");
 
@@ -325,6 +328,9 @@ namespace TheGodfather.Modules.Administration
                                           [Description("Member.")] DiscordMember member,
                                           [Description("Roles to revoke.")] params DiscordRole[] roles)
         {
+            if (roles is null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to provide atleast one role to revoke.");
+
             if (roles.Max(r => r.Position) >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot revoke some of the given roles.");
 

@@ -229,7 +229,7 @@ namespace TheGodfather.Modules.Misc
         public Task PenisCompareAsync(CommandContext ctx,
                                      [Description("User1.")] params DiscordUser[] users)
         {
-            if (users?.Length < 2 || users?.Length >= 10)
+            if (users is null || users.Length < 2 || users.Length >= 10)
                 throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
 
             if (users.Any(u => u.IsCurrent))

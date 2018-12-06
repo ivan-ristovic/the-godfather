@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Reminder ID.")] params int[] ids)
         {
-            if (!ids.Any())
+            if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing IDs of reminders to remove.");
 
             if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs))

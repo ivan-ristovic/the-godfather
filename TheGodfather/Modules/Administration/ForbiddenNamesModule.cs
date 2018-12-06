@@ -43,8 +43,8 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageNicknames)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Forbidden name list (can be regexes)")] params string[] regexes)
-            => this.AddAsync(ctx, regexes);
+                                     [RemainingText, Description("Forbidden name list (can be regexes)")] params string[] names)
+            => this.AddAsync(ctx, names);
 
 
         #region COMMAND_FORBIDDENNAMES_ADD
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Forbidden name IDs to remove.")] params int[] ids)
         {
-            if (!ids.Any())
+            if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
             
             using (DatabaseContext db = this.Database.CreateContext()) {

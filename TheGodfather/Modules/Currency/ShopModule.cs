@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Currency
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("ID list of items to remove.")] params int[] ids)
         {
-            if (!ids.Any())
+            if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {

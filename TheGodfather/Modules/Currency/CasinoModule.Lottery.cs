@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
-                if (numbers.Length != 3)
+                if (numbers is null || numbers.Length != 3)
                     throw new CommandFailedException("You need to specify three numbers!");
 
                 if (numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))

@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Owner
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to grant privilege to.")] params DiscordUser[] users)
             {
-                if (!users.Any())
+                if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
                 
                 using (DatabaseContext db = this.Database.CreateContext()) {
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to revoke privileges from.")] params DiscordUser[] users)
             {
-                if (!users.Any())
+                if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {

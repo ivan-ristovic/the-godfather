@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("IDs of the upgrades to buy.")] params int[] ids)
             {
-                if (!ids.Any())
+                if (ids is null || !ids.Any())
                     throw new CommandFailedException("You need to specify the IDs of the upgrades you wish to purchase.");
 
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)

@@ -29,17 +29,17 @@ namespace TheGodfather.Modules.Administration.Common
 
     public sealed class LinkfilterMatcher : Regex
     {
-        public LinkfilterMatcher(params string[] items) 
+        public LinkfilterMatcher(params string[] items)
             : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
         {
-            if (!items.Any())
+            if (items is null || !items.Any())
                 throw new ArgumentException("No items provided for matching.");
         }
 
-        public LinkfilterMatcher(IEnumerable<string> items) 
+        public LinkfilterMatcher(IEnumerable<string> items)
             : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
         {
-            if (!items.Any())
+            if (items is null || !items.Any())
                 throw new ArgumentException("No items provided for matching.");
         }
 

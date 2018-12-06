@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Owner
                 if (reason?.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
 
-                if (!channels.Any())
+                if (channels is null || !channels.Any())
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {
-                if (!channels.Any())
+                if (channels is null || !channels.Any())
                     throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var eb = new StringBuilder();

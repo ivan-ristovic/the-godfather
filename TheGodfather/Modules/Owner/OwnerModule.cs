@@ -476,7 +476,7 @@ namespace TheGodfather.Modules.Owner
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] gids)
         {
-            if (!gids.Any())
+            if (gids is null || !gids.Any())
                 throw new InvalidCommandUsageException("IDs missing.");
 
             var eb = new StringBuilder();

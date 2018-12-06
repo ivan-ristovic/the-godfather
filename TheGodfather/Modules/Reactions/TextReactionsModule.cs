@@ -85,6 +85,9 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
+            if (ids is null || !ids.Any())
+                throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
+
             if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
@@ -130,7 +133,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
-            if (triggers is null)
+            if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Triggers missing.");
 
             if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))

@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {
-            if (!ids.Any())
+            if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
 
             if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters))
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
-            if (!filters.Any())
+            if (filters is null || !filters.Any())
                 throw new CommandFailedException("No filters given.");
 
             if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters))

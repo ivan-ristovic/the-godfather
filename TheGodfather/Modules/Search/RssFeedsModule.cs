@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Search
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the subscriptions to remove.")] params int[] ids)
             {
-                if (!ids.Any())
+                if (ids is null || !ids.Any())
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {

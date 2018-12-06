@@ -137,6 +137,9 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
+            if (ids is null || !ids.Any())
+                throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
+
             if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
@@ -184,7 +187,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
-            if (triggers is null)
+            if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
             if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
@@ -336,7 +339,7 @@ namespace TheGodfather.Modules.Reactions
         #region HELPER_FUNCTIONS
         private async Task AddEmojiReactionAsync(CommandContext ctx, DiscordEmoji emoji, bool regex, params string[] triggers)
         {
-            if (triggers is null)
+            if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
             if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))

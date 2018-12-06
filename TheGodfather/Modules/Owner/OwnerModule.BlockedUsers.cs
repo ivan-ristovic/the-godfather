@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Owner
                 if (reason?.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
 
-                if (!users.Any())
+                if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {
-                if (!users.Any())
+                if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var eb = new StringBuilder();

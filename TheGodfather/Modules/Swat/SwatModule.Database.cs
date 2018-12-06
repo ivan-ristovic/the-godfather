@@ -80,6 +80,9 @@ namespace TheGodfather.Modules.Swat
                                       [Description("Player name.")] string name,
                                       [Description("IPs.")] params CustomIPFormat[] ips)
             {
+                if (ips is null || !ips.Any())
+                    throw new InvalidCommandUsageException("You need to specify atleast one IP to add.");
+
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (player is null) {

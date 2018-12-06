@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Users to exempt.")] params DiscordUser[] users)
                 {
-                    if (!users.Any())
+                    if (users is null || !users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Roles to exempt.")] params DiscordRole[] roles)
                 {
-                    if (!roles.Any())
+                    if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Channels to exempt.")] params DiscordChannel[] channels)
                 {
-                    if (!channels.Any())
+                    if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("User to unexempt.")] params DiscordUser[] users)
                 {
-                    if (!users.Any())
+                    if (users is null || !users.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
@@ -195,7 +195,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Roles to unexempt.")] params DiscordRole[] roles)
                 {
-                    if (!roles.Any())
+                    if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Channels to unexempt.")] params DiscordChannel[] channels)
                 {
-                    if (!channels.Any())
+                    if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
