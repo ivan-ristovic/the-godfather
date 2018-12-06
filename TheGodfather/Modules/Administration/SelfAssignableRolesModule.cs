@@ -92,16 +92,13 @@ namespace TheGodfather.Modules.Administration
                        "!sar delete @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Roles to delete.")] params DiscordRole[] roles)
+                                     [Description("Roles to remove.")] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.RemoveRange(roles.Select(r => new DatabaseSelfRole() {
-                    RoleId = r.Id,
-                    GuildId = ctx.Guild.Id
-                }));
+                db.SelfAssignableRoles.RemoveRange(db.SelfAssignableRoles.Where(sar => sar.GuildId == ctx.Guild.Id && roles.Any(r => r.Id == sar.RoleId)));
                 await db.SaveChangesAsync();
             }
 

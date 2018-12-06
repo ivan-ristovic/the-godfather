@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("No IDs given.");
             
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.ForbiddenNames.RemoveRange(ids.Select(id => new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, Id = id }));
+                db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(fn => fn.GuildId == ctx.Guild.Id && ids.Any(id => id == fn.Id)));
                 await db.SaveChangesAsync();
             }
 
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.RemoveRange(db.ForbiddenNames.Where(n => n.GuildId == ctx.Guild.Id));
+                db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(n => n.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
 

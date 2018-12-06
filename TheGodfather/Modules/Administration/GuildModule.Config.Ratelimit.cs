@@ -194,15 +194,15 @@ namespace TheGodfather.Modules.Administration
                                "!guild cfg ratelimit exempt #spam",
                                "!guild cfg ratelimit exempt Role")]
                 public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Users to exempt.")] params DiscordUser[] users)
+                                             [Description("Members to exempt.")] params DiscordMember[] members)
                 {
-                    if (users is null || !users.Any())
+                    if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.AddRange(users.Select(u => new DatabaseExemptRatelimit() {
+                        db.RatelimitExempts.AddRange(members.Select(m => new DatabaseExemptRatelimit() {
                             GuildId = ctx.Guild.Id,
-                            Id = u.Id,
+                            Id = m.Id,
                             Type = ExemptedEntityType.Member
                         }));
                         await db.SaveChangesAsync();
@@ -261,17 +261,15 @@ namespace TheGodfather.Modules.Administration
                                "!guild cfg ratelimit unexempt #spam",
                                "!guild cfg ratelimit unexempt Category")]
                 public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Users to unexempt.")] params DiscordUser[] users)
+                                              [Description("Members to unexempt.")] params DiscordMember[] members)
                 {
-                    if (users is null || !users.Any())
+                    if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.RemoveRange(users.Select(u => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = u.Id,
-                            Type = ExemptedEntityType.Member
-                        }));
+                        db.RatelimitExempts.RemoveRange(
+                            db.RatelimitExempts.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Member && members.Any(m => m.Id == ex.Id))
+                        );
                         await db.SaveChangesAsync();
                     }
 
@@ -287,11 +285,9 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.RemoveRange(roles.Select(r => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = r.Id,
-                            Type = ExemptedEntityType.Role
-                        }));
+                        db.RatelimitExempts.RemoveRange(
+                            db.RatelimitExempts.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Role && roles.Any(r => r.Id == ex.Id))
+                        );
                         await db.SaveChangesAsync();
                     }
 
@@ -307,11 +303,9 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.RemoveRange(channels.Select(c => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = c.Id,
-                            Type = ExemptedEntityType.Channel
-                        }));
+                        db.RatelimitExempts.RemoveRange(
+                            db.RatelimitExempts.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Channel && channels.Any(c => c.Id == ex.Id))
+                        );
                         await db.SaveChangesAsync();
                     }
 

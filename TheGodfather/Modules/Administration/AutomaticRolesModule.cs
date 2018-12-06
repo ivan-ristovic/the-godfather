@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
                  "of the guild. Group call lists all automatic roles for the guild. Group call with an " +
                  "arbitrary amount of roles will add those roles to the automatic roles list for the " +
                  "guild, effective immediately.")]
-    [Aliases("autoroles", "automaticr", "autorole", "aroles", "arole", "arl", "ar")]
+    [Aliases("autoroles", "automaticr", "autorole", "aroles", "arole", "arl", "ar", "aar")]
     [UsageExamples("!ar",
                    "!ar @Guests")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
@@ -98,10 +98,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.AutoAssignableRoles.RemoveRange(roles.Select(r => new DatabaseAutoRole() {
-                    RoleId = r.Id,
-                    GuildId = ctx.Guild.Id
-                }));
+                db.AutoAssignableRoles.RemoveRange(db.AutoAssignableRoles.Where(ar => ar.GuildId == ctx.Guild.Id && roles.Any(r => r.Id == ar.RoleId)));
                 await db.SaveChangesAsync();
             }
 

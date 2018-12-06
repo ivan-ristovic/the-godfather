@@ -270,7 +270,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_BANK_UNREGISTER
-        [Command("unregister")]
+        [Command("unregister"), Priority(1)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
         [UsageExamples("!bank unregister @Someone")]
@@ -280,15 +280,24 @@ namespace TheGodfather.Modules.Currency
                                          [Description("Globally delete?")] bool global = false)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
-                if (global)
+                if (global) { 
                     db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
-                else
-                    db.BankAccounts.Remove(new DatabaseBankAccount() { GuildId = ctx.Guild.Id, UserId = user.Id });
+                } else {
+                    DatabaseBankAccount acc = db.BankAccounts.SingleOrDefault(a => a.GuildId == ctx.Guild.Id && a.UserId == user.Id);
+                    if (acc is null)
+                        throw new CommandFailedException($"User {Formatter.Bold(user.Username)} does not have a bank account in this guild.");
+                    db.BankAccounts.Remove(acc);
+                }
                 await db.SaveChangesAsync();
             }
 
             await this.InformAsync(ctx, important: false);
         }
+
+        [Command("unregister"), Priority(0)]
+        public Task UnregisterAsync(CommandContext ctx,
+                                   [Description("User whose account to delete.")] DiscordMember member)
+            => this.UnregisterAsync(ctx, member as DiscordUser, false);
         #endregion
     }
 }

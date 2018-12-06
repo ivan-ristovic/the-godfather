@@ -83,9 +83,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users.");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.PrivilegedUsers.RemoveRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
-                        UserId = u.Id
-                    }));
+                    db.PrivilegedUsers.RemoveRange(db.PrivilegedUsers.Where(pu => users.Any(u => u.Id == pu.UserId)));
                     await db.SaveChangesAsync();
                 }
 

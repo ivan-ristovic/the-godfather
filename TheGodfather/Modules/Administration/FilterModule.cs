@@ -239,7 +239,7 @@ namespace TheGodfather.Modules.Administration
                 throw new ConcurrentOperationException("Failed to remove filter data structure for this guild. This is bad!");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id));
+                db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
 

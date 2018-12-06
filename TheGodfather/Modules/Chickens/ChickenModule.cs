@@ -125,7 +125,6 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to pay for the disease creation!");
 
                 db.Chickens.RemoveRange(db.Chickens.Where(c => c.Vitality < threshold));
-
                 await db.SaveChangesAsync();
             }
 
