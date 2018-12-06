@@ -236,7 +236,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = rsub });
+                    db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == rsub));
                     await db.SaveChangesAsync();
                 }
 
@@ -257,7 +257,7 @@ namespace TheGodfather.Modules.Search
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Name = name_url });
+                    db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name_url));
                     await db.SaveChangesAsync();
                 }
 
