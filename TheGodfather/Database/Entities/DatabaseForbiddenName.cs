@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 #endregion
 
 namespace TheGodfather.Database.Entities
@@ -20,7 +21,10 @@ namespace TheGodfather.Database.Entities
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("name_regex"), Required, MaxLength(64)]
-        public string ForbiddenNamesRegexString { get; set; }
+        public string RegexString { get; set; }
+
+        [NotMapped]
+        public Regex Regex => new Regex(this.RegexString, RegexOptions.IgnoreCase);
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

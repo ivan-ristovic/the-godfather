@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Administration
                     if (!regexString.TryParseRegex(out var regex))
                         regex = regexString.CreateRegex(escape: true);
 
-                    var name = new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, ForbiddenNamesRegexString = regexString };
+                    var name = new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, RegexString = regexString };
                     db.ForbiddenNames.Add(name);
                 }
                 await db.SaveChangesAsync();
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.SendCollectionInPagesAsync(
                 $"Forbidden names registered for {ctx.Guild.Name}",
                 names,
-                n => $"{Formatter.InlineCode($"{n.Id:D3}")} | {Formatter.InlineCode(n.ForbiddenNamesRegexString)}",
+                n => $"{Formatter.InlineCode($"{n.Id:D3}")} | {Formatter.InlineCode(n.RegexString)}",
                 this.ModuleColor
             );
         }

@@ -2,7 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
+using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -72,6 +72,23 @@ namespace TheGodfather.EventListeners
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
+
+            using (DatabaseContext db = shard.Database.CreateContext()) {
+                if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.Member.DisplayName))) {
+                    try {
+                        await e.Member.ModifyAsync(m => {
+                            m.Nickname = "Temporary name";
+                            m.AuditLogReason = "_gf: Forbidden name match";
+                        });
+                        emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                    } catch (UnauthorizedException) {
+                        emb.AddField("Additional actions taken", "Matched forbidden name, but I failed to remove it. Check my permissions");
+                    }
+
+                    if (!e.Member.IsBot)
+                        await e.Member.SendMessageAsync($"Your nickname in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
+                }
+            }
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -171,6 +188,23 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Name after", e.NicknameAfter ?? _unknown, inline: true);
                 emb.AddField("Roles before", e.RolesBefore?.Count.ToString() ?? _unknown, inline: true);
                 emb.AddField("Roles after", e.RolesAfter?.Count.ToString() ?? _unknown, inline: true);
+            }
+
+            using (DatabaseContext db = shard.Database.CreateContext()) {
+                if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
+                    try {
+                        await e.Member.ModifyAsync(m => {
+                            m.Nickname = e.NicknameBefore;
+                            m.AuditLogReason = "_gf: Forbidden name match";
+                        });
+                        emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                    } catch (UnauthorizedException) {
+                        emb.AddField("Additional actions taken", "Matched forbidden name, but I failed to remove it. Check my permissions");
+                    }
+
+                    if (!e.Member.IsBot)
+                        await e.Member.SendMessageAsync($"The nickname you tried to set in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
+                }
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());

@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -59,7 +60,8 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Nickname missing.");
             
             using (DatabaseContext db = this.Database.CreateContext()) {
-                // TODO check db forbidden names when added
+                if (db.ForbiddenNames.Any(n => n.GuildId == ctx.Guild.Id && n.Regex.IsMatch(name)))
+                    throw new CommandFailedException($"Name {name} matches one of the forbidden names in this guild.");
             }
 
             await ctx.Member.ModifyAsync(m => {
