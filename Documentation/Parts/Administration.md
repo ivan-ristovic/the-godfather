@@ -5,7 +5,7 @@
 ## Group: automaticroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for this guild, effective immediately.*
+*Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.*
 
 **Aliases:**
 `autoroles, automaticr, autorole, aroles, arole, arl, ar`
@@ -27,7 +27,7 @@
 ### automaticroles add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Adds an automatic role(s).*
+*Add automatic role(s).*
 
 **Requires user permissions:**
 `Administrator`
@@ -535,6 +535,49 @@
 
 ---
 
+### channel setratelimit
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the per-user ratelimit for given channel. Setting the value to 0 will disable ratelimit.*
+
+**Requires permissions:**
+`Manage channels`
+
+**Aliases:**
+`setrl, setrate, setrlimit`
+
+**Overload 1:**
+
+`[channel]` : *Channel to affect.*
+
+`[int]` : *New ratelimit.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+`[int]` : *New ratelimit.*
+
+`[channel]` : *Channel to affect.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+`[int]` : *New ratelimit.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!channel setratelimit #general 5
+!channel setratelimit 5 #general Reason
+```
+</p></details>
+
+---
+
 ### channel settopic
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -832,7 +875,7 @@
 ### filter delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Removes filter either by ID or plain text.*
+*Removes filter either by ID or plain text match.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -890,6 +933,112 @@
 
 ```
 !filter list
+```
+</p></details>
+
+---
+
+## Group: forbiddennames
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manage forbidden names for this guild. Group call shows all the forbidden nicknames for this guild.*
+
+**Aliases:**
+`forbiddenname, forbiddennicknames, fn, disallowednames`
+
+**Overload 0:**
+
+`[string...]` : *Forbidden name list (can be regexes)*
+
+**Examples:**
+
+```
+!forbiddennames f+u+c+k
+```
+</p></details>
+
+---
+
+### forbiddennames add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add nicknames to the forbidden list (can be a regex).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`addnew, create, a, +, +=, <, <<`
+
+**Arguments:**
+
+`[string...]` : *Name list.*
+
+**Examples:**
+
+```
+!forbiddennames add fuck f+u+c+k+
+```
+</p></details>
+
+---
+
+### forbiddennames delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes forbidden name either by ID or plain text match.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`remove, rm, del, d, -, -=, >, >>`
+
+**Arguments:**
+
+`[int...]` : *Forbidden name IDs to remove.*
+
+**Examples:**
+
+```
+!forbiddennames delete 3 4
+```
+</p></details>
+
+---
+
+### forbiddennames deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all forbidden names for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da`
+
+**Examples:**
+
+```
+!forbiddennames clear
+```
+</p></details>
+
+---
+
+### forbiddennames list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Show all forbidden names for this guild.*
+
+**Aliases:**
+`ls, l`
+
+**Examples:**
+
+```
+!forbiddennames list
 ```
 </p></details>
 
@@ -1041,7 +1190,7 @@
 **Examples:**
 
 ```
-!guild cfg antiflood sensitivity 9
+!guild cfg antiflood cooldown 9s
 ```
 </p></details>
 
@@ -1140,6 +1289,40 @@
 
 ---
 
+### guild configure antispam exempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disable the antispam watch for some entities (users, channels, etc).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ex, exc`
+
+**Overload 2:**
+
+`[user...]` : *Users to exempt.*
+
+**Overload 1:**
+
+`[role...]` : *Roles to exempt.*
+
+**Overload 0:**
+
+`[channel...]` : *Channels to exempt.*
+
+**Examples:**
+
+```
+!guild cfg antispam exempt @Someone
+!guild cfg antispam exempt #spam
+!guild cfg antispam exempt Role
+```
+</p></details>
+
+---
+
 ### guild configure antispam sensitivity
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1164,6 +1347,40 @@
 
 ---
 
+### guild configure antispam unexempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove an exempted entity and allow antispam watch for that entity.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`unex, uex`
+
+**Overload 2:**
+
+`[user...]` : *Users to unexempt.*
+
+**Overload 1:**
+
+`[role...]` : *Roles to unexempt.*
+
+**Overload 0:**
+
+`[channel...]` : *Channels to unexempt.*
+
+**Examples:**
+
+```
+!guild cfg antispam unexempt @Someone
+!guild cfg antispam unexempt #spam
+!guild cfg antispam unexempt Category
+```
+</p></details>
+
+---
+
 ## Group: guild configure instantleave
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1179,7 +1396,7 @@
 
 `[boolean]` : *Enable?*
 
-`[short]` : *Sensitivity (join-leave max seconds).*
+`[short]` : *Cooldown (join-leave max seconds).*
 
 **Overload 1:**
 
@@ -1196,16 +1413,16 @@
 
 ---
 
-### guild configure instantleave sensitivity
+### guild configure instantleave cooldown
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Set the instant leave cooldown. User will be banned if he leaves in the given sensitivity time window (in seconds).*
+*Set the instant leave sensitivity. User will be banned if he leaves within the given time window (in seconds).*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`setsensitivity, setsens, sens, s`
+`setcooldown, setcool, cool, c`
 
 **Arguments:**
 
@@ -1214,7 +1431,7 @@
 **Examples:**
 
 ```
-!guild cfg instaleave cooldown 9
+!guild cfg instaleave cooldown 5
 ```
 </p></details>
 
@@ -1431,9 +1648,9 @@
 **Examples:**
 
 ```
-!guild cfg logging
-!guild cfg logging on #log
-!guild cfg logging off
+!guild cfg log
+!guild cfg log on #log
+!guild cfg log off
 ```
 </p></details>
 
@@ -1452,22 +1669,22 @@
 
 **Overload 2:**
 
-`[user]` : *User to exempt.*
+`[user...]` : *Users to exempt.*
 
 **Overload 1:**
 
-`[role]` : *Role to exempt.*
+`[role...]` : *Roles to exempt.*
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel to exempt.* (def: `None`)
+`[channel...]` : *Channels to exempt.*
 
 **Examples:**
 
 ```
-!guild cfg exempt @Someone
-!guild cfg exempt #spam
-!guild cfg exempt Category
+!guild cfg log exempt @Someone
+!guild cfg log exempt #spam
+!guild cfg log exempt Role
 ```
 </p></details>
 
@@ -1486,22 +1703,22 @@
 
 **Overload 2:**
 
-`[user]` : *User to unexempt.*
+`[user...]` : *User to unexempt.*
 
 **Overload 1:**
 
-`[role]` : *Role to unexempt.*
+`[role...]` : *Roles to unexempt.*
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel to unexempt.* (def: `None`)
+`[channel...]` : *Channels to unexempt.*
 
 **Examples:**
 
 ```
-!guild cfg unexempt @Someone
-!guild cfg unexempt #spam
-!guild cfg unexempt Category
+!guild cfg log unexempt @Someone
+!guild cfg log unexempt #spam
+!guild cfg log unexempt Role
 ```
 </p></details>
 
@@ -1524,7 +1741,7 @@
 
 `[short]` : *Sensitivity (messages per 5s to trigger action).*
 
-(optional) `[PunishmentActionType]` : *Action type.* (def: `Mute`)
+(optional) `[PunishmentActionType]` : *Action type.* (def: `PermanentMute`)
 
 **Overload 2:**
 
@@ -1576,6 +1793,40 @@
 
 ---
 
+### guild configure ratelimit exempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disable the ratelimit watch for some entities (users, channels, etc).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ex, exc`
+
+**Overload 2:**
+
+`[user...]` : *Users to exempt.*
+
+**Overload 1:**
+
+`[role...]` : *Roles to exempt.*
+
+**Overload 0:**
+
+`[channel...]` : *Channels to exempt.*
+
+**Examples:**
+
+```
+!guild cfg ratelimit exempt @Someone
+!guild cfg ratelimit exempt #spam
+!guild cfg ratelimit exempt Role
+```
+</p></details>
+
+---
+
 ### guild configure ratelimit sensitivity
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1595,6 +1846,40 @@
 
 ```
 !guild cfg ratelimit sensitivity 9
+```
+</p></details>
+
+---
+
+### guild configure ratelimit unexempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove an exempted entity and allow ratelimit watch for that entity.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`unex, uex`
+
+**Overload 2:**
+
+`[user...]` : *Users to unexempt.*
+
+**Overload 1:**
+
+`[role...]` : *Roles to unexempt.*
+
+**Overload 0:**
+
+`[channel...]` : *Channels to unexempt.*
+
+**Examples:**
+
+```
+!guild cfg ratelimit unexempt @Someone
+!guild cfg ratelimit unexempt #spam
+!guild cfg ratelimit unexempt Category
 ```
 </p></details>
 
@@ -1854,13 +2139,7 @@
 **Aliases:**
 `r, name, setname`
 
-**Overload 0:**
-
-`[string]` : *Reason.*
-
-`[string...]` : *New name.*
-
-**Overload 0:**
+**Arguments:**
 
 `[string...]` : *New name.*
 
@@ -2637,7 +2916,11 @@
 **Aliases:**
 `users, u, usr`
 
-**Arguments:**
+**Overload 1:**
+
+(optional) `[member]` : *Guild member.* (def: `None`)
+
+**Overload 0:**
 
 (optional) `[user]` : *User.* (def: `None`)
 
@@ -2790,7 +3073,11 @@
 **Aliases:**
 `i, information`
 
-**Arguments:**
+**Overload 1:**
+
+(optional) `[member]` : *Guild member.* (def: `None`)
+
+**Overload 0:**
 
 (optional) `[user]` : *User.* (def: `None`)
 
@@ -2841,9 +3128,15 @@
 **Aliases:**
 `m`
 
-**Arguments:**
+**Overload 1:**
 
 `[boolean]` : *Mute?*
+
+`[member]` : *Member to mute.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
 
 `[member]` : *Member to mute.*
 
@@ -2870,9 +3163,15 @@
 **Aliases:**
 `mv, voicemute, vmute, mutev, vm`
 
-**Arguments:**
+**Overload 0:**
 
 `[boolean]` : *Mute?*
+
+`[member]` : *Member to mute.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
 
 `[member]` : *Member to mute.*
 
@@ -2960,7 +3259,7 @@
 ### user setname
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Gives someone a new nickname.*
+*Gives someone a new nickname in the current guild.*
 
 **Requires permissions:**
 `Manage nicknames`
@@ -3085,6 +3384,58 @@
 
 ```
 !user unban 154956794490845232
+```
+</p></details>
+
+---
+
+### user unmute
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Unmute a member.*
+
+**Requires permissions:**
+`Mute voice chat members`
+
+**Aliases:**
+`um`
+
+**Arguments:**
+
+`[member]` : *Member to unmute.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!user unmute @Someone
+```
+</p></details>
+
+---
+
+### user unmutevoice
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Unmute a member in the voice channels.*
+
+**Requires permissions:**
+`Mute voice chat members`
+
+**Aliases:**
+`umv, voiceunmute, vunmute, unmutev, vum`
+
+**Arguments:**
+
+`[member]` : *Member to unmute.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!user unmutevoice @Someone
 ```
 </p></details>
 

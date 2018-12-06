@@ -138,30 +138,6 @@
 
 ---
 
-## giveme
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Grants you a role from this guild's self-assignable roles list.*
-
-**Requires bot permissions:**
-`Manage roles`
-
-**Aliases:**
-`giverole, gimme, grantme`
-
-**Arguments:**
-
-`[role]` : *Role to grant.*
-
-**Examples:**
-
-```
-!giveme @Announcements
-```
-</p></details>
-
----
-
 ## help
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -291,6 +267,30 @@
 
 ```
 !news
+```
+</p></details>
+
+---
+
+## nsfw
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Wraps the URL into a special NSFW block.*
+
+**Requires bot permissions:**
+`Manage messages`
+
+**Arguments:**
+
+`[URL]` : *URL to wrap.*
+
+(optional) `[string...]` : *Additional info* (def: `None`)
+
+**Examples:**
+
+```
+!nsfw some_nasty_nsfw_url_here
+!nsfw some_nasty_nsfw_url_here additional info
 ```
 </p></details>
 
@@ -940,6 +940,20 @@
 ```
 !youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube unsubscribe rick
+```
+</p></details>
+
+---
+
+## uptime
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints out bot runtime information.*
+
+**Examples:**
+
+```
+!uptime
 ```
 </p></details>
 

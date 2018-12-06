@@ -427,9 +427,9 @@
 **Aliases:**
 `perks, upgrade, u`
 
-**Overload 1:**
+**Overload 0:**
 
-`[int]` : *ID of the upgrade to buy.*
+`[int...]` : *IDs of the upgrades to buy.*
 
 **Examples:**
 

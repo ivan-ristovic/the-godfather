@@ -38,7 +38,7 @@
 **Aliases:**
 `+, a, +=, <, <<`
 
-**Overload 1:**
+**Overload 2:**
 
 `[string]` : *Player name.*
 
@@ -46,9 +46,15 @@
 
 (optional) `[string...]` : *Reason for ban.* (def: `None`)
 
-**Overload 0:**
+**Overload 1:**
 
 `[CustomIPFormat]` : *IP.*
+
+`[string]` : *Player name.*
+
+(optional) `[string...]` : *Reason for ban.* (def: `None`)
+
+**Overload 1:**
 
 `[string]` : *Player name.*
 
@@ -74,9 +80,13 @@
 **Aliases:**
 `-, del, d, remove, -=, >, >>, rm`
 
-**Arguments:**
+**Overload 1:**
 
 `[CustomIPFormat]` : *IP.*
+
+**Overload 1:**
+
+`[string]` : *Player name.*
 
 **Examples:**
 
@@ -132,13 +142,19 @@
 **Aliases:**
 `+, a, +=, <, <<`
 
-**Overload 0:**
+**Overload 2:**
 
 `[string]` : *Player name.*
 
 `[CustomIPFormat]` : *IP.*
 
 (optional) `[string...]` : *Additional info.* (def: `None`)
+
+**Overload 1:**
+
+`[string]` : *Player name.*
+
+`[CustomIPFormat...]` : *IPs.*
 
 **Overload 0:**
 
@@ -157,19 +173,60 @@
 
 ---
 
+### swat database alias
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a player alias to the database.*
+
+**Privileged users only.**
+
+**Aliases:**
+`+a, aa, +=a, <a, <<a`
+
+**Overload 2:**
+
+`[string]` : *Player name.*
+
+`[string]` : *Player alias.*
+
+**Overload 1:**
+
+`[string]` : *Player alias.*
+
+`[CustomIPFormat]` : *Player IP.*
+
+**Overload 0:**
+
+`[CustomIPFormat]` : *Player IP.*
+
+`[string]` : *Player alias.*
+
+**Examples:**
+
+```
+!swat db alias Name Alias
+```
+</p></details>
+
+---
+
 ### swat database delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove ban entry from database.*
+*Remove IP entry from database.*
 
 **Privileged users only.**
 
 **Aliases:**
 `-, del, d, -=, >, >>`
 
-**Arguments:**
+**Overload 1:**
 
 `[CustomIPFormat]` : *IP or range.*
+
+**Overload 0:**
+
+`[string...]` : *Name.*
 
 **Examples:**
 
@@ -183,12 +240,18 @@
 ### swat database list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View the banlist.*
+*View the IP list.*
 
 **Privileged users only.**
 
 **Aliases:**
-`ls, l`
+`ls, l, print`
+
+**Arguments:**
+
+(optional) `[int]` : *From which index to view.* (def: `1`)
+
+(optional) `[int]` : *How many results to view.* (def: `10`)
 
 **Examples:**
 
@@ -462,7 +525,7 @@
 *Start listening for space on a given server and notifies you when there is space.*
 
 **Aliases:**
-`checkspace, spacecheck`
+`checkspace, spacecheck, sc`
 
 **Overload 1:**
 

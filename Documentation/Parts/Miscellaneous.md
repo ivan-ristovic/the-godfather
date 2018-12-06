@@ -152,6 +152,66 @@
 
 ---
 
+## Group: grant
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Requests to grant the sender a certain object (role for example).*
+
+**Aliases:**
+`give`
+
+</p></details>
+
+---
+
+### grant nickname
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Grants you a given nickname.*
+
+**Requires bot permissions:**
+`Manage nicknames`
+
+**Aliases:**
+`nick, name, n`
+
+**Arguments:**
+
+`[string...]` : *Nickname to set.*
+
+**Examples:**
+
+```
+!grant name My New Display Name
+```
+</p></details>
+
+---
+
+### grant role
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Grants you a role from this guild's self-assignable roles list.*
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Aliases:**
+`rl, r`
+
+**Arguments:**
+
+`[role]` : *Role to grant.*
+
+**Examples:**
+
+```
+!grant role @Announcements
+```
+</p></details>
+
+---
+
 ## Group: insult
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -199,7 +259,7 @@
 ### insult delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
+*Remove insult with a given ID from list. (use command ``insults list`` to view insult indexes).*
 
 **Privileged users only.**
 
@@ -208,7 +268,7 @@
 
 **Arguments:**
 
-`[int]` : *Index of the insult to remove.*
+`[int]` : *ID of the insult to remove.*
 
 **Examples:**
 
@@ -568,142 +628,6 @@
 
 ```
 !rank top
-```
-</p></details>
-
----
-
-## Group: shop
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.*
-
-**Aliases:**
-`store`
-
-**Examples:**
-
-```
-!shop
-```
-</p></details>
-
----
-
-### shop add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add a new item to guild purchasable items list.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`+, a, +=, <, <<, additem`
-
-**Overload 1:**
-
-`[long]` : *Item price.*
-
-`[string...]` : *Item name.*
-
-**Overload 0:**
-
-`[string]` : *Item name.*
-
-`[long]` : *Item price.*
-
-**Examples:**
-
-```
-!shop add Barbie 500
-!shop add "New Barbie" 500
-!shop add 500 Newest Barbie
-```
-</p></details>
-
----
-
-### shop buy
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Purchase an item from this guild's shop.*
-
-**Aliases:**
-`purchase, shutupandtakemymoney, b, p`
-
-**Arguments:**
-
-`[int]` : *Item ID.*
-
-**Examples:**
-
-```
-!shop buy 3
-```
-</p></details>
-
----
-
-### shop delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove purchasable item from this guild item list. You can remove an item by ID or by name.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`-, remove, rm, del, -=, >, >>`
-
-**Arguments:**
-
-`[int...]` : *ID list of items to remove.*
-
-**Examples:**
-
-```
-!shop delete Barbie
-!shop delete 5
-!shop delete 1 2 3 4 5
-```
-</p></details>
-
----
-
-### shop list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all purchasable items for this guild.*
-
-**Aliases:**
-`ls`
-
-**Examples:**
-
-```
-!shop list
-```
-</p></details>
-
----
-
-### shop sell
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Sell a purchased item for half the buy price.*
-
-**Aliases:**
-`return`
-
-**Arguments:**
-
-`[int]` : *Item ID.*
-
-**Examples:**
-
-```
-!shop sell 3
 ```
 </p></details>
 
