@@ -43,6 +43,17 @@ namespace TheGodfather.Modules.Misc.Common
             "When I grow a beard."
         }.ToImmutableArray();
 
+        private static ImmutableArray<string> _quantityAnswers = new string[] {
+            "None.",
+            "One.",
+            "A few.",
+            "Five.",
+            "A dozen.",
+            "One hundred.",
+            "One thousand.",
+            "It is impossible to count...",
+        }.ToImmutableArray();
+
 
         public static string GenerateAnswer(string question, IEnumerable<DiscordMember> members)
         {
@@ -50,6 +61,9 @@ namespace TheGodfather.Modules.Misc.Common
                 return GetRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
                 return members.ElementAt(GFRandom.Generator.Next(members.Count())).DisplayName;
+            if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) || 
+                question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase))
+                return GetRandomElement(_quantityAnswers);
             else
                 return GetRandomElement(_regularAnswers);
         }
