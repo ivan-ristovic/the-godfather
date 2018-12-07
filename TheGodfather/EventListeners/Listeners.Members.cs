@@ -190,7 +190,7 @@ namespace TheGodfather.EventListeners
             }
 
             using (DatabaseContext db = shard.Database.CreateContext()) {
-                if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
+                if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
                     try {
                         await e.Member.ModifyAsync(m => {
                             m.Nickname = e.NicknameBefore;
