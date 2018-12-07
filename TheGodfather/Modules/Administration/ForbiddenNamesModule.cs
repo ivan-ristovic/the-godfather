@@ -78,7 +78,6 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
 
                 DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-                // TODO D#+ DiscordMember.Hierarchy throws if member has no roles, waiting for a fix.
                 foreach (DiscordMember member in ctx.Guild.Members.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
                     if (dbNames.Any(name => name.Regex.IsMatch(member.DisplayName))) {
                         try {
