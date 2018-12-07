@@ -152,6 +152,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseRssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
             model.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             model.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
+            model.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             model.Entity<DatabaseSwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });
             model.Entity<DatabaseSwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);

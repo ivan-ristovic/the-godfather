@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 "Custom ranks for this guild",
                 ranks,
-                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank)}:D5")} | {Formatter.Bold(rank.Name)}",
+                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
                 this.ModuleColor
             );
         }
