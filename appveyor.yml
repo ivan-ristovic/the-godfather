@@ -36,10 +36,6 @@ test_script:
   - cmd: cd TheGodfatherTests
   - cmd: dotnet test
 
-on_finish:
-
-deploy: off
-
 on_success:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 success $env:WEBHOOK_URL
@@ -48,4 +44,4 @@ on_failure:
   - ps: ./send.ps1 failure $env:WEBHOOK_URL
 on_finish:
 
-https://discordapp.com/api/webhooks/520751773548412929/F6nOpuT_qIPE7YO1_6Yt_JSGtOaXGAblosDbR1oFFOQu4PFosPayFAqcGMKs4cFEtS2F
+deploy: off
