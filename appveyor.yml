@@ -4,7 +4,7 @@ branches:
   only:
   - master
 
-version: 3.0.{build}
+version: 4.1.{build}
 
 init:
   - cmd: git config --global core.autocrlf true
@@ -39,3 +39,13 @@ test_script:
 on_finish:
 
 deploy: off
+
+on_success:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 success $env:WEBHOOK_URL
+on_failure:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 failure $env:WEBHOOK_URL
+on_finish:
+
+https://discordapp.com/api/webhooks/520751773548412929/F6nOpuT_qIPE7YO1_6Yt_JSGtOaXGAblosDbR1oFFOQu4PFosPayFAqcGMKs4cFEtS2F
