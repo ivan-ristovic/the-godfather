@@ -218,7 +218,7 @@ namespace TheGodfather.Modules.Administration
                         await child.DeleteAsync(reason: ctx.BuildInvocationDetailsString(reason));
                 }
             } else {
-                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {Formatter.Bold(channel.Name)} (ID: {Formatter.InlineCode(channel.Id.ToString())})? This cannot be undone! (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {Formatter.Bold(channel.Name)} (ID: {Formatter.InlineCode(channel.Id.ToString())})? This cannot be undone!"))
                     return;
             }
 
