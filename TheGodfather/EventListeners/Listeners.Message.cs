@@ -188,7 +188,7 @@ namespace TheGodfather.EventListeners
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
-                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : Formatter.Sanitize(e.Message.Content.Truncate(1020)))}");
+                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : Formatter.Sanitize(e.Message.Content.Truncate(1000)))}");
                 if (shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.WithDescription(Formatter.Italic("Message contained a filter."));
             }

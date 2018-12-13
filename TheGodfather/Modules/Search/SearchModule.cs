@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_IPSTACK
         [Command("ipstack")]
         [Description("Retrieve IP geolocation information.")]
-        [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate")]
+        [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
         [UsageExamples("!ipstack 123.123.123.123")]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("IP.")] IPAddress ip)
