@@ -66,8 +66,6 @@ public sealed class DynamicCommands : BaseCommandModule
 {{
 {code.Substring(cs1, cs2 - cs1)}
 }}";
-
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compiling...");
                 
                 string type = $"DynamicCommands{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
                 Type moduleType = null;
@@ -103,7 +101,7 @@ public sealed class DynamicCommands : BaseCommandModule
 
                     TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
 
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Commands successfully added!");
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Command(s) successfully added!", important: false);
                 } catch (Exception ex) {
                     await this.InformFailureAsync(ctx, $"Compilation failed!\n\n{Formatter.Bold(ex.GetType().ToString())}: {ex.Message}");
                 }

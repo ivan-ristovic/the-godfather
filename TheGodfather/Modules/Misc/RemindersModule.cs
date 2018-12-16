@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
 {
     [Group("remind")]
     [Description("Manage reminders. Group call resends a message after given time span.")]
-    [Aliases("reminders", "reminder", "todo")]
+    [Aliases("reminders", "reminder", "todo", "todolist")]
     [UsageExamples("!remind 1h Drink water!")]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public class RemindersModule : TheGodfatherModule
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region HELPER_FUNCTIONS
-        private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel,
+        async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel,
                                             string message, bool repeat = false)
         {
             if (string.IsNullOrWhiteSpace(message))

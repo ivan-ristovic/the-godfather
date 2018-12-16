@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Administration.Services
                         muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
                         foreach (DiscordChannel channel in guild.Channels.Where(c => c.Type == ChannelType.Text)) {
                             await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
-                            await Task.Delay(200);
+                            await Task.Delay(100);
                         }
                         gcfg.MuteRoleId = muteRole.Id;
                         db.GuildConfig.Update(gcfg);

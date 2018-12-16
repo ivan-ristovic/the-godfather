@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
                     }
 
                     if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters)) {
-                        if (existingFilters.Any(f => regexString == regex.ToString())) {
+                        if (existingFilters.Any(f => f.Trigger.ToString() == regex.ToString())) {
                             eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                             continue;
                         }
