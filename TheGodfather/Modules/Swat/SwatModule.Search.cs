@@ -36,20 +36,25 @@ namespace TheGodfather.Modules.Swat
                 this.ModuleColor = DiscordColor.Black;
             }
 
-
-            [GroupCommand]
+            [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Player name to search.")] string name,
                                          [Description("Number of results")] int amount = 10)
                  => this.SearchNameAsync(ctx, name, amount);
 
+            [GroupCommand, Priority(0)]
+            public Task ExecuteGroupAsync(CommandContext ctx, 
+                                         [Description("IP or range.")] CustomIPFormat ip,
+                                         [Description("Number of results")] int amount = 10)
+                 => this.SearchIpAsync(ctx, ip, amount);
+
 
             #region COMMAND_SEARCH_IP
             [Command("ip")]
             [Description("Search for a given IP or range.")]
-            [UsageExamples("!swat search 123.123.123.123")]
+            [UsageExamples("!swat search ip 123.123.123.123")]
             public async Task SearchIpAsync(CommandContext ctx,
-                                           [Description("IP.")] CustomIPFormat ip,
+                                           [Description("IP or range.")] CustomIPFormat ip,
                                            [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)
@@ -85,7 +90,7 @@ namespace TheGodfather.Modules.Swat
             [Command("name")]
             [Description("Search for a given name.")]
             [Aliases("player", "nickname", "nick")]
-            [UsageExamples("!swat search EmoPig")]
+            [UsageExamples("!swat search name EmoPig")]
             public async Task SearchNameAsync(CommandContext ctx,
                                              [Description("Player name.")] string name,
                                              [Description("Number of results")] int amount = 10)
