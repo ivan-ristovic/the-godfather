@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Swat
                     $"Search matches for {ip.Content}",
                     matches,
                     p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
-                         (p.Aliases?.Any() ?? false ? $"Aliases: {Formatter.Italic(string.Join(", ", p.Aliases))}" : "") +
+                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
                          $"IPs: {Formatter.BlockCode(string.Join(", ", p.IPs))}" +
                          $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
                     this.ModuleColor,
