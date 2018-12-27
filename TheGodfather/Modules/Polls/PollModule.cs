@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Polls
         #region COMMAND_STOP
         [Command("stop")]
         [Description("Stops a running poll.")]
-        [Aliases("end")]
+        [Aliases("end", "cancel")]
         [UsageExamples("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
         public Task StopAsync(CommandContext ctx)

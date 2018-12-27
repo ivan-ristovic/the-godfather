@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
         [Aliases("gangwar", "battle")]
         [UsageExamples("!chicken war Team1 Team2",
-                       "!chicken war \"Team 1 name\" \"Team 2 name")]
+                       "!chicken war \"Team 1 name\" \"Team 2 name\"")]
         public class WarModule : TheGodfatherModule
         {
 
