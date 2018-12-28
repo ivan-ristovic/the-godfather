@@ -316,8 +316,8 @@ namespace TheGodfather.Modules.Misc
                         if (user.Id == ctx.Client.CurrentUser.Id) {
                             start_x = chart.Width - 10;
                             start_y = 0;
-                        } else {
-                            start_x = (int)(user.Id % (ulong)(chart.Width - 143)) + 110;
+                        } else { 
+                            start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
                             start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
                         }
                         graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
