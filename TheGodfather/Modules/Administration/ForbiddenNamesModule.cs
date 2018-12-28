@@ -115,10 +115,11 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FORBIDDENNAMES_DELETE
-        [Command("delete")]
+        [Command("delete"), Priority(1)]
         [Description("Removes forbidden name either by ID or plain text match.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!forbiddennames delete 3 4")]
+        [UsageExamples("!forbiddennames delete 3 4",
+                       "!forbiddennames delete SomeName")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Forbidden name IDs to remove.")] params int[] ids)
@@ -140,6 +141,36 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("User responsible", ctx.User.Mention, inline: true);
                 emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                 emb.AddField("Tried deleting forbidden names with IDs", string.Join("\n", ids.Select(id => id.ToString())));
+                await logchn.SendMessageAsync(embed: emb.Build());
+            }
+
+            await this.InformAsync(ctx, "Done!", important: false);
+        }
+
+        [Command("delete"), Priority(0)]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [RemainingText, Description("Forbidden name IDs to remove.")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Missing name.");
+
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                DatabaseForbiddenName fn = db.ForbiddenNames.SingleOrDefault(n => n.GuildId == ctx.Guild.Id && n.RegexString == name);
+                if (fn is null)
+                    throw new CommandFailedException("Such name is not forbidden.");
+                db.ForbiddenNames.Remove(fn);
+                await db.SaveChangesAsync();
+            }
+
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            if (!(logchn is null)) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Forbidden name deletion occured",
+                    Color = this.ModuleColor
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Tried deleting forbidden name", name);
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
