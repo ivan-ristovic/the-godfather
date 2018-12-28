@@ -155,6 +155,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             model.Entity<DatabaseSwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });
             model.Entity<DatabaseSwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
+            model.Entity<DatabaseSwatServer>().HasKey(srv => new { srv.IP, srv.JoinPort, srv.QueryPort });
             model.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
             model.Entity<DatabaseTextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
         }

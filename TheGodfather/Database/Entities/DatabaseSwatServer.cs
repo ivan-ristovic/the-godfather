@@ -31,8 +31,7 @@ namespace TheGodfather.Database.Entities
             };
         }
 
-
-        [Key]
+        
         [Column("ip"), Required, MaxLength(16)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string IP { get; set; }
