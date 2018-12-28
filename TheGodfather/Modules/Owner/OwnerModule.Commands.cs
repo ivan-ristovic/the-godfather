@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a new command.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExamples("!o cmd + ```[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");```")]
+            [UsageExamples("!o cmd + \\`\\`\\`[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");\\`\\`\\`")]
             public async Task AddAsync(CommandContext ctx,
                                       [RemainingText, Description("Code to evaluate.")] string code)
             {
