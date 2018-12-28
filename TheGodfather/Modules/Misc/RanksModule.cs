@@ -80,11 +80,17 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.GuildRanks.Add(new DatabaseGuildRank() {
-                    GuildId = ctx.Guild.Id,
-                    Name = name,
-                    Rank = (short)rank
-                });
+                DatabaseGuildRank dbr = db.GuildRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id);
+                if (dbr is null) {
+                    db.GuildRanks.Add(new DatabaseGuildRank() {
+                        GuildId = ctx.Guild.Id,
+                        Name = name,
+                        Rank = (short)rank
+                    });
+                } else {
+                    dbr.Name = name;
+                }
+
                 await db.SaveChangesAsync();
             }
 
