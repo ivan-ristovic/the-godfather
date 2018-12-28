@@ -229,6 +229,7 @@ namespace TheGodfather.Modules.Misc
         public Task PenisCompareAsync(CommandContext ctx,
                                      [Description("User1.")] params DiscordUser[] users)
         {
+            users = users?.Distinct().ToArray() ?? null;
             if (users is null || users.Length < 2 || users.Length >= 10)
                 throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
 
@@ -285,31 +286,43 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!rate @Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public async Task RateAsync(CommandContext ctx,
-                                   [Description("Who to measure.")] DiscordUser user = null)
+                                   [Description("Who to measure.")] params DiscordUser[] users)
         {
-            user = user ?? ctx.User;
+            users = users?.Distinct().ToArray() ?? null;
+            if (users is null || !users.Any() || users.Length > 8)
+                throw new InvalidCommandUsageException("You must provide atleast 1 and at most 8 users to rate.");
 
             try {
                 using (var chart = new Bitmap("Resources/graph.png"))
                 using (var g = Graphics.FromImage(chart)) {
-                    int start_x, start_y;
-                    if (user.Id == ctx.Client.CurrentUser.Id) {
-                        start_x = chart.Width - 10;
-                        start_y = 0;
-                    } else {
-                        start_x = (int)(user.Id % (ulong)(chart.Width - 143)) + 110;
-                        start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
-                    }
-                    g.FillEllipse(Brushes.Red, start_x, start_y, 10, 10);
-                    g.Flush();
+                    var colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
+
+                    int position = 0;
+                    foreach (DiscordUser user in users)
+                        DrawUserRating(g, user, position++);
 
                     using (var ms = new MemoryStream()) {
                         chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                         ms.Position = 0;
                         await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder() {
-                            Description = Formatter.Bold($"{user.Mention}'s rating"),
+                            Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
                             Color = this.ModuleColor
                         });
+                    }
+
+                    void DrawUserRating(Graphics graphics, DiscordUser user, int pos)
+                    {
+                        int start_x, start_y;
+                        if (user.Id == ctx.Client.CurrentUser.Id) {
+                            start_x = chart.Width - 10;
+                            start_y = 0;
+                        } else {
+                            start_x = (int)(user.Id % (ulong)(chart.Width - 143)) + 110;
+                            start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
+                        }
+                        graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
+                        graphics.DrawString(user.Username, new Font("Arial", 13), colors[pos], 750, pos * 30 + 20);
+                        graphics.Flush();
                     }
                 }
             } catch (FileNotFoundException e) {
