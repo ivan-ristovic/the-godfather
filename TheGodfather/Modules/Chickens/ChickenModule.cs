@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseChicken dbc = db.Chickens.FirstOrDefault(c => c.GuildId == ctx.Guild.Id && c.UserId == ctx.User.Id);
+                DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
                 if (dbc is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
                 dbc.Vitality = (dbc.Vitality + 100) % dbc.MaxVitality;

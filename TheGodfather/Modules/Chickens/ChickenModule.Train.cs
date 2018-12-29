@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Chickens
                 string result;
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.User.Id, (long)ctx.Guild.Id);
+                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
                     var chicken = Chicken.FromDatabaseChicken(dbc);
                     if (chicken is null)
                         throw new CommandFailedException("You do not own a chicken!");
