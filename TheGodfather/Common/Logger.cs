@@ -162,38 +162,30 @@ namespace TheGodfather.Common
         #region CONSOLE_PRINT_HELPERS
         private static void PrintLevel(LogLevel level)
         {
-            var ccfg = ConsoleColor.Gray;
-            var ccbg = ConsoleColor.Black;
             switch (level) {
                 case LogLevel.Critical:
-                    ccfg = ConsoleColor.Black;
-                    ccbg = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.BackgroundColor = ConsoleColor.Red;
                     break;
                 case LogLevel.Error:
-                    ccfg = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     break;
                 case LogLevel.Warning:
-                    ccfg = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     break;
                 case LogLevel.Info:
-                    ccfg = ConsoleColor.White;
                     break;
                 case LogLevel.Debug:
-                    ccfg = ConsoleColor.Magenta;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     break;
             }
-            Console.ForegroundColor = ccfg;
-            Console.BackgroundColor = ccbg;
             Console.WriteLine($"[{level}]");
 
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ResetColor();
         }
 
         private static void PrintTimestamp(DateTime? timestamp = null)
         {
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.White;
             Console.Write($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] ");
         }
 
@@ -201,7 +193,7 @@ namespace TheGodfather.Common
         {
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.Write(shard.HasValue ? $"[#{shard.Value}] " : "[Main] ");
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
             if (string.IsNullOrWhiteSpace(application))
                 Console.Write($"[{TheGodfather.ApplicationName}] ");
             else

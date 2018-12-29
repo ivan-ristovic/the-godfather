@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Swat
         #endregion
 
         #region COMMAND_SETTIMEOUT
-        [Command("settimeout")]
+        [Command("settimeout"), Hidden]
         [Description("Set checking timeout.")]
         [UsageExamples("!swat settimeout 500")]
         [RequireOwner]
