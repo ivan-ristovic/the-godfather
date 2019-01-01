@@ -36,17 +36,18 @@ namespace TheGodfather.Modules.Swat
                 this.ModuleColor = DiscordColor.Black;
             }
 
+
             [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("IP or range.")] CustomIPFormat ip,
+                                         [Description("Number of results")] int amount = 10)
+                 => this.SearchIpAsync(ctx, ip, amount);
+
+            [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Player name to search.")] string name,
                                          [Description("Number of results")] int amount = 10)
                  => this.SearchNameAsync(ctx, name, amount);
-
-            [GroupCommand, Priority(0)]
-            public Task ExecuteGroupAsync(CommandContext ctx, 
-                                         [Description("IP or range.")] CustomIPFormat ip,
-                                         [Description("Number of results")] int amount = 10)
-                 => this.SearchIpAsync(ctx, ip, amount);
 
 
             #region COMMAND_SEARCH_IP

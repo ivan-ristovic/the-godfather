@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
 
         #region COMMAND_CHICKEN_HEAL
         [Command("heal")]
-        [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
+        [Description("Heal your chicken (+100 HP). There is one medicine made each 5 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
         [UsageExamples("!chicken heal")]
         [Cooldown(1, 300, CooldownBucketType.Guild)]
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Chickens
                 if (dbc is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
                 dbc.Vitality = (dbc.Vitality + 100) % dbc.MaxVitality;
-                db.Update(dbc);
+                db.Chickens.Update(dbc);
                 await db.SaveChangesAsync();
             }
 
