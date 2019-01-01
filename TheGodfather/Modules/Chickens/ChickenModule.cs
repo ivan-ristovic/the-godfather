@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Chickens
                 DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
                 if (dbc is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
-                dbc.Vitality = (dbc.Vitality + 100) % dbc.MaxVitality;
+                dbc.Vitality = (dbc.Vitality + 100) > dbc.MaxVitality ? dbc.MaxVitality : (dbc.Vitality + 100);
                 db.Chickens.Update(dbc);
                 await db.SaveChangesAsync();
             }
