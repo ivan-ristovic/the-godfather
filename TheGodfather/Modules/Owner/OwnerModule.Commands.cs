@@ -117,6 +117,8 @@ public sealed class DynamicCommands : BaseCommandModule
                                    [RemainingText, Description("Command to remove.")] string command)
             {
                 Command cmd = ctx.CommandsNext.FindCommand(command, out _);
+                if (cmd is null)
+                    throw new CommandFailedException("Cannot find that command.");
                 ctx.CommandsNext.UnregisterCommands(cmd);
                 TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
                 return this.InformAsync(ctx, $"Removed command {Formatter.Bold(cmd.QualifiedName)}.", important: false);
