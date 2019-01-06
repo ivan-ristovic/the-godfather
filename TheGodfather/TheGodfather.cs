@@ -197,6 +197,9 @@ namespace TheGodfather
                 );
             }
 
+            var logger = new Logger(BotConfiguration);
+            logger.IgnoreApplication("Websocket");
+
             SharedData = new SharedData() {
                 BlockedChannels = blockedChannels,
                 BlockedUsers = blockedUsers,
@@ -205,7 +208,7 @@ namespace TheGodfather
                 EmojiReactions = ereactions,
                 Filters = filters,
                 GuildConfigurations = guildConfigurations,
-                LogProvider = new Logger(BotConfiguration),
+                LogProvider = logger,
                 MessageCount = msgcount,
                 TextReactions = treactions,
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)

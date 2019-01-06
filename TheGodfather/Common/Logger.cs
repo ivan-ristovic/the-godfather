@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +23,9 @@ namespace TheGodfather.Common
             }
         }
 
-        private readonly string path;
         private bool filelog;
+        private readonly List<string> ignoredApplications;
+        private readonly string path;
         private readonly object writeLock;
 
 
@@ -34,9 +36,15 @@ namespace TheGodfather.Common
             this.LogLevel = cfg.LogLevel;
             this.LogToFile = cfg.LogToFile;
             this.path = cfg.LogPath ?? "gf_log.txt";
+            this.ignoredApplications = new List<string>();
             TaskScheduler.UnobservedTaskException += this.LogUnobservedTaskException;
         }
 
+
+        public void IgnoreApplication(string app)
+        {
+            this.ignoredApplications.Add(app);
+        }
 
         public bool Clear()
         {
@@ -84,6 +92,9 @@ namespace TheGodfather.Common
         public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
         {
             if (e.Level > this.LogLevel)
+                return;
+
+            if (this.ignoredApplications.Contains(e.Application))
                 return;
 
             lock (this.writeLock) {
