@@ -197,10 +197,15 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PENIS
-        [Command("penis")]
+        [Command("penis"), Priority(1)]
         [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick")]
         [UsageExamples("!penis @Someone")]
+        public Task PenisAsync(CommandContext ctx,
+                              [Description("Who to measure.")] DiscordMember member = null)
+            => this.PenisAsync(ctx, member as DiscordUser);
+
+        [Command("penis"), Priority(0)]
         public Task PenisAsync(CommandContext ctx,
                               [Description("Who to measure.")] DiscordUser user = null)
         {
@@ -221,24 +226,28 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PENISCOMPARE
-        [Command("peniscompare")]
+        [Command("peniscompare"), Priority(1)]
         [Description("Comparison of the results given by ``penis`` command.")]
         [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
         [UsageExamples("!peniscompare @Someone",
                        "!peniscompare @Someone @SomeoneElse")]
         public Task PenisCompareAsync(CommandContext ctx,
+                                     [Description("User1.")] params DiscordMember[] members)
+            => this.PenisCompareAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
+
+        [Command("peniscompare"), Priority(0)]
+        public Task PenisCompareAsync(CommandContext ctx,
                                      [Description("User1.")] params DiscordUser[] users)
         {
-            users = users?.Distinct().ToArray() ?? null;
             if (users is null || users.Length < 2 || users.Length >= 10)
                 throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
 
-            if (users.Any(u => u.IsCurrent))
-                return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
-
             var sb = new StringBuilder();
-            foreach (DiscordUser u in users)
+            foreach (DiscordUser u in users.Distinct()) {
+                if (u.IsCurrent)
+                    return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
                 sb.Append('8').Append('=', (int)(u.Id % 40)).Append("D ").AppendLine(u.Mention);
+            }
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
         }
@@ -280,11 +289,16 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_RATE
-        [Command("rate")]
+        [Command("rate"), Priority(1)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
         [UsageExamples("!rate @Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
+        public Task RateAsync(CommandContext ctx,
+                             [Description("Who to measure.")] params DiscordMember[] members)
+            => this.RateAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
+
+        [Command("rate"), Priority(1)]
         public async Task RateAsync(CommandContext ctx,
                                    [Description("Who to measure.")] params DiscordUser[] users)
         {
@@ -316,7 +330,7 @@ namespace TheGodfather.Modules.Misc
                         if (user.Id == ctx.Client.CurrentUser.Id) {
                             start_x = chart.Width - 10;
                             start_y = 0;
-                        } else { 
+                        } else {
                             start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
                             start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
                         }
