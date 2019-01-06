@@ -19,14 +19,29 @@ namespace TheGodfather.Modules.Swat.Services
 {
     public static class SwatSpaceCheckService
     {
-        private static readonly ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannel>> _listeners;
+        private sealed class DiscordChannelInfo
+        {
+            public DiscordChannel Channel { get; }
+            public ulong LastMessageId { get; set; }
+            public bool Success { get; set; }
+
+
+            public DiscordChannelInfo(DiscordChannel channel, ulong? mid = null)
+            {
+                this.Channel = channel;
+                this.LastMessageId = mid ?? channel.LastMessageId;
+            }
+        }
+
+
+        private static readonly ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>> _listeners;
         private static readonly object _lock;
         private static readonly AsyncExecutor _async;
         private static Timer _ticker;
 
         static SwatSpaceCheckService()
         {
-            _listeners = new ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannel>>(new DatabaseSwatServerComparer());
+            _listeners = new ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>>(new DatabaseSwatServerComparer());
             _lock = new object();
             _async = new AsyncExecutor();
         }
@@ -40,9 +55,9 @@ namespace TheGodfather.Modules.Swat.Services
             lock (_lock) {
                 _listeners.AddOrUpdate(
                     server,
-                    new ConcurrentHashSet<DiscordChannel>() { channel },
+                    new ConcurrentHashSet<DiscordChannelInfo>() { new DiscordChannelInfo(channel) },
                     (k, v) => {
-                        v.Add(channel);
+                        v.Add(new DiscordChannelInfo(channel));
                         return v;
                     }
                 );
@@ -52,13 +67,13 @@ namespace TheGodfather.Modules.Swat.Services
         }
 
         public static bool IsListening(DiscordChannel channel)
-            => _listeners.Any(kvp => kvp.Value.Contains(channel));
+            => _listeners.Any(kvp => kvp.Value.Any(c => c.Channel == channel));
 
         public static void RemoveListener(DiscordChannel channel)
         {
             lock (_lock) {
-                foreach ((DatabaseSwatServer server, ConcurrentHashSet<DiscordChannel> listeners) in _listeners)
-                    if (!listeners.TryRemove(channel))
+                foreach ((DatabaseSwatServer server, ConcurrentHashSet<DiscordChannelInfo> listeners) in _listeners)
+                    if (listeners.RemoveWhere(c => c.Channel == channel) <= 0)
                         throw new ConcurrentOperationException("Failed to unregister space check task! Please try again.");
 
                 var toRemove = _listeners
@@ -90,19 +105,23 @@ namespace TheGodfather.Modules.Swat.Services
                 foreach (DatabaseSwatServer server in _listeners.Keys) {
                     SwatServerInfo info = _async.Execute(SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort));
                     if (info is null) {
-                        foreach (DiscordChannel channel in _listeners[server]) {
+                        foreach (DiscordChannelInfo ci in _listeners[server]) {
                             try {
-                                _async.Execute(channel.InformFailureAsync($"No reply from {server.IP}:{server.JoinPort}"));
+                                if (ci.Success == true || ci.LastMessageId != ci.LastMessageId)
+                                    ci.LastMessageId = _async.Execute(ci.Channel.InformFailureAsync($"No reply from {server.IP}:{server.JoinPort}")).Id;
+                                ci.Success = false;
                             } catch {
-                                _listeners[server].TryRemove(channel);
+                                _listeners[server].TryRemove(ci);
                             }
                         }
                     } else if (info.HasSpace) {
-                        foreach (DiscordChannel channel in _listeners[server]) {
+                        foreach (DiscordChannelInfo ci in _listeners[server]) {
                             try {
-                                _async.Execute(channel.EmbedAsync($"There is space on {Formatter.Bold(info.HostName)}!", StaticDiscordEmoji.AlarmClock, DiscordColor.Black));
+                                if (ci.Success == false || ci.LastMessageId != ci.Channel.LastMessageId)
+                                    ci.LastMessageId = _async.Execute(ci.Channel.EmbedAsync($"There is space on {Formatter.Bold(info.HostName)}!", StaticDiscordEmoji.AlarmClock, DiscordColor.Black)).Id;
+                                ci.Success = true;
                             } catch {
-                                _listeners[server].TryRemove(channel);
+                                _listeners[server].TryRemove(ci);
                             }
                         }
                     }
