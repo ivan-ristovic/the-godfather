@@ -22,7 +22,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member banned");
+            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "User BANNED");
 
             var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
             if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {

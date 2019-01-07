@@ -136,16 +136,11 @@ namespace TheGodfather.EventListeners
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
 
             DiscordAuditLogEntry kickEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Kick);
-            DiscordAuditLogEntry banEntry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
             if (!(kickEntry is null) && kickEntry is DiscordAuditLogKickEntry ke && ke.Target.Id == e.Member.Id) {
                 emb.WithTitle("Member kicked");
                 emb.AddField("User responsible", ke.UserResponsible.Mention);
                 emb.AddField("Reason", ke.Reason ?? "No reason provided.");
-            } else if (!(banEntry is null) && banEntry is DiscordAuditLogBanEntry be && be.Target.Id == e.Member.Id) {
-                emb.WithTitle("Member BANNED");
-                emb.AddField("User responsible", be.UserResponsible.Mention);
-                emb.AddField("Reason", be.Reason ?? "No reason provided.");
-            }
+            } 
 
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
