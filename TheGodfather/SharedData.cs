@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -129,9 +130,6 @@ namespace TheGodfather
         public bool GuildHasTextReaction(ulong gid, string trigger)
             => this.TextReactions.TryGetValue(gid, out var trs) && (trs?.Any(tr => tr.ContainsTriggerPattern(trigger)) ?? false);
 
-        public bool GuildHasEmojiReaction(ulong gid, string trigger)
-            => this.EmojiReactions.TryGetValue(gid, out var ers) && (ers?.Any(er => er.ContainsTriggerPattern(trigger)) ?? false);
-
         public bool MessageContainsFilter(ulong gid, string message)
         {
             if (!this.Filters.TryGetValue(gid, out var filters) || filters is null)
@@ -139,6 +137,24 @@ namespace TheGodfather
 
             message = message.ToLowerInvariant();
             return filters.Any(f => f.Trigger.IsMatch(message));
+        }
+
+        public bool MessageContainsFilter(ulong gid, string message, out string sanitized)
+        {
+            sanitized = null;
+            if (!this.Filters.TryGetValue(gid, out var filters) || filters is null)
+                return false;
+
+            message = message.ToLowerInvariant();
+            IEnumerable<Filter> hit = filters.Where(f => f.Trigger.IsMatch(message));
+            if (!hit.Any())
+                return false;
+
+            sanitized = message;
+            foreach (Filter f in hit)
+                sanitized = f.Trigger.Replace(sanitized, Formatter.InlineCode("***"));
+
+            return true;
         }
 
         public void UpdateGuildConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifier)

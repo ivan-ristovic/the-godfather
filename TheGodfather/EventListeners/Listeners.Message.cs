@@ -91,13 +91,15 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+            if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content, out string sanitized))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
                 return;
 
             await e.Message.DeleteAsync("_gf: Filter hit");
+            if (sanitized.Any(c => char.IsLetterOrDigit(c)))
+                await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {sanitized}");
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -214,9 +216,11 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content, out string sanitized)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update");
+                    if (sanitized.Any(c => char.IsLetterOrDigit(c)))
+                        await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {sanitized}");
                 } catch {
 
                 }
