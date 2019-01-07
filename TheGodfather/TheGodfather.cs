@@ -51,8 +51,7 @@ namespace TheGodfather
         {
             try {
                 PrintBuildInformation();
-
-                // Since some of the services require these protocols to be used, setting them up here
+                
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
@@ -64,7 +63,6 @@ namespace TheGodfather
                 await RegisterPeriodicTasksAsync();
 
                 try {
-                    // Waiting indefinitely for shutdown signal
                     await Task.Delay(Timeout.Infinite, SharedData.MainLoopCts.Token);
                 } catch (TaskCanceledException) {
                     SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
@@ -76,8 +74,7 @@ namespace TheGodfather
                 if (!(e.InnerException is null))
                     Console.WriteLine($"Inner exception: {e.InnerException.GetType()} :\n{e.InnerException.Message}");
             }
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
+            Console.WriteLine("\nPowering off...");
         }
 
 

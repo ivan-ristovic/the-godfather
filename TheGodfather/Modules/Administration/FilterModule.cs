@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Administration
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
             => this.AddAsync(ctx, filters);
