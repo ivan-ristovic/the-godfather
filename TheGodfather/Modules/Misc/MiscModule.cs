@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_PENIS
         [Command("penis"), Priority(1)]
         [Description("An accurate measurement.")]
-        [Aliases("size", "length", "manhood", "dick")]
+        [Aliases("size", "length", "manhood", "dick", "dicksize")]
         [UsageExamples("!penis @Someone")]
         public Task PenisAsync(CommandContext ctx,
                               [Description("Who to measure.")] DiscordMember member = null)

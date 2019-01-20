@@ -95,6 +95,9 @@ namespace TheGodfather.Modules.Swat
             using (DatabaseContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
+            if (server is null)
+                throw new CommandFailedException($"Server {Formatter.InlineCode(name)} not found in the database.");
+
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
             if (info is null)
                 await this.InformFailureAsync(ctx, "No reply from server.");

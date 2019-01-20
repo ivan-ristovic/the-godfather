@@ -36,14 +36,14 @@ namespace TheGodfather.Modules.Administration
 
 
         [GroupCommand, Priority(1)]
-        public Task ExecuteGroupAsync(CommandContext ctx)
-            => this.ListAsync(ctx);
-
-        [GroupCommand, Priority(0)]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
             => this.AddAsync(ctx, filters);
+
+        [GroupCommand, Priority(0)]
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => this.ListAsync(ctx);
 
 
         #region COMMAND_FILTER_ADD

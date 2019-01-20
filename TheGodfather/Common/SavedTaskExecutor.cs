@@ -54,7 +54,7 @@ namespace TheGodfather.Common
         public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
         {
             if (shared.RemindExecuters.TryGetValue(uid, out var texecs))
-                return texecs.FirstOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
+                return texecs.SingleOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
             else
                 return Task.CompletedTask;
         }
@@ -136,10 +136,14 @@ namespace TheGodfather.Common
                 }
                 this.shared.LogProvider.LogMessage(LogLevel.Debug, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
-                this.shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.shared.LogProvider.LogException(LogLevel.Debug, e);
             } finally {
-                if (unschedule)
-                    await this.UnscheduleAsync();
+                try {
+                    if (unschedule)
+                        await this.UnscheduleAsync();
+                } catch (Exception e) {
+                    this.shared.LogProvider.LogException(LogLevel.Debug, e);
+                }
             }
         }
 
@@ -151,8 +155,7 @@ namespace TheGodfather.Common
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
                     if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out var texecs)) {
-                        if (!texecs.TryRemove(this))
-                            throw new ConcurrentOperationException("Failed to unschedule reminder!");
+                        texecs.TryRemove(this);
                         if (texecs.Count == 0)
                             this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
                     }
@@ -163,10 +166,7 @@ namespace TheGodfather.Common
                     break;
                 case UnbanTaskInfo _:
                 case UnmuteTaskInfo _:
-                    if (this.shared.TaskExecuters.ContainsKey(this.Id)) {
-                        if (!this.shared.TaskExecuters.TryRemove(this.Id, out var _))
-                            throw new ConcurrentOperationException("Failed to unschedule saved task!");
-                    }
+                    this.shared.TaskExecuters.TryRemove(this.Id, out var _);
                     using (DatabaseContext db = this.dbb.CreateContext()) {
                         db.SavedTasks.RemoveRange(db.SavedTasks.Where(t => t.Id == this.Id));
                         await db.SaveChangesAsync();
