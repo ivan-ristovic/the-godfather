@@ -403,8 +403,8 @@ namespace TheGodfather.Modules.Misc
             IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
             string[] words = messages
                 .Where(m => !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
+                .SelectMany(m => m.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
-                .SelectMany(m => m.Content.Split(@"\s"))
                 .Shuffle()
                 .Take(1 + GFRandom.Generator.Next(10))
                 .ToArray();
