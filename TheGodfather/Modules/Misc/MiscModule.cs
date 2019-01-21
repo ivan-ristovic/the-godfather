@@ -392,6 +392,33 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_SIMULATE
+        [Command("simulate")]
+        [Description("Simulate another user.")]
+        [Aliases("sim")]
+        [UsageExamples("!simulate @Someone.")]
+        public async Task SimulateAsync(CommandContext ctx,
+                                       [Description("Member to simulate.")] DiscordMember member)
+        {
+            IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
+            string[] words = messages
+                .Where(m => !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
+                .Distinct()
+                .SelectMany(m => m.Content.Split(@"\s"))
+                .Shuffle()
+                .Take(1 + GFRandom.Generator.Next(10))
+                .ToArray();
+
+            if (!words.Any())
+                throw new CommandFailedException("Not enough messages were sent from that user recently!");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", words)}",
+                Color = this.ModuleColor,
+            }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
+        }
+        #endregion
+
         #region COMMAND_TTS
         [Command("tts")]
         [Description("Sends a tts message.")]

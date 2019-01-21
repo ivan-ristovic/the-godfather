@@ -2,6 +2,8 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -41,6 +43,27 @@ namespace TheGodfather.Extensions
                 await channel.InformFailureAsync("Alright, aborting...");
 
             return false;
+        }
+
+        public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
+        {
+            var messages = new List<DiscordMessage>();
+
+            int count = 0;
+            int step = 10;
+            while (count < limit && step < 500) {
+                ulong? lastId = messages.FirstOrDefault()?.Id;
+                IReadOnlyList<DiscordMessage> requested;
+                if (lastId is null)
+                    requested = await channel.GetMessagesAsync(step);
+                else
+                    requested = await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step);
+                messages.AddRange(requested.Where(m => m.Author.Id == member.Id));
+                count += (messages.Count - count);
+                step *= 2;
+            }
+
+            return messages.AsReadOnly();
         }
     }
 }
