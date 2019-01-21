@@ -401,21 +401,29 @@ namespace TheGodfather.Modules.Misc
                                        [Description("Member to simulate.")] DiscordMember member)
         {
             IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
-            string[] words = messages
+            string[] parts = messages
                 .Where(m => !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
-                .SelectMany(m => m.Content.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+                .Select(m => SplitMessage(m.Content))
                 .Distinct()
                 .Shuffle()
                 .Take(1 + GFRandom.Generator.Next(10))
                 .ToArray();
 
-            if (!words.Any())
+            if (!parts.Any())
                 throw new CommandFailedException("Not enough messages were sent from that user recently!");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", words)}",
+                Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", parts)}",
                 Color = this.ModuleColor,
             }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
+
+            string SplitMessage(string data)
+            {
+                string[] words = data.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                int start = GFRandom.Generator.Next(words.Length);
+                int count = GFRandom.Generator.Next(0, words.Length - start);
+                return string.Join(" ", words.Skip(start).Take(count));
+            }
         }
         #endregion
 

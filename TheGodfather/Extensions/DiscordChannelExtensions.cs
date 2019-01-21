@@ -48,19 +48,15 @@ namespace TheGodfather.Extensions
         public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
         {
             var messages = new List<DiscordMessage>();
-
-            int count = 0;
-            int step = 10;
-            while (count < limit && step < 500) {
+            
+            for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
                 ulong? lastId = messages.FirstOrDefault()?.Id;
                 IReadOnlyList<DiscordMessage> requested;
                 if (lastId is null)
                     requested = await channel.GetMessagesAsync(step);
                 else
-                    requested = await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step);
-                messages.AddRange(requested.Where(m => m.Author.Id == member.Id));
-                count += (messages.Count - count);
-                step *= 2;
+                    requested = await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
+                messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
             }
 
             return messages.AsReadOnly();
