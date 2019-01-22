@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("hangman")]
+        [Group("hangman"), UsesInteractivity]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
         [UsageExamples("!game hangman")]
@@ -48,10 +48,7 @@ namespace TheGodfather.Modules.Games
 
                 await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
-                MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                    xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
-                    TimeSpan.FromMinutes(1)
-                );
+                MessageContext mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(dm, ctx.Channel.Id, ctx.User.Id, this.Shared);
                 if (mctx is null) {
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;

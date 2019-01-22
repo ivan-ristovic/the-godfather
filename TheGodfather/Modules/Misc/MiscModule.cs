@@ -420,7 +420,7 @@ namespace TheGodfather.Modules.Misc
             string SplitMessage(string data)
             {
                 string[] words = data.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                int start = GFRandom.Generator.Next(words.Length);
+                int start = GFRandom.Generator.Next(words.Length - 1);
                 int count = GFRandom.Generator.Next(0, words.Length - start);
                 return string.Join(" ", words.Skip(start).Take(count));
             }

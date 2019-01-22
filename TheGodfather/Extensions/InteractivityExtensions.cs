@@ -1,9 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
 using Microsoft.Extensions.DependencyInjection;
-
+using System;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Converters;
@@ -37,6 +38,19 @@ namespace TheGodfather.Extensions
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return response;
+        }
+
+        public static async Task<MessageContext> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
+        {
+            if (!(shared is null))
+                shared.AddPendingResponse(cid, uid);
+            
+            MessageContext mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
+
+            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
+                throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
+
+            return mctx;
         }
     }
 }
