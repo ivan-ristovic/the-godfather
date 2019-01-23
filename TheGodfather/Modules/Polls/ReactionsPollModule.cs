@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Polls
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, question);
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
             PollService.RegisterPollInChannel(rpoll, ctx.Channel.Id);
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");

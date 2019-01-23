@@ -27,9 +27,10 @@ namespace TheGodfather.Modules.Polls.Common
         protected readonly DiscordChannel channel;
         protected readonly InteractivityExtension interactivity;
         protected readonly CancellationTokenSource cts;
+        protected readonly DiscordMember sender;
 
 
-        public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
+        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
         {
             this.Question = question;
             this.channel = channel;
@@ -37,6 +38,7 @@ namespace TheGodfather.Modules.Polls.Common
             this.Options = new List<string>();
             this.votes = new ConcurrentDictionary<ulong, int>();
             this.cts = new CancellationTokenSource();
+            this.sender = sender;
         }
 
 
@@ -62,7 +64,7 @@ namespace TheGodfather.Modules.Polls.Common
                     break;
 
                 try {
-                    await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(5) ? this.TimeUntilEnd : TimeSpan.FromSeconds(5), this.cts.Token);
+                    await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(10) ? this.TimeUntilEnd : TimeSpan.FromSeconds(10), this.cts.Token);
                 } catch (TaskCanceledException) {
                     await this.channel.InformFailureAsync("The poll has been cancelled!");
                 }
@@ -87,9 +89,9 @@ namespace TheGodfather.Modules.Polls.Common
 
             if (this.endTime != null) {
                 if (this.TimeUntilEnd.TotalSeconds > 1)
-                    emb.WithFooter($"Poll ends in: {this.TimeUntilEnd:hh\\:mm\\:ss}");
+                    emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})", this.sender.AvatarUrl);
                 else
-                    emb.WithFooter($"Poll ended.");
+                    emb.WithFooter($"Poll ended.", this.sender.AvatarUrl);
             }
 
             return emb.Build();
@@ -105,6 +107,7 @@ namespace TheGodfather.Modules.Polls.Common
             for (int i = 0; i < this.Options.Count; i++)
                 emb.AddField(this.Options[i], this.votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
+            emb.WithFooter($"Poll by {this.sender.DisplayName}", this.sender.AvatarUrl);
             return emb.Build();
         }
 

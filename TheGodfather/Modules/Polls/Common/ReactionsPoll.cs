@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Polls.Common
         private ReactionCollectionContext rctx;
 
 
-        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, string question)
-            : base(interactivity, channel, question)
+        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
+            : base(interactivity, channel, sender, question)
         {
 
         }
@@ -67,8 +67,12 @@ namespace TheGodfather.Modules.Polls.Common
                 if (!string.IsNullOrWhiteSpace(this.Options[i]))
                     emb.AddField($"{i + 1}", this.Options[i], inline: true);
 
-            if (this.endTime != null)
-                emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})");
+            if (this.endTime != null) {
+                if (this.TimeUntilEnd.TotalSeconds > 1)
+                    emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})", this.sender.AvatarUrl);
+                else
+                    emb.WithFooter($"Poll ended.", this.sender.AvatarUrl);
+            }
 
             return emb.Build();
         }
@@ -80,12 +84,13 @@ namespace TheGodfather.Modules.Polls.Common
                 Color = DiscordColor.Orange
             };
 
+            emb.WithFooter($"Poll by {this.sender.DisplayName}", this.sender.AvatarUrl);
+
             if (!this.rctx.Reactions.Any())
                 return emb.WithDescription("Nobody voted!").Build();
 
             foreach ((DiscordEmoji emoji, int votes) in this.rctx.Reactions) 
                 emb.AddField(this.Options[_emojiid[emoji.Name]], votes.ToString(), inline: true);
-
             return emb.Build();
         }
     }
