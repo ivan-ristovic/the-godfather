@@ -12,10 +12,10 @@
     <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ivan-ristovic/the-godfather</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/ivan-ristovic/the-godfather/master/TheGodfather/icon.ico</PackageIconUrl>
-    <Version>4.0.0</Version>
+    <Version>4.1.0</Version>
     <PackageVersion>3.0.0.0</PackageVersion>
-    <AssemblyVersion>4.0.0</AssemblyVersion>
-    <FileVersion>4.0.0</FileVersion>
+    <AssemblyVersion>4.1.0</AssemblyVersion>
+    <FileVersion>4.1.0</FileVersion>
 	<Copyright />
   </PropertyGroup>
   

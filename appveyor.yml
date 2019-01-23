@@ -4,7 +4,7 @@ branches:
   only:
   - master
 
-version: 4.0.{build}
+version: 4.1.{build}
 
 init:
   - cmd: git config --global core.autocrlf true
