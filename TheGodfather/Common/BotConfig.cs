@@ -4,6 +4,7 @@ using DSharpPlus;
 using Newtonsoft.Json;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using TheGodfather.Database;
 #endregion
@@ -63,6 +64,9 @@ namespace TheGodfather.Common
         [JsonProperty("token")]
         public string Token { get; private set; }
 
+        [JsonProperty("logger-special-rules")]
+        public List<Logger.SpecialRule> SpecialLoggerRules { get; private set; }
+
 
         public static BotConfig Load()
         {
@@ -87,6 +91,7 @@ namespace TheGodfather.Common
             FeedCheckStartDelay = 30,
             GiphyKey = "<insert GIPHY API key>",
             GoodreadsKey = "<insert Goodreads API key>",
+            SpecialLoggerRules = new List<Logger.SpecialRule>(),
             ImgurKey = "<insert Imgur API key>",
             LogLevel = LogLevel.Info,
             LogPath = "log.txt",

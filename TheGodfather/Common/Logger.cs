@@ -1,10 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 #endregion
@@ -24,7 +25,7 @@ namespace TheGodfather.Common
         }
 
         private bool filelog;
-        private readonly List<string> ignoredApplications;
+        private readonly List<SpecialRule> specialRules;
         private readonly string path;
         private readonly object writeLock;
 
@@ -36,14 +37,14 @@ namespace TheGodfather.Common
             this.LogLevel = cfg.LogLevel;
             this.LogToFile = cfg.LogToFile;
             this.path = cfg.LogPath ?? "gf_log.txt";
-            this.ignoredApplications = new List<string>();
+            this.specialRules = new List<SpecialRule>();
             TaskScheduler.UnobservedTaskException += this.LogUnobservedTaskException;
         }
 
 
-        public void IgnoreApplication(string app)
+        public void ApplyRule(SpecialRule rule)
         {
-            this.ignoredApplications.Add(app);
+            this.specialRules.Add(rule);
         }
 
         public bool Clear()
@@ -94,7 +95,7 @@ namespace TheGodfather.Common
             if (e.Level > this.LogLevel)
                 return;
 
-            if (this.ignoredApplications.Contains(e.Application))
+            if (this.specialRules.Any(r => r.Name == e.Application && r.MinLevel < e.Level))
                 return;
 
             lock (this.writeLock) {
@@ -217,5 +218,15 @@ namespace TheGodfather.Common
             Console.WriteLine();
         }
         #endregion
+
+
+        public sealed class SpecialRule
+        {
+            [JsonProperty("app")]
+            public string Name { get; set; }
+
+            [JsonProperty("level")]
+            public LogLevel MinLevel { get; set; }
+        }
     }
 }

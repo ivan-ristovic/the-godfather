@@ -195,8 +195,8 @@ namespace TheGodfather
             }
 
             var logger = new Logger(BotConfiguration);
-            logger.IgnoreApplication("Websocket");
-            logger.IgnoreApplication("REST");
+            foreach (Logger.SpecialRule rule in BotConfiguration.SpecialLoggerRules)
+                logger.ApplyRule(rule);
 
             SharedData = new SharedData() {
                 BlockedChannels = blockedChannels,
