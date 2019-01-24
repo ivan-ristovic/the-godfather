@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search
         public WikiModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Violet;
+            this.ModuleColor = DiscordColor.White;
         }
 
 

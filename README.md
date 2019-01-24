@@ -15,7 +15,7 @@ Features:
 - Message filtering: user-defined filters either by raw match or regex match, gore websites filter, IP logging websites filter, invite filter, etc.
 - Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching.
 - Customizable guild content: memes, ranks, birthdays, currencies, currency items and many more!
-- Searches of online services: YouTube, Imgur, reddit, Steam, IMDb, OpenWeather etc.
+- Searches of online services: YouTube, Wikipedia, Imgur, reddit, Steam, IMDb, OpenWeather etc.
 - RSS feed subscriptions (includes YouTube, reddit and many more) - automatic notifications when new content is released.
 - Many games to pass your time: Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc. 
 - Currency commands and games: Poker, BlackJack, Slots etc.
