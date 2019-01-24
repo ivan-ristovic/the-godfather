@@ -2,7 +2,8 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using DSharpPlus.Interactivity;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,20 +35,19 @@ namespace TheGodfather.Modules.Search
                                            [RemainingText, Description("Query.")] string query)
         {
             var res = await WikiService.SearchAsync(query);
-            if (res is null){ // TODO || !res.Any()) {
+            if (res is null || !res.Any()) {
                 await this.InformFailureAsync(ctx, "No results...");
                 return;
             }
-
-            // TODO
-            var r = res[0];
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = r.Title,
-                Description = r.Snippet,
-                Color = this.ModuleColor,
-                Url = r.Url
-            }.Build());
+            
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.Select(r => new Page() {
+                Embed = new DiscordEmbedBuilder() {
+                    Title = r.Title,
+                    Description = r.Snippet,
+                    Url = r.Url,
+                    Color = this.ModuleColor
+                }
+            }));
         }
     }
 }
