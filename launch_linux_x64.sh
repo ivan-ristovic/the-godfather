@@ -40,10 +40,12 @@ echo "!> Updating... "
 git pull > /dev/null 2>&1
 if [[ $? -ne 0 ]]; then
 	(>&2 echo -e "${RED}error:${NC} Failed to retrieve latest changes!")
-	if ask "!> Force the sync of the repository? (y/n)"; then
+	if ask "!> Force the sync of the repository?"; then
 		git fetch origin
 		git reset --hard origin/master
-		git clean -fdx
+		if ask "!> Clean all auxiliary files and directories (this will delete your bot config)?"; then
+			git clean -fdx
+		fi
 	else
 		exit 1
 	fi
