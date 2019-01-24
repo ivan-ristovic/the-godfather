@@ -68,20 +68,6 @@ namespace TheGodfather.Common
         public List<Logger.SpecialRule> SpecialLoggerRules { get; private set; }
 
 
-        public static BotConfig Load()
-        {
-            if (!File.Exists("Resources/config.json"))
-                return null;
-            try {
-                var cfg = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
-                return cfg;
-            } catch (Exception e) {
-                Console.WriteLine("EXCEPTION OCCURED WHILE LOADING CONFIG FILE: " + Environment.NewLine + e.ToString());
-                return null;
-            }
-        }
-
-
         [JsonIgnore]
         public static BotConfig Default => new BotConfig {
             DatabaseConfig = DatabaseConfig.Default,

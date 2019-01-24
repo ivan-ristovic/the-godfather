@@ -39,8 +39,8 @@ NC='\033[0m'
 echo "!> Updating... "
 git pull > /dev/null 2>&1
 if [[ $? -ne 0 ]]; then
-	(>&2 echo -e "${RED}error:${NC} Failed to retrieve latest changes!")
-	if ask "!> Force the sync of the repository?"; then
+	(>&2 echo -e "${RED}error:${NC} Failed to sync the repository (git pull cannot be executed due to conflicts)!")
+	if ask "!> Force the sync of the repository (recommended)?"; then
 		git fetch origin
 		git reset --hard origin/master
 		if ask "!> Clean all auxiliary files and directories (this will delete your bot config)?"; then

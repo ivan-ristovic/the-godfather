@@ -115,6 +115,7 @@ namespace TheGodfather
             using (FileStream fs = fi.OpenRead())
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
+
             BotConfiguration = JsonConvert.DeserializeObject<BotConfig>(json);
         }
 

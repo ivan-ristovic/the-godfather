@@ -31,9 +31,9 @@ namespace TheGodfather.Database
             DatabaseName = "gfdb",
             Provider = DatabaseProvider.SQLite,
             Hostname = "localhost",
-            Password = "<insert password>",
+            Password = "gfdb",
             Port = 5432,
-            Username = "<insert username>"
+            Username = ""
         };
     }
 }
