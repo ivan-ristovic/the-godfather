@@ -45,6 +45,8 @@ namespace TheGodfather.Modules.Search.Services
                     var response = (GoodreadsResponse)_serializer.Deserialize(stream);
                     return response.SearchInfo;
                 }
+            } catch {
+                return null;
             } finally {
                 await Task.Delay(TimeSpan.FromSeconds(1));
                 _requestSemaphore.Release();

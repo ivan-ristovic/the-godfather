@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Group("wikipedia"), Module(ModuleType.Searches), NotBlocked]
     [Description("Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.")]
     [Aliases("wiki")]
-    [UsageExamples("!wikipedia wat")]
+    [UsageExamples("!wikipedia Linux")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WikiModule : TheGodfatherModule
     {
@@ -31,15 +31,25 @@ namespace TheGodfather.Modules.Search
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Query.")] string query)
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("Query.")] string query)
+            => this.SearchAsync(ctx, query);
+
+
+        #region COMMAND_WIKI_SEARCH
+        [Command("search")]
+        [Description("Search Wikipedia for a given query.")]
+        [Aliases("s", "find")]
+        [UsageExamples("!wikipedia search Linux")]
+        public async Task SearchAsync(CommandContext ctx,
+                                     [RemainingText, Description("Query.")] string query)
         {
             var res = await WikiService.SearchAsync(query);
             if (res is null || !res.Any()) {
                 await this.InformFailureAsync(ctx, "No results...");
                 return;
             }
-            
+
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.Select(r => new Page() {
                 Embed = new DiscordEmbedBuilder() {
                     Title = r.Title,
@@ -49,5 +59,6 @@ namespace TheGodfather.Modules.Search
                 }
             }));
         }
+        #endregion
     }
 }
