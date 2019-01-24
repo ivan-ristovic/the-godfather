@@ -2,20 +2,41 @@
 using Newtonsoft.Json;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 #endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
-    public class WikiSearchResponse
+    public class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
     {
-        public string Query { get; set; }
-        public string[] Hits { get; set; }
-        public string[] Snippets { get; set; }
-        public string[] Urls { get; set; }
+        private readonly string query;
+        private readonly IReadOnlyList<string> hits;
+        private readonly IReadOnlyList<string> snippets;
+        private readonly IReadOnlyList<string> urls;
 
 
-        public WikiSearchResult GetResult(int id) => new WikiSearchResult(this.Hits[id], this.Snippets[id], this.Urls[id]);
+        public WikiSearchResponse(string query, IReadOnlyList<string> hits, IReadOnlyList<string> snippets, IReadOnlyList<string> urls)
+        {
+            this.query = query;
+            this.hits = hits;
+            this.snippets = snippets;
+            this.urls = urls;
+        }
+
+
+        public int Count => this.hits.Count;
+
+        public IEnumerator<WikiSearchResult> GetEnumerator()
+        {
+            for (int i = 0; i < this.Count; i++)
+                yield return this[i];
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
+
+        public WikiSearchResult this[int index] => new WikiSearchResult(this.hits[index], this.snippets[index], this.urls[index]);
     }
 
     public class WikiSearchResult

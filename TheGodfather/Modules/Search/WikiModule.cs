@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
             }
 
             // TODO
-            var r = res.GetResult(0);
+            var r = res[0];
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = r.Title,

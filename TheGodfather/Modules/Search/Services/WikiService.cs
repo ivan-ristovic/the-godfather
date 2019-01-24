@@ -35,12 +35,7 @@ namespace TheGodfather.Modules.Search.Services
                 JToken thits = tquery.Next;
                 JToken tsnippets = thits.Next;
                 JToken turls = tsnippets.Next;
-                return new WikiSearchResponse() {
-                    Hits = thits.ToObject<string[]>(),
-                    Query = tquery.ToString(),
-                    Snippets = tsnippets.ToObject<string[]>(),
-                    Urls = turls.ToObject<string[]>()
-                };
+                return new WikiSearchResponse(tquery.ToString(), thits.ToObject<string[]>(), tsnippets.ToObject<string[]>(), turls.ToObject<string[]>());
             } catch {
                 return null;
             }
