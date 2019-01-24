@@ -30,7 +30,11 @@ namespace TheGodfather.Modules.Search.Services
             if (id < 1 || id > TotalComics)
                 throw new ArgumentException("Comic ID is not valid (max 2019)", nameof(id));
 
-            return id.HasValue ? GetComicByIdAsync(id.Value) : GetLatestComicAsync();
+            try {
+                return id.HasValue ? GetComicByIdAsync(id.Value) : GetLatestComicAsync();
+            } catch {
+                return null;
+            }
         }
 
         public static Task<XkcdComic> GetRandomComicAsync()
