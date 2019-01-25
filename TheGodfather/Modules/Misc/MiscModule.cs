@@ -402,7 +402,7 @@ namespace TheGodfather.Modules.Misc
         {
             IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
             string[] parts = messages
-                .Where(m => !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
+                .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
                 .Select(m => SplitMessage(m.Content))
                 .Distinct()
                 .Shuffle()

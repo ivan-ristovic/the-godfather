@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Chickens
                 else
                     db.Chickens.Remove(loser.ToDatabaseChicken());
 
-                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + gain * 2000);
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + gain * 200);
 
                 await db.SaveChangesAsync();
             }
