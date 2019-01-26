@@ -127,7 +127,8 @@ namespace TheGodfather.Modules.Swat
         [Description("Print the serverlist with current player numbers.")]
         [Aliases("sl", "list")]
         [UsageExamples("!swat serverlist")]
-        public async Task ServerlistAsync(CommandContext ctx)
+        public async Task ServerlistAsync(CommandContext ctx,
+                                         [Description("Server name group.")] string group = null)
         {
             var em = new DiscordEmbedBuilder() {
                 Title = "Servers",
@@ -136,11 +137,15 @@ namespace TheGodfather.Modules.Swat
             };
 
             List<DatabaseSwatServer> servers;
-            using (DatabaseContext db = this.Database.CreateContext())
-                servers = await db.SwatServers.ToListAsync();
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                if (string.IsNullOrWhiteSpace(group))
+                    servers = await db.SwatServers.ToListAsync();
+                else
+                    servers = await db.SwatServers.Where(s => s.Name.Contains(group)).ToListAsync();
+            }
 
             if (servers is null || !servers.Any())
-                throw new CommandFailedException("No servers found in the database.");
+                throw new CommandFailedException("No servers found in the database matching the given criteria.");
 
             SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.IP, s.QueryPort)));
             foreach (SwatServerInfo info in infos.Where(i => !(i is null)).OrderByDescending(i => int.Parse(i.Players)))
