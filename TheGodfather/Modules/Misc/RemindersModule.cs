@@ -129,9 +129,8 @@ namespace TheGodfather.Modules.Misc
 
             return ctx.SendCollectionInPagesAsync(
                 "Your reminders:",
-                texecs
-                    .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
-                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
+                texecs.Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
+                      .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
                     if (tinfo.IsRepeating)

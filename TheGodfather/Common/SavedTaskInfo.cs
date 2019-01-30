@@ -28,7 +28,7 @@ namespace TheGodfather.Common
     {
         public DateTimeOffset ExecutionTime { get; set; }
 
-        public TimeSpan TimeUntilExecution
+        public virtual TimeSpan TimeUntilExecution 
             => this.ExecutionTime - DateTimeOffset.Now;
 
         public bool IsExecutionTimeReached
@@ -42,6 +42,15 @@ namespace TheGodfather.Common
         public ulong InitiatorId { get; set; }
         public bool IsRepeating { get; set; }
         public TimeSpan RepeatingInterval { get; set; }
+        public override TimeSpan TimeUntilExecution 
+        {
+            get {
+                var now = DateTimeOffset.Now;
+                if (this.ExecutionTime > now)
+                    return this.ExecutionTime - now;
+                return new TimeSpan(now.Ticks % this.RepeatingInterval.Ticks);
+            }
+        }
 
 
         public SendMessageTaskInfo(ulong cid, ulong uid, string message, DateTimeOffset when, bool repeating = false, TimeSpan? interval = null)

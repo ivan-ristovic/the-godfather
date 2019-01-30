@@ -79,7 +79,7 @@ namespace TheGodfather.Common
         {
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
-                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, smti.IsRepeating ? smti.RepeatingInterval : smti.TimeUntilExecution, smti.RepeatingInterval);
+                    this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, smti.TimeUntilExecution, smti.RepeatingInterval);
                     this.shared.RemindExecuters.AddOrUpdate(
                         smti.InitiatorId,
                         new ConcurrentHashSet<SavedTaskExecutor>() { this },
