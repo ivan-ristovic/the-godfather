@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
             return ctx.SendCollectionInPagesAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
-                r => $"{Formatter.InlineCode(r.Id.ToString())} | {r.Color.ToString()} | {Formatter.Bold(r.Name)}",
+                r => $"{Formatter.InlineCode(r.Id.ToString())} | {(r.Mention)}",
                 this.ModuleColor,
                 10
             );

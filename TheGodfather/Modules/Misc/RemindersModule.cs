@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Misc
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
                     if (tinfo.IsRepeating)
-                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.ToString()}):{Formatter.BlockCode(tinfo.Message)}";
+                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
                     else
                         return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
                 },
