@@ -250,6 +250,32 @@ namespace TheGodfather.Modules.Reactions
         }
         #endregion
 
+        #region COMMAND_TEXT_REACTIONS_FIND
+        [Command("find")]
+        [Description("Show all text reactions for the guild.")]
+        [Aliases("f")]
+        [UsageExamples("!textreactions find hello")]
+        public Task ListAsync(CommandContext ctx, 
+                             [RemainingText, Description("Specific trigger.")] string trigger)
+        {
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions) || !treactions.Any())
+                throw new CommandFailedException("This guild has no text reactions registered.");
+
+            TextReaction tr = treactions.SingleOrDefault(t => t.IsMatch(trigger));
+            if (tr is null)
+                throw new CommandFailedException("None of the reactions respond to such trigger.");
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = "Text reaction that matches the trigger",
+                Description = string.Join(" | ", tr.TriggerStrings),
+                Color = this.ModuleColor
+            };
+            emb.AddField("ID", tr.Id.ToString(), inline: true);
+            emb.AddField("Response", tr.Response, inline: true);
+            return ctx.RespondAsync(embed: emb.Build());
+        }
+        #endregion
+
         #region COMMAND_TEXT_REACTIONS_LIST
         [Command("list")]
         [Description("Show all text reactions for the guild.")]
