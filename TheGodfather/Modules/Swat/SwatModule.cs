@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,25 +65,21 @@ namespace TheGodfather.Modules.Swat
         [UsageExamples("!s4 q 109.70.149.158",
                        "!s4 q 109.70.149.158:10480",
                        "!s4 q wm")]
-        public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Server IP.")] CustomIPFormat ip,
-                                    [Description("Query port")] int queryport = 10481)
+        public Task QueryAsync(CommandContext ctx,
+                              [Description("Server IP.")] CustomIPFormat ip,
+                              [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
             var server = DatabaseSwatServer.FromIP(ip.Content, queryport);
-            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
-            if (info is null)
-                await this.InformFailureAsync(ctx, "No reply from server.");
-            else
-                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
+            return this.QueryAndPrintInfoAsync(ctx, server);
         }
 
         [Command("query"), Priority(0)]
-        public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Registered name or IP.")] string name,
-                                    [Description("Query port")] int queryport = 10481)
+        public Task QueryAsync(CommandContext ctx,
+                              [Description("Registered name or IP.")] string name,
+                              [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
@@ -98,11 +95,30 @@ namespace TheGodfather.Modules.Swat
             if (server is null)
                 throw new CommandFailedException($"Server {Formatter.InlineCode(name)} not found in the database.");
 
+            return this.QueryAndPrintInfoAsync(ctx, server);
+        }
+
+
+        private async Task QueryAndPrintInfoAsync(CommandContext ctx, DatabaseSwatServer server)
+        {
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
-            if (info is null)
+            if (info is null) {
                 await this.InformFailureAsync(ctx, "No reply from server.");
-            else
-                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
+                return;
+            }
+
+            DiscordMessage msg = await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
+
+            await msg.CreateReactionAsync(StaticDiscordEmoji.Information);
+            ReactionContext rctx = await msg.WaitForAnyReactionAsync(StaticDiscordEmoji.Information);
+            if (!(rctx is null)) {
+                SwatServerInfo completeInfo = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort, complete: true);
+                if (info is null) {
+                    await this.InformFailureAsync(ctx, "No reply from server.");
+                    return;
+                }
+                await msg.ModifyAsync(embed: completeInfo.ToDiscordEmbed(this.ModuleColor));
+            }
         }
         #endregion
 

@@ -73,6 +73,7 @@ namespace TheGodfather
                 Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");
                 if (!(e.InnerException is null))
                     Console.WriteLine($"Inner exception: {e.InnerException.GetType()} :\n{e.InnerException.Message}");
+                Console.ReadKey();
             }
             Console.WriteLine("\nPowering off...");
         }
