@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_DBQUERY
-        [Command("dbquery"), NotBlocked]
+        [Command("dbquery"), NotBlocked, Priority(0)]
         [Description("Execute SQL query on the bot database.")]
         [Aliases("sql", "dbq", "q")]
         [UsageExamples("!owner dbquery SELECT * FROM gf.msgcount;")]
@@ -190,7 +190,28 @@ namespace TheGodfather.Modules.Owner
                 },
                 this.ModuleColor,
                 1
-            ).ConfigureAwait(false);
+            );
+        }
+
+        [Command("dbquery"), Priority(1)]
+        public async Task DatabaseQuery(CommandContext ctx)
+        {
+            if (!ctx.Message.Attachments.Any())
+                throw new CommandFailedException("Either write a query or attach a .sql file containing it!");
+
+            DiscordAttachment attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
+            if (attachment is null)
+                throw new CommandFailedException("No .sql files attached!");
+
+            string query;
+            try {
+                query = await _http.GetStringAsync(attachment.Url).ConfigureAwait(false);
+            } catch (Exception e) {
+                this.Shared.LogProvider.LogException(LogLevel.Debug, e);
+                throw new CommandFailedException("An error occured while getting the file.", e);
+            }
+
+            await this.DatabaseQuery(ctx, query);
         }
         #endregion
 
