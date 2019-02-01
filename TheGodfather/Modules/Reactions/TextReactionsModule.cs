@@ -252,7 +252,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region COMMAND_TEXT_REACTIONS_FIND
         [Command("find")]
-        [Description("Show all text reactions for the guild.")]
+        [Description("Show a text reactions that matches the specified trigger.")]
         [Aliases("f")]
         [UsageExamples("!textreactions find hello")]
         public Task ListAsync(CommandContext ctx, 

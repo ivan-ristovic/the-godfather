@@ -300,6 +300,29 @@ namespace TheGodfather.Modules.Reactions
         }
         #endregion
 
+        #region COMMAND_EMOJI_REACTIONS_FIND
+        [Command("find")]
+        [Description("Show all emoji reactions that matches the specified trigger.")]
+        [Aliases("f")]
+        [UsageExamples("!emojireactions find hello")]
+        public Task ListAsync(CommandContext ctx,
+                             [RemainingText, Description("Specific trigger.")] string trigger)
+        {
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions) || !ereactions.Any())
+                throw new CommandFailedException("This guild has no text reactions registered.");
+
+            IEnumerable<EmojiReaction> ers = ereactions.Where(t => t.IsMatch(trigger));
+            if (!ers.Any())
+                throw new CommandFailedException("None of the reactions respond to such trigger.");
+
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Text reaction that matches the trigger",
+                Description = string.Join("\n", ers.Select(er => $"{Formatter.InlineCode(er.Id.ToString())} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {Formatter.InlineCode(string.Join(", ", er.TriggerStrings))}")),
+                Color = this.ModuleColor
+            }.Build());
+        }
+        #endregion
+
         #region COMMAND_EMOJI_REACTIONS_LIST
         [Command("list")]
         [Description("Show all emoji reactions for this guild.")]
