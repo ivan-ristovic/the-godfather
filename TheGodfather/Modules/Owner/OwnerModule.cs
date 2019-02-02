@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -155,7 +156,7 @@ namespace TheGodfather.Modules.Owner
 
             var res = new List<IReadOnlyDictionary<string, string>>();
             using (DatabaseContext db = this.Database.CreateContext())
-            using (var dr = await db.Database.ExecuteSqlQueryAsync(query)) {
+            using (Microsoft.EntityFrameworkCore.Storage.RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query)) {
                 DbDataReader reader = dr.DbDataReader;
                 while (await reader.ReadAsync()) {
                     var dict = new Dictionary<string, string>();
@@ -166,7 +167,7 @@ namespace TheGodfather.Modules.Owner
                     res.Add(new ReadOnlyDictionary<string, string>(dict));
                 }
             }
-            
+
             if (!res.Any() || !res.First().Any()) {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
                 return;
@@ -241,7 +242,7 @@ namespace TheGodfather.Modules.Owner
             DiscordMessage msg = await ctx.RespondAsync(embed: emb.Build());
 
             var globals = new EvaluationEnvironment(ctx);
-            var sopts = ScriptOptions.Default
+            ScriptOptions sopts = ScriptOptions.Default
                 .WithImports("System", "System.Collections.Generic", "System.Linq", "System.Net.Http",
                     "System.Net.Http.Headers", "System.Reflection", "System.Text", "System.Text.RegularExpressions",
                     "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities",
@@ -249,8 +250,8 @@ namespace TheGodfather.Modules.Owner
                 .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
             var sw1 = Stopwatch.StartNew();
-            var snippet = CSharpScript.Create(code, sopts, typeof(EvaluationEnvironment));
-            var diag = snippet.Compile();
+            Script<object> snippet = CSharpScript.Create(code, sopts, typeof(EvaluationEnvironment));
+            System.Collections.Immutable.ImmutableArray<Diagnostic> diag = snippet.Compile();
             sw1.Stop();
 
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
@@ -602,6 +603,30 @@ namespace TheGodfather.Modules.Owner
         {
             this.Shared.ListeningStatus = !this.Shared.ListeningStatus;
             return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}", important: false);
+        }
+        #endregion
+
+        #region COMMAND_UPDATE
+        [Command("update"), NotBlocked]
+        [Description("Update and restart the bot.")]
+        [Aliases("upd", "u")]
+        [UsageExamples("!owner update")]
+        [RequireOwner]
+        public Task UpdateAsync(CommandContext ctx)
+        {
+            string scriptPath;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                scriptPath = "../launch_linux_x64.sh";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                scriptPath = "../launch_win10_x64.sh";
+            else
+                throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
+
+            if (!File.Exists(scriptPath))
+                throw new CommandFailedException("Failed to find the update script on the host filesystem!");
+
+            Process.Start(scriptPath);
+            return this.ExitAsync(ctx);
         }
         #endregion
     }
