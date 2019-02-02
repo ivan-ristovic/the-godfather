@@ -24,6 +24,8 @@ namespace TheGodfather.Modules.Administration
     [Description("Manage forbidden names for this guild. Group call shows all the forbidden nicknames for this guild.")]
     [Aliases("forbiddenname", "forbiddennicknames", "fn", "disallowednames")]
     [UsageExamples("!forbiddennames f+u+c+k")]
+    [RequireUserPermissions(Permissions.ManageGuild)]
+    [RequirePermissions(Permissions.ManageNicknames)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ForbiddenNamesModule : TheGodfatherModule
     {
@@ -40,7 +42,6 @@ namespace TheGodfather.Modules.Administration
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        [RequirePermissions(Permissions.ManageNicknames)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Forbidden name list (can be regexes)")] params string[] names)
             => this.AddAsync(ctx, names);
@@ -51,8 +52,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Add nicknames to the forbidden list (can be a regex).")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
         [UsageExamples("!forbiddennames add fuck f+u+c+k+")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
-        [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Name list.")] params string[] names)
         {
@@ -121,7 +120,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!forbiddennames delete 3 4",
                        "!forbiddennames delete SomeName")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Forbidden name IDs to remove.")] params int[] ids)
         {

@@ -24,6 +24,7 @@ namespace TheGodfather.Modules.Administration
                  "adds a new filter for the given word list. Filters are regular expressions.")]
     [Aliases("f", "filters")]
     [UsageExamples("!filter fuck fk f+u+c+k+")]
+    [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class FilterModule : TheGodfatherModule
     {
@@ -36,12 +37,11 @@ namespace TheGodfather.Modules.Administration
 
 
         [GroupCommand, Priority(1)]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
             => this.AddAsync(ctx, filters);
 
-        [GroupCommand, Priority(0)]
+        [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
@@ -51,7 +51,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Add filter to guild filter list.")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
         [UsageExamples("!filter add fuck f+u+c+k+")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
         {
@@ -133,7 +132,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!filter delete fuck f+u+c+k+",
                        "!filter delete 3 4")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {

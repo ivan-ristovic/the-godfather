@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("autoroles", "automaticr", "autorole", "aroles", "arole", "arl", "ar", "aar")]
     [UsageExamples("!ar",
                    "!ar @Guests")]
+    [RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class AutomaticRolesModule : TheGodfatherModule
     {
@@ -41,7 +42,6 @@ namespace TheGodfather.Modules.Administration
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        [RequireUserPermissions(Permissions.Administrator)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Roles to add.")] params DiscordRole[] roles)
             => this.AddAsync(ctx, roles);
@@ -53,7 +53,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("a", "+", "+=", "<<", "<")]
         [UsageExamples("!ar add @Notifications",
                        "!ar add @Notifications @Role1 @Role2")]
-        [RequireUserPermissions(Permissions.Administrator)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
@@ -90,7 +89,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!ar delete @Notifications",
                        "!ar delete @Notifications @Role1 @Role2")]
-        [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {
@@ -123,7 +121,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Delete all automatic roles for this guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
         [UsageExamples("!ar deleteall")]
-        [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all automatic roles for this guild?"))
@@ -186,7 +183,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.SendCollectionInPagesAsync(
                 "Automatic roles for this guild:",
                 roles.OrderByDescending(r => r.Position),
-                r => r.ToString(),
+                r => r.Mention,
                 this.ModuleColor
             );
         }

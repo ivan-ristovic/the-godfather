@@ -26,6 +26,7 @@ namespace TheGodfather.Modules.Reactions
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExamples("!emojireaction :smile: haha laughing")]
+    [RequirePermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiReactionsModule : TheGodfatherModule
     {
@@ -42,14 +43,12 @@ namespace TheGodfather.Modules.Reactions
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(1)]
-        [RequirePermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Emoji to send.")] DiscordEmoji emoji,
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
             => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [GroupCommand, Priority(0)]
-        [RequirePermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Trigger word (case-insensitive).")] string trigger,
                                      [Description("Emoji to send.")] DiscordEmoji emoji)
@@ -62,7 +61,6 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("+", "new", "a", "+=", "<", "<<")]
         [UsageExamples("!emojireaction add :smile: haha",
                        "!emojireaction add haha :smile:")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
                             [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -81,7 +79,6 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
         [UsageExamples("!emojireaction addregex :smile: (ha)+",
                        "!emojireaction addregex (ha)+ :smile:")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
                                  [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -102,7 +99,6 @@ namespace TheGodfather.Modules.Reactions
                        "!emojireaction delete 5",
                        "!emojireaction delete 5 4",
                        "!emojireaction delete :joy:")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {

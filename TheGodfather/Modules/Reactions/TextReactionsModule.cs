@@ -27,6 +27,7 @@ namespace TheGodfather.Modules.Reactions
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [UsageExamples("!textreaction hi hello",
                    "!textreaction \"hi\" \"Hello, %user%!\"")]
+    [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class TextReactionsModule : TheGodfatherModule
     {
@@ -43,7 +44,6 @@ namespace TheGodfather.Modules.Reactions
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Trigger string (case insensitive).")] string trigger,
                                      [RemainingText, Description("Response.")] string response)
@@ -55,7 +55,6 @@ namespace TheGodfather.Modules.Reactions
         [Description("Add a new text reaction to guild text reaction list.")]
         [Aliases("+", "new", "a", "+=", "<", "<<")]
         [UsageExamples("!textreaction add \"hi\" \"Hello, %user%!\"")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger string (case insensitive).")] string trigger,
                             [RemainingText, Description("Response.")] string response)
@@ -67,7 +66,6 @@ namespace TheGodfather.Modules.Reactions
         [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
         [UsageExamples("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Regex (case insensitive).")] string trigger,
                                  [RemainingText, Description("Response.")] string response)
@@ -81,7 +79,6 @@ namespace TheGodfather.Modules.Reactions
         [UsageExamples("!textreaction delete 5",
                        "!textreaction delete 5 8",
                        "!textreaction delete hi")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
