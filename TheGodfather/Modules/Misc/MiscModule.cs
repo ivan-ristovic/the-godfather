@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Misc
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.NoEntry} NSFW link from {ctx.Member.DisplayName} {StaticDiscordEmoji.NoEntry}",
-                Description = Formatter.EmbedlessUrl(url),
+                Description = FormatterExtensions.Spoiler(url.ToString()),
                 Color = DiscordColor.Red
             };
             if (!string.IsNullOrWhiteSpace(info))
