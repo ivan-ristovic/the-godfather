@@ -10,6 +10,7 @@ using System.Threading;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 #endregion
@@ -152,7 +153,7 @@ namespace TheGodfather
 
             sanitized = message;
             foreach (Filter f in hit)
-                sanitized = f.Trigger.Replace(sanitized, Formatter.InlineCode("***"));
+                sanitized = f.Trigger.Replace(sanitized, FormatterExtensions.Spoiler("$0"));
 
             return true;
         }
