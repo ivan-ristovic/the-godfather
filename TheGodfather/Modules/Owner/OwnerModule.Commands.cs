@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 
 using System;
 using System.Collections.Generic;
@@ -49,8 +50,8 @@ namespace TheGodfather.Modules.Owner
             [Description("Add a new command.")]
             [Aliases("+", "a", "<", "<<", "+=")]
             [UsageExamples("!o cmd + \\`\\`\\`[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");\\`\\`\\`")]
-            public async Task AddAsync(CommandContext ctx,
-                                      [RemainingText, Description("Code to evaluate.")] string code)
+            public Task AddAsync(CommandContext ctx,
+                                [RemainingText, Description("Code to evaluate.")] string code)
             {
                 if (string.IsNullOrWhiteSpace(code))
                     throw new InvalidCommandUsageException("Code missing.");
@@ -82,14 +83,14 @@ public sealed class DynamicCommands : BaseCommandModule
                         usings: new[] { "System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities", "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity" },
                         optimizationLevel: OptimizationLevel.Release,
                         allowUnsafe: true, 
-                        platform: Platform.X64
+                        platform: Platform.AnyCpu
                     );
                     
                     var compilation = CSharpCompilation.CreateScriptCompilation(type, ast, refs, opts, returnType: typeof(object));
 
                     Assembly assembly = null;
                     using (var ms = new MemoryStream()) {
-                        var er = compilation.Emit(ms);
+                        EmitResult er = compilation.Emit(ms);
                         ms.Position = 0;
                         assembly = Assembly.Load(ms.ToArray());
                     }
@@ -98,12 +99,11 @@ public sealed class DynamicCommands : BaseCommandModule
                     moduleType = outerType.GetNestedTypes().FirstOrDefault(x => x.BaseType == typeof(BaseCommandModule));
 
                     ctx.CommandsNext.RegisterCommands(moduleType);
-
                     TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
 
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Command(s) successfully added!", important: false);
+                    return this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Command(s) successfully added!", important: false);
                 } catch (Exception ex) {
-                    await this.InformFailureAsync(ctx, $"Compilation failed!\n\n{Formatter.Bold(ex.GetType().ToString())}: {ex.Message}");
+                    return this.InformFailureAsync(ctx, $"Compilation failed!\n\n{Formatter.Bold(ex.GetType().ToString())}: {ex.Message}");
                 }
             }
             #endregion
