@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 "Memes registered in this guild",
                 memes,
-                meme => $"{Formatter.Bold(meme.Name)} | ({Formatter.InlineCode(meme.Url)})",
+                meme => Formatter.MaskedUrl(meme.Name, new Uri(meme.Url)),
                 this.ModuleColor
             );
         }

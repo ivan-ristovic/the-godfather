@@ -615,15 +615,32 @@ namespace TheGodfather.Modules.Owner
         public Task UpdateAsync(CommandContext ctx)
         {
             string scriptPath;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
                 scriptPath = "../launch_linux_x64.sh";
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                scriptPath = "../launch_win10_x64.sh";
-            else
+                var proc = new Process {
+                    StartInfo = new ProcessStartInfo {
+                        FileName = "nohup",
+                        Arguments = $"bash {scriptPath} {Process.GetCurrentProcess().Id} {ctx.Guild.Id} {ctx.Channel.Id}",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                proc.Start();
+            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                scriptPath = "../launch_win10_x64.ps1";
+                var proc = new Process {
+                    StartInfo = new ProcessStartInfo {
+                        FileName = scriptPath,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                proc.Start();
+            } else {
                 throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
-
-            if (!File.Exists(scriptPath))
-                throw new CommandFailedException("Failed to find the update script on the host filesystem!");
+            }
 
             Process.Start(scriptPath);
             return this.ExitAsync(ctx);

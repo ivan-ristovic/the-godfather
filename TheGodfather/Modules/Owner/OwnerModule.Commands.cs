@@ -83,7 +83,7 @@ public sealed class DynamicCommands : BaseCommandModule
                         usings: new[] { "System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities", "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity" },
                         optimizationLevel: OptimizationLevel.Release,
                         allowUnsafe: true, 
-                        platform: Platform.AnyCpu
+                        platform: Platform.X64
                     );
                     
                     var compilation = CSharpCompilation.CreateScriptCompilation(type, ast, refs, opts, returnType: typeof(object));
