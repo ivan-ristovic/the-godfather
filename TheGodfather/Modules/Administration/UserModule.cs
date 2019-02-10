@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
-
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -16,6 +16,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 #endregion
 
@@ -404,7 +405,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_TEMPBAN
         [Command("tempban"), Priority(3)]
-        [Description("Temporarily ans the user from the server and then unbans him after given timespan.")]
+        [Description("Temporarily bans the user from the server and then unbans him after given timespan.")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
         [UsageExamples("!user tempban @Someone 3h4m",
                        "!user tempban 5d @Someone Troublemaker",
@@ -458,6 +459,31 @@ namespace TheGodfather.Modules.Administration
                                 [Description("User (doesn't have to be a member).")] DiscordUser user,
                                 [RemainingText, Description("Reason.")] string reason = null)
             => this.TempBanAsync(ctx, user, timespan, reason);
+        #endregion
+
+        #region COMMAND_USER_TEMPMUTE
+        [Command("tempmute"), Priority(1)]
+        [Description("Temporarily mutes the user and unmutes him after the given timespan.")]
+        [Aliases("tm", "tmute", "tmpmute", "tmpm")]
+        [UsageExamples("!user tempmute @Someone 3h4m",
+                       "!user tempmute 5d @Someone Spammer",
+                       "!user tempmute @Someone 5h30m30s Spammer")]
+        [RequirePermissions(Permissions.ManageRoles)]
+        public async Task TempMuteAsync(CommandContext ctx,
+                                       [Description("Time span.")] TimeSpan timespan,
+                                       [Description("Member.")] DiscordMember member,
+                                       [RemainingText, Description("Reason.")] string reason = null)
+        {
+            await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentActionType.TemporaryMute, timespan, ctx.BuildInvocationDetailsString("_gf: Tempmute"));
+            await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} muted {Formatter.Bold(member.Username)} for {Formatter.Bold(timespan.Humanize())}!", important: false);
+        }
+
+        [Command("tempmute"), Priority(0)]
+        public Task TempMuteAsync(CommandContext ctx,
+                                 [Description("User.")] DiscordMember member,
+                                 [Description("Time span.")] TimeSpan timespan,
+                                 [RemainingText, Description("Reason.")] string reason = null)
+            => this.TempMuteAsync(ctx, timespan, member);
         #endregion
 
         #region COMMAND_USER_UNBAN

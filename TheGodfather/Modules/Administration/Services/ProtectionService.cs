@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
-
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,35 +32,35 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsDisabled()
             => false;
 
-        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type)
+        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type, TimeSpan? cooldown = null, string reason = null)
         {
             try {
                 DiscordRole muteRole;
                 SavedTaskInfo task;
                 switch (type) {
                     case PunishmentActionType.Kick:
-                        await member.RemoveAsync(this.reason);
+                        await member.RemoveAsync(reason ?? this.reason);
                         break;
                     case PunishmentActionType.PermanentMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
-                        await member.GrantRoleAsync(muteRole, this.reason);
+                        await member.GrantRoleAsync(muteRole, reason ?? this.reason);
                         break;
                     case PunishmentActionType.PermanentBan:
-                        await member.BanAsync(1, reason: this.reason);
+                        await member.BanAsync(1, reason: reason ?? this.reason);
                         break;
                     case PunishmentActionType.TemporaryBan:
-                        await member.BanAsync(0, reason: this.reason);
-                        task = new UnbanTaskInfo(guild.Id, member.Id);
+                        await member.BanAsync(0, reason: reason ?? this.reason);
+                        task = new UnbanTaskInfo(guild.Id, member.Id, cooldown is null ? null : DateTimeOffset.Now + cooldown);
                         await SavedTaskExecutor.ScheduleAsync(this.shard.SharedData, this.shard.Database, this.shard.Client, task);
                         break;
                     case PunishmentActionType.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
-                        await member.GrantRoleAsync(muteRole, this.reason);
-                        task = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id);
+                        await member.GrantRoleAsync(muteRole, reason ?? this.reason);
+                        task = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id, cooldown is null ? null : DateTimeOffset.Now + cooldown);
                         await SavedTaskExecutor.ScheduleAsync(this.shard.SharedData, this.shard.Database, this.shard.Client, task);
                         break;
                 }
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration.Services
                         Color = DiscordColor.Red
                     };
                     emb.AddField("User", member?.ToString() ?? "unknown", inline: true);
-                    emb.AddField("Reason", this.reason, inline: false);
+                    emb.AddField("Reason", reason ?? this.reason, inline: false);
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
             }
