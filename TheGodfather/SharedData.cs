@@ -140,24 +140,6 @@ namespace TheGodfather
             return filters.Any(f => f.Trigger.IsMatch(message));
         }
 
-        public bool MessageContainsFilter(ulong gid, string message, out string sanitized)
-        {
-            sanitized = null;
-            if (!this.Filters.TryGetValue(gid, out var filters) || filters is null)
-                return false;
-
-            message = message.ToLowerInvariant();
-            IEnumerable<Filter> hit = filters.Where(f => f.Trigger.IsMatch(message));
-            if (!hit.Any())
-                return false;
-
-            sanitized = message;
-            foreach (Filter f in hit)
-                sanitized = f.Trigger.Replace(sanitized, FormatterExtensions.Spoiler("$0"));
-
-            return true;
-        }
-
         public void UpdateGuildConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifier)
             => this.GuildConfigurations[gid] = modifier(this.GuildConfigurations[gid]);
         #endregion

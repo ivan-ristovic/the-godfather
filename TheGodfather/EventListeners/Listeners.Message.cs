@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
@@ -31,7 +32,7 @@ namespace TheGodfather.EventListeners
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn is null)
                 return;
-            
+
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -50,7 +51,7 @@ namespace TheGodfather.EventListeners
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id))) {
                 short rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
-                if (rank != 0) { 
+                if (rank != 0) {
                     DatabaseGuildRank rankInfo;
                     using (DatabaseContext db = shard.Database.CreateContext())
                         rankInfo = db.GuildRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
@@ -91,15 +92,14 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content, out string sanitized))
+            if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
                 return;
 
             await e.Message.DeleteAsync("_gf: Filter hit");
-            if (sanitized.Any(c => char.IsLetterOrDigit(c)))
-                await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {sanitized}");
+            await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(Formatter.Sanitize(e.Message.Content)))}");
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -114,7 +114,7 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            if (!shard.SharedData.EmojiReactions.TryGetValue(e.Guild.Id, out var ereactions))
+            if (!shard.SharedData.EmojiReactions.TryGetValue(e.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
                 return;
 
             EmojiReaction ereaction = ereactions?
@@ -146,7 +146,7 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            if (!shard.SharedData.TextReactions.TryGetValue(e.Guild.Id, out var treactions))
+            if (!shard.SharedData.TextReactions.TryGetValue(e.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
                 return;
 
             TextReaction tr = treactions?.FirstOrDefault(r => r.IsMatch(e.Message.Content));
@@ -172,7 +172,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
 
-            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MessageDelete);
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
 
@@ -216,11 +216,10 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content, out string sanitized)) {
+            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update");
-                    if (sanitized.Any(c => char.IsLetterOrDigit(c)))
-                        await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {sanitized}");
+                    await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(Formatter.Sanitize(e.Message.Content)))}");
                 } catch {
 
                 }
@@ -244,7 +243,7 @@ namespace TheGodfather.EventListeners
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);
             string ctime = e.Message.CreationTimestamp == null ? _unknown : e.Message.CreationTimestamp.ToUtcTimestamp();
-            string etime = e.Message.EditedTimestamp is null ? _unknown: e.Message.EditedTimestamp.Value.ToUtcTimestamp();
+            string etime = e.Message.EditedTimestamp is null ? _unknown : e.Message.EditedTimestamp.Value.ToUtcTimestamp();
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 

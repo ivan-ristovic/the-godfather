@@ -110,6 +110,7 @@ namespace TheGodfather.Modules.Swat
             DiscordMessage msg = await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
 
             await msg.CreateReactionAsync(StaticDiscordEmoji.Information);
+            await Task.Delay(250);
             ReactionContext rctx = await msg.WaitForAnyReactionAsync(StaticDiscordEmoji.Information);
             if (!(rctx is null)) {
                 SwatServerInfo completeInfo = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort, complete: true);

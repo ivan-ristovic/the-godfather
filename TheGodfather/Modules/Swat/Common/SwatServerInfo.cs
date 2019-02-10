@@ -40,7 +40,9 @@ namespace TheGodfather.Modules.Swat.Common
             };
 
             if (complete) {
-                int max = int.Parse(si.Players);
+                int max;
+                if (!int.TryParse(si.Players, out max))
+                    max = 16;
                 for (int i = 0; i < max; i++) {
                     int playerIndex = Array.IndexOf(data, $"player_{i}");
                     si.players.Add(playerIndex != -1 ? data[playerIndex + 1] : "<unknown>");
