@@ -24,14 +24,14 @@ namespace TheGodfatherTests.Modules.Search.Services
             Assert.IsTrue(info.Success);
             Assert.AreEqual("US", info.CountryCode);
             Assert.That(info.City.StartsWith("San Francisco"));
-            Assert.AreEqual("94105", info.ZipCode);
+            Assert.That(info.ZipCode.StartsWith("9410"));
 
             info = await IpGeolocationService.GetInfoForIpAsync(IPAddress.Parse("208.80.152.201"));
             Assert.IsNotNull(info);
             Assert.IsTrue(info.Success);
             Assert.AreEqual("US", info.CountryCode);
             Assert.That(info.City.StartsWith("San Francisco"));
-            Assert.AreEqual("94105", info.ZipCode);
+            Assert.That(info.ZipCode.StartsWith("9410"));
 
             Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync((string)null));
             Assert.ThrowsAsync(typeof(ArgumentNullException), () => IpGeolocationService.GetInfoForIpAsync((IPAddress)null));

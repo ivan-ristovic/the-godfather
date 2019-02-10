@@ -51,7 +51,7 @@ namespace TheGodfather
         {
             try {
                 PrintBuildInformation();
-                
+
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
