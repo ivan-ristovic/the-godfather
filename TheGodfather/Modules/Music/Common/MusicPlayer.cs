@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Music.Common
                                 for (int i = br; i < buff.Length; i++)
                                     buff[i] = 0;
 
-                            await this.vnc.SendAsync(buff, 20);
+                            //await this.vnc.SendAsync(buff, 20);
                         }
                     }
 
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Music.Common
             } catch (Exception e) {
                 // handle exc
             } finally {
-                await this.vnc.SendSpeakingAsync(false);
+                //await this.vnc.SendSpeakingAsync(false);
                 lock (this.operationLock) {
                     this.playing = false;
                     this.stopped = true;
