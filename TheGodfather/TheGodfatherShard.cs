@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
@@ -72,9 +73,9 @@ namespace TheGodfather
 
 
         #region SETUP_FUNCTIONS
-        public void Initialize()
+        public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
-            this.SetupClient();
+            this.SetupClient(onGuildDownloadCompleted);
             this.SetupCommands();
             this.SetupInteractivity();
             this.SetupVoice();
@@ -82,7 +83,7 @@ namespace TheGodfather
             AsyncExecutionManager.RegisterEventListeners(this.Client, this);
         }
 
-        private void SetupClient()
+        private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
             var cfg = new DiscordConfiguration {
                 Token = this.SharedData.BotConfiguration.Token,
@@ -107,6 +108,7 @@ namespace TheGodfather
                 this.SharedData.LogProvider.ElevatedLog(LogLevel.Info, "| Ready!", this.Id);
                 return Task.CompletedTask;
             };
+            this.Client.GuildDownloadCompleted += onGuildDownloadCompleted;
         }
 
         private void SetupCommands()

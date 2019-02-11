@@ -59,8 +59,6 @@ namespace TheGodfather
                 LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
-                await Task.Delay(TimeSpan.FromSeconds(10));
-                await RegisterPeriodicTasksAsync();
 
                 try {
                     await Task.Delay(Timeout.Infinite, SharedData.MainLoopCts.Token);
@@ -220,16 +218,22 @@ namespace TheGodfather
             Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...                  ");
 
             Shards = new List<TheGodfatherShard>();
+            var shard = new TheGodfatherShard(0, GlobalDatabaseContextBuilder, SharedData);
+            shard.Initialize(async e => await RegisterPeriodicTasksAsync());
+            Shards.Add(shard);
+
+            /* TODO periodic tasks for shards will clash, 
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, GlobalDatabaseContextBuilder, SharedData);
-                shard.Initialize();
+                shard.Initialize(async e => await RegisterPeriodicTasksAsync());
                 Shards.Add(shard);
             }
+            */
 
             Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            return Task.WhenAll(Shards.Select(shard => shard.StartAsync()));
+            return Task.WhenAll(Shards.Select(s => s.StartAsync()));
         }
 
         private static async Task RegisterPeriodicTasksAsync()
@@ -240,7 +244,7 @@ namespace TheGodfather
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
             using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
-                await RegisterSavedTasks(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
+                await RegisterSavedTasksAsync(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
                     t => t.Id,
                     t => {
                         switch (t.Type) {
@@ -253,18 +257,18 @@ namespace TheGodfather
                         }
                     })
                 );
-                await RegisterReminders(db.Reminders.ToDictionary(
+                await RegisterRemindersAsync(db.Reminders.ToDictionary(
                     t => t.Id,
                     t => new SendMessageTaskInfo(t.ChannelId, t.UserId, t.Message, t.ExecutionTime, t.IsRepeating, t.RepeatInterval)
                 ));
             }
 
 
-            async Task RegisterSavedTasks(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
+            async Task RegisterSavedTasksAsync(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
             {
                 int registeredTasks = 0, missedTasks = 0;
                 foreach ((int tid, SavedTaskInfo task) in tasks) {
-                    if (await RegisterTask(tid, task))
+                    if (await RegisterTaskAsync(tid, task))
                         registeredTasks++;
                     else
                         missedTasks++;
@@ -272,11 +276,11 @@ namespace TheGodfather
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {registeredTasks} registered; {missedTasks} missed.");
             }
 
-            async Task RegisterReminders(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
+            async Task RegisterRemindersAsync(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
             {
                 int registeredTasks = 0, missedTasks = 0;
                 foreach ((int tid, SendMessageTaskInfo task) in reminders) {
-                    if (await RegisterTask(tid, task))
+                    if (await RegisterTaskAsync(tid, task))
                         registeredTasks++;
                     else
                         missedTasks++;
@@ -284,7 +288,7 @@ namespace TheGodfather
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {registeredTasks} registered; {missedTasks} missed.");
             }
 
-            async Task<bool> RegisterTask(int id, SavedTaskInfo tinfo)
+            async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
             {
                 var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, SharedData, GlobalDatabaseContextBuilder);
                 if (texec.TaskInfo.IsExecutionTimeReached) {
