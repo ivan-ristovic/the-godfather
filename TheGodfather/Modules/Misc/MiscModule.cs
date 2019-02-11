@@ -13,6 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -419,7 +420,7 @@ namespace TheGodfather.Modules.Misc
 
             string SplitMessage(string data)
             {
-                string[] words = data.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string[] words = new Regex("\\b").Split(data);
                 if (words.Length == 1)
                     return words[0];
                 int start = GFRandom.Generator.Next(words.Length);
