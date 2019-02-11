@@ -78,11 +78,17 @@ namespace TheGodfather.EventListeners
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
 
                     break;
-                case ArgumentException _:
+                case InvalidCommandUsageException _:
                     sb.AppendLine("Invalid command usage! Details:").AppendLine();
                     sb.AppendLine(Formatter.BlockCode(ex.Message));
                     sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
+                case ArgumentException _:
+                    string fcmdStr = $"help {e.Command.QualifiedName}";
+                    Command command = shard.CNext.FindCommand(fcmdStr, out string args);
+                    CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
+                    await shard.CNext.ExecuteCommandAsync(fctx);
+                    return;
                 case BadRequestException brex:
                     sb.Append($"Bad request! Details: {brex.JsonMessage}");
                     break;
@@ -94,6 +100,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case NpgsqlException dbex:
                     sb.Append($"Database operation failed. Details: {dbex.Message}");
+                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     break;
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
@@ -136,13 +143,15 @@ namespace TheGodfather.EventListeners
                     }
                     break;
                 case ConcurrentOperationException _:
-                    sb.Append($"A concurrency error - please report this. Details: {ex.Message}");
+                    sb.Append($"A concurrency error occured - please report this. Details: {ex.Message}");
+                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     break;
                 case UnauthorizedException _:
-                    sb.Append("I am not authorized to do that.");
+                    sb.Append("I am unauthorized to do that.");
                     break;
                 case DbUpdateException _:
                     sb.Append("A database update error has occured, possibly due to large amount of update requests. Please try again later.");
+                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     break;
                 case TargetInvocationException _:
                     sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
@@ -157,6 +166,7 @@ namespace TheGodfather.EventListeners
                         sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
                         sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
                     }
+                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     break;
             }
 
