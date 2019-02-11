@@ -265,7 +265,7 @@ namespace TheGodfather.Modules.Administration
                 await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Mute"));
             else
                 await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Unmute"));
-            await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}");
+            await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}", important: false);
         }
 
         [Command("mute"), Priority(0)]
@@ -419,6 +419,9 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
+            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+                throw new InvalidCommandUsageException("Given time period cannot be lower than 1 minute or greater than 1 month");
+
             await member.BanAsync(delete_message_days: 0, reason: ctx.BuildInvocationDetailsString($"(tempban for {timespan.ToString()}) " + reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
@@ -443,6 +446,9 @@ namespace TheGodfather.Modules.Administration
         {
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
+
+            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+                throw new InvalidCommandUsageException("Given time period cannot be lower than 1 minute or greater than 1 month");
 
             await ctx.Guild.BanMemberAsync(user.Id, 0, ctx.BuildInvocationDetailsString(reason));
 
@@ -474,6 +480,9 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Member.")] DiscordMember member,
                                        [RemainingText, Description("Reason.")] string reason = null)
         {
+            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+                throw new InvalidCommandUsageException("Given time period cannot be lower than 1 minute or greater than 1 month");
+
             await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentActionType.TemporaryMute, timespan, ctx.BuildInvocationDetailsString("_gf: Tempmute"));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} muted {Formatter.Bold(member.Username)} for {Formatter.Bold(timespan.Humanize())}!", important: false);
         }
@@ -487,22 +496,32 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_UNBAN
-        [Command("unban")]
-        [Description("Unbans the user ID from the server.")]
+        [Command("unban"), Priority(1)]
+        [Description("Unbans the user from the server.")]
         [Aliases("ub")]
         [UsageExamples("!user unban 154956794490845232")]
         [RequirePermissions(Permissions.BanMembers)]
+        public async Task UnbanAsync(CommandContext ctx,
+                                    [Description("User.")] DiscordUser user,
+                                    [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (user.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't unban yourself...");
+            
+            await ctx.Guild.UnbanMemberAsync(user.Id, reason: ctx.BuildInvocationDetailsString(reason));
+            await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed a ban for {Formatter.Bold(user.ToString())}!");
+        }
+
+        [Command("unban"), Priority(0)]
         public async Task UnbanAsync(CommandContext ctx,
                                     [Description("ID.")] ulong id,
                                     [RemainingText, Description("Reason.")] string reason = null)
         {
             if (id == ctx.User.Id)
                 throw new CommandFailedException("You can't unban yourself...");
-
-            DiscordUser u = await ctx.Client.GetUserAsync(id);
-
+            
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildInvocationDetailsString(reason));
-            await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!");
+            await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed a ban for ID {Formatter.InlineCode(id.ToString())}!");
         }
         #endregion
 
