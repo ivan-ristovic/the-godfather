@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Chickens
 
 
         #region COMMAND_CHICKEN_FIGHT
-        [Command("fight")]
+        [Command("fight"), Priority(1)]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
         [UsageExamples("!chicken duel @Someone")]
@@ -103,6 +103,25 @@ namespace TheGodfather.Modules.Chickens
                 $"\n\n{winner.Owner.Mention} won {gain * 200} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}."
                 , important: true
             );
+        }
+
+        [Command("fight"), Priority(0)]
+        public async Task FightAsync(CommandContext ctx,
+                                    [Description("Name of the chicken to fight.")] string chickenName)
+        {
+            Chicken chicken = null;
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                DatabaseChicken dbc = db.Chickens
+                    .Include(c => c.DbUpgrades)
+                        .ThenInclude(u => u.DbChickenUpgrade)
+                    .FirstOrDefault(c => c.GuildId == ctx.Guild.Id && string.Compare(c.Name, chickenName, true) == 0);
+                chicken = Chicken.FromDatabaseChicken(dbc);
+            }
+
+            if (chicken is null)
+                throw new CommandFailedException("Couldn't find any chickens with that name!");
+
+            await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
         }
         #endregion
 
