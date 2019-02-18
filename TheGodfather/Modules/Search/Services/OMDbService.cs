@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
 #endregion
 

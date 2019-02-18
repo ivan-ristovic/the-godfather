@@ -1,6 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 
 using Newtonsoft.Json;
 
@@ -88,50 +86,5 @@ namespace TheGodfather.Modules.Search.Common
 
         [JsonProperty("Year")]
         public string Year { get; set; }
-
-
-        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder() {
-                Title = this.Title,
-                Description = this.Plot,
-                Url = $"http://www.imdb.com/title/{ this.IMDbId }",
-            };
-
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            if (!string.IsNullOrWhiteSpace(this.Type))
-                emb.AddField("Type", this.Type, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Year))
-                emb.AddField("Air time", this.Year, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.IMDbId))
-                emb.AddField("IMDb ID", this.IMDbId, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Genre))
-                emb.AddField("Genre", this.Genre, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.ReleaseDate))
-                emb.AddField("Release date", this.ReleaseDate, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Rated))
-                emb.AddField("Rated", this.Rated, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Duration))
-                emb.AddField("Duration", this.Duration, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Actors))
-                emb.AddField("Actors", this.Actors, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.IMDbRating) && !string.IsNullOrWhiteSpace(this.IMDbVotes))
-                emb.AddField("IMDb rating", $"{this.IMDbRating} out of {this.IMDbVotes} votes", inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Writer))
-                emb.AddField("Writer", this.Writer, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Director))
-                emb.AddField("Director", this.Director, inline: true);
-            if (!string.IsNullOrWhiteSpace(this.Poster) && this.Poster != "N/A")
-                emb.WithThumbnailUrl(this.Poster);
-
-            emb.WithFooter("Powered by OMDb.");
-
-            return emb.Build();
-        }
-        
-        public Page ToDiscordPage(DiscordColor? color = null)
-            => new Page() { Embed = this.ToDiscordEmbed(color) };
     }
 }

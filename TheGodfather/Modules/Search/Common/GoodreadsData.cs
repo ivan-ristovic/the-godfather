@@ -1,8 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 
-using System.Collections.Generic;
 using System.Xml.Serialization;
 
 #endregion
@@ -28,33 +25,6 @@ namespace TheGodfather.Modules.Search.Common
 
         [XmlArray("results"), XmlArrayItem("work")]
         public GoodreadsWork[] Results { get; set; }
-
-
-        public IReadOnlyList<Page> ToDiscordPages()
-        {
-            var pages = new List<Page>();
-
-            foreach (GoodreadsWork work in this.Results) {
-                var emb = new DiscordEmbedBuilder() {
-                    Title = work.Book.Title,
-                    ThumbnailUrl = work.Book.ImageUrl,
-                    Color = DiscordColor.DarkGray
-                };
-
-                emb.AddField("Author", work.Book.Author.Name, inline: true);
-                emb.AddField("Rating", $"{work.AverageRating} out of {work.RatingsCount} votes", inline: true);
-                emb.AddField("Date", $"{work.PublicationDayString}/{work.PublicationMonthString}/{work.PublicationYearString}", inline: true);
-                emb.AddField("Books count", work.BooksCount.ToString(), inline: true);
-                emb.AddField("Work ID", work.Id.ToString(), inline: true);
-                emb.AddField("Book ID", work.Book.Id.ToString(), inline: true);
-
-                emb.WithFooter($"Fethed results using Goodreads API in {this.QueryTime}s");
-
-                pages.Add(new Page() { Embed = emb.Build() });
-            }
-
-            return pages.AsReadOnly();
-        }
     }
 
     public class GoodreadsWork

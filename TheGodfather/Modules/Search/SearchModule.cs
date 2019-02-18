@@ -2,14 +2,17 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Collections.Generic;
 using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 #endregion
 

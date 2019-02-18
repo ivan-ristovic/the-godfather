@@ -1,6 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
 
 using Newtonsoft.Json;
 #endregion
@@ -9,9 +7,6 @@ namespace TheGodfather.Modules.Search.Common
 {
     public class IpInfo
     {
-        [JsonIgnore]
-        private static readonly string _unknown = Formatter.Italic("Unknown");
-
         [JsonIgnore]
         public bool Success => this.Status == "success";
 
@@ -57,26 +52,5 @@ namespace TheGodfather.Modules.Search.Common
 
         [JsonProperty("org")]
         public string Organization { get; set; }
-
-
-        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder() {
-                Title = $"IP geolocation info for {this.Ip}",
-            };
-            
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            emb.AddField("Location", $"{this.City}, {this.RegionName} {this.RegionCode}, {this.CountryName} {this.CountryCode}");
-            emb.AddField("Exact location", $"({this.Latitude}, {this.Longitude})", inline: true);
-            emb.AddField("ISP", string.IsNullOrWhiteSpace(this.Isp) ? _unknown : this.Isp, inline: true);
-            emb.AddField("Organization", string.IsNullOrWhiteSpace(this.Organization) ? _unknown : this.Organization, inline: true);
-            emb.AddField("AS number", string.IsNullOrWhiteSpace(this.As) ? _unknown : this.As, inline: true);
-
-            emb.WithFooter("Powered by ip-api.");
-
-            return emb.Build();
-        }
     }
 }

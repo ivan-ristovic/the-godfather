@@ -1,7 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
 using Newtonsoft.Json;
-using TheGodfather.Modules.Search.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search.Common
@@ -22,22 +20,5 @@ namespace TheGodfather.Modules.Search.Common
 
         [JsonProperty("year")]
         public string Year { get; set; }
-
-
-        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder() {
-                Title = $"xkcd #{this.Id} : {this.Title}",
-                ImageUrl = ImageUrl,
-                Url = XkcdService.CreateUrlForComic(this.Id)
-            };
-
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            emb.WithFooter($"Publish date: {this.Month}/{this.Year}");
-
-            return emb.Build();
-        }
     }
 }
