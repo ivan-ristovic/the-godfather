@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Games
         public Task ResetDeckAsync(CommandContext ctx)
         {
             CardDecksService.ResetDeckInChannel(ctx.Channel.Id);
-            return this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!", important: false);
+            return this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!");
         }
         #endregion
     }

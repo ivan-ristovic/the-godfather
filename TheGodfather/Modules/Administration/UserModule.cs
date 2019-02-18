@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
             member = member ?? ctx.Member;
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Member: {Formatter.Bold(member.DisplayName)} ({Formatter.Bold(member.Username)})",
+                Title = $"Member: {member.DisplayName} ({member.Username})",
                 ThumbnailUrl = member.AvatarUrl,
                 Color = this.ModuleColor
             };
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
             user = user ?? ctx.User;
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"User: {Formatter.Bold(user.Username)}",
+                Title = $"User: {user.Username}",
                 ThumbnailUrl = user.AvatarUrl,
                 Color = this.ModuleColor
             };
