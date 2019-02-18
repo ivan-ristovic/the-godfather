@@ -163,36 +163,5 @@ namespace TheGodfather.Modules.Swat.Common
 
         public bool HasSpace
             => int.Parse(this.Players) < int.Parse(this.MaxPlayers);
-
-        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder() {
-                Url = $"https://swat4stats.com/servers/{ this.Ip }:{ this.JoinPort }",
-                Title = HostName,
-                Description = $"{this.Ip}:{this.JoinPort}"
-            };
-
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            emb.AddField("Players", this.Players + "/" + this.MaxPlayers, inline: true);
-            emb.AddField("Game", string.IsNullOrWhiteSpace(this.Game) ? Formatter.Italic("unknown") : this.Game, inline: true);
-            emb.AddField("Version", string.IsNullOrWhiteSpace(this.GameVersion) ? Formatter.Italic("unknown") : this.GameVersion, inline: true);
-            emb.AddField("Game mode", string.IsNullOrWhiteSpace(this.GameMode) ? Formatter.Italic("unknown") : this.GameMode, inline: true);
-            emb.AddField("Map", string.IsNullOrWhiteSpace(this.Map) ? Formatter.Italic("unknown") : this.Map, inline: true);
-            emb.AddField("Round", (string.IsNullOrWhiteSpace(this.Round) ? Formatter.Italic("unknown") : this.Round) + "/" + (string.IsNullOrWhiteSpace(this.MaxRounds) ? Formatter.Italic("unknown") : this.MaxRounds), inline: true);
-
-            if (this.PlayerNames.Any()) {
-                int maxNameLen = this.PlayerNames.Max(p => p.Length);
-                int maxScoreLen = this.PlayerScores.Max(s => s.Length);
-                IEnumerable<string> lines = this.PlayerNames
-                    .Zip(this.PlayerScores, (p, s) => (p, s))
-                    .OrderByDescending(tup => int.TryParse(tup.s, out int score) ? score : 0)
-                    .Select(tup => $"{tup.p.PadRight(maxNameLen)} | {tup.s.PadLeft(maxScoreLen)}");
-                emb.AddField("Playerlist", Formatter.BlockCode(string.Join("\n", lines)));
-            }
-
-            return emb.Build();
-        }
     }
 }

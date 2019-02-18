@@ -4,7 +4,9 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using Microsoft.EntityFrameworkCore;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,6 +18,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Swat.Common;
+using TheGodfather.Modules.Swat.Extensions;
 using TheGodfather.Modules.Swat.Services;
 #endregion
 
@@ -114,7 +117,7 @@ namespace TheGodfather.Modules.Swat
             ReactionContext rctx = await msg.WaitForAnyReactionAsync(StaticDiscordEmoji.Information);
             if (!(rctx is null)) {
                 SwatServerInfo completeInfo = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort, complete: true);
-                if (info is null) {
+                if (completeInfo is null) {
                     await this.InformFailureAsync(ctx, "No reply from server.");
                     return;
                 }
