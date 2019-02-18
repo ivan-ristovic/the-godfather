@@ -48,6 +48,19 @@ namespace TheGodfather.Modules.Chickens.Common
             return chicken;
         }
 
+        public static Chicken FromDatabase(DatabaseContextBuilder dbb, ulong gid, string name)
+        {
+            Chicken chicken = null;
+            using (DatabaseContext db = dbb.CreateContext()) {
+                DatabaseChicken dbc = db.Chickens
+                    .Include(c => c.DbUpgrades)
+                        .ThenInclude(u => u.DbChickenUpgrade)
+                    .FirstOrDefault(c => c.GuildId == gid && string.Compare(c.Name, name, true) == 0);
+                chicken = FromDatabaseChicken(dbc);
+            }
+            return chicken;
+        }
+
         public static Chicken FromDatabaseChicken(DatabaseChicken dbc)
         {
             if (dbc == null)

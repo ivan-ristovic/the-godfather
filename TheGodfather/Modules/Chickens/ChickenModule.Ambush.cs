@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 
 using System;
@@ -29,14 +30,14 @@ namespace TheGodfather.Modules.Chickens
         public class AmbushModule : TheGodfatherModule
         {
 
-            public AmbushModule(SharedData shared, DatabaseContextBuilder db) 
+            public AmbushModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Whose chicken to ambush?")] DiscordMember member)
             {
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Chickens
                 var ambushed = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
                 if (ambushed is null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
-                
+
                 var ambusher = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (ambusher is null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -101,6 +102,25 @@ namespace TheGodfather.Modules.Chickens
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                }
+            }
+
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Name of the chicken to fight.")] string chickenName)
+            {
+                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, chickenName);
+                if (chicken is null)
+                    throw new CommandFailedException("Couldn't find any chickens with that name!");
+
+                try {
+                    await this.ExecuteGroupAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
+                } catch (NotFoundException) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
+                        db.Chickens.Remove(chicken.ToDatabaseChicken());
+                        await db.SaveChangesAsync();
+                    }
+                    throw new CommandFailedException("The user whose chicken you tried to ambush is not currently in this guild. The chicken has been put to sleep.");
                 }
             }
 

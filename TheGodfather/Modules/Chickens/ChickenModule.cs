@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -109,19 +110,19 @@ namespace TheGodfather.Modules.Chickens
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Name of the chicken to fight.")] string chickenName)
         {
-            Chicken chicken = null;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseChicken dbc = db.Chickens
-                    .Include(c => c.DbUpgrades)
-                        .ThenInclude(u => u.DbChickenUpgrade)
-                    .FirstOrDefault(c => c.GuildId == ctx.Guild.Id && string.Compare(c.Name, chickenName, true) == 0);
-                chicken = Chicken.FromDatabaseChicken(dbc);
-            }
-
+            var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, chickenName);
             if (chicken is null)
                 throw new CommandFailedException("Couldn't find any chickens with that name!");
 
-            await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
+            try {
+                await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
+            } catch (NotFoundException) {
+                using (DatabaseContext db = this.Database.CreateContext()) {
+                    db.Chickens.Remove(chicken.ToDatabaseChicken());
+                    await db.SaveChangesAsync();
+                }
+                throw new CommandFailedException("The user whose chicken you tried to fight is not currently in this guild. The chicken has been put to sleep.");
+            }
         }
         #endregion
 
@@ -274,22 +275,27 @@ namespace TheGodfather.Modules.Chickens
                     .OrderBy(c => c.Stats.TotalStrength)
                     .ToListAsync();
             }
-            
-            if (!chickens.Any())
-                throw new CommandFailedException("No chickens bought in this guild.");
 
             foreach (Chicken chicken in chickens) {
                 try {
-                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
+                    chicken.Owner = await ctx.Guild.GetMemberAsync(chicken.OwnerId);
+                } catch (NotFoundException) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
+                        db.Chickens.Remove(chicken.ToDatabaseChicken());
+                        await db.SaveChangesAsync();
+                    }
                 } catch (Exception e) {
                     this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
+            if (!chickens.Any())
+                throw new CommandFailedException("No chickens bought in this guild.");
+
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens in this guild:",
                 chickens.OrderByDescending(c => c.Stats.TotalStrength),
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown owner (removed)"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
         }
@@ -313,21 +319,26 @@ namespace TheGodfather.Modules.Chickens
                     .ToList();
             }
 
-            if (!chickens.Any())
-                throw new CommandFailedException("No chickens bought.");
-
             foreach (Chicken chicken in chickens) {
                 try {
                     chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
+                } catch (NotFoundException) {
+                    using (DatabaseContext db = this.Database.CreateContext()) {
+                        db.Chickens.Remove(chicken.ToDatabaseChicken());
+                        await db.SaveChangesAsync();
+                    }
                 } catch (Exception e) {
                     this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
+            if (!chickens.Any())
+                throw new CommandFailedException("No chickens bought.");
+
             await ctx.SendCollectionInPagesAsync(
                 "Strongest chickens globally:",
                 chickens.OrderByDescending(c => c.Stats.TotalStrength),
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown owner (removed)"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
                 this.ModuleColor
             );
         }
