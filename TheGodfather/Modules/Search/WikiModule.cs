@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 #endregion
 
@@ -44,7 +45,7 @@ namespace TheGodfather.Modules.Search
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {
-            var res = await WikiService.SearchAsync(query);
+            WikiSearchResponse res = await WikiService.SearchAsync(query);
             if (res is null || !res.Any()) {
                 await this.InformFailureAsync(ctx, "No results...");
                 return;
@@ -53,10 +54,10 @@ namespace TheGodfather.Modules.Search
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.Select(r => new Page() {
                 Embed = new DiscordEmbedBuilder() {
                     Title = r.Title,
-                    Description = r.Snippet,
+                    Description = string.IsNullOrWhiteSpace(r.Snippet) ? "No description provided" : r.Snippet,
                     Url = r.Url,
                     Color = this.ModuleColor
-                }
+                }.WithFooter("Powered by Wikipedia API", WikiService.WikipediaIconUrl).Build()
             }));
         }
         #endregion

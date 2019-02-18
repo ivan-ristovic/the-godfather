@@ -14,6 +14,8 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class WikiService : TheGodfatherHttpService
     {
+        public static readonly string WikipediaIconUrl = "https://en.wikipedia.org/static/images/project-logos/enwiki.png";
+
         private static readonly string _url = "https://en.wikipedia.org/w/api.php?action=opensearch&limit=20&namespace=0&format=json&search=";
         private static readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
 
