@@ -1,5 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 #endregion
 
@@ -96,5 +98,8 @@ namespace TheGodfather.Common
 
             return Math.Abs(this.GetS32()) % (max - min) + min - offset;
         }
+
+        public T ChooseRandomElement<T>(IEnumerable<T> collection)
+            => collection.ElementAt(this.Next(collection.Count()));
     }
 }

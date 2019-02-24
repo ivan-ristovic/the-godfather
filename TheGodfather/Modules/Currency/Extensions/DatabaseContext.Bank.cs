@@ -20,16 +20,25 @@ namespace TheGodfather.Modules.Currency.Extensions
 
         public static async Task ModifyBankAccountAsync(this DatabaseContext db, ulong uid, ulong gid, Func<long, long> balanceModifier)
         {
+            bool created = false;
+
             DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)gid, (long)uid);
             if (account is null) {
                 account = new DatabaseBankAccount() {
                     GuildId = gid,
                     UserId = uid
                 };
-                db.Add(account);
+                created = true;
             }
+
             account.Balance = balanceModifier(account.Balance);
-            db.BankAccounts.Update(account);
+            if (account.Balance < 0)
+                account.Balance = 0;
+
+            if (created)
+                db.BankAccounts.Add(account);
+            else
+                db.BankAccounts.Update(account);
         }
     }
 }

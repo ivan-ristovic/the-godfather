@@ -59,17 +59,14 @@ namespace TheGodfather.Modules.Misc.Common
         {
             if (question.StartsWith("when", StringComparison.InvariantCultureIgnoreCase) ||
                 question.StartsWith("how long", StringComparison.InvariantCultureIgnoreCase))
-                return GetRandomElement(_timeAnswers);
+                return GFRandom.Generator.ChooseRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
-                return members.ElementAt(GFRandom.Generator.Next(members.Count())).DisplayName;
+                return GFRandom.Generator.ChooseRandomElement(members).DisplayName;
             if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) || 
                 question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase))
-                return GetRandomElement(_quantityAnswers);
+                return GFRandom.Generator.ChooseRandomElement(_quantityAnswers);
             else
-                return GetRandomElement(_regularAnswers);
+                return GFRandom.Generator.ChooseRandomElement(_regularAnswers);
         }
-
-
-        private static string GetRandomElement(ImmutableArray<string> array) => array[GFRandom.Generator.Next(array.Length)];
     }
 }
