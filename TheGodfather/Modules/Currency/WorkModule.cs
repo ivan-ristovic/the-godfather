@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_SLUT
         [Command("slut")]
-        [Description("Work the streets tonight hoping to gather some easy money but beware, there are many . You can work the streets once per 5s.")]
+        [Description("Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.")]
         [UsageExamples("!slut")]
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
@@ -39,10 +39,9 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                ThumbnailUrl = ctx.Member.AvatarUrl,
                 Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkStreetsString(change, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
                 Color = change > 0 ? DiscordColor.PhthaloGreen : DiscordColor.IndianRed
-            }.Build());
+            }.WithFooter("Who needs dignity?", ctx.Member.AvatarUrl).Build());
         }
         #endregion
 
@@ -61,10 +60,9 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                ThumbnailUrl = ctx.Member.AvatarUrl,
                 Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkString(earned, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
                 Color = DiscordColor.SapGreen
-            }.Build());
+            }.WithFooter("Arbeit macht frei.", ctx.Member.AvatarUrl).Build());
         }
         #endregion
 
@@ -83,10 +81,9 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                ThumbnailUrl = ctx.Member.AvatarUrl,
                 Description = $"{ctx.Member.Mention} {WorkHandler.GetCrimeString(earned, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
                 Color = success ? DiscordColor.SapGreen : DiscordColor.IndianRed
-            }.Build());
+            }.WithFooter("PAYDAY3", ctx.Member.AvatarUrl).Build());
         }
         #endregion
     }
