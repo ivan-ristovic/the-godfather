@@ -66,24 +66,25 @@ namespace TheGodfather.Modules.Administration
         [RequireBotPermissions(Permissions.ManageMessages)]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task FlagMessageAsync(CommandContext ctx,
-                                          [Description("Message.")] DiscordMessage message = null,
+                                          [Description("Message.")] DiscordMessage msg = null,
                                           [Description("Voting timespan.")] TimeSpan? timespan = null)
         {
-            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+            msg = msg ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-            if (message is null)
+            if (msg is null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
-            if (timespan?.TotalMinutes > 5)
-                throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes.");
+            if (timespan?.TotalSeconds < 5 || timespan?.TotalMinutes > 5)
+                throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes or lower than 5 seconds.");
 
-            ReactionCollectionContext rctx = await message.MakePoll(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, timespan ?? TimeSpan.FromMinutes(1));
+            ReactionCollectionContext rctx = await msg.MakePoll(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, timespan ?? TimeSpan.FromMinutes(1));
             if (rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
-                await message.DeleteAsync();
-                await this.InformAsync(ctx, "Message deleted.", important: false);
+                string sanitized = FormatterExtensions.Spoiler(Formatter.Sanitize(msg.Content));
+                await msg.DeleteAsync();
+                await ctx.RespondAsync($"{msg.Author.Mention} said: {sanitized}");
+            } else {
+                await this.InformFailureAsync(ctx, "Not enough downvotes required for deletion.");
             }
-
-            await this.InformFailureAsync(ctx, "Not enough downvotes required for deletion.");
         }
         #endregion
 
