@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class CaroGame : BoardGame
     {
-        private static readonly string _Header = StaticDiscordEmoji.UpArrow + string.Join("", StaticDiscordEmoji.Numbers);
+        private static readonly string _Header = StaticDiscordEmoji.ArrowUp + string.Join("", StaticDiscordEmoji.Numbers);
 
 
         public CaroGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)

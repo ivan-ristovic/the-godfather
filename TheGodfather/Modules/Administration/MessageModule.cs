@@ -4,12 +4,12 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -54,6 +54,36 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
 
             await ctx.RespondAsync(embed: emb.Build());
+        }
+        #endregion
+
+        #region COMMAND_MESSAGES_FLAG
+        [Command("flag")]
+        [Description("Flags the message given by ID for deletion vote. If the message is not provided, flags the last sent message before command invocation.")]
+        [Aliases("f")]
+        [UsageExamples("!message flag",
+                       "!message flag 408226948855234561")]
+        [RequireBotPermissions(Permissions.ManageMessages)]
+        [Cooldown(1, 60, CooldownBucketType.User)]
+        public async Task FlagMessageAsync(CommandContext ctx,
+                                          [Description("Message.")] DiscordMessage message = null,
+                                          [Description("Voting timespan.")] TimeSpan? timespan = null)
+        {
+            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+
+            if (message is null)
+                throw new CommandFailedException("Cannot retrieve the message!");
+
+            if (timespan?.TotalMinutes > 5)
+                throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes.");
+
+            ReactionCollectionContext rctx = await message.MakePoll(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, timespan ?? TimeSpan.FromMinutes(1));
+            if (rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
+                await message.DeleteAsync();
+                await this.InformAsync(ctx, "Message deleted.", important: false);
+            }
+
+            await this.InformFailureAsync(ctx, "Not enough downvotes required for deletion.");
         }
         #endregion
 

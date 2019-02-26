@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games.Common
             this.Started = true;
 
             int num = GFRandom.Generator.Next(1000);
-            await this.Channel.EmbedAsync(num.ToString(), StaticDiscordEmoji.UpArrow);
+            await this.Channel.EmbedAsync(num.ToString(), StaticDiscordEmoji.ArrowUp);
             
             while (this.participants.Any()) {
                 int guess = 0;

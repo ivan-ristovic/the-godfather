@@ -140,6 +140,9 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
+            if (e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id)))
+                return;
+
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
                 return;
 
