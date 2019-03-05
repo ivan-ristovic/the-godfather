@@ -16,6 +16,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Swat.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Swat
@@ -74,16 +75,7 @@ namespace TheGodfather.Modules.Swat
                 if (!matches.Any())
                     throw new CommandFailedException("No results.");
 
-                await ctx.SendCollectionInPagesAsync(
-                    $"Search matches for {ip.Content}",
-                    matches,
-                    p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
-                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
-                         $"IPs: {Formatter.BlockCode(string.Join(", ", p.IPs))}" +
-                         $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
-                    this.ModuleColor,
-                    1
-                );
+                await ctx.SendCollectionInPagesAsync($"Search matches for {ip.Content}", matches, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
 
@@ -117,16 +109,7 @@ namespace TheGodfather.Modules.Swat
                 if (!matches.Any())
                     throw new CommandFailedException("No results.");
 
-                await ctx.SendCollectionInPagesAsync(
-                    $"Search matches for {name}",
-                    matches,
-                    m => $"Name: {Formatter.Bold(m.Name)} {(m.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
-                         $"Aliases: {string.Join(", ", m.Aliases)}\n" +
-                         $"IPs: {Formatter.BlockCode(string.Join('\n', m.IPs))}\n" +
-                         $"Info: {Formatter.Italic(m.Info ?? "No info provided.")}",
-                    this.ModuleColor,
-                    1
-                );
+                await ctx.SendCollectionInPagesAsync($"Search matches for {name}", matches, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }

@@ -16,6 +16,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Swat.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Swat
@@ -54,6 +55,8 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers
                         .Include(p => p.DbIPs)
+                        .Include(p => p.DbAliases)
+                        .AsEnumerable()
                         .FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase) || p.IPs.Contains(ip.Content));
                     if (player is null) {
                         var toAdd = new DatabaseSwatPlayer() {
@@ -66,7 +69,8 @@ namespace TheGodfather.Modules.Swat
                     } else {
                         if (player.Name != name && !player.Aliases.Contains(name))
                             player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = name, PlayerId = player.Id });
-                        player.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = player.Id, IP = ip.Content });
+                        if (!player.IPs.Contains(ip.Content))
+                            player.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = player.Id, IP = ip.Content });
                         db.SwatPlayers.Update(player);
                     }
                     await db.SaveChangesAsync();
@@ -145,6 +149,7 @@ namespace TheGodfather.Modules.Swat
                     DatabaseSwatPlayer player = db.SwatPlayers
                         .Include(p => p.DbAliases)
                         .Include(p => p.DbIPs)
+                        .AsEnumerable()
                         .FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (player is null)
                         throw new CommandFailedException($"A player with IP {Formatter.Bold(ip.Content)} is not present in the database!");
@@ -219,33 +224,25 @@ namespace TheGodfather.Modules.Swat
                                        [Description("From which index to view.")] int from = 1,
                                        [Description("How many results to view.")] int amount = 10)
             {
-                if (from < 1 || amount < 1)
+                if (from < 1 || amount < 1 || amount > 20)
                     throw new InvalidCommandUsageException("Index or amount invalid.");
 
                 List<DatabaseSwatPlayer> players;
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    players = await db.SwatPlayers
+                    players = db.SwatPlayers
                         .Include(p => p.DbAliases)
                         .Include(p => p.DbIPs)
+                        .AsEnumerable()
                         .OrderBy(p => p.Name)
                         .Skip(from - 1)
                         .Take(amount)
-                        .ToListAsync();
+                        .ToList();
                 }
 
                 if (!players.Any())
                     throw new CommandFailedException("Player database is empty.");
 
-                await ctx.SendCollectionInPagesAsync(
-                    "Player database",
-                    players,
-                    p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
-                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
-                         $"IPs: {Formatter.BlockCode(string.Join('\n', p.IPs))}\n" +
-                         $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
-                    this.ModuleColor,
-                    1
-                );
+                await ctx.SendCollectionInPagesAsync($"Player database", players, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }

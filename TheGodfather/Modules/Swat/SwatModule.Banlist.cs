@@ -16,6 +16,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Swat.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Swat
@@ -150,16 +151,7 @@ namespace TheGodfather.Modules.Swat
                 if (!banned.Any())
                     throw new CommandFailedException("Banlist is empty.");
 
-                await ctx.SendCollectionInPagesAsync(
-                    "Blacklist",
-                    banned,
-                    p => $"Name: {Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
-                         $"Aliases: {string.Join(", ", p.Aliases)}\n" +
-                         $"IPs: {Formatter.BlockCode(string.Join('\n', p.IPs))}\n" +
-                         $"Info: {Formatter.Italic(p.Info ?? "No info provided.")}",
-                    this.ModuleColor,
-                    1
-                );
+                await ctx.SendCollectionInPagesAsync("Blacklist", banned, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }
