@@ -4,7 +4,7 @@
 [![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
 [![Discord Server](https://img.shields.io/discord/201315884709576705.svg?label=discord)](https://discord.me/worldmafia)
 [![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable)](https://github.com/ivan-ristovic/the-godfather/releases)
-[![Latest release](https://img.shields.io/github/tag-date/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
+[![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
 
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
 

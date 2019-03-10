@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_REMIND_DELETE
         [Command("delete")]
-        [Description("Unschedule a reminder.")]
+        [Description("Unschedules reminders.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
         [UsageExamples("!remind delete 1")]
         public async Task DeleteAsync(CommandContext ctx,
