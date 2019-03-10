@@ -614,9 +614,10 @@ namespace TheGodfather.Modules.Owner
         [RequireOwner]
         public Task UpdateAsync(CommandContext ctx)
         {
+            // TODO
             string scriptPath;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                scriptPath = "../launch_linux_x64.sh";
+                scriptPath = "update.sh";
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
                         FileName = "nohup",
