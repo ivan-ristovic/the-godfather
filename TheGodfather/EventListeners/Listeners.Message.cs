@@ -203,7 +203,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Reactions", string.Join(" ", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName())), inline: true);
             if (e.Message.Attachments.Any())
                 emb.AddField("Attachments", string.Join("\n", e.Message.Attachments.Select(a => a.FileName)), inline: true);
-            if (!(e.Message.CreationTimestamp != null))
+            if (e.Message.CreationTimestamp != null)
                 emb.AddField("Message creation time", e.Message.CreationTimestamp.ToUtcTimestamp(), inline: true);
 
             await logchn.SendMessageAsync(embed: emb.Build());

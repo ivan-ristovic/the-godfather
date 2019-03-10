@@ -620,7 +620,7 @@ namespace TheGodfather.Modules.Owner
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
                         FileName = "nohup",
-                        Arguments = $"bash {scriptPath} {Process.GetCurrentProcess().Id} {ctx.Guild.Id} {ctx.Channel.Id}",
+                        Arguments = $"bash {scriptPath} {Process.GetCurrentProcess().Id}",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         CreateNoWindow = true
@@ -641,8 +641,7 @@ namespace TheGodfather.Modules.Owner
             } else {
                 throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
             }
-
-            Process.Start(scriptPath);
+            
             return this.ExitAsync(ctx);
         }
         #endregion
