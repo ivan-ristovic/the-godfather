@@ -25,7 +25,7 @@ before_build:
   - cmd: dotnet restore ./TheGodfather/TheGodfather.csproj --verbosity m
 
 build_script:
-  - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj /p:Version=%APPVEYOR_BUILD_VERSION%
+  - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj -c Release /p:Version=%APPVEYOR_BUILD_VERSION%
   - cmd: 7z a TheGodfather.zip "%APPVEYOR_BUILD_FOLDER%\TheGodfather\bin\Release\netcoreapp2.1\publish\*"
   - cmd: 7z a TheGodfather.zip "%APPVEYOR_BUILD_FOLDER%\Scripts\*"
   - cmd: 7z a TheGodfatherResources.zip "%APPVEYOR_BUILD_FOLDER%\TheGodfather\Resources\*"
