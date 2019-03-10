@@ -5,7 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using Humanizer;
-
+using Humanizer.Localisation;
 using System;
 using System.Linq;
 using System.Text;
@@ -21,72 +21,27 @@ using TheGodfather.Extensions;
 namespace TheGodfather.Modules.Misc
 {
     [Group("remind")]
-    [Description("Manage reminders. Group call resends a message after given time span.")]
-    [Aliases("reminders", "reminder", "todo", "todolist")]
+    [Description("Manage reminders.")]
+    [Aliases("reminders", "reminder", "todo", "todolist", "note")]
     [UsageExamples("!remind 1h Drink water!")]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
-    public class RemindersModule : TheGodfatherModule
+    public partial class RemindModule : TheGodfatherModule
     {
 
-        public RemindersModule(SharedData shared, DatabaseContextBuilder db)
+        public RemindModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.LightGray;
         }
-
-
-        [GroupCommand, Priority(3)]
-        public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [Description("Channel to send message to.")] DiscordChannel channel,
-                                     [RemainingText, Description("What to send?")] string message)
-            => this.AddAsync(ctx, timespan, channel, message);
-
-        [GroupCommand, Priority(2)]
-        public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Channel to send message to.")] DiscordChannel channel,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [RemainingText, Description("What to send?")] string message)
-            => this.AddAsync(ctx, timespan, channel, message);
-
-        [GroupCommand, Priority(1)]
-        public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [RemainingText, Description("What to send?")] string message)
-            => this.AddAsync(ctx, timespan, null, message);
+  
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
+        
 
-
-        #region COMMAND_REMINDERS_ADD
-        [Command("add"), Priority(2)]
-        [Description("Schedule a new reminder. You can also specify a channel where to send the reminder.")]
-        [Aliases("new", "+", "a", "+=", "<", "<<")]
-        [UsageExamples("!remind add 1h Drink water!")]
-        public Task AddAsync(CommandContext ctx,
-                            [Description("Time span until reminder.")] TimeSpan timespan,
-                            [Description("Channel to send message to.")] DiscordChannel channel,
-                            [RemainingText, Description("What to send?")] string message)
-            => this.AddReminderAsync(ctx, timespan, channel, message);
-
-        [Command("add"), Priority(1)]
-        public Task AddAsync(CommandContext ctx,
-                            [Description("Channel to send message to.")] DiscordChannel channel,
-                            [Description("Time span until reminder.")] TimeSpan timespan,
-                            [RemainingText, Description("What to send?")] string message)
-            => this.AddReminderAsync(ctx, timespan, channel, message);
-
-        [Command("add"), Priority(0)]
-        public Task AddAsync(CommandContext ctx,
-                            [Description("Time span until reminder.")] TimeSpan timespan,
-                            [RemainingText, Description("What to send?")] string message)
-            => this.AddReminderAsync(ctx, timespan, null, message);
-        #endregion
-
-        #region COMMAND_REMINDERS_DELETE
+        #region COMMAND_REMIND_DELETE
         [Command("delete")]
         [Description("Unschedule a reminder.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
@@ -117,9 +72,9 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_REMINDERS_LIST
+        #region COMMAND_REMIND_LIST
         [Command("list")]
-        [Description("List your registered reminders in the current channel.")]
+        [Description("Lists your reminders.")]
         [Aliases("ls")]
         [UsageExamples("!remind list")]
         public Task ListAsync(CommandContext ctx)
@@ -144,7 +99,7 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_REMINDERS_REPEAT
+        #region COMMAND_REMIND_REPEAT
         [Command("repeat"), Priority(2)]
         [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
         [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
@@ -171,7 +126,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region HELPER_FUNCTIONS
-        async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel,
+        private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel channel,
                                             string message, bool repeat = false)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -180,7 +135,7 @@ namespace TheGodfather.Modules.Misc
             if (message.Length > 250)
                 throw new InvalidCommandUsageException("Message must be shorter than 250 characters.");
 
-            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+            if (timespan < TimeSpan.Zero || timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
 
             bool privileged;
@@ -198,10 +153,83 @@ namespace TheGodfather.Modules.Misc
             await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
 
             if (repeat)
-                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(5))} to:\n\n{message}", important: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))} to:\n\n{message}", important: false);
             else
-                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel?.Mention ?? "you"} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel?.Mention ?? "you"} in {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
         }
         #endregion
+
+
+
+        [Group("in")]
+        [Description("Send a reminder after specific time span.")]
+        [UsageExamples("!remind in 3h Drink water!",
+                       "!remind in 3h5m Drink water!")]
+        public class RemindInModule : RemindModule
+        {
+
+            public RemindInModule(SharedData shared, DatabaseContextBuilder db)
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.NotQuiteBlack;
+            }
+
+
+            [GroupCommand, Priority(2)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Time span until reminder.")] TimeSpan timespan,
+                                         [Description("Channel to send message to.")] DiscordChannel channel,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, timespan, channel, message);
+
+            [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Channel to send message to.")] DiscordChannel channel,
+                                         [Description("Time span until reminder.")] TimeSpan timespan,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, timespan, channel, message);
+
+            [GroupCommand, Priority(0)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Time span until reminder.")] TimeSpan timespan,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, timespan, null, message);
+        }
+
+        [Group("at")]
+        [Description("Send a reminder at a specific point in time (given by date and time string).")]
+        [UsageExamples("!remind at 17:20 Drink water!",
+                       "!remind at 03.15.2019 Drink water!",
+                       "!remind at \"03.15.2019 17:20\" Drink water!")]
+        public class RemindAtModule : RemindModule
+        {
+
+            public RemindAtModule(SharedData shared, DatabaseContextBuilder db)
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.NotQuiteBlack;
+            }
+
+
+            [GroupCommand, Priority(2)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Date and/or time.")] DateTimeOffset when,
+                                         [Description("Channel to send message to.")] DiscordChannel channel,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, when - DateTimeOffset.Now, channel, message);
+
+            [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Channel to send message to.")] DiscordChannel channel,
+                                         [Description("Date and/or time.")] DateTimeOffset when,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, when - DateTimeOffset.Now, channel, message);
+
+            [GroupCommand, Priority(0)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Date and/or time.")] DateTimeOffset when,
+                                         [RemainingText, Description("What to send?")] string message)
+                => this.AddReminderAsync(ctx, when - DateTimeOffset.Now, null, message);
+        }
     }
 }

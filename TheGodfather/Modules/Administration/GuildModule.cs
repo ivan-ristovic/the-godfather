@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
             };
 
             emb.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
-            emb.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
+            emb.AddField("Owner", ctx.Guild.Owner.Mention, inline: true);
             emb.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
             emb.AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true);
             emb.AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);

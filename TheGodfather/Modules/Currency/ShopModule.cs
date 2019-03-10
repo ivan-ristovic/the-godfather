@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,7 +81,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_SHOP_BUY
-        [Command("buy"), UsesInteractivity]
+        [Command("buy"), UsesInteractivity, Priority(1)]
         [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
         [UsageExamples("!shop buy 3")]
@@ -90,10 +91,10 @@ namespace TheGodfather.Modules.Currency
             DatabasePurchasableItem item;
             using (DatabaseContext db = this.Database.CreateContext()) {
                 item = await db.PurchasableItems.FindAsync(id);
-                if (item is null)
+                if (item is null || item.GuildId != ctx.Guild.Id)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
-                if (db.PurchasedItems.Any(i => item.Id == id && i.UserId == ctx.User.Id))
+                if (db.PurchasedItems.Any(i => i.ItemId == id && i.UserId == ctx.User.Id))
                     throw new CommandFailedException("You have already purchased this item!");
             }
 
@@ -114,8 +115,42 @@ namespace TheGodfather.Modules.Currency
 
             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
+
+        [Command("buy"), UsesInteractivity, Priority(1)]
+        public async Task BuyAsync(CommandContext ctx,
+                                  [Description("Item name.")] string name)
+        {
+            DatabasePurchasableItem item;
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                item = db.PurchasableItems.FirstOrDefault(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (item is null || item.GuildId != ctx.Guild.Id)
+                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+
+                if (db.PurchasedItems.Any(i => item.Id == i.ItemId && i.UserId == ctx.User.Id))
+                    throw new CommandFailedException("You have already purchased this item!");
+            }
+
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+                return;
+
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
+                    throw new CommandFailedException("You do not have enough money to purchase that item!");
+
+                db.PurchasedItems.Add(new DatabasePurchasedItem() {
+                    ItemId = item.Id,
+                    UserId = ctx.User.Id
+                });
+
+                await db.SaveChangesAsync();
+            }
+
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+        }
+
+
         #endregion
-        
+
         #region COMMAND_SHOP_SELL
         [Command("sell"), UsesInteractivity]
         [Description("Sell a purchased item for half the buy price.")]

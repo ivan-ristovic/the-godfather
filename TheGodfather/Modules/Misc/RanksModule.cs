@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.ManageGuild)]
         [UsageExamples("!rank add 1 Private")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Rank.")] int rank,
+                                  [Description("Rank.")] short rank,
                                   [RemainingText, Description("Rank name.")] string name)
         {
             if (rank < 0 || rank > 99)
@@ -80,12 +80,12 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseGuildRank dbr = db.GuildRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id);
+                DatabaseGuildRank dbr = db.GuildRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id && r.Rank == rank);
                 if (dbr is null) {
                     db.GuildRanks.Add(new DatabaseGuildRank() {
                         GuildId = ctx.Guild.Id,
                         Name = name,
-                        Rank = (short)rank
+                        Rank = rank
                     });
                 } else {
                     dbr.Name = name;
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!rank delete 3")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Rank.")] int rank)
+                                     [Description("Rank.")] short rank)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
                 db.GuildRanks.Remove(new DatabaseGuildRank() {
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 "Custom ranks for this guild",
                 ranks,
-                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} : | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
+                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
                 this.ModuleColor
             );
         }
