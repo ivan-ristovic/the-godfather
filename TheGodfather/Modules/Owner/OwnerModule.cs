@@ -617,7 +617,7 @@ namespace TheGodfather.Modules.Owner
             // TODO
             string scriptPath;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                scriptPath = "update.sh";
+                scriptPath = "install.sh";
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
                         FileName = "nohup",
@@ -629,7 +629,7 @@ namespace TheGodfather.Modules.Owner
                 };
                 proc.Start();
             } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                scriptPath = "../launch_win10_x64.ps1";
+                scriptPath = "install.ps1";
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
                         FileName = scriptPath,
