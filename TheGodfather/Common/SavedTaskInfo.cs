@@ -46,9 +46,10 @@ namespace TheGodfather.Common
         {
             get {
                 var now = DateTimeOffset.Now;
-                if (this.ExecutionTime > now)
+                if (this.ExecutionTime > now || !this.IsRepeating)
                     return this.ExecutionTime - now;
-                return new TimeSpan(now.Ticks % this.RepeatingInterval.Ticks);
+                TimeSpan diff = now - this.ExecutionTime;
+                return TimeSpan.FromTicks(this.RepeatingInterval.Ticks - diff.Ticks % this.RepeatingInterval.Ticks);
             }
         }
 

@@ -25,7 +25,7 @@ namespace TheGodfather.Common
         private readonly DatabaseContextBuilder dbb;
         private Timer timer;
 
-        
+
         public static async Task ScheduleAsync(SharedData shared, DatabaseContextBuilder dbb, DiscordClient client, SavedTaskInfo task)
         {
             SavedTaskExecutor texec = null;
@@ -53,7 +53,7 @@ namespace TheGodfather.Common
 
         public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
         {
-            if (shared.RemindExecuters.TryGetValue(uid, out var texecs))
+            if (shared.RemindExecuters.TryGetValue(uid, out ConcurrentHashSet<SavedTaskExecutor> texecs))
                 return texecs.SingleOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
             else
                 return Task.CompletedTask;
@@ -70,10 +70,7 @@ namespace TheGodfather.Common
         }
 
 
-        public void Dispose()
-        {
-            this.timer?.Dispose();
-        }
+        public void Dispose() => this.timer?.Dispose();
 
         public void Schedule()
         {
@@ -117,15 +114,10 @@ namespace TheGodfather.Common
                         else
                             channel = await this.client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
-                        if (smti.IsRepeating) {
-                            unschedule = false;
-                            this.Schedule();
-                        } else {
-                            await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
-                                Description = $"{StaticDiscordEmoji.BoardPieceX} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
-                                Color = DiscordColor.Red
-                            });
-                        }
+                        await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                            Description = $"{StaticDiscordEmoji.BoardPieceX} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
+                            Color = DiscordColor.Red
+                        });
                         break;
                     case UnbanTaskInfo _:
                         this.UnbanUserCallback(this.TaskInfo);
@@ -154,10 +146,10 @@ namespace TheGodfather.Common
 
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
-                    if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out var texecs)) {
+                    if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out ConcurrentHashSet<SavedTaskExecutor> texecs)) {
                         texecs.TryRemove(this);
                         if (texecs.Count == 0)
-                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
+                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out ConcurrentHashSet<SavedTaskExecutor> _);
                     }
                     using (DatabaseContext db = this.dbb.CreateContext()) {
                         db.Reminders.RemoveRange(db.Reminders.Where(t => t.Id == this.Id));
@@ -166,7 +158,7 @@ namespace TheGodfather.Common
                     break;
                 case UnbanTaskInfo _:
                 case UnmuteTaskInfo _:
-                    this.shared.TaskExecuters.TryRemove(this.Id, out var _);
+                    this.shared.TaskExecuters.TryRemove(this.Id, out SavedTaskExecutor _);
                     using (DatabaseContext db = this.dbb.CreateContext()) {
                         db.SavedTasks.RemoveRange(db.SavedTasks.Where(t => t.Id == this.Id));
                         await db.SaveChangesAsync();
@@ -206,7 +198,7 @@ namespace TheGodfather.Common
         {
             var info = _ as UnbanTaskInfo;
 
-            try { 
+            try {
                 DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
             } catch (Exception e) {

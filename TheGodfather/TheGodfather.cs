@@ -55,7 +55,7 @@ namespace TheGodfather
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
-                InitializeDatabaseContext();
+                await InitializeDatabaseAsync();
                 LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
                 SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
@@ -118,11 +118,12 @@ namespace TheGodfather
             BotConfiguration = JsonConvert.DeserializeObject<BotConfig>(json);
         }
 
-        private static void InitializeDatabaseContext()
+        private static async Task InitializeDatabaseAsync()
         {
             Console.Write("\r[2/5] Establishing database connection...         ");
 
             GlobalDatabaseContextBuilder = new DatabaseContextBuilder(BotConfiguration.DatabaseConfig);
+            await GlobalDatabaseContextBuilder.CreateContext().Database.MigrateAsync();
         }
 
         private static void LoadSharedDataFromDatabase()
@@ -266,26 +267,26 @@ namespace TheGodfather
 
             async Task RegisterSavedTasksAsync(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
             {
-                int registeredTasks = 0, missedTasks = 0;
+                int scheduled = 0, missed = 0;
                 foreach ((int tid, SavedTaskInfo task) in tasks) {
                     if (await RegisterTaskAsync(tid, task))
-                        registeredTasks++;
+                        scheduled++;
                     else
-                        missedTasks++;
+                        missed++;
                 }
-                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {registeredTasks} registered; {missedTasks} missed.");
+                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {scheduled} scheduled; {missed} missed.");
             }
 
             async Task RegisterRemindersAsync(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
             {
-                int registeredTasks = 0, missedTasks = 0;
+                int scheduled = 0, missed = 0;
                 foreach ((int tid, SendMessageTaskInfo task) in reminders) {
                     if (await RegisterTaskAsync(tid, task))
-                        registeredTasks++;
+                        scheduled++;
                     else
-                        missedTasks++;
+                        missed++;
                 }
-                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {registeredTasks} registered; {missedTasks} missed.");
+                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {scheduled} scheduled; {missed} missed.");
             }
 
             async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
