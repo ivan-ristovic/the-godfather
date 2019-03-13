@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -25,6 +26,35 @@ namespace TheGodfather.Modules.Misc
             : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Wheat;
+        }
+
+
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Role to grant.")] DiscordRole role)
+        {
+            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+            if (bot is null)
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+            
+            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
+                await this.GiveRoleAsync(ctx, role);
+            else
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+        }
+
+        [GroupCommand, Priority(0)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [RemainingText, Description("Nickname to set.")] string name)
+        {
+            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+            if (bot is null)
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageNicknames) });
+
+            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageNicknames))
+                await this.GiveNameAsync(ctx, name);
+            else
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageNicknames) });
         }
 
 

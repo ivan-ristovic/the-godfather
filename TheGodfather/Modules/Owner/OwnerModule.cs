@@ -614,7 +614,6 @@ namespace TheGodfather.Modules.Owner
         [RequireOwner]
         public Task UpdateAsync(CommandContext ctx)
         {
-            // TODO
             string scriptPath;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
                 scriptPath = "install.sh";
@@ -629,7 +628,7 @@ namespace TheGodfather.Modules.Owner
                 };
                 proc.Start();
             } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                scriptPath = "install.ps1";
+                scriptPath = "install.bat";
                 var proc = new Process {
                     StartInfo = new ProcessStartInfo {
                         FileName = scriptPath,

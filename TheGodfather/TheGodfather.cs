@@ -406,6 +406,12 @@ namespace TheGodfather
                     db.Database.ExecuteSqlCommand("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                     db.SaveChanges();
                 }
+
+                // TODO remove
+                DiscordChannel temp = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(409490633712205845));
+                SharedData.AsyncExecutor.Execute(temp.SendMessageAsync("sync"));
+                // end remove
+
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);
             }
