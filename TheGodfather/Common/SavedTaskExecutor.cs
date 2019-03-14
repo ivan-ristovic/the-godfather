@@ -46,7 +46,7 @@ namespace TheGodfather.Common
                 texec.Schedule();
             } catch (Exception e) {
                 await texec?.UnscheduleAsync();
-                shared.LogProvider.LogException(LogLevel.Warning, e);
+                shared.LogProvider.Log(LogLevel.Warning, e);
                 throw;
             }
         }
@@ -127,15 +127,15 @@ namespace TheGodfather.Common
                         this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
-                this.shared.LogProvider.LogMessage(LogLevel.Debug, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
+                this.shared.LogProvider.Log(LogLevel.Debug, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
-                this.shared.LogProvider.LogException(LogLevel.Debug, e);
+                this.shared.LogProvider.Log(LogLevel.Debug, e);
             } finally {
                 try {
                     if (unschedule)
                         await this.UnscheduleAsync();
                 } catch (Exception e) {
-                    this.shared.LogProvider.LogException(LogLevel.Debug, e);
+                    this.shared.LogProvider.Log(LogLevel.Debug, e);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace TheGodfather.Common
                     Color = DiscordColor.Orange
                 }));
             } catch (Exception e) {
-                this.shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
                 if (!info.IsRepeating)
                     this.Execute(this.UnscheduleAsync());
@@ -203,7 +203,7 @@ namespace TheGodfather.Common
                 DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
             } catch (Exception e) {
-                this.shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
                 this.Execute(this.UnscheduleAsync());
             }
@@ -221,7 +221,7 @@ namespace TheGodfather.Common
                     return;
                 this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
             } catch (Exception e) {
-                this.shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
                 this.Execute(this.UnscheduleAsync());
             }

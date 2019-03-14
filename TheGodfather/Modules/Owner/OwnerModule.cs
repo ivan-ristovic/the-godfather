@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to clear the logs?"))
                 return;
 
-            if (!this.Shared.LogProvider.Clear())
+            if (!this.Shared.LogProvider.ClearLog())
                 throw new CommandFailedException("Failed to delete log file!");
 
             await this.InformAsync(ctx, $"Logs cleared!", important: false);
@@ -208,7 +208,7 @@ namespace TheGodfather.Modules.Owner
             try {
                 query = await _http.GetStringAsync(attachment.Url).ConfigureAwait(false);
             } catch (Exception e) {
-                this.Shared.LogProvider.LogException(LogLevel.Debug, e);
+                this.Shared.LogProvider.Log(LogLevel.Debug, e);
                 throw new CommandFailedException("An error occured while getting the file.", e);
             }
 

@@ -196,8 +196,8 @@ namespace TheGodfather
             }
 
             var logger = new Logger(BotConfiguration);
-            foreach (Logger.SpecialRule rule in BotConfiguration.SpecialLoggerRules)
-                logger.ApplyRule(rule);
+            foreach (Logger.SpecialLoggingRule rule in BotConfiguration.SpecialLoggerRules)
+                logger.ApplySpecialLoggingRule(rule);
 
             SharedData = new SharedData() {
                 BlockedChannels = blockedChannels,
@@ -336,7 +336,7 @@ namespace TheGodfather
 
                 SharedData.AsyncExecutor.Execute(client.UpdateStatusAsync(activity));
             } catch (Exception e) {
-                SharedData.LogProvider.LogException(LogLevel.Error, e);
+                SharedData.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -361,7 +361,7 @@ namespace TheGodfather
                     db.SaveChanges();
                 }
             } catch (Exception e) {
-                SharedData.LogProvider.LogException(LogLevel.Error, e);
+                SharedData.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -372,7 +372,7 @@ namespace TheGodfather
             try {
                 SharedData.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, GlobalDatabaseContextBuilder));
             } catch (Exception e) {
-                SharedData.LogProvider.LogException(LogLevel.Error, e);
+                SharedData.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -413,7 +413,7 @@ namespace TheGodfather
                 // end remove
 
             } catch (Exception e) {
-                SharedData.LogProvider.LogException(LogLevel.Error, e);
+                SharedData.LogProvider.Log(LogLevel.Error, e);
             }
         }
         #endregion

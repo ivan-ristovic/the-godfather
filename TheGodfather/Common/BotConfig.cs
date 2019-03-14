@@ -65,7 +65,7 @@ namespace TheGodfather.Common
         public string Token { get; private set; }
 
         [JsonProperty("logger-special-rules")]
-        public List<Logger.SpecialRule> SpecialLoggerRules { get; private set; }
+        public List<Logger.SpecialLoggingRule> SpecialLoggerRules { get; private set; }
 
 
         [JsonIgnore]
@@ -77,7 +77,7 @@ namespace TheGodfather.Common
             FeedCheckStartDelay = 30,
             GiphyKey = "<insert GIPHY API key>",
             GoodreadsKey = "<insert Goodreads API key>",
-            SpecialLoggerRules = new List<Logger.SpecialRule>(),
+            SpecialLoggerRules = new List<Logger.SpecialLoggingRule>(),
             ImgurKey = "<insert Imgur API key>",
             LogLevel = LogLevel.Info,
             LogPath = "log.txt",

@@ -14,6 +14,8 @@ namespace TheGodfather.Common
 {
     public sealed class Logger
     {
+        private static readonly string _separator = "|> ";
+
         public int BufferSize { get; set; }
         public LogLevel LogLevel { get; set; }
         public bool LogToFile {
@@ -25,7 +27,7 @@ namespace TheGodfather.Common
         }
 
         private bool filelog;
-        private readonly List<SpecialRule> specialRules;
+        private readonly List<SpecialLoggingRule> specialRules;
         private readonly string path;
         private readonly object writeLock;
 
@@ -37,24 +39,24 @@ namespace TheGodfather.Common
             this.LogLevel = cfg.LogLevel;
             this.LogToFile = cfg.LogToFile;
             this.path = cfg.LogPath ?? "gf_log.txt";
-            this.specialRules = new List<SpecialRule>();
-            TaskScheduler.UnobservedTaskException += this.LogUnobservedTaskException;
+            this.specialRules = new List<SpecialLoggingRule>();
+            TaskScheduler.UnobservedTaskException += this.Log;
         }
 
 
-        public void ApplyRule(SpecialRule rule)
+        public void ApplySpecialLoggingRule(SpecialLoggingRule rule)
         {
             this.specialRules.Add(rule);
         }
 
-        public bool Clear()
+        public bool ClearLog()
         {
             lock (this.writeLock) {
                 Console.Clear();
                 try {
                     File.Delete(this.path);
                 } catch (Exception e) {
-                    this.LogException(LogLevel.Error, e);
+                    this.Log(LogLevel.Error, e);
                     return false;
                 }
             }
@@ -68,12 +70,13 @@ namespace TheGodfather.Common
                 PrintApplicationInfo(shard, null);
                 PrintLevel(level);
                 PrintLogMessage(message);
+                PrintLogMessage();
                 if (filelog && this.filelog)
                     this.WriteToLogFile(level, message, timestamp);
             }
         }
 
-        public void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
+        public void Log(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
         {
             if (level > this.LogLevel)
                 return;
@@ -81,16 +84,18 @@ namespace TheGodfather.Common
             lock (this.writeLock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
-                PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}");
+                PrintLogMessage($"Exception occured: {e.GetType()}");
+                PrintLogMessage($"Details: {e.Message}");
                 if (!(e.InnerException is null))
-                    PrintLogMessage($"| Inner exception: {e.InnerException}");
-                PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
+                    PrintLogMessage($"Inner exception: {e.InnerException}");
+                PrintLogMessage($"Stack trace:\n{e.StackTrace}");
+                PrintLogMessage();
                 if (filelog && this.filelog)
                     this.WriteToLogFile(level, e);
             }
         }
 
-        public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
+        public void Log(int shard, DebugLogMessageEventArgs e, bool filelog = true)
         {
             if (e.Level > this.LogLevel)
                 return;
@@ -103,12 +108,13 @@ namespace TheGodfather.Common
                 PrintApplicationInfo(shard, e.Application);
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message);
+                PrintLogMessage();
                 if (filelog && this.filelog)
                     this.WriteToLogFile(shard, e);
             }
         }
 
-        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
+        public void Log(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
         {
             if (level > this.LogLevel)
                 return;
@@ -116,10 +122,27 @@ namespace TheGodfather.Common
             this.ElevatedLog(level, message, shard, timestamp, filelog);
         }
 
-
-        private void LogUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        public void LogMany(LogLevel level, int shard, DateTime timestamp, bool filelog, params string[] messages)
         {
-            this.LogException(LogLevel.Error, e.Exception);
+            if (level > this.LogLevel)
+                return;
+
+            lock (this.writeLock) {
+                PrintTimestamp(timestamp);
+                PrintApplicationInfo(shard, null);
+                PrintLevel(level);
+                foreach (string message in messages)
+                    PrintLogMessage(message);
+                PrintLogMessage();
+                if (filelog && this.filelog)
+                    this.WriteManyToLogFile(level, timestamp, messages);
+            }
+        }
+
+
+        private void Log(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            this.Log(LogLevel.Error, e.Exception);
         }
 
 
@@ -129,12 +152,12 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
-                    sw.WriteLine(message.Trim().Replace("\n", Environment.NewLine));
+                    sw.WriteLine($"{_separator}{message.Trim()}");
                     sw.WriteLine();
                     sw.Flush();
                 }
             } catch (Exception e) {
-                this.LogException(LogLevel.Error, e, filelog: false);
+                this.Log(LogLevel.Error, e, filelog: false);
             }
         }
 
@@ -143,12 +166,12 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{e.Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [#{shard}] [{e.Application}] [{e.Level}]");
-                    sw.WriteLine(e.Message.Trim().Replace("\n", Environment.NewLine));
+                    sw.WriteLine($"{_separator}{e.Message.Trim()}");
                     sw.WriteLine();
                     sw.Flush();
                 }
             } catch (Exception exc) {
-                this.LogException(LogLevel.Error, exc, filelog: false);
+                this.Log(LogLevel.Error, exc, filelog: false);
             }
         }
 
@@ -157,16 +180,31 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
-                    sw.WriteLine($"| Exception occured: {e.GetType()}");
-                    sw.WriteLine($"| Details: {e.Message}");
+                    sw.WriteLine($"{_separator}Exception occured: {e.GetType()}");
+                    sw.WriteLine($"{_separator}Details: {e.Message}");
                     if (!(e.InnerException is null))
-                        sw.WriteLine($"| Inner exception: {e.InnerException}");
-                    sw.WriteLine($"| Stack trace: {e.StackTrace}");
+                        sw.WriteLine($"{_separator}Inner exception: {e.InnerException}");
+                    sw.WriteLine($"{_separator}Stack trace: {e.StackTrace}");
                     sw.WriteLine();
                     sw.Flush();
                 }
             } catch (Exception exc) {
-                this.LogException(LogLevel.Error, exc, filelog: false);
+                this.Log(LogLevel.Error, exc, filelog: false);
+            }
+        }
+
+        private void WriteManyToLogFile(LogLevel level, DateTime? timestamp, params string[] messages)
+        {
+            try {
+                using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
+                    sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
+                    foreach (string message in messages)
+                        sw.WriteLine($"{_separator}{message.Trim()}");
+                    sw.WriteLine();
+                    sw.Flush();
+                }
+            } catch (Exception e) {
+                this.Log(LogLevel.Error, e, filelog: false);
             }
         }
         #endregion
@@ -212,15 +250,12 @@ namespace TheGodfather.Common
                 Console.Write($"[{application}] ");
         }
 
-        private static void PrintLogMessage(string message)
-        {
-            Console.WriteLine(message.Trim());
-            Console.WriteLine();
-        }
+        private static void PrintLogMessage(string message = "")
+            => Console.WriteLine(string.IsNullOrWhiteSpace(message) ? "" : $"{_separator}{message.Trim()}");
         #endregion
 
 
-        public sealed class SpecialRule
+        public sealed class SpecialLoggingRule
         {
             [JsonProperty("app")]
             public string Name { get; set; }

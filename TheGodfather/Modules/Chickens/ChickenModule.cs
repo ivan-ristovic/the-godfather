@@ -285,7 +285,7 @@ namespace TheGodfather.Modules.Chickens
                         await db.SaveChangesAsync();
                     }
                 } catch (Exception e) {
-                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
+                    this.Shared.LogProvider.Log(LogLevel.Warning, e);
                 }
             }
 
@@ -328,7 +328,7 @@ namespace TheGodfather.Modules.Chickens
                         await db.SaveChangesAsync();
                     }
                 } catch (Exception e) {
-                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
+                    this.Shared.LogProvider.Log(LogLevel.Warning, e);
                 }
             }
 

@@ -69,7 +69,10 @@ namespace TheGodfather
         }
 
         public void Log(LogLevel level, string message)
-            => this.SharedData.LogProvider.LogMessage(level, message, this.Id, DateTime.Now);
+            => this.SharedData.LogProvider.Log(level, message, this.Id, DateTime.Now);
+
+        public void LogMany(LogLevel level, params string[] messages)
+            => this.SharedData.LogProvider.LogMany(level, this.Id, DateTime.Now, this.SharedData.LogProvider.LogToFile, messages);
 
 
         #region SETUP_FUNCTIONS
@@ -102,10 +105,10 @@ namespace TheGodfather
             this.Client = new DiscordClient(cfg);
 
             this.Client.DebugLogger.LogMessageReceived += (s, e) => {
-                this.SharedData.LogProvider.LogMessage(this.Id, e);
+                this.SharedData.LogProvider.Log(this.Id, e);
             };
             this.Client.Ready += e => {
-                this.SharedData.LogProvider.ElevatedLog(LogLevel.Info, "| Ready!", this.Id);
+                this.SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", this.Id);
                 return Task.CompletedTask;
             };
             this.Client.GuildDownloadCompleted += onGuildDownloadCompleted;

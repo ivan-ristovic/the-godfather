@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
                     }
                 }
             } catch (Exception exc) {
-                shard.SharedData.LogProvider.LogException(LogLevel.Debug, exc);
+                shard.SharedData.LogProvider.Log(LogLevel.Debug, exc);
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);

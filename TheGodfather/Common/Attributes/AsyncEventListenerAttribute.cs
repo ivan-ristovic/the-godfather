@@ -31,7 +31,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
@@ -46,7 +46,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
                     } catch (Exception ex) {
-                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;

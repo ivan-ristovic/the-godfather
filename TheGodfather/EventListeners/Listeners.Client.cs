@@ -25,12 +25,16 @@ namespace TheGodfather.EventListeners
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
-            shard.Log(
-                LogLevel.Critical,
-                $"| Client errored with exception: {ex.GetType()}\n" +
-                $"| Message: {ex.Message}" +
-                (ex.InnerException is null ? "" : $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
-            );
+            if (ex.InnerException is null) {
+                shard.LogMany(LogLevel.Critical, $"Client errored with exception: {ex.GetType()}", $"Message: {ex.Message}");
+            } else {
+                shard.LogMany(LogLevel.Critical,
+                    $"Client errored with exception: {ex.GetType()}",
+                    $"Message: {ex.Message}",
+                    $"Inner exception: {ex.InnerException.GetType()}",
+                    $"Inner exception message: {ex.InnerException.Message}"
+                );
+            }
 
             return Task.CompletedTask;
         }
@@ -38,7 +42,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildAvailable)]
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Debug, $"| Guild available: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Debug, $"Guild available: {e.Guild.ToString()}");
 
             if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
                 return Task.CompletedTask;
@@ -49,14 +53,14 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
         public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"| All guilds are now available.");
+            shard.Log(LogLevel.Info, $"All guilds are now available.");
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]
         public static async Task GuildCreateEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"| Joined guild: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
 
             await RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
 

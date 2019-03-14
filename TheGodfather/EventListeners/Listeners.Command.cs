@@ -100,7 +100,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case NpgsqlException dbex:
                     sb.Append($"Database operation failed. Details: {dbex.Message}");
-                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
@@ -144,14 +144,14 @@ namespace TheGodfather.EventListeners
                     break;
                 case ConcurrentOperationException _:
                     sb.Append($"A concurrency error occured - please report this. Details: {ex.Message}");
-                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case UnauthorizedException _:
                     sb.Append("I am unauthorized to do that.");
                     break;
                 case DbUpdateException _:
                     sb.Append("A database update error has occured, possibly due to large amount of update requests. Please try again later.");
-                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case TargetInvocationException _:
                     sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
@@ -166,7 +166,7 @@ namespace TheGodfather.EventListeners
                         sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
                         sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
                     }
-                    shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
+                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
             }
 
