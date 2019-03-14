@@ -70,7 +70,8 @@ namespace TheGodfather.Common
         }
 
 
-        public void Dispose() => this.timer?.Dispose();
+        public void Dispose() 
+            => this.timer?.Dispose();
 
         public void Schedule()
         {
@@ -152,7 +153,7 @@ namespace TheGodfather.Common
                             this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out ConcurrentHashSet<SavedTaskExecutor> _);
                     }
                     using (DatabaseContext db = this.dbb.CreateContext()) {
-                        db.Reminders.RemoveRange(db.Reminders.Where(t => t.Id == this.Id));
+                        db.Reminders.Remove(new DatabaseReminder() { Id = this.Id });
                         await db.SaveChangesAsync();
                     }
                     break;
@@ -160,7 +161,7 @@ namespace TheGodfather.Common
                 case UnmuteTaskInfo _:
                     this.shared.TaskExecuters.TryRemove(this.Id, out SavedTaskExecutor _);
                     using (DatabaseContext db = this.dbb.CreateContext()) {
-                        db.SavedTasks.RemoveRange(db.SavedTasks.Where(t => t.Id == this.Id));
+                        db.SavedTasks.Remove(new DatabaseSavedTask() { Id = this.Id });
                         await db.SaveChangesAsync();
                     }
                     break;

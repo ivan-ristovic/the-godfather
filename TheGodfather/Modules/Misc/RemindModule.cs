@@ -6,7 +6,9 @@ using DSharpPlus.Entities;
 
 using Humanizer;
 using Humanizer.Localisation;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 #endregion
@@ -39,7 +42,33 @@ namespace TheGodfather.Modules.Misc
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
-        
+
+        #region COMMAND_REMIND_CLEAR
+        [Command("deleteall"), UsesInteractivity]
+        [Description("Delete all your reminders. You can also specify a channel for which to remove reminders.")]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
+        [UsageExamples("!remind clear")]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Channel for which to remove reminders.")] DiscordChannel channel = null)
+        {
+            if (!(channel is null) && channel.Type != ChannelType.Text)
+                throw new InvalidCommandUsageException("You must specify a text channel.");
+
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to remove all your reminders" + (channel is null ? "?" : $"in {channel.Mention}?")))
+                return;
+
+            List<DatabaseReminder> reminders;
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                if (channel is null)
+                    reminders = await db.Reminders.Where(r => r.UserId == ctx.User.Id).ToListAsync();
+                else
+                    reminders = await db.Reminders.Where(r => r.UserId == ctx.User.Id && r.ChannelId == channel.Id).ToListAsync();
+            }
+
+            await Task.WhenAll(reminders.Select(r => SavedTaskExecutor.UnscheduleAsync(this.Shared, ctx.User.Id, r.Id)));
+            await this.InformAsync(ctx, "Successfully removed the specified reminders.", important: false);
+        }
+        #endregion
 
         #region COMMAND_REMIND_DELETE
         [Command("delete")]
