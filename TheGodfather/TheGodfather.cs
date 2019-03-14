@@ -219,17 +219,11 @@ namespace TheGodfather
             Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...                  ");
 
             Shards = new List<TheGodfatherShard>();
-            var shard = new TheGodfatherShard(0, GlobalDatabaseContextBuilder, SharedData);
-            shard.Initialize(async e => await RegisterPeriodicTasksAsync());
-            Shards.Add(shard);
-
-            /* TODO periodic tasks for shards will clash, 
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, GlobalDatabaseContextBuilder, SharedData);
                 shard.Initialize(async e => await RegisterPeriodicTasksAsync());
                 Shards.Add(shard);
             }
-            */
 
             Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
@@ -242,7 +236,7 @@ namespace TheGodfather
             BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[3].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
             using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                 await RegisterSavedTasksAsync(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
