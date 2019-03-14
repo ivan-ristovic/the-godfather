@@ -127,7 +127,7 @@ namespace TheGodfather.Common
                         this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
-                this.shared.LogProvider.Log(LogLevel.Debug, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
+                this.shared.LogProvider.Log(LogLevel.Debug, $"Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Debug, e);
             } finally {
