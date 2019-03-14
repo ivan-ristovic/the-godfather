@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
-
+using DSharpPlus.Exceptions;
 using System;
 using System.Linq;
 using System.Threading;
@@ -187,6 +187,8 @@ namespace TheGodfather.Common
                     Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));
+            } catch (UnauthorizedException) {
+
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
@@ -202,6 +204,8 @@ namespace TheGodfather.Common
             try {
                 DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
+            } catch (UnauthorizedException) {
+
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
@@ -220,6 +224,8 @@ namespace TheGodfather.Common
                 if (role is null)
                     return;
                 this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
+            } catch (UnauthorizedException) {
+
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
