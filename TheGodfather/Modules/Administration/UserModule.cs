@@ -207,7 +207,8 @@ namespace TheGodfather.Modules.Administration
 
             emb.AddField("Status", user.Presence?.Status.ToString() ?? "Offline", inline: true);
             emb.AddField("Discriminator", user.Discriminator, inline: true);
-            emb.AddField("Avatar hash", user.AvatarHash, inline: true);
+            if (!string.IsNullOrWhiteSpace(user.AvatarHash))
+                emb.AddField("Avatar hash", user.AvatarHash, inline: true);
             emb.AddField("Created", user.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("ID", user.Id.ToString(), inline: true);
             if (!string.IsNullOrWhiteSpace(user.Email))
