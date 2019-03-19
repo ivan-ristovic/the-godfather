@@ -116,11 +116,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.LoggingExempts.AddRange(members.Select(m => new DatabaseExemptLogging() {
-                            GuildId = ctx.Guild.Id,
-                            Id = m.Id,
-                            Type = ExemptedEntityType.Member
-                        }));
+                        db.LoggingExempts.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
                         await db.SaveChangesAsync();
                     }
 
@@ -135,11 +131,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.LoggingExempts.AddRange(roles.Select(r => new DatabaseExemptLogging() {
-                            GuildId = ctx.Guild.Id,
-                            Id = r.Id,
-                            Type = ExemptedEntityType.Role
-                        }));
+                        db.LoggingExempts.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
                         await db.SaveChangesAsync();
                     }
 
@@ -154,11 +146,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.LoggingExempts.AddRange(channels.Select(c => new DatabaseExemptLogging() {
-                            GuildId = ctx.Guild.Id,
-                            Id = c.Id,
-                            Type = ExemptedEntityType.Channel
-                        }));
+                        db.LoggingExempts.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
                         await db.SaveChangesAsync();
                     }
 

@@ -402,8 +402,10 @@ namespace TheGodfather
                 }
 
                 // TODO remove
-                DiscordChannel temp = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(409490633712205845));
-                SharedData.AsyncExecutor.Execute(temp.SendMessageAsync("sync"));
+                if (!Debugger.IsAttached) {
+                    DiscordChannel temp = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(409490633712205845));
+                    SharedData.AsyncExecutor.Execute(temp.SendMessageAsync("sync"));
+                }
                 // end remove
 
             } catch (Exception e) {

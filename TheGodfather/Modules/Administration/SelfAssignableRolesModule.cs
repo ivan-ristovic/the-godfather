@@ -13,6 +13,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -60,7 +61,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.AddRange(roles.Select(r => new DatabaseSelfRole() {
+                db.SelfAssignableRoles.SafeAddRange(roles.Select(r => new DatabaseSelfRole() {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
                 }));

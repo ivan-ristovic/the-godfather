@@ -200,11 +200,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.AddRange(members.Select(m => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = m.Id,
-                            Type = ExemptedEntityType.Member
-                        }));
+                        db.RatelimitExempts.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
                         await db.SaveChangesAsync();
                     }
 
@@ -220,11 +216,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.AddRange(roles.Select(r => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = r.Id,
-                            Type = ExemptedEntityType.Role
-                        }));
+                        db.RatelimitExempts.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
                         await db.SaveChangesAsync();
                     }
 
@@ -240,11 +232,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.RatelimitExempts.AddRange(channels.Select(c => new DatabaseExemptRatelimit() {
-                            GuildId = ctx.Guild.Id,
-                            Id = c.Id,
-                            Type = ExemptedEntityType.Channel
-                        }));
+                        db.RatelimitExempts.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
                         await db.SaveChangesAsync();
                     }
 

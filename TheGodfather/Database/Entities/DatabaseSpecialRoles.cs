@@ -1,10 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 #endregion
 
 namespace TheGodfather.Database.Entities
 {
-    public class DatabaseSpecialRole
+    public class DatabaseSpecialRole : IEquatable<DatabaseSpecialRole> 
     {
         [ForeignKey("DbGuildConfig")]
         [Column("gid")]
@@ -21,17 +22,29 @@ namespace TheGodfather.Database.Entities
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
-    }
 
-    [Table("self_roles")]
-    public class DatabaseSelfRole : DatabaseSpecialRole
-    {
 
+        public bool Equals(DatabaseSpecialRole other)
+            => !(other is null) && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
+
+        public override bool Equals(object other)
+            => this.Equals(other as DatabaseSpecialRole);
+
+        public override int GetHashCode() 
+            => (this.GuildId, this.RoleId).GetHashCode();
     }
 
     [Table("auto_roles")]
-    public class DatabaseAutoRole : DatabaseSpecialRole
+    public class DatabaseAutoRole : DatabaseSpecialRole, IEquatable<DatabaseAutoRole>
     {
+        public bool Equals(DatabaseAutoRole other)
+            => base.Equals(other);
+    }
 
+    [Table("self_roles")]
+    public class DatabaseSelfRole : DatabaseSpecialRole, IEquatable<DatabaseSelfRole>
+    {
+        public bool Equals(DatabaseSelfRole other) 
+            => base.Equals(other);
     }
 }

@@ -16,6 +16,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -59,7 +60,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
                 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.PrivilegedUsers.AddRange(users.Distinct().Select(u => new DatabasePrivilegedUser() {
+                    db.PrivilegedUsers.SafeAddRange(users.Select(u => new DatabasePrivilegedUser() {
                         UserId = u.Id
                     }));
                     await db.SaveChangesAsync();
