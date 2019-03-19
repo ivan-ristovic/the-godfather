@@ -200,11 +200,14 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.AntispamExempts.AddRange(members.Select(m => new DatabaseExemptAntispam() {
-                            GuildId = ctx.Guild.Id,
-                            Id = m.Id,
-                            Type = ExemptedEntityType.Member
-                        }));
+                        db.AntispamExempts.AddRange(members
+                            .Where(m => !db.AntispamExempts.Where(dbe => dbe.GuildId == ctx.Guild.Id).Any(dbe => dbe.Type == ExemptedEntityType.Member && dbe.Id == m.Id))
+                            .Select(m => new DatabaseExemptAntispam() {
+                                GuildId = ctx.Guild.Id,
+                                Id = m.Id,
+                                Type = ExemptedEntityType.Member
+                            })
+                        );
                         await db.SaveChangesAsync();
                     }
 
@@ -220,11 +223,14 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.AntispamExempts.AddRange(roles.Select(r => new DatabaseExemptAntispam() {
-                            GuildId = ctx.Guild.Id,
-                            Id = r.Id,
-                            Type = ExemptedEntityType.Role
-                        }));
+                        db.AntispamExempts.AddRange(roles
+                            .Where(r => !db.AntispamExempts.Where(dbe => dbe.GuildId == ctx.Guild.Id).Any(dbe => dbe.Type == ExemptedEntityType.Role && dbe.Id == r.Id))
+                            .Select(r => new DatabaseExemptAntispam() {
+                                GuildId = ctx.Guild.Id,
+                                Id = r.Id,
+                                Type = ExemptedEntityType.Role
+                            })
+                        );
                         await db.SaveChangesAsync();
                     }
 
@@ -240,6 +246,14 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
+                        db.AntispamExempts.AddRange(channels
+                            .Where(c => !db.AntispamExempts.Where(dbe => dbe.GuildId == ctx.Guild.Id).Any(dbe => dbe.Type == ExemptedEntityType.Channel && dbe.Id == c.Id))
+                            .Select(c => new DatabaseExemptAntispam() {
+                                GuildId = ctx.Guild.Id,
+                                Id = c.Id,
+                                Type = ExemptedEntityType.Channel
+                            })
+                        );
                         db.AntispamExempts.AddRange(channels.Select(c => new DatabaseExemptAntispam() {
                             GuildId = ctx.Guild.Id,
                             Id = c.Id,

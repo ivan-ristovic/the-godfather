@@ -60,10 +60,13 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.AutoAssignableRoles.AddRange(roles.Select(r => new DatabaseAutoRole() {
-                    RoleId = r.Id,
-                    GuildId = ctx.Guild.Id
-                }));
+                db.AutoAssignableRoles.AddRange(roles
+                    .Where(r => !db.AutoAssignableRoles.Where(dbr => dbr.GuildId == ctx.Guild.Id).Any(dbr => dbr.RoleId == r.Id))
+                    .Select(r => new DatabaseAutoRole() {
+                        RoleId = r.Id,
+                        GuildId = ctx.Guild.Id
+                    })
+                );
                 await db.SaveChangesAsync();
             }
 

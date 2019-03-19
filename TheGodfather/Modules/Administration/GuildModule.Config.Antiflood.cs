@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
                     };
 
                     using (DatabaseContext db = this.Database.CreateContext()) {
-                        DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
+                        DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
                         gcfg.AntifloodSettings = settings;
                         db.GuildConfig.Update(gcfg);
                         await db.SaveChangesAsync();
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    AntifloodSettings settings = (await this.GetGuildConfig(ctx.Guild.Id)).AntifloodSettings;
+                    AntifloodSettings settings = (await this.GetGuildConfigAsync(ctx.Guild.Id)).AntifloodSettings;
                     if (settings.Enabled) {
                         var sb = new StringBuilder();
                         sb.Append(Formatter.Bold("Sensitivity: ")).AppendLine(settings.Sensitivity.ToString());

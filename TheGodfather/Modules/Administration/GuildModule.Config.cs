@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(0)]
             public async Task SuggestionsAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
                 await this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg welcome off")]
             public async Task WelcomeAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
                 DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
                 await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
@@ -190,12 +190,13 @@ namespace TheGodfather.Modules.Administration
                 if (wchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Welcome channel must be a text channel.");
 
-                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
+                if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
                 await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.WelcomeChannelIdDb = enable ? (long)wchn.Id : (long?)null;
-                    cfg.WelcomeMessage = message;
+                    if (!string.IsNullOrWhiteSpace(message))
+                        cfg.WelcomeMessage = message;
                 });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -207,12 +208,12 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("User responsible", ctx.User.Mention, inline: true);
                     emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                     emb.AddField("User welcoming", enable ? $"on @ {wchn.Mention}" : "off", inline: true);
-                    emb.AddField("Welcome message", message ?? Formatter.Italic("default"));
+                    emb.AddField("Welcome message", message ?? Formatter.Italic("not changed"));
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
                 if (enable)
-                    await this.InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(wchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
+                    await this.InformAsync(ctx, $"Welcome message channel set to {wchn.Mention} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
                 else
                     await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
             }
@@ -224,28 +225,9 @@ namespace TheGodfather.Modules.Administration
                 => this.WelcomeAsync(ctx, true, channel, message);
 
             [Command("welcome"), Priority(0)]
-            public async Task WelcomeAsync(CommandContext ctx,
-                                          [RemainingText, Description("Welcome message.")] string message)
-            {
-                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
-                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
-
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
-                        Title = "Guild config changed",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Welcome message set to", message);
-                    await logchn.SendMessageAsync(embed: emb.Build());
-                }
-
-                await this.InformAsync(ctx, $"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
-            }
+            public Task WelcomeAsync(CommandContext ctx,
+                                    [RemainingText, Description("Welcome message.")] string message)
+                => this.WelcomeAsync(ctx, true, ctx.Channel, message);
 
             #endregion
 
@@ -259,7 +241,7 @@ namespace TheGodfather.Modules.Administration
                            "!guild cfg leave off")]
             public async Task LeaveAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfig(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
                 DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
                 await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
@@ -275,12 +257,13 @@ namespace TheGodfather.Modules.Administration
                 if (lchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Leave channel must be a text channel.");
 
-                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
+                if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
                 await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LeaveChannelIdDb = enable ? (long)lchn.Id : (long?)null;
-                    cfg.LeaveMessage = message;
+                    if (!string.IsNullOrWhiteSpace(message))
+                        cfg.LeaveMessage = message;
                 });
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -292,12 +275,12 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("User responsible", ctx.User.Mention, inline: true);
                     emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                     emb.AddField("User leave messages", enable ? $"on @ {lchn.Mention}" : "off", inline: true);
-                    emb.AddField("Leave message", message ?? Formatter.Italic("default"));
+                    emb.AddField("Leave message", message ?? Formatter.Italic("not changed"));
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
                 if (enable)
-                    await this.InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(lchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
+                    await this.InformAsync(ctx, $"Welcome message channel set to {lchn.Mention} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
                 else
                     await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
             }
@@ -309,28 +292,9 @@ namespace TheGodfather.Modules.Administration
                 => this.LeaveAsync(ctx, true, channel, message);
 
             [Command("leave"), Priority(0)]
-            public async Task LeaveAsync(CommandContext ctx,
-                                        [RemainingText, Description("Leave message.")] string message)
-            {
-                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
-                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => cfg.LeaveMessage = message);
-
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
-                        Title = "Guild config changed",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Leave message set to", message);
-                    await logchn.SendMessageAsync(embed: emb.Build());
-                }
-
-                await this.InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
-            }
+            public Task LeaveAsync(CommandContext ctx,
+                                  [RemainingText, Description("Leave message.")] string message)
+                => this.LeaveAsync(ctx, true, ctx.Channel, message);
             #endregion
 
             #region COMMAND_CONFIG_MUTEROLE
@@ -365,7 +329,7 @@ namespace TheGodfather.Modules.Administration
                     Color = this.ModuleColor
                 };
 
-                DatabaseGuildConfig gcfg = await this.GetGuildConfig(guild.Id);
+                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(guild.Id);
 
                 emb.AddField("Prefix", this.Shared.GetGuildPrefix(guild.Id), inline: true);
                 emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
