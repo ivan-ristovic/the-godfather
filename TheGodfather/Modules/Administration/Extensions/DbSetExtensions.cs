@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 .Select(e => new TEntity() {
                     GuildId = gid,
                     Id = e.Id,
-                    Type = ExemptedEntityType.Channel
+                    Type = type
                 })
             );
         }
