@@ -378,7 +378,7 @@ namespace TheGodfather
                 List<DatabaseBirthday> todayBirthdays;
                 using (DatabaseContext db = GlobalDatabaseContextBuilder.CreateContext()) {
                     todayBirthdays = db.Birthdays
-                        .Where(b => b.Date == DateTime.Now.Date && b.LastUpdateYear < DateTime.Now.Year)
+                        .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                         .ToList();
                 }
                 foreach (DatabaseBirthday birthday in todayBirthdays) {
@@ -400,14 +400,6 @@ namespace TheGodfather
                     db.Database.ExecuteSqlCommand("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                     db.SaveChanges();
                 }
-
-                // TODO remove
-                if (!Debugger.IsAttached) {
-                    DiscordChannel temp = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(409490633712205845));
-                    SharedData.AsyncExecutor.Execute(temp.SendMessageAsync("sync"));
-                }
-                // end remove
-
             } catch (Exception e) {
                 SharedData.LogProvider.Log(LogLevel.Error, e);
             }
