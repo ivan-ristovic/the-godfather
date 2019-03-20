@@ -1,19 +1,28 @@
 #!/bin/bash
 
+function execute {
+	if ! "$@"; then
+		echo "An error occured."
+		exit 1
+	fi
+}
+
+
 if [ "$#" -ne 0 ]; then
 	echo "Waiting for the bot to shutdown... "
 	wait "$1"
 fi
 
-rm TheGodfather*.zip
+rm TheGodfather*.zip &2> /dev/null
 
 echo "Downloading ... "
-wget "https://ci.appveyor.com/api/projects/ivan-ristovic/the-godfather/artifacts/TheGodfather.zip" -q --show-progress
-wget "https://ci.appveyor.com/api/projects/ivan-ristovic/the-godfather/artifacts/TheGodfatherResources.zip" -q --show-progress
+execute wget "https://ci.appveyor.com/api/projects/ivan-ristovic/the-godfather/artifacts/TheGodfather.zip" -q --show-progress
+execute wget "https://ci.appveyor.com/api/projects/ivan-ristovic/the-godfather/artifacts/TheGodfatherResources.zip" -q --show-progress
 
 echo "Extracting ... "
-unzip -o TheGodfather.zip
-unzip -o TheGodfatherResources.zip ./Resources/
+execute unzip -o TheGodfather.zip
+mkdir -p Resources
+execute unzip -o TheGodfatherResources.zip -d Resources/
 
 echo "Starting the bot... "
-dotnet TheGodfather.dll
+execute dotnet TheGodfather.dll

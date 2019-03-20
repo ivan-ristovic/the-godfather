@@ -614,34 +614,28 @@ namespace TheGodfather.Modules.Owner
         [RequireOwner]
         public Task UpdateAsync(CommandContext ctx)
         {
-            string scriptPath;
+            ProcessStartInfo psi;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                scriptPath = "install.sh";
-                var proc = new Process {
-                    StartInfo = new ProcessStartInfo {
-                        FileName = "nohup",
-                        Arguments = $"bash {scriptPath} {Process.GetCurrentProcess().Id}",
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true
-                    }
+                psi = new ProcessStartInfo {
+                    FileName = "bash",
+                    Arguments = $"install.sh {Process.GetCurrentProcess().Id}",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
                 };
-                proc.Start();
             } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                scriptPath = "install.bat";
-                var proc = new Process {
-                    StartInfo = new ProcessStartInfo {
-                        FileName = scriptPath,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true
-                    }
+                psi = new ProcessStartInfo {
+                    FileName = "install.bat",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
                 };
-                proc.Start();
             } else {
                 throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
             }
-            
+
+            var proc = new Process { StartInfo = psi };
+            proc.Start();
             return this.ExitAsync(ctx);
         }
         #endregion

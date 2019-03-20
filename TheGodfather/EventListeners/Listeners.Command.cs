@@ -27,10 +27,10 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
         public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
-            shard.Log(LogLevel.Info,
-                $"| Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
-                $"| {e.Context.User.ToString()}\n" +
-                $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
+            shard.LogMany(LogLevel.Info,
+                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}",
+                $"{e.Context.User.ToString()}",
+                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
             return Task.CompletedTask;
         }
@@ -48,13 +48,13 @@ namespace TheGodfather.EventListeners
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
                 return;
 
-            shard.Log(LogLevel.Info,
-                $"| Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
-                $"| {e.Context.User.ToString()}\n" +
-                $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}\n" +
-                $"| Exception: {ex.GetType()}\n" +
-                $"| Message: {ex.Message ?? "<no message provided>"}\n" +
-                (ex.InnerException is null ? "" : $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
+            shard.LogMany(LogLevel.Info,
+                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}",
+                $"{e.Context.User.ToString()}",
+                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}",
+                $"Exception: {ex.GetType()}",
+                $"Message: {ex.Message ?? "<no message provided>"}",
+                (ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
             );
 
             var emb = new DiscordEmbedBuilder {
