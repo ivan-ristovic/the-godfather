@@ -203,5 +203,38 @@ namespace TheGodfather.EventListeners
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
+
+        [AsyncEventListener(DiscordEventType.PresenceUpdated)]
+        public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherShard shard, PresenceUpdateEventArgs e)
+        {
+            if (e.User.IsBot)
+                return;
+
+            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "User updated", e.User.ToString());
+            emb.WithTitle("User Updated:");
+            emb.WithDescription(e.UserAfter.ToString());
+            if (e.UserAfter.Username != e.UserBefore.Username)
+                emb.AddField("Changed username", $"{e.UserBefore.Username} to {e.UserAfter.Username}");
+            if (e.UserAfter.Discriminator != e.UserBefore.Discriminator)
+                emb.AddField("Changed discriminator", $"{e.UserBefore.Discriminator} to {e.UserAfter.Discriminator}");
+            if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
+                emb.AddField("Changed avatar", Formatter.MaskedUrl("Old Avatar (note: might 404 later)", new Uri(e.UserBefore.AvatarUrl)));
+            emb.WithThumbnailUrl(e.UserAfter.AvatarUrl);
+
+            if (!emb.Fields.Any())
+                return;
+
+            IEnumerable<DiscordGuild> guilds = TheGodfather.ActiveShards
+                .SelectMany(s => s.Client?.Guilds)
+                .Select(kvp => kvp.Value)
+                ?? Enumerable.Empty<DiscordGuild>();
+            foreach (DiscordGuild guild in guilds) {
+                DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, guild);
+                if (logchn is null)
+                    continue;
+                if (await e.UserAfter.IsMemberOfGuildAsync(guild))
+                    await logchn.SendMessageAsync(embed: emb.Build());
+            }
+        }
     }
 }
