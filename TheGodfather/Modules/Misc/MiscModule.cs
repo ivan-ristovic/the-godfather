@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Red
             };
             if (!string.IsNullOrWhiteSpace(info))
-                emb.AddField("Additional info", Formatter.BlockCode(Formatter.Sanitize(info)));
+                emb.AddField("Additional info", Formatter.BlockCode(Formatter.Strip(info)));
 
             await ctx.RespondAsync(embed: emb.Build());
         }
@@ -389,7 +389,7 @@ namespace TheGodfather.Modules.Misc
             if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
-            return this.InformAsync(ctx, Formatter.Sanitize(text), ":loudspeaker:");
+            return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
         }
         #endregion
 
@@ -444,7 +444,7 @@ namespace TheGodfather.Modules.Misc
             if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
-            return ctx.RespondAsync(Formatter.BlockCode(Formatter.Sanitize(text)), isTTS: true);
+            return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
         }
         #endregion
 

@@ -6,6 +6,7 @@ using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -140,7 +141,7 @@ namespace TheGodfather.EventListeners
                 emb.WithTitle("Member kicked");
                 emb.AddField("User responsible", ke.UserResponsible.Mention);
                 emb.AddField("Reason", ke.Reason ?? "No reason provided.");
-            } 
+            }
 
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);

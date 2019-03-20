@@ -88,7 +88,7 @@ namespace TheGodfather.EventListeners
             if (pinned.Any()) {
                 emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(900))));
+                emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
             }
             if (!(e.LastPinTimestamp is null))
                 emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp(), inline: true);
@@ -124,8 +124,8 @@ namespace TheGodfather.EventListeners
                 if (!(centry.OverwriteChange is null))
                     emb.AddField("Permissions overwrites changed", $"{centry.OverwriteChange.After.Count} overwrites after changes");
                 if (!(centry.TopicChange is null)) {
-                    string ptopic = Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(centry.TopicChange.Before) ? " " : centry.TopicChange.Before));
-                    string ctopic = Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(centry.TopicChange.After) ? " " : centry.TopicChange.After));
+                    string ptopic = Formatter.BlockCode(Formatter.Strip(string.IsNullOrWhiteSpace(centry.TopicChange.Before) ? " " : centry.TopicChange.Before));
+                    string ctopic = Formatter.BlockCode(Formatter.Strip(string.IsNullOrWhiteSpace(centry.TopicChange.After) ? " " : centry.TopicChange.After));
                     emb.AddField("Topic changed", $"From:{ptopic}\nTo:{ctopic}");
                 }
                 if (!(centry.TypeChange is null))

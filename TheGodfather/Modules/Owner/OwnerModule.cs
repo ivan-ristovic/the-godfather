@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Owner
         public async Task AnnounceAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(Formatter.Sanitize(message))}"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(Formatter.Strip(message))}"))
                 return;
 
             var emb = new DiscordEmbedBuilder() {
