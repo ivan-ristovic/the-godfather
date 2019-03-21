@@ -192,8 +192,13 @@ namespace TheGodfather.Common
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
-                if (!info.IsRepeating)
-                    this.Execute(this.UnscheduleAsync());
+                if (!info.IsRepeating) {
+                    try {
+                        this.Execute(this.UnscheduleAsync());
+                    } catch (Exception e) {
+                        this.shared.LogProvider.Log(LogLevel.Error, e);
+                    }
+                }
             }
         }
 
@@ -209,7 +214,11 @@ namespace TheGodfather.Common
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
-                this.Execute(this.UnscheduleAsync());
+                try {
+                    this.Execute(this.UnscheduleAsync());
+                } catch (Exception e) {
+                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                }
             }
         }
 
@@ -229,7 +238,11 @@ namespace TheGodfather.Common
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
-                this.Execute(this.UnscheduleAsync());
+                try {
+                    this.Execute(this.UnscheduleAsync());
+                } catch (Exception e) {
+                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                }
             }
         }
         #endregion
