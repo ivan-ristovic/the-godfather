@@ -46,14 +46,14 @@
     <PackageReference Include="Imgur.API" Version="5.0.0-beta1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-beta4-final" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0-beta4-final" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0-preview3.19153.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0-preview.18572.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0-preview.18572.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="Npgsql" Version="4.0.5" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0-preview3" />
+    <PackageReference Include="Npgsql" Version="4.0.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0-preview1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="2.0.0-preview1" />
     <PackageReference Include="RedditSharp" Version="2.0.0-CI00075" />
     <PackageReference Include="SteamWebAPI2" Version="4.0.8" />
