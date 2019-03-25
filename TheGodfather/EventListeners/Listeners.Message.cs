@@ -29,9 +29,16 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessagesBulkDeleted)]
         public static async Task BulkDeleteEventHandlerAsync(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
+            if (e.Channel.IsPrivate)
+                return;
+
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn is null)
                 return;
+
+            using (DatabaseContext db = shard.Database.CreateContext())
+                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
+                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
             await logchn.SendMessageAsync(embed: emb.Build());
