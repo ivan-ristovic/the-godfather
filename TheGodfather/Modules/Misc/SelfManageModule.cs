@@ -117,14 +117,29 @@ namespace TheGodfather.Modules.Misc
         }
 
 
+        [GroupCommand, Priority(0)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Role to grant.")] DiscordRole role)
+        {
+            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+            if (bot is null)
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+
+            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
+                await this.RevokeRoleAsync(ctx, role);
+            else
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+        }
+
+
         #region COMMAND_REVOKE_ROLE
         [Command("role")]
         [Description("Revokes from your role list a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
         [UsageExamples("!revoke role @Announcements")]
         [RequireBotPermissions(Permissions.ManageRoles)]
-        public async Task GiveRoleAsync(CommandContext ctx,
-                                       [Description("Role to revoke.")] DiscordRole role)
+        public async Task RevokeRoleAsync(CommandContext ctx,
+                                         [Description("Role to revoke.")] DiscordRole role)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
