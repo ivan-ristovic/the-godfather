@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Administration
                 db.SaveChanges();
             }
 
-            return Task.CompletedTask;
+            return this.InformAsync(ctx, $"Successfully {(allow ? "allowed" : "denied")} usage of command {cmd.QualifiedName} {(channels.Any() ? "globally" : "in given channels")}!", important: false);
         }
     }
 }
