@@ -63,9 +63,14 @@ namespace TheGodfather.Modules.Owner
 
                 code = $@"
 [ModuleLifespan(ModuleLifespan.Transient)]
-public sealed class DynamicCommands : BaseCommandModule
+public sealed class DynamicCommands : TheGodfatherModule
 {{
-{code.Substring(cs1, cs2 - cs1)}
+    public DynamicCommands(SharedData shared, DatabaseContextBuilder db) : base(shared, db)
+    {{
+        this.ModuleColor = DiscordColor.NotQuiteBlack;
+    }}
+
+    {code.Substring(cs1, cs2 - cs1)}
 }}";
                 
                 string type = $"DynamicCommands{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
