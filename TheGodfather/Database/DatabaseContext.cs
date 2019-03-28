@@ -24,6 +24,7 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChicken> Chickens { get; set; }
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
+        public virtual DbSet<DatabaseCommandRule> CommandRules { get; set; }
         public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
         public virtual DbSet<DatabaseFilter> Filters { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
@@ -98,6 +99,7 @@ namespace TheGodfather.Database
             model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             model.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             model.Entity<DatabaseEmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
+            model.Entity<DatabaseCommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
             model.Entity<DatabaseExemptAntispam>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptLogging>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             model.Entity<DatabaseExemptRatelimit>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
