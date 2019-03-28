@@ -42,6 +42,28 @@ namespace TheGodfather.Modules.Administration
             => this.ListAsync(ctx);
 
 
+        #region COMMAND_COMMANDRULES_ALLOW
+        [Command("allow")]
+        [Description("Allow a command to be executed only in specific channel(s).")]
+        [Aliases("a", "only")]
+        [UsageExamples("!commandrules allow")]
+        public Task AllowAsync(CommandContext ctx,
+                              [Description("Command to forbid.")] string command,
+                              [Description("Channels where to forbid.")] params DiscordChannel[] channels)
+            => this.AddRuleToDatabaseAsync(ctx, command, true, channels);
+        #endregion
+
+        #region COMMAND_COMMANDRULES_FORBID
+        [Command("forbid")]
+        [Description("Forbid a command to be executed in a specific channel(s) (or globally if no channel is provided).")]
+        [Aliases("f", "deny")]
+        [UsageExamples("!commandrules allow")]
+        public Task ForbidAsync(CommandContext ctx, 
+                               [Description("Command to forbid.")] string command,
+                               [Description("Channels where to forbid.")] params DiscordChannel[] channels)
+            => this.AddRuleToDatabaseAsync(ctx, command, false, channels);
+        #endregion
+
         #region COMMAND_COMMANDRULES_LIST
         [Command("list")]
         [Description("Show all command rules for this guild.")]
@@ -67,5 +89,41 @@ namespace TheGodfather.Modules.Administration
             );
         }
         #endregion
+
+
+        private Task AddRuleToDatabaseAsync(CommandContext ctx, string command, bool allow, params DiscordChannel[] channels)
+        {
+            Command cmd = ctx.CommandsNext.FindCommand(command, out _);
+            if (cmd is null)
+                throw new CommandFailedException($"Failed to find command {Formatter.InlineCode(command)}");
+
+            string qname = cmd.QualifiedName;
+            var dbrule = new DatabaseCommandRule() {
+                Allowed = allow,
+                ChannelId = ctx.Channel.Id,
+                Command = cmd.QualifiedName,
+                GuildId = ctx.Guild.Id
+            };
+
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                if (channels is null || !channels.Any()) {
+                    db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command == cmd.QualifiedName));
+                } else {
+                    foreach (DiscordChannel channel in channels.Distinct()) {
+                        dbrule.ChannelId = channel.Id;
+                        db.CommandRules.Add(dbrule);
+                    }
+                }
+
+                if (!allow) {
+                    dbrule.ChannelId = 0;
+                    db.CommandRules.Add(dbrule);
+                }
+
+                db.SaveChanges();
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }
