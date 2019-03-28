@@ -82,6 +82,20 @@
 
 ---
 
+## crime
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Commit a crime and hope to get away with large amounts of cash. You can attempt to commit a crime once every 10 minutes.*
+
+**Examples:**
+
+```
+!crime
+```
+</p></details>
+
+---
+
 ## dice
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -177,7 +191,7 @@
 *Retrieve IP geolocation information.*
 
 **Aliases:**
-`ip, geolocation, iplocation, iptracker, iptrack, trackip, iplocate`
+`ip, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
 
 **Arguments:**
 
@@ -302,9 +316,13 @@
 *An accurate measurement.*
 
 **Aliases:**
-`size, length, manhood, dick`
+`size, length, manhood, dick, dicksize`
 
-**Arguments:**
+**Overload 1:**
+
+(optional) `[member]` : *Who to measure.* (def: `None`)
+
+**Overload 0:**
 
 (optional) `[user]` : *Who to measure.* (def: `None`)
 
@@ -325,7 +343,11 @@
 **Aliases:**
 `sizecompare, comparesize, comparepenis, cmppenis, peniscmp, comppenis`
 
-**Arguments:**
+**Overload 1:**
+
+`[member...]` : *User1.*
+
+**Overload 0:**
 
 `[user...]` : *User1.*
 
@@ -411,9 +433,13 @@
 **Aliases:**
 `score, graph, rating`
 
-**Arguments:**
+**Overload 1:**
 
-(optional) `[user]` : *Who to measure.* (def: `None`)
+`[member...]` : *Who to measure.*
+
+**Overload 1:**
+
+`[user...]` : *Who to measure.*
 
 **Examples:**
 
@@ -446,161 +472,6 @@
 
 ```
 !rpoll :smile: :joy:
-```
-</p></details>
-
----
-
-## Group: remind
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Manage reminders. Group call resends a message after given time span.*
-
-**Aliases:**
-`reminders, reminder, todo`
-
-**Overload 3:**
-
-`[time span]` : *Time span until reminder.*
-
-`[channel]` : *Channel to send message to.*
-
-`[string...]` : *What to send?*
-
-**Overload 2:**
-
-`[channel]` : *Channel to send message to.*
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Overload 1:**
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Examples:**
-
-```
-!remind 1h Drink water!
-```
-</p></details>
-
----
-
-### remind add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Schedule a new reminder. You can also specify a channel where to send the reminder.*
-
-**Aliases:**
-`new, +, a, +=, <, <<`
-
-**Overload 2:**
-
-`[time span]` : *Time span until reminder.*
-
-`[channel]` : *Channel to send message to.*
-
-`[string...]` : *What to send?*
-
-**Overload 1:**
-
-`[channel]` : *Channel to send message to.*
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Overload 0:**
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Examples:**
-
-```
-!remind add 1h Drink water!
-```
-</p></details>
-
----
-
-### remind delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Unschedule a reminder.*
-
-**Aliases:**
-`-, remove, rm, del, -=, >, >>, unschedule`
-
-**Arguments:**
-
-`[int...]` : *Reminder ID.*
-
-**Examples:**
-
-```
-!remind delete 1
-```
-</p></details>
-
----
-
-### remind list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List your registered reminders in the current channel.*
-
-**Aliases:**
-`ls`
-
-**Examples:**
-
-```
-!remind list
-```
-</p></details>
-
----
-
-### remind repeat
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Schedule a new repeating reminder. You can also specify a channel where to send the reminder.*
-
-**Aliases:**
-`newrep, +r, ar, +=r, <r, <<r`
-
-**Overload 2:**
-
-`[time span]` : *Repeat timespan.*
-
-`[channel]` : *Channel to send message to.*
-
-`[string...]` : *What to send?*
-
-**Overload 1:**
-
-`[channel]` : *Channel to send message to.*
-
-`[time span]` : *Repeat timespan.*
-
-`[string...]` : *What to send?*
-
-**Overload 0:**
-
-`[time span]` : *Repeat timespan.*
-
-`[string...]` : *What to send?*
-
-**Examples:**
-
-```
-!remind repeat 1h Drink water!
 ```
 </p></details>
 
@@ -666,6 +537,27 @@
 
 ---
 
+## simulate
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Simulate another user.*
+
+**Aliases:**
+`sim`
+
+**Arguments:**
+
+`[member]` : *Member to simulate.*
+
+**Examples:**
+
+```
+!simulate @Someone.
+```
+</p></details>
+
+---
+
 ## skip
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -680,6 +572,20 @@
 
 ```
 !skip
+```
+</p></details>
+
+---
+
+## slut
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.*
+
+**Examples:**
+
+```
+!slut
 ```
 </p></details>
 
@@ -954,6 +860,23 @@
 
 ```
 !uptime
+```
+</p></details>
+
+---
+
+## work
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Do something productive with your life. You can work once per minute.*
+
+**Aliases:**
+`job`
+
+**Examples:**
+
+```
+!work
 ```
 </p></details>
 

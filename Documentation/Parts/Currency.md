@@ -188,11 +188,15 @@
 **Aliases:**
 `ur, signout, deleteaccount, delacc, disable, deactivate`
 
-**Arguments:**
+**Overload 1:**
 
 `[user]` : *User whose account to delete.*
 
 (optional) `[boolean]` : *Globally delete?* (def: `False`)
+
+**Overload 0:**
+
+`[member]` : *User whose account to delete.*
 
 **Examples:**
 
@@ -569,9 +573,13 @@
 **Aliases:**
 `purchase, shutupandtakemymoney, b, p`
 
-**Arguments:**
+**Overload 1:**
 
 `[int]` : *Item ID.*
+
+**Overload 1:**
+
+`[string]` : *Item name.*
 
 **Examples:**
 

@@ -326,7 +326,13 @@
 **Aliases:**
 `s, find, lookup`
 
-**Arguments:**
+**Overload 1:**
+
+`[CustomIPFormat]` : *IP or range.*
+
+(optional) `[int]` : *Number of results* (def: `10`)
+
+**Overload 0:**
 
 `[string]` : *Player name to search.*
 
@@ -345,14 +351,14 @@
 
 **Arguments:**
 
-`[CustomIPFormat]` : *IP.*
+`[CustomIPFormat]` : *IP or range.*
 
 (optional) `[int]` : *Number of results* (def: `10`)
 
 **Examples:**
 
 ```
-!swat search 123.123.123.123
+!swat search ip 123.123.123.123
 ```
 </p></details>
 
@@ -377,7 +383,7 @@
 **Examples:**
 
 ```
-!swat search EmoPig
+!swat search name EmoPig
 ```
 </p></details>
 
@@ -390,6 +396,10 @@
 
 **Aliases:**
 `sl, list`
+
+**Arguments:**
+
+(optional) `[string]` : *Server name group.* (def: `None`)
 
 **Examples:**
 
@@ -501,6 +511,8 @@
 
 ### swat settimeout
 <details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
 
 *Set checking timeout.*
 

@@ -30,9 +30,13 @@
 **Aliases:**
 `gangattack`
 
-**Arguments:**
+**Overload 1:**
 
 `[member]` : *Whose chicken to ambush?*
+
+**Overload 0:**
+
+`[string]` : *Name of the chicken to fight.*
 
 **Examples:**
 
@@ -228,9 +232,13 @@
 **Aliases:**
 `f, duel, attack`
 
-**Arguments:**
+**Overload 1:**
 
 `[member]` : *Member whose chicken to fight.*
+
+**Overload 0:**
+
+`[string]` : *Name of the chicken to fight.*
 
 **Examples:**
 
@@ -261,7 +269,7 @@
 ### chicken heal
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!*
+*Heal your chicken (+100 HP). There is one medicine made each 5 minutes, so you need to grab it before the others do!*
 
 **Aliases:**
 `+hp, hp`
@@ -434,7 +442,7 @@
 **Examples:**
 
 ```
-!chicken upgrade
+!chicken upgrade 1 2 3
 ```
 </p></details>
 
@@ -475,7 +483,7 @@
 
 ```
 !chicken war Team1 Team2
-!chicken war "Team 1 name" "Team 2 name
+!chicken war "Team 1 name" "Team 2 name"
 ```
 </p></details>
 

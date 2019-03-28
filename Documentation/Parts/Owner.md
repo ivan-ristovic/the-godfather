@@ -359,7 +359,7 @@
 **Examples:**
 
 ```
-!o cmd + ```[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");```
+!o cmd + \`\`\`[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");\`\`\`
 ```
 </p></details>
 
@@ -417,7 +417,7 @@
 **Aliases:**
 `sql, dbq, q`
 
-**Arguments:**
+**Overload 0:**
 
 `[string...]` : *SQL Query.*
 
@@ -606,6 +606,25 @@
 
 ```
 !owner privilegedusers list
+```
+</p></details>
+
+---
+
+### owner restart
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Restart the bot.*
+
+**Owner-only.**
+
+**Aliases:**
+`reset`
+
+**Examples:**
+
+```
+!owner restart
 ```
 </p></details>
 
@@ -843,6 +862,25 @@
 
 ```
 !owner toggleignore
+```
+</p></details>
+
+---
+
+### owner update
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Update and restart the bot.*
+
+**Owner-only.**
+
+**Aliases:**
+`upd, u`
+
+**Examples:**
+
+```
+!owner update
 ```
 </p></details>
 

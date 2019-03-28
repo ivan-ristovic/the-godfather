@@ -5,6 +5,9 @@
 
 *Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).*
 
+**Requires permissions:**
+`Manage guild`
+
 **Aliases:**
 `ereact, er, emojir, emojireactions`
 
@@ -34,7 +37,7 @@
 
 *Add emoji reaction to guild reaction list.*
 
-**Requires user permissions:**
+**Requires permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -67,7 +70,7 @@
 
 *Add emoji reaction triggered by a regex to guild reaction list.*
 
-**Requires user permissions:**
+**Requires permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -100,7 +103,7 @@
 
 *Remove emoji reactions for given trigger words.*
 
-**Requires user permissions:**
+**Requires permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -135,6 +138,9 @@
 
 *Delete all reactions for the current guild.*
 
+**Requires permissions:**
+`Manage guild`
+
 **Requires user permissions:**
 `Administrator`
 
@@ -150,10 +156,37 @@
 
 ---
 
+### emojireaction find
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Show all emoji reactions that matches the specified trigger.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`f`
+
+**Arguments:**
+
+`[string...]` : *Specific trigger.*
+
+**Examples:**
+
+```
+!emojireactions find hello
+```
+</p></details>
+
+---
+
 ### emojireaction list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Show all emoji reactions for this guild.*
+
+**Requires permissions:**
+`Manage guild`
 
 **Aliases:**
 `ls, l, print`
@@ -171,6 +204,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `treact, tr, txtr, textreactions`
@@ -279,7 +315,7 @@
 *Delete all text reactions for the current guild.*
 
 **Requires user permissions:**
-`Administrator`
+`Administrator, Manage guild`
 
 **Aliases:**
 `clear, da, c, ca, cl, clearall, >>>`
@@ -293,10 +329,37 @@
 
 ---
 
+### textreaction find
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Show a text reactions that matches the specified trigger.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`f`
+
+**Arguments:**
+
+`[string...]` : *Specific trigger.*
+
+**Examples:**
+
+```
+!textreactions find hello
+```
+</p></details>
+
+---
+
 ### textreaction list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Show all text reactions for the guild.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `ls, l, print`

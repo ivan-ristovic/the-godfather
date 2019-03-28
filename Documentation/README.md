@@ -8,6 +8,7 @@
 * [Owner](Parts/Owner.md)
 * [Polls](Parts/Polls.md)
 * [Reactions](Parts/Reactions.md)
+* [Reminders](Parts/Reminders.md)
 * [Searches](Parts/Searches.md)
 * [SWAT](Parts/SWAT.md)
 * [Uncategorized](Parts/Uncategorized.md)

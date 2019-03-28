@@ -7,8 +7,11 @@
 
 *Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.*
 
+**Requires user permissions:**
+`Administrator`
+
 **Aliases:**
-`autoroles, automaticr, autorole, aroles, arole, arl, ar`
+`autoroles, automaticr, autorole, aroles, arole, arl, ar, aar`
 
 **Overload 0:**
 
@@ -98,6 +101,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all current automatic roles.*
+
+**Requires user permissions:**
+`Administrator`
 
 **Aliases:**
 `print, show, ls, l, p`
@@ -664,6 +670,93 @@
 
 ---
 
+## Group: commandrules
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manage command rules. You can specify a rule to block a command in a certain channel, or allow a command to be executed only in specific channel. Group call lists all commandrules for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`cmdrules, crules, cr`
+
+</p></details>
+
+---
+
+### commandrules allow
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Allow a command to be executed only in specific channel(s).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`a, only`
+
+**Arguments:**
+
+`[string]` : *Command to forbid.*
+
+`[channel...]` : *Channels where to forbid.*
+
+**Examples:**
+
+```
+!commandrules allow
+```
+</p></details>
+
+---
+
+### commandrules forbid
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Forbid a command to be executed in a specific channel(s) (or globally if no channel is provided).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`f, deny`
+
+**Arguments:**
+
+`[string]` : *Command to forbid.*
+
+`[channel...]` : *Channels where to forbid.*
+
+**Examples:**
+
+```
+!commandrules allow
+```
+</p></details>
+
+---
+
+### commandrules list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Show all command rules for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ls, l`
+
+**Examples:**
+
+```
+!commandrules list
+```
+</p></details>
+
+---
+
 ## Group: emoji
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -832,6 +925,9 @@
 
 *Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Filters are regular expressions.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `f, filters`
 
@@ -907,7 +1003,7 @@
 *Delete all filters for the current guild.*
 
 **Requires user permissions:**
-`Administrator`
+`Administrator, Manage guild`
 
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
@@ -926,6 +1022,9 @@
 
 *Show all filters for this guild.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `ls, l`
 
@@ -942,6 +1041,12 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Manage forbidden names for this guild. Group call shows all the forbidden nicknames for this guild.*
+
+**Requires permissions:**
+`Manage nicknames`
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `forbiddenname, forbiddennicknames, fn, disallowednames`
@@ -963,6 +1068,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add nicknames to the forbidden list (can be a regex).*
+
+**Requires permissions:**
+`Manage nicknames`
 
 **Requires user permissions:**
 `Manage guild`
@@ -988,20 +1096,28 @@
 
 *Removes forbidden name either by ID or plain text match.*
 
+**Requires permissions:**
+`Manage nicknames`
+
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
 `remove, rm, del, d, -, -=, >, >>`
 
-**Arguments:**
+**Overload 1:**
 
 `[int...]` : *Forbidden name IDs to remove.*
+
+**Overload 0:**
+
+`[string...]` : *Forbidden name IDs to remove.*
 
 **Examples:**
 
 ```
 !forbiddennames delete 3 4
+!forbiddennames delete SomeName
 ```
 </p></details>
 
@@ -1012,8 +1128,11 @@
 
 *Delete all forbidden names for the current guild.*
 
+**Requires permissions:**
+`Manage nicknames`
+
 **Requires user permissions:**
-`Administrator`
+`Administrator, Manage guild`
 
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
@@ -1031,6 +1150,12 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Show all forbidden names for this guild.*
+
+**Requires permissions:**
+`Manage nicknames`
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `ls, l`
@@ -1302,7 +1427,7 @@
 
 **Overload 2:**
 
-`[user...]` : *Users to exempt.*
+`[member...]` : *Members to exempt.*
 
 **Overload 1:**
 
@@ -1360,7 +1485,7 @@
 
 **Overload 2:**
 
-`[user...]` : *Users to unexempt.*
+`[member...]` : *Members to unexempt.*
 
 **Overload 1:**
 
@@ -1669,7 +1794,7 @@
 
 **Overload 2:**
 
-`[user...]` : *Users to exempt.*
+`[member...]` : *Members to exempt.*
 
 **Overload 1:**
 
@@ -1703,7 +1828,7 @@
 
 **Overload 2:**
 
-`[user...]` : *User to unexempt.*
+`[member...]` : *Members to unexempt.*
 
 **Overload 1:**
 
@@ -1806,7 +1931,7 @@
 
 **Overload 2:**
 
-`[user...]` : *Users to exempt.*
+`[member...]` : *Members to exempt.*
 
 **Overload 1:**
 
@@ -1864,7 +1989,7 @@
 
 **Overload 2:**
 
-`[user...]` : *Users to unexempt.*
+`[member...]` : *Members to unexempt.*
 
 **Overload 1:**
 
@@ -2412,6 +2537,33 @@
 
 ---
 
+### message flag
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Flags the message given by ID for deletion vote. If the message is not provided, flags the last sent message before command invocation.*
+
+**Requires bot permissions:**
+`Manage messages`
+
+**Aliases:**
+`f`
+
+**Arguments:**
+
+(optional) `[message]` : *Message.* (def: `None`)
+
+(optional) `[time span]` : *Voting timespan.* (def: `None`)
+
+**Examples:**
+
+```
+!message flag
+!message flag 408226948855234561
+```
+</p></details>
+
+---
+
 ### message listpinned
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -2804,6 +2956,9 @@
 
 *Self-assignable roles management. A member can grant himself a self-assignable roleusing ``giveme`` command. Group call lists all self-assignable roles for the guild. Group call with an arbitrary amount of roles will add those roles to the self-assignable roles list for this guild, effective immediately.*
 
+**Requires user permissions:**
+`Administrator`
+
 **Aliases:**
 `sar, selfroles, selfrole`
 
@@ -2859,7 +3014,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to delete.*
+`[role...]` : *Roles to remove.*
 
 **Examples:**
 
@@ -2895,6 +3050,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all current self-assignable roles.*
+
+**Requires user permissions:**
+`Administrator`
 
 **Aliases:**
 `print, show, ls, l, p`
@@ -3049,9 +3207,9 @@
 
 **Arguments:**
 
-`[member]` : *Member.*
-
 `[boolean]` : *Deafen?*
+
+`[member]` : *Member.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -3312,7 +3470,7 @@
 ### user tempban
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Temporarily ans the user from the server and then unbans him after given timespan.*
+*Temporarily bans the user from the server and then unbans him after given timespan.*
 
 **Requires permissions:**
 `Ban members`
@@ -3363,10 +3521,48 @@
 
 ---
 
+### user tempmute
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Temporarily mutes the user and unmutes him after the given timespan.*
+
+**Requires permissions:**
+`Manage roles`
+
+**Aliases:**
+`tm, tmute, tmpmute, tmpm`
+
+**Overload 1:**
+
+`[time span]` : *Time span.*
+
+`[member]` : *Member.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+`[member]` : *User.*
+
+`[time span]` : *Time span.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!user tempmute @Someone 3h4m
+!user tempmute 5d @Someone Spammer
+!user tempmute @Someone 5h30m30s Spammer
+```
+</p></details>
+
+---
+
 ### user unban
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Unbans the user ID from the server.*
+*Unbans the user from the server.*
 
 **Requires permissions:**
 `Ban members`
@@ -3374,7 +3570,13 @@
 **Aliases:**
 `ub`
 
-**Arguments:**
+**Overload 1:**
+
+`[user]` : *User.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
 
 `[unsigned long]` : *ID.*
 

@@ -40,7 +40,7 @@
 `Administrator`
 
 **Aliases:**
-`end`
+`end, cancel`
 
 **Examples:**
 

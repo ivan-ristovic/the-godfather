@@ -160,6 +160,14 @@
 **Aliases:**
 `give`
 
+**Overload 1:**
+
+`[role]` : *Role to grant.*
+
+**Overload 0:**
+
+`[string...]` : *Nickname to set.*
+
 </p></details>
 
 ---
@@ -565,7 +573,7 @@
 
 **Arguments:**
 
-`[int]` : *Rank.*
+`[short]` : *Rank.*
 
 `[string...]` : *Rank name.*
 
@@ -591,7 +599,7 @@
 
 **Arguments:**
 
-`[int]` : *Rank.*
+`[short]` : *Rank.*
 
 **Examples:**
 
@@ -628,6 +636,46 @@
 
 ```
 !rank top
+```
+</p></details>
+
+---
+
+## Group: revoke
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Requests to revoke a certain object from the sender (role for example).*
+
+**Aliases:**
+`take`
+
+**Arguments:**
+
+`[role]` : *Role to grant.*
+
+</p></details>
+
+---
+
+### revoke role
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Revokes from your role list a role from this guild's self-assignable roles list.*
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Aliases:**
+`rl, r`
+
+**Arguments:**
+
+`[role]` : *Role to revoke.*
+
+**Examples:**
+
+```
+!revoke role @Announcements
 ```
 </p></details>
 

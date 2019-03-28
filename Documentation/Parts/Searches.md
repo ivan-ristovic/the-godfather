@@ -637,6 +637,48 @@
 
 ---
 
+## Group: wikipedia
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.*
+
+**Aliases:**
+`wiki`
+
+**Arguments:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!wikipedia Linux
+```
+</p></details>
+
+---
+
+### wikipedia search
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Search Wikipedia for a given query.*
+
+**Aliases:**
+`s, find`
+
+**Arguments:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!wikipedia search Linux
+```
+</p></details>
+
+---
+
 ## Group: xkcd
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
