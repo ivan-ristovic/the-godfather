@@ -18,6 +18,7 @@ namespace TheGodfather.Common.Attributes
         Owner,
         Polls,
         Reactions,
+        Reminders,
         Searches,
         SWAT,
         Uncategorized

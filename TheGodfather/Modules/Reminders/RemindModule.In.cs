@@ -10,7 +10,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 #endregion
 
-namespace TheGodfather.Modules.Misc
+namespace TheGodfather.Modules.Reminders
 {
     public partial class RemindModule
     {

@@ -21,13 +21,13 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 #endregion
 
-namespace TheGodfather.Modules.Misc
+namespace TheGodfather.Modules.Reminders
 {
-    [Group("remind")]
+    [Group("remind"), Module(ModuleType.Reminders), NotBlocked]
     [Description("Manage reminders.")]
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
     [UsageExamples("!remind 1h Drink water!")]
-    [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class RemindModule : TheGodfatherModule
     {
 

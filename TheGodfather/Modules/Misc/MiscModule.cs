@@ -28,6 +28,7 @@ using TheGodfather.Modules.Misc.Common;
 
 namespace TheGodfather.Modules.Misc
 {
+    [Module(ModuleType.Miscellaneous)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public class MiscModule : TheGodfatherModule
     {

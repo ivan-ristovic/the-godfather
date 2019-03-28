@@ -113,11 +113,11 @@ namespace TheGodfather.Modules.Swat
                     servers = await db.SwatServers.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
-                "Available servers",
-                servers,
-                server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
-                this.ModuleColor
-            );
+                    "Available servers",
+                    servers,
+                    server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
+                    this.ModuleColor
+                );
             }
             #endregion
         }
