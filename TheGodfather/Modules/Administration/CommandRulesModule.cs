@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Administration
             this.ModuleColor = DiscordColor.Goldenrod;
         }
 
-        
+
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
@@ -46,10 +47,10 @@ namespace TheGodfather.Modules.Administration
         [Command("allow")]
         [Description("Allow a command to be executed only in specific channel(s).")]
         [Aliases("a", "only")]
-        [UsageExamples("!commandrules allow")]
+        [UsageExamples("!commandrules allow ")]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("Command to forbid.")] string command,
-                                    [Description("Channels where to forbid.")] params DiscordChannel[] channels)
+                                    [Description("Command to allow.")] string command,
+                                    [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
             => await this.AddRuleToDatabaseAsync(ctx, command, true, channels);
         #endregion
 
@@ -58,9 +59,9 @@ namespace TheGodfather.Modules.Administration
         [Description("Forbid a command to be executed in a specific channel(s) (or globally if no channel is provided).")]
         [Aliases("f", "deny")]
         [UsageExamples("!commandrules allow")]
-        public async Task ForbidAsync(CommandContext ctx, 
+        public async Task ForbidAsync(CommandContext ctx,
                                      [Description("Command to forbid.")] string command,
-                                     [Description("Channels where to forbid.")] params DiscordChannel[] channels)
+                                     [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)
             => await this.AddRuleToDatabaseAsync(ctx, command, false, channels);
         #endregion
 
@@ -98,17 +99,22 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Failed to find command {Formatter.InlineCode(command)}");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
+                db.CommandRules.RemoveRange(
+                    db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command.StartsWith(cmd.QualifiedName) && channels.Any(c => c.Id == cr.ChannelId))
+                );
+
                 if (channels is null || !channels.Any()) {
-                    db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command == cmd.QualifiedName));
+                    db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command.StartsWith(cmd.QualifiedName)));
                 } else {
-                    foreach (DiscordChannel channel in channels.Distinct()) {
-                        db.CommandRules.Add(new DatabaseCommandRule() {
+                    db.CommandRules.AddRange(channels
+                        .Distinct()
+                        .Select(c => new DatabaseCommandRule() {
                             Allowed = allow,
-                            ChannelId = channel.Id,
+                            ChannelId = c.Id,
                             Command = cmd.QualifiedName,
                             GuildId = ctx.Guild.Id
-                        });
-                    }
+                        })
+                    );
                 }
 
                 if (!allow || channels.Any()) {
@@ -118,8 +124,8 @@ namespace TheGodfather.Modules.Administration
                         Command = cmd.QualifiedName,
                         GuildId = ctx.Guild.Id
                     };
-                    var globalRule = await db.CommandRules.FindAsync(dbrule.GuildIdDb, dbrule.ChannelIdDb, dbrule.Command);
-                    if (globalRule is null) 
+                    DatabaseCommandRule globalRule = await db.CommandRules.FindAsync(dbrule.GuildIdDb, dbrule.ChannelIdDb, dbrule.Command);
+                    if (globalRule is null)
                         db.CommandRules.Add(dbrule);
                 }
 
