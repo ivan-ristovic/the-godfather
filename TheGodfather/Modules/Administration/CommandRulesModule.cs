@@ -45,22 +45,26 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_COMMANDRULES_ALLOW
         [Command("allow")]
-        [Description("Allow a command to be executed only in specific channel(s).")]
+        [Description("Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).")]
         [Aliases("a", "only")]
-        [UsageExamples("!commandrules allow ")]
+        [UsageExamples("!commandrules allow 8ball",
+                       "!commandrules allow 8ball #spam",
+                       "!commandrules allow \"g cfg\" #config")]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("Command to allow.")] string command,
+                                    [Description("Command or group to allow.")] string command,
                                     [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
             => await this.AddRuleToDatabaseAsync(ctx, command, true, channels);
         #endregion
 
         #region COMMAND_COMMANDRULES_FORBID
         [Command("forbid")]
-        [Description("Forbid a command to be executed in a specific channel(s) (or globally if no channel is provided).")]
+        [Description("Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).")]
         [Aliases("f", "deny")]
-        [UsageExamples("!commandrules allow")]
+        [UsageExamples("!commandrules forbid giphy",
+                       "!commandrules forbid game #general",
+                       "!commandrules forbid \"g cfg\" #general")]
         public async Task ForbidAsync(CommandContext ctx,
-                                     [Description("Command to forbid.")] string command,
+                                     [Description("Command or group to forbid.")] string command,
                                      [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)
             => await this.AddRuleToDatabaseAsync(ctx, command, false, channels);
         #endregion
