@@ -88,8 +88,8 @@ namespace TheGodfather.Common
         public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
         public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
         public static DiscordEmoji BoardPieceRedCircle => DiscordEmoji.FromUnicode("\U0001f534");
-        public static DiscordEmoji BoardPieceO => DiscordEmoji.FromUnicode("\u2b55");
-        public static DiscordEmoji BoardPieceX => DiscordEmoji.FromUnicode("\u274c");
+        public static DiscordEmoji O => DiscordEmoji.FromUnicode("\u2b55");
+        public static DiscordEmoji X => DiscordEmoji.FromUnicode("\u274c");
         public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
         public static DiscordEmoji BlackSquare => DiscordEmoji.FromUnicode("\u2b1b");
         public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");

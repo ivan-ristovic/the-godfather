@@ -116,7 +116,7 @@ namespace TheGodfather.Common
                             channel = await this.client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
                         await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
-                            Description = $"{StaticDiscordEmoji.BoardPieceX} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
+                            Description = $"{StaticDiscordEmoji.X} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
                             Color = DiscordColor.Red
                         });
                         break;

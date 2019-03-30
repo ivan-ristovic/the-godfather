@@ -24,7 +24,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> InformFailureAsync(this DiscordChannel channel, string message)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.BoardPieceX} {message}",
+                Description = $"{StaticDiscordEmoji.X} {message}",
                 Color = DiscordColor.IndianRed
             });
         }

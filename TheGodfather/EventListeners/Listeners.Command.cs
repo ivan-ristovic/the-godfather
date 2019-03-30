@@ -113,6 +113,9 @@ namespace TheGodfather.EventListeners
                             sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
                                 switch (attr) {
+                                    case NotBlockedAttribute _:
+                                        await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.X);
+                                        break;
                                     case RequirePermissionsAttribute perms:
                                         sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
                                         break;

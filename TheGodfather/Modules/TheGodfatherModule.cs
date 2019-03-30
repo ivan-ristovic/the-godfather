@@ -66,7 +66,7 @@ namespace TheGodfather.Modules
         protected Task InformFailureAsync(CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.BoardPieceX} {message}",
+                Description = $"{StaticDiscordEmoji.X} {message}",
                 Color = DiscordColor.IndianRed
             });
         }
