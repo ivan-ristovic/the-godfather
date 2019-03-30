@@ -45,8 +45,10 @@ namespace TheGodfather.EventListeners
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute)) {
+                await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.X);
                 return;
+            }
 
             shard.LogMany(LogLevel.Info,
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}",
@@ -113,9 +115,6 @@ namespace TheGodfather.EventListeners
                             sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
                                 switch (attr) {
-                                    case NotBlockedAttribute _:
-                                        await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.X);
-                                        break;
                                     case RequirePermissionsAttribute perms:
                                         sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
                                         break;
