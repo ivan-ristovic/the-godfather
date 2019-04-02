@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [UsageExamples("!channel", 
                    "!channel #general")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class ChannelModule : TheGodfatherModule
+    public partial class ChannelModule : TheGodfatherModule
     {
         private static ImmutableArray<int> _ratelimitValues = new int[] { 0, 5, 10, 15, 30, 45, 60, 75, 90, 120 }.ToImmutableArray();
 
