@@ -11,11 +11,12 @@ namespace TheGodfather.Extensions
     {
         public static Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
         {
-            DiscordMember member = client.Guilds.Values
-                .SelectMany(e => e.Members)
-                .FirstOrDefault(e => e.Id == uid);
+            foreach ((ulong gid, DiscordGuild guild) in client.Guilds) {
+                if (guild.Members.TryGetValue(uid, out DiscordMember member))
+                    return member?.CreateDmChannelAsync() ?? Task.FromResult<DiscordDmChannel>(null);
+            }
 
-            return member?.CreateDmChannelAsync() ?? Task.FromResult<DiscordDmChannel>(null);
+            return Task.FromResult<DiscordDmChannel>(null);
         }
     }
 }

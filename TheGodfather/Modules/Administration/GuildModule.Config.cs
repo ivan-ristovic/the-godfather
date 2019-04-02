@@ -367,7 +367,7 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordRole muteRole = guild.GetRole(gcfg.MuteRoleId);
                 if (muteRole is null)
-                    muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+                    muteRole = guild.Roles.Values.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
                 if (!(muteRole is null))
                     emb.AddField("Mute role", muteRole.Name, inline: true);
 
@@ -409,7 +409,7 @@ namespace TheGodfather.Modules.Administration
 
             private async Task<DiscordChannel> ChooseSetupChannelAsync(CommandContext ctx)
             {
-                DiscordChannel channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
+                DiscordChannel channel = ctx.Guild.Channels.Values.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
 
                 if (channel is null) {
                     if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
@@ -632,13 +632,13 @@ namespace TheGodfather.Modules.Administration
                     await channel.EmbedAsync("Which role will it be?");
                     MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id &&
-                             (m.MentionedRoles.Count == 1 || ctx.Guild.Roles.Any(r => r.Name.Equals(m.Content, StringComparison.InvariantCultureIgnoreCase)))
+                             (m.MentionedRoles.Count == 1 || ctx.Guild.Roles.Values.Any(r => r.Name.Equals(m.Content, StringComparison.InvariantCultureIgnoreCase)))
                     );
                     if (!(mctx is null)) {
                         if (mctx.MentionedRoles.Any())
                             muteRole = mctx.MentionedRoles.First();
                         else
-                            muteRole = ctx.Guild.Roles.FirstOrDefault(r => r.Name.Equals(mctx.Message.Content, StringComparison.InvariantCultureIgnoreCase));
+                            muteRole = ctx.Guild.Roles.Values.FirstOrDefault(r => r.Name.Equals(mctx.Message.Content, StringComparison.InvariantCultureIgnoreCase));
                     }
                 }
 

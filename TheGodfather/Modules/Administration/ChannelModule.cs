@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
                 if (channel.Type == ChannelType.Text && name.Contains(' '))
                     throw new CommandFailedException("Text channel name cannot contain spaces!");
 
-                if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
+                if (ctx.Guild.Channels.Values.Any(chn => chn.Name == name.ToLowerInvariant())) {
                     if (!await ctx.WaitForBoolReplyAsync("Another channel with that name already exists. Continue?"))
                         return;
                 }
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length > 100)
                 throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
+            if (ctx.Guild.Channels.Values.Any(chn => chn.Name == name.ToLowerInvariant())) {
                 if (!await ctx.WaitForBoolReplyAsync("A category with that name already exists. Continue?"))
                     return;
             }
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Administration
             if (!(parent is null) && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
             
-            if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
+            if (ctx.Guild.Channels.Values.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
                 if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
                     return;
             }
@@ -170,7 +170,7 @@ namespace TheGodfather.Modules.Administration
             if (!(parent is null) && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
             
-            if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
+            if (ctx.Guild.Channels.Values.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
                 if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
                     return;
             }

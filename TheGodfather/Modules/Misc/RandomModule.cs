@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc
         public Task RaffleAsync(CommandContext ctx,
                                [Description("Role.")] DiscordRole role = null)
         {
-            IEnumerable<DiscordMember> online = ctx.Guild.Members
+            IEnumerable<DiscordMember> online = ctx.Guild.Members.Values
                 .Where(m => !(m.Presence is null) && m.Presence.Status != UserStatus.Offline);
 
             if (!(role is null))
