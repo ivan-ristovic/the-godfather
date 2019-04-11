@@ -34,18 +34,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00585" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00585" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00585" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00585" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00585" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00585" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00586" />
     <PackageReference Include="GiphyDotNet" Version="1.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.38.0.1488" />
     <PackageReference Include="Humanizer.Core" Version="2.6.2" />
     <PackageReference Include="Imgur.API" Version="5.0.0-beta1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0-beta4-final" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0-beta4-final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.0-preview.18572.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="2.2.0" />
