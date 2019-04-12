@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -520,6 +520,37 @@ namespace TheGodfather.Modules.Owner
                 else
                     await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Successfully left all given guilds!", important: false);
             }
+        }
+        #endregion
+
+        #region COMMAND_LOG
+        [Command("log"), NotBlocked, Priority(1)]
+        [Description("Upload the bot log file or add a remark to it.")]
+        [Aliases("getlog", "remark", "rem")]
+        [UsageExamples("!owner log",
+                       "!owner log debug Hello world!")]
+        [RequireOwner]
+        public async Task LogAsync(CommandContext ctx, 
+                                  [Description("Bypass current configuration and search file anyway?")] bool bypassConfig = false)
+        {
+            if (!bypassConfig && !this.Shared.BotConfiguration.LogToFile)
+                throw new CommandFailedException("Logs aren't dumped to any files.");
+            var fi = new FileInfo(this.Shared.BotConfiguration.LogPath);
+            if (fi.Exists && fi.Length > 8 * 1024)
+                throw new CommandFailedException("The file is too big to upload!");
+            using (var fs = new FileStream(this.Shared.BotConfiguration.LogPath, FileMode.Open))
+                await ctx.RespondWithFileAsync(fs);
+        }
+
+        [Command("log"), NotBlocked, Priority(0)]
+        public Task LogAsync(CommandContext ctx,
+                            [Description("Log level.")] string level,
+                            [RemainingText, Description("Remark.")] string text)
+        {
+            if (!Enum.TryParse(level.Titleize(), out LogLevel logLevel))
+                throw new CommandFailedException($"Invalid log level!");
+            this.Shared.LogProvider.Log(logLevel, text);
+            return this.InformAsync(ctx, "Done!", important: false);
         }
         #endregion
 
