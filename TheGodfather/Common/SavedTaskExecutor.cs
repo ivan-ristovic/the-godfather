@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,8 +54,8 @@ namespace TheGodfather.Common
 
         public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
         {
-            if (shared.RemindExecuters.TryGetValue(uid, out ConcurrentHashSet<SavedTaskExecutor> texecs))
-                return texecs.SingleOrDefault(t => t.Id == id)?.UnscheduleAsync() ?? Task.CompletedTask;
+            if (shared.RemindExecuters.TryGetValue(uid, out ConcurrentDictionary<int, SavedTaskExecutor> texecs))
+                return texecs.TryGetValue(id, out SavedTaskExecutor texec) ? texec.UnscheduleAsync() : Task.CompletedTask;
             else
                 return Task.CompletedTask;
         }
@@ -78,14 +79,11 @@ namespace TheGodfather.Common
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
                     this.timer = new Timer(this.SendMessageCallback, this.TaskInfo, smti.TimeUntilExecution, smti.RepeatingInterval);
-                    this.shared.RemindExecuters.AddOrUpdate(
-                        smti.InitiatorId,
-                        new ConcurrentHashSet<SavedTaskExecutor>() { this },
-                        (k, v) => {
-                            v.Add(this);
-                            return v;
-                        }
-                    );
+                    if (!this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out ConcurrentDictionary<int, SavedTaskExecutor> texecs))
+                        texecs = new ConcurrentDictionary<int, SavedTaskExecutor>();
+                    if (!texecs.TryAdd(this.Id, this))
+                        throw new ConcurrentOperationException("Failed to add reminder!");
+                    this.shared.RemindExecuters.AddOrUpdate(smti.InitiatorId, texecs, (k, v) => texecs);
                     break;
                 case UnbanTaskInfo _:
                     this.timer = new Timer(this.UnbanUserCallback, this.TaskInfo, this.TaskInfo.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
@@ -147,15 +145,19 @@ namespace TheGodfather.Common
 
             switch (this.TaskInfo) {
                 case SendMessageTaskInfo smti:
-                    if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out ConcurrentHashSet<SavedTaskExecutor> texecs)) {
-                        texecs.TryRemove(this);
+                    Exception ex = null;
+                    if (this.shared.RemindExecuters.TryGetValue(smti.InitiatorId, out ConcurrentDictionary<int, SavedTaskExecutor> texecs)) {
+                        if (!texecs.TryRemove(this.Id, out _))
+                            ex = new ConcurrentOperationException("Failed to remove reminder from the dictionary!");
                         if (texecs.Count == 0)
-                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out ConcurrentHashSet<SavedTaskExecutor> _);
+                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
                     }
                     using (DatabaseContext db = this.dbb.CreateContext()) {
                         db.Reminders.Remove(new DatabaseReminder() { Id = this.Id });
                         await db.SaveChangesAsync();
                     }
+                    if (!(ex is null))
+                        throw ex;
                     break;
                 case UnbanTaskInfo _:
                 case UnmuteTaskInfo _:

@@ -107,11 +107,10 @@ namespace TheGodfather.Modules.Reminders
 
             var eb = new StringBuilder();
             foreach (int id in ids) {
-                if (!texecs.Any(texec => texec.Id == id)) {
+                if (!texecs.TryGetValue(id, out _)) {
                     eb.AppendLine($"Reminder with ID {Formatter.Bold(id.ToString())} does not exist (or is not scheduled by you)!");
                     continue;
                 }
-
                 await SavedTaskExecutor.UnscheduleAsync(this.Shared, ctx.User.Id, id);
             }
 
@@ -129,13 +128,14 @@ namespace TheGodfather.Modules.Reminders
         [UsageExamples("!remind list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Values.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
                 throw new CommandFailedException("You haven't issued any reminders.");
 
             return ctx.SendCollectionInPagesAsync(
                 "Your reminders:",
-                texecs.Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
-                      .OrderBy(tup => tup.TaskInfo.ExecutionTime),
+                texecs.Values
+                    .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
+                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
                     if (tinfo.IsRepeating)
