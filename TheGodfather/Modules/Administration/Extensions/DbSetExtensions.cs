@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿#region USING_DIRECTIVES
+using DSharpPlus.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
+#endregion
 
 namespace TheGodfather.Modules.Administration.Extensions
 {

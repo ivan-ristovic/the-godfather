@@ -97,6 +97,7 @@ namespace TheGodfather.Modules.Owner
                 using (Stream stream = await _http.GetStreamAsync(url))
                 using (var ms = new MemoryStream()) {
                     await stream.CopyToAsync(ms);
+                    ms.Seek(0, SeekOrigin.Begin);
                     await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
                 }
             } catch (WebException e) {
