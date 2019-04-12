@@ -55,8 +55,8 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
-                if (amount < 5 || amount > 50)
-                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [5, 50]!");
+                if (amount < 1 || amount > 20)
+                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [1, 20]!");
 
                 QuestionDifficulty difficulty = QuestionDifficulty.Easy;
                 switch (diff.ToLowerInvariant()) {
@@ -99,29 +99,25 @@ namespace TheGodfather.Modules.Games
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
                                                [Description("Amount of questions.")] int amount = 10)
             {
-                int? id = await QuizService.GetCategoryIdAsync(category);
-                if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!");
-
-                await this.ExecuteGroupAsync(ctx, id.Value, amount, diff);
+                try {
+                    int? id = await QuizService.GetCategoryIdAsync(category);
+                    if (!id.HasValue)
+                        throw new CommandFailedException("Category with that name doesn't exist!");
+                    await this.ExecuteGroupAsync(ctx, id.Value, amount, diff);
+                } catch (ArgumentException e) {
+                    throw new CommandFailedException("Fetching category failed!", e);
+                }
             }
 
             [GroupCommand, Priority(1)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("Quiz category.")] string category)
-            {
-                int? id = await QuizService.GetCategoryIdAsync(category);
-                if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!");
-
-                await this.ExecuteGroupAsync(ctx, id.Value, 10);
-            }
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [RemainingText, Description("Quiz category.")] string category)
+                => string.IsNullOrWhiteSpace(category) ? this.ExecuteGroupAsync(ctx) : this.ExecuteGroupAsync(ctx, category, amount: 10);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 IReadOnlyList<QuizCategory> categories = await QuizService.GetCategoriesAsync();
-
                 await this.InformAsync(ctx,
                     StaticDiscordEmoji.Information,
                     $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
