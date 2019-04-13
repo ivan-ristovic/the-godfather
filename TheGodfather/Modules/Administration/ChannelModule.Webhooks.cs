@@ -139,13 +139,13 @@ namespace TheGodfather.Modules.Administration
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
             {
-                bool displayToken = await ctx.WaitForBoolReplyAsync("Do you wish to display the tokens?", reply: false);
-
                 channel = channel ?? ctx.Channel;
                 IReadOnlyList<DiscordWebhook> whs = await channel.GetWebhooksAsync();
 
                 if (!whs.Any())
                     throw new CommandFailedException("There are no webhooks in this channel.");
+
+                bool displayToken = await ctx.WaitForBoolReplyAsync("Do you wish to display the tokens?", reply: false);
 
                 await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, whs.Select(wh => new Page() {
                     Embed = new DiscordEmbedBuilder() {

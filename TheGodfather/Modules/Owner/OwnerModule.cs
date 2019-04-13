@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Owner
         public async Task AnnounceAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(Formatter.Strip(message))}"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(FormatterExtensions.StripMarkdown(message))}"))
                 return;
 
             var emb = new DiscordEmbedBuilder() {
@@ -591,7 +591,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("disable", "poweroff", "exit", "quit")]
         [UsageExamples("!owner shutdown")]
         [RequirePrivilegedUser]
-        public Task ExitAsync(CommandContext ctx,
+        public Task ExitAsync(CommandContext _,
                              [Description("Time until shutdown.")] TimeSpan timespan)
         {
             this.Shared.MainLoopCts.CancelAfter(timespan);
@@ -599,7 +599,7 @@ namespace TheGodfather.Modules.Owner
         }
 
         [Command("shutdown"), Priority(0)]
-        public Task ExitAsync(CommandContext ctx)
+        public Task ExitAsync(CommandContext _)
         {
             this.Shared.MainLoopCts.Cancel();
             return Task.CompletedTask;

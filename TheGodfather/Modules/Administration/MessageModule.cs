@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
 
             ReactionCollectionContext rctx = await msg.MakePoll(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, timespan ?? TimeSpan.FromMinutes(1));
             if (rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
-                string sanitized = FormatterExtensions.Spoiler(Formatter.Strip(msg.Content));
+                string sanitized = FormatterExtensions.Spoiler(FormatterExtensions.StripMarkdown(msg.Content));
                 await msg.DeleteAsync();
                 await ctx.RespondAsync($"{msg.Author.Mention} said: {sanitized}");
             } else {

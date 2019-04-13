@@ -106,7 +106,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             await e.Message.DeleteAsync("_gf: Filter hit");
-            await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)))}");
+            await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(FormatterExtensions.StripMarkdown(e.Message.Content)))}");
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -200,7 +200,7 @@ namespace TheGodfather.EventListeners
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
-                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : Formatter.Strip(e.Message.Content.Truncate(1000)))}");
+                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : FormatterExtensions.StripMarkdown(e.Message.Content.Truncate(1000)))}");
                 if (shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.WithDescription(Formatter.Italic("Message contained a filter."));
             }
@@ -229,7 +229,7 @@ namespace TheGodfather.EventListeners
             if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update");
-                    await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)))}");
+                    await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(FormatterExtensions.StripMarkdown(e.Message.Content)))}");
                 } catch {
 
                 }
@@ -261,8 +261,8 @@ namespace TheGodfather.EventListeners
             emb.WithDescription(Formatter.MaskedUrl("Jump to message", e.Message.JumpLink));
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
-            emb.AddField("Before update", $"Created {ctime}\n{bextra}\nContent:{Formatter.BlockCode(Formatter.Strip(pcontent))}");
-            emb.AddField("After update", $"Edited {etime}\n{aextra}\nContent:{Formatter.BlockCode(Formatter.Strip(acontent))}");
+            emb.AddField("Before update", $"Created {ctime}\n{bextra}\nContent:{Formatter.BlockCode(FormatterExtensions.StripMarkdown(pcontent))}");
+            emb.AddField("After update", $"Edited {etime}\n{aextra}\nContent:{Formatter.BlockCode(FormatterExtensions.StripMarkdown(acontent))}");
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
