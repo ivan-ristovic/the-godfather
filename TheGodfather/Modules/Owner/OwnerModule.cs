@@ -536,7 +536,7 @@ namespace TheGodfather.Modules.Owner
             if (!bypassConfig && !this.Shared.BotConfiguration.LogToFile)
                 throw new CommandFailedException("Logs aren't dumped to any files.");
             var fi = new FileInfo(this.Shared.BotConfiguration.LogPath);
-            if (fi.Exists && fi.Length > 8 * 1024)
+            if (fi.Exists && fi.Length > 8 * 1024 * 1024)
                 throw new CommandFailedException("The file is too big to upload!");
             using (var fs = new FileStream(this.Shared.BotConfiguration.LogPath, FileMode.Open))
                 await ctx.RespondWithFileAsync(fs);

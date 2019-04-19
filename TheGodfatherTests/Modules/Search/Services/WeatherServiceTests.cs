@@ -62,7 +62,7 @@ namespace TheGodfatherTests.Modules.Search.Services
             if (this.weather.IsDisabled())
                 Assert.Inconclusive("Service has not been properly initialized.");
 
-            IReadOnlyList<DiscordEmbed> results;
+            IReadOnlyList<DiscordEmbedBuilder> results;
 
             results = await this.weather.GetEmbeddedWeatherForecastAsync("belgrade");
             Assert.IsNotNull(results);
