@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             quote = this.PrepareText(quote);
-            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 msg => {
                     if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
                         return false;

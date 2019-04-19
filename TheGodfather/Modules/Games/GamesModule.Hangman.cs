@@ -48,15 +48,15 @@ namespace TheGodfather.Modules.Games
 
                 await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
-                MessageContext mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(dm, ctx.Channel.Id, ctx.User.Id, this.Shared);
-                if (mctx is null) {
+                InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(dm, ctx.Channel.Id, ctx.User.Id, this.Shared);
+                if (mctx.TimedOut) {
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {
-                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Message.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
+                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Result.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
                 }
 
-                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
+                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Result.Content, mctx.Result.Author);
                 this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync();

@@ -82,10 +82,10 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Action category", entry.ActionCategory.ToString(), inline: true);
                 emb.AddField("Action type", entry.ActionType.ToString(), inline: true);
                 emb.AddField("Reason", entry.Reason ?? "No reason provided");
-                return new Page() { Embed = emb.Build()};
+                return new Page(embed: emb);
             });
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
         }
         #endregion
 

@@ -1,7 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.EventHandling;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -31,7 +32,7 @@ namespace TheGodfather.Modules.Polls.Common
 
 
         private DiscordMessage msgHandle;
-        private ReactionCollectionContext rctx;
+        private IReadOnlyCollection<PollEmoji> results;
 
 
         public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
@@ -48,7 +49,7 @@ namespace TheGodfather.Modules.Polls.Common
 
             this.msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
-            this.rctx = await this.interactivity.CreatePollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count), timespan);
+            this.results = await this.interactivity.DoPollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count).ToArray(), PollBehaviour.Default, timespan);
 
             await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
 
@@ -86,11 +87,12 @@ namespace TheGodfather.Modules.Polls.Common
 
             emb.WithFooter($"Poll by {this.sender.DisplayName}", this.sender.AvatarUrl);
 
-            if (!this.rctx.Reactions.Any())
+            if (!this.results.Any())
                 return emb.WithDescription("Nobody voted!").Build();
 
-            foreach ((DiscordEmoji emoji, int votes) in this.rctx.Reactions) 
-                emb.AddField(this.Options[_emojiid[emoji.Name]], votes.ToString(), inline: true);
+            foreach (PollEmoji pe in results) 
+                emb.AddField(this.Options[_emojiid[pe.Emoji.Name]], pe.Voted.Count.ToString(), inline: true);
+
             return emb.Build();
         }
     }

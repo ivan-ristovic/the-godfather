@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             int field = 0;
             bool player1plays = (this.move % 2 == 0);
-            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 xm => {
                     if (xm.Channel.Id != this.Channel.Id) return false;
                     if (player1plays && (xm.Author.Id != this.player1.Id)) return false;
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games.Common
                 },
                 this.moveTime
             );
-            if (mctx is null) {
+            if (mctx.TimedOut) {
                 this.IsTimeoutReached = true;
                 this.Winner = player1plays ? this.player2 : this.player1;
                 return;
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games.Common
                 this.move++;
                 if (!this.deleteErrored) {
                     try {
-                        await mctx.Message.DeleteAsync();
+                        await mctx.Result.DeleteAsync();
                     } catch {
                         await this.Channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts and keep the board at the bottom.");
                         this.deleteErrored = true;

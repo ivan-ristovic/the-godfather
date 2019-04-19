@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task AdvanceAsync()
         {
-            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(xm => {
+            InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(xm => {
                 if (xm.Channel.Id != this.Channel.Id || xm.Author.IsBot) return false;
                 if (xm.Author.Id == this.initiator.Id) return false;
                 if (xm.Content.ToLowerInvariant() == this.word) return true;
@@ -69,24 +69,24 @@ namespace TheGodfather.Modules.Games
                 if (!this.guesses.Contains(char.ToLowerInvariant(xm.Content[0]))) return true;
                 return false;
             });
-            if (mctx is null) {
+            if (mctx.TimedOut) {
                 this.gameOver = true;
                 this.IsTimeoutReached = true;
                 return;
             }
 
-            if (mctx.Message.Content.ToLowerInvariant() == this.word) {
-                this.Winner = mctx.User;
+            if (mctx.Result.Content.ToLowerInvariant() == this.word) {
+                this.Winner = mctx.Result.Author;
                 this.gameOver = true;
             }
 
-            char guess = char.ToLowerInvariant(mctx.Message.Content[0]);
+            char guess = char.ToLowerInvariant(mctx.Result.Content[0]);
             if (this.word.IndexOf(guess) != -1) {
                 for (int i = 0; i < this.word.Length; i++)
                     if (this.word[i] == guess)
                         this.hidden[i] = char.ToUpper(this.word[i]);
                 if (Array.IndexOf(this.hidden, '?') == -1) {
-                    this.Winner = mctx.User;
+                    this.Winner = mctx.Result.Author;
                     this.gameOver = true;
                 }
             } else {

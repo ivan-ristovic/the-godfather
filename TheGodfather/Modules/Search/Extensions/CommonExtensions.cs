@@ -2,11 +2,14 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using Humanizer;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using TheGodfather.Common;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
@@ -19,7 +22,7 @@ namespace TheGodfather.Modules.Search.Extensions
         private static readonly string _unknown = Formatter.Italic("Unknown");
 
 
-        public static DiscordEmbed ToDiscordEmbed(this IpInfo info, DiscordColor? color = null)
+        public static DiscordEmbedBuilder ToDiscordEmbed(this IpInfo info, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"IP geolocation info for {info.Ip}",
@@ -36,7 +39,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
             emb.WithFooter("Powered by ip-api.");
 
-            return emb.Build();
+            return emb;
         }
 
         public static IReadOnlyList<Page> ToDiscordPages(this GoodreadsSearchInfo info)
@@ -59,13 +62,13 @@ namespace TheGodfather.Modules.Search.Extensions
 
                 emb.WithFooter($"Fethed results using Goodreads API in {info.QueryTime}s");
 
-                pages.Add(new Page() { Embed = emb.Build() });
+                pages.Add(new Page(embed: emb));
             }
 
             return pages.AsReadOnly();
         }
 
-        public static DiscordEmbed ToDiscordEmbed(this MovieInfo info, DiscordColor? color = null)
+        public static DiscordEmbedBuilder ToDiscordEmbed(this MovieInfo info, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = info.Title,
@@ -103,17 +106,13 @@ namespace TheGodfather.Modules.Search.Extensions
 
             emb.WithFooter("Powered by OMDb.");
 
-            return emb.Build();
+            return emb;
         }
 
         public static Page ToDiscordPage(this MovieInfo info, DiscordColor? color = null)
-        {
-            return new Page() {
-                Embed = info.ToDiscordEmbed(color)
-            };
-        }
+            => new Page(embed: info.ToDiscordEmbed(color));
 
-        public static DiscordEmbed ToDiscordEmbed(this Quote quote, string altTitle = null)
+        public static DiscordEmbedBuilder ToDiscordEmbed(this Quote quote, string altTitle = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = string.IsNullOrWhiteSpace(altTitle) ? "Quote" : altTitle,
@@ -126,7 +125,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
             emb.WithFooter("Powered by theysaidso.com");
 
-            return emb.Build();
+            return emb;
         }
 
         public static string ToInfoString(this UrbanDictList res)
@@ -141,7 +140,7 @@ namespace TheGodfather.Modules.Search.Extensions
             return sb.ToString();
         }
 
-        public static DiscordEmbed ToDiscordEmbed(this WeatherData data, DiscordColor? color = null)
+        public static DiscordEmbedBuilder ToDiscordEmbed(this WeatherData data, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder();
 
@@ -160,7 +159,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
             emb.WithFooter("Powered by openweathermap.org");
 
-            return emb.Build();
+            return emb;
         }
 
         public static DiscordEmbedBuilder AddToDiscordEmbed(this PartialWeatherData data, DiscordEmbedBuilder emb)
@@ -175,9 +174,9 @@ namespace TheGodfather.Modules.Search.Extensions
             return emb;
         }
 
-        public static IReadOnlyList<DiscordEmbed> ToDiscordEmbeds(this Forecast forecast, int amount = 7)
+        public static IReadOnlyList<DiscordEmbedBuilder> ToDiscordEmbedBuilders(this Forecast forecast, int amount = 7)
         {
-            var embeds = new List<DiscordEmbed>();
+            var embeds = new List<DiscordEmbedBuilder>();
 
             for (int i = 0; i < forecast.WeatherDataList.Count && i < amount; i++) {
                 var data = forecast.WeatherDataList[i];
@@ -192,13 +191,13 @@ namespace TheGodfather.Modules.Search.Extensions
                 emb.AddField($"{StaticDiscordEmoji.Ruler} Coordinates", $"{forecast.City.Coord.Lat}, {forecast.City.Coord.Lon}", inline: true);
 
                 emb = data.AddToDiscordEmbed(emb);
-                embeds.Add(emb.Build());
+                embeds.Add(emb);
             }
 
             return embeds.AsReadOnly();
         }
 
-        public static DiscordEmbed ToDiscordEmbed(this XkcdComic comic, DiscordColor? color = null)
+        public static DiscordEmbedBuilder ToDiscordEmbedBuilder(this XkcdComic comic, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"xkcd #{comic.Id} : {comic.Title}",
@@ -211,7 +210,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
             emb.WithFooter($"Publish date: {comic.Month}/{comic.Year}");
 
-            return emb.Build();
+            return emb;
         }
     }
 }

@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Games.Common
 
         private async Task WaitForPotionUseAsync()
         {
-            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 msg => {
                     if (msg.ChannelId != this.Channel.Id) return false;
                     if (msg.Content.ToLowerInvariant() != "hp") return false;
@@ -100,8 +100,8 @@ namespace TheGodfather.Modules.Games.Common
                 },
                 TimeSpan.FromSeconds(2)
             );
-            if (!(mctx is null)) {
-                if (mctx.User.Id == this.player1.Id) {
+            if (!mctx.TimedOut) {
+                if (mctx.Result.Author.Id == this.player1.Id) {
                     this.hp1 = (this.hp1 + 1 > 5) ? 5 : this.hp1 + 1;
                     this.potionUsed1 = true;
                     this.eb.AppendLine($"{this.player1.Username} {StaticDiscordEmoji.Syringe}");
@@ -115,14 +115,14 @@ namespace TheGodfather.Modules.Games.Common
 
         private async Task<string> WaitForFinishingMoveAsync()
         {
-            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 m => m.ChannelId == this.Channel.Id && m.Author.Id == this.Winner.Id
             );
 
-            if (string.IsNullOrWhiteSpace(mctx?.Message?.Content))
+            if (mctx.TimedOut || string.IsNullOrWhiteSpace(mctx.Result.Content))
                 return null;
 
-            return mctx.Message.Content.Trim();
+            return mctx.Result.Content.Trim();
         }
     }
 }

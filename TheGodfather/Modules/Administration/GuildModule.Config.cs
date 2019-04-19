@@ -70,13 +70,13 @@ namespace TheGodfather.Modules.Administration
                 await this.SetupPrefixAsync(gcfg, ctx, channel);
                 await this.SetupCommandSuggestionsAsync(gcfg, ctx, channel);
                 await this.SetupLoggingAsync(gcfg, ctx, channel);
-                MemberUpdateMessagesSettings msgSettings = await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
-                DiscordRole muteRole = await this.SetupMuteRoleAsync(gcfg, ctx, channel);
+                MemberUpdateMessagesSettings msgSettings = await this.GetMemberUpdateMessagesAsync(ctx, channel);
+                DiscordRole muteRole = await this.SetupMuteRoleAsync(ctx, channel);
                 await this.SetupLinkfilterAsync(gcfg, ctx, channel);
                 await this.SetupAntispamAsync(gcfg, ctx, channel);
                 await this.SetupRatelimitAsync(gcfg, ctx, channel);
-                AntifloodSettings antifloodSettings = await this.SetupAntifloodAsync(gcfg, ctx, channel);
-                AntiInstantLeaveSettings antiInstantLeaveSettings = await this.SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
+                AntifloodSettings antifloodSettings = await this.GetAntifloodAsync(ctx, channel);
+                AntiInstantLeaveSettings antiInstantLeaveSettings = await this.GetAntiInstantLeaveAsync(ctx, channel);
                 await this.SetupCurrencyAsync(gcfg, ctx, channel);
 
                 await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
@@ -527,8 +527,8 @@ namespace TheGodfather.Modules.Administration
             {
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix?", reply: false)) {
                     await channel.EmbedAsync("What will the new prefix be?");
-                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
-                    gcfg.Prefix = mctx?.Message.Content;
+                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.Author == ctx.User);
+                    gcfg.Prefix = mctx.TimedOut ? null : mctx.Result.Content;
                 }
             }
 
@@ -550,16 +550,16 @@ namespace TheGodfather.Modules.Administration
 
                 if (await channel.WaitForBoolResponseAsync(ctx, logQuery, reply: false)) {
                     await channel.EmbedAsync(chnQuery);
-                    MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.ChannelId == channel.Id &&
                              m.Author.Id == ctx.User.Id &&
                              m.MentionedChannels.Count == 1
                     );
-                    gcfg.LogChannelId = mctx.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                    gcfg.LogChannelId = mctx.TimedOut ? 0 : (mctx.Result.MentionedChannels.FirstOrDefault()?.Id ?? 0);
                 }
             }
 
-            private async Task<MemberUpdateMessagesSettings> SetupMemberUpdateMessagesAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            private async Task<MemberUpdateMessagesSettings> GetMemberUpdateMessagesAsync(CommandContext ctx, DiscordChannel channel)
             {
                 var ninfo = new MemberUpdateMessagesSettings();
                 await GetChannelIdAndMessageAsync(ninfo, true);
@@ -577,13 +577,13 @@ namespace TheGodfather.Modules.Administration
                                 " messages. Please reply with a channel mention, for example: " +
                                 $"{Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}";
                         await channel.EmbedAsync(query);
-                        MessageContext mctx = await interactivity.WaitForMessageAsync(
+                        InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
                             m => m.ChannelId == channel.Id &&
                                  m.Author.Id == ctx.User.Id &&
                                  m.MentionedChannels.Count == 1
                         );
 
-                        ulong cid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                        ulong cid = mctx.TimedOut ? 0 : (mctx.Result.MentionedChannels.FirstOrDefault()?.Id ?? 0);
                         if (info.WelcomeChannelId != 0 && ctx.Guild.GetChannel(info.WelcomeChannelId).Type != ChannelType.Text) {
                             await channel.InformFailureAsync("You need to provide a text channel!");
                             cid = 0;
@@ -597,8 +597,8 @@ namespace TheGodfather.Modules.Administration
                                     $"wildcard {Formatter.Bold("%user%")} and I will replace it with the " +
                                     "member mention.";
                             await channel.EmbedAsync(query);
-                            mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
-                            info.WelcomeMessage = mctx?.Message?.Content;
+                            mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.Author.Id == ctx.User.Id && m.Channel.Id == channel.Id);
+                            info.WelcomeMessage = mctx.TimedOut ? null : mctx.Result?.Content;
                         }
 
                         if (welcome) {
@@ -624,21 +624,21 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            private async Task<DiscordRole> SetupMuteRoleAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            private async Task<DiscordRole> SetupMuteRoleAsync(CommandContext ctx, DiscordChannel channel)
             {
                 DiscordRole muteRole = null;
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
                     await channel.EmbedAsync("Which role will it be?");
-                    MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id &&
                              (m.MentionedRoles.Count == 1 || ctx.Guild.Roles.Values.Any(r => r.Name.Equals(m.Content, StringComparison.InvariantCultureIgnoreCase)))
                     );
-                    if (!(mctx is null)) {
-                        if (mctx.MentionedRoles.Any())
-                            muteRole = mctx.MentionedRoles.First();
+                    if (!mctx.TimedOut && !(mctx.Result is null)) {
+                        if (mctx.Result.MentionedRoles.Any())
+                            muteRole = mctx.Result.MentionedRoles.First();
                         else
-                            muteRole = ctx.Guild.Roles.Values.FirstOrDefault(r => r.Name.Equals(mctx.Message.Content, StringComparison.InvariantCultureIgnoreCase));
+                            muteRole = ctx.Guild.Roles.Values.FirstOrDefault(r => r.Name.Equals(mctx.Result.Content, StringComparison.InvariantCultureIgnoreCase));
                     }
                 }
 
@@ -662,22 +662,22 @@ namespace TheGodfather.Modules.Administration
                     query = $"Do you wish to change the default ratelimit action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
                         );
-                        if (!(mctx is null))
-                            gcfg.RatelimitSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                        if (!mctx.TimedOut)
+                            gcfg.RatelimitSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = "Do you wish to change the default ratelimit sensitivity aka number of messages " +
                             $"in 5s window before the action is triggered ({gcfg.RatelimitSettings.Sensitivity})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 4 && sens <= 10
                         );
-                        if (!(mctx is null))
-                            gcfg.RatelimitSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                        if (!mctx.TimedOut)
+                            gcfg.RatelimitSettings.Sensitivity = short.Parse(mctx.Result.Content);
                     }
                 }
             }
@@ -692,27 +692,27 @@ namespace TheGodfather.Modules.Administration
                     query = $"Do you wish to change the default antispam action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
                         );
-                        if (!(mctx is null))
-                            gcfg.AntispamSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                        if (!mctx.TimedOut)
+                            gcfg.AntispamSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = "Do you wish to change the default antispam sensitivity aka number of same messages " +
                             $"allowed before the action is triggered ({gcfg.AntispamSettings.Sensitivity})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [3, 10]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 3 && sens <= 10
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 3 && sens <= 10
                         );
-                        if (!(mctx is null))
-                            gcfg.AntispamSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                        if (!mctx.TimedOut)
+                            gcfg.AntispamSettings.Sensitivity = short.Parse(mctx.Result.Content);
                     }
                 }
             }
 
-            private async Task<AntifloodSettings> SetupAntifloodAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            private async Task<AntifloodSettings> GetAntifloodAsync(CommandContext ctx, DiscordChannel channel)
             {
                 var antifloodSettings = new AntifloodSettings();
 
@@ -726,40 +726,40 @@ namespace TheGodfather.Modules.Administration
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         query = "Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan";
                         await channel.EmbedAsync(query);
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
                         );
-                        if (!(mctx is null))
-                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                        if (!mctx.TimedOut)
+                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = $"Do you wish to change the default antiflood user quota after which the " +
                             $"action will be applied ({antifloodSettings.Sensitivity})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 2 && sens <= 20
                         );
-                        if (!(mctx is null))
-                            antifloodSettings.Sensitivity = short.Parse(mctx.Message.Content);
+                        if (!mctx.TimedOut)
+                            antifloodSettings.Sensitivity = short.Parse(mctx.Result.Content);
                     }
 
                     query = $"Do you wish to change the default cooldown time " +
                             $"({antifloodSettings.Cooldown})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short cooldown) && cooldown >= 5 && cooldown <= 60
                         );
-                        if (!(mctx is null))
-                            antifloodSettings.Cooldown = short.Parse(mctx.Message.Content);
+                        if (!mctx.TimedOut)
+                            antifloodSettings.Cooldown = short.Parse(mctx.Result.Content);
                     }
                 }
 
                 return antifloodSettings;
             }
 
-            private async Task<AntiInstantLeaveSettings> SetupAntiInstantLeaveAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+            private async Task<AntiInstantLeaveSettings> GetAntiInstantLeaveAsync(CommandContext ctx, DiscordChannel channel)
             {
                 var antiInstantLeaveSettings = new AntiInstantLeaveSettings();
 
@@ -773,11 +773,11 @@ namespace TheGodfather.Modules.Administration
                             $"not be punished ({antiInstantLeaveSettings.Cooldown})?";
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the time window in seconds. Valid range: [2, 20]");
-                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
-                            m => short.TryParse(m, out short cooldown) && cooldown >= 2 && cooldown <= 20
+                        InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short cooldown) && cooldown >= 2 && cooldown <= 20
                         );
-                        if (!(mctx is null))
-                            antiInstantLeaveSettings.Cooldown = short.Parse(mctx.Message.Content);
+                        if (!mctx.TimedOut)
+                            antiInstantLeaveSettings.Cooldown = short.Parse(mctx.Result.Content);
                     }
                 }
 
@@ -791,9 +791,11 @@ namespace TheGodfather.Modules.Administration
                     query = "Please specify the new currency (can also be an emoji). Note: Currency name " +
                             "cannot be longer than 30 characters.";
                     await channel.EmbedAsync(query);
-                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => m.Length < 30);
-                    if (!(mctx is null))
-                        gcfg.Currency = mctx.Message.Content;
+                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.Content.Length < 30
+                    );
+                    if (!mctx.TimedOut)
+                        gcfg.Currency = mctx.Result.Content;
                 }
             }
             #endregion

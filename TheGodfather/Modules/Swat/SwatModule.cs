@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 
 using Microsoft.EntityFrameworkCore;
@@ -114,8 +115,8 @@ namespace TheGodfather.Modules.Swat
 
             await msg.CreateReactionAsync(StaticDiscordEmoji.Information);
             await Task.Delay(250);
-            ReactionContext rctx = await msg.WaitForAnyReactionAsync(StaticDiscordEmoji.Information);
-            if (!(rctx is null)) {
+            InteractivityResult<MessageReactionAddEventArgs> rctx = await ctx.Client.GetInteractivity().WaitForEventArgsAsync<MessageReactionAddEventArgs>(e => e.Message == msg && e.Emoji == StaticDiscordEmoji.Information);
+            if (!rctx.TimedOut) {
                 SwatServerInfo completeInfo = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort, complete: true);
                 if (completeInfo is null) {
                     await this.InformFailureAsync(ctx, "No reply from server.");

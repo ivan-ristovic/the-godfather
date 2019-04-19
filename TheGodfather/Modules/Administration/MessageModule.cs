@@ -4,6 +4,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.EventHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,8 +79,9 @@ namespace TheGodfather.Modules.Administration
             if (timespan?.TotalSeconds < 5 || timespan?.TotalMinutes > 5)
                 throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes or lower than 5 seconds.");
 
-            ReactionCollectionContext rctx = await msg.MakePoll(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, timespan ?? TimeSpan.FromMinutes(1));
-            if (rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * rctx.Reactions.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
+            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, PollBehaviour.Default, timeout: timespan ?? TimeSpan.FromMinutes(1));
+            var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Voted.Count);
+            if (votes.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * votes.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
                 string sanitized = FormatterExtensions.Spoiler(FormatterExtensions.StripMarkdown(msg.Content));
                 await msg.DeleteAsync();
                 await ctx.RespondAsync($"{msg.Author.Mention} said: {sanitized}");
@@ -102,16 +105,25 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            var pages = pinned.Select(m => new Page() {
-                Content = $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
-                Embed = m.Embeds.FirstOrDefault() ?? new DiscordEmbedBuilder() {
+            var pages = pinned.Select(m => new Page(
+                $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
+                GetFirstEmbedOrDefaultAsBuilder(m)
+            ));
+
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
+
+
+            DiscordEmbedBuilder GetFirstEmbedOrDefaultAsBuilder(DiscordMessage m)
+            {
+                DiscordEmbed em = m.Embeds.FirstOrDefault();
+                if (!(em is null))
+                    return new DiscordEmbedBuilder(m.Embeds.First());
+                return new DiscordEmbedBuilder() {
                     Title = "Jump to",
                     Description = m.Content ?? Formatter.Italic("Empty message."),
                     Url = m.JumpLink.ToString()
-                }.Build()
-            }).ToList();
-
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
+                };
+            }
         }
         #endregion
 

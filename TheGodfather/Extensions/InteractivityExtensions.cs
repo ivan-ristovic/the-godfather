@@ -23,29 +23,26 @@ namespace TheGodfather.Extensions
             if (!(shared is null))
                 shared.AddPendingResponse(cid, uid);
 
-            bool response = false;
-            MessageContext mctx = await interactivity.WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
                 m => {
                     if (m.ChannelId != cid || m.Author.Id != uid)
                         return false;
-                    bool? b = CustomBoolConverter.TryConvert(m.Content);
-                    response = b ?? false;
-                    return b.HasValue;
+                    return CustomBoolConverter.TryConvert(m.Content).HasValue;
                 }
             );
 
             if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
-            return response;
+            return !mctx.TimedOut;
         }
 
-        public static async Task<MessageContext> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
+        public static async Task<InteractivityResult<DiscordMessage>> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
         {
             if (!(shared is null))
                 shared.AddPendingResponse(cid, uid);
             
-            MessageContext mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
 
             if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");

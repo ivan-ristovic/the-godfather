@@ -13,10 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00586" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00586" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00586" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00586" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00594" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00594" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00594" />
+    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00594" />
     <PackageReference Include="GiphyDotNet" Version="1.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.38.2.1488" />
     <PackageReference Include="Humanizer.Core" Version="2.6.2" />
@@ -33,7 +33,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="RedditSharp" Version="2.0.0-CI00075" />
     <PackageReference Include="SteamWebAPI2" Version="4.0.8" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview3.19128.7" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19212.13" />
     <PackageReference Include="System.IO" Version="4.3.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="4.6.0-preview3.19128.7" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />

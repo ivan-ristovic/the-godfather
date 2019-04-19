@@ -93,10 +93,10 @@ namespace TheGodfather.Modules.Currency.Common
                             await this.Channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}");
                             if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) {
                                 int raise = 0;
-                                MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+                                InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                                     m => m.Channel.Id == this.Channel.Id && m.Author.Id == participant.Id && int.TryParse(m.Content, out raise) && bet + raise <= participant.Balance
                                 );
-                                if (!(mctx is null)) {
+                                if (!mctx.TimedOut) {
                                     bet += raise;
                                 }
                             }

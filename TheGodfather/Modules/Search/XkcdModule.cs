@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Search
             if (comic is null)
                 throw new CommandFailedException("Failed to retrieve comic from xkcd.");
 
-            await ctx.RespondAsync(embed: comic.ToDiscordEmbed(this.ModuleColor));
+            await ctx.RespondAsync(embed: comic.ToDiscordEmbedBuilder(this.ModuleColor));
         }
         #endregion
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Search
             if (comic is null)
                 throw new CommandFailedException("Failed to retrieve comic from xkcd.");
 
-            await ctx.RespondAsync(embed: comic.ToDiscordEmbed(this.ModuleColor));
+            await ctx.RespondAsync(embed: comic.ToDiscordEmbedBuilder(this.ModuleColor));
         }
         #endregion
     }

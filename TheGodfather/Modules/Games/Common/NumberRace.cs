@@ -47,17 +47,17 @@ namespace TheGodfather.Modules.Games.Common
                     TimeSpan.FromSeconds(20)
                 );
 
-                if (mctx is null) {
+                if (mctx.TimedOut) {
                     this.IsTimeoutReached = true;
                     return;
                 } else if (guess == num + 1) {
                     num++;
-                    this.Winner = mctx.User;
+                    this.Winner = mctx.Result.Author;
                 } else {
-                    await this.Channel.EmbedAsync($"{mctx.User.Mention} lost!", StaticDiscordEmoji.Dead);
-                    if (!(this.Winner is null) && this.Winner.Id == mctx.User.Id)
+                    await this.Channel.EmbedAsync($"{mctx.Result.Author.Mention} lost!", StaticDiscordEmoji.Dead);
+                    if (!(this.Winner is null) && this.Winner.Id == mctx.Result.Author.Id)
                         this.Winner = null;
-                    this.participants.RemoveWhere(u => mctx.User.Id == u.Id);
+                    this.participants.RemoveWhere(u => mctx.Result.Author.Id == u.Id);
                 }
             }
 

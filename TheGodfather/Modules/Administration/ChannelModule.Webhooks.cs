@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using DSharpPlus.Interactivity.EventHandling;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -147,15 +147,16 @@ namespace TheGodfather.Modules.Administration
 
                 bool displayToken = await ctx.WaitForBoolReplyAsync("Do you wish to display the tokens?", reply: false);
 
-                await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, whs.Select(wh => new Page() {
-                    Embed = new DiscordEmbedBuilder() {
+                await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, 
+                    ctx.User, 
+                    whs.Select(wh => new Page(embed: new DiscordEmbedBuilder() {
                         Title = $"Webhook: {wh.Name}",
                         Description = $"{(displayToken ? $"Token: {Formatter.InlineCode(wh.Token)}\n" : "")}Created by {wh.User.ToString()}",
                         Color = this.ModuleColor,
                         ThumbnailUrl = wh.AvatarUrl,
                         Timestamp = wh.CreationTimestamp,
-                    }.AddField("URL", displayToken ? wh.BuildUrlString() : "Hidden").Build()
-                }));
+                    }.AddField("URL", displayToken ? wh.BuildUrlString() : "Hidden")))
+                );
             }
             #endregion
         }

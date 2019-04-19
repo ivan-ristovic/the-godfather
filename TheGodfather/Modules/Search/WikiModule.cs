@@ -51,14 +51,14 @@ namespace TheGodfather.Modules.Search
                 return;
             }
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.Select(r => new Page() {
-                Embed = new DiscordEmbedBuilder() {
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.Select(r => new Page(embed:
+                new DiscordEmbedBuilder() {
                     Title = r.Title,
                     Description = string.IsNullOrWhiteSpace(r.Snippet) ? "No description provided" : r.Snippet,
                     Url = r.Url,
                     Color = this.ModuleColor
-                }.WithFooter("Powered by Wikipedia API", WikiService.WikipediaIconUrl).Build()
-            }));
+                }.WithFooter("Powered by Wikipedia API", WikiService.WikipediaIconUrl)
+            )));
         }
         #endregion
     }

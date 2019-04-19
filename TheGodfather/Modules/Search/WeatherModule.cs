@@ -65,11 +65,11 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
-            IReadOnlyList<DiscordEmbed> ems = await this.Service.GetEmbeddedWeatherForecastAsync(query, amount);
+            IReadOnlyList<DiscordEmbedBuilder> ems = await this.Service.GetEmbeddedWeatherForecastAsync(query, amount);
             if (ems is null || !ems.Any())
                 throw new CommandFailedException("Cannot find weather data for given query.");
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, ems.Select(e => new Page() { Embed = e }));
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, ems.Select(e => new Page(embed: e)));
         }
 
         [Command("forecast"), Priority(0)]

@@ -2,7 +2,7 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using DSharpPlus.Interactivity.EventHandling;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
@@ -34,17 +34,15 @@ namespace TheGodfather.Extensions
                     .Skip(start)
                     .Take(takeAmount)
                     .Select(selector);
-                pages.Add(new Page() {
-                    Embed = new DiscordEmbedBuilder() {
-                        Title = $"{title} (page {i + 1}/{amountOfPages + 1})",
-                        Description = string.Join("\n", formattedCollectionPart),
-                        Color = color ?? DiscordColor.Black
-                    }.Build()
-                });
+                pages.Add(new Page(embed: new DiscordEmbedBuilder() {
+                    Title = $"{title} (page {i + 1}/{amountOfPages + 1})",
+                    Description = string.Join("\n", formattedCollectionPart),
+                    Color = color ?? DiscordColor.Black
+                }));
                 start += pageSize;
             }
-
-            return ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
+            
+            return ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
         }
 
         public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string question, DiscordChannel channel = null, bool reply = true)
@@ -71,7 +69,7 @@ namespace TheGodfather.Extensions
             var shared = ctx.Services.GetService<SharedData>();
             shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
-            MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
                     if (xm.Author.IsBot || xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
                         return false;
@@ -83,7 +81,7 @@ namespace TheGodfather.Extensions
             if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
-            return mctx?.User;
+            return mctx.TimedOut ? null : mctx.Result.Author;
         }
 
         internal static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)
@@ -91,17 +89,17 @@ namespace TheGodfather.Extensions
             var shared = ctx.Services.GetService<SharedData>();
             shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
-            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+            InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id
             );
 
             if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
-            if (mctx is null)
+            if (mctx.TimedOut)
                 return null;
 
-            return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
+            return mctx.Result.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct()
                 .ToList();
         }

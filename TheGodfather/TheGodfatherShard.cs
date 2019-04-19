@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
 
@@ -157,8 +158,10 @@ namespace TheGodfather
         private void SetupInteractivity()
         {
             this.Interactivity = this.Client.UseInteractivity(new InteractivityConfiguration() {
-                PaginationBehavior = TimeoutBehaviour.Ignore,
-                PaginationTimeout = TimeSpan.FromMinutes(1),
+                PaginationBehaviour = PaginationBehaviour.WrapAround,
+                PaginationDeletion = PaginationDeletion.DeleteEmojis,
+                PaginationEmojis = new PaginationEmojis(),
+                PollBehaviour = PollBehaviour.KeepEmojis,
                 Timeout = TimeSpan.FromMinutes(1)
             });
         }

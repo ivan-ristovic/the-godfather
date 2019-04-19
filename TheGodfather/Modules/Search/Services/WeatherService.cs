@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search.Services
             }
         }
 
-        public async Task<IReadOnlyList<DiscordEmbed>> GetEmbeddedWeatherForecastAsync(string query, int amount = 7)
+        public async Task<IReadOnlyList<DiscordEmbedBuilder>> GetEmbeddedWeatherForecastAsync(string query, int amount = 7)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing", nameof(query));
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Search.Services
             try {
                 string response = await _http.GetStringAsync($"{_url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
                 var forecast = JsonConvert.DeserializeObject<Forecast>(response);
-                return forecast.ToDiscordEmbeds(amount);
+                return forecast.ToDiscordEmbedBuilders(amount);
             } catch {
                 return null;
             }

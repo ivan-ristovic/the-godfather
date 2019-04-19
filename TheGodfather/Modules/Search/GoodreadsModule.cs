@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             var res = await this.Service.SearchBooksAsync(query);
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.ToDiscordPages());
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.ToDiscordPages());
         }
         #endregion
     }

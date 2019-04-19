@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Games.Common
 
                 bool timeout = true;
                 var answerRegex = new Regex($@"\b{_capitals[question]}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-                MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+                InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.ChannelId != this.Channel.Id || xm.Author.IsBot) return false;
                         timeout = false;
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Games.Common
                     }, 
                     TimeSpan.FromSeconds(10)
                 );
-                if (mctx is null) {
+                if (mctx.TimedOut) {
                     if (timeout)
                         timeouts++;
                     else
@@ -86,8 +86,8 @@ namespace TheGodfather.Modules.Games.Common
 
                     await this.Channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(_capitals[question])}");
                 } else {
-                    await this.Channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!");
-                    this.Results.AddOrUpdate(mctx.User, u => 1, (u, v) => v + 1);
+                    await this.Channel.SendMessageAsync($"GG {mctx.Result.Author.Mention}, you got it right!");
+                    this.Results.AddOrUpdate(mctx.Result.Author, u => 1, (u, v) => v + 1);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(2));

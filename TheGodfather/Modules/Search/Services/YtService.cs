@@ -145,9 +145,7 @@ namespace TheGodfather.Modules.Search.Services
                         break;
                 }
 
-                pages.Add(new Page() {
-                    Embed = emb.Build()
-                });
+                pages.Add(new Page(embed: emb));
             }
 
             return pages.AsReadOnly();

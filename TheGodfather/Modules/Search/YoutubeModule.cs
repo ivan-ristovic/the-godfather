@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Search
                 return;
             }
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
+            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
         }
         #endregion
     }
