@@ -23,18 +23,21 @@ namespace TheGodfather.Extensions
             if (!(shared is null))
                 shared.AddPendingResponse(cid, uid);
 
+            bool response = false;
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
                 m => {
                     if (m.ChannelId != cid || m.Author.Id != uid)
                         return false;
-                    return CustomBoolConverter.TryConvert(m.Content).HasValue;
+                    bool? b = CustomBoolConverter.TryConvert(m.Content);
+                    response = b ?? false;
+                    return b.HasValue;
                 }
             );
 
             if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
-            return !mctx.TimedOut;
+            return response;
         }
 
         public static async Task<InteractivityResult<DiscordMessage>> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
