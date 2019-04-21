@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Misc.Common
                 question.StartsWith("how long", StringComparison.InvariantCultureIgnoreCase))
                 return rng.ChooseRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
-                return rng.ChooseRandomElement(rng.NextBool() ? members.Where(m => IsOnline(m)) : members.Where(m => !IsOnline(m))).DisplayName;
+                return rng.ChooseRandomElement(rng.NextBool(3) ? members.Where(m => IsOnline(m)) : members.Where(m => !IsOnline(m))).DisplayName;
             if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) || 
                 question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase))
                 return rng.ChooseRandomElement(_quantityAnswers);
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Misc.Common
 
 
             bool IsOnline(DiscordMember m) 
-                => m.Presence.Status >= UserStatus.Online;
+                => (m?.Presence?.Status ?? UserStatus.Offline) >= UserStatus.Online;
         }
     }
 }

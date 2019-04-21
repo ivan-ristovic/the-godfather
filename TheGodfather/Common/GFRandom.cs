@@ -32,8 +32,13 @@ namespace TheGodfather.Common
         }
 
 
-        public bool NextBool()
-            => this.Next(2) == 0;
+        public bool NextBool(int trueRatio = 1)
+        {
+            if (trueRatio <= 0)
+                throw new ArgumentOutOfRangeException(nameof(trueRatio), "Ratio must be positive.");
+
+            return this.Next() % (trueRatio + 1) > 0;
+        }
 
         public byte[] GetBytes(int count)
         {
