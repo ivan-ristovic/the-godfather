@@ -69,10 +69,12 @@ namespace TheGodfather.Modules.Misc
             if (content.Length >= 120)
                 throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 120 characters please.");
 
-            if (content.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
-                throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
+            if (!content.Contains("%user%"))
+                throw new InvalidCommandUsageException($"Insult string is not in correct format (missing {Formatter.Bold("%user%")} in the content)!");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
+                if (db.Insults.Any(i => string.Compare(i.Content, content, StringComparison.InvariantCultureIgnoreCase) == 0))
+                    throw new CommandFailedException("The given insult string already exists!");
                 db.Insults.Add(new DatabaseInsult() {
                     Content = content
                 });

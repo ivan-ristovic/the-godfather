@@ -81,9 +81,9 @@ namespace TheGodfather.EventListeners
 
                     break;
                 case InvalidCommandUsageException _:
-                    sb.AppendLine("Invalid command usage! Details:").AppendLine();
-                    sb.AppendLine(Formatter.BlockCode(ex.Message));
-                    sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
+                    sb.Append("Invalid command usage! ");
+                    sb.AppendLine(ex.Message);
+                    emb.WithFooter($"Type \"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}\" for a command manual.");
                     break;
                 case ArgumentException _:
                     string fcmdStr = $"help {e.Command.QualifiedName}";
