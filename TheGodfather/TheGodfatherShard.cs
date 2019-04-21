@@ -40,7 +40,7 @@ namespace TheGodfather
                 .AsReadOnly();
         }
 
-        
+
         public int Id { get; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }
@@ -89,7 +89,7 @@ namespace TheGodfather
 
         private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
-            var cfg = new DiscordConfiguration {
+            var cfg = new DiscordConfiguration() {
                 Token = this.SharedData.BotConfiguration.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,

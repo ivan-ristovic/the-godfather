@@ -20,6 +20,7 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 #endregion
 
@@ -171,7 +172,7 @@ namespace TheGodfather.Modules.Administration
 
             emb.AddField("Joined at", member.JoinedAt.ToUtcTimestamp(), inline: true);
             emb.AddField("Hierarchy", member.Hierarchy.ToString(), inline: true);
-            emb.AddField("Status", member.Presence?.Status.ToString() ?? "Offline", inline: true);
+            emb.AddField("Status", member.Presence is null ? "Offline" : $"{member.Presence.Status} ({member.Presence.ClientStatus.ToUserFriendlyString()})", inline: true);
             emb.AddField("Discriminator", member.Discriminator, inline: true);
             emb.AddField("Avatar hash", member.AvatarHash, inline: true);
             emb.AddField("Created", member.CreationTimestamp.ToUtcTimestamp(), inline: true);
@@ -208,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                 Color = this.ModuleColor
             };
 
-            emb.AddField("Status", user.Presence?.Status.ToString() ?? "Offline", inline: true);
+            emb.AddField("Status", user.Presence is null ? "Offline" : $"{user.Presence.Status} ({user.Presence.ClientStatus.ToUserFriendlyString()})", inline: true);
             emb.AddField("Discriminator", user.Discriminator, inline: true);
             if (!string.IsNullOrWhiteSpace(user.AvatarHash))
                 emb.AddField("Avatar hash", user.AvatarHash, inline: true);
