@@ -32,7 +32,7 @@ namespace TheGodfather.Common
         }
 
 
-        public bool GetBool()
+        public bool NextBool()
             => this.Next(2) == 0;
 
         public byte[] GetBytes(int count)

@@ -266,9 +266,9 @@ namespace TheGodfather.Modules.Administration
         {
             DiscordRole muteRole = await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
             if (mute)
-                await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Mute"));
+                await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
             else
-                await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString("Unmute"));
+                await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} {member.Mention}", important: false);
         }
 
@@ -440,7 +440,7 @@ namespace TheGodfather.Modules.Administration
                                 [Description("User.")] DiscordMember member,
                                 [Description("Time span.")] TimeSpan timespan,
                                 [RemainingText, Description("Reason.")] string reason = null)
-            => this.TempBanAsync(ctx, timespan, member);
+            => this.TempBanAsync(ctx, timespan, member, reason);
 
         [Command("tempban"), Priority(1)]
         public async Task TempBanAsync(CommandContext ctx,
@@ -487,7 +487,7 @@ namespace TheGodfather.Modules.Administration
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Given time period cannot be lower than 1 minute or greater than 1 month");
 
-            await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentActionType.TemporaryMute, timespan, ctx.BuildInvocationDetailsString("_gf: Tempmute"));
+            await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentActionType.TemporaryMute, timespan, ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute"));
             await this.InformAsync(ctx, $"{ctx.User.Mention} muted {member.Mention} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!", important: false);
         }
 
@@ -496,7 +496,7 @@ namespace TheGodfather.Modules.Administration
                                  [Description("User.")] DiscordMember member,
                                  [Description("Time span.")] TimeSpan timespan,
                                  [RemainingText, Description("Reason.")] string reason = null)
-            => this.TempMuteAsync(ctx, timespan, member);
+            => this.TempMuteAsync(ctx, timespan, member, reason);
         #endregion
 
         #region COMMAND_USER_UNBAN

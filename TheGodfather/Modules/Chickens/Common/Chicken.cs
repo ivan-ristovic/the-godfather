@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Chickens.Common
 
         public bool TrainStrength()
         {
-            if (GFRandom.Generator.GetBool()) {
+            if (GFRandom.Generator.NextBool()) {
                 this.Stats.BareStrength += 5;
                 return true;
             } else {
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Chickens.Common
 
         public bool TrainVitality()
         {
-            if (GFRandom.Generator.GetBool()) {
+            if (GFRandom.Generator.NextBool()) {
                 this.Stats.BareMaxVitality += 4;
                 return true;
             } else {

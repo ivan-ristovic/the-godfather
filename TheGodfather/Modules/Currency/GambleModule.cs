@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            bool rnd = GFRandom.Generator.GetBool();
+            bool rnd = GFRandom.Generator.NextBool();
 
             var sb = new StringBuilder();
             sb.Append(ctx.User.Mention);

@@ -178,6 +178,9 @@ namespace TheGodfather.EventListeners
                 if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
 
+            if (e.Message.Author == e.Client.CurrentUser && shard.SharedData.IsEventRunningInChannel(e.Channel.Id))
+                return;
+
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
@@ -224,6 +227,9 @@ namespace TheGodfather.EventListeners
                 return;
 
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
+                return;
+
+            if (e.Message.Author == e.Client.CurrentUser && shard.SharedData.IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {

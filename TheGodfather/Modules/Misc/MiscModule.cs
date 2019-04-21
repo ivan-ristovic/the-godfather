@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("coin", "flip")]
         [UsageExamples("!coinflip")]
         public Task CoinflipAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.GetBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
+            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
         #endregion
 
         #region COMMAND_DICE
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Misc
             var sb = new StringBuilder();
             foreach (char c in text) {
                 char add;
-                bool r = GFRandom.Generator.GetBool();
+                bool r = GFRandom.Generator.NextBool();
                 switch (c) {
                     case 'i': add = r ? 'i' : '1'; break;
                     case 'l': add = r ? 'l' : '1'; break;
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Misc
                     case 's': add = r ? 's' : '5'; break;
                     default: add = c; break;
                 }
-                sb.Append(GFRandom.Generator.GetBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
+                sb.Append(GFRandom.Generator.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
             }
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());

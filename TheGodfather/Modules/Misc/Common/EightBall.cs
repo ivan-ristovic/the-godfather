@@ -57,16 +57,21 @@ namespace TheGodfather.Modules.Misc.Common
 
         public static string GenerateAnswer(string question, IEnumerable<DiscordMember> members)
         {
+            var rng = GFRandom.Generator;
             if (question.StartsWith("when", StringComparison.InvariantCultureIgnoreCase) ||
                 question.StartsWith("how long", StringComparison.InvariantCultureIgnoreCase))
-                return GFRandom.Generator.ChooseRandomElement(_timeAnswers);
+                return rng.ChooseRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
-                return GFRandom.Generator.ChooseRandomElement(members).DisplayName;
+                return rng.ChooseRandomElement(rng.NextBool() ? members.Where(m => IsOnline(m)) : members.Where(m => !IsOnline(m))).DisplayName;
             if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) || 
                 question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase))
-                return GFRandom.Generator.ChooseRandomElement(_quantityAnswers);
+                return rng.ChooseRandomElement(_quantityAnswers);
             else
-                return GFRandom.Generator.ChooseRandomElement(_regularAnswers);
+                return rng.ChooseRandomElement(_regularAnswers);
+
+
+            bool IsOnline(DiscordMember m) 
+                => m.Presence.Status >= UserStatus.Online;
         }
     }
 }

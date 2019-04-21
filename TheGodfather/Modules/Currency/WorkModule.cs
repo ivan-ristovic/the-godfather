@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
         {
-            int change = GFRandom.Generator.GetBool() ? GFRandom.Generator.Next(1000, 5000) : -GFRandom.Generator.Next(5, 2500);
+            int change = GFRandom.Generator.NextBool() ? GFRandom.Generator.Next(1000, 5000) : -GFRandom.Generator.Next(5, 2500);
             using (DatabaseContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + change);
                 await db.SaveChangesAsync();
