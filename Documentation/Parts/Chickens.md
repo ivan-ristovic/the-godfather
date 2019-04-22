@@ -14,8 +14,8 @@
 
 **Examples:**
 
-```
-!chicken
+```xml
+!chicken 
 !chicken @Someone
 ```
 </p></details>
@@ -40,8 +40,9 @@
 
 **Examples:**
 
-```
+```xml
 !chicken ambush @Someone
+!chicken ambush chicken
 ```
 </p></details>
 
@@ -55,11 +56,6 @@
 **Aliases:**
 `h, halp, hlp, ha`
 
-**Examples:**
-
-```
-!chicken ambush help
-```
 </p></details>
 
 ---
@@ -72,11 +68,6 @@
 **Aliases:**
 `+, compete, enter, j, <, <<`
 
-**Examples:**
-
-```
-!chicken ambush join
-```
 </p></details>
 
 ---
@@ -95,7 +86,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy My Chicken Name
 ```
 </p></details>
@@ -116,7 +107,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy alien My Chicken Name
 ```
 </p></details>
@@ -137,7 +128,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy default My Chicken Name
 ```
 </p></details>
@@ -152,11 +143,6 @@
 **Aliases:**
 `ls, view`
 
-**Examples:**
-
-```
-!chicken buy list
-```
 </p></details>
 
 ---
@@ -175,7 +161,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy steroidempowered My Chicken Name
 ```
 </p></details>
@@ -196,7 +182,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy trained My Chicken Name
 ```
 </p></details>
@@ -217,7 +203,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken buy wellfed My Chicken Name
 ```
 </p></details>
@@ -242,8 +228,8 @@
 
 **Examples:**
 
-```
-!chicken duel @Someone
+```xml
+!chicken fight @Someone
 ```
 </p></details>
 
@@ -257,11 +243,6 @@
 **Aliases:**
 `cancer, disease, blackdeath`
 
-**Examples:**
-
-```
-!chicken flu
-```
 </p></details>
 
 ---
@@ -274,11 +255,6 @@
 **Aliases:**
 `+hp, hp`
 
-**Examples:**
-
-```
-!chicken heal
-```
 </p></details>
 
 ---
@@ -297,7 +273,8 @@
 
 **Examples:**
 
-```
+```xml
+!chicken info 
 !chicken info @Someone
 ```
 </p></details>
@@ -318,8 +295,8 @@
 
 **Examples:**
 
-```
-!chicken name New Name
+```xml
+!chicken rename New Name
 ```
 </p></details>
 
@@ -333,11 +310,6 @@
 **Aliases:**
 `s`
 
-**Examples:**
-
-```
-!chicken sell
-```
 </p></details>
 
 ---
@@ -350,11 +322,6 @@
 **Aliases:**
 `best, strongest`
 
-**Examples:**
-
-```
-!chicken top
-```
 </p></details>
 
 ---
@@ -367,11 +334,6 @@
 **Aliases:**
 `bestglobally, globallystrongest, globaltop, topg, gtop`
 
-**Examples:**
-
-```
-!chicken topglobal
-```
 </p></details>
 
 ---
@@ -384,11 +346,6 @@
 **Aliases:**
 `tr, t, exercise`
 
-**Examples:**
-
-```
-!chicken train
-```
 </p></details>
 
 ---
@@ -401,11 +358,6 @@
 **Aliases:**
 `str, st, s`
 
-**Examples:**
-
-```
-!chicken train strength
-```
 </p></details>
 
 ---
@@ -418,11 +370,6 @@
 **Aliases:**
 `vit, vi, v`
 
-**Examples:**
-
-```
-!chicken train vitality
-```
 </p></details>
 
 ---
@@ -441,8 +388,10 @@
 
 **Examples:**
 
-```
-!chicken upgrade 1 2 3
+```xml
+!chicken upgrades 
+!chicken upgrades 1
+!chicken upgrades 1 2 3
 ```
 </p></details>
 
@@ -456,11 +405,6 @@
 **Aliases:**
 `ls, view`
 
-**Examples:**
-
-```
-!chicken upgrade list
-```
 </p></details>
 
 ---
@@ -481,7 +425,8 @@
 
 **Examples:**
 
-```
+```xml
+!chicken war 
 !chicken war Team1 Team2
 !chicken war "Team 1 name" "Team 2 name"
 ```
@@ -507,7 +452,7 @@
 
 **Examples:**
 
-```
+```xml
 !chicken war join Team Name
 ```
 </p></details>

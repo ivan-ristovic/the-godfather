@@ -62,7 +62,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat banlist add Name 109.70.149.158
 !swat banlist add Name 109.70.149.158 Reason for ban
 ```
@@ -90,7 +90,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat banlist delete 123.123.123.123
 ```
 </p></details>
@@ -107,11 +107,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!swat banlist list
-```
 </p></details>
 
 ---
@@ -166,8 +161,8 @@
 
 **Examples:**
 
-```
-!swat db add Name 109.70.149.158
+```xml
+!swat database add Name 109.70.149.158
 ```
 </p></details>
 
@@ -203,8 +198,8 @@
 
 **Examples:**
 
-```
-!swat db alias Name Alias
+```xml
+!swat database alias Name Alias
 ```
 </p></details>
 
@@ -230,8 +225,9 @@
 
 **Examples:**
 
-```
-!swat db remove 123.123.123.123
+```xml
+!swat database delete 123.123.123.123
+!swat database delete Name
 ```
 </p></details>
 
@@ -253,11 +249,6 @@
 
 (optional) `[int]` : *How many results to view.* (def: `10`)
 
-**Examples:**
-
-```
-!swat db list
-```
 </p></details>
 
 ---
@@ -276,8 +267,8 @@
 
 **Examples:**
 
-```
-!s4 ip wm
+```xml
+!swat ip wm
 ```
 </p></details>
 
@@ -305,10 +296,10 @@
 
 **Examples:**
 
-```
-!s4 q 109.70.149.158
-!s4 q 109.70.149.158:10480
-!s4 q wm
+```xml
+!swat query 109.70.149.158
+!swat query 109.70.149.158:10480
+!swat query wm
 ```
 </p></details>
 
@@ -357,7 +348,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat search ip 123.123.123.123
 ```
 </p></details>
@@ -382,7 +373,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat search name EmoPig
 ```
 </p></details>
@@ -403,8 +394,9 @@
 
 **Examples:**
 
-```
-!swat serverlist
+```xml
+!swat serverlist 
+!swat serverlist wm
 ```
 </p></details>
 
@@ -422,11 +414,6 @@
 **Aliases:**
 `serv, srv`
 
-**Examples:**
-
-```
-!swat servers
-```
 </p></details>
 
 ---
@@ -459,7 +446,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat servers add 4u 109.70.149.158:10480
 !swat servers add 4u 109.70.149.158:10480 10481
 ```
@@ -483,7 +470,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat servers delete 4u
 ```
 </p></details>
@@ -500,11 +487,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!swat servers list
-```
 </p></details>
 
 ---
@@ -524,7 +506,7 @@
 
 **Examples:**
 
-```
+```xml
 !swat settimeout 500
 ```
 </p></details>
@@ -551,9 +533,9 @@
 
 **Examples:**
 
-```
-!s4 startcheck 109.70.149.158
-!s4 startcheck 109.70.149.158:10480
+```xml
+!swat startcheck 109.70.149.158
+!swat startcheck 109.70.149.158:10480
 !swat startcheck wm
 ```
 </p></details>
@@ -568,11 +550,6 @@
 **Aliases:**
 `checkstop`
 
-**Examples:**
-
-```
-!swat stopcheck
-```
 </p></details>
 
 ---

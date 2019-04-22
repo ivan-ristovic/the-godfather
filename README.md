@@ -9,23 +9,23 @@
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
 
 Features:
-- Complete administration of the guild, channels, users, emoji etc via categorized commands.
-- Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
-- Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
-- Message filtering: user-defined filters either by raw match or regex match, gore websites filter, IP logging websites filter, invite filter, etc.
-- Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching.
-- Customizable guild content: memes, ranks, birthdays, currencies, currency items and many more!
-- Searches of online services: YouTube, Wikipedia, Imgur, reddit, Steam, IMDb, OpenWeather etc.
-- RSS feed subscriptions (includes YouTube, reddit and many more) - automatic notifications when new content is released.
-- Many games to pass your time: Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc. 
-- Currency commands and games: Poker, BlackJack, Slots etc.
-- Eases your pain with auto-assigned roles and self-assignable roles.
-- Interactive polls and reminders.
-- SWAT4 server queries and player database.
+  - Complete administration of the guild, channels, users, emoji etc via categorized commands.
+  - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
+  - Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
+  - Message filtering: user-defined filters either by raw match or regex match, gore websites filter, IP logging websites filter, invite filter, etc.
+  - Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching.
+  - Customizable guild content: memes, ranks, birthdays, currencies, currency items and many more!
+  - Searches of online services: YouTube, Wikipedia, Imgur, reddit, Steam, IMDb, OpenWeather etc.
+  - RSS feed subscriptions (includes YouTube, reddit and many more) - automatic notifications when new content is released.
+  - Many games to pass your time: Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc. 
+  - Currency commands and games: Poker, BlackJack, Slots etc.
+  - Eases your pain with auto-assigned roles and self-assignable roles.
+  - Interactive polls and reminders.
+  - SWAT4 server queries and player database.
 
 Upcoming features:
-- Music playback (currently in beta).
-- Interactive NLP mode (currently in alpha) - explain what you want and it will be done!
+  - Music playback (currently in beta).
+  - Interactive NLP mode (currently in alpha) - explain what you want and it will be done!
 
 
 Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
@@ -74,24 +74,24 @@ Commands that require arguments also specify the type of the arguments that they
 For example, you need to pass a valid Discord user to ``kick`` command (not some random gibberish).
 
 Arguments can be exactly one of the following types: 
-* ``int`` : Integer (a single whole number) in range [-2147483648, 2147483647]. Valid examples: ``25`` , ``-64`` , ``123456789``.
-* ``long`` : Integer (a single whole number) with greater range (approx. 18 digits). Valid examples: ``25`` , ``-64`` , ``123456789123``.
-* ``double`` : Floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5`` , ``123456.5646``.
-* ``string`` : Unicode characrer sequence without spaces. If you want to include spaces, then surround the sequence with quotes. Valid examples: ``testtest`` , ``T3S7`` , ``"I need quotes for spaces!"``
-* ``string...`` : Unicode characrer sequence, can include spaces. Since this is a very general argument type, it will always come last in argument queue. Valid examples: ``This is a text so I do not need quotes``.
-* ``boolean`` : A truth value, either ``true`` or ``false`` (can also be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Common/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no`` , ``0``.
-* ``user`` : Discord user - given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
-* ``message`` : Discord message ID. Valid examples: ``123456789123456``.
-* ``channel`` : Discord channel - given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
-* ``role`` : Discord role - given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
-* ``emoji`` : Discord emoji, either in Unicode or Discord representation (using ``:``). Valid examples: ``😂`` , ``:joy:``.
-* ``Uri`` : A sequence of characters representing a URL. The protocol for most commands must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
-* ``id`` : ID of a Discord entity (could be a message, user, channel, role etc.).
-* ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
-* ``time span`` : A time span in form ``DDd HHh MMm SSs`` Valid examples: ``3d 5m 30s`` etc. 
-* ``IPAddress`` : An IPv4 address. Valid examples: ``123.123.123.123`` etc. 
-* ``CustomIPFormat`` : Combined IPv4 range and optional endpoint port. Valid examples: ``123.123.123.123:12345`` , ``123.123.*`` etc. 
-* ``PunishmentActionType`` : One of the following values: Kick, Ban, Mute, TemporaryBan, TemporaryMute. 
+  - ``int`` : Integer (a single whole number) in range [-2147483648, 2147483647]. Valid examples: ``25`` , ``-64`` , ``123456789``.
+  - ``long`` : Integer (a single whole number) with greater range (approx. 18 digits). Valid examples: ``25`` , ``-64`` , ``123456789123``.
+  - ``double`` : Floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5`` , ``123456.5646``.
+  - ``string`` : Unicode characrer sequence without spaces. If you want to include spaces, then surround the sequence with quotes. Valid examples: ``testtest`` , ``T3S7`` , ``"I need quotes for spaces!"``
+  - ``string...`` : Unicode characrer sequence, can include spaces. Since this is a very general argument type, it will always come last in argument queue. Valid examples: ``This is a text so I do not need quotes``.
+  - ``boolean`` : A truth value, either ``true`` or ``false`` (can also be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Common/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no`` , ``0``.
+  - ``user`` : Discord user - given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
+  - ``message`` : Discord message ID. Valid examples: ``123456789123456``.
+  - ``channel`` : Discord channel - given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
+  - ``role`` : Discord role - given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
+  - ``emoji`` : Discord emoji, either in Unicode or Discord representation (using ``:``). Valid examples: ``😂`` , ``:joy:``.
+  - ``Uri`` : A sequence of characters representing a URL. The protocol for most commands must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
+  - ``id`` : ID of a Discord entity (could be a message, user, channel, role etc.).
+  - ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
+  - ``time span`` : A time span in form ``DDd HHh MMm SSs`` Valid examples: ``3d 5m 30s`` etc. 
+  - ``IPAddress`` : An IPv4 address. Valid examples: ``123.123.123.123`` etc. 
+  - ``CustomIPFormat`` : Combined IPv4 range and optional endpoint port. Valid examples: ``123.123.123.123:12345`` , ``123.123.*`` etc. 
+  - ``PunishmentActionType`` : One of the following values: Kick, Ban, Mute, TemporaryBan, TemporaryMute. 
 
 
 **Note:** Discord entity IDs can only be seen in the Discord client by enabling the ``Developer appearance`` option in Discord settings.
@@ -131,4 +131,5 @@ This way, the ordering of the arguments does not matter and therefore does not n
 **Note:** ``string...`` argument always comes last in queue because it captures raw text until the end of the message.
 
 **Note:** It is always preferred to surround arguments of type ``string`` with quotes. 
+
 This eliminates the misinterpretation in case two strings are required as arguments (if quotes are not used, the space will be seen as a separator and the passed text will be interpreted as multiple strings, which is not usually a behaviour that the user expects). However, note that if the argument type is ``string...`` , the quotes will be captured as well.

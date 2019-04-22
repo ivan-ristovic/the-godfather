@@ -14,7 +14,7 @@
 
 **Examples:**
 
-```
+```xml
 !8ball Am I gay?
 ```
 </p></details>
@@ -29,11 +29,6 @@
 **Aliases:**
 `kitty, kitten`
 
-**Examples:**
-
-```
-!random cat
-```
 </p></details>
 
 ---
@@ -46,11 +41,6 @@
 **Aliases:**
 `coin, flip`
 
-**Examples:**
-
-```
-!coinflip
-```
 </p></details>
 
 ---
@@ -74,8 +64,8 @@
 
 **Examples:**
 
-```
-!connect
+```xml
+!connect 
 !connect Music
 ```
 </p></details>
@@ -87,11 +77,6 @@
 
 *Commit a crime and hope to get away with large amounts of cash. You can attempt to commit a crime once every 10 minutes.*
 
-**Examples:**
-
-```
-!crime
-```
 </p></details>
 
 ---
@@ -104,11 +89,6 @@
 **Aliases:**
 `die, roll`
 
-**Examples:**
-
-```
-!dice
-```
 </p></details>
 
 ---
@@ -126,11 +106,6 @@
 **Aliases:**
 `dcon, dconn, discon, disconn, dc`
 
-**Examples:**
-
-```
-!disconnect
-```
 </p></details>
 
 ---
@@ -143,11 +118,6 @@
 **Aliases:**
 `doge, puppy, pup`
 
-**Examples:**
-
-```
-!random dog
-```
 </p></details>
 
 ---
@@ -176,11 +146,6 @@
 **Aliases:**
 `getinvite`
 
-**Examples:**
-
-```
-!invite
-```
 </p></details>
 
 ---
@@ -199,7 +164,7 @@
 
 **Examples:**
 
-```
+```xml
 !ipstack 123.123.123.123
 ```
 </p></details>
@@ -223,8 +188,8 @@
 
 **Examples:**
 
-```
-!items
+```xml
+!items 
 !items @Someone
 ```
 </p></details>
@@ -239,11 +204,6 @@
 **Requires permissions:**
 `Administrator`
 
-**Examples:**
-
-```
-!leave
-```
 </p></details>
 
 ---
@@ -262,7 +222,7 @@
 
 **Examples:**
 
-```
+```xml
 !leet Some sentence
 ```
 </p></details>
@@ -277,11 +237,6 @@
 **Aliases:**
 `worldnews`
 
-**Examples:**
-
-```
-!news
-```
 </p></details>
 
 ---
@@ -302,9 +257,9 @@
 
 **Examples:**
 
-```
-!nsfw some_nasty_nsfw_url_here
-!nsfw some_nasty_nsfw_url_here additional info
+```xml
+!nsfw http://unsafe.to.view
+!nsfw http://unsafe.to.view message
 ```
 </p></details>
 
@@ -328,7 +283,8 @@
 
 **Examples:**
 
-```
+```xml
+!penis 
 !penis @Someone
 ```
 </p></details>
@@ -353,7 +309,7 @@
 
 **Examples:**
 
-```
+```xml
 !peniscompare @Someone
 !peniscompare @Someone @SomeoneElse
 ```
@@ -366,11 +322,6 @@
 
 *Ping the bot.*
 
-**Examples:**
-
-```
-!ping
-```
 </p></details>
 
 ---
@@ -392,8 +343,8 @@
 
 **Examples:**
 
-```
-!prefix
+```xml
+!prefix 
 !prefix ;
 ```
 </p></details>
@@ -414,8 +365,8 @@
 
 **Examples:**
 
-```
-!quoteoftheday
+```xml
+!quoteoftheday 
 !quoteoftheday life
 ```
 </p></details>
@@ -443,7 +394,7 @@
 
 **Examples:**
 
-```
+```xml
 !rate @Someone
 ```
 </p></details>
@@ -470,8 +421,8 @@
 
 **Examples:**
 
-```
-!rpoll :smile: :joy:
+```xml
+!reactionspoll :smile: :joy:
 ```
 </p></details>
 
@@ -488,7 +439,7 @@
 
 **Examples:**
 
-```
+```xml
 !report Your bot sucks!
 ```
 </p></details>
@@ -509,7 +460,7 @@
 
 **Examples:**
 
-```
+```xml
 !rss https://news.google.com/news/rss/
 ```
 </p></details>
@@ -530,7 +481,7 @@
 
 **Examples:**
 
-```
+```xml
 !say I am gay.
 ```
 </p></details>
@@ -551,8 +502,8 @@
 
 **Examples:**
 
-```
-!simulate @Someone.
+```xml
+!simulate @Someone
 ```
 </p></details>
 
@@ -568,11 +519,6 @@
 **Requires bot permissions:**
 `Use voice chat`
 
-**Examples:**
-
-```
-!skip
-```
 </p></details>
 
 ---
@@ -582,11 +528,6 @@
 
 *Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.*
 
-**Examples:**
-
-```
-!slut
-```
 </p></details>
 
 ---
@@ -601,11 +542,6 @@
 **Requires bot permissions:**
 `Use voice chat`
 
-**Examples:**
-
-```
-!stop
-```
 </p></details>
 
 ---
@@ -629,7 +565,8 @@
 
 **Examples:**
 
-```
+```xml
+!subscribe 
 !subscribe https://news.google.com/news/rss/
 !subscribe https://news.google.com/news/rss/ news
 ```
@@ -648,11 +585,6 @@
 **Aliases:**
 `ls, listsubs, listfeeds`
 
-**Examples:**
-
-```
-!subscribe list
-```
 </p></details>
 
 ---
@@ -674,7 +606,7 @@
 
 **Examples:**
 
-```
+```xml
 !subscribe reddit aww
 ```
 </p></details>
@@ -700,7 +632,7 @@
 
 **Examples:**
 
-```
+```xml
 !subscribe youtube https://www.youtube.com/user/RickAstleyVEVO
 !subscribe youtube https://www.youtube.com/user/RickAstleyVEVO rick
 ```
@@ -722,7 +654,7 @@
 
 **Examples:**
 
-```
+```xml
 !tts I am gay.
 ```
 </p></details>
@@ -743,7 +675,7 @@
 
 **Examples:**
 
-```
+```xml
 !unleet w0W 5uCh C0oL
 ```
 </p></details>
@@ -771,7 +703,7 @@
 
 **Examples:**
 
-```
+```xml
 !unsubscribe 1
 ```
 </p></details>
@@ -793,11 +725,6 @@
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-**Examples:**
-
-```
-!unsub all
-```
 </p></details>
 
 ---
@@ -819,8 +746,8 @@
 
 **Examples:**
 
-```
-!unsub reddit aww
+```xml
+!unsubscribe reddit aww
 ```
 </p></details>
 
@@ -843,9 +770,9 @@
 
 **Examples:**
 
-```
-!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
-!youtube unsubscribe rick
+```xml
+!unsubscribe youtube https://www.youtube.com/user/RickAstleyVEVO
+!unsubscribe youtube rick
 ```
 </p></details>
 
@@ -856,11 +783,6 @@
 
 *Prints out bot runtime information.*
 
-**Examples:**
-
-```
-!uptime
-```
 </p></details>
 
 ---
@@ -873,11 +795,6 @@
 **Aliases:**
 `job`
 
-**Examples:**
-
-```
-!work
-```
 </p></details>
 
 ---
@@ -896,7 +813,7 @@
 
 **Examples:**
 
-```
+```xml
 !zugify Some random text
 ```
 </p></details>

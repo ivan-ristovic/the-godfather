@@ -23,7 +23,7 @@
 
 **Examples:**
 
-```
+```xml
 !poll Do you vote for User1 or User2?
 !poll 5m Do you vote for User1 or User2?
 ```
@@ -42,11 +42,6 @@
 **Aliases:**
 `end, cancel`
 
-**Examples:**
-
-```
-!poll stop
-```
 </p></details>
 
 ---
@@ -65,7 +60,7 @@
 
 **Examples:**
 
-```
+```xml
 !vote 1
 ```
 </p></details>
@@ -80,11 +75,6 @@
 **Aliases:**
 `c, reset`
 
-**Examples:**
-
-```
-!vote cancel
-```
 </p></details>
 
 ---

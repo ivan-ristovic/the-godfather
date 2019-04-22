@@ -29,10 +29,13 @@
 
 **Examples:**
 
-```
-!birthdays
-!birthday add @Someone #channel_to_send_message_to
-!birthday add @Someone 15.2.1990 #channel_to_send_message_to
+```xml
+!birthdays 
+!birthdays @Someone
+!birthdays @Someone #channel
+!birthdays @Someone 15.2.1990
+!birthdays @Someone #channel 15.2.1990
+!birthdays @Someone 15.2.1990 #channel
 ```
 </p></details>
 
@@ -67,12 +70,12 @@
 
 **Examples:**
 
-```
-!birthday add @Someone
-!birthday add @Someone #channel_to_send_message_to
-!birthday add @Someone 15.2.1990
-!birthday add @Someone #channel_to_send_message_to 15.2.1990
-!birthday add @Someone 15.2.1990 #channel_to_send_message_to
+```xml
+!birthdays add @Someone
+!birthdays add @Someone #channel
+!birthdays add @Someone 15.2.1990
+!birthdays add @Someone #channel 15.2.1990
+!birthdays add @Someone 15.2.1990 #channel
 ```
 </p></details>
 
@@ -99,8 +102,9 @@
 
 **Examples:**
 
-```
-!birthday delete @Someone
+```xml
+!birthdays delete @Someone
+!birthdays delete #channel
 ```
 </p></details>
 
@@ -121,11 +125,6 @@
 
 (optional) `[channel]` : *Channel for which to list.* (def: `None`)
 
-**Examples:**
-
-```
-!birthday list
-```
 </p></details>
 
 ---
@@ -143,11 +142,6 @@
 **Aliases:**
 `lsa`
 
-**Examples:**
-
-```
-!birthday listall
-```
 </p></details>
 
 ---
@@ -189,8 +183,8 @@
 
 **Examples:**
 
-```
-!grant name My New Display Name
+```xml
+!grant nickname My New Display Name
 ```
 </p></details>
 
@@ -213,7 +207,7 @@
 
 **Examples:**
 
-```
+```xml
 !grant role @Announcements
 ```
 </p></details>
@@ -234,7 +228,8 @@
 
 **Examples:**
 
-```
+```xml
+!insult 
 !insult @Someone
 ```
 </p></details>
@@ -257,7 +252,7 @@
 
 **Examples:**
 
-```
+```xml
 !insult add %user% is lowering the IQ of the entire street!
 ```
 </p></details>
@@ -280,8 +275,8 @@
 
 **Examples:**
 
-```
-!insult delete 2
+```xml
+!insult delete !insult delete 2
 ```
 </p></details>
 
@@ -297,11 +292,6 @@
 **Aliases:**
 `clear, da, c, ca, cl, clearall, >>>`
 
-**Examples:**
-
-```
-!insults clear
-```
 </p></details>
 
 ---
@@ -314,11 +304,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!insult list
-```
 </p></details>
 
 ---
@@ -337,8 +322,8 @@
 
 **Examples:**
 
-```
-!meme
+```xml
+!meme 
 !meme SomeMemeNameWhichYouAdded
 ```
 </p></details>
@@ -370,7 +355,7 @@
 
 **Examples:**
 
-```
+```xml
 !meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
 </p></details>
@@ -398,7 +383,7 @@
 
 **Examples:**
 
-```
+```xml
 !meme create 1stworld "Top text" "Bottom text"
 ```
 </p></details>
@@ -422,7 +407,7 @@
 
 **Examples:**
 
-```
+```xml
 !meme delete pepe
 ```
 </p></details>
@@ -440,11 +425,6 @@
 **Aliases:**
 `clear, da, ca, cl, clearall, >>>`
 
-**Examples:**
-
-```
-!memes clear
-```
 </p></details>
 
 ---
@@ -457,11 +437,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!meme list
-```
 </p></details>
 
 ---
@@ -474,11 +449,6 @@
 **Aliases:**
 `template, t`
 
-**Examples:**
-
-```
-!meme templates
-```
 </p></details>
 
 ---
@@ -509,7 +479,7 @@
 
 **Examples:**
 
-```
+```xml
 !random choose option 1, option 2, option 3...
 ```
 </p></details>
@@ -530,8 +500,8 @@
 
 **Examples:**
 
-```
-!random raffle
+```xml
+!random raffle 
 !random raffle Admins
 ```
 </p></details>
@@ -552,8 +522,8 @@
 
 **Examples:**
 
-```
-!rank
+```xml
+!rank 
 !rank @Someone
 ```
 </p></details>
@@ -579,7 +549,7 @@
 
 **Examples:**
 
-```
+```xml
 !rank add 1 Private
 ```
 </p></details>
@@ -603,7 +573,7 @@
 
 **Examples:**
 
-```
+```xml
 !rank delete 3
 ```
 </p></details>
@@ -618,11 +588,6 @@
 **Aliases:**
 `levels, ls, l, print`
 
-**Examples:**
-
-```
-!rank list
-```
 </p></details>
 
 ---
@@ -632,11 +597,6 @@
 
 *Get rank leaderboard.*
 
-**Examples:**
-
-```
-!rank top
-```
 </p></details>
 
 ---
@@ -674,7 +634,7 @@
 
 **Examples:**
 
-```
+```xml
 !revoke role @Announcements
 ```
 </p></details>

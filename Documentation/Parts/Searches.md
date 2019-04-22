@@ -14,7 +14,7 @@
 
 **Examples:**
 
-```
+```xml
 !gif wat
 ```
 </p></details>
@@ -29,11 +29,6 @@
 **Aliases:**
 `r, rand, rnd`
 
-**Examples:**
-
-```
-!gif random
-```
 </p></details>
 
 ---
@@ -52,8 +47,8 @@
 
 **Examples:**
 
-```
-!gif trending
+```xml
+!gif trending 
 !gif trending 3
 ```
 </p></details>
@@ -74,7 +69,7 @@
 
 **Examples:**
 
-```
+```xml
 !goodreads Ender's Game
 ```
 </p></details>
@@ -95,7 +90,7 @@
 
 **Examples:**
 
-```
+```xml
 !goodreads book Ender's Game
 ```
 </p></details>
@@ -116,7 +111,7 @@
 
 **Examples:**
 
-```
+```xml
 !imdb Airplane
 ```
 </p></details>
@@ -134,7 +129,7 @@
 
 **Examples:**
 
-```
+```xml
 !imdb id tt4158110
 ```
 </p></details>
@@ -155,8 +150,8 @@
 
 **Examples:**
 
-```
-!imdb search Kill Bill
+```xml
+!imdb search Sharknado
 ```
 </p></details>
 
@@ -176,7 +171,7 @@
 
 **Examples:**
 
-```
+```xml
 !imdb title Airplane
 ```
 </p></details>
@@ -205,7 +200,7 @@
 
 **Examples:**
 
-```
+```xml
 !imgur aww
 !imgur 10 aww
 !imgur aww 10
@@ -236,9 +231,10 @@
 
 **Examples:**
 
-```
-!imgur latest 5 aww
-!imgur latest aww 5
+```xml
+!imgur latest aww
+!imgur latest 10 aww
+!imgur latest aww 10
 ```
 </p></details>
 
@@ -284,7 +280,7 @@
 
 **Examples:**
 
-```
+```xml
 !imgur top day 10 aww
 !imgur top 10 day aww
 !imgur top 5 aww
@@ -302,11 +298,6 @@
 **Aliases:**
 `jokes, j`
 
-**Examples:**
-
-```
-!joke
-```
 </p></details>
 
 ---
@@ -325,7 +316,7 @@
 
 **Examples:**
 
-```
+```xml
 !joke search blonde
 ```
 </p></details>
@@ -340,11 +331,6 @@
 **Aliases:**
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
 
-**Examples:**
-
-```
-!joke yourmom
-```
 </p></details>
 
 ---
@@ -363,7 +349,8 @@
 
 **Examples:**
 
-```
+```xml
+!reddit 
 !reddit aww
 ```
 </p></details>
@@ -381,7 +368,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit controversial aww
 ```
 </p></details>
@@ -399,7 +386,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit gilded aww
 ```
 </p></details>
@@ -417,7 +404,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit hot aww
 ```
 </p></details>
@@ -438,7 +425,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit new aww
 ```
 </p></details>
@@ -456,7 +443,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit rising aww
 ```
 </p></details>
@@ -480,8 +467,8 @@
 
 **Examples:**
 
-```
-!reddit sub aww
+```xml
+!reddit subscribe aww
 ```
 </p></details>
 
@@ -498,7 +485,7 @@
 
 **Examples:**
 
-```
+```xml
 !reddit top aww
 ```
 </p></details>
@@ -526,9 +513,9 @@
 
 **Examples:**
 
-```
-!reddit unsub aww
-!reddit unsub 12
+```xml
+!reddit unsubscribe aww
+!reddit unsubscribe 12
 ```
 </p></details>
 
@@ -544,8 +531,8 @@
 
 **Examples:**
 
-```
-!steam profile 123456123
+```xml
+!steam 123456123
 ```
 </p></details>
 
@@ -563,6 +550,11 @@
 
 `[unsigned long]` : *ID.*
 
+**Examples:**
+
+```xml
+!steam profile 123456123
+```
 </p></details>
 
 ---
@@ -581,7 +573,7 @@
 
 **Examples:**
 
-```
+```xml
 !urbandict blonde
 ```
 </p></details>
@@ -602,7 +594,7 @@
 
 **Examples:**
 
-```
+```xml
 !weather london
 ```
 </p></details>
@@ -629,7 +621,7 @@
 
 **Examples:**
 
-```
+```xml
 !weather forecast london
 !weather forecast 5 london
 ```
@@ -651,7 +643,7 @@
 
 **Examples:**
 
-```
+```xml
 !wikipedia Linux
 ```
 </p></details>
@@ -672,7 +664,7 @@
 
 **Examples:**
 
-```
+```xml
 !wikipedia search Linux
 ```
 </p></details>
@@ -693,8 +685,9 @@
 
 **Examples:**
 
-```
-!xkcd
+```xml
+!xkcd 
+!xkcd 650
 ```
 </p></details>
 
@@ -711,7 +704,8 @@
 
 **Examples:**
 
-```
+```xml
+!xkcd id 
 !xkcd id 650
 ```
 </p></details>
@@ -726,11 +720,6 @@
 **Aliases:**
 `fresh, newest, l`
 
-**Examples:**
-
-```
-!xkcd latest
-```
 </p></details>
 
 ---
@@ -743,11 +732,6 @@
 **Aliases:**
 `rnd, r, rand`
 
-**Examples:**
-
-```
-!xkcd random
-```
 </p></details>
 
 ---
@@ -766,7 +750,7 @@
 
 **Examples:**
 
-```
+```xml
 !youtube never gonna give you up
 ```
 </p></details>
@@ -789,7 +773,7 @@
 
 **Examples:**
 
-```
+```xml
 !youtube search 5 rick astley
 ```
 </p></details>
@@ -810,8 +794,8 @@
 
 **Examples:**
 
-```
-!youtube searchchannel 5 rick astley
+```xml
+!youtube searchchannel rick astley
 ```
 </p></details>
 
@@ -831,8 +815,8 @@
 
 **Examples:**
 
-```
-!youtube searchplaylist 5 rick astley
+```xml
+!youtube searchp rick astley
 ```
 </p></details>
 
@@ -852,8 +836,8 @@
 
 **Examples:**
 
-```
-!youtube searchvideo 5 rick astley
+```xml
+!youtube searchvideo rick astley
 ```
 </p></details>
 
@@ -878,7 +862,7 @@
 
 **Examples:**
 
-```
+```xml
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick
 ```
@@ -903,7 +887,7 @@
 
 **Examples:**
 
-```
+```xml
 !youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube unsubscribe rick
 ```

@@ -473,7 +473,7 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command modules:");
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 string mname = mattr.Module.ToString();
-                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
+                sb.Append("  - ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
             }
 
             try {

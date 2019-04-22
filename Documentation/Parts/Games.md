@@ -26,8 +26,9 @@
 
 **Examples:**
 
-```
-!deck draw 5
+```xml
+!cards draw 
+!cards draw 5
 ```
 </p></details>
 
@@ -41,11 +42,6 @@
 **Aliases:**
 `new, opennew, open`
 
-**Examples:**
-
-```
-!deck reset
-```
 </p></details>
 
 ---
@@ -70,11 +66,6 @@
 **Aliases:**
 `animr, arace, ar, animalr`
 
-**Examples:**
-
-```
-!game animalrace
-```
 </p></details>
 
 ---
@@ -87,11 +78,6 @@
 **Aliases:**
 `+, compete, enter, j`
 
-**Examples:**
-
-```
-!game animalrace join
-```
 </p></details>
 
 ---
@@ -104,11 +90,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game animalrace stats
-```
 </p></details>
 
 ---
@@ -127,8 +108,8 @@
 
 **Examples:**
 
-```
-!game caro
+```xml
+!game caro 
 !game caro 10s
 ```
 </p></details>
@@ -143,11 +124,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game caro rules
-```
 </p></details>
 
 ---
@@ -160,11 +136,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game caro stats
-```
 </p></details>
 
 ---
@@ -183,8 +154,8 @@
 
 **Examples:**
 
-```
-!game connect4
+```xml
+!game connect4 
 !game connect4 10s
 ```
 </p></details>
@@ -199,11 +170,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game connect4 rules
-```
 </p></details>
 
 ---
@@ -216,11 +182,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game connect4 stats
-```
 </p></details>
 
 ---
@@ -239,7 +200,7 @@
 
 **Examples:**
 
-```
+```xml
 !game duel @Someone
 ```
 </p></details>
@@ -254,11 +215,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game duel rules
-```
 </p></details>
 
 ---
@@ -271,11 +227,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game duel stats
-```
 </p></details>
 
 ---
@@ -288,11 +239,6 @@
 **Aliases:**
 `h, hang`
 
-**Examples:**
-
-```
-!game hangman
-```
 </p></details>
 
 ---
@@ -305,11 +251,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game hangman rules
-```
 </p></details>
 
 ---
@@ -322,11 +263,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game hangman stats
-```
 </p></details>
 
 ---
@@ -339,11 +275,6 @@
 **Aliases:**
 `globalstats`
 
-**Examples:**
-
-```
-!game leaderboard
-```
 </p></details>
 
 ---
@@ -356,11 +287,6 @@
 **Aliases:**
 `nr, n, nunchi, numbers, numbersrace`
 
-**Examples:**
-
-```
-!game numberrace
-```
 </p></details>
 
 ---
@@ -373,11 +299,6 @@
 **Aliases:**
 `+, compete, j, enter`
 
-**Examples:**
-
-```
-!game numberrace join
-```
 </p></details>
 
 ---
@@ -390,11 +311,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game numberrace rules
-```
 </p></details>
 
 ---
@@ -407,11 +323,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game numberrace stats
-```
 </p></details>
 
 ---
@@ -430,8 +341,8 @@
 
 **Examples:**
 
-```
-!game othello
+```xml
+!game othello 
 !game othello 10s
 ```
 </p></details>
@@ -446,11 +357,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game othello rules
-```
 </p></details>
 
 ---
@@ -463,11 +369,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game othello stats
-```
 </p></details>
 
 ---
@@ -510,8 +411,8 @@
 
 **Examples:**
 
-```
-!game quiz
+```xml
+!game quiz 
 !game quiz countries
 !game quiz 9
 !game quiz history
@@ -538,8 +439,8 @@
 
 **Examples:**
 
-```
-!game quiz capitals
+```xml
+!game quiz capitals 
 !game quiz capitals 15
 ```
 </p></details>
@@ -560,8 +461,8 @@
 
 **Examples:**
 
-```
-!game quiz countries
+```xml
+!game quiz countries 
 !game quiz countries 15
 ```
 </p></details>
@@ -576,11 +477,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game quiz stats
-```
 </p></details>
 
 ---
@@ -599,7 +495,7 @@
 
 **Examples:**
 
-```
+```xml
 !game rps scissors
 ```
 </p></details>
@@ -614,11 +510,6 @@
 **Aliases:**
 `rr, roulette, russianr`
 
-**Examples:**
-
-```
-!game russianroulette
-```
 </p></details>
 
 ---
@@ -631,11 +522,6 @@
 **Aliases:**
 `+, compete, j, enter`
 
-**Examples:**
-
-```
-!game russianroulette join
-```
 </p></details>
 
 ---
@@ -648,11 +534,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game numberrace rules
-```
 </p></details>
 
 ---
@@ -671,8 +552,8 @@
 
 **Examples:**
 
-```
-!game stats
+```xml
+!game stats 
 !game stats @Someone
 ```
 </p></details>
@@ -693,8 +574,8 @@
 
 **Examples:**
 
-```
-!game tictactoe
+```xml
+!game tictactoe 
 !game tictactoe 10s
 ```
 </p></details>
@@ -709,11 +590,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!game tictactoe rules
-```
 </p></details>
 
 ---
@@ -726,11 +602,6 @@
 **Aliases:**
 `top, leaderboard`
 
-**Examples:**
-
-```
-!game tictactoe stats
-```
 </p></details>
 
 ---
@@ -743,11 +614,6 @@
 **Aliases:**
 `tr, trace, typerace, typing, typingr`
 
-**Examples:**
-
-```
-!game typingrace
-```
 </p></details>
 
 ---
@@ -760,11 +626,6 @@
 **Aliases:**
 `+, compete, enter, j`
 
-**Examples:**
-
-```
-!game typingrace join
-```
 </p></details>
 
 ---

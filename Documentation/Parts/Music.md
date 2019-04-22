@@ -23,7 +23,7 @@
 
 **Examples:**
 
-```
+```xml
 !play https://www.youtube.com/watch?v=dQw4w9WgXcQ
 !play what is love?
 ```
@@ -50,7 +50,7 @@
 
 **Examples:**
 
-```
+```xml
 !play file test.mp3
 ```
 </p></details>

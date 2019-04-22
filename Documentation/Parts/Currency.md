@@ -14,8 +14,8 @@
 
 **Examples:**
 
-```
-!bank
+```xml
+!bank 
 !bank @Someone
 ```
 </p></details>
@@ -36,7 +36,8 @@
 
 **Examples:**
 
-```
+```xml
+!bank balance 
 !bank balance @Someone
 ```
 </p></details>
@@ -57,7 +58,8 @@
 
 **Examples:**
 
-```
+```xml
+!bank currency 
 !bank currency :euro:
 !bank currency My Custom Currency Name
 ```
@@ -89,7 +91,7 @@
 
 **Examples:**
 
-```
+```xml
 !bank grant @Someone 1000
 !bank grant 1000 @Someone
 ```
@@ -105,11 +107,6 @@
 **Aliases:**
 `r, signup, activate`
 
-**Examples:**
-
-```
-!bank register
-```
 </p></details>
 
 ---
@@ -122,11 +119,6 @@
 **Aliases:**
 `leaderboard, elite`
 
-**Examples:**
-
-```
-!bank top
-```
 </p></details>
 
 ---
@@ -139,11 +131,6 @@
 **Aliases:**
 `globalleaderboard, globalelite, gtop, topg, globaltop`
 
-**Examples:**
-
-```
-!bank gtop
-```
 </p></details>
 
 ---
@@ -170,7 +157,7 @@
 
 **Examples:**
 
-```
+```xml
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
 ```
@@ -200,7 +187,7 @@
 
 **Examples:**
 
-```
+```xml
 !bank unregister @Someone
 ```
 </p></details>
@@ -233,8 +220,9 @@
 
 **Examples:**
 
-```
-!casino blackjack
+```xml
+!casino blackjack 
+!casino blackjack 100
 ```
 </p></details>
 
@@ -254,8 +242,9 @@
 
 **Examples:**
 
-```
-!casino blackjack join
+```xml
+!casino blackjack join 
+!casino blackjack join 100
 ```
 </p></details>
 
@@ -269,11 +258,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!casino blackjack rules
-```
 </p></details>
 
 ---
@@ -292,7 +276,8 @@
 
 **Examples:**
 
-```
+```xml
+!casino holdem 
 !casino holdem 10000
 ```
 </p></details>
@@ -307,11 +292,6 @@
 **Aliases:**
 `+, compete, enter, j, <<, <`
 
-**Examples:**
-
-```
-!casino holdem join
-```
 </p></details>
 
 ---
@@ -324,11 +304,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!casino holdem rules
-```
 </p></details>
 
 ---
@@ -347,7 +322,7 @@
 
 **Examples:**
 
-```
+```xml
 !casino lottery 2 10 8
 ```
 </p></details>
@@ -368,7 +343,7 @@
 
 **Examples:**
 
-```
+```xml
 !casino lottery join 2 10 8
 ```
 </p></details>
@@ -383,11 +358,6 @@
 **Aliases:**
 `help, h, ruling, rule`
 
-**Examples:**
-
-```
-!casino lottery rules
-```
 </p></details>
 
 ---
@@ -410,8 +380,10 @@
 
 **Examples:**
 
-```
+```xml
+!casino slot 
 !casino slot 20
+!casino slot 1k
 ```
 </p></details>
 
@@ -435,8 +407,10 @@
 
 **Examples:**
 
-```
-!casino wof 20
+```xml
+!casino wheeloffortune 
+!casino wheeloffortune 20
+!casino wheeloffortune 1k
 ```
 </p></details>
 
@@ -476,9 +450,9 @@
 
 **Examples:**
 
-```
-!bet coinflip 10 heads
-!bet coinflip tails 20
+```xml
+!gamble coinflip 10 heads
+!gamble coinflip tails 20
 ```
 </p></details>
 
@@ -506,9 +480,9 @@
 
 **Examples:**
 
-```
-!bet dice 50 six
-!bet dice three 10
+```xml
+!gamble dice 50 six
+!gamble dice three 10
 ```
 </p></details>
 
@@ -522,11 +496,6 @@
 **Aliases:**
 `store`
 
-**Examples:**
-
-```
-!shop
-```
 </p></details>
 
 ---
@@ -556,7 +525,7 @@
 
 **Examples:**
 
-```
+```xml
 !shop add Barbie 500
 !shop add "New Barbie" 500
 !shop add 500 Newest Barbie
@@ -583,7 +552,7 @@
 
 **Examples:**
 
-```
+```xml
 !shop buy 3
 ```
 </p></details>
@@ -607,7 +576,7 @@
 
 **Examples:**
 
-```
+```xml
 !shop delete Barbie
 !shop delete 5
 !shop delete 1 2 3 4 5
@@ -624,11 +593,6 @@
 **Aliases:**
 `ls`
 
-**Examples:**
-
-```
-!shop list
-```
 </p></details>
 
 ---
@@ -647,7 +611,7 @@
 
 **Examples:**
 
-```
+```xml
 !shop sell 3
 ```
 </p></details>

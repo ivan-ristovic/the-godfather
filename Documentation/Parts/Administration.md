@@ -19,9 +19,9 @@
 
 **Examples:**
 
-```
-!ar
-!ar @Guests
+```xml
+!automaticroles 
+!automaticroles @Guests
 ```
 </p></details>
 
@@ -44,9 +44,9 @@
 
 **Examples:**
 
-```
-!ar add @Notifications
-!ar add @Notifications @Role1 @Role2
+```xml
+!automaticroles add @Notifications
+!automaticroles add @Notifications @Role1 @Role2
 ```
 </p></details>
 
@@ -69,9 +69,9 @@
 
 **Examples:**
 
-```
-!ar delete @Notifications
-!ar delete @Notifications @Role1 @Role2
+```xml
+!automaticroles delete @Notifications
+!automaticroles delete @Notifications @Role1 @Role2
 ```
 </p></details>
 
@@ -88,11 +88,6 @@
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
 
-**Examples:**
-
-```
-!ar deleteall
-```
 </p></details>
 
 ---
@@ -108,11 +103,6 @@
 **Aliases:**
 `print, show, ls, l, p`
 
-**Examples:**
-
-```
-!ar list
-```
 </p></details>
 
 ---
@@ -131,8 +121,8 @@
 
 **Examples:**
 
-```
-!channel
+```xml
+!channel 
 !channel #general
 ```
 </p></details>
@@ -158,7 +148,7 @@
 
 **Examples:**
 
-```
+```xml
 !channel clone #general newname
 ```
 </p></details>
@@ -182,7 +172,7 @@
 
 **Examples:**
 
-```
+```xml
 !channel createcategory My New Category
 ```
 </p></details>
@@ -226,10 +216,11 @@
 
 **Examples:**
 
-```
-!channel addtext newtextchannel ParentCategory no
-!channel addtext newtextchannel no
-!channel addtext ParentCategory newtextchannel
+```xml
+!channel createtext mytextchannel
+!channel createtext newtextchannel ParentCategory no
+!channel createtext newtextchannel no
+!channel createtext ParentCategory newtextchannel
 ```
 </p></details>
 
@@ -278,10 +269,11 @@
 
 **Examples:**
 
-```
-!channel createtext "My voice channel" ParentCategory 0 96000
-!channel createtext "My voice channel" 10 96000
-!channel createtext ParentCategory "My voice channel" 10 96000
+```xml
+!channel createvoice "Music"
+!channel createvoice "Music" ParentCategory 0 96000
+!channel createvoice "Music" 10 96000
+!channel createvoice ParentCategory "Music" 10 96000
 ```
 </p></details>
 
@@ -310,10 +302,11 @@
 
 **Examples:**
 
-```
-!channel delete
-!channel delete "My voice channel"
+```xml
+!channel delete 
+!channel delete "text_channel"
 !channel delete "My voice channel" Because I can!
+!channel delete My Category
 ```
 </p></details>
 
@@ -333,9 +326,9 @@
 
 **Examples:**
 
-```
-!channel info
-!channel info "My voice channel"
+```xml
+!channel info 
+!channel info #some_channel
 ```
 </p></details>
 
@@ -372,7 +365,8 @@
 
 **Examples:**
 
-```
+```xml
+!channel modify 
 !channel modify "My voice channel" 20 96000 Some reason
 ```
 </p></details>
@@ -410,7 +404,7 @@
 
 **Examples:**
 
-```
+```xml
 !channel rename New name for this channel
 !channel rename "My voice channel" "My old voice channel"
 !channel rename "My reason" "My voice channel" "My old voice channel"
@@ -454,7 +448,8 @@
 
 **Examples:**
 
-```
+```xml
+!channel setnsfw 
 !channel setnsfw #general
 !channel setnsfw false #general
 ```
@@ -489,7 +484,7 @@
 
 **Examples:**
 
-```
+```xml
 !channel setparent "My channel" ParentCategory
 !channel setparent ParentCategory I set a new parent for this channel!
 ```
@@ -532,10 +527,10 @@
 
 **Examples:**
 
-```
+```xml
 !channel setposition 4
 !channel setposition "My channel" 1
-!channel setposition "My channel" 4 I changed position :)
+!channel setposition "My channel" 4 I changed the position :)
 ```
 </p></details>
 
@@ -576,9 +571,9 @@
 
 **Examples:**
 
-```
+```xml
 !channel setratelimit #general 5
-!channel setratelimit 5 #general Reason
+!channel setratelimit #general Reason
 ```
 </p></details>
 
@@ -615,9 +610,9 @@
 
 **Examples:**
 
-```
+```xml
 !channel settopic New channel topic
-!channel settopic "My channel" New channel topic
+!channel settopic #text_channel New channel topic
 ```
 </p></details>
 
@@ -660,11 +655,152 @@
 
 **Examples:**
 
-```
+```xml
+!channel viewperms 
 !channel viewperms @Someone
 !channel viewperms Admins
 !channel viewperms #private everyone
 !channel viewperms everyone #private
+```
+</p></details>
+
+---
+
+## Group: channel webhooks
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manage webhooks for given channel. Group call lists all existing webhooks in channel.*
+
+**Requires permissions:**
+`Manage webhooks`
+
+**Aliases:**
+`wh, webhook, whook`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list webhooks for.* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel webhooks 
+!channel webhooks #general
+```
+</p></details>
+
+---
+
+### channel webhooks add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Create a new webhook in channel.*
+
+**Requires permissions:**
+`Manage webhooks`
+
+**Aliases:**
+`a, c, +, +=, create, <<, <`
+
+**Overload 1:**
+
+`[channel]` : *Channel to list webhooks for.*
+
+`[string]` : *Name.*
+
+(optional) `[URL]` : *Avatar URL.* (def: `None`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+`[string]` : *Name.*
+
+(optional) `[URL]` : *Avatar URL.* (def: `None`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel webhooks add "My Webhook"
+!channel webhooks add MyWebhook http://some.avatar/url.here
+```
+</p></details>
+
+---
+
+### channel webhooks delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Create a new webhook in channel.*
+
+**Requires permissions:**
+`Manage webhooks`
+
+**Aliases:**
+`-, del, d, remove, rm, >>, >`
+
+**Arguments:**
+
+`[string]` : *Name.*
+
+(optional) `[channel]` : *Channel to list webhooks for.* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel webhooks delete "My Webhook"
+```
+</p></details>
+
+---
+
+### channel webhooks deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Create a new webhook in channel.*
+
+**Requires permissions:**
+`Manage webhooks`
+
+**Aliases:**
+`-a, clear, delall, da, removeall, rmrf, >>>`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list webhooks for.* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel webhooks deleteall 
+!channel webhooks deleteall #some_channel
+```
+</p></details>
+
+---
+
+### channel webhooks list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all existing webhooks in channel.*
+
+**Requires permissions:**
+`Manage webhooks`
+
+**Aliases:**
+`l, ls`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list webhooks for.* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel webhooks list 
+!channel webhooks list #general
 ```
 </p></details>
 
@@ -688,7 +824,7 @@
 ### commandrules allow
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Allow a command to be executed only in specific channel(s).*
+*Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).*
 
 **Requires user permissions:**
 `Manage guild`
@@ -698,14 +834,16 @@
 
 **Arguments:**
 
-`[string]` : *Command to forbid.*
+`[string]` : *Command or group to allow.*
 
-`[channel...]` : *Channels where to forbid.*
+`[channel...]` : *Channels where to allow the command.*
 
 **Examples:**
 
-```
-!commandrules allow
+```xml
+!commandrules allow 8ball
+!commandrules allow 8ball #spam
+!commandrules allow "g cfg" #config
 ```
 </p></details>
 
@@ -714,7 +852,7 @@
 ### commandrules forbid
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Forbid a command to be executed in a specific channel(s) (or globally if no channel is provided).*
+*Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).*
 
 **Requires user permissions:**
 `Manage guild`
@@ -724,14 +862,16 @@
 
 **Arguments:**
 
-`[string]` : *Command to forbid.*
+`[string]` : *Command or group to forbid.*
 
-`[channel...]` : *Channels where to forbid.*
+`[channel...]` : *Channels where to forbid the command.*
 
 **Examples:**
 
-```
-!commandrules allow
+```xml
+!commandrules forbid giphy
+!commandrules forbid game #general
+!commandrules forbid "g cfg" #general
 ```
 </p></details>
 
@@ -748,11 +888,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!commandrules list
-```
 </p></details>
 
 ---
@@ -771,8 +906,8 @@
 
 **Examples:**
 
-```
-!emoji
+```xml
+!emoji 
 !emoji :some_emoji:
 ```
 </p></details>
@@ -816,7 +951,7 @@
 
 **Examples:**
 
-```
+```xml
 !emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 !emoji add pepe [ATTACHED IMAGE]
 !emoji add pepe :pepe_from_other_server:
@@ -842,7 +977,7 @@
 
 **Examples:**
 
-```
+```xml
 !emoji delete pepe
 ```
 </p></details>
@@ -863,7 +998,7 @@
 
 **Examples:**
 
-```
+```xml
 !emoji info :pepe:
 ```
 </p></details>
@@ -878,11 +1013,6 @@
 **Aliases:**
 `print, show, l, p, ls`
 
-**Examples:**
-
-```
-!emoji list
-```
 </p></details>
 
 ---
@@ -912,7 +1042,7 @@
 
 **Examples:**
 
-```
+```xml
 !emoji modify :pepe: newname
 !emoji modify newname :pepe:
 ```
@@ -937,7 +1067,8 @@
 
 **Examples:**
 
-```
+```xml
+!filter 
 !filter fuck fk f+u+c+k+
 ```
 </p></details>
@@ -961,7 +1092,7 @@
 
 **Examples:**
 
-```
+```xml
 !filter add fuck f+u+c+k+
 ```
 </p></details>
@@ -989,7 +1120,7 @@
 
 **Examples:**
 
-```
+```xml
 !filter delete fuck f+u+c+k+
 !filter delete 3 4
 ```
@@ -1008,11 +1139,6 @@
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
 
-**Examples:**
-
-```
-!filter clear
-```
 </p></details>
 
 ---
@@ -1028,11 +1154,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!filter list
-```
 </p></details>
 
 ---
@@ -1057,7 +1178,8 @@
 
 **Examples:**
 
-```
+```xml
+!forbiddennames 
 !forbiddennames f+u+c+k
 ```
 </p></details>
@@ -1084,7 +1206,7 @@
 
 **Examples:**
 
-```
+```xml
 !forbiddennames add fuck f+u+c+k+
 ```
 </p></details>
@@ -1115,7 +1237,7 @@
 
 **Examples:**
 
-```
+```xml
 !forbiddennames delete 3 4
 !forbiddennames delete SomeName
 ```
@@ -1137,11 +1259,6 @@
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
 
-**Examples:**
-
-```
-!forbiddennames clear
-```
 </p></details>
 
 ---
@@ -1160,11 +1277,6 @@
 **Aliases:**
 `ls, l`
 
-**Examples:**
-
-```
-!forbiddennames list
-```
 </p></details>
 
 ---
@@ -1177,11 +1289,6 @@
 **Aliases:**
 `server, g`
 
-**Examples:**
-
-```
-!guild
-```
 </p></details>
 
 ---
@@ -1197,11 +1304,6 @@
 **Aliases:**
 `configuration, config, cfg`
 
-**Examples:**
-
-```
-!guild configure
-```
 </p></details>
 
 ---
@@ -1263,10 +1365,10 @@
 
 **Examples:**
 
-```
-!guild cfg antiflood
-!guild cfg antiflood on
-!guild cfg antiflood on kick 5s
+```xml
+!guild configure antiflood 
+!guild configure antiflood on
+!guild configure antiflood on kick 5s
 ```
 </p></details>
 
@@ -1289,9 +1391,9 @@
 
 **Examples:**
 
-```
-!guild cfg antiflood action mute
-!guild cfg antiflood action temporaryban
+```xml
+!guild configure antiflood action mute
+!guild configure antiflood action temporaryban
 ```
 </p></details>
 
@@ -1314,8 +1416,8 @@
 
 **Examples:**
 
-```
-!guild cfg antiflood cooldown 9s
+```xml
+!guild configure antiflood cooldown 9s
 ```
 </p></details>
 
@@ -1338,8 +1440,8 @@
 
 **Examples:**
 
-```
-!guild cfg antiflood sensitivity 9
+```xml
+!guild configure antiflood sensitivity 9
 ```
 </p></details>
 
@@ -1378,12 +1480,12 @@
 
 **Examples:**
 
-```
-!guild cfg antispam
-!guild cfg antispam on
-!guild cfg antispam on mute
-!guild cfg antispam on 5
-!guild cfg antispam on 6 kick
+```xml
+!guild configure antispam 
+!guild configure antispam on
+!guild configure antispam on mute
+!guild configure antispam on 5
+!guild configure antispam on 6 kick
 ```
 </p></details>
 
@@ -1406,9 +1508,9 @@
 
 **Examples:**
 
-```
-!guild cfg antispam action mute
-!guild cfg antispam action temporaryban
+```xml
+!guild configure antispam action mute
+!guild configure antispam action temporaryban
 ```
 </p></details>
 
@@ -1439,10 +1541,10 @@
 
 **Examples:**
 
-```
-!guild cfg antispam exempt @Someone
-!guild cfg antispam exempt #spam
-!guild cfg antispam exempt Role
+```xml
+!guild configure antispam exempt @Someone
+!guild configure antispam exempt #spam
+!guild configure antispam exempt Role
 ```
 </p></details>
 
@@ -1465,8 +1567,8 @@
 
 **Examples:**
 
-```
-!guild cfg antispam sensitivity 9
+```xml
+!guild configure antispam sensitivity 9
 ```
 </p></details>
 
@@ -1497,10 +1599,10 @@
 
 **Examples:**
 
-```
-!guild cfg antispam unexempt @Someone
-!guild cfg antispam unexempt #spam
-!guild cfg antispam unexempt Category
+```xml
+!guild configure antispam unexempt @Someone
+!guild configure antispam unexempt #spam
+!guild configure antispam unexempt Category
 ```
 </p></details>
 
@@ -1529,10 +1631,10 @@
 
 **Examples:**
 
-```
-!guild cfg instaleave
-!guild cfg instaleave on
-!guild cfg instaleave on 5
+```xml
+!guild configure instantleave 
+!guild configure instantleave on
+!guild configure instantleave on 5
 ```
 </p></details>
 
@@ -1555,8 +1657,8 @@
 
 **Examples:**
 
-```
-!guild cfg instaleave cooldown 5
+```xml
+!guild configure instantleave cooldown 5
 ```
 </p></details>
 
@@ -1593,11 +1695,11 @@
 
 **Examples:**
 
-```
-!guild cfg leave
-!guild cfg leave on #general
-!guild cfg leave Welcome, %user%!
-!guild cfg leave off
+```xml
+!guild configure leave 
+!guild configure leave on #general
+!guild configure leave Welcome, %user%!
+!guild configure leave off
 ```
 </p></details>
 
@@ -1620,9 +1722,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter
-!guild cfg linkfilter on
+```xml
+!guild configure linkfilter 
+!guild configure linkfilter on
 ```
 </p></details>
 
@@ -1645,9 +1747,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter booters
-!guild cfg linkfilter booters on
+```xml
+!guild configure linkfilter booters 
+!guild configure linkfilter booters on
 ```
 </p></details>
 
@@ -1670,9 +1772,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter disturbing
-!guild cfg linkfilter disturbing on
+```xml
+!guild configure linkfilter disturbingsites 
+!guild configure linkfilter disturbingsites on
 ```
 </p></details>
 
@@ -1695,9 +1797,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter invites
-!guild cfg linkfilter invites on
+```xml
+!guild configure linkfilter invites 
+!guild configure linkfilter invites on
 ```
 </p></details>
 
@@ -1720,9 +1822,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter iploggers
-!guild cfg linkfilter iploggers on
+```xml
+!guild configure linkfilter iploggers 
+!guild configure linkfilter iploggers on
 ```
 </p></details>
 
@@ -1745,9 +1847,9 @@
 
 **Examples:**
 
-```
-!guild cfg linkfilter shorteners
-!guild cfg linkfilter shorteners on
+```xml
+!guild configure linkfilter shorteners 
+!guild configure linkfilter shorteners on
 ```
 </p></details>
 
@@ -1772,10 +1874,10 @@
 
 **Examples:**
 
-```
-!guild cfg log
-!guild cfg log on #log
-!guild cfg log off
+```xml
+!guild configure logging 
+!guild configure logging on #log
+!guild configure logging off
 ```
 </p></details>
 
@@ -1806,10 +1908,10 @@
 
 **Examples:**
 
-```
-!guild cfg log exempt @Someone
-!guild cfg log exempt #spam
-!guild cfg log exempt Role
+```xml
+!guild configure logging exempt @Someone
+!guild configure logging exempt #spam
+!guild configure logging exempt Role
 ```
 </p></details>
 
@@ -1840,10 +1942,10 @@
 
 **Examples:**
 
-```
-!guild cfg log unexempt @Someone
-!guild cfg log unexempt #spam
-!guild cfg log unexempt Role
+```xml
+!guild configure logging unexempt @Someone
+!guild configure logging unexempt #spam
+!guild configure logging unexempt Role
 ```
 </p></details>
 
@@ -1882,12 +1984,12 @@
 
 **Examples:**
 
-```
-!guild cfg ratelimit
-!guild cfg ratelimit on
-!guild cfg ratelimit on mute
-!guild cfg ratelimit on 5
-!guild cfg ratelimit on 6 kick
+```xml
+!guild configure ratelimit 
+!guild configure ratelimit on
+!guild configure ratelimit on mute
+!guild configure ratelimit on 5
+!guild configure ratelimit on 6 kick
 ```
 </p></details>
 
@@ -1910,9 +2012,9 @@
 
 **Examples:**
 
-```
-!guild cfg ratelimit action mute
-!guild cfg ratelimit action temporaryban
+```xml
+!guild configure ratelimit action mute
+!guild configure ratelimit action temporaryban
 ```
 </p></details>
 
@@ -1943,10 +2045,10 @@
 
 **Examples:**
 
-```
-!guild cfg ratelimit exempt @Someone
-!guild cfg ratelimit exempt #spam
-!guild cfg ratelimit exempt Role
+```xml
+!guild configure ratelimit exempt @Someone
+!guild configure ratelimit exempt #spam
+!guild configure ratelimit exempt Role
 ```
 </p></details>
 
@@ -1969,8 +2071,8 @@
 
 **Examples:**
 
-```
-!guild cfg ratelimit sensitivity 9
+```xml
+!guild configure ratelimit sensitivity 9
 ```
 </p></details>
 
@@ -2001,10 +2103,10 @@
 
 **Examples:**
 
-```
-!guild cfg ratelimit unexempt @Someone
-!guild cfg ratelimit unexempt #spam
-!guild cfg ratelimit unexempt Category
+```xml
+!guild configure ratelimit unexempt @Someone
+!guild configure ratelimit unexempt #spam
+!guild configure ratelimit unexempt Role
 ```
 </p></details>
 
@@ -2027,9 +2129,9 @@
 
 **Examples:**
 
-```
-!guild cfg muterole
-!guild cfg muterole MuteRoleName
+```xml
+!guild configure setmuterole 
+!guild configure setmuterole MuteRoleName
 ```
 </p></details>
 
@@ -2046,11 +2148,6 @@
 **Aliases:**
 `wizard`
 
-**Examples:**
-
-```
-!guild cfg setup
-```
 </p></details>
 
 ---
@@ -2072,9 +2169,9 @@
 
 **Examples:**
 
-```
-!guild cfg suggestions
-!guild cfg suggestions on
+```xml
+!guild configure suggestions 
+!guild configure suggestions on
 ```
 </p></details>
 
@@ -2097,9 +2194,9 @@
 
 **Examples:**
 
-```
-!guild cfg verbose
-!guild cfg verbose on
+```xml
+!guild configure verbose 
+!guild configure verbose on
 ```
 </p></details>
 
@@ -2136,11 +2233,11 @@
 
 **Examples:**
 
-```
-!guild cfg welcome
-!guild cfg welcome on #general
-!guild cfg welcome Welcome, %user%!
-!guild cfg welcome off
+```xml
+!guild configure welcome 
+!guild configure welcome on #general
+!guild configure welcome Welcome, %user%!
+!guild configure welcome off
 ```
 </p></details>
 
@@ -2157,11 +2254,6 @@
 **Aliases:**
 `banlist, viewbanlist, getbanlist, bans, viewbans`
 
-**Examples:**
-
-```
-!guild banlist
-```
 </p></details>
 
 ---
@@ -2174,11 +2266,6 @@
 **Aliases:**
 `i, information`
 
-**Examples:**
-
-```
-!guild info
-```
 </p></details>
 
 ---
@@ -2200,8 +2287,9 @@
 
 **Examples:**
 
-```
-!guild logs
+```xml
+!guild log 
+!guild log 5
 ```
 </p></details>
 
@@ -2215,11 +2303,6 @@
 **Aliases:**
 `listmembers, lm, members`
 
-**Examples:**
-
-```
-!guild memberlist
-```
 </p></details>
 
 ---
@@ -2246,7 +2329,8 @@
 
 **Examples:**
 
-```
+```xml
+!guild prune 
 !guild prune 5
 ```
 </p></details>
@@ -2270,7 +2354,7 @@
 
 **Examples:**
 
-```
+```xml
 !guild rename New guild name
 !guild rename "Reason for renaming" New guild name
 ```
@@ -2295,7 +2379,7 @@
 
 **Examples:**
 
-```
+```xml
 !guild seticon http://imgur.com/someimage.png
 ```
 </p></details>
@@ -2328,8 +2412,8 @@
 
 **Examples:**
 
-```
-!message attachments
+```xml
+!message attachments 
 !message attachments 408226948855234561
 ```
 </p></details>
@@ -2358,9 +2442,10 @@
 
 **Examples:**
 
-```
-!messages delete 10
-!messages delete 10 Cleaning spam
+```xml
+!message delete 
+!message delete 10
+!message delete 10 Cleaning spam
 ```
 </p></details>
 
@@ -2390,8 +2475,8 @@
 
 **Examples:**
 
-```
-!messages delete before 123456789132 20 Cleaning spam
+```xml
+!message delete after 4022123456789132 20 Cleaning spam
 ```
 </p></details>
 
@@ -2421,8 +2506,8 @@
 
 **Examples:**
 
-```
-!messages delete before 123456789132 20 Cleaning spam
+```xml
+!message delete before 4022123456789132 20 Cleaning spam
 ```
 </p></details>
 
@@ -2460,9 +2545,9 @@
 
 **Examples:**
 
-```
-!messages delete from @Someone 10 Cleaning spam
-!messages delete from 10 @Someone Cleaning spam
+```xml
+!message delete from @Someone 10 Cleaning spam
+!message delete from 10 @Someone Cleaning spam
 ```
 </p></details>
 
@@ -2490,8 +2575,9 @@
 
 **Examples:**
 
-```
-!messages delete reactions 408226948855234561
+```xml
+!message delete reactions 
+!message delete reactions 408226948855234561
 ```
 </p></details>
 
@@ -2529,9 +2615,9 @@
 
 **Examples:**
 
-```
-!messages delete regex s+p+a+m+ 10 Cleaning spam
-!messages delete regex 10 s+p+a+m+ Cleaning spam
+```xml
+!message delete regex s+p+a+m+ 10 Cleaning spam
+!message delete regex 10 s+p+a+m+ Cleaning spam
 ```
 </p></details>
 
@@ -2556,8 +2642,8 @@
 
 **Examples:**
 
-```
-!message flag
+```xml
+!message flag 
 !message flag 408226948855234561
 ```
 </p></details>
@@ -2572,11 +2658,6 @@
 **Aliases:**
 `lp, listpins, listpin, pinned`
 
-**Examples:**
-
-```
-!messages listpinned
-```
 </p></details>
 
 ---
@@ -2600,8 +2681,8 @@
 
 **Examples:**
 
-```
-!messages modify 408226948855234561 modified text
+```xml
+!message modify 408226948855234561 modified text
 ```
 </p></details>
 
@@ -2624,9 +2705,9 @@
 
 **Examples:**
 
-```
-!messages pin
-!messages pin 408226948855234561
+```xml
+!message pin 
+!message pin 408226948855234561
 ```
 </p></details>
 
@@ -2653,9 +2734,10 @@
 
 **Examples:**
 
-```
-!messages unpin 12345645687955
-!messages unpin 10
+```xml
+!message unpin 
+!message unpin 12345645687955
+!message unpin 10
 ```
 </p></details>
 
@@ -2672,11 +2754,6 @@
 **Aliases:**
 `upa`
 
-**Examples:**
-
-```
-!messages unpinall
-```
 </p></details>
 
 ---
@@ -2693,6 +2770,12 @@
 
 `[role]` : *Role.*
 
+**Examples:**
+
+```xml
+!roles 
+!roles SomeRole
+```
 </p></details>
 
 ---
@@ -2730,7 +2813,7 @@
 
 **Examples:**
 
-```
+```xml
 !roles create Role
 !roles create "My role" #C77B0F no no
 !roles create #C77B0F My new role
@@ -2758,9 +2841,9 @@
 
 **Examples:**
 
-```
-!role delete My role
-!role delete @admins
+```xml
+!roles delete My role
+!roles delete @Admins
 ```
 </p></details>
 
@@ -2783,8 +2866,8 @@
 
 **Examples:**
 
-```
-!role info Admins
+```xml
+!roles info Admins
 ```
 </p></details>
 
@@ -2810,8 +2893,8 @@
 
 **Examples:**
 
-```
-!role mentionall Admins
+```xml
+!roles mention Admins
 ```
 </p></details>
 
@@ -2842,9 +2925,9 @@
 
 **Examples:**
 
-```
-!role setcolor #FF0000 Admins
-!role setcolor Admins #FF0000
+```xml
+!roles setcolor #FF0000 Admins
+!roles setcolor Admins #FF0000
 ```
 </p></details>
 
@@ -2875,10 +2958,10 @@
 
 **Examples:**
 
-```
-!role setmentionable Admins
-!role setmentionable Admins false
-!role setmentionable false Admins
+```xml
+!roles setmentionable Admins
+!roles setmentionable Admins on
+!roles setmentionable off Admins
 ```
 </p></details>
 
@@ -2909,9 +2992,9 @@
 
 **Examples:**
 
-```
-!role setname @Admins Administrators
-!role setname Administrators @Admins
+```xml
+!roles setname @Admins Administrators
+!roles setname Administrators @Admins
 ```
 </p></details>
 
@@ -2942,10 +3025,10 @@
 
 **Examples:**
 
-```
-!role setvisible Admins
-!role setvisible Admins false
-!role setvisible false Admins
+```xml
+!roles setvisible Admins
+!roles setvisible Admins off
+!roles setvisible on Admins
 ```
 </p></details>
 
@@ -2968,9 +3051,9 @@
 
 **Examples:**
 
-```
-!sar
-!sar @Announcements
+```xml
+!selfassignableroles 
+!selfassignableroles @Announcements
 ```
 </p></details>
 
@@ -2993,9 +3076,9 @@
 
 **Examples:**
 
-```
-!sar add @Notifications
-!sar add @Notifications @Role1 @Role2
+```xml
+!selfassignableroles add @Notifications
+!selfassignableroles add @Role1 @Role2 ...
 ```
 </p></details>
 
@@ -3018,9 +3101,9 @@
 
 **Examples:**
 
-```
-!sar delete @Notifications
-!sar delete @Notifications @Role1 @Role2
+```xml
+!selfassignableroles delete @Notifications
+!selfassignableroles delete @Role1 @Role2 ...
 ```
 </p></details>
 
@@ -3037,11 +3120,6 @@
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da`
 
-**Examples:**
-
-```
-!sar clear
-```
 </p></details>
 
 ---
@@ -3057,11 +3135,6 @@
 **Aliases:**
 `print, show, ls, l, p`
 
-**Examples:**
-
-```
-!sar list
-```
 </p></details>
 
 ---
@@ -3082,6 +3155,13 @@
 
 (optional) `[user]` : *User.* (def: `None`)
 
+**Examples:**
+
+```xml
+!user 
+!user @Someone
+!user 4123838938129838
+```
 </p></details>
 
 ---
@@ -3111,7 +3191,7 @@
 
 **Examples:**
 
-```
+```xml
 !user addrole @User Admins
 !user addrole Admins @User
 ```
@@ -3133,8 +3213,9 @@
 
 **Examples:**
 
-```
+```xml
 !user avatar @Someone
+!user avatar 4123838938129838
 ```
 </p></details>
 
@@ -3159,7 +3240,7 @@
 
 **Examples:**
 
-```
+```xml
 !user ban @Someone
 !user ban @Someone Troublemaker
 ```
@@ -3186,7 +3267,7 @@
 
 **Examples:**
 
-```
+```xml
 !user banid 154956794490845232
 !user banid 154558794490846232 Troublemaker
 ```
@@ -3215,7 +3296,7 @@
 
 **Examples:**
 
-```
+```xml
 !user deafen on @Someone
 !user deafen off @Someone
 ```
@@ -3241,8 +3322,10 @@
 
 **Examples:**
 
-```
+```xml
+!user info 
 !user info @Someone
+!user info 4123838938129838
 ```
 </p></details>
 
@@ -3267,7 +3350,7 @@
 
 **Examples:**
 
-```
+```xml
 !user kick @Someone
 !user kick @Someone Troublemaker
 ```
@@ -3302,9 +3385,9 @@
 
 **Examples:**
 
-```
+```xml
 !user mute off @Someone
-!user mute on @Someone Trashtalk
+!user mute on @Someone Troublemaker
 ```
 </p></details>
 
@@ -3337,9 +3420,9 @@
 
 **Examples:**
 
-```
+```xml
 !user mutevoice off @Someone
-!user mutevoice on @Someone Trashtalk
+!user mutevoice on @Someone Troublemaker
 ```
 </p></details>
 
@@ -3364,7 +3447,7 @@
 
 **Examples:**
 
-```
+```xml
 !user removeallroles @Someone
 ```
 </p></details>
@@ -3406,7 +3489,7 @@
 
 **Examples:**
 
-```
+```xml
 !user removerole @Someone Admins
 !user removerole Admins @Someone
 ```
@@ -3433,7 +3516,7 @@
 
 **Examples:**
 
-```
+```xml
 !user setname @Someone Newname
 ```
 </p></details>
@@ -3459,9 +3542,9 @@
 
 **Examples:**
 
-```
-!user sban @Someone
-!user sban @Someone Troublemaker
+```xml
+!user softban @Someone
+!user softban @Someone Troublemaker
 ```
 </p></details>
 
@@ -3512,7 +3595,7 @@
 
 **Examples:**
 
-```
+```xml
 !user tempban @Someone 3h4m
 !user tempban 5d @Someone Troublemaker
 !user tempban @Someone 5h30m30s Troublemaker
@@ -3550,7 +3633,7 @@
 
 **Examples:**
 
-```
+```xml
 !user tempmute @Someone 3h4m
 !user tempmute 5d @Someone Spammer
 !user tempmute @Someone 5h30m30s Spammer
@@ -3584,7 +3667,7 @@
 
 **Examples:**
 
-```
+```xml
 !user unban 154956794490845232
 ```
 </p></details>
@@ -3610,7 +3693,7 @@
 
 **Examples:**
 
-```
+```xml
 !user unmute @Someone
 ```
 </p></details>
@@ -3636,7 +3719,7 @@
 
 **Examples:**
 
-```
+```xml
 !user unmutevoice @Someone
 ```
 </p></details>
@@ -3662,7 +3745,7 @@
 
 **Examples:**
 
-```
+```xml
 !user warn @Someone Stop spamming or kick!
 ```
 </p></details>

@@ -25,7 +25,8 @@
 
 **Examples:**
 
-```
+```xml
+!emojireaction 
 !emojireaction :smile: haha laughing
 ```
 </p></details>
@@ -57,7 +58,7 @@
 
 **Examples:**
 
-```
+```xml
 !emojireaction add :smile: haha
 !emojireaction add haha :smile:
 ```
@@ -90,7 +91,7 @@
 
 **Examples:**
 
-```
+```xml
 !emojireaction addregex :smile: (ha)+
 !emojireaction addregex (ha)+ :smile:
 ```
@@ -123,7 +124,7 @@
 
 **Examples:**
 
-```
+```xml
 !emojireaction delete haha sometrigger
 !emojireaction delete 5
 !emojireaction delete 5 4
@@ -147,11 +148,6 @@
 **Aliases:**
 `clear, da, c, ca, cl, clearall, >>>`
 
-**Examples:**
-
-```
-!emojireactions clear
-```
 </p></details>
 
 ---
@@ -173,8 +169,8 @@
 
 **Examples:**
 
-```
-!emojireactions find hello
+```xml
+!emojireaction find hello
 ```
 </p></details>
 
@@ -191,11 +187,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!emojireaction list
-```
 </p></details>
 
 ---
@@ -219,8 +210,9 @@
 
 **Examples:**
 
-```
-!textreaction hi hello
+```xml
+!textreaction 
+!textreaction hello
 !textreaction "hi" "Hello, %user%!"
 ```
 </p></details>
@@ -246,7 +238,7 @@
 
 **Examples:**
 
-```
+```xml
 !textreaction add "hi" "Hello, %user%!"
 ```
 </p></details>
@@ -272,7 +264,7 @@
 
 **Examples:**
 
-```
+```xml
 !textreaction addregex "h(i|ey|ello|owdy)" "Hello, %user%!"
 ```
 </p></details>
@@ -300,7 +292,7 @@
 
 **Examples:**
 
-```
+```xml
 !textreaction delete 5
 !textreaction delete 5 8
 !textreaction delete hi
@@ -320,11 +312,6 @@
 **Aliases:**
 `clear, da, c, ca, cl, clearall, >>>`
 
-**Examples:**
-
-```
-!textreactions clear
-```
 </p></details>
 
 ---
@@ -346,8 +333,8 @@
 
 **Examples:**
 
-```
-!textreactions find hello
+```xml
+!textreaction find hello
 ```
 </p></details>
 
@@ -364,11 +351,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!textreactions list
-```
 </p></details>
 
 ---

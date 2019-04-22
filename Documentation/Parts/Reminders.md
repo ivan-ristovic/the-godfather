@@ -32,7 +32,8 @@
 
 **Examples:**
 
-```
+```xml
+!remind 
 !remind 1h Drink water!
 ```
 </p></details>
@@ -71,7 +72,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind at 17:20 Drink water!
 !remind at 03.15.2019 Drink water!
 !remind at "03.15.2019 17:20" Drink water!
@@ -94,7 +95,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind delete 1
 ```
 </p></details>
@@ -113,11 +114,6 @@
 
 (optional) `[channel]` : *Channel for which to remove reminders.* (def: `None`)
 
-**Examples:**
-
-```
-!remind clear
-```
 </p></details>
 
 ---
@@ -138,7 +134,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind here 3h Drink water!
 !remind here 3h5m Drink water!
 ```
@@ -162,9 +158,7 @@
 
 **Examples:**
 
-```
-!remind here at 17:20 Drink water!
-!remind here at 03.15.2019 Drink water!
+```xml
 !remind here at "03.15.2019 17:20" Drink water!
 ```
 </p></details>
@@ -187,7 +181,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind here in 3h Drink water!
 !remind here in 3h5m Drink water!
 ```
@@ -227,7 +221,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind in 3h Drink water!
 !remind in 3h5m Drink water!
 ```
@@ -243,11 +237,6 @@
 **Aliases:**
 `ls`
 
-**Examples:**
-
-```
-!remind list
-```
 </p></details>
 
 ---
@@ -284,7 +273,7 @@
 
 **Examples:**
 
-```
+```xml
 !remind repeat 1h Drink water!
 ```
 </p></details>

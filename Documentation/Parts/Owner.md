@@ -30,7 +30,7 @@
 
 **Examples:**
 
-```
+```xml
 !owner announce SPAM SPAM
 ```
 </p></details>
@@ -95,9 +95,9 @@
 
 **Examples:**
 
-```
+```xml
 !owner blockedchannels add #channel
-!owner blockedchannels add #channel Some reason for blocking
+!owner blockedchannels add #channel Some reason
 !owner blockedchannels add 123123123123123
 !owner blockedchannels add #channel 123123123123123
 !owner blockedchannels add "This is some reason" #channel 123123123123123
@@ -122,10 +122,10 @@
 
 **Examples:**
 
-```
-!owner blockedchannels remove #channel
-!owner blockedchannels remove 123123123123123
-!owner blockedchannels remove @Someone 123123123123123
+```xml
+!owner blockedchannels delete #channel
+!owner blockedchannels delete 123123123123123
+!owner blockedchannels delete #channel1 #channel2 123123123123123
 ```
 </p></details>
 
@@ -141,11 +141,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!owner blockedchannels list
-```
 </p></details>
 
 ---
@@ -208,9 +203,9 @@
 
 **Examples:**
 
-```
+```xml
 !owner blockedusers add @Someone
-!owner blockedusers add @Someone Troublemaker and spammer
+!owner blockedusers add @Someone Troublemaker
 !owner blockedusers add 123123123123123
 !owner blockedusers add @Someone 123123123123123
 !owner blockedusers add "This is some reason" @Someone 123123123123123
@@ -235,10 +230,10 @@
 
 **Examples:**
 
-```
-!owner blockedusers remove @Someone
-!owner blockedusers remove 123123123123123
-!owner blockedusers remove @Someone 123123123123123
+```xml
+!owner blockedusers delete @Someone
+!owner blockedusers delete 123123123123123
+!owner blockedusers delete @Someone 123123123123123
 ```
 </p></details>
 
@@ -254,11 +249,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!owner blockedusers list
-```
 </p></details>
 
 ---
@@ -279,7 +269,7 @@
 
 **Examples:**
 
-```
+```xml
 !owner botavatar http://someimage.png
 ```
 </p></details>
@@ -302,8 +292,8 @@
 
 **Examples:**
 
-```
-!owner setname TheBotfather
+```xml
+!owner botname TheBotfather
 ```
 </p></details>
 
@@ -319,11 +309,6 @@
 **Aliases:**
 `clearlogs, deletelogs, deletelog`
 
-**Examples:**
-
-```
-!owner clearlog
-```
 </p></details>
 
 ---
@@ -358,8 +343,8 @@
 
 **Examples:**
 
-```
-!o cmd + \`\`\`[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");\`\`\`
+```xml
+!owner commands add \`\`\`[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");\`\`\`
 ```
 </p></details>
 
@@ -381,8 +366,8 @@
 
 **Examples:**
 
-```
-!owner command remove say
+```xml
+!owner commands delete say
 ```
 </p></details>
 
@@ -398,11 +383,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!owner command list
-```
 </p></details>
 
 ---
@@ -423,7 +403,8 @@
 
 **Examples:**
 
-```
+```xml
+!owner dbquery 
 !owner dbquery SELECT * FROM gf.msgcount;
 ```
 </p></details>
@@ -446,8 +427,8 @@
 
 **Examples:**
 
-```
-!owner eval ```await Context.RespondAsync("Hello!");```
+```xml
+!owner eval \`\`\`await Context.RespondAsync("Hello!");\`\`\`
 ```
 </p></details>
 
@@ -469,9 +450,10 @@
 
 **Examples:**
 
-```
-!owner filelog yes
-!owner filelog false
+```xml
+!owner filelog 
+!owner filelog on
+!owner filelog off
 ```
 </p></details>
 
@@ -493,8 +475,8 @@
 
 **Examples:**
 
-```
-!owner generatecommandlist
+```xml
+!owner generatecommandlist 
 !owner generatecommandlist Temp/blabla.md
 ```
 </p></details>
@@ -517,9 +499,39 @@
 
 **Examples:**
 
+```xml
+!owner leaveguilds 337570344149975050
+!owner leaveguilds 337570344149975050 201315884709576708
 ```
-!owner leave 337570344149975050
-!owner leave 337570344149975050 201315884709576708
+</p></details>
+
+---
+
+### owner log
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Upload the bot log file or add a remark to it.*
+
+**Owner-only.**
+
+**Aliases:**
+`getlog, remark, rem`
+
+**Overload 1:**
+
+(optional) `[boolean]` : *Bypass current configuration and search file anyway?* (def: `False`)
+
+**Overload 0:**
+
+`[string]` : *Log level.*
+
+`[string...]` : *Remark.*
+
+**Examples:**
+
+```xml
+!owner log 
+!owner log debug Hello world!
 ```
 </p></details>
 
@@ -559,9 +571,9 @@
 
 **Examples:**
 
-```
-!owner privilegedusers add @Someone
-!owner privilegedusers add @Someone @SomeoneElse
+```xml
+!owner privilegedusers add add @Someone
+!owner privilegedusers add add @Someone @SomeoneElse
 ```
 </p></details>
 
@@ -583,10 +595,10 @@
 
 **Examples:**
 
-```
-!owner privilegedusers remove @Someone
-!owner privilegedusers remove 123123123123123
-!owner privilegedusers remove @Someone 123123123123123
+```xml
+!owner privilegedusers delete remove @Someone
+!owner privilegedusers delete remove 123123123123123
+!owner privilegedusers delete remove @Someone 123123123123123
 ```
 </p></details>
 
@@ -602,30 +614,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!owner privilegedusers list
-```
-</p></details>
-
----
-
-### owner restart
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Restart the bot.*
-
-**Owner-only.**
-
-**Aliases:**
-`reset`
-
-**Examples:**
-
-```
-!owner restart
-```
 </p></details>
 
 ---
@@ -650,9 +638,9 @@
 
 **Examples:**
 
-```
-!owner send u 303463460233150464 Hi to user!
-!owner send c 120233460278590414 Hi to channel!
+```xml
+!owner sendmessage u 303463460233150464 Hi to user!
+!owner sendmessage c 120233460278590414 Hi to channel!
 ```
 </p></details>
 
@@ -674,8 +662,9 @@
 
 **Examples:**
 
-```
-!owner shutdown
+```xml
+!owner shutdown 
+!owner shutdown 10s
 ```
 </p></details>
 
@@ -719,9 +708,9 @@
 
 **Examples:**
 
-```
-!owner status add Playing CS:GO
-!owner status add Streaming on Twitch
+```xml
+!owner statuses add Playing CS:GO
+!owner statuses add Streaming on Twitch
 ```
 </p></details>
 
@@ -743,8 +732,8 @@
 
 **Examples:**
 
-```
-!owner status delete 1
+```xml
+!owner statuses delete 2
 ```
 </p></details>
 
@@ -760,11 +749,6 @@
 **Aliases:**
 `ls, l, print`
 
-**Examples:**
-
-```
-!owner status list
-```
 </p></details>
 
 ---
@@ -791,9 +775,9 @@
 
 **Examples:**
 
-```
-!owner status set Playing with fire
-!owner status set 5
+```xml
+!owner statuses set Playing with fire
+!owner statuses set 5
 ```
 </p></details>
 
@@ -815,9 +799,9 @@
 
 **Examples:**
 
-```
-!owner status setrotation
-!owner status setrotation false
+```xml
+!owner statuses setrotation 
+!owner statuses setrotation off
 ```
 </p></details>
 
@@ -841,7 +825,7 @@
 
 **Examples:**
 
-```
+```xml
 !owner sudo @Someone rate
 ```
 </p></details>
@@ -858,11 +842,6 @@
 **Aliases:**
 `ti`
 
-**Examples:**
-
-```
-!owner toggleignore
-```
 </p></details>
 
 ---
@@ -877,11 +856,6 @@
 **Aliases:**
 `upd, u`
 
-**Examples:**
-
-```
-!owner update
-```
 </p></details>
 
 ---
