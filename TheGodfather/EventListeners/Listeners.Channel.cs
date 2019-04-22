@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.EventListeners.Extensions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 #endregion
@@ -28,7 +29,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel created", e.Channel.ToString());
 
-            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
             if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -46,18 +47,14 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
+            if (logchn is null || e.Channel.IsExempted(shard))
                 return;
-
-            using (DatabaseContext db = shard.Database.CreateContext())
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel deleted", e.Channel.ToString());
 
             emb.AddField("Channel type", e.Channel?.Type.ToString() ?? _unknown, inline: true);
 
-            var entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
             if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
@@ -74,17 +71,13 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn is null)
+            if (logchn is null || e.Channel.IsExempted(shard))
                 return;
-
-            using (DatabaseContext db = shard.Database.CreateContext())
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
             emb.AddField("Channel", e.Channel.Mention, inline: true);
 
-            var pinned = await e.Channel.GetPinnedMessagesAsync();
+            System.Collections.Generic.IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
                 emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
@@ -103,12 +96,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
+            if (logchn is null || e.ChannelBefore.IsExempted(shard))
                 return;
-
-            using (DatabaseContext db = shard.Database.CreateContext())
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.ChannelAfter.Id))
-                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel updated");
             DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);            

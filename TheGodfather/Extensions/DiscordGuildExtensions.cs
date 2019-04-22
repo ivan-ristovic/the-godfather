@@ -16,7 +16,7 @@ namespace TheGodfather.Extensions
         public static async Task<DiscordAuditLogEntry> GetLatestAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType type)
         {
             try {
-                var entry = (await guild.GetAuditLogsAsync(1, action_type: type))
+                DiscordAuditLogEntry entry = (await guild.GetAuditLogsAsync(1, action_type: type))
                     ?.FirstOrDefault();
                 if (entry is null || DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() > TimeSpan.FromSeconds(5))
                     return null;

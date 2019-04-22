@@ -47,7 +47,7 @@ namespace TheGodfather
         #endregion
 
 
-        internal static async Task Main(string[] args)
+        internal static async Task Main(string[] _)
         {
             try {
                 PrintBuildInformation();

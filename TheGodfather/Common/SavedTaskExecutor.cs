@@ -150,7 +150,7 @@ namespace TheGodfather.Common
                         if (!texecs.TryRemove(this.Id, out _))
                             ex = new ConcurrentOperationException("Failed to remove reminder from the dictionary!");
                         if (texecs.Count == 0)
-                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out var _);
+                            this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out ConcurrentDictionary<int, SavedTaskExecutor> _);
                     }
                     using (DatabaseContext db = this.dbb.CreateContext()) {
                         db.Reminders.Remove(new DatabaseReminder() { Id = this.Id });

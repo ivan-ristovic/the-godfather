@@ -21,7 +21,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ClientErrored)]
         public static Task ClientErrorEventHandlerAsync(TheGodfatherShard shard, ClientErrorEventArgs e)
         {
-            var ex = e.Exception;
+            Exception ex = e.Exception;
             while (ex is AggregateException)
                 ex = ex.InnerException;
 

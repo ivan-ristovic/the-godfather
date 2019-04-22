@@ -41,7 +41,7 @@ namespace TheGodfather.EventListeners
             if (e.Exception is null)
                 return;
 
-            var ex = e.Exception;
+            Exception ex = e.Exception;
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
@@ -62,7 +62,7 @@ namespace TheGodfather.EventListeners
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
             };
-            var sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
+            StringBuilder sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
 
             switch (ex) {
                 case CommandNotFoundException cne:
@@ -73,7 +73,7 @@ namespace TheGodfather.EventListeners
 
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
-                    var ordered = TheGodfatherShard.Commands
+                    System.Collections.Generic.IEnumerable<(string Name, Command Command)> ordered = TheGodfatherShard.Commands
                         .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Name))
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)

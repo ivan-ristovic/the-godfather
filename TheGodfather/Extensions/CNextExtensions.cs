@@ -23,7 +23,7 @@ namespace TheGodfather.Extensions
 
         public static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, Command c)
         {
-            var arr = new[] { c };
+            Command[] arr = new[] { c };
 
             if (c is CommandGroup group)
                 return arr.Concat(group.Children.SelectMany(cnext.CommandSelector));

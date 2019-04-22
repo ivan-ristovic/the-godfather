@@ -45,7 +45,7 @@ namespace TheGodfather.Common
         public override TimeSpan TimeUntilExecution 
         {
             get {
-                var now = DateTimeOffset.Now;
+                DateTimeOffset now = DateTimeOffset.Now;
                 if (this.ExecutionTime > now || !this.IsRepeating)
                     return this.ExecutionTime - now;
                 TimeSpan diff = now - this.ExecutionTime;

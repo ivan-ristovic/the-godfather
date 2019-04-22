@@ -16,6 +16,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.EventListeners.Extensions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
@@ -33,12 +34,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn is null)
+            if (logchn is null || e.Channel.IsExempted(shard))
                 return;
-
-            using (DatabaseContext db = shard.Database.CreateContext())
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -171,12 +168,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
+            if (logchn is null || e.Channel.IsExempted(shard))
                 return;
-
-            using (DatabaseContext db = shard.Database.CreateContext())
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
 
             if (e.Message.Author == e.Client.CurrentUser && shard.SharedData.IsEventRunningInChannel(e.Channel.Id))
                 return;
@@ -188,13 +181,8 @@ namespace TheGodfather.EventListeners
             DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
                 DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
-
-                using (DatabaseContext db = shard.Database.CreateContext()) {
-                    if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == mentry.UserResponsible.Id))
-                        return;
-                    if (member?.Roles.Any(r => db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Role && ee.Id == r.Id)) ?? false)
-                        return;
-                }
+                if (member.IsExempted(shard))
+                    return;
 
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
@@ -242,19 +230,12 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null || !e.Message.IsEdited)
+            if (logchn is null || !e.Message.IsEdited || e.Channel.IsExempted(shard))
                 return;
 
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
-
-            using (DatabaseContext db = shard.Database.CreateContext()) {
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
-                if (db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
-                    return;
-                if (member?.Roles.Any(r => db.LoggingExempts.Any(ee => ee.Type == ExemptedEntityType.Role && ee.Id == r.Id)) ?? false)
-                    return;
-            }
+            if (member.IsExempted(shard))
+                return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);

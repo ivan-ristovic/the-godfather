@@ -19,7 +19,7 @@ namespace TheGodfather.Common.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            var shared = ctx.Services.GetService<SharedData>();
+            SharedData shared = ctx.Services.GetService<SharedData>();
             if (shared.ListeningStatus) {
                 if (shared.BlockedUsers.Contains(ctx.User.Id) || shared.BlockedChannels.Contains(ctx.Channel.Id))
                     return Task.FromResult(false);
@@ -44,9 +44,9 @@ namespace TheGodfather.Common.Attributes
 
         private bool BlockingCommandRuleExists(CommandContext ctx)
         {
-            var dbb = ctx.Services.GetService<DatabaseContextBuilder>();
+            DatabaseContextBuilder dbb = ctx.Services.GetService<DatabaseContextBuilder>();
             using (DatabaseContext db = dbb.CreateContext()) {
-                var dbrules = db.CommandRules
+                IQueryable<DatabaseCommandRule> dbrules = db.CommandRules
                     .Where(cr => cr.GuildId == ctx.Guild.Id && (cr.ChannelId == ctx.Channel.Id || cr.ChannelId == 0) && ctx.Command.QualifiedName.StartsWith(cr.Command));
                 if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelId == ctx.Channel.Id && cr.Allowed))
                     return false;

@@ -29,7 +29,7 @@ namespace TheGodfatherTests.Modules.Search.Services
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
-                var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
+                BotConfig cfg = JsonConvert.DeserializeObject<BotConfig>(json);
                 this.giphy = new GiphyService(cfg.GiphyKey);
             } catch {
                 Assert.Warn("Config file not found or GIPHY key isn't valid (service disabled).");

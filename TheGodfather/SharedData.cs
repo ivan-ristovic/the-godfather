@@ -129,11 +129,11 @@ namespace TheGodfather
         }
 
         public bool GuildHasTextReaction(ulong gid, string trigger)
-            => this.TextReactions.TryGetValue(gid, out var trs) && (trs?.Any(tr => tr.ContainsTriggerPattern(trigger)) ?? false);
+            => this.TextReactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs) && (trs?.Any(tr => tr.ContainsTriggerPattern(trigger)) ?? false);
 
         public bool MessageContainsFilter(ulong gid, string message)
         {
-            if (!this.Filters.TryGetValue(gid, out var filters) || filters is null)
+            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
                 return false;
 
             message = message.ToLowerInvariant();
@@ -155,11 +155,11 @@ namespace TheGodfather
         }
 
         public bool PendingResponseExists(ulong cid, ulong uid)
-            => this.PendingResponses.TryGetValue(cid, out var pending) && pending.Contains(uid);
+            => this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending) && pending.Contains(uid);
 
         public bool TryRemovePendingResponse(ulong cid, ulong uid)
         {
-            if (!this.PendingResponses.TryGetValue(cid, out var pending))
+            if (!this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending))
                 return true;
 
             bool success = pending.TryRemove(uid);

@@ -44,12 +44,12 @@ namespace TheGodfather.Common.Collections
         public int Count
         {
             get {
-                var count = 0;
-                var acquiredLocks = 0;
+                int count = 0;
+                int acquiredLocks = 0;
                 try {
                     this.AcquireAllLocks(ref acquiredLocks);
 
-                    for (var i = 0; i < this._tables.CountPerLock.Length; i++) {
+                    for (int i = 0; i < this._tables.CountPerLock.Length; i++) {
                         count += this._tables.CountPerLock[i];
                     }
                 } finally {
@@ -68,11 +68,11 @@ namespace TheGodfather.Common.Collections
         public bool IsEmpty
         {
             get {
-                var acquiredLocks = 0;
+                int acquiredLocks = 0;
                 try {
                     this.AcquireAllLocks(ref acquiredLocks);
 
-                    for (var i = 0; i < this._tables.CountPerLock.Length; i++) {
+                    for (int i = 0; i < this._tables.CountPerLock.Length; i++) {
                         if (this._tables.CountPerLock[i] != 0) {
                             return false;
                         }
@@ -234,12 +234,12 @@ namespace TheGodfather.Common.Collections
                 capacity = concurrencyLevel;
             }
 
-            var locks = new object[concurrencyLevel];
-            for (var i = 0; i < locks.Length; i++) {
+            object[] locks = new object[concurrencyLevel];
+            for (int i = 0; i < locks.Length; i++) {
                 locks[i] = new object();
             }
 
-            var countPerLock = new int[locks.Length];
+            int[] countPerLock = new int[locks.Length];
             var buckets = new Node[capacity];
             this._tables = new Tables(buckets, locks, countPerLock);
 
@@ -264,7 +264,7 @@ namespace TheGodfather.Common.Collections
         /// </summary>
         public void Clear()
         {
-            var locksAcquired = 0;
+            int locksAcquired = 0;
             try {
                 this.AcquireAllLocks(ref locksAcquired);
 
@@ -284,16 +284,16 @@ namespace TheGodfather.Common.Collections
         /// <returns>true if the <see cref="ConcurrentHashSet{T}"/> contains the item; otherwise, false.</returns>
         public bool Contains(T item)
         {
-            var hashcode = this._comparer.GetHashCode(item);
+            int hashcode = this._comparer.GetHashCode(item);
 
             // We must capture the _buckets field in a local variable. It is set to a new table on each table resize.
-            var tables = this._tables;
+            Tables tables = this._tables;
 
-            var bucketNo = GetBucket(hashcode, tables.Buckets.Length);
+            int bucketNo = GetBucket(hashcode, tables.Buckets.Length);
 
             // We can get away w/out a lock here.
             // The Volatile.Read ensures that the load of the fields of 'n' doesn't move before the load from buckets[i].
-            var current = Volatile.Read(ref tables.Buckets[bucketNo]);
+            Node current = Volatile.Read(ref tables.Buckets[bucketNo]);
 
             while (current != null) {
                 if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
@@ -312,9 +312,9 @@ namespace TheGodfather.Common.Collections
         /// <returns>true if an item was removed successfully; otherwise, false.</returns>
         public bool TryRemove(T item)
         {
-            var hashcode = this._comparer.GetHashCode(item);
+            int hashcode = this._comparer.GetHashCode(item);
             while (true) {
-                var tables = this._tables;
+                Tables tables = this._tables;
 
                 int bucketNo, lockNo;
                 GetBucketAndLockNo(hashcode, out bucketNo, out lockNo, tables.Buckets.Length, tables.Locks.Length);
@@ -327,7 +327,7 @@ namespace TheGodfather.Common.Collections
                     }
 
                     Node previous = null;
-                    for (var current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
+                    for (Node current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
                         Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
 
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
@@ -361,11 +361,11 @@ namespace TheGodfather.Common.Collections
         /// </remarks>
         public IEnumerator<T> GetEnumerator()
         {
-            var buckets = this._tables.Buckets;
+            Node[] buckets = this._tables.Buckets;
 
-            for (var i = 0; i < buckets.Length; i++) {
+            for (int i = 0; i < buckets.Length; i++) {
                 // The Volatile.Read ensures that the load of the fields of 'current' doesn't move before the load from buckets[i].
-                var current = Volatile.Read(ref buckets[i]);
+                Node current = Volatile.Read(ref buckets[i]);
 
                 while (current != null) {
                     yield return current.Item;
@@ -383,13 +383,13 @@ namespace TheGodfather.Common.Collections
             if (array is null) throw new ArgumentNullException(nameof(array));
             if (arrayIndex < 0) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 
-            var locksAcquired = 0;
+            int locksAcquired = 0;
             try {
                 this.AcquireAllLocks(ref locksAcquired);
 
-                var count = 0;
+                int count = 0;
 
-                for (var i = 0; i < this._tables.Locks.Length && count >= 0; i++) {
+                for (int i = 0; i < this._tables.Locks.Length && count >= 0; i++) {
                     count += this._tables.CountPerLock[i];
                 }
 
@@ -408,7 +408,7 @@ namespace TheGodfather.Common.Collections
 
         private void InitializeFromCollection(IEnumerable<T> collection)
         {
-            foreach (var item in collection) {
+            foreach (T item in collection) {
                 this.AddInternal(item, this._comparer.GetHashCode(item), false);
             }
 
@@ -422,11 +422,11 @@ namespace TheGodfather.Common.Collections
             while (true) {
                 int bucketNo, lockNo;
 
-                var tables = this._tables;
+                Tables tables = this._tables;
                 GetBucketAndLockNo(hashcode, out bucketNo, out lockNo, tables.Buckets.Length, tables.Locks.Length);
 
-                var resizeDesired = false;
-                var lockTaken = false;
+                bool resizeDesired = false;
+                bool lockTaken = false;
                 try {
                     if (acquireLock)
                         Monitor.Enter(tables.Locks[lockNo], ref lockTaken);
@@ -439,7 +439,7 @@ namespace TheGodfather.Common.Collections
 
                     // Try to find this item in the bucket
                     Node previous = null;
-                    for (var current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
+                    for (Node current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
                         Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
                             return false;
@@ -484,7 +484,7 @@ namespace TheGodfather.Common.Collections
 
         private static int GetBucket(int hashcode, int bucketCount)
         {
-            var bucketNo = (hashcode & 0x7fffffff) % bucketCount;
+            int bucketNo = (hashcode & 0x7fffffff) % bucketCount;
             Debug.Assert(bucketNo >= 0 && bucketNo < bucketCount);
             return bucketNo;
         }
@@ -501,7 +501,7 @@ namespace TheGodfather.Common.Collections
         private void GrowTable(Tables tables)
         {
             const int maxArrayLength = 0X7FEFFFFF;
-            var locksAcquired = 0;
+            int locksAcquired = 0;
             try {
                 // The thread that first obtains _locks[0] will be the one doing the resize operation
                 this.AcquireLocks(0, 1, ref locksAcquired);
@@ -516,7 +516,7 @@ namespace TheGodfather.Common.Collections
 
                 // Compute the (approx.) total size. Use an Int64 accumulation variable to avoid an overflow.
                 long approxCount = 0;
-                for (var i = 0; i < tables.CountPerLock.Length; i++) {
+                for (int i = 0; i < tables.CountPerLock.Length; i++) {
                     approxCount += tables.CountPerLock[i];
                 }
 
@@ -533,8 +533,8 @@ namespace TheGodfather.Common.Collections
 
                 // Compute the new table size. We find the smallest integer larger than twice the previous table size, and not divisible by
                 // 2,3,5 or 7. We can consider a different table-sizing policy in the future.
-                var newLength = 0;
-                var maximizeTableSize = false;
+                int newLength = 0;
+                bool maximizeTableSize = false;
                 try {
                     checked {
                         // Double the size of the buckets table and add one, so that we have an odd integer.
@@ -570,25 +570,25 @@ namespace TheGodfather.Common.Collections
                 // Now acquire all other locks for the table
                 this.AcquireLocks(1, tables.Locks.Length, ref locksAcquired);
 
-                var newLocks = tables.Locks;
+                object[] newLocks = tables.Locks;
 
                 // Add more locks
                 if (this._growLockArray && tables.Locks.Length < MaxLockNumber) {
                     newLocks = new object[tables.Locks.Length * 2];
                     Array.Copy(tables.Locks, 0, newLocks, 0, tables.Locks.Length);
-                    for (var i = tables.Locks.Length; i < newLocks.Length; i++) {
+                    for (int i = tables.Locks.Length; i < newLocks.Length; i++) {
                         newLocks[i] = new object();
                     }
                 }
 
                 var newBuckets = new Node[newLength];
-                var newCountPerLock = new int[newLocks.Length];
+                int[] newCountPerLock = new int[newLocks.Length];
 
                 // Copy all data into a new table, creating new nodes for all elements
-                for (var i = 0; i < tables.Buckets.Length; i++) {
-                    var current = tables.Buckets[i];
+                for (int i = 0; i < tables.Buckets.Length; i++) {
+                    Node current = tables.Buckets[i];
                     while (current != null) {
-                        var next = current.Next;
+                        Node next = current.Next;
                         int newBucketNo, newLockNo;
                         GetBucketAndLockNo(current.Hashcode, out newBucketNo, out newLockNo, newBuckets.Length, newLocks.Length);
 
@@ -615,9 +615,9 @@ namespace TheGodfather.Common.Collections
 
         public int RemoveWhere(Func<T, bool> predicate)
         {
-            var elems = this.Where(predicate);
-            var removed = 0;
-            foreach (var elem in elems) {
+            IEnumerable<T> elems = this.Where(predicate);
+            int removed = 0;
+            foreach (T elem in elems) {
                 if (this.TryRemove(elem))
                     removed++;
             }
@@ -638,10 +638,10 @@ namespace TheGodfather.Common.Collections
         private void AcquireLocks(int fromInclusive, int toExclusive, ref int locksAcquired)
         {
             Debug.Assert(fromInclusive <= toExclusive);
-            var locks = this._tables.Locks;
+            object[] locks = this._tables.Locks;
 
-            for (var i = fromInclusive; i < toExclusive; i++) {
-                var lockTaken = false;
+            for (int i = fromInclusive; i < toExclusive; i++) {
+                bool lockTaken = false;
                 try {
                     Monitor.Enter(locks[i], ref lockTaken);
                 } finally {
@@ -656,16 +656,16 @@ namespace TheGodfather.Common.Collections
         {
             Debug.Assert(fromInclusive <= toExclusive);
 
-            for (var i = fromInclusive; i < toExclusive; i++) {
+            for (int i = fromInclusive; i < toExclusive; i++) {
                 Monitor.Exit(this._tables.Locks[i]);
             }
         }
 
         private void CopyToItems(T[] array, int index)
         {
-            var buckets = this._tables.Buckets;
-            for (var i = 0; i < buckets.Length; i++) {
-                for (var current = buckets[i]; current != null; current = current.Next) {
+            Node[] buckets = this._tables.Buckets;
+            for (int i = 0; i < buckets.Length; i++) {
+                for (Node current = buckets[i]; current != null; current = current.Next) {
                     array[index] = current.Item;
                     index++; //this should never flow, CopyToItems is only called when there's no overflow risk
                 }

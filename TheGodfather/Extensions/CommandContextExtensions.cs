@@ -66,7 +66,7 @@ namespace TheGodfather.Extensions
 
         internal static async Task<DiscordUser> WaitForGameOpponentAsync(this CommandContext ctx)
         {
-            var shared = ctx.Services.GetService<SharedData>();
+            SharedData shared = ctx.Services.GetService<SharedData>();
             shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
@@ -86,7 +86,7 @@ namespace TheGodfather.Extensions
 
         internal static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)
         {
-            var shared = ctx.Services.GetService<SharedData>();
+            SharedData shared = ctx.Services.GetService<SharedData>();
             shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
