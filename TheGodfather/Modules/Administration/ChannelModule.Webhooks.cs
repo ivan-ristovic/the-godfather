@@ -25,8 +25,7 @@ namespace TheGodfather.Modules.Administration
         [Group("webhooks")]
         [Description("Manage webhooks for given channel. Group call lists all existing webhooks in channel.")]
         [Aliases("wh", "webhook", "whook")]
-        [UsageExamples("!channel webhooks",
-                       "!channel webhooks #general")]
+        [UsageExampleArgs("#general")]
         [RequirePermissions(Permissions.ManageWebhooks)]
         public class WebhooksModule : TheGodfatherModule
         {
@@ -47,8 +46,7 @@ namespace TheGodfather.Modules.Administration
             [Command("add"), Priority(1)]
             [Description("Create a new webhook in channel.")]
             [Aliases("a", "c", "+", "+=", "create", "<<", "<")]
-            [UsageExamples("!channel webhooks add \"My Webhook\"",
-                           "!channel webhooks add MyWebhook http://some.avatar/url.here")]
+            [UsageExampleArgs("\"My Webhook\"", "MyWebhook http://some.avatar/url.here")]
             public async Task CreateAsync(CommandContext ctx,
                                          [Description("Channel to list webhooks for.")] DiscordChannel channel,
                                          [Description("Name.")] string name,
@@ -94,7 +92,7 @@ namespace TheGodfather.Modules.Administration
             [Command("delete")]
             [Description("Create a new webhook in channel.")]
             [Aliases("-", "del", "d", "remove", "rm", ">>", ">")]
-            [UsageExamples("!channel webhooks delete \"My Webhook\"")]
+            [UsageExampleArgs("\"My Webhook\"")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name,
                                          [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
@@ -115,7 +113,7 @@ namespace TheGodfather.Modules.Administration
             [Command("deleteall"), UsesInteractivity]
             [Description("Create a new webhook in channel.")]
             [Aliases("-a", "clear", "delall", "da", "removeall", "rmrf", ">>>")]
-            [UsageExamples("!channel webhooks deleteall")]
+            [UsageExampleArgs("#some_channel")]
             public async Task DeleteAllAsync(CommandContext ctx,
                                             [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
             {
@@ -134,8 +132,7 @@ namespace TheGodfather.Modules.Administration
             [Command("list"), UsesInteractivity]
             [Description("Lists all existing webhooks in channel.")]
             [Aliases("l", "ls")]
-            [UsageExamples("!channel webhooks list",
-                           "!channel webhooks list #general")]
+            [UsageExampleArgs("#general")]
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
             {

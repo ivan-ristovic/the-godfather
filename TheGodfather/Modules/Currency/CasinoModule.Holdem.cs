@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Currency
         [Group("holdem")]
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
-        [UsageExamples("!casino holdem 10000")]
+        [UsageExampleArgs("10000")]
         public class HoldemModule : TheGodfatherModule
         {
 
@@ -87,7 +87,6 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Description("Join a pending Texas Hold'Em game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            [UsageExamples("!casino holdem join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame game))
@@ -125,7 +124,6 @@ namespace TheGodfather.Modules.Currency
             [Command("rules")]
             [Description("Explain the Texas Hold'Em rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!casino holdem rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,

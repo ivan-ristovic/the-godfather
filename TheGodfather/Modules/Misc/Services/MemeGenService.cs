@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc.Services
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()
         {
             string json = await _http.GetStringAsync($"{_urlHttps}/api/templates/").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            Dictionary<string, string> data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             return data
                 .OrderBy(kvp => kvp.Key)
                 .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))

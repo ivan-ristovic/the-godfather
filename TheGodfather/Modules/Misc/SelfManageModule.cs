@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Misc
         [Command("role")]
         [Description("Grants you a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
-        [UsageExamples("!grant role @Announcements")]
+        [UsageExampleArgs("@Announcements")]
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         [Command("nickname")]
         [Description("Grants you a given nickname.")]
         [Aliases("nick", "name", "n")]
-        [UsageExamples("!grant name My New Display Name")]
+        [UsageExampleArgs("My New Display Name")]
         [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task GiveNameAsync(CommandContext ctx,
                                        [RemainingText, Description("Nickname to set.")] string name)
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Misc
         [Command("role")]
         [Description("Revokes from your role list a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
-        [UsageExamples("!revoke role @Announcements")]
+        [UsageExampleArgs("@Announcements")]
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task RevokeRoleAsync(CommandContext ctx,
                                          [Description("Role to revoke.")] DiscordRole role)

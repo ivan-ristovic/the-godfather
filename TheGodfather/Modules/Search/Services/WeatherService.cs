@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search.Services
 
             try {
                 string response = await _http.GetStringAsync($"{_url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
-                var data = JsonConvert.DeserializeObject<WeatherData>(response);
+                WeatherData data = JsonConvert.DeserializeObject<WeatherData>(response);
                 return data.ToDiscordEmbed(DiscordColor.Aquamarine);
             } catch {
                 return null;
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search.Services
 
             try {
                 string response = await _http.GetStringAsync($"{_url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
-                var forecast = JsonConvert.DeserializeObject<Forecast>(response);
+                Forecast forecast = JsonConvert.DeserializeObject<Forecast>(response);
                 return forecast.ToDiscordEmbedBuilders(amount);
             } catch {
                 return null;

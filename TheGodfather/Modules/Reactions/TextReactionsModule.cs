@@ -25,8 +25,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("textreaction"), Module(ModuleType.Reactions), NotBlocked]
     [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
-    [UsageExamples("!textreaction hi hello",
-                   "!textreaction \"hi\" \"Hello, %user%!\"")]
+    [UsageExampleArgs("hello", "\"hi\" \"Hello, %user%!\"")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class TextReactionsModule : TheGodfatherModule
@@ -54,7 +53,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("add")]
         [Description("Add a new text reaction to guild text reaction list.")]
         [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExamples("!textreaction add \"hi\" \"Hello, %user%!\"")]
+        [UsageExampleArgs("\"hi\" \"Hello, %user%!\"")]
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger string (case insensitive).")] string trigger,
                             [RemainingText, Description("Response.")] string response)
@@ -65,7 +64,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("addregex")]
         [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExamples("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
+        [UsageExampleArgs("\"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Regex (case insensitive).")] string trigger,
                                  [RemainingText, Description("Response.")] string response)
@@ -76,16 +75,14 @@ namespace TheGodfather.Modules.Reactions
         [Command("delete"), Priority(1)]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExamples("!textreaction delete 5",
-                       "!textreaction delete 5 8",
-                       "!textreaction delete hi")]
+        [UsageExampleArgs("5", "5 8", "hi")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var eb = new StringBuilder();
@@ -133,7 +130,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions))
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var trIds = new List<int>();
@@ -216,7 +213,6 @@ namespace TheGodfather.Modules.Reactions
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all text reactions for the current guild.")]
         [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
-        [UsageExamples("!textreactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
@@ -251,11 +247,11 @@ namespace TheGodfather.Modules.Reactions
         [Command("find")]
         [Description("Show a text reactions that matches the specified trigger.")]
         [Aliases("f")]
-        [UsageExamples("!textreactions find hello")]
+        [UsageExampleArgs("hello")]
         public Task ListAsync(CommandContext ctx, 
                              [RemainingText, Description("Specific trigger.")] string trigger)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions) || !treactions.Any())
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             TextReaction tr = treactions.SingleOrDefault(t => t.IsMatch(trigger));
@@ -277,10 +273,9 @@ namespace TheGodfather.Modules.Reactions
         [Command("list")]
         [Description("Show all text reactions for the guild.")]
         [Aliases("ls", "l", "print")]
-        [UsageExamples("!textreactions list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out var treactions) || !treactions.Any())
+            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
             return ctx.SendCollectionInPagesAsync(
@@ -314,7 +309,7 @@ namespace TheGodfather.Modules.Reactions
             if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
+            if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Administration.Common.Filter> filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
             int id;
@@ -337,8 +332,8 @@ namespace TheGodfather.Modules.Reactions
 
             var eb = new StringBuilder();
 
-            var treactions = this.Shared.TextReactions[ctx.Guild.Id];
-            var reaction = treactions.FirstOrDefault(tr => tr.Response == response);
+            ConcurrentHashSet<TextReaction> treactions = this.Shared.TextReactions[ctx.Guild.Id];
+            TextReaction reaction = treactions.FirstOrDefault(tr => tr.Response == response);
             if (reaction is null) {
                 if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
@@ -347,7 +342,7 @@ namespace TheGodfather.Modules.Reactions
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
-            var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New text reaction added",

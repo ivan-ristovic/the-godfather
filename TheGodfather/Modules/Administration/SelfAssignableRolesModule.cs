@@ -24,8 +24,7 @@ namespace TheGodfather.Modules.Administration
                  "Group call with an arbitrary amount of roles will add those roles to the self-assignable " +
                  "roles list for this guild, effective immediately.")]
     [Aliases("sar", "selfroles", "selfrole")]
-    [UsageExamples("!sar",
-                   "!sar @Announcements")]
+    [UsageExampleArgs("@Announcements")]
     [RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class SelfAssignableRolesModule : TheGodfatherModule
@@ -52,8 +51,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add a self-assignable role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
-        [UsageExamples("!sar add @Notifications",
-                       "!sar add @Notifications @Role1 @Role2")]
+        [UsageExampleArgs("@Notifications", "@Role1 @Role2 ...")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
@@ -88,8 +86,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove self-assignable role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!sar delete @Notifications",
-                       "!sar delete @Notifications @Role1 @Role2")]
+        [UsageExampleArgs("@Notifications", "@Role1 @Role2 ...")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {
@@ -121,7 +118,6 @@ namespace TheGodfather.Modules.Administration
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all self-assignable roles for the current guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [UsageExamples("!sar clear")]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
@@ -151,7 +147,6 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("List all current self-assignable roles.")]
         [Aliases("print", "show", "ls", "l", "p")]
-        [UsageExamples("!sar list")]
         public async Task ListAsync(CommandContext ctx)
         {
             var roles = new List<DiscordRole>();

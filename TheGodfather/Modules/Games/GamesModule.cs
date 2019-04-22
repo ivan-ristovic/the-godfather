@@ -61,7 +61,6 @@ namespace TheGodfather.Modules.Games
         [Command("leaderboard")]
         [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
-        [UsageExamples("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
             var emb = new DiscordEmbedBuilder {
@@ -116,7 +115,7 @@ namespace TheGodfather.Modules.Games
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        [UsageExamples("!game rps scissors")]
+        [UsageExampleArgs("scissors")]
         public async Task RpsAsync(CommandContext ctx,
                                   [Description("rock/paper/scissors")] string rps)
         {
@@ -153,8 +152,7 @@ namespace TheGodfather.Modules.Games
         [Command("stats")]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
-        [UsageExamples("!game stats",
-                       "!game stats @Someone")]
+        [UsageExampleArgs("@Someone")]
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {

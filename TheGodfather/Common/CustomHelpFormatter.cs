@@ -55,8 +55,8 @@ namespace TheGodfather.Common
 
             this.emb.AddField("Category", ModuleAttribute.ForCommand(cmd).Module.ToString(), inline: true);
 
-            var checks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
-            var perms = checks
+            IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+            IEnumerable<string> perms = checks
                 .Where(chk => chk is RequirePermissionsAttribute)
                 .Select(chk => chk as RequirePermissionsAttribute)
                 .Select(chk => chk.Permissions.ToPermissionString())
@@ -65,10 +65,10 @@ namespace TheGodfather.Common
                     .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
                     .Select(chk => chk.Permissions.ToPermissionString())
                 );
-            var uperms = checks.Where(chk => chk is RequireUserPermissionsAttribute)
+            IEnumerable<string> uperms = checks.Where(chk => chk is RequireUserPermissionsAttribute)
                                   .Select(chk => chk as RequireUserPermissionsAttribute)
                                   .Select(chk => chk.Permissions.ToPermissionString());
-            var bperms = checks.Where(chk => chk is RequireBotPermissionsAttribute)
+            IEnumerable<string> bperms = checks.Where(chk => chk is RequireBotPermissionsAttribute)
                                   .Select(chk => chk as RequireBotPermissionsAttribute)
                                   .Select(chk => chk.Permissions.ToPermissionString());
 
@@ -89,10 +89,10 @@ namespace TheGodfather.Common
                 this.emb.AddField("Required permissions", pstr);
 
             if (cmd.Overloads?.Any() ?? false) {
-                foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
+                foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
                     var ab = new StringBuilder();
 
-                    foreach (var arg in overload.Arguments) {
+                    foreach (CommandArgument arg in overload.Arguments) {
                         if (arg.IsOptional)
                             ab.Append("(optional) ");
 
@@ -117,8 +117,8 @@ namespace TheGodfather.Common
                 }
             }
 
-            if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) is UsageExamplesAttribute example)
-                this.emb.AddField("Examples of use", Formatter.BlockCode(example.JoinExamples()));                
+            if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExampleArgsAttribute) is UsageExampleArgsAttribute eattr)
+                this.emb.AddField("Examples of use", Formatter.BlockCode(eattr.JoinExamples(cmd, this.Context)));                
 
             return this;
         }

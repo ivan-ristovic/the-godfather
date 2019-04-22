@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Swat
         [Command("ip")]
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
-        [UsageExamples("!s4 ip wm")]
+        [UsageExampleArgs("wm")]
         public Task QueryAsync(CommandContext ctx,
                               [Description("Registered name.")] string name)
         {
@@ -66,9 +66,7 @@ namespace TheGodfather.Modules.Swat
         [Command("query"), Priority(1)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
-        [UsageExamples("!s4 q 109.70.149.158",
-                       "!s4 q 109.70.149.158:10480",
-                       "!s4 q wm")]
+        [UsageExampleArgs("109.70.149.158", "109.70.149.158:10480", "wm")]
         public Task QueryAsync(CommandContext ctx,
                               [Description("Server IP.")] CustomIPFormat ip,
                               [Description("Query port")] int queryport = 10481)
@@ -130,7 +128,7 @@ namespace TheGodfather.Modules.Swat
         #region COMMAND_SETTIMEOUT
         [Command("settimeout"), Hidden]
         [Description("Set checking timeout.")]
-        [UsageExamples("!swat settimeout 500")]
+        [UsageExampleArgs("500")]
         [RequireOwner]
         public Task SetTimeoutAsync(CommandContext ctx,
                                    [Description("Timeout (in ms).")] int timeout)
@@ -147,7 +145,7 @@ namespace TheGodfather.Modules.Swat
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers.")]
         [Aliases("sl", "list")]
-        [UsageExamples("!swat serverlist")]
+        [UsageExampleArgs("wm")]
         public async Task ServerlistAsync(CommandContext ctx,
                                          [Description("Server name group.")] string group = null)
         {
@@ -180,9 +178,7 @@ namespace TheGodfather.Modules.Swat
         [Command("startcheck"), Priority(1), UsesInteractivity]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck", "sc")]
-        [UsageExamples("!s4 startcheck 109.70.149.158",
-                       "!s4 startcheck 109.70.149.158:10480",
-                       "!swat startcheck wm")]
+        [UsageExampleArgs("109.70.149.158", "109.70.149.158:10480", "wm")]
         public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip,
                                          [Description("Query port")] int queryport = 10481)
@@ -231,7 +227,6 @@ namespace TheGodfather.Modules.Swat
         [Command("stopcheck")]
         [Description("Stops space checking.")]
         [Aliases("checkstop")]
-        [UsageExamples("!swat stopcheck")]
         public Task StopCheckAsync(CommandContext ctx)
         {
             if (!SwatSpaceCheckService.IsListening(ctx.Channel))

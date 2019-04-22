@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Search.Services
                 Color = DiscordColor.White
             };
 
-            foreach (var res in results)
+            foreach (SyndicationItem res in results)
                 emb.AddField(res.Title.Text.Truncate(255), res.Links.First().Uri.ToString());
 
             await channel.SendMessageAsync(embed: emb.Build());

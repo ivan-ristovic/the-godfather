@@ -26,8 +26,7 @@ namespace TheGodfather.Modules.Chickens
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExamples("!chicken",
-                   "!chicken @Someone")]
+    [UsageExampleArgs("@Someone")]
     public partial class ChickenModule : TheGodfatherModule
     {
 
@@ -48,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("fight"), Priority(1)]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
-        [UsageExamples("!chicken duel @Someone")]
+        [UsageExampleArgs("@Someone")]
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Member whose chicken to fight.")] DiscordMember member)
         {
@@ -130,7 +129,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("flu"), UsesInteractivity]
         [Description("Pay a well-known scientist to create a disease that disintegrates weak chickens.")]
         [Aliases("cancer", "disease", "blackdeath")]
-        [UsageExamples("!chicken flu")]
         public async Task FluAsync(CommandContext ctx)
         {
             if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
@@ -156,7 +154,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("heal")]
         [Description("Heal your chicken (+100 HP). There is one medicine made each 5 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
-        [UsageExamples("!chicken heal")]
         [Cooldown(1, 300, CooldownBucketType.Guild)]
         public async Task HealAsync(CommandContext ctx)
         {
@@ -180,7 +177,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("info")]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
-        [UsageExamples("!chicken info @Someone")]
+        [UsageExampleArgs("@Someone")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordMember member = null)
         {
@@ -198,7 +195,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("rename")]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
-        [UsageExamples("!chicken name New Name")]
+        [UsageExampleArgs("New Name")]
         public async Task RenameAsync(CommandContext ctx,
                                      [RemainingText, Description("New chicken name.")] string newname)
         {
@@ -231,7 +228,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("sell"), UsesInteractivity]
         [Description("Sell your chicken.")]
         [Aliases("s")]
-        [UsageExamples("!chicken sell")]
         public async Task SellAsync(CommandContext ctx)
         {
             if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
@@ -262,7 +258,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("top")]
         [Description("View the list of strongest chickens in the current guild.")]
         [Aliases("best", "strongest")]
-        [UsageExamples("!chicken top")]
         public async Task TopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;
@@ -305,7 +300,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("topglobal")]
         [Description("View the list of strongest chickens globally.")]
         [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop")]
-        [UsageExamples("!chicken topglobal")]
         public async Task GlobalTopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("emojireaction"), Module(ModuleType.Reactions), NotBlocked]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
-    [UsageExamples("!emojireaction :smile: haha laughing")]
+    [UsageExampleArgs(":smile: haha laughing")]
     [RequirePermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiReactionsModule : TheGodfatherModule
@@ -59,8 +59,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("add"), Priority(1)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExamples("!emojireaction add :smile: haha",
-                       "!emojireaction add haha :smile:")]
+        [UsageExampleArgs(":smile: haha", "haha :smile:")]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
                             [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -77,8 +76,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("addregex"), Priority(1)]
         [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExamples("!emojireaction addregex :smile: (ha)+",
-                       "!emojireaction addregex (ha)+ :smile:")]
+        [UsageExampleArgs(":smile: (ha)+", "(ha)+ :smile:")]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
                                  [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -95,14 +93,11 @@ namespace TheGodfather.Modules.Reactions
         [Command("delete"), Priority(2)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExamples("!emojireaction delete haha sometrigger",
-                       "!emojireaction delete 5",
-                       "!emojireaction delete 5 4",
-                       "!emojireaction delete :joy:")]
+        [UsageExampleArgs("haha sometrigger", "5", "5 4", ":joy:")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             string ename = emoji.GetDiscordName();
@@ -136,7 +131,7 @@ namespace TheGodfather.Modules.Reactions
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
 
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var eb = new StringBuilder();
@@ -186,7 +181,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var erIds = new List<int>();
@@ -265,7 +260,6 @@ namespace TheGodfather.Modules.Reactions
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all reactions for the current guild.")]
         [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
-        [UsageExamples("!emojireactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
@@ -300,11 +294,11 @@ namespace TheGodfather.Modules.Reactions
         [Command("find")]
         [Description("Show all emoji reactions that matches the specified trigger.")]
         [Aliases("f")]
-        [UsageExamples("!emojireactions find hello")]
+        [UsageExampleArgs("hello")]
         public Task ListAsync(CommandContext ctx,
                              [RemainingText, Description("Specific trigger.")] string trigger)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions) || !ereactions.Any())
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions) || !ereactions.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             IEnumerable<EmojiReaction> ers = ereactions.Where(t => t.IsMatch(trigger));
@@ -323,10 +317,9 @@ namespace TheGodfather.Modules.Reactions
         [Command("list")]
         [Description("Show all emoji reactions for this guild.")]
         [Aliases("ls", "l", "print")]
-        [UsageExamples("!emojireaction list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out var ereactions))
+            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
             foreach (EmojiReaction reaction in ereactions) {
@@ -399,7 +392,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                var ereactions = this.Shared.EmojiReactions[ctx.Guild.Id];
+                ConcurrentHashSet<EmojiReaction> ereactions = this.Shared.EmojiReactions[ctx.Guild.Id];
 
                 string ename = emoji.GetDiscordName();
                 if (ereactions.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {

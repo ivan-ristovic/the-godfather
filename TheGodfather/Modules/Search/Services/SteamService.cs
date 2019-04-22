@@ -69,10 +69,10 @@ namespace TheGodfather.Modules.Search.Services
             // em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
             if (model.IsVacBanned) {
-                var bans = this.user.GetPlayerBansAsync(model.SteamID).Result.Data;
+                System.Collections.Generic.IReadOnlyCollection<PlayerBansModel> bans = this.user.GetPlayerBansAsync(model.SteamID).Result.Data;
 
                 uint bancount = 0;
-                foreach (var b in bans)
+                foreach (PlayerBansModel b in bans)
                     bancount += b.NumberOfVACBans;
 
                 em.AddField("VAC Status:", $"{Formatter.Bold(bancount.ToString())} ban(s) on record.", inline: true);

@@ -21,8 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.")]
     [Aliases("emojis", "e")]
-    [UsageExamples("!emoji",
-                   "!emoji :some_emoji:")]
+    [UsageExampleArgs(":some_emoji:")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiModule : TheGodfatherModule
     {
@@ -49,9 +48,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can " +
                      "also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("addnew", "create", "install", "a", "+", "+=", "<", "<<")]
-        [UsageExamples("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg",
-                       "!emoji add pepe [ATTACHED IMAGE]",
-                       "!emoji add pepe :pepe_from_other_server:")]
+        [UsageExampleArgs("pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg", "pepe [ATTACHED IMAGE]", "pepe :pepe_from_other_server:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name for the emoji.")] string name,
@@ -69,8 +66,8 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (var response = await _http.GetAsync(url))
-                using (var stream = await response.Content.ReadAsStreamAsync()) {
+                using (System.Net.Http.HttpResponseMessage response = await _http.GetAsync(url))
+                using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync()) {
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
                     DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
@@ -112,7 +109,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove guild emoji. Note: Bots can only delete emojis they created!")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!emoji delete pepe")]
+        [UsageExampleArgs("pepe")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to delete.")] DiscordEmoji emoji)
@@ -131,8 +128,8 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_EMOJI_INFO
         [Command("info")]
         [Description("Prints information for given guild emoji.")]
-        [UsageExamples("!emoji info :pepe:")]
         [Aliases("details", "information", "i")]
+        [UsageExampleArgs(":pepe:")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("Emoji.")] DiscordEmoji emoji)
         {
@@ -157,7 +154,6 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("List all emojis for this guild.")]
         [Aliases("print", "show", "l", "p", "ls")]
-        [UsageExamples("!emoji list")]
         public Task ListAsync(CommandContext ctx)
         {
             return ctx.SendCollectionInPagesAsync(
@@ -173,8 +169,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify"), Priority(1)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
-        [UsageExamples("!emoji modify :pepe: newname",
-                       "!emoji modify newname :pepe:")]
+        [UsageExampleArgs(":pepe: newname", "newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("Emoji to rename.")] DiscordEmoji emoji,

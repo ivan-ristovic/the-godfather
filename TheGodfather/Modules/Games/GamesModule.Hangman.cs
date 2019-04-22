@@ -25,7 +25,6 @@ namespace TheGodfather.Modules.Games
         [Group("hangman"), UsesInteractivity]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
-        [UsageExamples("!game hangman")]
         public class HangmanModule : TheGodfatherModule
         {
 
@@ -73,7 +72,6 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Description("Explain the Hangman game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!game hangman rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx, 
@@ -88,7 +86,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game hangman stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopHangmanStatsAsync();

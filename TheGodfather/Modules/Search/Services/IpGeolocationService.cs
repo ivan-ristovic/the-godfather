@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentNullException(nameof(ip));
 
             string response = await _http.GetStringAsync($"{_url}/{ip.ToString()}").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<IpInfo>(response);
+            IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response);
             return data;
         }
     }

@@ -16,9 +16,7 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("at")]
         [Description("Send a reminder at a specific point in time (given by date and time string).")]
-        [UsageExamples("!remind at 17:20 Drink water!",
-                       "!remind at 03.15.2019 Drink water!",
-                       "!remind at \"03.15.2019 17:20\" Drink water!")]
+        [UsageExampleArgs("17:20 Drink water!", "03.15.2019 Drink water!", "\"03.15.2019 17:20\" Drink water!")]
         public class RemindAtModule : RemindModule
         {
 

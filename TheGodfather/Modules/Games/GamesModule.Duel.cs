@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         [Group("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        [UsageExamples("!game duel @Someone")]
+        [UsageExampleArgs("@Someone")]
         public class DuelModule : TheGodfatherModule
         {
 
@@ -77,7 +77,6 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Description("Explain the Duel game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!game duel rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
@@ -92,7 +91,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();

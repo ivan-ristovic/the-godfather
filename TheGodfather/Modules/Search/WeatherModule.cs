@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Group("weather"), Module(ModuleType.Searches), NotBlocked]
     [Description("Weather search commands. Group call returns weather information for given query.")]
     [Aliases("w")]
-    [UsageExamples("!weather london")]
+    [UsageExampleArgs("london")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
@@ -53,8 +53,7 @@ namespace TheGodfather.Modules.Search
         [Command("forecast"), Priority(1)]
         [Description("Get weather forecast for the following days (def: 7).")]
         [Aliases("f")]
-        [UsageExamples("!weather forecast london",
-                       "!weather forecast 5 london")]
+        [UsageExampleArgs("london", "5 london")]
         public async Task ForecastAsync(CommandContext ctx,
                                        [Description("Amount of days to fetch the forecast for.")] int amount,
                                        [RemainingText, Description("Query.")] string query)

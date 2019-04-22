@@ -30,9 +30,7 @@ namespace TheGodfather.Modules.Administration
             [Group("logging")]
             [Description("Action logging configuration.")]
             [Aliases("log", "modlog")]
-            [UsageExamples("!guild cfg log",
-                           "!guild cfg log on #log",
-                           "!guild cfg log off")]
+            [UsageExampleArgs("on #log", "off")]
             public class LoggingModule : TheGodfatherModule
             {
 
@@ -106,9 +104,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the logs for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                [UsageExamples("!guild cfg log exempt @Someone",
-                               "!guild cfg log exempt #spam",
-                               "!guild cfg log exempt Role")]
+                [UsageExampleArgs("@Someone", "#spam", "Role")]
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
@@ -158,9 +154,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow logging for actions regarding that entity.")]
                 [Aliases("unex", "uex")]
-                [UsageExamples("!guild cfg log unexempt @Someone",
-                               "!guild cfg log unexempt #spam",
-                               "!guild cfg log unexempt Role")]
+                [UsageExampleArgs("@Someone", "#spam", "Role")]
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {

@@ -25,7 +25,6 @@ namespace TheGodfather.Modules.Games
         [Group("numberrace")]
         [Description("Number racing game commands.")]
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
-        [UsageExamples("!game numberrace")]
         public class NumberRaceModule : TheGodfatherModule
         {
 
@@ -81,7 +80,6 @@ namespace TheGodfather.Modules.Games
             [Command("join")]
             [Description("Join an existing number race game.")]
             [Aliases("+", "compete", "j", "enter")]
-            [UsageExamples("!game numberrace join")]
             public Task JoinRaceAsync(CommandContext ctx)
             {
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is NumberRace game))
@@ -104,7 +102,6 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Description("Explain the number race rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!game numberrace rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
@@ -121,7 +118,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game numberrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopNumberRaceStatsAsync();

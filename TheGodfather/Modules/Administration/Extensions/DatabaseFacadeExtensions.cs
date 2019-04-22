@@ -17,10 +17,10 @@ namespace TheGodfather.Modules.Administration.Extensions
                                                                             params object[] parameters)
         {
 
-            var concurrencyDetector = databaseFacade.GetService<IConcurrencyDetector>();
+            IConcurrencyDetector concurrencyDetector = databaseFacade.GetService<IConcurrencyDetector>();
 
             using (concurrencyDetector.EnterCriticalSection()) {
-                var rawSqlCommand = databaseFacade
+                RawSqlCommand rawSqlCommand = databaseFacade
                     .GetService<IRawSqlCommandBuilder>()
                     .Build(sql, parameters);
 

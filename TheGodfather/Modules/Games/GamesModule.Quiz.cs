@@ -28,14 +28,7 @@ namespace TheGodfather.Modules.Games
         [Group("quiz")]
         [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExamples("!game quiz",
-                       "!game quiz countries",
-                       "!game quiz 9",
-                       "!game quiz history",
-                       "!game quiz history hard",
-                       "!game quiz history hard 15",
-                       "!game quiz 9 hard",
-                       "!game quiz 9 hard 15")]
+        [UsageExampleArgs("countries", "9", "history", "history hard", "history hard 15", "9 hard", "9 hard 15")]
         public class QuizModule : TheGodfatherModule
         {
 
@@ -132,8 +125,7 @@ namespace TheGodfather.Modules.Games
             [Command("capitals")]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            [UsageExamples("!game quiz capitals",
-                           "!game quiz capitals 15")]
+            [UsageExampleArgs("15")]
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
@@ -166,8 +158,7 @@ namespace TheGodfather.Modules.Games
             [Command("countries")]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            [UsageExamples("!game quiz countries",
-                           "!game quiz countries 15")]
+            [UsageExampleArgs("15")]
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {
@@ -200,7 +191,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopQuizStatsAsync();

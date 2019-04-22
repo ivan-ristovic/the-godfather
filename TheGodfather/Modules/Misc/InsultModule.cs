@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Misc
     [Group("insult"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Insults manipulation. Group call insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
-    [UsageExamples("!insult @Someone")]
+    [UsageExampleArgs("@Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class InsultModule : TheGodfatherModule
     {
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add")]
         [Description("Add insult to list (use %user% instead of user mention).")]
         [Aliases("new", "a", "+", "+=", "<", "<<")]
-        [UsageExamples("!insult add %user% is lowering the IQ of the entire street!")]
+        [UsageExampleArgs("%user% is lowering the IQ of the entire street!")]
         [RequirePrivilegedUser]
         public async Task AddInsultAsync(CommandContext ctx,
                                         [RemainingText, Description("Insult (must contain ``%user%``).")] string content)
@@ -84,12 +84,29 @@ namespace TheGodfather.Modules.Misc
             await this.InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(content)}", important: false);
         }
         #endregion
-        
+
+        #region COMMAND_INSULTS_DELETE
+        [Command("delete")]
+        [Description("Remove insult with a given ID from list. (use command ``insults list`` to view insult indexes).")]
+        [Aliases("-", "remove", "del", "rm", "rem", "d", ">", ">>", "-=")]
+        [UsageExampleArgs("!insult delete 2")]
+        [RequirePrivilegedUser]
+        public async Task DeleteInsultAsync(CommandContext ctx,
+                                           [Description("ID of the insult to remove.")] int id)
+        {
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                db.Insults.Remove(new DatabaseInsult() { Id = id });
+                await db.SaveChangesAsync();
+            }
+
+            await this.InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(id.ToString())}");
+        }
+        #endregion
+
         #region COMMAND_INSULTS_DELETEALL
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all insults.")]
         [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
-        [UsageExamples("!insults clear")]
         [RequirePrivilegedUser]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
@@ -105,29 +122,10 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_INSULTS_DELETE
-        [Command("delete")]
-        [Description("Remove insult with a given ID from list. (use command ``insults list`` to view insult indexes).")]
-        [Aliases("-", "remove", "del", "rm", "rem", "d", ">", ">>", "-=")]
-        [UsageExamples("!insult delete 2")]
-        [RequirePrivilegedUser]
-        public async Task DeleteInsultAsync(CommandContext ctx, 
-                                           [Description("ID of the insult to remove.")] int id)
-        {
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Insults.Remove(new DatabaseInsult() { Id = id });
-                await db.SaveChangesAsync();
-            }
-            
-            await this.InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(id.ToString())}");
-        }
-        #endregion
-
         #region COMMAND_INSULTS_LIST
         [Command("list")]
         [Description("Show all insults.")]
         [Aliases("ls", "l")]
-        [UsageExamples("!insult list")]
         public async Task ListInsultsAsync(CommandContext ctx)
         {
             List<DatabaseInsult> insults;

@@ -25,9 +25,7 @@ namespace TheGodfather.Modules.Search
     [Group("imgur"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search imgur. Group call retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
-    [UsageExamples("!imgur aww",
-                   "!imgur 10 aww",
-                   "!imgur aww 10")]
+    [UsageExampleArgs("aww", "10 aww", "aww 10")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
@@ -47,7 +45,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetItemsFromSubAsync(
+            IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(
                 sub,
                 amount,
                 SubredditGallerySortOrder.Top,
@@ -69,8 +67,7 @@ namespace TheGodfather.Modules.Search
         [Command("latest"), Priority(1)]
         [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
-        [UsageExamples("!imgur latest 5 aww",
-                       "!imgur latest aww 5")]
+        [UsageExampleArgs("aww", "10 aww", "aww 10")]
         public async Task LatestAsync(CommandContext ctx,
                                      [Description("Number of images to print [1-10].")] int amount,
                                      [RemainingText, Description("Subreddit.")] string sub)
@@ -78,7 +75,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
+            IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
             await this.PrintImagesAsync(ctx.Channel, res, amount);
         }
 
@@ -93,10 +90,7 @@ namespace TheGodfather.Modules.Search
         [Command("top"), Priority(3)]
         [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
-        [UsageExamples("!imgur top day 10 aww",
-                       "!imgur top 10 day aww",
-                       "!imgur top 5 aww",
-                       "!imgur top day aww")]
+        [UsageExampleArgs("day 10 aww", "10 day aww", "5 aww", "day aww")]
         public async Task TopAsync(CommandContext ctx,
                                   [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
                                   [Description("Number of images to print [1-10].")] int amount,
@@ -105,7 +99,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
+            IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
             await this.PrintImagesAsync(ctx.Channel, res, amount);
         }
 
@@ -141,7 +135,7 @@ namespace TheGodfather.Modules.Search
             }
 
             try {
-                foreach (var im in results) {
+                foreach (IGalleryItem im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
                         if (!(img.Nsfw is null) && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))

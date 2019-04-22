@@ -16,8 +16,7 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("here")]
         [Description("Send a reminder to the current channel after specific time span.")]
-        [UsageExamples("!remind here 3h Drink water!",
-                       "!remind here 3h5m Drink water!")]
+        [UsageExampleArgs("3h Drink water!", "3h5m Drink water!")]
         public class RemindHereModule : RemindModule
         {
 
@@ -37,8 +36,7 @@ namespace TheGodfather.Modules.Reminders
 
             [Group("in")]
             [Description("Send a reminder to the current channel after specific time span.")]
-            [UsageExamples("!remind here in 3h Drink water!",
-                           "!remind here in 3h5m Drink water!")]
+            [UsageExampleArgs("3h Drink water!", "3h5m Drink water!")]
             public class RemindHereInModule : RemindHereModule
             {
 
@@ -59,9 +57,7 @@ namespace TheGodfather.Modules.Reminders
 
             [Group("at")]
             [Description("Send a reminder to the current channel at a specific point in time (given by date and time string).")]
-            [UsageExamples("!remind here at 17:20 Drink water!",
-                           "!remind here at 03.15.2019 Drink water!",
-                           "!remind here at \"03.15.2019 17:20\" Drink water!")]
+            [UsageExampleArgs("\"03.15.2019 17:20\" Drink water!")]
             public class RemindHereAtModule : RemindModule
             {
 

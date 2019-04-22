@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Reactions.Common
             bool success = false;
 
             lock (this.cooldownLock) {
-                var now = DateTimeOffset.UtcNow;
+                DateTimeOffset now = DateTimeOffset.UtcNow;
                 if (now >= this.resetTime) {
                     this.cooldown = false;
                     this.resetTime = now + _cooldownTimeout;

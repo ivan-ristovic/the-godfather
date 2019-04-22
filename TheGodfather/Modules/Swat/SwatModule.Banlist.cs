@@ -46,8 +46,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(2)]
             [Description("Add a player to banlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            [UsageExamples("!swat banlist add Name 109.70.149.158",
-                           "!swat banlist add Name 109.70.149.158 Reason for ban")]
+            [UsageExampleArgs("Name 109.70.149.158", "Name 109.70.149.158 Reason for ban")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
                                       [Description("IP.")] CustomIPFormat ip,
@@ -98,7 +97,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete"), Priority(1)]
             [Description("Remove ban entry from database.")]
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
-            [UsageExamples("!swat banlist delete 123.123.123.123")]
+            [UsageExampleArgs("123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip)
             {
@@ -136,7 +135,6 @@ namespace TheGodfather.Modules.Swat
             [Command("list")]
             [Description("View the banlist.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!swat banlist list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseSwatPlayer> banned;

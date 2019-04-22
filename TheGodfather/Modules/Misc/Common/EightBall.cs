@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Misc.Common
 
         public static string GenerateAnswer(string question, IEnumerable<DiscordMember> members)
         {
-            var rng = GFRandom.Generator;
+            GFRandom rng = GFRandom.Generator;
             if (question.StartsWith("when", StringComparison.InvariantCultureIgnoreCase) ||
                 question.StartsWith("how long", StringComparison.InvariantCultureIgnoreCase))
                 return rng.ChooseRandomElement(_timeAnswers);

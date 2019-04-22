@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Currency
         [Command("slot"), Priority(1)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
-        [UsageExamples("!casino slot 20")]
+        [UsageExampleArgs("20", "1k")]
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] long bid = 5)
         {
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Currency
         [Command("wheeloffortune"), Priority(1)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
-        [UsageExamples("!casino wof 20")]
+        [UsageExampleArgs("20", "1k")]
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("Bid.")] long bid = 5)
         {

@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             var member = e.Author as DiscordMember;
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out var exempts)) {
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity> exempts)) {
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration.Services
                     return;
             }
 
-            var gRateInfo = this.guildRatelimitInfo[e.Guild.Id];
+            ConcurrentDictionary<ulong, UserRatelimitInfo> gRateInfo = this.guildRatelimitInfo[e.Guild.Id];
             if (!gRateInfo.ContainsKey(e.Author.Id)) {
                 if (!gRateInfo.TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity)))
                     throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");

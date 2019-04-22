@@ -24,7 +24,6 @@ namespace TheGodfather.Modules.Swat
         [Group("servers"), Hidden]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("serv", "srv")]
-        [UsageExamples("!swat servers")]
         [RequirePrivilegedUser]
         public class SwatServersModule : TheGodfatherModule
         {
@@ -45,8 +44,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(1)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            [UsageExamples("!swat servers add 4u 109.70.149.158:10480",
-                           "!swat servers add 4u 109.70.149.158:10480 10481")]
+            [UsageExampleArgs("4u 109.70.149.158:10480", "4u 109.70.149.158:10480 10481")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
                                       [Description("IP.")] CustomIPFormat ip,
@@ -81,7 +79,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete")]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
-            [UsageExamples("!swat servers delete 4u")]
+            [UsageExampleArgs("4u")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name)
             {
@@ -105,7 +103,6 @@ namespace TheGodfather.Modules.Swat
             [Command("list")]
             [Description("List all registered servers.")]
             [Aliases("ls", "l")]
-            [UsageExamples("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseSwatServer> servers;

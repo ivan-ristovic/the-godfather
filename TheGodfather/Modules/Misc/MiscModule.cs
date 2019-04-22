@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc
         [Command("8ball")]
         [Description("An almighty ball which knows the answer to any question you ask. Alright, the answer is random, so what?")]
         [Aliases("8b")]
-        [UsageExamples("!8ball Am I gay?")]
+        [UsageExampleArgs("Am I gay?")]
         public Task EightBallAsync(CommandContext ctx,
                                   [RemainingText, Description("A question for the almighty ball.")] string question)
         {
@@ -59,7 +59,6 @@ namespace TheGodfather.Modules.Misc
         [Command("coinflip")]
         [Description("Flip a coin.")]
         [Aliases("coin", "flip")]
-        [UsageExamples("!coinflip")]
         public Task CoinflipAsync(CommandContext ctx)
             => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
         #endregion
@@ -68,7 +67,6 @@ namespace TheGodfather.Modules.Misc
         [Command("dice")]
         [Description("Roll a dice.")]
         [Aliases("die", "roll")]
-        [UsageExamples("!dice")]
         public Task DiceAsync(CommandContext ctx)
             => this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
         #endregion
@@ -77,7 +75,6 @@ namespace TheGodfather.Modules.Misc
         [Command("invite")]
         [Description("Get an instant invite link for the current guild.")]
         [Aliases("getinvite")]
-        [UsageExamples("!invite")]
         [RequirePermissions(Permissions.CreateInstantInvite)]
         public async Task GetInstantInviteAsync(CommandContext ctx)
         {
@@ -96,8 +93,7 @@ namespace TheGodfather.Modules.Misc
         [Command("items")]
         [Description("View user's purchased items (see ``bank`` and ``shop``).")]
         [Aliases("myitems", "purchases")]
-        [UsageExamples("!items",
-                       "!items @Someone")]
+        [UsageExampleArgs("@Someone")]
         [RequirePermissions(Permissions.CreateInstantInvite)]
         public async Task GetPurchasedItemsAsync(CommandContext ctx,
                                                 [Description("User.")] DiscordUser user = null)
@@ -129,7 +125,6 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_LEAVE
         [Command("leave"), UsesInteractivity]
         [Description("Makes Godfather leave the guild.")]
-        [UsageExamples("!leave")]
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
@@ -146,7 +141,7 @@ namespace TheGodfather.Modules.Misc
         [Command("leet")]
         [Description("Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.")]
         [Aliases("l33t")]
-        [UsageExamples("!leet Some sentence")]
+        [UsageExampleArgs("Some sentence")]
         public Task L33tAsync(CommandContext ctx,
                              [RemainingText, Description("Text.")] string text)
         {
@@ -177,8 +172,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_NSFW
         [Command("nsfw")]
         [Description("Wraps the URL into a special NSFW block.")]
-        [UsageExamples("!nsfw some_nasty_nsfw_url_here", 
-                       "!nsfw some_nasty_nsfw_url_here additional info")]
+        [UsageExampleArgs("http://unsafe.to.view", "http://unsafe.to.view message")]
         [RequireBotPermissions(Permissions.ManageMessages)]
         public async Task NsfwAsync(CommandContext ctx,
                                    [Description("URL to wrap.")] Uri url,
@@ -202,7 +196,7 @@ namespace TheGodfather.Modules.Misc
         [Command("penis"), Priority(1)]
         [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]
-        [UsageExamples("!penis @Someone")]
+        [UsageExampleArgs("@Someone")]
         public Task PenisAsync(CommandContext ctx,
                               [Description("Who to measure.")] DiscordMember member = null)
             => this.PenisAsync(ctx, member as DiscordUser);
@@ -213,7 +207,7 @@ namespace TheGodfather.Modules.Misc
         {
             user = user ?? ctx.User;
 
-            var sb = new StringBuilder($"{user.Mention}'s size:").AppendLine().AppendLine();
+            StringBuilder sb = new StringBuilder($"{user.Mention}'s size:").AppendLine().AppendLine();
 
             if (user.IsCurrent) {
                 sb.AppendLine(Formatter.Bold($"8{new string('=', 45)}"));
@@ -231,8 +225,7 @@ namespace TheGodfather.Modules.Misc
         [Command("peniscompare"), Priority(1)]
         [Description("Comparison of the results given by ``penis`` command.")]
         [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
-        [UsageExamples("!peniscompare @Someone",
-                       "!peniscompare @Someone @SomeoneElse")]
+        [UsageExampleArgs("@Someone", "@Someone @SomeoneElse")]
         public Task PenisCompareAsync(CommandContext ctx,
                                      [Description("User1.")] params DiscordMember[] members)
             => this.PenisCompareAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
@@ -258,7 +251,6 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_PING
         [Command("ping")]
         [Description("Ping the bot.")]
-        [UsageExamples("!ping")]
         public Task PingAsync(CommandContext ctx)
             => this.InformAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:");
         #endregion
@@ -267,8 +259,7 @@ namespace TheGodfather.Modules.Misc
         [Command("prefix")]
         [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix", "pref", "setpref")]
-        [UsageExamples("!prefix",
-                       "!prefix ;")]
+        [UsageExampleArgs(";")]
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
@@ -294,7 +285,7 @@ namespace TheGodfather.Modules.Misc
         [Command("rate"), Priority(1)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
-        [UsageExamples("!rate @Someone")]
+        [UsageExampleArgs("@Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
                              [Description("Who to measure.")] params DiscordMember[] members)
@@ -311,7 +302,7 @@ namespace TheGodfather.Modules.Misc
             try {
                 using (var chart = new Bitmap("Resources/graph.png"))
                 using (var g = Graphics.FromImage(chart)) {
-                    var colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
+                    Brush[] colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
 
                     int position = 0;
                     foreach (DiscordUser user in users)
@@ -351,7 +342,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_REPORT
         [Command("report"), UsesInteractivity]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
-        [UsageExamples("!report Your bot sucks!")]
+        [UsageExampleArgs("Your bot sucks!")]
         public async Task SendErrorReportAsync(CommandContext ctx,
                                               [RemainingText, Description("Issue text.")] string issue)
         {
@@ -380,7 +371,7 @@ namespace TheGodfather.Modules.Misc
         [Command("say")]
         [Description("Echo echo echo.")]
         [Aliases("repeat")]
-        [UsageExamples("!say I am gay.")]
+        [UsageExampleArgs("I am gay.")]
         public Task SayAsync(CommandContext ctx,
                             [RemainingText, Description("Text to say.")] string text)
         {
@@ -398,7 +389,7 @@ namespace TheGodfather.Modules.Misc
         [Command("simulate")]
         [Description("Simulate another user.")]
         [Aliases("sim")]
-        [UsageExamples("!simulate @Someone.")]
+        [UsageExampleArgs("@Someone")]
         public async Task SimulateAsync(CommandContext ctx,
                                        [Description("Member to simulate.")] DiscordMember member)
         {
@@ -434,7 +425,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_TTS
         [Command("tts")]
         [Description("Sends a tts message.")]
-        [UsageExamples("!tts I am gay.")]
+        [UsageExampleArgs("I am gay.")]
         [RequirePermissions(Permissions.SendTtsMessages)]
         public Task TtsAsync(CommandContext ctx,
                             [RemainingText, Description("Text.")] string text)
@@ -453,7 +444,7 @@ namespace TheGodfather.Modules.Misc
         [Command("unleet")]
         [Description("Translates a message from leetspeak (expecting only letters in translated output).")]
         [Aliases("unl33t")]
-        [UsageExamples("!unleet w0W 5uCh C0oL")]
+        [UsageExampleArgs("w0W 5uCh C0oL")]
         public Task Unl33tAsync(CommandContext ctx,
                                [RemainingText, Description("Text to unleet.")] string text)
         {
@@ -483,7 +474,6 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_UPTIME
         [Command("uptime")]
         [Description("Prints out bot runtime information.")]
-        [UsageExamples("!uptime")]
         public Task UptimeAsync(CommandContext ctx)
         {
             TimeSpan processUptime = this.Shared.UptimeInformation.ProgramUptime;
@@ -502,7 +492,7 @@ namespace TheGodfather.Modules.Misc
         [Command("zugify")]
         [Description("I don't even...")]
         [Aliases("z")]
-        [UsageExamples("!zugify Some random text")]
+        [UsageExampleArgs("Some random text")]
         public Task ZugifyAsync(CommandContext ctx,
                                [RemainingText, Description("Text.")] string text)
         {

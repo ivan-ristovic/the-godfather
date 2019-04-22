@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Search
         [Command("rss")]
         [Description("Get the latest topics from the given RSS feed URL.")]
         [Aliases("feed")]
-        [UsageExamples("!rss https://news.google.com/news/rss/")]
+        [UsageExampleArgs("https://news.google.com/news/rss/")]
         public Task RssAsync(CommandContext ctx,
                             [Description("RSS feed URL.")] Uri url)
         {
@@ -60,8 +60,7 @@ namespace TheGodfather.Modules.Search
         [Description("Commands for managing feed subscriptions. The bot will send a message when the latest topic " +
                      "is changed. Group call subscribes the bot to the given RSS feed URL or lists active subs.")]
         [Aliases("sub", "subscriptions", "subscription")]
-        [UsageExamples("!subscribe https://news.google.com/news/rss/",
-                       "!subscribe https://news.google.com/news/rss/ news")]
+        [UsageExampleArgs("https://news.google.com/news/rss/", "https://news.google.com/news/rss/ news")]
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class SubscribeModule : TheGodfatherModule
         {
@@ -94,7 +93,6 @@ namespace TheGodfather.Modules.Search
             [Command("list")]
             [Description("Get feed list for the current channel.")]
             [Aliases("ls", "listsubs", "listfeeds")]
-            [UsageExamples("!subscribe list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseRssSubscription> subs;
@@ -120,7 +118,7 @@ namespace TheGodfather.Modules.Search
             [Command("reddit")]
             [Description("Add new subscription for a subreddit.")]
             [Aliases("r")]
-            [UsageExamples("!subscribe reddit aww")]
+            [UsageExampleArgs("aww")]
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
@@ -137,8 +135,7 @@ namespace TheGodfather.Modules.Search
             [Command("youtube")]
             [Description("Add a new subscription for a YouTube channel.")]
             [Aliases("y", "yt", "ytube")]
-            [UsageExamples("!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO",
-                           "!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO rick")]
+            [UsageExampleArgs("https://www.youtube.com/user/RickAstleyVEVO", "https://www.youtube.com/user/RickAstleyVEVO rick")]
             public async Task SubscribeAsync(CommandContext ctx,
                                             [Description("Channel URL.")] string url,
                                             [Description("Friendly name.")] string name = null)
@@ -159,7 +156,7 @@ namespace TheGodfather.Modules.Search
         [Group("unsubscribe")]
         [Description("Remove an existing feed subscription.")]
         [Aliases("unsub")]
-        [UsageExamples("!unsubscribe 1")]
+        [UsageExampleArgs("1")]
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class UnsubscribeModule : TheGodfatherModule
         {
@@ -206,7 +203,6 @@ namespace TheGodfather.Modules.Search
             [Command("all"), UsesInteractivity]
             [Description("Remove all subscriptions for the given channel.")]
             [Aliases("a")]
-            [UsageExamples("!unsub all")]
             public async Task AllAsync(CommandContext ctx,
                                       [Description("Channel.")] DiscordChannel channel = null)
             {
@@ -228,7 +224,7 @@ namespace TheGodfather.Modules.Search
             [Command("reddit")]
             [Description("Remove a subscription using subreddit name or subscription ID (use command ``subscriptions list`` to see IDs).")]
             [Aliases("r")]
-            [UsageExamples("!unsub reddit aww")]
+            [UsageExampleArgs("aww")]
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
@@ -248,8 +244,7 @@ namespace TheGodfather.Modules.Search
             [Command("youtube")]
             [Description("Remove a YouTube channel subscription.")]
             [Aliases("y", "yt", "ytube")]
-            [UsageExamples("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO",
-                           "!youtube unsubscribe rick")]
+            [UsageExampleArgs("https://www.youtube.com/user/RickAstleyVEVO", "rick")]
             public async Task UnsubscribeAsync(CommandContext ctx,
                                               [Description("Channel URL or subscription name.")] string name_url)
             {

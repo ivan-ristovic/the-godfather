@@ -61,11 +61,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(2)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a", "block", "<", "<<", "+=")]
-            [UsageExamples("!owner blockedusers add @Someone",
-                           "!owner blockedusers add @Someone Troublemaker and spammer",
-                           "!owner blockedusers add 123123123123123",
-                           "!owner blockedusers add @Someone 123123123123123",
-                           "!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
+            [UsageExampleArgs("@Someone", "@Someone Troublemaker", "123123123123123", "@Someone 123123123123123", "\"This is some reason\" @Someone 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] params DiscordUser[] users)
                 => this.AddAsync(ctx, null, users);
@@ -120,9 +116,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from blocked users list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
-            [UsageExamples("!owner blockedusers remove @Someone",
-                           "!owner blockedusers remove 123123123123123",
-                           "!owner blockedusers remove @Someone 123123123123123")]
+            [UsageExampleArgs("@Someone", "123123123123123", "@Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {
@@ -159,7 +153,6 @@ namespace TheGodfather.Modules.Owner
             [Command("list")]
             [Description("List all blocked users.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseBlockedUser> blocked;

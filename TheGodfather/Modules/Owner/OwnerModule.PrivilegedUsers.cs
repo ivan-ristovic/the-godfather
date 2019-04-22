@@ -51,8 +51,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add users to privileged users list.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExamples("!owner privilegedusers add @Someone",
-                           "!owner privilegedusers add @Someone @SomeoneElse")]
+            [UsageExampleArgs("add @Someone", "add @Someone @SomeoneElse")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to grant privilege to.")] params DiscordUser[] users)
             {
@@ -74,9 +73,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from privileged users list.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            [UsageExamples("!owner privilegedusers remove @Someone",
-                           "!owner privilegedusers remove 123123123123123",
-                           "!owner privilegedusers remove @Someone 123123123123123")]
+            [UsageExampleArgs("remove @Someone", "remove 123123123123123", "remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to revoke privileges from.")] params DiscordUser[] users)
             {
@@ -96,7 +93,6 @@ namespace TheGodfather.Modules.Owner
             [Command("list")]
             [Description("List all privileged users.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!owner privilegedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabasePrivilegedUser> privileged;

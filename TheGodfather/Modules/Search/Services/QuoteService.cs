@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Search.Services
             else
                 response = await _http.GetStringAsync($"{_url}?category={WebUtility.UrlEncode(category)}").ConfigureAwait(false);
 
-            var data = JsonConvert.DeserializeObject<QuoteApiResponse>(response);
+            QuoteApiResponse data = JsonConvert.DeserializeObject<QuoteApiResponse>(response);
             return data?.Contents?.Quotes?.FirstOrDefault();
         }
 

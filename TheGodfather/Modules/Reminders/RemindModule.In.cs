@@ -16,8 +16,7 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("in")]
         [Description("Send a reminder after specific time span.")]
-        [UsageExamples("!remind in 3h Drink water!",
-                       "!remind in 3h5m Drink water!")]
+        [UsageExampleArgs("3h Drink water!", "3h5m Drink water!")]
         public class RemindInModule : RemindModule
         {
 

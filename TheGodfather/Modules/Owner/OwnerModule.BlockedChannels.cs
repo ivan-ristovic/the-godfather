@@ -61,11 +61,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(2)]
             [Description("Add channel to blocked channels list.")]
             [Aliases("+", "a", "block", "<", "<<", "+=")]
-            [UsageExamples("!owner blockedchannels add #channel",
-                           "!owner blockedchannels add #channel Some reason for blocking",
-                           "!owner blockedchannels add 123123123123123",
-                           "!owner blockedchannels add #channel 123123123123123",
-                           "!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
+            [UsageExampleArgs("#channel", "#channel Some reason", "123123123123123", "#channel 123123123123123", "\"This is some reason\" #channel 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Channels to block.")] params DiscordChannel[] channels)
                 => this.AddAsync(ctx, null, channels);
@@ -120,9 +116,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove channel from blocked channels list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
-            [UsageExamples("!owner blockedchannels remove #channel",
-                           "!owner blockedchannels remove 123123123123123",
-                           "!owner blockedchannels remove @Someone 123123123123123")]
+            [UsageExampleArgs("#channel", "123123123123123", "#channel1 #channel2 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {
@@ -159,7 +153,6 @@ namespace TheGodfather.Modules.Owner
             [Command("list")]
             [Description("List all blocked channels.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 List<DatabaseBlockedChannel> blocked;

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or " +
                  "adds a new filter for the given word list. Filters are regular expressions.")]
     [Aliases("f", "filters")]
-    [UsageExamples("!filter fuck fk f+u+c+k+")]
+    [UsageExampleArgs("fuck fk f+u+c+k+")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class FilterModule : TheGodfatherModule
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add filter to guild filter list.")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
-        [UsageExamples("!filter add fuck f+u+c+k+")]
+        [UsageExampleArgs("fuck f+u+c+k+")]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
         {
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    if (!regexString.TryParseRegex(out var regex)) {
+                    if (!regexString.TryParseRegex(out Regex regex)) {
                         eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} is not a valid regular expression.");
                         continue;
                     }
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters)) {
+                    if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters)) {
                         if (existingFilters.Any(f => f.Trigger.ToString() == regex.ToString())) {
                             eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                             continue;
@@ -130,15 +130,14 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Priority(1)]
         [Description("Removes filter either by ID or plain text match.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!filter delete fuck f+u+c+k+",
-                       "!filter delete 3 4")]
+        [UsageExampleArgs("fuck f+u+c+k+", "3 4")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {
             if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
 
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters))
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
@@ -181,7 +180,7 @@ namespace TheGodfather.Modules.Administration
             if (filters is null || !filters.Any())
                 throw new CommandFailedException("No filters given.");
 
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var existingFilters))
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
@@ -226,7 +225,6 @@ namespace TheGodfather.Modules.Administration
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all filters for the current guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [UsageExamples("!filter clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
@@ -260,10 +258,9 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExamples("!filter list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out var filters) || !filters.Any())
+            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters) || !filters.Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
             return ctx.SendCollectionInPagesAsync(

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(2)]
             [Description("Add a player to IP database.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            [UsageExamples("!swat db add Name 109.70.149.158")]
+            [UsageExampleArgs("Name 109.70.149.158")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
                                       [Description("IP.")] CustomIPFormat ip,
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Swat
             [Command("alias"), Priority(2)]
             [Description("Add a player alias to the database.")]
             [Aliases("+a", "aa", "+=a", "<a", "<<a")]
-            [UsageExamples("!swat db alias Name Alias")]
+            [UsageExampleArgs("Name Alias")]
             public async Task AliasAsync(CommandContext ctx,
                                         [Description("Player name.")] string name,
                                         [Description("Player alias.")] string alias)
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete"), Priority(1)]
             [Description("Remove IP entry from database.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
-            [UsageExamples("!swat db remove 123.123.123.123")]
+            [UsageExampleArgs("123.123.123.123", "Name")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP or range.")] CustomIPFormat ip)
             {
@@ -219,7 +219,6 @@ namespace TheGodfather.Modules.Swat
             [Command("list")]
             [Description("View the IP list.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!swat db list")]
             public async Task ListAsync(CommandContext ctx,
                                        [Description("From which index to view.")] int from = 1,
                                        [Description("How many results to view.")] int amount = 10)

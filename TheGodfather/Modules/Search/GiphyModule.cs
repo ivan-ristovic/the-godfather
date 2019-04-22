@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("gif"), Module(ModuleType.Searches), NotBlocked]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
-    [UsageExamples("!gif wat")]
+    [UsageExampleArgs("wat")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.SearchAsync(query);
+            GiphyDotNet.Model.GiphyImage.Data[] res = await this.Service.SearchAsync(query);
             if (!res.Any()) {
                 await this.InformFailureAsync(ctx, "No results...");
                 return;
@@ -50,13 +50,12 @@ namespace TheGodfather.Modules.Search
         [Command("random")]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
-        [UsageExamples("!gif random")]
         public async Task RandomAsync(CommandContext ctx)
         {
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetRandomGifAsync();
+            GiphyDotNet.Model.GiphyRandomImage.Data res = await this.Service.GetRandomGifAsync();
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Random gif:",
@@ -70,22 +69,21 @@ namespace TheGodfather.Modules.Search
         [Command("trending")]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
-        [UsageExamples("!gif trending",
-                       "!gif trending 3")]
+        [UsageExampleArgs("3")]
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetTrendingGifsAsync(amount);
+            GiphyDotNet.Model.GiphyImage.Data[] res = await this.Service.GetTrendingGifsAsync(amount);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
                 Color = this.ModuleColor
             };
 
-            foreach (var gif in res)
+            foreach (GiphyDotNet.Model.GiphyImage.Data gif in res)
                 emb.AddField($"{gif.Username} (rating: {gif.Rating})", gif.EmbedUrl);
 
             await ctx.RespondAsync(embed: emb.Build());

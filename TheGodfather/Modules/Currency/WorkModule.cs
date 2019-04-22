@@ -28,7 +28,6 @@ namespace TheGodfather.Modules.Currency
         #region COMMAND_SLUT
         [Command("slut")]
         [Description("Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.")]
-        [UsageExamples("!slut")]
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
         {
@@ -49,7 +48,6 @@ namespace TheGodfather.Modules.Currency
         [Command("work")]
         [Description("Do something productive with your life. You can work once per minute.")]
         [Aliases("job")]
-        [UsageExamples("!work")]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task WorkAsync(CommandContext ctx)
         {
@@ -69,7 +67,6 @@ namespace TheGodfather.Modules.Currency
         #region COMMAND_CRIME
         [Command("crime")]
         [Description("Commit a crime and hope to get away with large amounts of cash. You can attempt to commit a crime once every 10 minutes.")]
-        [UsageExamples("!crime")]
         [Cooldown(1, 600, CooldownBucketType.User)]
         public async Task CrimeAsync(CommandContext ctx)
         {

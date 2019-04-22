@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a new command.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExamples("!o cmd + \\`\\`\\`[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");\\`\\`\\`")]
+            [UsageExampleArgs("\\`\\`\\`[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");\\`\\`\\`")]
             public Task AddAsync(CommandContext ctx,
                                 [RemainingText, Description("Code to evaluate.")] string code)
             {
@@ -117,7 +117,7 @@ public sealed class DynamicCommands : TheGodfatherModule
             [Command("delete")]
             [Description("Remove an existing command.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            [UsageExamples("!owner command remove say")]
+            [UsageExampleArgs("say")]
             public Task DeleteAsync(CommandContext ctx,
                                    [RemainingText, Description("Command to remove.")] string command)
             {
@@ -134,7 +134,6 @@ public sealed class DynamicCommands : TheGodfatherModule
             [Command("list")]
             [Description("List all privileged users.")]
             [Aliases("ls", "l", "print")]
-            [UsageExamples("!owner command list")]
             public Task ListAsync(CommandContext ctx)
             {
                 return ctx.SendCollectionInPagesAsync(

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("buy"), UsesInteractivity]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
-        [UsageExamples("!chicken buy My Chicken Name")]
+        [UsageExampleArgs("My Chicken Name")]
         public class BuyModule : TheGodfatherModule
         {
 
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("default")]
             [Description("Buy a chicken of default strength (cheapest).")]
             [Aliases("d", "def")]
-            [UsageExamples("!chicken buy default My Chicken Name")]
+            [UsageExampleArgs("My Chicken Name")]
             public Task DefaultAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("wellfed")]
             [Description("Buy a well-fed chicken.")]
             [Aliases("wf", "fed")]
-            [UsageExamples("!chicken buy wellfed My Chicken Name")]
+            [UsageExampleArgs("My Chicken Name")]
             public Task WellFedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("trained")]
             [Description("Buy a trained chicken.")]
             [Aliases("tr", "train")]
-            [UsageExamples("!chicken buy trained My Chicken Name")]
+            [UsageExampleArgs("My Chicken Name")]
             public Task TrainedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("steroidempowered")]
             [Description("Buy a steroid-empowered chicken.")]
             [Aliases("steroid", "empowered")]
-            [UsageExamples("!chicken buy steroidempowered My Chicken Name")]
+            [UsageExampleArgs("My Chicken Name")]
             public Task EmpoweredAsync(CommandContext ctx,
                                       [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("alien")]
             [Description("Buy an alien chicken.")]
             [Aliases("a", "extraterrestrial")]
-            [UsageExamples("!chicken buy alien My Chicken Name")]
+            [UsageExampleArgs("My Chicken Name")]
             public Task AlienAsync(CommandContext ctx,
                                   [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);
@@ -94,7 +94,6 @@ namespace TheGodfather.Modules.Chickens
             [Command("list")]
             [Description("List all available chicken types.")]
             [Aliases("ls", "view")]
-            [UsageExamples("!chicken buy list")]
             public Task ListAsync(CommandContext ctx)
             {
                 var emb = new DiscordEmbedBuilder() {
@@ -135,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 
-                    var stats = Chicken.StartingStats[type];
+                    ChickenStats stats = Chicken.StartingStats[type];
                     db.Chickens.Add(new DatabaseChicken() {
                         GuildId = ctx.Guild.Id,
                         MaxVitality = stats.BareMaxVitality,

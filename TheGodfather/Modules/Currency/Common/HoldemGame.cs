@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Currency.Common
             foreach (HoldemParticipant p in this.ActiveParticipants)
                 p.HandRank = _evaluator.GetBestHand(new List<Card>(this.drawn) { p.Card1, p.Card2 }).RankType;
 
-            var winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
+            HoldemParticipant winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
             if (!(winner is null))
                 winner.Balance += this.Pot;
             this.Winner = winner?.User;

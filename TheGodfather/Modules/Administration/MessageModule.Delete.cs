@@ -21,8 +21,7 @@ namespace TheGodfather.Modules.Administration
         [Group("delete"), UsesInteractivity]
         [Description("Deletes messages from the current channel. Group call deletes given amount of most recent messages.")]
         [Aliases("-", "prune", "del", "d")]
-        [UsageExamples("!messages delete 10",
-                       "!messages delete 10 Cleaning spam")]
+        [UsageExampleArgs("10", "10 Cleaning spam")]
         [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
         public class MessageDeleteModule : TheGodfatherModule
         {
@@ -57,7 +56,7 @@ namespace TheGodfather.Modules.Administration
             [Command("after")]
             [Description("Deletes given amount messages after a specified message ID.")]
             [Aliases("aft", "af")]
-            [UsageExamples("!messages delete before 123456789132 20 Cleaning spam")]
+            [UsageExampleArgs("4022123456789132 20 Cleaning spam")]
             public async Task DeleteMessagesAfterAsync(CommandContext ctx,
                                                       [Description("Message after which to delete.")] DiscordMessage message,
                                                       [Description("Amount.")] int amount = 5,
@@ -75,7 +74,7 @@ namespace TheGodfather.Modules.Administration
             [Command("before")]
             [Description("Deletes given amount messages before a specified message ID.")]
             [Aliases("bef", "bf")]
-            [UsageExamples("!messages delete before 123456789132 20 Cleaning spam")]
+            [UsageExampleArgs("4022123456789132 20 Cleaning spam")]
             public async Task DeleteMessagesBeforeAsync(CommandContext ctx,
                                                        [Description("Message before which to delete.")] DiscordMessage message,
                                                        [Description("Amount.")] int amount = 5,
@@ -93,8 +92,7 @@ namespace TheGodfather.Modules.Administration
             [Command("from"), Priority(1)]
             [Description("Deletes given amount of most recent messages from the given member.")]
             [Aliases("f", "frm")]
-            [UsageExamples("!messages delete from @Someone 10 Cleaning spam",
-                           "!messages delete from 10 @Someone Cleaning spam")]
+            [UsageExampleArgs("@Someone 10 Cleaning spam", "10 @Someone Cleaning spam")]
             public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
                                                          [Description("User whose messages to delete.")] DiscordMember member,
                                                          [Description("Message range.")] int amount = 5,
@@ -120,7 +118,7 @@ namespace TheGodfather.Modules.Administration
             [Command("reactions")]
             [Description("Deletes all reactions from the given message.")]
             [Aliases("react", "re")]
-            [UsageExamples("!messages delete reactions 408226948855234561")]
+            [UsageExampleArgs("408226948855234561")]
             public async Task DeleteReactionsAsync(CommandContext ctx,
                                                   [Description("Message.")] DiscordMessage message = null,
                                                   [RemainingText, Description("Reason.")] string reason = null)
@@ -138,8 +136,7 @@ namespace TheGodfather.Modules.Administration
             [Command("regex"), Priority(1)]
             [Description("Deletes given amount of most-recent messages that match a given regular expression withing a given message amount.")]
             [Aliases("r", "rgx", "regexp", "reg")]
-            [UsageExamples("!messages delete regex s+p+a+m+ 10 Cleaning spam",
-                           "!messages delete regex 10 s+p+a+m+ Cleaning spam")]
+            [UsageExampleArgs("s+p+a+m+ 10 Cleaning spam", "10 s+p+a+m+ Cleaning spam")]
             public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                           [Description("Pattern (Regex).")] string pattern,
                                                           [Description("Amount.")] int amount = 100,

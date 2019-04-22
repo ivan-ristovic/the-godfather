@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Group("urbandict"), Module(ModuleType.Searches), NotBlocked]
     [Description("Urban Dictionary commands. Group call searches Urban Dictionary for a given query.")]
     [Aliases("ud", "urban")]
-    [UsageExamples("!urbandict blonde")]
+    [UsageExampleArgs("blonde")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class UrbanDictModule : TheGodfatherModule
     {

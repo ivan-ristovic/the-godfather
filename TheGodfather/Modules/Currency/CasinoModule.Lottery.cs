@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Currency
         [Group("lottery")]
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't be repeated.")]
         [Aliases("lotto")]
-        [UsageExamples("!casino lottery 2 10 8")]
+        [UsageExampleArgs("2 10 8")]
         public class LotteryModule : TheGodfatherModule
         {
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency
                             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
                             using (DatabaseContext db = this.Database.CreateContext()) {
-                                foreach (var winner in game.Winners)
+                                foreach (LotteryParticipant winner in game.Winners)
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
                                 await db.SaveChangesAsync();
                             }
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Description("Join a pending Lottery game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            [UsageExamples("!casino lottery join 2 10 8")]
+            [UsageExampleArgs("2 10 8")]
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
@@ -124,7 +124,6 @@ namespace TheGodfather.Modules.Currency
             [Command("rules")]
             [Description("Explain the Lottery rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!casino lottery rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,

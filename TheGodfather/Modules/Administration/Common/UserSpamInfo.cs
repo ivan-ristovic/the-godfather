@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Administration.Common
             newContent = newContent.ToLowerInvariant();
 
             lock (this.decrementLock) {
-                var now = DateTimeOffset.UtcNow;
+                DateTimeOffset now = DateTimeOffset.UtcNow;
                 if (now >= this.resetsAt || (!string.IsNullOrWhiteSpace(newContent) && this.lastContent.LevenshteinDistance(newContent) > 2)) {
                     Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
                     this.resetsAt = now + _resetAfter;

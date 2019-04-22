@@ -1,4 +1,8 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.CommandsNext;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Linq;
 #endregion
@@ -6,12 +10,12 @@ using System.Linq;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    public sealed class UsageExamplesAttribute : Attribute
+    public sealed class UsageExampleArgsAttribute : Attribute
     {
         public string[] Examples { get; private set; }
 
 
-        public UsageExamplesAttribute(params string[] examples)
+        public UsageExampleArgsAttribute(params string[] examples)
         {
             if (examples is null)
                 throw new ArgumentException($"No examples provided to {this.GetType().Name}!");
@@ -26,7 +30,18 @@ namespace TheGodfather.Common.Attributes
         }
 
 
-        public string JoinExamples(string separator = "\n") 
-            => string.Join(separator, this.Examples);
+        public string JoinExamples(Command cmd, CommandContext ctx = null, string separator = "\n")
+        {
+            if (ctx is null)
+                return string.Join(separator, this.Examples);
+
+            string cname = cmd.QualifiedName;
+            string prefix = ctx.Services.GetService<SharedData>().GetGuildPrefix(ctx.Guild.Id);
+
+            if (cmd.Overloads.Any(o => o.Arguments.All(a => a.IsOptional)))
+                return string.Join(separator, new[] { "" }.Concat(this.Examples).Select(e => $"{prefix}{cname} {e}"));
+            else
+                return string.Join(separator, this.Examples.Select(e => $"{prefix}{cname} {e}"));
+        }
     }
 }

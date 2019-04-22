@@ -38,8 +38,7 @@ namespace TheGodfather.Modules.Administration
         [Command("attachments")]
         [Description("View all message attachments. If the message is not provided, scans the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
-        [UsageExamples("!message attachments",
-                       "!message attachments 408226948855234561")]
+        [UsageExampleArgs("408226948855234561")]
         public async Task ListAttachmentsAsync(CommandContext ctx,
                                               [Description("Message.")] DiscordMessage message = null)
         {
@@ -63,8 +62,7 @@ namespace TheGodfather.Modules.Administration
         [Command("flag")]
         [Description("Flags the message given by ID for deletion vote. If the message is not provided, flags the last sent message before command invocation.")]
         [Aliases("f")]
-        [UsageExamples("!message flag",
-                       "!message flag 408226948855234561")]
+        [UsageExampleArgs("408226948855234561")]
         [RequireBotPermissions(Permissions.ManageMessages)]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task FlagMessageAsync(CommandContext ctx,
@@ -95,7 +93,6 @@ namespace TheGodfather.Modules.Administration
         [Command("listpinned")]
         [Description("List pinned messages in this channel.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
-        [UsageExamples("!messages listpinned")]
         public async Task ListPinnedMessagesAsync(CommandContext ctx)
         {
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
@@ -105,7 +102,7 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            var pages = pinned.Select(m => new Page(
+            IEnumerable<Page> pages = pinned.Select(m => new Page(
                 $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
                 GetFirstEmbedOrDefaultAsBuilder(m)
             ));
@@ -131,7 +128,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify")]
         [Description("Modify the given message.")]
         [Aliases("edit", "mod", "e", "m")]
-        [UsageExamples("!messages modify 408226948855234561 modified text")]
+        [UsageExampleArgs("408226948855234561 modified text")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task ModifyMessageAsync(CommandContext ctx,
                                             [Description("Message.")] DiscordMessage message,
@@ -149,8 +146,7 @@ namespace TheGodfather.Modules.Administration
         [Command("pin")]
         [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
-        [UsageExamples("!messages pin",
-                       "!messages pin 408226948855234561")]
+        [UsageExampleArgs("408226948855234561")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
                                          [Description("Message.")] DiscordMessage message = null)
@@ -168,8 +164,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unpin"), Priority(1)]
         [Description("Unpins the message at given index (starting from 1) or message ID. If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
-        [UsageExamples("!messages unpin 12345645687955",
-                       "!messages unpin 10")]
+        [UsageExampleArgs("12345645687955", "10")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinMessageAsync(CommandContext ctx,
                                            [Description("Message.")] DiscordMessage message)
@@ -196,7 +191,6 @@ namespace TheGodfather.Modules.Administration
         [Command("unpinall")]
         [Description("Unpins all pinned messages in this channel.")]
         [Aliases("upa")]
-        [UsageExamples("!messages unpinall")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinAllMessagesAsync(CommandContext ctx)
         {

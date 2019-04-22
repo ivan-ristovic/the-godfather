@@ -21,9 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Group("birthdays"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.")]
     [Aliases("birthday", "bday", "bd", "bdays")]
-    [UsageExamples("!birthdays",
-                   "!birthday add @Someone #channel_to_send_message_to",
-                   "!birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
+    [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class BirthdayModule : TheGodfatherModule
@@ -59,17 +57,13 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Priority(0)]
         [Description("Schedule a birthday notification. If the date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("new", "+", "a", "+=", "<", "<<")]
-        [UsageExamples("!birthday add @Someone",
-                       "!birthday add @Someone #channel_to_send_message_to",
-                       "!birthday add @Someone 15.2.1990",
-                       "!birthday add @Someone #channel_to_send_message_to 15.2.1990",
-                       "!birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
+        [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Birthday boy/girl.")] DiscordUser user,
                                   [Description("Birth date.")] string date_str = null,
                                   [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
         {
-            var date = DateTime.UtcNow.Date;
+            DateTime date = DateTime.UtcNow.Date;
             if (!string.IsNullOrWhiteSpace(date_str) && !DateTime.TryParse(date_str, out date))
                 throw new CommandFailedException("The given date is not valid!");
 
@@ -105,7 +99,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Priority(1), UsesInteractivity]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        [UsageExamples("!birthday delete @Someone")]
+        [UsageExampleArgs("@Someone", "#channel")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("User whose birthday to remove.")] DiscordUser user)
         {
@@ -137,7 +131,6 @@ namespace TheGodfather.Modules.Misc
         [Command("list")]
         [Description("List registered birthday notifications for this channel.")]
         [Aliases("ls")]
-        [UsageExamples("!birthday list")]
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Channel for which to list.")] DiscordChannel channel = null)
         {
@@ -183,7 +176,6 @@ namespace TheGodfather.Modules.Misc
         [Command("listall")]
         [Description("List all registered birthdays.")]
         [Aliases("lsa")]
-        [UsageExamples("!birthday listall")]
         [RequirePrivilegedUser]
         public async Task ListAllAsync(CommandContext ctx)
         {

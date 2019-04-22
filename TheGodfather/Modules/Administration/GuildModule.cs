@@ -22,7 +22,6 @@ namespace TheGodfather.Modules.Administration
     [Group("guild"), Module(ModuleType.Administration), NotBlocked]
     [Description("Miscellaneous guild control commands. Group call prints guild information.")]
     [Aliases("server", "g")]
-    [UsageExamples("!guild")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public partial class GuildModule : TheGodfatherModule
     {
@@ -43,7 +42,6 @@ namespace TheGodfather.Modules.Administration
         [Command("getbans")]
         [Description("Get guild ban list.")]
         [Aliases("banlist", "viewbanlist", "getbanlist", "bans", "viewbans")]
-        [UsageExamples("!guild banlist")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
         {
@@ -62,7 +60,7 @@ namespace TheGodfather.Modules.Administration
         [Command("log")]
         [Description("View guild audit logs. You can also specify an amount of entries to fetch.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-        [UsageExamples("!guild logs")]
+        [UsageExampleArgs("5")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Amount of entries to fetch")] int amount = 10)
@@ -93,7 +91,6 @@ namespace TheGodfather.Modules.Administration
         [Command("info")]
         [Description("Print guild information.")]
         [Aliases("i", "information")]
-        [UsageExamples("!guild info")]
         public Task GuildInfoAsync(CommandContext ctx)
         {
             var emb = new DiscordEmbedBuilder() {
@@ -116,7 +113,6 @@ namespace TheGodfather.Modules.Administration
         [Command("memberlist")]
         [Description("Print the guild member list.")]
         [Aliases("listmembers", "lm", "members")]
-        [UsageExamples("!guild memberlist")]
         public async Task MemberlistAsync(CommandContext ctx)
         {
             IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
@@ -134,7 +130,7 @@ namespace TheGodfather.Modules.Administration
         [Command("prune"), UsesInteractivity]
         [Description("Prune guild members who weren't active in the given amount of days [1-30].")]
         [Aliases("p", "clean", "purge")]
-        [UsageExamples("!guild prune 5")]
+        [UsageExampleArgs("5")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembersAsync(CommandContext ctx,
@@ -162,8 +158,7 @@ namespace TheGodfather.Modules.Administration
         [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
-        [UsageExamples("!guild rename New guild name",
-                       "!guild rename \"Reason for renaming\" New guild name")]
+        [UsageExampleArgs("New guild name", "\"Reason for renaming\" New guild name")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
                                           [RemainingText, Description("New name.")] string newname)
@@ -186,7 +181,7 @@ namespace TheGodfather.Modules.Administration
         [Command("seticon")]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
-        [UsageExamples("!guild seticon http://imgur.com/someimage.png")]
+        [UsageExampleArgs("http://imgur.com/someimage.png")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] Uri url)
@@ -198,8 +193,8 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (var response = await _http.GetAsync(url).ConfigureAwait(false))
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (System.Net.Http.HttpResponseMessage response = await _http.GetAsync(url).ConfigureAwait(false))
+                using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
                 this.Shared.LogProvider.Log(LogLevel.Debug, e);

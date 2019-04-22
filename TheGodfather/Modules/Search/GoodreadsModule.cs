@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Group("goodreads"), Module(ModuleType.Searches), NotBlocked]
     [Description("Goodreads commands. Group call searches Goodreads books with given query.")]
     [Aliases("gr")]
-    [UsageExamples("!goodreads Ender's Game")]
+    [UsageExampleArgs("Ender's Game")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
@@ -40,14 +40,14 @@ namespace TheGodfather.Modules.Search
         [Command("book")]
         [Description("Search Goodreads books by title, author, or ISBN.")]
         [Aliases("books", "b")]
-        [UsageExamples("!goodreads book Ender's Game")]
+        [UsageExampleArgs("Ender's Game")]
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("Query.")] string query)
         {
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.SearchBooksAsync(query);
+            Common.GoodreadsSearchInfo res = await this.Service.SearchBooksAsync(query);
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.ToDiscordPages());
         }
         #endregion

@@ -47,9 +47,7 @@ namespace TheGodfather.Modules.Administration
         [Command("allow")]
         [Description("Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).")]
         [Aliases("a", "only")]
-        [UsageExamples("!commandrules allow 8ball",
-                       "!commandrules allow 8ball #spam",
-                       "!commandrules allow \"g cfg\" #config")]
+        [UsageExampleArgs("8ball", "8ball #spam", "\"g cfg\" #config")]
         public async Task AllowAsync(CommandContext ctx,
                                     [Description("Command or group to allow.")] string command,
                                     [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
@@ -60,9 +58,7 @@ namespace TheGodfather.Modules.Administration
         [Command("forbid")]
         [Description("Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).")]
         [Aliases("f", "deny")]
-        [UsageExamples("!commandrules forbid giphy",
-                       "!commandrules forbid game #general",
-                       "!commandrules forbid \"g cfg\" #general")]
+        [UsageExampleArgs("giphy", "game #general", "\"g cfg\" #general")]
         public async Task ForbidAsync(CommandContext ctx,
                                      [Description("Command or group to forbid.")] string command,
                                      [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)
@@ -73,7 +69,6 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("Show all command rules for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExamples("!commandrules list")]
         public async Task ListAsync(CommandContext ctx)
         {
             List<DatabaseCommandRule> rules;

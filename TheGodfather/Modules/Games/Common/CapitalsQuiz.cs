@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Games.Common
         static CapitalsQuiz()
         {
             string data = File.ReadAllText("Resources/quiz-capitals.json");
-            var capitals = JsonConvert.DeserializeObject<List<CapitalInfo>>(data);
+            List<CapitalInfo> capitals = JsonConvert.DeserializeObject<List<CapitalInfo>>(data);
             _capitals = new Dictionary<string, string>();
             foreach (CapitalInfo info in capitals)
                 _capitals.Add(info.Country, info.Capital);

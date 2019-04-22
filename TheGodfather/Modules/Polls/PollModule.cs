@@ -21,8 +21,7 @@ namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
-    [UsageExamples("!poll Do you vote for User1 or User2?",
-                   "!poll 5m Do you vote for User1 or User2?")]
+    [UsageExampleArgs("Do you vote for User1 or User2?", "5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class PollModule : TheGodfatherModule
     {
@@ -52,7 +51,7 @@ namespace TheGodfather.Modules.Polls
             PollService.RegisterPollInChannel(poll, ctx.Channel.Id);
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
-                var options = await ctx.WaitAndParsePollOptionsAsync();
+                System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options is null || options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
                 poll.Options = options;
@@ -80,11 +79,10 @@ namespace TheGodfather.Modules.Polls
         [Command("stop")]
         [Description("Stops a running poll.")]
         [Aliases("end", "cancel")]
-        [UsageExamples("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
         public Task StopAsync(CommandContext ctx)
         {
-            var poll = PollService.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
             if (poll is null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
 

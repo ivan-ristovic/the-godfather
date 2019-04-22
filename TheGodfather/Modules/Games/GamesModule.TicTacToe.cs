@@ -27,8 +27,7 @@ namespace TheGodfather.Modules.Games
                      "to the field where you wish to play. You can also specify a time window in which players " +
                      "must submit their move.")]
         [Aliases("ttt")]
-        [UsageExamples("!game tictactoe",
-                       "!game tictactoe 10s")]
+        [UsageExampleArgs("10s")]
         public class TicTacToeModule : TheGodfatherModule
         {
 
@@ -83,7 +82,6 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Description("Explain the Tic-Tac-Toe game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!game tictactoe rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
@@ -100,7 +98,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopTicTacToeStatsAsync();

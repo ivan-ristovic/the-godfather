@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Games.Services
         public static async Task<IReadOnlyList<QuizCategory>> GetCategoriesAsync()
         {
             string response = await _http.GetStringAsync($"{_url}/api_category.php").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<QuizCategoryList>(response);
+            QuizCategoryList data = JsonConvert.DeserializeObject<QuizCategoryList>(response);
             return data.Categories.AsReadOnly();
         }
 
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Games.Services
 
             string reqUrl = $"{_url}/api.php?amount={amount}&category={category}&difficulty={difficulty.ToAPIString()}&type=multiple&encode=url3986";
             string response = await _http.GetStringAsync(reqUrl).ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<QuizData>(response);
+            QuizData data = JsonConvert.DeserializeObject<QuizData>(response);
             if (data.ResponseCode == 0) {
                 return data.Questions.Select(q => {
                     q.Content = WebUtility.UrlDecode(q.Content);

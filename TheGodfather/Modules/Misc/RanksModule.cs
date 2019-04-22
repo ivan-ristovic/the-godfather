@@ -21,8 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Group("rank"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("User ranking commands. Group command prints given user's rank.")]
     [Aliases("ranks", "ranking", "level")]
-    [UsageExamples("!rank",
-                   "!rank @Someone")]
+    [UsageExampleArgs("@Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RanksModule : TheGodfatherModule
     {
@@ -65,7 +64,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Add a custom name for given rank in this guild.")]
         [Aliases("+", "a", "rename", "rn", "newname", "<", "<<", "+=")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [UsageExamples("!rank add 1 Private")]
+        [UsageExampleArgs("1 Private")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Rank.")] short rank,
                                   [RemainingText, Description("Rank name.")] string name)
@@ -102,7 +101,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete")]
         [Description("Remove a custom name for given rank in this guild.")]
         [Aliases("-", "remove", "rm", "del", "revert")]
-        [UsageExamples("!rank delete 3")]
+        [UsageExampleArgs("3")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] short rank)
@@ -123,7 +122,6 @@ namespace TheGodfather.Modules.Misc
         [Command("list")]
         [Description("Print all customized ranks for this guild.")]
         [Aliases("levels", "ls", "l", "print")]
-        [UsageExamples("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
             List<DatabaseGuildRank> ranks;
@@ -149,7 +147,6 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RANK_TOP
         [Command("top")]
         [Description("Get rank leaderboard.")]
-        [UsageExamples("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
             IEnumerable<KeyValuePair<ulong, int>> top = this.Shared.MessageCount

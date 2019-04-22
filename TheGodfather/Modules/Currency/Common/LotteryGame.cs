@@ -55,9 +55,9 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            var msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
+            DiscordMessage msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
 
-            var drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
+            IEnumerable<int> drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
             for (int i = 0; i < DrawCount; i++) {
                 await Task.Delay(TimeSpan.FromSeconds(5));
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Currency.Common
             sb.AppendLine(Formatter.Bold($"Drawn numbers:"));
             sb.AppendLine(Formatter.Bold(string.Join(" ", numbers.Take(step)))).AppendLine();
 
-            foreach (var participant in this.participants) {
+            foreach (LotteryParticipant participant in this.participants) {
                 sb.Append(participant.User.Mention).Append(" | ");
                 sb.AppendLine(Formatter.Bold(string.Join(" ", participant.Numbers)));
                 sb.AppendLine();

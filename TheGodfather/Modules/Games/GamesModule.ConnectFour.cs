@@ -26,8 +26,7 @@ namespace TheGodfather.Modules.Games
                      "the column where you wish to insert your piece. You can also specify a time window in " +
                      "which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
-        [UsageExamples("!game connect4",
-                       "!game connect4 10s")]
+        [UsageExampleArgs("10s")]
         public class ConnectFourModule : TheGodfatherModule
         {
 
@@ -82,7 +81,6 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Description("Explain the Connect4 game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExamples("!game connect4 rules")]
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
@@ -100,7 +98,6 @@ namespace TheGodfather.Modules.Games
             [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExamples("!game connect4 stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();

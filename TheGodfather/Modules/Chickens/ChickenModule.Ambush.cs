@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("ambush")]
         [Description("Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.")]
         [Aliases("gangattack")]
-        [UsageExamples("!chicken ambush @Someone")]
+        [UsageExampleArgs("@Someone", "chicken")]
         public class AmbushModule : TheGodfatherModule
         {
 
@@ -129,7 +129,6 @@ namespace TheGodfather.Modules.Chickens
             [Command("join")]
             [Description("Join a pending chicken ambush as one of the ambushers.")]
             [Aliases("+", "compete", "enter", "j", "<", "<<")]
-            [UsageExamples("!chicken ambush join")]
             public Task JoinAsync(CommandContext ctx)
             {
                 Chicken chicken = this.TryJoinInternal(ctx, team2: true);
@@ -141,7 +140,6 @@ namespace TheGodfather.Modules.Chickens
             [Command("help")]
             [Description("Join a pending chicken ambush and help the ambushed chicken.")]
             [Aliases("h", "halp", "hlp", "ha")]
-            [UsageExamples("!chicken ambush help")]
             public Task HelpAsync(CommandContext ctx)
             {
                 Chicken chicken = this.TryJoinInternal(ctx, team2: false);

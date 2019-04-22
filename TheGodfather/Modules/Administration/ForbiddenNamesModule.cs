@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Group("forbiddennames"), Module(ModuleType.Administration), NotBlocked]
     [Description("Manage forbidden names for this guild. Group call shows all the forbidden nicknames for this guild.")]
     [Aliases("forbiddenname", "forbiddennicknames", "fn", "disallowednames")]
-    [UsageExamples("!forbiddennames f+u+c+k")]
+    [UsageExampleArgs("f+u+c+k")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [RequirePermissions(Permissions.ManageNicknames)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add nicknames to the forbidden list (can be a regex).")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
-        [UsageExamples("!forbiddennames add fuck f+u+c+k+")]
+        [UsageExampleArgs("fuck f+u+c+k+")]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Name list.")] params string[] names)
         {
@@ -118,8 +118,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Priority(1)]
         [Description("Removes forbidden name either by ID or plain text match.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExamples("!forbiddennames delete 3 4",
-                       "!forbiddennames delete SomeName")]
+        [UsageExampleArgs("3 4", "SomeName")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Forbidden name IDs to remove.")] params int[] ids)
         {
@@ -181,7 +180,6 @@ namespace TheGodfather.Modules.Administration
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all forbidden names for the current guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [UsageExamples("!forbiddennames clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
@@ -212,7 +210,6 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("Show all forbidden names for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExamples("!forbiddennames list")]
         public async Task ListAsync(CommandContext ctx)
         {
             List<DatabaseForbiddenName> names;

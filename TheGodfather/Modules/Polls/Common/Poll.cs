@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Polls.Common
         public virtual async Task RunAsync(TimeSpan timespan)
         {
             this.IsRunning = true;
-            var msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+            DiscordMessage msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
             this.endTime = DateTime.Now + timespan;
             while (!this.cts.IsCancellationRequested) {

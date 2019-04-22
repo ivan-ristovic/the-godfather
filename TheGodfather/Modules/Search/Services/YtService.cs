@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Search.Services
             try {
                 string getUrl = $"{_apiUrl}/channels?key={this.key}&forUsername={id}&part=id";
                 string response = await _http.GetStringAsync(getUrl).ConfigureAwait(false);
-                var items = JObject.Parse(response)["items"].ToObject<List<Dictionary<string, string>>>();
+                List<Dictionary<string, string>> items = JObject.Parse(response)["items"].ToObject<List<Dictionary<string, string>>>();
                 if (!(items is null) && items.Any())
                     return items.First()["id"];
             } catch {
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 
-            var res = await this.SearchAsync(query, 1, "video");
+            IReadOnlyList<SearchResult> res = await this.SearchAsync(query, 1, "video");
             if (!res.Any())
                 return null;
 
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             var pages = new List<Page>();
-            foreach (var res in results.Take(10)) {
+            foreach (SearchResult res in results.Take(10)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = res.Snippet.Title,
                     Description = Formatter.Italic(string.IsNullOrWhiteSpace(res.Snippet.Description) ? "No description provided" : res.Snippet.Description),
@@ -168,12 +168,12 @@ namespace TheGodfather.Modules.Search.Services
             if (!YoutubeClient.TryParseVideoId(url, out string id))
                 return null;
 
-            var video = await this.ytExplode.GetVideoAsync(id).ConfigureAwait(false);
+            YoutubeExplode.Models.Video video = await this.ytExplode.GetVideoAsync(id).ConfigureAwait(false);
             if (video is null)
                 return null;
 
-            var streamInfo = await this.ytExplode.GetVideoMediaStreamInfosAsync(video.Id).ConfigureAwait(false);
-            var stream = streamInfo.Audio
+            YoutubeExplode.Models.MediaStreams.MediaStreamInfoSet streamInfo = await this.ytExplode.GetVideoMediaStreamInfosAsync(video.Id).ConfigureAwait(false);
+            YoutubeExplode.Models.MediaStreams.AudioStreamInfo stream = streamInfo.Audio
                 .OrderByDescending(x => x.Bitrate)
                 .FirstOrDefault();
             if (stream is null)
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Search.Services
                 if (data is null || data.Length < 6)
                     return null;
 
-                if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out var time))
+                if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out TimeSpan time))
                     time = TimeSpan.FromHours(24);
 
                 return new SongInfo() {

@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Music.Common
             this.client.MessageReactionAdded += this.ReactionHandler;
             try {
                 while (!this.songs.IsEmpty && !this.stopped) {
-                    if (!this.songs.TryDequeue(out var si))
+                    if (!this.songs.TryDequeue(out SongInfo si))
                         continue;
 
                     lock (this.operationLock)
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Music.Common
                         RedirectStandardError = true
                     };
                     var ffmpeg = Process.Start(ffmpeg_inf);
-                    var ffout = ffmpeg.StandardOutput.BaseStream;
+                    Stream ffout = ffmpeg.StandardOutput.BaseStream;
 
                     using (var ms = new MemoryStream()) {
                         await ffout.CopyToAsync(ms);

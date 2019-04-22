@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Query missing!", nameof(query));
             
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&s={query}").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
+            OMDbResponse data = JsonConvert.DeserializeObject<OMDbResponse>(response);
             IReadOnlyList<MovieInfo> results = data.Success ? data.Results?.AsReadOnly() : null;
             if (results is null || !results.Any())
                 return null;
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Query missing!", nameof(query));
 
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&{type.ToApiString()}={query}").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<MovieInfo>(response);
+            MovieInfo data = JsonConvert.DeserializeObject<MovieInfo>(response);
             return data.Success ? data : null;
         }
     }

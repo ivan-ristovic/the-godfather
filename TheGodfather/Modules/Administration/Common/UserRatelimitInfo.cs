@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration.Common
         public bool TryDecrementAllowedMessageCount()
         {
             lock (this.decrementLock) {
-                var now = DateTimeOffset.UtcNow;
+                DateTimeOffset now = DateTimeOffset.UtcNow;
                 if (now >= this.resetsAt) {
                     Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
                     this.resetsAt = now + _resetAfter;

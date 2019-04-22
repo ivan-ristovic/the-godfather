@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("steam"), Module(ModuleType.Searches), NotBlocked]
     [Description("Steam commands. Group call searches steam profiles for a given ID.")]
     [Aliases("s", "st")]
-    [UsageExamples("!steam profile 123456123")]
+    [UsageExampleArgs("123456123")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
@@ -33,6 +33,7 @@ namespace TheGodfather.Modules.Search
         [Command("profile")]
         [Description("Get Steam user information for user based on his ID.")]
         [Aliases("id", "user")]
+        [UsageExampleArgs("123456123")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {

@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Games.Common
             
             while (this.participants.Any()) {
                 int guess = 0;
-                var mctx = await this.Interactivity.WaitForMessageAsync(
+                InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.Channel.Id != this.Channel.Id || xm.Author.IsBot) return false;
                         if (!this.participants.Contains(xm.Author)) return false;

@@ -22,7 +22,6 @@ namespace TheGodfather.Modules.Chickens
         [Group("train"), UsesInteractivity]
         [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
-        [UsageExamples("!chicken train")]
         public class TrainModule : TheGodfatherModule
         {
 
@@ -42,7 +41,6 @@ namespace TheGodfather.Modules.Chickens
             [Command("strength")]
             [Description("Train your chicken's strength using your credits from WM bank.")]
             [Aliases("str", "st", "s")]
-            [UsageExamples("!chicken train strength")]
             public async Task StrengthAsync(CommandContext ctx)
             {
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
@@ -87,7 +85,6 @@ namespace TheGodfather.Modules.Chickens
             [Command("vitality")]
             [Description("Train your chicken's vitality using your credits from WM bank.")]
             [Aliases("vit", "vi", "v")]
-            [UsageExamples("!chicken train vitality")]
             public async Task VitalityAsync(CommandContext ctx)
             {
                 if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)

@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
         [Command("draw")]
         [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
         [Aliases("take")]
-        [UsageExamples("!deck draw 5")]
+        [UsageExampleArgs("5")]
         public Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1, 10]).")] int amount = 1)
         {
@@ -65,7 +65,6 @@ namespace TheGodfather.Modules.Games
         [Command("reset")]
         [Description("Opens a brand new card deck.")]
         [Aliases("new", "opennew", "open")]
-        [UsageExamples("!deck reset")]
         public Task ResetDeckAsync(CommandContext ctx)
         {
             CardDecksService.ResetDeckInChannel(ctx.Channel.Id);

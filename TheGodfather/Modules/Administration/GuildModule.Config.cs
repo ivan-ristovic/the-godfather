@@ -32,7 +32,6 @@ namespace TheGodfather.Modules.Administration
         [Group("configure")]
         [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.")]
         [Aliases("configuration", "config", "cfg")]
-        [UsageExamples("!guild configure")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public partial class GuildConfigModule : TheGodfatherModule
         {
@@ -53,7 +52,6 @@ namespace TheGodfather.Modules.Administration
             [Command("setup"), UsesInteractivity]
             [Description("Starts an interactive wizard for configuring the guild settings.")]
             [Aliases("wizard")]
-            [UsageExamples("!guild cfg setup")]
             public async Task SetupAsync(CommandContext ctx)
             {
                 DiscordChannel channel = await this.ChooseSetupChannelAsync(ctx);
@@ -96,8 +94,7 @@ namespace TheGodfather.Modules.Administration
             [Command("verbose"), Priority(1)]
             [Description("Configuration of bot's responding options.")]
             [Aliases("fullresponse", "verbosereact", "verboseresponse", "v", "vr")]
-            [UsageExamples("!guild cfg verbose",
-                           "!guild cfg verbose on")]
+            [UsageExampleArgs("on")]
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
@@ -132,8 +129,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(1)]
             [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "cmdsug", "sugg", "sug", "cs", "s")]
-            [UsageExamples("!guild cfg suggestions",
-                           "!guild cfg suggestions on")]
+            [UsageExampleArgs("on")]
             public async Task SuggestionsAsync(CommandContext ctx,
                                               [Description("Enable suggestions?")] bool enable)
             {
@@ -168,10 +164,7 @@ namespace TheGodfather.Modules.Administration
             [Command("welcome"), Priority(3)]
             [Description("Allows user welcoming configuration.")]
             [Aliases("enter", "join", "wlc", "wm", "w")]
-            [UsageExamples("!guild cfg welcome",
-                           "!guild cfg welcome on #general",
-                           "!guild cfg welcome Welcome, %user%!",
-                           "!guild cfg welcome off")]
+            [UsageExampleArgs("on #general", "Welcome, %user%!", "off")]
             public async Task WelcomeAsync(CommandContext ctx)
             {
                 DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
@@ -235,10 +228,7 @@ namespace TheGodfather.Modules.Administration
             [Command("leave"), Priority(3)]
             [Description("Allows user leaving message configuration.")]
             [Aliases("exit", "drop", "lvm", "lm", "l")]
-            [UsageExamples("!guild cfg leave",
-                           "!guild cfg leave on #general",
-                           "!guild cfg leave Welcome, %user%!",
-                           "!guild cfg leave off")]
+            [UsageExampleArgs("on #general", "Welcome, %user%!", "off")]
             public async Task LeaveAsync(CommandContext ctx)
             {
                 DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
@@ -301,8 +291,7 @@ namespace TheGodfather.Modules.Administration
             [Command("setmuterole")]
             [Description("Gets or sets mute role for this guild.")]
             [Aliases("muterole", "mr", "muterl", "mrl")]
-            [UsageExamples("!guild cfg muterole",
-                           "!guild cfg muterole MuteRoleName")]
+            [UsageExampleArgs("MuteRoleName")]
             public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {

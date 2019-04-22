@@ -49,8 +49,8 @@ namespace TheGodfather.Modules.Search.Services
             request.Accept = "text/plain";
 
             string data = null;
-            using (var response = await request.GetResponseAsync().ConfigureAwait(false))
-            using (var stream = response.GetResponseStream())
+            using (WebResponse response = await request.GetResponseAsync().ConfigureAwait(false))
+            using (Stream stream = response.GetResponseStream())
             using (var reader = new StreamReader(stream)) {
                 data = await reader.ReadToEndAsync().ConfigureAwait(false);
             }

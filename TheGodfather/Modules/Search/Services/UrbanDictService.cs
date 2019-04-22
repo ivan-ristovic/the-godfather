@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Query missing", nameof(query));
 
             string result = await _http.GetStringAsync($"{_url}/define?term={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
-            var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
+            UrbanDictData data = JsonConvert.DeserializeObject<UrbanDictData>(result);
             if (data.ResultType == "no_results" || !data.List.Any())
                 return null;
 

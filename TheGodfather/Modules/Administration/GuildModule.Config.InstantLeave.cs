@@ -24,9 +24,7 @@ namespace TheGodfather.Modules.Administration
             [Group("instantleave")]
             [Description("Automatically bans users which leave in certain timespan after joining.")]
             [Aliases("joinleave", "instaleave", "il", "jl")]
-            [UsageExamples("!guild cfg instaleave",
-                           "!guild cfg instaleave on",
-                           "!guild cfg instaleave on 5")]
+            [UsageExampleArgs("on", "on 5")]
             public class InstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
             {
 
@@ -88,7 +86,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("cooldown")]
                 [Description("Set the instant leave sensitivity. User will be banned if he leaves within the given time window (in seconds).")]
                 [Aliases("setcooldown", "setcool", "cool", "c")]
-                [UsageExamples("!guild cfg instaleave cooldown 5")]
+                [UsageExampleArgs("5")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Cooldown (in seconds).")] short cooldown)
                 {

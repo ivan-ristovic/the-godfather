@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Reminders
     [Group("remind"), Module(ModuleType.Reminders), NotBlocked]
     [Description("Manage reminders.")]
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
-    [UsageExamples("!remind 1h Drink water!")]
+    [UsageExampleArgs("1h Drink water!")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class RemindModule : TheGodfatherModule
     {
@@ -68,7 +68,6 @@ namespace TheGodfather.Modules.Reminders
         [Command("deleteall"), UsesInteractivity]
         [Description("Delete all your reminders. You can also specify a channel for which to remove reminders.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [UsageExamples("!remind clear")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Channel for which to remove reminders.")] DiscordChannel channel = null)
         {
@@ -95,14 +94,14 @@ namespace TheGodfather.Modules.Reminders
         [Command("delete")]
         [Description("Unschedules reminders.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
-        [UsageExamples("!remind delete 1")]
+        [UsageExampleArgs("1")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Reminder ID.")] params int[] ids)
         {
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing IDs of reminders to remove.");
 
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs))
                 throw new CommandFailedException("You have no reminders scheduled.");
 
             var eb = new StringBuilder();
@@ -125,10 +124,9 @@ namespace TheGodfather.Modules.Reminders
         [Command("list")]
         [Description("Lists your reminders.")]
         [Aliases("ls")]
-        [UsageExamples("!remind list")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) || !texecs.Values.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs) || !texecs.Values.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
                 throw new CommandFailedException("You haven't issued any reminders.");
 
             return ctx.SendCollectionInPagesAsync(
@@ -153,7 +151,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("repeat"), Priority(2)]
         [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
         [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
-        [UsageExamples("!remind repeat 1h Drink water!")]
+        [UsageExampleArgs("1h Drink water!")]
         public Task RepeatAsync(CommandContext ctx,
                                [Description("Repeat timespan.")] TimeSpan timespan,
                                [Description("Channel to send message to.")] DiscordChannel channel,
@@ -196,7 +194,7 @@ namespace TheGodfather.Modules.Reminders
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
             if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !privileged) {
-                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out var texecs) && texecs.Count >= 20)
+                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 

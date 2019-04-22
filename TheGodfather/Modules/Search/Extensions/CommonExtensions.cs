@@ -179,8 +179,8 @@ namespace TheGodfather.Modules.Search.Extensions
             var embeds = new List<DiscordEmbedBuilder>();
 
             for (int i = 0; i < forecast.WeatherDataList.Count && i < amount; i++) {
-                var data = forecast.WeatherDataList[i];
-                var date = DateTime.UtcNow.AddDays(i + 1);
+                PartialWeatherData data = forecast.WeatherDataList[i];
+                DateTime date = DateTime.UtcNow.AddDays(i + 1);
 
                 var emb = new DiscordEmbedBuilder() {
                     Title = $"Forecast for {date.DayOfWeek}, {date.Date.ToUniversalTime().ToShortDateString()}",

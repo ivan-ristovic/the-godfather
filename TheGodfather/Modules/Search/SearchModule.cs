@@ -34,7 +34,6 @@ namespace TheGodfather.Modules.Search
         [Command("cat")]
         [Description("Get a random cat image.")]
         [Aliases("kitty", "kitten")]
-        [UsageExamples("!random cat")]
         public async Task RandomCatAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomCatImageAsync();
@@ -53,7 +52,6 @@ namespace TheGodfather.Modules.Search
         [Command("dog")]
         [Description("Get a random dog image.")]
         [Aliases("doge", "puppy", "pup")]
-        [UsageExamples("!random dog")]
         public async Task RandomDogAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomDogImageAsync();
@@ -72,7 +70,7 @@ namespace TheGodfather.Modules.Search
         [Command("ipstack")]
         [Description("Retrieve IP geolocation information.")]
         [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
-        [UsageExamples("!ipstack 123.123.123.123")]
+        [UsageExampleArgs("123.123.123.123")]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("IP.")] IPAddress ip)
         {
@@ -89,7 +87,6 @@ namespace TheGodfather.Modules.Search
         [Command("news")]
         [Description("Get newest world news.")]
         [Aliases("worldnews")]
-        [UsageExamples("!news")]
         public Task NewsRssAsync(CommandContext ctx)
         {
             IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
@@ -104,8 +101,7 @@ namespace TheGodfather.Modules.Search
         [Command("quoteoftheday")]
         [Description("Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.")]
         [Aliases("qotd", "qod", "quote", "q")]
-        [UsageExamples("!quoteoftheday",
-                       "!quoteoftheday life")]
+        [UsageExampleArgs("life")]
         public async Task QotdAsync(CommandContext ctx,
                                    [Description("Category.")] string category = null)
         {
