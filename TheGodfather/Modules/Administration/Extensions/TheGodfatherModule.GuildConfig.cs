@@ -18,8 +18,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             return gcfg;
         }
 
-        public static async Task<DatabaseGuildConfig> ModifyGuildConfigAsync(this TheGodfatherModule module, 
-            ulong gid, Action<DatabaseGuildConfig> action)
+        public static async Task<DatabaseGuildConfig> ModifyGuildConfigAsync(this TheGodfatherModule module, ulong gid, Action<DatabaseGuildConfig> action)
         {
             DatabaseGuildConfig gcfg = null;
             using (DatabaseContext db = module.Database.CreateContext()) {

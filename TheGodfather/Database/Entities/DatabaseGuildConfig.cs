@@ -65,6 +65,7 @@ namespace TheGodfather.Database.Entities
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
 
+
         #region MEMBER_UPDATES
         [Column("welcome_cid")]
         public long? WelcomeChannelIdDb { get; set; }
@@ -84,142 +85,135 @@ namespace TheGodfather.Database.Entities
         #endregion
 
         #region LINKFILTER
+        [NotMapped]
+        public LinkfilterSettings LinkfilterSettings { get; set; } = new LinkfilterSettings();
+
         [Column("linkfilter_enabled")]
-        public bool LinkfilterEnabled { get; set; }
+        public bool LinkfilterEnabled {
+            get => this.LinkfilterSettings.Enabled;
+            set => this.LinkfilterSettings.Enabled = value;
+        }
 
         [Column("linkfilter_booters")]
-        public bool LinkfilterBootersEnabled { get; set; } = true;
+        public bool LinkfilterBootersEnabled {
+            get => this.LinkfilterSettings.BlockBooterWebsites;
+            set => this.LinkfilterSettings.BlockBooterWebsites = value;
+        }
 
         [Column("linkfilter_disturbing")]
-        public bool LinkfilterDisturbingWebsitesEnabled { get; set; } = true;
+        public bool LinkfilterDisturbingWebsitesEnabled {
+            get => this.LinkfilterSettings.BlockDisturbingWebsites;
+            set => this.LinkfilterSettings.BlockDisturbingWebsites = value;
+        }
 
         [Column("linkfilter_invites")]
-        public bool LinkfilterDiscordInvitesEnabled { get; set; }
+        public bool LinkfilterDiscordInvitesEnabled {
+            get => this.LinkfilterSettings.BlockDiscordInvites;
+            set => this.LinkfilterSettings.BlockDiscordInvites = value;
+        }
 
         [Column("linkfilter_loggers")]
-        public bool LinkfilterIpLoggersEnabled { get; set; } = true;
+        public bool LinkfilterIpLoggersEnabled {
+            get => this.LinkfilterSettings.BlockIpLoggingWebsites;
+            set => this.LinkfilterSettings.BlockIpLoggingWebsites = value;
+        }
 
         [Column("linkfilter_shorteners")]
-        public bool LinkfilterUrlShortenersEnabled { get; set; } = true;
-
-        [NotMapped]
-        public LinkfilterSettings LinkfilterSettings {
-            get => new LinkfilterSettings() {
-                BlockBooterWebsites = this.LinkfilterBootersEnabled,
-                BlockDiscordInvites = this.LinkfilterDiscordInvitesEnabled,
-                BlockDisturbingWebsites = this.LinkfilterDisturbingWebsitesEnabled,
-                BlockIpLoggingWebsites = this.LinkfilterIpLoggersEnabled,
-                BlockUrlShorteners = this.LinkfilterUrlShortenersEnabled,
-                Enabled = this.LinkfilterEnabled
-            };
-            set {
-                this.LinkfilterEnabled = value.Enabled;
-                this.LinkfilterBootersEnabled = value.BlockBooterWebsites;
-                this.LinkfilterDiscordInvitesEnabled = value.BlockDiscordInvites;
-                this.LinkfilterDisturbingWebsitesEnabled = value.BlockDisturbingWebsites;
-                this.LinkfilterIpLoggersEnabled = value.BlockIpLoggingWebsites;
-                this.LinkfilterUrlShortenersEnabled = value.BlockUrlShorteners;
-            }
+        public bool LinkfilterUrlShortenersEnabled {
+            get => this.LinkfilterSettings.BlockUrlShorteners;
+            set => this.LinkfilterSettings.BlockUrlShorteners = value;
         }
         #endregion
 
         #region ANTIFLOOD
+        [NotMapped]
+        public AntifloodSettings AntifloodSettings { get; set; } = new AntifloodSettings();
+
         [Column("antiflood_enabled")]
-        public bool AntifloodEnabled { get; set; }
+        public bool AntifloodEnabled {
+            get => this.AntifloodSettings.Enabled;
+            set => this.AntifloodSettings.Enabled = value;
+        }
 
         [Column("antiflood_action")]
-        public PunishmentActionType AntifloodAction { get; set; } = PunishmentActionType.PermanentBan;
+        public PunishmentActionType AntifloodAction {
+            get => this.AntifloodSettings.Action;
+            set => this.AntifloodSettings.Action = value;
+        }
 
         [Column("antiflood_sensitivity")]
-        public short AntifloodSensitivity { get; set; } = 5;
+        public short AntifloodSensitivity {
+            get => this.AntifloodSettings.Sensitivity;
+            set => this.AntifloodSettings.Sensitivity = value;
+        }
 
         [Column("antiflood_cooldown")]
-        public short AntifloodCooldown { get; set; } = 10;
-
-        [NotMapped]
-        public AntifloodSettings AntifloodSettings {
-            get => new AntifloodSettings() {
-                Action = this.AntifloodAction,
-                Cooldown = this.AntifloodCooldown,
-                Enabled = this.AntifloodEnabled,
-                Sensitivity = this.AntifloodSensitivity
-            };
-            set {
-                this.AntifloodAction = value.Action;
-                this.AntifloodCooldown = value.Cooldown;
-                this.AntifloodEnabled = value.Enabled;
-                this.AntifloodSensitivity = value.Sensitivity;
-            }
+        public short AntifloodCooldown {
+            get => this.AntifloodSettings.Cooldown;
+            set => this.AntifloodSettings.Cooldown = value;
         }
         #endregion
 
         #region ANTIINSTANTLEAVE
+        [NotMapped]
+        public AntiInstantLeaveSettings AntiInstantLeaveSettings { get; set; } = new AntiInstantLeaveSettings();
+
         [Column("antiinstantleave_enabled")]
-        public bool AntiInstantLeaveEnabled { get; set; }
+        public bool AntiInstantLeaveEnabled {
+            get => this.AntiInstantLeaveSettings.Enabled;
+            set => this.AntiInstantLeaveSettings.Enabled = value;
+        }
 
         [Column("antiinstantleave_cooldown")]
-        public short AntiInstantLeaveCooldown { get; set; } = 3;
-
-        [NotMapped]
-        public AntiInstantLeaveSettings AntiInstantLeaveSettings {
-            get => new AntiInstantLeaveSettings() {
-                Cooldown = this.AntiInstantLeaveCooldown,
-                Enabled = this.AntiInstantLeaveEnabled
-            };
-            set {
-                this.AntiInstantLeaveCooldown = value.Cooldown;
-                this.AntiInstantLeaveEnabled = value.Enabled;
-            }
+        public short AntiInstantLeaveCooldown {
+            get => this.AntiInstantLeaveSettings.Cooldown;
+            set => this.AntiInstantLeaveSettings.Cooldown = value;
         }
         #endregion
 
         #region ANTISPAM
+        [NotMapped]
+        public AntispamSettings AntispamSettings { get; set; } = new AntispamSettings();
+
         [Column("antispam_enabled")]
-        public bool AntispamEnabled { get; set; }
+        public bool AntispamEnabled {
+            get => this.AntispamSettings.Enabled;
+            set => this.AntispamSettings.Enabled = value;
+        }
 
         [Column("antispam_action")]
-        public PunishmentActionType AntispamAction { get; set; } = PunishmentActionType.TemporaryMute;
+        public PunishmentActionType AntispamAction {
+            get => this.AntispamSettings.Action;
+            set => this.AntispamSettings.Action = value;
+        }
 
         [Column("antispam_sensitivity")]
-        public short AntispamSensitivity { get; set; } = 5;
-
-        [NotMapped]
-        public AntispamSettings AntispamSettings {
-            get => new AntispamSettings() {
-                Action = this.AntispamAction,
-                Enabled = this.AntispamEnabled,
-                Sensitivity = this.AntispamSensitivity
-            };
-            set {
-                this.AntispamAction = value.Action;
-                this.AntispamEnabled = value.Enabled;
-                this.AntispamSensitivity = value.Sensitivity;
-            }
+        public short AntispamSensitivity {
+            get => this.AntispamSettings.Sensitivity;
+            set => this.AntispamSettings.Sensitivity = value;
         }
         #endregion
 
         #region RATELIMIT
+        [NotMapped]
+        public RatelimitSettings RatelimitSettings { get; set; } = new RatelimitSettings();
+
         [Column("ratelimit_enabled")]
-        public bool RatelimitEnabled { get; set; }
+        public bool RatelimitEnabled {
+            get => this.RatelimitSettings.Enabled;
+            set => this.RatelimitSettings.Enabled = value;
+        }
 
         [Column("ratelimit_action")]
-        public PunishmentActionType RatelimitAction { get; set; } = PunishmentActionType.TemporaryMute;
+        public PunishmentActionType RatelimitAction {
+            get => this.RatelimitSettings.Action;
+            set => this.RatelimitSettings.Action = value;
+        }
 
         [Column("ratelimit_sensitivity")]
-        public short RatelimitSensitivity { get; set; } = 5;
-
-        [NotMapped]
-        public RatelimitSettings RatelimitSettings {
-            get => new RatelimitSettings() {
-                Action = this.RatelimitAction,
-                Enabled = this.RatelimitEnabled,
-                Sensitivity = this.RatelimitSensitivity
-            };
-            set {
-                this.RatelimitAction = value.Action;
-                this.RatelimitEnabled = value.Enabled;
-                this.RatelimitSensitivity = value.Sensitivity;
-            }
+        public short RatelimitSensitivity {
+            get => this.RatelimitSettings.Sensitivity;
+            set => this.RatelimitSettings.Sensitivity = value;
         }
         #endregion
 
