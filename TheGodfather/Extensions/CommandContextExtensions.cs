@@ -99,7 +99,7 @@ namespace TheGodfather.Extensions
             if (mctx.TimedOut)
                 return null;
 
-            return mctx.Result.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
+            return mctx.Result.Content.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct()
                 .ToList();
         }

@@ -10,7 +10,7 @@ namespace TheGodfather.Modules.Currency.Common
 {
     public static class WorkHandler
     {
-        private static ImmutableArray<string> _workAnswers = new string[] {
+        private static ImmutableArray<string> _workAnswers = new[] {
             "hard",
             "as a taxi driver",
             "in a grocery shop",
@@ -18,20 +18,20 @@ namespace TheGodfather.Modules.Currency.Common
             "as bathroom cleaner"
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _workStreetsPositiveAnswers = new string[] {
+        private static ImmutableArray<string> _workStreetsPositiveAnswers = new[] {
             "danced whole night",
             "made a good use of the party night",
             "got hired for a bachelor's party",
             "lurked around the singles bar"
         }.ToImmutableArray();
-        private static ImmutableArray<string> _workStreetsNegativeAnswers = new string[] {
+        private static ImmutableArray<string> _workStreetsNegativeAnswers = new[] {
             "got robbed",
             "got ambushed by the local mafia",
             "got his wallet stolen",
             "drank too much - gambled away all the earnings"
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _crimePositiveAnswers = new string[] {
+        private static ImmutableArray<string> _crimePositiveAnswers = new[] {
             "successfully robbed the bank",
             "took up a hit-man contract",
             "stole some wallets",

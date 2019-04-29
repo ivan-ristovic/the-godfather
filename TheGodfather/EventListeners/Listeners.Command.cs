@@ -56,7 +56,7 @@ namespace TheGodfather.EventListeners
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}",
                 $"Exception: {ex.GetType()}",
                 $"Message: {ex.Message ?? "<no message provided>"}",
-                (ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}")
+                ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}"
             );
 
             var emb = new DiscordEmbedBuilder {
@@ -138,6 +138,9 @@ namespace TheGodfather.EventListeners
                                         break;
                                     case RequirePrefixesAttribute pattr:
                                         sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                                        break;
+                                    default:
+                                        sb.AppendLine($"{attr} was not met! (this should not happen, please report)");
                                         break;
                                 }
                             }

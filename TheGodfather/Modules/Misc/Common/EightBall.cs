@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Misc.Common
 {
     public static class EightBall
     {
-        private static ImmutableArray<string> _regularAnswers = new string[] {
+        private static ImmutableArray<string> _regularAnswers = new[] {
             "Definitely NO.",
             "Are you crazy? No.",
             "As I see it, no.",
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Misc.Common
             "More than you can imagine."
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _timeAnswers = new string[] {
+        private static ImmutableArray<string> _timeAnswers = new[] {
             "Right now.",
             "Soon™",
             "In 5 minutes.",
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Misc.Common
             "When I grow a beard."
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _quantityAnswers = new string[] {
+        private static ImmutableArray<string> _quantityAnswers = new[] {
             "None.",
             "One.",
             "A few.",

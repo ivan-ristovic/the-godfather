@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Currency.Common
             StaticDiscordEmoji.Cherries
         }.ToImmutableArray();
 
-        private static ImmutableArray<int> _multipliers = new int[] {
+        private static ImmutableArray<int> _multipliers = new[] {
             10,
             7,
             5,

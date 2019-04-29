@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency.Common
         public static readonly int MaxNumber = 15;
         public static readonly int DrawCount = 3;
         public static readonly int TicketPrice = 250;
-        public static readonly ImmutableArray<int> Prizes = new int[] {
+        public static readonly ImmutableArray<int> Prizes = new[] {
             0, 2500, 50000, 1000000
         }.ToImmutableArray();
 
