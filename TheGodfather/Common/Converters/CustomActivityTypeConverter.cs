@@ -10,7 +10,7 @@ namespace TheGodfather.Common.Converters
 {
     public class CustomActivityTypeConverter : IArgumentConverter<ActivityType>
     {
-        public Task<Optional<ActivityType>> ConvertAsync(string value, CommandContext ctx)
+        public static ActivityType? TryConvert(string value)
         {
             ActivityType result = ActivityType.Playing;
             bool parses = true;
@@ -46,10 +46,11 @@ namespace TheGodfather.Common.Converters
                     break;
             }
 
-            if (parses)
-                return Task.FromResult(new Optional<ActivityType>(result));
-            else
-                return Task.FromResult(new Optional<ActivityType>());
+            return parses ? result : (ActivityType?)null;
         }
+
+
+        public Task<Optional<ActivityType>> ConvertAsync(string value, CommandContext ctx)
+            => Task.FromResult(new Optional<ActivityType>(TryConvert(value).GetValueOrDefault()));
     }
 }

@@ -12,7 +12,7 @@ namespace TheGodfather.Common.Converters
     {
         public static bool? TryConvert(string value)
         {
-            bool result = false;
+            bool result;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "t":
@@ -45,20 +45,11 @@ namespace TheGodfather.Common.Converters
                     break;
             }
 
-            if (parses)
-                return result;
-            else
-                return null;
+            return parses ? result : (bool?)null;
         }
 
 
         public Task<Optional<bool>> ConvertAsync(string value, CommandContext ctx)
-        {
-            bool? b = TryConvert(value);
-            if (b.HasValue)
-                return Task.FromResult(new Optional<bool>(b.Value));
-            else
-                return Task.FromResult(new Optional<bool>());
-        }
+            => Task.FromResult(new Optional<bool>(TryConvert(value).GetValueOrDefault()));
     }
 }

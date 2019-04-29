@@ -46,20 +46,11 @@ namespace TheGodfather.Common.Converters
                     break;
             }
 
-            if (parses)
-                return result;
-            else
-                return null;
+            return parses ? result : (PunishmentActionType?)null;
         }
 
 
         public Task<Optional<PunishmentActionType>> ConvertAsync(string value, CommandContext ctx)
-        {
-            PunishmentActionType? b = TryConvert(value);
-            if (b.HasValue)
-                return Task.FromResult(new Optional<PunishmentActionType>(b.Value));
-            else
-                return Task.FromResult(new Optional<PunishmentActionType>());
-        }
+            => Task.FromResult(new Optional<PunishmentActionType>(TryConvert(value).GetValueOrDefault()));
     }
 }

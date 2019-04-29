@@ -12,7 +12,7 @@ namespace TheGodfather.Common.Converters
 {
     public class CustomTimeWindowConverter : IArgumentConverter<TimeWindow>
     {
-        public Task<Optional<TimeWindow>> ConvertAsync(string value, CommandContext ctx)
+        public static TimeWindow? TryConvert(string value)
         {
             TimeWindow result = TimeWindow.Day;
             bool parses = true;
@@ -44,10 +44,11 @@ namespace TheGodfather.Common.Converters
                     break;
             }
 
-            if (parses)
-                return Task.FromResult(new Optional<TimeWindow>(result));
-            else
-                return Task.FromResult(new Optional<TimeWindow>());
+            return parses ? result : (TimeWindow?)null;
         }
+
+
+        public Task<Optional<TimeWindow>> ConvertAsync(string value, CommandContext ctx)
+            => Task.FromResult(new Optional<TimeWindow>(TryConvert(value).GetValueOrDefault()));
     }
 }
