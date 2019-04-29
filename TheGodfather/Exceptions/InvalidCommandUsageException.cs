@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Exceptions
 {
-    internal class InvalidCommandUsageException : ArgumentException
+    public class InvalidCommandUsageException : ArgumentException
     {
         public InvalidCommandUsageException() 
             : base()

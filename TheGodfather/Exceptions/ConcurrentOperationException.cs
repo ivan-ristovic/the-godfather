@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Exceptions
 {
-    internal class ConcurrentOperationException : Exception
+    public class ConcurrentOperationException : Exception
     {
         public ConcurrentOperationException(string message)
             : base(message)

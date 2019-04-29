@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Exceptions
 {
-    internal class CommandFailedException : Exception
+    public class CommandFailedException : Exception
     {
         public CommandFailedException()
             : base()

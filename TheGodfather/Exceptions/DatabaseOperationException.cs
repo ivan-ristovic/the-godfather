@@ -6,7 +6,7 @@ using System;
 
 namespace TheGodfather.Exceptions
 {
-    internal class DatabaseOperationException : NpgsqlException
+    public class DatabaseOperationException : NpgsqlException
     {
         public DatabaseOperationException() 
             : base()
