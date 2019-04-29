@@ -14,7 +14,7 @@ namespace TheGodfather.Database.Entities
 
         public static DatabaseSavedTask FromSavedTaskInfo(SavedTaskInfo tinfo)
         {
-            var dbti = new DatabaseSavedTask() {
+            var dbti = new DatabaseSavedTask {
                 ExecutionTime = tinfo.ExecutionTime.UtcDateTime
             };
 

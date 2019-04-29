@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Administration
         public Task InfoAsync(CommandContext ctx,
                              [Description("Role.")] DiscordRole role)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = role.Name,
                 Color = this.ModuleColor
             };

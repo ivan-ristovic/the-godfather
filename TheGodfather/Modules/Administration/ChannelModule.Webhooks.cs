@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, 
                     ctx.User, 
-                    whs.Select(wh => new Page(embed: new DiscordEmbedBuilder() {
+                    whs.Select(wh => new Page(embed: new DiscordEmbedBuilder {
                         Title = $"Webhook: {wh.Name}",
                         Description = $"{(displayToken ? $"Token: {Formatter.InlineCode(wh.Token)}\n" : "")}Created by {wh.User.ToString()}",
                         Color = this.ModuleColor,

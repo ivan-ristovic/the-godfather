@@ -219,7 +219,7 @@ namespace TheGodfather.Database.Entities
 
         [NotMapped]
         public CachedGuildConfig CachedConfig {
-            get => new CachedGuildConfig() {
+            get => new CachedGuildConfig {
                 AntispamSettings = this.AntispamSettings,
                 Currency = this.Currency,
                 LinkfilterSettings = this.LinkfilterSettings,

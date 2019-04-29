@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown?.TotalSeconds < 5 || cooldown?.TotalSeconds > 60)
                         throw new CommandFailedException("The cooldown timespan is not in the valid range ([5, 60] seconds).");
 
-                    var settings = new AntifloodSettings() {
+                    var settings = new AntifloodSettings {
                         Action = action,
                         Cooldown = (short?)cooldown?.TotalSeconds ?? 10,
                         Enabled = enable,
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
                             Description = $"Antiflood {(enable ? "enabled" : "disabled")}",
                             Color = this.ModuleColor
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Administration
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
                         };
@@ -181,7 +181,7 @@ namespace TheGodfather.Modules.Administration
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
                         };
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Administration
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
                         };

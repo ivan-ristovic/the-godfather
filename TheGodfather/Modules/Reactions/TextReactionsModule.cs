@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Reactions
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
                         Color = this.ModuleColor
                     };
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Reactions
                     .ToList();
                 foreach (DatabaseTextReaction tr in toUpdate) {
                     foreach (string trigger in triggers)
-                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger() { ReactionId = tr.Id, Trigger = trigger });
+                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger { ReactionId = tr.Id, Trigger = trigger });
                     await db.SaveChangesAsync();
 
                     if (tr.DbTriggers.Any()) {
@@ -187,7 +187,7 @@ namespace TheGodfather.Modules.Reactions
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
                         Color = this.ModuleColor
                     };
@@ -230,7 +230,7 @@ namespace TheGodfather.Modules.Reactions
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All text reactions have been deleted",
                     Color = this.ModuleColor
                 };
@@ -258,7 +258,7 @@ namespace TheGodfather.Modules.Reactions
             if (tr is null)
                 throw new CommandFailedException("None of the reactions respond to such trigger.");
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Text reaction that matches the trigger",
                 Description = string.Join(" | ", tr.TriggerStrings),
                 Color = this.ModuleColor
@@ -316,7 +316,7 @@ namespace TheGodfather.Modules.Reactions
             using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
                 if (dbtr is null) {
-                    dbtr = new DatabaseTextReaction() {
+                    dbtr = new DatabaseTextReaction {
                         GuildId = ctx.Guild.Id,
                         Response = response,
                     };
@@ -324,7 +324,7 @@ namespace TheGodfather.Modules.Reactions
                     await db.SaveChangesAsync();
                 }
 
-                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger() { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
 
                 await db.SaveChangesAsync();
                 id = dbtr.Id;
@@ -344,7 +344,7 @@ namespace TheGodfather.Modules.Reactions
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "New text reaction added",
                     Color = this.ModuleColor
                 };

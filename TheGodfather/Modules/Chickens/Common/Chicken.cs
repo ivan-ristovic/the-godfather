@@ -24,12 +24,12 @@ namespace TheGodfather.Modules.Chickens.Common
 
     public class Chicken
     {
-        public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats>() {
-            { ChickenType.Default, new ChickenStats() { BareStrength = 50, BareMaxVitality = 100, BareVitality = 100 } },
-            { ChickenType.WellFed, new ChickenStats() { BareStrength = 100, BareMaxVitality = 150, BareVitality = 150 } },
-            { ChickenType.Trained, new ChickenStats() { BareStrength = 150, BareMaxVitality = 200, BareVitality = 200 } },
-            { ChickenType.SteroidEmpowered, new ChickenStats() { BareStrength = 200, BareMaxVitality = 250, BareVitality = 250 } },
-            { ChickenType.Alien, new ChickenStats() { BareStrength = 250, BareMaxVitality = 300, BareVitality = 300 } },
+        public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats> {
+            { ChickenType.Default, new ChickenStats { BareStrength = 50, BareMaxVitality = 100, BareVitality = 100 } },
+            { ChickenType.WellFed, new ChickenStats { BareStrength = 100, BareMaxVitality = 150, BareVitality = 150 } },
+            { ChickenType.Trained, new ChickenStats { BareStrength = 150, BareMaxVitality = 200, BareVitality = 200 } },
+            { ChickenType.SteroidEmpowered, new ChickenStats { BareStrength = 200, BareMaxVitality = 250, BareVitality = 250 } },
+            { ChickenType.Alien, new ChickenStats { BareStrength = 250, BareMaxVitality = 300, BareVitality = 300 } },
         }.ToImmutableDictionary();
 
         public static long Price(ChickenType type)
@@ -66,15 +66,15 @@ namespace TheGodfather.Modules.Chickens.Common
             if (dbc == null)
                 return null;
 
-            return new Chicken() {
+            return new Chicken {
                 GuildId = dbc.GuildId,
                 Name = dbc.Name,
                 OwnerId = dbc.UserId,
-                Stats = new ChickenStats() {
+                Stats = new ChickenStats {
                     BareStrength = dbc.Strength,
                     BareMaxVitality = dbc.MaxVitality,
                     BareVitality = dbc.Vitality,
-                    Upgrades = dbc.DbUpgrades.Select(u => new ChickenUpgrade() {
+                    Upgrades = dbc.DbUpgrades.Select(u => new ChickenUpgrade {
                         Id = u.Id,
                         Modifier = u.DbChickenUpgrade.Modifier,
                         Name = u.DbChickenUpgrade.Name,
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Chickens.Common
 
         public DiscordEmbed ToDiscordEmbed(DiscordUser owner)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.Chicken} {this.Name}",
                 Color = DiscordColor.Yellow
             };
@@ -171,8 +171,8 @@ namespace TheGodfather.Modules.Chickens.Common
         public DatabaseChicken ToDatabaseChicken(DatabaseChicken target = null)
         {
             if (target is null) {
-                return new DatabaseChicken() {
-                    DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
+                return new DatabaseChicken {
+                    DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade {
                         GuildId = this.GuildId,
                         Id = u.Id,
                         UserId = this.OwnerId
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Chickens.Common
                     Vitality = this.Stats.BareVitality
                 };
             } else {
-                target.DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade() {
+                target.DbUpgrades = this.Stats.Upgrades.Select(u => new DatabaseChickenBoughtUpgrade {
                     GuildId = this.GuildId,
                     Id = u.Id,
                     UserId = this.OwnerId

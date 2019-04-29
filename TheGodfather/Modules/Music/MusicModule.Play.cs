@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Music
                 if (!File.Exists(filename))
                     throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.");
 
-                var si = new SongInfo() {
+                var si = new SongInfo {
                     Title = filename,
                     Provider = "Server file system",
                     Query = ctx.Client.CurrentUser.AvatarUrl,

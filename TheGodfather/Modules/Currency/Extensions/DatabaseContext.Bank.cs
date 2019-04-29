@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 
             DatabaseBankAccount account = await db.BankAccounts.FindAsync((long)gid, (long)uid);
             if (account is null) {
-                account = new DatabaseBankAccount() {
+                account = new DatabaseBankAccount {
                     GuildId = gid,
                     UserId = uid
                 };

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Misc
             using (DatabaseContext db = this.Database.CreateContext())
                 rankInfo = await db.GuildRanks.FindAsync((long)ctx.Guild.Id, rank);
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = user.Username,
                 Color = this.ModuleColor,
                 ThumbnailUrl = user.AvatarUrl
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
             using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseGuildRank dbr = db.GuildRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id && r.Rank == rank);
                 if (dbr is null) {
-                    db.GuildRanks.Add(new DatabaseGuildRank() {
+                    db.GuildRanks.Add(new DatabaseGuildRank {
                         GuildId = ctx.Guild.Id,
                         Name = name,
                         Rank = rank
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Misc
                                      [Description("Rank.")] short rank)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.GuildRanks.Remove(new DatabaseGuildRank() {
+                db.GuildRanks.Remove(new DatabaseGuildRank {
                     GuildId = ctx.Guild.Id,
                     Rank = (short)rank
                 });
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Misc
                 .OrderByDescending(v => v.Value)
                 .Take(10);
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Top ranked users (globally)",
                 Color = this.ModuleColor
             };

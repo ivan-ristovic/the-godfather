@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration.Services
                 this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
                     db.AntispamExempts
                         .Where(ee => ee.GuildId == gid)
-                        .Select(ee => new ExemptedEntity() { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+                        .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
                 );
             }
         }

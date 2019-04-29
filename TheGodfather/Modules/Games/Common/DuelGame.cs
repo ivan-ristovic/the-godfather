@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Games.Common
             await this.WaitForPotionUseAsync();
             this.UpdateHpBars();
 
-            this.messageHandle = await this.messageHandle.ModifyAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}", embed: new DiscordEmbedBuilder() {
+            this.messageHandle = await this.messageHandle.ModifyAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}", embed: new DiscordEmbedBuilder {
                 Title = "ITS TIME TO DUDUDUDU... DUEL!",
                 Description = this.eb.ToString(),
                 Color = DiscordColor.Teal

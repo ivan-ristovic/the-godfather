@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search.Extensions
             using (DatabaseContext db = dbb.CreateContext()) {
                 DatabaseRssFeed feed = db.RssFeeds.SingleOrDefault(f => f.Url == url);
                 if (feed is null) {
-                    feed = new DatabaseRssFeed() {
+                    feed = new DatabaseRssFeed {
                         Url = url,
                         LastPostUrl = newest.Links[0].Uri.ToString()
                     };
@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search.Extensions
                     await db.SaveChangesAsync();
                 }
 
-                db.RssSubscriptions.Add(new DatabaseRssSubscription() {
+                db.RssSubscriptions.Add(new DatabaseRssSubscription {
                     ChannelId = cid,
                     GuildId = gid,
                     Id = feed.Id,

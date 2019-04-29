@@ -34,7 +34,7 @@ namespace TheGodfather.Extensions
                     .Skip(start)
                     .Take(takeAmount)
                     .Select(selector);
-                pages.Add(new Page(embed: new DiscordEmbedBuilder() {
+                pages.Add(new Page(embed: new DiscordEmbedBuilder {
                     Title = $"{title} (page {i + 1}/{amountOfPages + 1})",
                     Description = string.Join("\n", formattedCollectionPart),
                     Color = color ?? DiscordColor.Black

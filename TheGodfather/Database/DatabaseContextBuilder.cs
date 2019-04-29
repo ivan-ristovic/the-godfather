@@ -32,7 +32,7 @@ namespace TheGodfather.Database
 
             switch (this.Provider) {
                 case DatabaseProvider.PostgreSQL:
-                    this.ConnectionString = new NpgsqlConnectionStringBuilder() {
+                    this.ConnectionString = new NpgsqlConnectionStringBuilder {
                         Host = cfg.Hostname,
                         Port = cfg.Port,
                         Database = cfg.DatabaseName,

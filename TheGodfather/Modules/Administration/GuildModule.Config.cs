@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
                     };
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
                     };
@@ -194,7 +194,7 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
                     };
@@ -258,7 +258,7 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
                         Color = this.ModuleColor
                     };
@@ -312,7 +312,7 @@ namespace TheGodfather.Modules.Administration
             #region HELPER_FUNCTIONS
             private async Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
             {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = $"Guild configuration {(changed ? " changed" : "")}",
                     Description = guild.ToString(),
                     Color = this.ModuleColor

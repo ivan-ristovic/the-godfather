@@ -59,18 +59,18 @@ namespace TheGodfather.Modules.Swat
                         .AsEnumerable()
                         .FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase) || p.IPs.Contains(ip.Content));
                     if (player is null) {
-                        var toAdd = new DatabaseSwatPlayer() {
+                        var toAdd = new DatabaseSwatPlayer {
                             Info = info,
                             IsBlacklisted = false,
                             Name = name
                         };
-                        toAdd.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = toAdd.Id, IP = ip.Content });
+                        toAdd.DbIPs.Add(new DatabaseSwatPlayerIP { PlayerId = toAdd.Id, IP = ip.Content });
                         db.SwatPlayers.Add(toAdd);
                     } else {
                         if (player.Name != name && !player.Aliases.Contains(name))
-                            player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = name, PlayerId = player.Id });
+                            player.DbAliases.Add(new DatabaseSwatPlayerAlias { Alias = name, PlayerId = player.Id });
                         if (!player.IPs.Contains(ip.Content))
-                            player.DbIPs.Add(new DatabaseSwatPlayerIP() { PlayerId = player.Id, IP = ip.Content });
+                            player.DbIPs.Add(new DatabaseSwatPlayerIP { PlayerId = player.Id, IP = ip.Content });
                         db.SwatPlayers.Update(player);
                     }
                     await db.SaveChangesAsync();
@@ -90,16 +90,16 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name == name);
                     if (player is null) {
-                        var toAdd = new DatabaseSwatPlayer() {
+                        var toAdd = new DatabaseSwatPlayer {
                             IsBlacklisted = false,
                             Name = name
                         };
                         foreach (string ip in ips.Select(i => i.Content))
-                            toAdd.DbIPs.Add(new DatabaseSwatPlayerIP() { IP = ip, PlayerId = toAdd.Id });
+                            toAdd.DbIPs.Add(new DatabaseSwatPlayerIP { IP = ip, PlayerId = toAdd.Id });
                         db.SwatPlayers.Add(toAdd);
                     } else {
                         foreach (string ip in ips.Select(i => i.Content))
-                            player.DbIPs.Add(new DatabaseSwatPlayerIP() { IP = ip, PlayerId = player.Id });
+                            player.DbIPs.Add(new DatabaseSwatPlayerIP { IP = ip, PlayerId = player.Id });
                         db.SwatPlayers.Update(player);
                     }
                     await db.SaveChangesAsync();
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Swat
                     if (player is null)
                         throw new CommandFailedException($"Name {Formatter.Bold(name)} is not present in the database!");
                     if (!player.Aliases.Contains(name))
-                        player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = alias, PlayerId = player.Id });
+                        player.DbAliases.Add(new DatabaseSwatPlayerAlias { Alias = alias, PlayerId = player.Id });
                     db.SwatPlayers.Update(player);
                     await db.SaveChangesAsync();
                     await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Swat
                         throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
 
                     if (!player.Aliases.Contains(alias))
-                        player.DbAliases.Add(new DatabaseSwatPlayerAlias() { Alias = alias, PlayerId = player.Id });
+                        player.DbAliases.Add(new DatabaseSwatPlayerAlias { Alias = alias, PlayerId = player.Id });
                     db.SwatPlayers.Update(player);
                     await db.SaveChangesAsync();
                     await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.Include(p => p.DbIPs).FirstOrDefault(p => p.IPs.Contains(ip.Content));
                     if (!(player is null)) {
-                        player.DbIPs.Remove(new DatabaseSwatPlayerIP() { IP = ip.Content, PlayerId = player.Id });
+                        player.DbIPs.Remove(new DatabaseSwatPlayerIP { IP = ip.Content, PlayerId = player.Id });
                         if (player.DbIPs.Any())
                             db.SwatPlayers.Update(player);
                         else

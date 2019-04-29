@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Reactions
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Several emoji reactions have been deleted",
                     Color = this.ModuleColor
                 };
@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Reactions
                         eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                         continue;
                     } else {
-                        db.EmojiReactions.Remove(new DatabaseEmojiReaction() { Id = id, GuildId = ctx.Guild.Id });
+                        db.EmojiReactions.Remove(new DatabaseEmojiReaction { Id = id, GuildId = ctx.Guild.Id });
                     }
                 }
                 await db.SaveChangesAsync();
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Reactions
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
                         Color = this.ModuleColor
                     };
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Reactions
                    .ToList();
                 foreach (DatabaseEmojiReaction er in toUpdate) {
                     foreach (string trigger in triggers)
-                        er.DbTriggers.Remove(new DatabaseEmojiReactionTrigger() { ReactionId = er.Id, Trigger = trigger });
+                        er.DbTriggers.Remove(new DatabaseEmojiReactionTrigger { ReactionId = er.Id, Trigger = trigger });
                     await db.SaveChangesAsync();
 
                     if (er.DbTriggers.Any()) {
@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Reactions
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder() {
+                    var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
                         Color = this.ModuleColor
                     };
@@ -277,7 +277,7 @@ namespace TheGodfather.Modules.Reactions
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All emoji reactions have been deleted",
                     Color = this.ModuleColor
                 };
@@ -305,7 +305,7 @@ namespace TheGodfather.Modules.Reactions
             if (!ers.Any())
                 throw new CommandFailedException("None of the reactions respond to such trigger.");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Text reaction that matches the trigger",
                 Description = string.Join("\n", ers.Select(er => $"{Formatter.InlineCode(er.Id.ToString())} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {Formatter.InlineCode(string.Join(", ", er.TriggerStrings))}")),
                 Color = this.ModuleColor
@@ -365,7 +365,7 @@ namespace TheGodfather.Modules.Reactions
             using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == ctx.Guild.Id && er.Reaction == emoji.GetDiscordName());
                 if (dber is null) {
-                    dber = new DatabaseEmojiReaction() {
+                    dber = new DatabaseEmojiReaction {
                         GuildId = ctx.Guild.Id,
                         Reaction = emoji.GetDiscordName()
                     };
@@ -374,7 +374,7 @@ namespace TheGodfather.Modules.Reactions
                 }
 
                 foreach (string trigger in triggers)
-                    dber.DbTriggers.Add(new DatabaseEmojiReactionTrigger() { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                    dber.DbTriggers.Add(new DatabaseEmojiReactionTrigger { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
 
                 await db.SaveChangesAsync();
                 id = dber.Id;
@@ -412,7 +412,7 @@ namespace TheGodfather.Modules.Reactions
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "New emoji reactions added",
                     Color = this.ModuleColor
                 };

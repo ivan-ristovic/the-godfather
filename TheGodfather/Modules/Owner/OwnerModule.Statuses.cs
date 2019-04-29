@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Owner
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.BotStatuses.Add(new DatabaseBotStatus() { Activity = activity, Status = status });
+                    db.BotStatuses.Add(new DatabaseBotStatus { Activity = activity, Status = status });
                     await db.SaveChangesAsync();
                 }
 
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Owner
                                          [Description("Status ID.")] int id)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.BotStatuses.Remove(new DatabaseBotStatus() { Id = id });
+                    db.BotStatuses.Remove(new DatabaseBotStatus { Id = id });
                     await db.SaveChangesAsync();
                 }
 

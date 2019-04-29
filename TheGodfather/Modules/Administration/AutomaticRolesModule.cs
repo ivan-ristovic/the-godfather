@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.AutoAssignableRoles.SafeAddRange(roles.Select(r => new DatabaseAutoRole() {
+                db.AutoAssignableRoles.SafeAddRange(roles.Select(r => new DatabaseAutoRole {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
                 }));
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Automatic roles change occured",
                     Color = this.ModuleColor
                 };
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Automatic roles change occured",
                     Color = this.ModuleColor
                 };
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All automatic roles have been deleted",
                     Color = this.ModuleColor
                 };
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
                 foreach (ulong rid in rids) {
                     DiscordRole role = ctx.Guild.GetRole(rid);
                     if (role is null) {
-                        db.AutoAssignableRoles.Remove(new DatabaseAutoRole() {
+                        db.AutoAssignableRoles.Remove(new DatabaseAutoRole {
                             GuildId = ctx.Guild.Id,
                             RoleId = rid
                         });

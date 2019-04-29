@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Swat.Services
             lock (_lock) {
                 _listeners.AddOrUpdate(
                     server,
-                    new ConcurrentHashSet<DiscordChannelInfo>() { new DiscordChannelInfo(channel) },
+                    new ConcurrentHashSet<DiscordChannelInfo> { new DiscordChannelInfo(channel) },
                     (k, v) => {
                         v.Add(new DiscordChannelInfo(channel));
                         return v;

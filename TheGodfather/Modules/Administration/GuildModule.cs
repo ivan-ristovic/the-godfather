@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Administration
             IReadOnlyList<DiscordAuditLogEntry> logs = await ctx.Guild.GetAuditLogsAsync(amount);
 
             IEnumerable<Page> pages = logs.Select(entry => {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = $"Audit log entry #{entry.Id}",
                     Color = this.ModuleColor,
                     Timestamp = entry.CreationTimestamp
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("i", "information")]
         public Task GuildInfoAsync(CommandContext ctx)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = ctx.Guild.ToString(),
                 Color = this.ModuleColor,
                 ThumbnailUrl = ctx.Guild.IconUrl

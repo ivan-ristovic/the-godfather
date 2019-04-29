@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
             if (url is null)
                 throw new CommandFailedException("Connection to random.cat failed!");
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = DiscordEmoji.FromName(ctx.Client, ":cat:"),
                 ImageUrl = url,
                 Color = this.ModuleColor
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Search
             if (url is null)
                 throw new CommandFailedException("Connection to random.dog failed!");
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = DiscordEmoji.FromName(ctx.Client, ":dog:"),
                 ImageUrl = url,
                 Color = this.ModuleColor

@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Games.Extensions
 
         public static DiscordEmbedBuilder ToPartialDiscordEmbed(this DatabaseGameStats stats)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Chartreuse
             };
             emb.AddField("Duel stats", stats.BuildDuelStatsString())

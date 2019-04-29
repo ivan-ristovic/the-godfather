@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Misc
         {
             await ctx.Message.DeleteAsync();
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.NoEntry} NSFW link from {ctx.Member.DisplayName} {StaticDiscordEmoji.NoEntry}",
                 Description = FormatterExtensions.Spoiler(url.ToString()),
                 Color = DiscordColor.Red
@@ -311,7 +311,7 @@ namespace TheGodfather.Modules.Misc
                     using (var ms = new MemoryStream()) {
                         chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                         ms.Position = 0;
-                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder() {
+                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
                             Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
                             Color = this.ModuleColor
                         });
@@ -354,7 +354,7 @@ namespace TheGodfather.Modules.Misc
                 DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id);
                 if (dm is null)
                     throw new CommandFailedException("Owner has disabled DMs.");
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Issue",
                     Description = issue
                 };
@@ -405,7 +405,7 @@ namespace TheGodfather.Modules.Misc
             if (!parts.Any())
                 throw new CommandFailedException("Not enough messages were sent from that user recently!");
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", parts)}",
                 Color = this.ModuleColor,
             }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
@@ -522,7 +522,7 @@ namespace TheGodfather.Modules.Misc
                 sb.Append(' ');
             }
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

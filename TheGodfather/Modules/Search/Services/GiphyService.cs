@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search.Services
             if (amount < 1 || amount > 20)
                 throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
-            SearchResult res = await this.giphy.GifSearch(new SearchParameter() {
+            SearchResult res = await this.giphy.GifSearch(new SearchParameter {
                 Query = query,
                 Limit = amount
             }).ConfigureAwait(false);
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Search.Services
             if (amount < 1 || amount > 20)
                 throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
-            SearchResult res = await this.giphy.TrendingGifs(new TrendingParameter() {
+            SearchResult res = await this.giphy.TrendingGifs(new TrendingParameter {
                 Limit = amount
             }).ConfigureAwait(false);
 

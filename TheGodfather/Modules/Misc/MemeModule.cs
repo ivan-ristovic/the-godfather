@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Memes.Add(new DatabaseMeme() {
+                db.Memes.Add(new DatabaseMeme {
                     GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                     Url = url.AbsoluteUri
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Misc
                                    [Description("Bottom Text.")] string bottomText)
         {
             string url = MemeGenService.GenerateMeme(template, topText, bottomText);
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "The meme you asked me to generate",
                 Url = url,
                 ImageUrl = url
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Meme name is missing.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Memes.Remove(new DatabaseMeme() {
+                db.Memes.Remove(new DatabaseMeme {
                     GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                 });

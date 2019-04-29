@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled())
                 return null;
 
-            var em = new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder {
                 Title = summary.Nickname,
                 Description = Regex.Replace(model.Summary, "<[^>]*>", string.Empty),
                 ThumbnailUrl = model.AvatarFull.ToString(),

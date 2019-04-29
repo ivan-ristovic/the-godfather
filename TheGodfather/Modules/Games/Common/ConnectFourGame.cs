@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Games.Common
 
             sb.AppendLine().Append("User to move: ").AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder() {
+            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Owner
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
                 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.PrivilegedUsers.SafeAddRange(users.Select(u => new DatabasePrivilegedUser() {
+                    db.PrivilegedUsers.SafeAddRange(users.Select(u => new DatabasePrivilegedUser {
                         UserId = u.Id
                     }));
                     await db.SaveChangesAsync();
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Owner
                     } catch (NotFoundException) {
                         this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 privileged user with ID {usr.UserId}");
                         using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.PrivilegedUsers.Remove(new DatabasePrivilegedUser() { UserIdDb = usr.UserIdDb });
+                            db.PrivilegedUsers.Remove(new DatabasePrivilegedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();
                         }
                     }

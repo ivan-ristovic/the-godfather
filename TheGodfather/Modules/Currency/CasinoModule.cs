@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("slot");
             sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("wheeloffortune");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Available casino games:",
                 Description = sb.ToString(),
                 Color = this.ModuleColor,

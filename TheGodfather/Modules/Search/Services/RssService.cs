@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Search.Services
                                 continue;
                             }
 
-                            var emb = new DiscordEmbedBuilder() {
+                            var emb = new DiscordEmbedBuilder {
                                 Title = latest.Title.Text,
                                 Url = url,
                                 Timestamp = latest.LastUpdatedTime > latest.PublishDate ? latest.LastUpdatedTime : latest.PublishDate,
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Search.Services
             if (results is null)
                 return;
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Topics active recently",
                 Color = DiscordColor.White
             };

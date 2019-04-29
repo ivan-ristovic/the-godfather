@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                         regex = regexString.CreateRegex(escape: true);
                     
                     if (!db.ForbiddenNames.Any(n => n.RegexString == regexString))
-                        dbNames.Add(new DatabaseForbiddenName() { GuildId = ctx.Guild.Id, RegexString = regexString });
+                        dbNames.Add(new DatabaseForbiddenName { GuildId = ctx.Guild.Id, RegexString = regexString });
                 }
                 db.ForbiddenNames.AddRange(dbNames);
                 await db.SaveChangesAsync();
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name addition occured",
                     Color = this.ModuleColor
                 };
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name deletion occured",
                     Color = this.ModuleColor
                 };
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name deletion occured",
                     Color = this.ModuleColor
                 };
@@ -193,7 +193,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All forbidden names have been deleted",
                     Color = this.ModuleColor
                 };

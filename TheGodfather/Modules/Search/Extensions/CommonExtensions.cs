@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
         public static DiscordEmbedBuilder ToDiscordEmbed(this IpInfo info, DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"IP geolocation info for {info.Ip}",
             };
 
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search.Extensions
             var pages = new List<Page>();
 
             foreach (GoodreadsWork work in info.Results) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = work.Book.Title,
                     ThumbnailUrl = work.Book.ImageUrl,
                     Color = DiscordColor.DarkGray
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
         public static DiscordEmbedBuilder ToDiscordEmbed(this MovieInfo info, DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = info.Title,
                 Description = info.Plot,
                 Url = $"http://www.imdb.com/title/{ info.IMDbId }",
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
         public static DiscordEmbedBuilder ToDiscordEmbed(this Quote quote, string altTitle = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = string.IsNullOrWhiteSpace(altTitle) ? "Quote" : altTitle,
                 Description = Formatter.Italic($"\"{quote.Content}\""),
                 Color = DiscordColor.SpringGreen,
@@ -182,7 +182,7 @@ namespace TheGodfather.Modules.Search.Extensions
                 PartialWeatherData data = forecast.WeatherDataList[i];
                 DateTime date = DateTime.UtcNow.AddDays(i + 1);
 
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = $"Forecast for {date.DayOfWeek}, {date.Date.ToUniversalTime().ToShortDateString()}",
                     Color = DiscordColor.Aquamarine
                 };
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Search.Extensions
 
         public static DiscordEmbedBuilder ToDiscordEmbedBuilder(this XkcdComic comic, DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"xkcd #{comic.Id} : {comic.Title}",
                 ImageUrl = comic.ImageUrl,
                 Url = XkcdService.CreateUrlForComic(comic.Id)

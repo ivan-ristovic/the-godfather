@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("ls", "view")]
             public Task ListAsync(CommandContext ctx)
             {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Available chicken types",
                     Color = this.ModuleColor
                 };
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Chickens
                         throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 
                     ChickenStats stats = Chicken.StartingStats[type];
-                    db.Chickens.Add(new DatabaseChicken() {
+                    db.Chickens.Add(new DatabaseChicken {
                         GuildId = ctx.Guild.Id,
                         MaxVitality = stats.BareMaxVitality,
                         Name = name,

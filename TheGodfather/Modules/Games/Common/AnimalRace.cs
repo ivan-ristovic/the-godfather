@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Games.Common
                 sb.AppendLine();
             }
 
-            return msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+            return msg.ModifyAsync(embed: new DiscordEmbedBuilder {
                 Title = "LIVE RACING BROADCAST",
                 Description = sb.ToString()
             }.Build());

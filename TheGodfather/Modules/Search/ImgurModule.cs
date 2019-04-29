@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Search
                         var img = ((GalleryImage)im);
                         if (!(img.Nsfw is null) && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                             Color = this.ModuleColor,
                             ImageUrl = img.Link
                         }.Build());
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Search
                         var img = ((GalleryAlbum)im);
                         if (!(img.Nsfw is null) && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                             Color = this.ModuleColor,
                             ImageUrl = img.Link
                         }.Build());

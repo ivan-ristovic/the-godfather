@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search.Services
             this.key = key;
             this.ytExplode = new YoutubeClient();
             if (!string.IsNullOrWhiteSpace(key)) {
-                this.yt = new YouTubeService(new BaseClientService.Initializer() {
+                this.yt = new YouTubeService(new BaseClientService.Initializer {
                     ApiKey = key,
                     ApplicationName = TheGodfather.ApplicationName
                 });
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Search.Services
 
             var pages = new List<Page>();
             foreach (SearchResult res in results.Take(10)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = res.Snippet.Title,
                     Description = Formatter.Italic(string.IsNullOrWhiteSpace(res.Snippet.Description) ? "No description provided" : res.Snippet.Description),
                     Color = DiscordColor.Red
@@ -194,7 +194,7 @@ namespace TheGodfather.Modules.Search.Services
         {
             string[] data = null;
             try {
-                var ytdlinfo = new ProcessStartInfo() {
+                var ytdlinfo = new ProcessStartInfo {
                     FileName = "Resources/youtube-dl",
                     Arguments = $"-4 --geo-bypass -f bestaudio -e --get-url --get-id --get-thumbnail --get-duration --no-check-certificate --default-search \"ytsearch:\" \"{url}\"",
                     UseShellExecute = false,
@@ -202,7 +202,7 @@ namespace TheGodfather.Modules.Search.Services
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
                 };
-                using (var process = new Process() { StartInfo = ytdlinfo }) {
+                using (var process = new Process { StartInfo = ytdlinfo }) {
                     process.Start();
                     string str = await process.StandardOutput.ReadToEndAsync();
                     string err = await process.StandardError.ReadToEndAsync();
@@ -218,7 +218,7 @@ namespace TheGodfather.Modules.Search.Services
                 if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out TimeSpan time))
                     time = TimeSpan.FromHours(24);
 
-                return new SongInfo() {
+                return new SongInfo {
                     Title = data[0],
                     VideoId = data[1],
                     Uri = data[2],

@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.SafeAddRange(roles.Select(r => new DatabaseSelfRole() {
+                db.SelfAssignableRoles.SafeAddRange(roles.Select(r => new DatabaseSelfRole {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
                 }));
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Self-assignable roles change occured",
                     Color = this.ModuleColor
                 };
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Self-assignable roles change occured",
                     Color = this.ModuleColor
                 };
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All self-assignable roles have been deleted",
                     Color = this.ModuleColor
                 };
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
                 foreach (ulong rid in rids) {
                     DiscordRole role = ctx.Guild.GetRole(rid);
                     if (role is null) {
-                        db.SelfAssignableRoles.Remove(new DatabaseSelfRole() {
+                        db.SelfAssignableRoles.Remove(new DatabaseSelfRole {
                             GuildId = ctx.Guild.Id,
                             RoleId = rid
                         });

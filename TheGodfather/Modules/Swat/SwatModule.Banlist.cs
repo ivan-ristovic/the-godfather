@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                     if (player is null) {
-                        db.SwatPlayers.Add(new DatabaseSwatPlayer() {
+                        db.SwatPlayers.Add(new DatabaseSwatPlayer {
                             Info = reason,
                             IsBlacklisted = true
                         });
@@ -86,6 +86,7 @@ namespace TheGodfather.Modules.Swat
                     if (player is null)
                         throw new CommandFailedException($"Player with name {Formatter.Bold(name)} is not present in the database!");
                     player.IsBlacklisted = true;
+                    player.Info = reason;
                     db.SwatPlayers.Update(player);
                     await db.SaveChangesAsync();
                     await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(player.Name)}.", important: false);

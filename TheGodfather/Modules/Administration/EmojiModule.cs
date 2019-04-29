@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Administration
         {
             DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Emoji details:",
                 Description = gemoji,
                 Color = this.ModuleColor,

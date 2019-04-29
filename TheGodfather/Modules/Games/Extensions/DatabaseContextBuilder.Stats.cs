@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games.Extensions
             using (DatabaseContext db = dbb.CreateContext()) {
                 DatabaseGameStats stats = await db.GameStats.FindAsync((long)uid);
                 if (stats is null) {
-                    stats = new DatabaseGameStats() { UserId = uid };
+                    stats = new DatabaseGameStats { UserId = uid };
                     action(stats);
                     db.GameStats.Add(stats);
                 } else {

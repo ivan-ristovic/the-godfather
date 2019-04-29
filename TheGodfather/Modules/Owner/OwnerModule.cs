@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(FormatterExtensions.StripMarkdown(message))}"))
                 return;
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "An announcement from my owner",
                 Description = message,
                 Color = DiscordColor.Red

@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedUsers.Add(new DatabaseBlockedUser() {
+                        db.BlockedUsers.Add(new DatabaseBlockedUser {
                             UserId = user.Id,
                             Reason = reason
                         });
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserId = user.Id });
+                        db.BlockedUsers.Remove(new DatabaseBlockedUser { UserId = user.Id });
                     }
 
                     await db.SaveChangesAsync();
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Owner
                     } catch (NotFoundException) {
                         this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 blocked user with ID {usr.UserId}");
                         using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.BlockedUsers.Remove(new DatabaseBlockedUser() { UserIdDb = usr.UserIdDb });
+                            db.BlockedUsers.Remove(new DatabaseBlockedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();
                         }
                     }

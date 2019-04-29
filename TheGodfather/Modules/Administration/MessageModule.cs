@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
             if (message is null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Attachments:",
                 Color = this.ModuleColor
             };
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordEmbed em = m.Embeds.FirstOrDefault();
                 if (!(em is null))
                     return new DiscordEmbedBuilder(m.Embeds.First());
-                return new DiscordEmbedBuilder() {
+                return new DiscordEmbedBuilder {
                     Title = "Jump to",
                     Description = m.Content ?? Formatter.Italic("Empty message."),
                     Url = m.JumpLink.ToString()

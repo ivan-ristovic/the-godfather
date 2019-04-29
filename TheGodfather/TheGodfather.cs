@@ -143,14 +143,14 @@ namespace TheGodfather
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
                 blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
                 guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
-                    gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig() {
-                        AntispamSettings = new AntispamSettings() {
+                    gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig {
+                        AntispamSettings = new AntispamSettings {
                             Action = gcfg.AntispamAction,
                             Enabled = gcfg.AntispamEnabled,
                             Sensitivity = gcfg.AntispamSensitivity
                         },
                         Currency = gcfg.Currency,
-                        LinkfilterSettings = new LinkfilterSettings() {
+                        LinkfilterSettings = new LinkfilterSettings {
                             BlockBooterWebsites = gcfg.LinkfilterBootersEnabled,
                             BlockDiscordInvites = gcfg.LinkfilterDiscordInvitesEnabled,
                             BlockDisturbingWebsites = gcfg.LinkfilterDisturbingWebsitesEnabled,
@@ -160,7 +160,7 @@ namespace TheGodfather
                         },
                         LogChannelId = gcfg.LogChannelId,
                         Prefix = gcfg.Prefix,
-                        RatelimitSettings = new RatelimitSettings() {
+                        RatelimitSettings = new RatelimitSettings {
                             Action = gcfg.RatelimitAction,
                             Enabled = gcfg.RatelimitEnabled,
                             Sensitivity = gcfg.RatelimitSensitivity
@@ -199,7 +199,7 @@ namespace TheGodfather
             foreach (Logger.SpecialLoggingRule rule in BotConfiguration.SpecialLoggerRules)
                 logger.ApplySpecialLoggingRule(rule);
 
-            SharedData = new SharedData() {
+            SharedData = new SharedData {
                 BlockedChannels = blockedChannels,
                 BlockedUsers = blockedUsers,
                 BotConfiguration = BotConfiguration,
@@ -341,7 +341,7 @@ namespace TheGodfather
                     foreach ((ulong uid, int count) in SharedData.MessageCount) {
                         DatabaseMessageCount msgcount = db.MessageCount.Find((long)uid);
                         if (msgcount is null) {
-                            db.MessageCount.Add(new DatabaseMessageCount() {
+                            db.MessageCount.Add(new DatabaseMessageCount {
                                 MessageCount = count,
                                 UserId = uid
                             });
@@ -384,7 +384,7 @@ namespace TheGodfather
                 foreach (DatabaseBirthday birthday in todayBirthdays) {
                     DiscordChannel channel = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(birthday.ChannelId));
                     DiscordUser user = SharedData.AsyncExecutor.Execute(client.GetUserAsync(birthday.UserId));
-                    SharedData.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder() {
+                    SharedData.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                         Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
                         Color = DiscordColor.Aquamarine
                     }));

@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
         public Task GetAvatarAsync(CommandContext ctx,
                                   [Description("User whose avatar to show.")] DiscordUser user)
         {
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = $"{user.Username}'s avatar:",
                 ImageUrl = user.AvatarUrl,
                 Color = this.ModuleColor
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
         {
             member = member ?? ctx.Member;
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"Member: {member.DisplayName} ({member.Username})",
                 ThumbnailUrl = member.AvatarUrl,
                 Color = this.ModuleColor
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
         {
             user = user ?? ctx.User;
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"User: {user.Username}",
                 ThumbnailUrl = user.AvatarUrl,
                 Color = this.ModuleColor
@@ -552,7 +552,7 @@ namespace TheGodfather.Modules.Administration
                                    [Description("Member.")] DiscordMember member,
                                    [RemainingText, Description("Warning message.")] string msg = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Warning received!",
                 Description = $"Guild {Formatter.Bold(ctx.Guild.Name)} issued a warning to you through me.",
                 Color = DiscordColor.Red,

@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Polls.Common
 
         public virtual DiscordEmbed ToDiscordEmbed()
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = Question,
                 Description = $"Vote by using command {Formatter.InlineCode("vote <number>")}",
                 Color = DiscordColor.Orange
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Polls.Common
 
         public virtual DiscordEmbed ResultsToDiscordEmbed()
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = this.Question + " (results)",
                 Color = DiscordColor.Orange
             };

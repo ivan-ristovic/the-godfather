@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Search
             }
 
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.Select(r => new Page(embed:
-                new DiscordEmbedBuilder() {
+                new DiscordEmbedBuilder {
                     Title = r.Title,
                     Description = string.IsNullOrWhiteSpace(r.Snippet) ? "No description provided" : r.Snippet,
                     Url = r.Url,

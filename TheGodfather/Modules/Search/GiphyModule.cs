@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
 
             GiphyDotNet.Model.GiphyRandomImage.Data res = await this.Service.GetRandomGifAsync();
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Random gif:",
                 ImageUrl = res.Url,
                 Color = this.ModuleColor
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Search
 
             GiphyDotNet.Model.GiphyImage.Data[] res = await this.Service.GetTrendingGifsAsync(amount);
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = "Trending gifs:",
                 Color = this.ModuleColor
             };

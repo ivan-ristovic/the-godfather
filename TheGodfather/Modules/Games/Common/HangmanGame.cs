@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Games
 
         private Task UpdateHangmanAsync()
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = string.Join(" ", this.hidden),
                 Description = $@". ┌─────┐
 .┃...............┋

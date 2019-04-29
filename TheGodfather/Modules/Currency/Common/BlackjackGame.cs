@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Currency.Common
                 sb.AppendLine();
             }
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.CardSuits[0]} BLACKJACK GAME STATE {StaticDiscordEmoji.CardSuits[0]}",
                 Description = sb.ToString(),
                 Color = DiscordColor.DarkGreen

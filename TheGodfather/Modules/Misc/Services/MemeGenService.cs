@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc.Services
         private static readonly string _url = "http://memegen.link";
         private static readonly string _urlHttps = "https://memegen.link";
         private static readonly Regex _whitespaceRegex = new Regex(@"\s+", RegexOptions.Compiled);
-        private static readonly ImmutableDictionary<char, string> _replacements = new Dictionary<char, string>() {
+        private static readonly ImmutableDictionary<char, string> _replacements = new Dictionary<char, string> {
             {'?', "~q"},
             {'%', "~p"},
             {'#', "~h"},

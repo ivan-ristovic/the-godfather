@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games.Common
                         eb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Relieved} {StaticDiscordEmoji.Gun}");
                     }
                     
-                    msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+                    msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder {
                         Title = $"ROUND #{round}",
                         Description = eb.ToString(),
                         Color = DiscordColor.DarkRed

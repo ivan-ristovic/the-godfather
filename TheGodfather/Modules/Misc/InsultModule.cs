@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Misc
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (db.Insults.Any(i => string.Compare(i.Content, content, StringComparison.InvariantCultureIgnoreCase) == 0))
                     throw new CommandFailedException("The given insult string already exists!");
-                db.Insults.Add(new DatabaseInsult() {
+                db.Insults.Add(new DatabaseInsult {
                     Content = content
                 });
                 await db.SaveChangesAsync();
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
                                            [Description("ID of the insult to remove.")] int id)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Insults.Remove(new DatabaseInsult() { Id = id });
+                db.Insults.Remove(new DatabaseInsult { Id = id });
                 await db.SaveChangesAsync();
             }
 

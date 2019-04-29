@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Search
                                           [Description("Subscription ID.")] int id)
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.RssSubscriptions.Remove(new DatabaseRssSubscription() { ChannelId = ctx.Channel.Id, Id = id });
+                db.RssSubscriptions.Remove(new DatabaseRssSubscription { ChannelId = ctx.Channel.Id, Id = id });
                 await db.SaveChangesAsync();
             }
 

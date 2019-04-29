@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Swat.Common
 
         public static SwatServerInfo FromData(string ip, string[] data, bool complete = false)
         {
-            var si = new SwatServerInfo() {
+            var si = new SwatServerInfo {
                 Ip = ip,
                 HostName = data[Array.IndexOf(data, "hostname") + 1],
                 Players = data[Array.IndexOf(data, "numplayers") + 1],

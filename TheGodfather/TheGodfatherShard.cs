@@ -89,7 +89,7 @@ namespace TheGodfather
 
         private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
-            var cfg = new DiscordConfiguration() {
+            var cfg = new DiscordConfiguration {
                 Token = this.SharedData.BotConfiguration.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
@@ -157,7 +157,7 @@ namespace TheGodfather
 
         private void SetupInteractivity()
         {
-            this.Interactivity = this.Client.UseInteractivity(new InteractivityConfiguration() {
+            this.Interactivity = this.Client.UseInteractivity(new InteractivityConfiguration {
                 PaginationBehaviour = PaginationBehaviour.WrapAround,
                 PaginationDeletion = PaginationDeletion.DeleteEmojis,
                 PaginationEmojis = new PaginationEmojis(),

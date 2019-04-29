@@ -23,7 +23,7 @@ namespace TheGodfather.Database.Entities
                 queryport = joinport + 1;
 
 
-            return new DatabaseSwatServer() {
+            return new DatabaseSwatServer {
                 IP = ip,
                 JoinPort = joinport,
                 Name = name,

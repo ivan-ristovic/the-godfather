@@ -2,13 +2,16 @@
 using DSharpPlus.Entities;
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 #endregion
 
 namespace TheGodfather.Common
 {
     public static class StaticDiscordEmoji
     {
-        public static IReadOnlyList<DiscordEmoji> Numbers = new List<DiscordEmoji> {
+        public static IReadOnlyList<DiscordEmoji> Numbers => _numbers;
+        private static ImmutableList<DiscordEmoji> _numbers = new List<DiscordEmoji> {
+            #region NUMBERS
             DiscordEmoji.FromUnicode("1\u20e3"),
             DiscordEmoji.FromUnicode("2\u20e3"),
             DiscordEmoji.FromUnicode("3\u20e3"),
@@ -18,10 +21,13 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("7\u20e3"),
             DiscordEmoji.FromUnicode("8\u20e3"),
             DiscordEmoji.FromUnicode("9\u20e3"),
-            DiscordEmoji.FromUnicode("\U0001f51f")
-        }.AsReadOnly();
+            DiscordEmoji.FromUnicode("\U0001f51f"),
+            #endregion
+        }.ToImmutableList();
 
-        public static IReadOnlyList<DiscordEmoji> DuelWeapons = new List<DiscordEmoji> {
+        public static IReadOnlyList<DiscordEmoji> DuelWeapons => _weapons;
+        private static ImmutableList<DiscordEmoji> _weapons = new List<DiscordEmoji> {
+            #region WEAPONS
             DiscordEmoji.FromUnicode("\U0001f528"),     // :hammer:
             DiscordEmoji.FromUnicode("\U0001f5e1"),     // :dagger:
             DiscordEmoji.FromUnicode("\u26cf"),         // :pick:
@@ -29,9 +35,12 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f525"),     // :fire:
             DiscordEmoji.FromUnicode("\U0001f3f9"),     // :bow_and_arrow:
             DiscordEmoji.FromUnicode("\U0001f529"),     // :nut_and_bolt:
-        }.AsReadOnly();
+            #endregion
+        }.ToImmutableList();
 
-        public static IReadOnlyList<DiscordEmoji> Animals = new List<DiscordEmoji> {
+        public static IReadOnlyList<DiscordEmoji> Animals => _animals;
+        public static ImmutableList<DiscordEmoji> _animals = new List<DiscordEmoji> {
+            #region ANIMALS
             DiscordEmoji.FromUnicode("\U0001f436"),     // :dog:
             DiscordEmoji.FromUnicode("\U0001f431"),     // :cat: 
             DiscordEmoji.FromUnicode("\U0001f42d"),     // :mouse:
@@ -41,10 +50,13 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f437"),     // :pig:
             DiscordEmoji.FromUnicode("\U0001f42e"),     // :cow:
             DiscordEmoji.FromUnicode("\U0001f428"),     // :koala:
-            DiscordEmoji.FromUnicode("\U0001f42f")      // :tiger:
-        }.AsReadOnly();
+            DiscordEmoji.FromUnicode("\U0001f42f"),     // :tiger:
+            #endregion
+        }.ToImmutableList();
 
-        public static IReadOnlyList<DiscordEmoji> CardValues = new List<DiscordEmoji>() {
+        public static IReadOnlyList<DiscordEmoji> CardValues => _cards;
+        private static ImmutableList<DiscordEmoji> _cards = new List<DiscordEmoji> {
+            #region CARDS
             DiscordEmoji.FromUnicode("\U0001f1e6"),     // :regional_indicator_a:
             Numbers[1],
             Numbers[2],
@@ -59,16 +71,21 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f1f6"),     // :regional_indicator_q:
             DiscordEmoji.FromUnicode("\U0001f1f0"),     // :regional_indicator_k:
             DiscordEmoji.FromUnicode("\U0001f1e6"),     // :regional_indicator_a:
-        }.AsReadOnly();
+            #endregion
+        }.ToImmutableList();
 
-        public static IReadOnlyList<DiscordEmoji> CardSuits = new List<DiscordEmoji>() {
+        public static IReadOnlyList<DiscordEmoji> CardSuits => _suits;
+        public static ImmutableList<DiscordEmoji> _suits = new List<DiscordEmoji> {
+            #region SUITS
             DiscordEmoji.FromUnicode("\u2660"),         // :spades:
             DiscordEmoji.FromUnicode("\u2663"),         // :clubs:
             DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
             DiscordEmoji.FromUnicode("\u2666"),         // :diamonds:
-        }.AsReadOnly();
+            #endregion
+        }.ToImmutableList();
 
-        // Misc
+
+        #region MISC
         public static DiscordEmoji AlarmClock => DiscordEmoji.FromUnicode("\u23f0");
         public static DiscordEmoji ArrowDown => DiscordEmoji.FromUnicode("\u2b07");
         public static DiscordEmoji ArrowUp => DiscordEmoji.FromUnicode("\u2b06");
@@ -82,8 +99,9 @@ namespace TheGodfather.Common
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
         public static DiscordEmoji Tada => DiscordEmoji.FromUnicode("\U0001f389");
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
+        #endregion
 
-        // Games emoji
+        #region GAMES
         public static DiscordEmoji Bicyclist => DiscordEmoji.FromUnicode("\U0001f6b4");
         public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
         public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
@@ -105,8 +123,9 @@ namespace TheGodfather.Common
 
         public static DiscordEmoji GetRandomDuelWeapon()
             => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];
+        #endregion
 
-        // Slot machine
+        #region SLOTS
         public static DiscordEmoji Peach => DiscordEmoji.FromUnicode("\U0001f351");
         public static DiscordEmoji MoneyBag => DiscordEmoji.FromUnicode("\U0001f4b0");
         public static DiscordEmoji Gift => DiscordEmoji.FromUnicode("\U0001f381");
@@ -116,13 +135,15 @@ namespace TheGodfather.Common
         public static DiscordEmoji SmallOrangeDiamond => DiscordEmoji.FromUnicode("\U0001f538");
         public static DiscordEmoji Seven => DiscordEmoji.FromUnicode("7\u20e3");
         public static DiscordEmoji Cherries => DiscordEmoji.FromUnicode("\U0001f352");
+        #endregion
 
-        // Weather emoji
+        #region WEATHER
         public static DiscordEmoji Cloud => DiscordEmoji.FromUnicode("\u2601");
         public static DiscordEmoji Drops => DiscordEmoji.FromUnicode("\U0001f4a6");
         public static DiscordEmoji Globe => DiscordEmoji.FromUnicode("\U0001f30d");
         public static DiscordEmoji Ruler => DiscordEmoji.FromUnicode("\U0001f4cf");
         public static DiscordEmoji Thermometer => DiscordEmoji.FromUnicode("\U0001f321");
         public static DiscordEmoji Wind => DiscordEmoji.FromUnicode("\U0001f4a8");
+        #endregion
     }
 }

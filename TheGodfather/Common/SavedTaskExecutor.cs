@@ -113,7 +113,7 @@ namespace TheGodfather.Common
                         else
                             channel = await this.client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
-                        await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                        await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                             Description = $"{StaticDiscordEmoji.X} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
                             Color = DiscordColor.Red
                         });
@@ -153,7 +153,7 @@ namespace TheGodfather.Common
                             this.shared.RemindExecuters.TryRemove(smti.InitiatorId, out ConcurrentDictionary<int, SavedTaskExecutor> _);
                     }
                     using (DatabaseContext db = this.dbb.CreateContext()) {
-                        db.Reminders.Remove(new DatabaseReminder() { Id = this.Id });
+                        db.Reminders.Remove(new DatabaseReminder { Id = this.Id });
                         await db.SaveChangesAsync();
                     }
                     if (!(ex is null))
@@ -163,7 +163,7 @@ namespace TheGodfather.Common
                 case UnmuteTaskInfo _:
                     this.shared.TaskExecuters.TryRemove(this.Id, out SavedTaskExecutor _);
                     using (DatabaseContext db = this.dbb.CreateContext()) {
-                        db.SavedTasks.Remove(new DatabaseSavedTask() { Id = this.Id });
+                        db.SavedTasks.Remove(new DatabaseSavedTask { Id = this.Id });
                         await db.SaveChangesAsync();
                     }
                     break;
@@ -185,7 +185,7 @@ namespace TheGodfather.Common
                 else
                     channel = this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
-                this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                     Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));

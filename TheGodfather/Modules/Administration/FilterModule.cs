@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Administration
                             throw new ConcurrentOperationException("Failed to create filter data structure for this guild. This is bad!");
                     }
 
-                    var filter = new DatabaseFilter() { GuildId = ctx.Guild.Id, Trigger = regexString };
+                    var filter = new DatabaseFilter { GuildId = ctx.Guild.Id, Trigger = regexString };
                     db.Filters.Add(filter);
                     await db.SaveChangesAsync();
 
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Filter addition occured",
                     Color = this.ModuleColor
                 };
@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Administration
                         eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
                         continue;
                     }
-                    db.Filters.Remove(new DatabaseFilter() { GuildId = ctx.Guild.Id, Id = id });
+                    db.Filters.Remove(new DatabaseFilter { GuildId = ctx.Guild.Id, Id = id });
                 }
 
                 await db.SaveChangesAsync();
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Filter deletion occured",
                     Color = this.ModuleColor
                 };
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
             
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "Filter deletion occured",
                     Color = this.ModuleColor
                 };
@@ -241,7 +241,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder() {
+                var emb = new DiscordEmbedBuilder {
                     Title = "All filters have been deleted",
                     Color = this.ModuleColor
                 };

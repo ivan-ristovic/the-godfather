@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Games
             {
                 if (results.Any()) {
                     IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = results.OrderByDescending(kvp => kvp.Value);
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                         Title = "Results",
                         Description = string.Join("\n", ordered.Select(kvp => $"{kvp.Key.Mention} : {kvp.Value}")),
                         Color = this.ModuleColor

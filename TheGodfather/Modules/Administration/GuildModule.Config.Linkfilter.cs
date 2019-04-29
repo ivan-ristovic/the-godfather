@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     LinkfilterSettings settings = this.Shared.GetGuildConfig(ctx.Guild.Id).LinkfilterSettings;
                     if (settings.Enabled) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Linkfilter modules for this guild",
                             Color = this.ModuleColor
                         };
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder() {
+                        var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
                             Color = this.ModuleColor
                         };

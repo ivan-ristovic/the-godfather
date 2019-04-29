@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
             sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" tictactoe");
             sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" typingrace");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Available games:",
                 Description = sb.ToString(),
                 Color = this.ModuleColor,
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Games
             using (DatabaseContext db = this.Database.CreateContext()) {
                 DatabaseGameStats stats = await db.GameStats.FindAsync((long)user.Id);
                 if (stats is null) {
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                         Title = $"Stats for {user.Username}",
                         Description = "No games played yet!",
                         ThumbnailUrl = user.AvatarUrl,

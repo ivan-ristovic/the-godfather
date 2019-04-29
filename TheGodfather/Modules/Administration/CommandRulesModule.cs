@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
                 } else {
                     db.CommandRules.AddRange(channels
                         .Distinct()
-                        .Select(c => new DatabaseCommandRule() {
+                        .Select(c => new DatabaseCommandRule {
                             Allowed = allow,
                             ChannelId = c.Id,
                             Command = cmd.QualifiedName,
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (!allow || channels.Any()) {
-                    var dbrule = new DatabaseCommandRule() {
+                    var dbrule = new DatabaseCommandRule {
                         Allowed = false,
                         ChannelId = 0,
                         Command = cmd.QualifiedName,

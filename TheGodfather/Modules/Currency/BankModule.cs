@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Currency
                 balance = account?.Balance;
             }
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.MoneyBag} Bank account for {user.Username}",
                 Color = this.ModuleColor,
                 ThumbnailUrl = user.AvatarUrl
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Currency
         {
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
-                    db.BankAccounts.Add(new DatabaseBankAccount() { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
+                    db.BankAccounts.Add(new DatabaseBankAccount { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
                 else
                     throw new CommandFailedException("You already own an account in WM bank!");
 
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Currency
                 }
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = $"Wealthiest users for guild {ctx.Guild.Name}",
                 Description = sb.ToString(),
                 Color = this.ModuleColor
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Currency
                 }
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Globally wealthiest users:",
                 Description = sb.ToString(),
                 Color = this.ModuleColor

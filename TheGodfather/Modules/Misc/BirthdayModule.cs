@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("I can only send birthday notifications in a text channel.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Birthdays.Add(new DatabaseBirthday() {
+                db.Birthdays.Add(new DatabaseBirthday {
                     ChannelId = channel.Id,
                     Date = date,
                     GuildId = ctx.Guild.Id,

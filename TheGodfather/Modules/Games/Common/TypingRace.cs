@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Games.Common
     public class TypingRace : ChannelEvent
     {
         private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);
-        private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char>() {
+        private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char> {
         #region REPLACEMENTS
             {'`', '\''},
             {'’', '\''},
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Games.Common
                   .AppendLine($"{Formatter.Bold(result.ToString())} errors");
             }
 
-            return new DiscordEmbedBuilder() {
+            return new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.Joystick} Typing race results:",
                 Description = sb.ToString(),
                 Color = DiscordColor.Green

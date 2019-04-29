@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration.Extensions
         {
             set.AddRange(exempts
                 .Where(e => !set.Where(dbe => dbe.GuildId == gid).Any(dbe => dbe.Type == type && dbe.Id == e.Id))
-                .Select(e => new TEntity() {
+                .Select(e => new TEntity {
                     GuildId = gid,
                     Id = e.Id,
                     Type = type

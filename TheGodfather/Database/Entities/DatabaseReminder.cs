@@ -17,7 +17,7 @@ namespace TheGodfather.Database.Entities
             if (smti is null)
                 return null;
 
-            var dbr = new DatabaseReminder() {
+            var dbr = new DatabaseReminder {
                 ChannelId = smti.ChannelId,
                 ExecutionTime = tinfo.ExecutionTime.UtcDateTime,
                 IsRepeating = smti.IsRepeating,

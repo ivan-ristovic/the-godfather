@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Currency.Common
             int[,] res = Roll();
             won = EvaluateSlotResult(res, bid);
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.LargeOrangeDiamond} SLUT MACHINE {StaticDiscordEmoji.LargeOrangeDiamond}",
                 Description = MakeStringFromResult(res),
                 Color = DiscordColor.DarkGreen,

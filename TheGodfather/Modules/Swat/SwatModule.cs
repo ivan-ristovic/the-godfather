@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Swat
         public async Task ServerlistAsync(CommandContext ctx,
                                          [Description("Server name group.")] string group = null)
         {
-            var em = new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder {
                 Title = "Servers",
                 Color = this.ModuleColor,
                 Url = "https://swat4stats.com/servers/"

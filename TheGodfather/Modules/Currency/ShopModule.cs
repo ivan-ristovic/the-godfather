@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Currency
                 throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
-                db.PurchasableItems.Add(new DatabasePurchasableItem() {
+                db.PurchasableItems.Add(new DatabasePurchasableItem {
                     GuildId = ctx.Guild.Id,
                     Name = name,
                     Price = price
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Currency
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
 
-                db.PurchasedItems.Add(new DatabasePurchasedItem() {
+                db.PurchasedItems.Add(new DatabasePurchasedItem {
                     ItemId = item.Id,
                     UserId = ctx.User.Id
                 });
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Currency
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
 
-                db.PurchasedItems.Add(new DatabasePurchasedItem() {
+                db.PurchasedItems.Add(new DatabasePurchasedItem {
                     ItemId = item.Id,
                     UserId = ctx.User.Id
                 });
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Currency
 
             using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (int id in ids.Distinct()) {
-                    var item = new DatabasePurchasableItem() { Id = id, GuildId = ctx.Guild.Id };
+                    var item = new DatabasePurchasableItem { Id = id, GuildId = ctx.Guild.Id };
                     if (db.PurchasableItems.Contains(item))
                         db.PurchasableItems.Remove(item);
                 }

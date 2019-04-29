@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.Headphones} {this.Title}",
                 ThumbnailUrl = this.Thumbnail,
                 Url = Query

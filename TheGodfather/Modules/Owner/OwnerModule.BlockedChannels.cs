@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedChannels.Add(new DatabaseBlockedChannel() {
+                        db.BlockedChannels.Add(new DatabaseBlockedChannel {
                             ChannelId = channel.Id,
                             Reason = reason
                         });
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Owner
                             continue;
                         }
 
-                        db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelId = channel.Id });
+                        db.BlockedChannels.Remove(new DatabaseBlockedChannel { ChannelId = channel.Id });
                     }
 
                     await db.SaveChangesAsync();
@@ -168,14 +168,14 @@ namespace TheGodfather.Modules.Owner
                         this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 blocked channel with ID {chn.ChannelId}");
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
                         using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb });
+                            db.BlockedChannels.Remove(new DatabaseBlockedChannel { ChannelIdDb = chn.ChannelIdDb });
                             await db.SaveChangesAsync();
                         }
                     } catch (UnauthorizedException) {
                         this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 403 blocked channel with ID {chn.ChannelId}");
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
                         using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.BlockedChannels.Remove(new DatabaseBlockedChannel() { ChannelIdDb = chn.ChannelIdDb});
+                            db.BlockedChannels.Remove(new DatabaseBlockedChannel { ChannelIdDb = chn.ChannelIdDb});
                             await db.SaveChangesAsync();
                         }
                     }

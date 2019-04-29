@@ -240,7 +240,7 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = channel.ToString(),
                 Description = $"Current channel topic: {Formatter.Italic(string.IsNullOrWhiteSpace(channel.Topic) ? "None" : channel.Topic)}",
                 Color = this.ModuleColor
@@ -545,7 +545,7 @@ namespace TheGodfather.Modules.Administration
             if (member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 perms = member.PermissionsIn(channel).ToPermissionString();
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = $"Permissions for {member.ToString()} in {channel.ToString()}:",
                 Description = perms,
                 Color = this.ModuleColor
@@ -577,7 +577,7 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = $"Permissions for {role.ToString()} in {channel.ToString()}:",
                 Color = this.ModuleColor
             };

@@ -26,7 +26,7 @@ namespace TheGodfather.EventListeners
 
         public static DiscordEmbedBuilder FormEmbedBuilder(EventOrigin origin, string title, string desc = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = title
             };
 

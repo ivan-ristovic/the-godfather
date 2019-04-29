@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Swat.Extensions
     {
         public static DiscordEmbed ToDiscordEmbed(this SwatServerInfo info, DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Url = $"https://swat4stats.com/servers/{ info.Ip }:{ info.JoinPort }",
                 Title = info.HostName,
                 Description = $"{info.Ip}:{info.JoinPort}"

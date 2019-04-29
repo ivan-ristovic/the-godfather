@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Polls.Common
 {
     public class ReactionsPoll : Poll
     {
-        private static readonly ImmutableDictionary<string, int> _emojiid = new Dictionary<string, int>() {
+        private static readonly ImmutableDictionary<string, int> _emojiid = new Dictionary<string, int> {
             { "1\u20e3" , 0 }, { ":one:" , 0 },
             { "2\u20e3" , 1 }, { ":two:" , 1 },
             { "3\u20e3" , 2 }, { ":three:" , 2 },
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Polls.Common
 
         public override DiscordEmbed ToDiscordEmbed()
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = Question,
                 Description = "Vote by clicking on the reactions!",
                 Color = DiscordColor.Orange
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Polls.Common
 
         public override DiscordEmbed ResultsToDiscordEmbed()
         {
-            var emb = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder {
                 Title = this.Question + " (results)",
                 Color = DiscordColor.Orange
             };
