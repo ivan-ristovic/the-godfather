@@ -64,4 +64,7 @@ echo "!> Updating database... "
 dotnet ef database update > /dev/null 2>&1
 
 echo "!> All done! Starting the bot... "
-dotnet run
+until dotnet run; do
+	echo "!> TheGodfather crashed with exit code $?. Relaunching in 5 seconds..." >&2
+	sleep 5
+done

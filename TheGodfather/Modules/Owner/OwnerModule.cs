@@ -586,18 +586,14 @@ namespace TheGodfather.Modules.Owner
         [UsageExampleArgs("10s")]
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
-                             [Description("Time until shutdown.")] TimeSpan timespan)
-        {
-            this.Shared.MainLoopCts.CancelAfter(timespan);
-            return Task.CompletedTask;
-        }
+                             [Description("Time until shutdown.")] TimeSpan timespan,
+                             [Description("Exit code.")] int exitCode = 0)
+            => TheGodfather.Stop(exitCode, timespan);
 
         [Command("shutdown"), Priority(0)]
-        public Task ExitAsync(CommandContext _)
-        {
-            this.Shared.MainLoopCts.Cancel();
-            return Task.CompletedTask;
-        }
+        public Task ExitAsync(CommandContext _,
+                             [Description("Exit code.")] int exitCode = 0)
+            => TheGodfather.Stop(exitCode);
         #endregion
 
         #region COMMAND_SUDO
