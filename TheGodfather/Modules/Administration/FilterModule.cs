@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration
                     }
 
                     if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters)) {
-                        if (existingFilters.Any(f => f.Trigger.ToString() == regex.ToString())) {
+                        if (existingFilters.Any(f => f.BaseRegexString == regex.ToString())) {
                             eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                             continue;
                         }
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
                     db.Filters.Add(filter);
                     await db.SaveChangesAsync();
 
-                    if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regex)))
+                    if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regexString)))
                         eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
                 }
             }
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration
             var eb = new StringBuilder();
             using (DatabaseContext db = this.Database.CreateContext()) {
                 foreach (string regexString in filters) {
-                    string filterString = Filter.Wrap(regexString);
+                    string filterString = regexString.CreateWordBoundaryRegex().ToString();
                     if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
                         eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} does not exist.");
                         continue;
@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Administration
             return ctx.SendCollectionInPagesAsync(
                 $"Filters registered for {ctx.Guild.Name}",
                 this.Shared.Filters[ctx.Guild.Id].OrderBy(f => f.Id),
-                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.GetBaseRegexString())}",
+                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.BaseRegexString)}",
                 this.ModuleColor
             );
         }

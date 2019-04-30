@@ -25,7 +25,7 @@ namespace TheGodfather.Database.Entities
         public string RegexString { get; set; }
 
         [NotMapped]
-        public Regex Regex => this.RegexString.CreateRegex();
+        public Regex Regex => this.RegexString.CreateWordBoundaryRegex();
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }

@@ -12,12 +12,11 @@ namespace TheGodfather.Modules.Reactions.Common
 {
     public abstract class Reaction : IEquatable<Reaction>
     {
-        private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
 
         public int Id { get; }
         public string Response { get; }
         public int RegexCount => this.triggerRegexes.Count;
-        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => _wordBoundaryRegex.Replace(rgx.ToString(), ""));
+        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => rgx.ToString().RemoveWordBoundaryEscapes());
         public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
 
         private readonly ConcurrentHashSet<Regex> triggerRegexes;

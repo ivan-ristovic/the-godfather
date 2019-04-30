@@ -1,5 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System.Text.RegularExpressions;
+
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Common
@@ -9,27 +11,15 @@ namespace TheGodfather.Modules.Administration.Common
         public int Id { get; }
         public Regex Trigger { get; }
 
-        public static string Wrap(string str)
-            => $@"\b{str}\b";
-
-        public static string Unwrap(string str)
-            => str.Replace(@"\b", "");
-
 
         public Filter(int id, string trigger)
         {
             this.Id = id;
-            this.Trigger = new Regex(Wrap(trigger));
+            this.Trigger = trigger.CreateWordBoundaryRegex();
         }
 
-        public Filter(int id, Regex trigger)
-        {
-            this.Id = id;
-            this.Trigger = trigger;
-        }
 
-        public string GetBaseRegexString() 
-            => Unwrap(this.Trigger.ToString());
+        public string BaseRegexString => this.Trigger.ToString().RemoveWordBoundaryEscapes();
     }
 }
 

@@ -351,7 +351,7 @@ namespace TheGodfather.Modules.Reactions
         #region HELPER_FUNCTIONS
         private async Task AddEmojiReactionAsync(CommandContext ctx, DiscordEmoji emoji, bool regex, params string[] triggers)
         {
-            if (!ctx.Guild.Emojis.Values.Contains(emoji))
+            if (emoji is DiscordGuildEmoji && !ctx.Guild.Emojis.Values.Contains(emoji))
                 throw new CommandFailedException("The reaction has to be an emoji from this guild.");
 
             if (triggers is null || !triggers.Any())

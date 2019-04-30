@@ -8,6 +8,9 @@ namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
+        private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
+
+
         public static bool IsValidRegex(this string pattern)
         {
             if (string.IsNullOrEmpty(pattern))
@@ -65,23 +68,23 @@ namespace TheGodfather.Extensions
             if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
                 return false;
 
-            result = CreateRegex(pattern, escape: false);
+            result = CreateWordBoundaryRegex(pattern, escape: false);
             return true;
         }
 
-        public static Regex CreateRegex(this string pattern, bool escape = false)
+        public static Regex CreateWordBoundaryRegex(this string pattern, bool escape = false)
         {
             string rstr = pattern.ToLowerInvariant();
-            if (char.IsLetterOrDigit(pattern.First()))
-                rstr = $@"\b{rstr}";
-            else
-                rstr = $@"(^|\s){rstr}";
-            if (char.IsLetterOrDigit(pattern.Last()))
-                rstr = $@"{rstr}\b";
-            else
-                rstr = $@"{rstr}($|\s)";
-
+            char fst = pattern[0];
+            char lst = pattern[pattern.Length - 1];
+            rstr = $"{(char.IsLetterOrDigit(fst) ? @"\b" : @"(^|\s)")}({rstr}){(char.IsLetterOrDigit(lst) ? @"\b" : @"($|\s)")}";
             return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
+        }
+
+        public static string RemoveWordBoundaryEscapes(this string str)
+        {
+            string unbounded = _wordBoundaryRegex.Replace(str, "");
+            return unbounded.Substring(1, unbounded.Length - 2);
         }
     }
 }
