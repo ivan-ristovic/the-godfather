@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException("I failed to send you the token in private.");
                     await dm.SendMessageAsync($"Token for webhook {Formatter.Bold(wh.Name)} in {Formatter.Bold(ctx.Guild.ToString())}, {Formatter.Bold(channel.ToString())}: {Formatter.BlockCode(wh.Token)}\nWebhook URL: {wh.BuildUrlString()}");
                 } catch {
-
+                    // Failed to create DM or insufficient perms to send
                 }
             }
 

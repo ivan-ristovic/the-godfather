@@ -190,7 +190,7 @@ namespace TheGodfather.Common
                     Color = DiscordColor.Orange
                 }));
             } catch (UnauthorizedException) {
-
+                // Do nothing, user has disabled DM in meantime
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
@@ -212,7 +212,7 @@ namespace TheGodfather.Common
                 DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
             } catch (UnauthorizedException) {
-
+                // Do nothing, perms to unban removed in meantime
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {
@@ -236,7 +236,7 @@ namespace TheGodfather.Common
                     return;
                 this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
             } catch (UnauthorizedException) {
-
+                // Do nothing, perms to unmute removed in meantime
             } catch (Exception e) {
                 this.shared.LogProvider.Log(LogLevel.Warning, e);
             } finally {

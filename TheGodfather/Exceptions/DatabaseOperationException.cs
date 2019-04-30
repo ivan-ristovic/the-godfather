@@ -8,8 +8,7 @@ namespace TheGodfather.Exceptions
 {
     public class DatabaseOperationException : NpgsqlException
     {
-        public DatabaseOperationException() 
-            : base()
+        public DatabaseOperationException()
         {
 
         }

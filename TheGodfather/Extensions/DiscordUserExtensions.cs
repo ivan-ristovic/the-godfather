@@ -14,8 +14,8 @@ namespace TheGodfather.Extensions
             try {
                 DiscordMember m = await g.GetMemberAsync(u.Id);
                 return true;
-            } catch (Exception) {
-
+            } catch {
+                // Not found
             }
             return false;
         }

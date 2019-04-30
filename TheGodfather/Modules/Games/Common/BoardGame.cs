@@ -16,8 +16,8 @@ namespace TheGodfather.Modules.Games.Common
         protected readonly int SizeY;
         protected readonly int SizeX;
         protected int[,] board;
-        protected bool deleteErrored = false;
-        protected int move = 0;
+        protected bool deleteErrored;
+        protected int move;
         protected TimeSpan moveTime;
         protected DiscordMessage msgHandle;
         protected DiscordUser player1;
@@ -38,12 +38,7 @@ namespace TheGodfather.Modules.Games.Common
 
 
         protected int BoardElementAt(int row, int col)
-        {
-            if (col >= 0 && col < this.SizeY && row >= 0 && row < this.SizeX)
-                return this.board[row, col];
-            else
-                return -1;
-        }
+            => (col >= 0 && col < this.SizeY && row >= 0 && row < this.SizeX) ? this.board[row, col] : -1;
 
 
         public sealed override async Task RunAsync()
@@ -79,7 +74,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (xm.Channel.Id != this.Channel.Id || xm.Author.IsBot) return false;
                     if (player1plays && (xm.Author.Id != this.player1.Id)) return false;
                     if (!player1plays && (xm.Author.Id != this.player2.Id)) return false;
-                    string[] split = xm.Content.Split(' ');
+                    string[] split = xm.Content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     if (split.Length < 2) return false;
                     if (!int.TryParse(split[0], out row)) return false;
                     if (!int.TryParse(split[1], out col)) return false;
