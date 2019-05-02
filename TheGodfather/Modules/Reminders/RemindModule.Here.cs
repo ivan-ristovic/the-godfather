@@ -27,11 +27,15 @@ namespace TheGodfather.Modules.Reminders
             }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(1)]
             new public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Time span until reminder.")] TimeSpan timespan,
                                              [RemainingText, Description("What to send?")] string message)
                 => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
+
+            [GroupCommand, Priority(0)]
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => this.ListAsync(ctx, ctx.Channel);
 
 
             [Group("in")]
@@ -45,7 +49,7 @@ namespace TheGodfather.Modules.Reminders
                 {
                     this.ModuleColor = DiscordColor.NotQuiteBlack;
                 }
-                
+
 
                 [GroupCommand]
                 new public Task ExecuteGroupAsync(CommandContext ctx,
@@ -66,7 +70,7 @@ namespace TheGodfather.Modules.Reminders
                 {
                     this.ModuleColor = DiscordColor.NotQuiteBlack;
                 }
-                
+
 
                 [GroupCommand, Priority(0)]
                 public Task ExecuteGroupAsync(CommandContext ctx,

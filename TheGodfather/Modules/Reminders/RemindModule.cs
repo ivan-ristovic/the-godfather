@@ -8,6 +8,7 @@ using Humanizer;
 using Humanizer.Localisation;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Reminders
         {
             this.ModuleColor = DiscordColor.LightGray;
         }
-  
+
 
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -59,8 +60,9 @@ namespace TheGodfather.Modules.Reminders
             => this.AddReminderAsync(ctx, timespan, null, message);
 
         [GroupCommand, Priority(0)]
-        public Task ExecuteGroupAsync(CommandContext ctx)
-            => this.ListAsync(ctx);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Channel for which to list the reminders.")] DiscordChannel channel = null)
+            => channel is null ? this.ListAsync(ctx) : this.ListAsync(ctx, channel);
 
 
 
@@ -121,12 +123,40 @@ namespace TheGodfather.Modules.Reminders
         #endregion
 
         #region COMMAND_REMIND_LIST
-        [Command("list")]
+        [Command("list"), Priority(1)]
         [Description("Lists your reminders.")]
         [Aliases("ls")]
+        public Task ListAsync(CommandContext ctx,
+                             [Description("Channel for which to list the reminders.")] DiscordChannel channel)
+        {
+            if (channel.Type != ChannelType.Text)
+                throw new InvalidCommandUsageException("Reminders can only be issued for text channels.");
+
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs) || !texecs.Values.Any(t => (t.TaskInfo as SendMessageTaskInfo).ChannelId == channel.Id))
+                throw new CommandFailedException("No reminders are scheduled for that channel.");
+
+            return ctx.SendCollectionInPagesAsync(
+                $"Reminders for channel {channel.Name}:",
+                texecs.Values
+                    .Select(t => (TaskId: t.Id, TaskInfo: t.TaskInfo as SendMessageTaskInfo))
+                    .Where(tup => tup.TaskInfo.ChannelId == channel.Id)
+                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
+                tup => {
+                    (int id, SendMessageTaskInfo tinfo) = tup;
+                    if (tinfo.IsRepeating)
+                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
+                    else
+                        return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
+                },
+                this.ModuleColor,
+                1
+            );
+        }
+
+        [Command("list"), Priority(0)]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs) || !texecs.Values.Any(t => ((SendMessageTaskInfo)t.TaskInfo).InitiatorId == ctx.User.Id))
+            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs))
                 throw new CommandFailedException("You haven't issued any reminders.");
 
             return ctx.SendCollectionInPagesAsync(
