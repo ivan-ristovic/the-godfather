@@ -39,8 +39,6 @@ namespace TheGodfather
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
 
-        private static int ExitCode { get; set; }
-
         #region TIMERS
         private static Timer BotStatusUpdateTimer { get; set; }
         private static Timer DatabaseSyncTimer { get; set; }
@@ -74,15 +72,16 @@ namespace TheGodfather
                 if (!(e.InnerException is null))
                     Console.WriteLine($"Inner exception: {e.InnerException.GetType()} :\n{e.InnerException.Message}");
                 Console.ReadKey();
+                Environment.ExitCode = 1;
             }
             Console.WriteLine("\nPowering off...");
-            Environment.Exit(ExitCode);
+            Environment.Exit(Environment.ExitCode);
         }
 
 
         internal static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
-            ExitCode = exitCode;
+            Environment.ExitCode = exitCode;
             SharedData.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
             return Task.CompletedTask;
         }

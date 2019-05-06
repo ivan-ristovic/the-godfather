@@ -33,7 +33,7 @@ namespace TheGodfather.Common
         {
             this.emb.WithColor(DiscordColor.SpringGreen);
 
-            string desc = $"Listing all commands and groups. Use {Formatter.InlineCode("!help <command>")} for detailed information.";
+            string desc = $"Listing all commands and groups. Use command {Formatter.InlineCode("help <command>")} for detailed information about the given command.";
             if (!string.IsNullOrWhiteSpace(this.name)) {
                 this.emb.WithTitle(this.name);
                 desc = string.IsNullOrWhiteSpace(this.description) ? "No description provided." : this.description;
