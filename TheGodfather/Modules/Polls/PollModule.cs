@@ -79,12 +79,14 @@ namespace TheGodfather.Modules.Polls
         [Command("stop")]
         [Description("Stops a running poll.")]
         [Aliases("end", "cancel")]
-        [RequireUserPermissions(Permissions.Administrator)]
         public Task StopAsync(CommandContext ctx)
         {
             Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
             if (poll is null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
+
+            if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User.Id != poll.Initiator.Id)
+                throw new CommandFailedException("You do not have the sufficient permissions to close another person's poll!");
 
             poll.Stop();
 
