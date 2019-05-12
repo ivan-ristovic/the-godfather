@@ -59,9 +59,6 @@ namespace TheGodfather.Modules.Games
 
                 try {
                     await duel.RunAsync();
-
-                    await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
-
                     await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
                     if (duel.Winner.Id == ctx.User.Id)
                         await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);

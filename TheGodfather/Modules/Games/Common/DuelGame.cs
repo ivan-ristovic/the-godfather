@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 
 using System;
@@ -52,9 +53,8 @@ namespace TheGodfather.Modules.Games.Common
                 await this.AdvanceAsync();
 
             this.Winner = this.hp1 > 0 ? this.player1 : this.player2;
-
-            await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}");
             this.FinishingMove = await this.WaitForFinishingMoveAsync();
+            await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention} {this.FinishingMove ?? "wins"}!");
         }
 
         private async Task AdvanceAsync()
@@ -80,10 +80,10 @@ namespace TheGodfather.Modules.Games.Common
         {
             int damage = 1;
             if (GFRandom.Generator.NextBool()) {
-                this.eb.AppendLine($"{this.player1.Username} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player2.Username}");
+                this.eb.AppendLine($"{this.player1.Mention} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player2.Mention}");
                 this.hp2 -= damage;
             } else {
-                this.eb.AppendLine($"{this.player2.Username} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player1.Username}");
+                this.eb.AppendLine($"{this.player2.Mention} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player1.Mention}");
                 this.hp1 -= damage;
             }
         }
@@ -104,23 +104,33 @@ namespace TheGodfather.Modules.Games.Common
                 if (mctx.Result.Author.Id == this.player1.Id) {
                     this.hp1 = (this.hp1 + 1 > 5) ? 5 : this.hp1 + 1;
                     this.potionUsed1 = true;
-                    this.eb.AppendLine($"{this.player1.Username} {StaticDiscordEmoji.Syringe}");
+                    this.eb.AppendLine($"{this.player1.Mention} {StaticDiscordEmoji.Syringe}");
                 } else {
                     this.hp2 = (this.hp2 + 1 > 5) ? 5 : this.hp2 + 1;
                     this.potionUsed2 = true;
-                    this.eb.AppendLine($"{this.player2.Username} {StaticDiscordEmoji.Syringe}");
+                    this.eb.AppendLine($"{this.player2.Mention} {StaticDiscordEmoji.Syringe}");
                 }
             }
         }
 
         private async Task<string> WaitForFinishingMoveAsync()
         {
+            DiscordMessage msg = await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}");
+
             InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
-                m => m.ChannelId == this.Channel.Id && m.Author.Id == this.Winner.Id
+                m => m.ChannelId == this.Channel.Id && m.Author.Id == this.Winner.Id,
+                TimeSpan.FromSeconds(15)
             );
 
             if (mctx.TimedOut || string.IsNullOrWhiteSpace(mctx.Result.Content))
                 return null;
+
+            try {
+                await msg.DeleteAsync();
+                await mctx.Result.DeleteAsync();
+            } catch (Exception e) when (e is UnauthorizedException || e is NotFoundException) {
+                // No permissions to delete the messages
+            }
 
             return mctx.Result.Content.Trim();
         }
