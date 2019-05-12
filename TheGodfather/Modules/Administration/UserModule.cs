@@ -245,7 +245,29 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You can't kick yourself.");
 
             await member.RemoveAsync(reason: ctx.BuildInvocationDetailsString(reason));
-            await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("kicked")} {member.Mention}!");
+            await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("kicked")} {member.Mention}!", important: false);
+        }
+        #endregion
+
+        #region COMMAND_USER_KICKVOICE
+        [Command("kickvoice")]
+        [Description("Kicks the member from the voice channels.")]
+        [Aliases("kv")]
+        [UsageExampleArgs("@Someone", "@Someone Troublemaker")]
+        [RequirePermissions(Permissions.MuteMembers)]
+        public async Task KickVoiceAsync(CommandContext ctx,
+                                        [Description("Member.")] DiscordMember member,
+                                        [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (ctx.Channel.PermissionsFor(member).HasPermission(Permissions.Administrator))
+                throw new CommandFailedException("You cannot kick administrators from the voice channels.");
+
+            await member.ModifyAsync(m => {
+                m.VoiceChannel = null;
+                m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
+            });
+
+            await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("kicked")} {member.Mention} from the voice channels!", important: false);
         }
         #endregion
 

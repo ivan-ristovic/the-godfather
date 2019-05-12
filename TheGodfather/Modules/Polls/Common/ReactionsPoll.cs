@@ -70,9 +70,9 @@ namespace TheGodfather.Modules.Polls.Common
 
             if (this.endTime != null) {
                 if (this.TimeUntilEnd.TotalSeconds > 1)
-                    emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})", this.sender.AvatarUrl);
+                    emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})", this.Initiator.AvatarUrl);
                 else
-                    emb.WithFooter($"Poll ended.", this.sender.AvatarUrl);
+                    emb.WithFooter($"Poll ended.", this.Initiator.AvatarUrl);
             }
 
             return emb.Build();
@@ -85,12 +85,12 @@ namespace TheGodfather.Modules.Polls.Common
                 Color = DiscordColor.Orange
             };
 
-            emb.WithFooter($"Poll by {this.sender.DisplayName}", this.sender.AvatarUrl);
+            emb.WithFooter($"Poll by {this.Initiator.DisplayName}", this.Initiator.AvatarUrl);
 
             if (!this.results.Any())
                 return emb.WithDescription("Nobody voted!").Build();
 
-            foreach (PollEmoji pe in results) 
+            foreach (PollEmoji pe in this.results) 
                 emb.AddField(this.Options[_emojiid[pe.Emoji.Name]], pe.Voted.Count.ToString(), inline: true);
 
             return emb.Build();
