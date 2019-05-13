@@ -34,21 +34,27 @@ namespace TheGodfather.Modules.Misc
         }
 
 
+        [GroupCommand, Priority(3)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Whose birthday to search for.")] DiscordUser user)
+            => this.ListAsync(ctx, user);
+
         [GroupCommand, Priority(2)]
-        public Task ExecuteGroupAsync(CommandContext ctx)
-            => this.ListAsync(ctx);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Channel for which to list the birthdays.")] DiscordChannel channel = null)
+            => this.ListAsync(ctx, channel);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel,
                                      [Description("Birth date.")] string date = null)
             => this.AddAsync(ctx, user, date, channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Birth date.")] string date = null,
+                                     [Description("Birth date.")] string date,
                                      [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
             => this.AddAsync(ctx, user, date, channel);
 
@@ -128,11 +134,31 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_BIRTHDAY_LIST
-        [Command("list")]
+        [Command("list"), Priority(1)]
+        public async Task ListAsync(CommandContext ctx,
+                                   [Description("Whose birthday to search for.")] DiscordUser user)
+        {
+            List<DatabaseBirthday> birthdays;
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                birthdays = await db.Birthdays
+                    .Where(b => b.GuildId == ctx.Guild.Id && b.UserId == user.Id)
+                    .ToListAsync();
+            }
+
+            await ctx.SendCollectionInPagesAsync(
+                $"Birthdays registered for {user.Username}:",
+                birthdays,
+                b => $"{Formatter.InlineCode(b.Date.ToShortDateString())} | Channel: {b.ChannelId}",
+                this.ModuleColor,
+                5
+            );
+        }
+
+        [Command("list"), Priority(0)]
         [Description("List registered birthday notifications for this channel.")]
         [Aliases("ls")]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("Channel for which to list.")] DiscordChannel channel = null)
+                                   [Description("Channel for which to list the birthdays.")] DiscordChannel channel = null)
         {
             channel = channel ?? ctx.Channel;
 

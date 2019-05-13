@@ -41,8 +41,11 @@ namespace TheGodfather.Extensions
                 }));
                 start += pageSize;
             }
-            
-            return ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
+
+            if (pages.Count > 1)
+                return ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
+            else
+                return ctx.Channel.SendMessageAsync(content: pages.First().Content, embed: pages.First().Embed);
         }
 
         public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string question, DiscordChannel channel = null, bool reply = true)
