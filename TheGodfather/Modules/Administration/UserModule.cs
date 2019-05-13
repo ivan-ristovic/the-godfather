@@ -171,7 +171,8 @@ namespace TheGodfather.Modules.Administration
             emb.AddField("Hierarchy", member.Hierarchy.ToString(), inline: true);
             emb.AddField("Status", member.Presence is null ? "Offline" : $"{member.Presence.Status} ({member.Presence.ClientStatus.ToUserFriendlyString()})", inline: true);
             emb.AddField("Discriminator", member.Discriminator, inline: true);
-            emb.AddField("Avatar hash", member.AvatarHash, inline: true);
+            if (!string.IsNullOrWhiteSpace(member.AvatarHash))
+                emb.AddField("Avatar hash", member.AvatarHash, inline: true);
             emb.AddField("Created", member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("ID", member.Id.ToString(), inline: true);
             if (!string.IsNullOrWhiteSpace(member.Email))

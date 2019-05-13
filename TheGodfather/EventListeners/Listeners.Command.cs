@@ -56,7 +56,8 @@ namespace TheGodfather.EventListeners
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}",
                 $"Exception: {ex.GetType()}",
                 $"Message: {ex.Message ?? "<no message provided>"}",
-                ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}"
+                ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}",
+                ex.InnerException is null ? "" : $"Inner exception message: {ex.InnerException.Message}"
             );
 
             var emb = new DiscordEmbedBuilder {
