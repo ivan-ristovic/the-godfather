@@ -112,15 +112,5 @@ namespace TheGodfatherTests.Modules.Misc.Services
                 MemeGenService.GenerateMeme("tmp", null, " ")
             );
         }
-
-        [Test]
-        public async Task GetMemeTemplatesAsync()
-        {
-            IReadOnlyList<string> templates = await MemeGenService.GetMemeTemplatesAsync();
-            Assert.IsNotNull(templates);
-            CollectionAssert.AllItemsAreNotNull(templates);
-            CollectionAssert.AllItemsAreUnique(templates);
-            CollectionAssert.IsOrdered(templates);
-        }
     }
 }

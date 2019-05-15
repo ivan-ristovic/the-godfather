@@ -45,4 +45,9 @@
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Games\Services\" />
+    <Folder Include="Modules\Search\Services\" />
+  </ItemGroup>
+
 </Project>
