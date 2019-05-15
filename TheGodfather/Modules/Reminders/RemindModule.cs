@@ -143,10 +143,14 @@ namespace TheGodfather.Modules.Reminders
                     .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
-                    if (tinfo.IsRepeating)
+                    if (tinfo.IsRepeating) {
                         return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
-                    else
-                        return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
+                    } else {
+                        if (tinfo.TimeUntilExecution > TimeSpan.FromDays(1))
+                            return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
+                        else
+                            return $"ID: {Formatter.Bold(id.ToString())} (in {tinfo.TimeUntilExecution.Humanize(precision: 3, minUnit: TimeUnit.Minute)}):{Formatter.BlockCode(tinfo.Message)}";
+                    }
                 },
                 this.ModuleColor,
                 1
@@ -166,10 +170,14 @@ namespace TheGodfather.Modules.Reminders
                     .OrderBy(tup => tup.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
-                    if (tinfo.IsRepeating)
+                    if (tinfo.IsRepeating) {
                         return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
-                    else
-                        return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
+                    } else {
+                        if (tinfo.TimeUntilExecution > TimeSpan.FromDays(1))
+                            return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
+                        else
+                            return $"ID: {Formatter.Bold(id.ToString())} (in {tinfo.TimeUntilExecution.Humanize(precision: 3, minUnit: TimeUnit.Minute)}):{Formatter.BlockCode(tinfo.Message)}";
+                    }
                 },
                 this.ModuleColor,
                 1
