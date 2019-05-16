@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System;
 #endregion
@@ -11,7 +12,8 @@ namespace TheGodfather.Database
         {
             SQLite = 0,
             PostgreSQL = 1,
-            SQLServer = 2
+            SQLServer = 2,
+            InMemoryTestingDatabase = 3
         }
 
 
@@ -51,6 +53,9 @@ namespace TheGodfather.Database
                 case DatabaseProvider.SQLServer:
                     this.ConnectionString = $@"Data Source=(localdb)\ProjectsV13;Initial Catalog={cfg.DatabaseName};Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
                     break;
+                case DatabaseProvider.InMemoryTestingDatabase:
+                    this.ConnectionString = @"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;ConnectRetryCount=0";
+                    break;
                 default:
                     throw new NotSupportedException("Unsupported database provider!");
             }
@@ -61,6 +66,17 @@ namespace TheGodfather.Database
         {
             try {
                 return new DatabaseContext(this.Provider, this.ConnectionString);
+            } catch (Exception e) {
+                Console.WriteLine("Error during database initialization:");
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public DatabaseContext CreateContext(DbContextOptions<DatabaseContext> options)
+        {
+            try {
+                return new DatabaseContext(this.Provider, this.ConnectionString, options);
             } catch (Exception e) {
                 Console.WriteLine("Error during database initialization:");
                 Console.WriteLine(e);

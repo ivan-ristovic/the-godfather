@@ -29,7 +29,9 @@ namespace TheGodfather.Modules.Administration.Extensions
                     .ExecuteReaderAsync(
                         databaseFacade.GetService<IRelationalConnection>(),
                         parameterValues: rawSqlCommand.ParameterValues,
-                        cancellationToken: cancellationToken);
+                        null,
+                        cancellationToken: cancellationToken
+                );
             }
         }
     }
