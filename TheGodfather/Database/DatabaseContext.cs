@@ -58,6 +58,13 @@ namespace TheGodfather.Database
             this.ConnectionString = connectionString;
         }
 
+        public DatabaseContext(DatabaseProvider provider, string connectionString, DbContextOptions<DatabaseContext> options)
+            : base(options)
+        {
+            this.Provider = provider;
+            this.ConnectionString = connectionString;
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -78,6 +85,7 @@ namespace TheGodfather.Database
                     optionsBuilder.UseSqlite(this.ConnectionString);
                     break;
                 case DatabaseProvider.SQLServer:
+                case DatabaseProvider.InMemoryTestingDatabase:
                     optionsBuilder.UseSqlServer(this.ConnectionString);
                     break;
                 default:
