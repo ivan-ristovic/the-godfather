@@ -20,6 +20,7 @@ namespace TheGodfather.Database.Entities
             this.Birthdays = new HashSet<DatabaseBirthday>();
             this.Chickens = new HashSet<DatabaseChicken>();
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
+            this.CommandRules = new HashSet<DatabaseCommandRule>();
             this.EmojiReactions = new HashSet<DatabaseEmojiReaction>();
             this.Filters = new HashSet<DatabaseFilter>();
             this.LoggingExempts = new HashSet<DatabaseExemptLogging>();
@@ -248,6 +249,7 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseBirthday> Birthdays { get; set; }
         public virtual ICollection<DatabaseChicken> Chickens { get; set; }
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
+        public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
         public virtual ICollection<DatabaseEmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<DatabaseFilter> Filters { get; set; }
         public virtual ICollection<DatabaseExemptLogging> LoggingExempts { get; set; }
