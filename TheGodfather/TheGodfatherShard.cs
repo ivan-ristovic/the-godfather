@@ -1,4 +1,11 @@
-﻿using DSharpPlus;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -6,17 +13,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
@@ -52,7 +49,7 @@ namespace TheGodfather
         public SharedData SharedData { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
 
-        public bool IsListening => this.SharedData.ListeningStatus;
+        public bool IsListening => this.SharedData.IsBotListening;
         #endregion
 
 

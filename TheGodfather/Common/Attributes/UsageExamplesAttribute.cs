@@ -1,11 +1,7 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using System;
+﻿using System;
 using System.Linq;
-#endregion
+using DSharpPlus.CommandsNext;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -18,7 +14,7 @@ namespace TheGodfather.Common.Attributes
         public UsageExampleArgsAttribute(params string[] examples)
         {
             if (examples is null)
-                throw new ArgumentException($"No examples provided to {this.GetType().Name}!");
+                throw new ArgumentException($"No usage examples provided to {this.GetType().Name}!");
 
             this.Examples = examples
                 .Where(s => !string.IsNullOrWhiteSpace(s))
@@ -26,7 +22,7 @@ namespace TheGodfather.Common.Attributes
                 .ToArray();
 
             if (!this.Examples.Any())
-                throw new ArgumentException($"Please provide non-empty examples to {this.GetType().Name}!");
+                throw new ArgumentException($"Empty usage examples attribute provided to {this.GetType().Name}!");
         }
 
 
@@ -39,9 +35,13 @@ namespace TheGodfather.Common.Attributes
             string prefix = ctx.Services.GetService<SharedData>().GetGuildPrefix(ctx.Guild.Id);
 
             if (cmd.Overloads.Any(o => o.Arguments.All(a => a.IsOptional)))
-                return string.Join(separator, new[] { "" }.Concat(this.Examples).Select(e => $"{prefix}{cname} {e}"));
+                return string.Join(separator, new[] { "" }.Concat(this.Examples).Select(GenerateExampleString));
             else
-                return string.Join(separator, this.Examples.Select(e => $"{prefix}{cname} {e}"));
+                return string.Join(separator, this.Examples.Select(GenerateExampleString));
+
+
+            string GenerateExampleString(string example)
+                => $"{prefix}{cname} {example}";
         }
     }
 }

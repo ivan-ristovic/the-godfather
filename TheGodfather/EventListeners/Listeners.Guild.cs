@@ -18,7 +18,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildBanAdded)]
         public static async Task GuildBanEventHandlerAsync(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -42,7 +42,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildBanRemoved)]
         public static async Task GuildUnbanEventHandlerAsync(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -127,7 +127,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildIntegrationsUpdated)]
         public static async Task GuildIntegrationsUpdateEventHandlerAsync(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -139,7 +139,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildRoleCreated)]
         public static async Task GuildRoleCreateEventHandlerAsync(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -173,7 +173,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildRoleDeleted)]
         public static async Task GuildRoleDeleteEventHandlerAsync(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -197,7 +197,7 @@ namespace TheGodfather.EventListeners
             if (e.RoleBefore.Position != e.RoleAfter.Position)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -232,7 +232,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildUpdated)]
         public static async Task GuildUpdateEventHandlerAsync(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.GuildAfter);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.GuildAfter);
             if (logchn is null)
                 return;
 
@@ -266,7 +266,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
         public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 

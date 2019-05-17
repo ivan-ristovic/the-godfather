@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Automatic roles change occured",
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Automatic roles change occured",
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All automatic roles have been deleted",

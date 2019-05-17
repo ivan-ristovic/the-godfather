@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Reactions
             int count = treactions.RemoveWhere(tr => ids.Contains(tr.Id));
 
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Reactions
             int count = treactions.RemoveWhere(tr => tr.RegexCount == 0);
 
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
@@ -228,7 +228,7 @@ namespace TheGodfather.Modules.Reactions
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All text reactions have been deleted",
@@ -342,7 +342,7 @@ namespace TheGodfather.Modules.Reactions
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "New text reaction added",

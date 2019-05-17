@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
         {
-            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, e.Guild);
+            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 

@@ -28,5 +28,9 @@ namespace TheGodfather.Database.Entities
 
 
         public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
+
+
+        public bool IsMatchFor(ulong gid, ulong cid)
+            => this.GuildId == gid && (this.ChannelId == cid || this.ChannelId == 0);
     }
 }

@@ -624,8 +624,8 @@ namespace TheGodfather.Modules.Owner
         [RequirePrivilegedUser]
         public Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            this.Shared.ListeningStatus = !this.Shared.ListeningStatus;
-            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}", important: false);
+            this.Shared.IsBotListening = !this.Shared.IsBotListening;
+            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.IsBotListening.ToString())}", important: false);
         }
         #endregion
 
