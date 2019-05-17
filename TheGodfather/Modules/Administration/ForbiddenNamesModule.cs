@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name addition occured",
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name deletion occured",
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Forbidden name deletion occured",
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All forbidden names have been deleted",

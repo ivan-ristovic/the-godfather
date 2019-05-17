@@ -1,17 +1,12 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
-#endregion
 
 namespace TheGodfather
 {
@@ -25,7 +20,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
         public Logger LogProvider { get; internal set; }
-        public bool ListeningStatus { get; internal set; }
+        public bool IsBotListening { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, int> MessageCount { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
@@ -48,7 +43,7 @@ namespace TheGodfather
             this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
-            this.ListeningStatus = true;
+            this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
             this.MessageCount = new ConcurrentDictionary<ulong, int>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
@@ -120,7 +115,7 @@ namespace TheGodfather
                 return this.BotConfiguration.DefaultPrefix;
         }
 
-        public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
+        public DiscordChannel GetLogChannelForGuild(DiscordGuild guild)
         {
             CachedGuildConfig gcfg = this.GetGuildConfig(guild.Id);
             return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
@@ -152,7 +147,7 @@ namespace TheGodfather
             );
         }
 
-        public bool PendingResponseExists(ulong cid, ulong uid)
+        public bool IsResponsePending(ulong cid, ulong uid)
             => this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending) && pending.Contains(uid);
 
         public bool TryRemovePendingResponse(ulong cid, ulong uid)

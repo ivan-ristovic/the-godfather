@@ -251,7 +251,10 @@ namespace TheGodfather.Common
         }
 
         private static void PrintLogMessage(string message = "")
-            => Console.WriteLine(string.IsNullOrWhiteSpace(message) ? "" : $"{_separator}{message.Trim()}");
+        {
+            if (!(message is null))
+                Console.WriteLine(string.IsNullOrWhiteSpace(message) ? "" : $"{_separator}{message.Trim()}");
+        }
         #endregion
 
 

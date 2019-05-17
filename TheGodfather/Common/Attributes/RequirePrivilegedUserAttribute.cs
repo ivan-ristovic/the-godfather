@@ -1,15 +1,10 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-#endregion
 
 namespace TheGodfather.Common.Attributes
 {

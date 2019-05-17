@@ -1,9 +1,6 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-
-using System;
+﻿using System;
 using System.Linq;
-#endregion
+using DSharpPlus.CommandsNext;
 
 namespace TheGodfather.Common.Attributes
 {

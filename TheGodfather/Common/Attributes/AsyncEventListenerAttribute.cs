@@ -1,10 +1,7 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-
-using System;
+﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-#endregion
+using DSharpPlus;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -52,6 +49,7 @@ namespace TheGodfather.Common.Attributes
                 return Task.CompletedTask;
             }
 
+            #region Event hooking
             switch (this.Target) {
                 case DiscordEventType.ClientErrored:
                     client.ClientErrored += OnEventWithArgs;
@@ -195,6 +193,7 @@ namespace TheGodfather.Common.Attributes
                     shard.CNext.CommandErrored += OnEventWithArgs;
                     break;
             }
+            #endregion
         }
     }
 }

@@ -1,12 +1,8 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Threading.Tasks;
-#endregion
 
 namespace TheGodfather.Common.Attributes
 {
@@ -15,7 +11,7 @@ namespace TheGodfather.Common.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.Services.GetService<SharedData>().PendingResponseExists(ctx.Channel.Id, ctx.User.Id))
+            if (ctx.Services.GetService<SharedData>().IsResponsePending(ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);
             else
                 return Task.FromResult(true);

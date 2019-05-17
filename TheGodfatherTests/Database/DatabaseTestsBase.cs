@@ -1,8 +1,6 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-
-using System;
-
 using TheGodfather.Database;
 using static TheGodfather.Database.DatabaseContextBuilder;
 

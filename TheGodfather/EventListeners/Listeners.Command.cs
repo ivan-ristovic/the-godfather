@@ -43,8 +43,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             Exception ex = e.Exception;
-            while (ex is AggregateException)
-                ex = ex.InnerException;
+            while (ex is AggregateException || ex is TargetInvocationException)
+                ex = ex.InnerException ?? ex;
 
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute)) {
                 await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.X);
@@ -57,8 +57,8 @@ namespace TheGodfather.EventListeners
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}",
                 $"Exception: {ex.GetType()}",
                 $"Message: {ex.Message ?? "<no message provided>"}",
-                ex.InnerException is null ? "" : $"Inner exception: {ex.InnerException.GetType()}",
-                ex.InnerException is null ? "" : $"Inner exception message: {ex.InnerException.Message}"
+                ex.InnerException is null ? null : $"Inner exception: {ex.InnerException.GetType()}",
+                ex.InnerException is null ? null : $"Inner exception message: {ex.InnerException.Message}"
             );
 
             var emb = new DiscordEmbedBuilder {

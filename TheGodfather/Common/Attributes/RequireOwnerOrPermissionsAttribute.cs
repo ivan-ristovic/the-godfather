@@ -1,11 +1,8 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using System;
-using System.Threading.Tasks;
-#endregion
 
 namespace TheGodfather.Common.Attributes
 {
@@ -32,8 +29,8 @@ namespace TheGodfather.Common.Attributes
             if (ctx.Member is null)
                 return Task.FromResult(false);
 
-            Permissions mperms = ctx.Channel.PermissionsFor(ctx.Member);
-            return Task.FromResult((mperms & this.Permissions) == this.Permissions);
+            Permissions perms = ctx.Channel.PermissionsFor(ctx.Member);
+            return Task.FromResult((perms & this.Permissions) == this.Permissions);
         }
     }
 }

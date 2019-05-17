@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration
                         cfg.LogChannelIdDb = enable ? (long?)channel.Id : null;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",

@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Reactions
                 await db.SaveChangesAsync();
             }
             
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Several emoji reactions have been deleted",
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Reactions
             int count = ereactions.RemoveWhere(er => ids.Contains(er.Id));
             
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
@@ -233,7 +233,7 @@ namespace TheGodfather.Modules.Reactions
             int count = ereactions.RemoveWhere(er => er.RegexCount == 0);
             
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
@@ -275,7 +275,7 @@ namespace TheGodfather.Modules.Reactions
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All emoji reactions have been deleted",
@@ -410,7 +410,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
             
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "New emoji reactions added",

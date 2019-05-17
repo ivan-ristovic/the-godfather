@@ -23,7 +23,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -46,7 +46,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -70,7 +70,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Channel.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -95,7 +95,7 @@ namespace TheGodfather.EventListeners
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.ChannelBefore.IsExempted(shard))
                 return;
 

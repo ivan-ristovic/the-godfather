@@ -33,7 +33,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Channel.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -167,7 +167,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate || e.Message is null)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -229,7 +229,7 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
             if (logchn is null || !e.Message.IsEdited || e.Channel.IsExempted(shard))
                 return;
 
