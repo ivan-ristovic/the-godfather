@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="4.6.0-preview5.19224.8" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="TexasHoldemGameEngine" Version="1.1.0" />
-    <PackageReference Include="YoutubeExplode" Version="4.7.0" />
+    <PackageReference Include="YoutubeExplode" Version="4.7.1" />
   </ItemGroup>
 
   <ItemGroup>
