@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -74,8 +75,8 @@ namespace TheGodfather.EventListeners
 
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
-                    System.Collections.Generic.IEnumerable<(string Name, Command Command)> ordered = TheGodfatherShard.Commands
-                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Name))
+                    IEnumerable<KeyValuePair<string, Command>> ordered = TheGodfatherShard.Commands
+                        .OrderBy(kvp => cne.CommandName.LevenshteinDistance(kvp.Key))
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);

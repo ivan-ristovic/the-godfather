@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
@@ -11,6 +10,7 @@ using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,23 +23,27 @@ using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Search.Services;
-#endregion
 
 namespace TheGodfather
 {
     public sealed class TheGodfatherShard
     {
-        public static IReadOnlyList<(string Name, Command Command)> Commands;
+        #region Static 
+        public static IReadOnlyDictionary<string, Command> Commands => _commands;
+        private static ConcurrentDictionary<string, Command> _commands;
 
         public static void UpdateCommandList(CommandsNextExtension cnext)
         {
-            Commands = cnext.GetAllRegisteredCommands()
+            _commands = new ConcurrentDictionary<string, Command>(
+                cnext.GetAllRegisteredCommands()
                 .Where(cmd => cmd.Parent is null)
-                .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
-                .ToList();
+                .SelectMany(cmd => cmd.Aliases.Select(alias => (Name: alias, Command: cmd)).Concat(new[] { (cmd.Name, Command: cmd) }))
+                .ToDictionary(tup => tup.Name, tup => tup.Command)
+            );
         }
+        #endregion
 
-
+        #region Public Properties
         public int Id { get; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }
@@ -49,6 +53,7 @@ namespace TheGodfather
         public DatabaseContextBuilder Database { get; private set; }
 
         public bool IsListening => this.SharedData.ListeningStatus;
+        #endregion
 
 
         public TheGodfatherShard(int sid, DatabaseContextBuilder dbb, SharedData shared)
@@ -59,23 +64,14 @@ namespace TheGodfather
         }
 
 
-        public async Task StartAsync()
-            => await this.Client.ConnectAsync();
-
         public async Task DisposeAsync()
         {
             await this.Client.DisconnectAsync();
             this.Client.Dispose();
         }
 
-        public void Log(LogLevel level, string message)
-            => this.SharedData.LogProvider.Log(level, message, this.Id, DateTime.Now);
 
-        public void LogMany(LogLevel level, params string[] messages)
-            => this.SharedData.LogProvider.LogMany(level, this.Id, DateTime.Now, this.SharedData.LogProvider.LogToFile, messages);
-
-
-        #region SETUP_FUNCTIONS
+        #region Setup
         public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
             this.SetupClient(onGuildDownloadCompleted);
@@ -169,6 +165,18 @@ namespace TheGodfather
         {
             this.Voice = this.Client.UseVoiceNext();
         }
+
+        public async Task StartAsync()
+            => await this.Client.ConnectAsync();
+
+        #endregion
+
+        #region Misc
+        public void Log(LogLevel level, string message)
+            => this.SharedData.LogProvider.Log(level, message, this.Id, DateTime.Now);
+
+        public void LogMany(LogLevel level, params string[] messages)
+            => this.SharedData.LogProvider.LogMany(level, this.Id, DateTime.Now, this.SharedData.LogProvider.LogToFile, messages);
 
         private Task<int> PrefixResolverAsync(DiscordMessage m)
         {
