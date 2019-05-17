@@ -4,13 +4,11 @@ using DSharpPlus.Entities;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 #endregion
