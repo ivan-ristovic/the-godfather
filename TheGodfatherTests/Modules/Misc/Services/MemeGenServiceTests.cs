@@ -10,7 +10,7 @@ using TheGodfather.Modules.Misc.Services;
 namespace TheGodfatherTests.Modules.Misc.Services
 {
     [TestFixture]
-    public class MemeGenServiceTests
+    public sealed class MemeGenServiceTests
     {
         [Test]
         public void GenerateMemeTest()
