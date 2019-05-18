@@ -22,15 +22,14 @@ namespace TheGodfather.Modules.Administration.Services
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
         protected string reason;
 
+        public bool IsDisabled => false;
+
 
         protected ProtectionService(TheGodfatherShard shard)
         {
             this.shard = shard;
         }
 
-
-        public bool IsDisabled()
-            => false;
 
         public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type, TimeSpan? cooldown = null, string reason = null)
         {

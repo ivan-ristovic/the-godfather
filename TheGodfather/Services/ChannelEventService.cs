@@ -5,6 +5,8 @@ namespace TheGodfather.Services
 {
     public sealed class ChannelEventService : ITheGodfatherService
     {
+        public bool IsDisabled => false;
+
         private ConcurrentDictionary<ulong, IChannelEvent> _events;
 
 
@@ -13,9 +15,6 @@ namespace TheGodfather.Services
             this._events = new ConcurrentDictionary<ulong, IChannelEvent>();
         }
 
-
-        public bool IsDisabled() 
-            => false;
 
         public IChannelEvent GetEventInChannel(ulong cid)
             => this._events.TryGetValue(cid, out IChannelEvent e) && !(e is null) ? e : null;

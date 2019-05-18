@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Query.")] string query)
         {
-            if (this.Service.IsDisabled())
+            if (this.Service.IsDisabled)
                 throw new ServiceDisabledException();
 
             GiphyDotNet.Model.GiphyImage.Data[] res = await this.Service.SearchAsync(query);
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("r", "rand", "rnd")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            if (this.Service.IsDisabled())
+            if (this.Service.IsDisabled)
                 throw new ServiceDisabledException();
 
             GiphyDotNet.Model.GiphyRandomImage.Data res = await this.Service.GetRandomGifAsync();
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Search
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {
-            if (this.Service.IsDisabled())
+            if (this.Service.IsDisabled)
                 throw new ServiceDisabledException();
 
             GiphyDotNet.Model.GiphyImage.Data[] res = await this.Service.GetTrendingGifsAsync(amount);

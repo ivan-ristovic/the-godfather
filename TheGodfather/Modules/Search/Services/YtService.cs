@@ -59,8 +59,7 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public override bool IsDisabled() 
-            => string.IsNullOrWhiteSpace(this.key);
+        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
 
 
         public async Task<string> ExtractChannelIdAsync(string url)
@@ -91,7 +90,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<string> GetFirstVideoResultAsync(string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))
@@ -106,7 +105,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query, int amount = 1, string type = null)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))
@@ -153,7 +152,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<SongInfo> GetSongInfoAsync(string url)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(url))

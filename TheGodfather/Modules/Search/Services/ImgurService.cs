@@ -16,6 +16,8 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class ImgurService : ITheGodfatherService
     {
+        public bool IsDisabled => this.imgur is null;
+
         private readonly ImgurClient imgur;
         private readonly GalleryEndpoint gEndpoint;
         //private readonly ImageEndpoint iEndpoint;
@@ -31,14 +33,12 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public bool IsDisabled()
-            => this.imgur is null;
 
 
         public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub, int amount,
             SubredditGallerySortOrder order, TimeWindow time)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(sub))

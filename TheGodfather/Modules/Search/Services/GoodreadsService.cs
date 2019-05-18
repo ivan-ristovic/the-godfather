@@ -18,6 +18,9 @@ namespace TheGodfather.Modules.Search.Services
         private static readonly XmlSerializer _serializer = new XmlSerializer(typeof(GoodreadsResponse));
         private static readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
 
+
+        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
+
         private readonly string key;
 
 
@@ -27,13 +30,11 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public override bool IsDisabled()
-            => string.IsNullOrWhiteSpace(this.key);
 
 
         public async Task<GoodreadsSearchInfo> SearchBooksAsync(string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))

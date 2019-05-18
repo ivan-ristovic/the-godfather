@@ -10,8 +10,7 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class PetImagesService : TheGodfatherHttpService
     {
-        public override bool IsDisabled()
-            => false;
+        public override bool IsDisabled => false;
 
 
         public static async Task<string> GetRandomCatImageAsync()
