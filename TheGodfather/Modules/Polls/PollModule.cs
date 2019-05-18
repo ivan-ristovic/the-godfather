@@ -14,7 +14,7 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
-using TheGodfather.Modules.Polls.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Polls
@@ -23,11 +23,11 @@ namespace TheGodfather.Modules.Polls
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
     [UsageExampleArgs("Do you vote for User1 or User2?", "5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class PollModule : TheGodfatherModule
+    public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public PollModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public PollModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;
         }
@@ -41,14 +41,14 @@ namespace TheGodfather.Modules.Polls
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
 
-            if (PollService.IsPollRunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another poll is already running in this channel.");
+            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out _))
+                throw new CommandFailedException("Another event is already running in this channel.");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
-            var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
-            PollService.RegisterPollInChannel(poll, ctx.Channel.Id);
+            var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+            this.Service.RegisterEventInChannel(poll, ctx.Channel.Id);
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
                 System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
@@ -56,10 +56,10 @@ namespace TheGodfather.Modules.Polls
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
                 poll.Options = options;
 
-                await poll.RunAsync(timeout);
+                await poll.RunAsync();
 
             } finally {
-                PollService.UnregisterPollInChannel(ctx.Channel.Id);
+                this.Service.UnregisterEventInChannel(ctx.Channel.Id);
             }
         }
 
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Polls
         [Aliases("end", "cancel")]
         public Task StopAsync(CommandContext ctx)
         {
-            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
 
@@ -89,6 +89,7 @@ namespace TheGodfather.Modules.Polls
                 throw new CommandFailedException("You do not have the sufficient permissions to close another person's poll!");
 
             poll.Stop();
+            this.Service.UnregisterEventInChannel(ctx.Channel.Id);
 
             return Task.CompletedTask;
         }

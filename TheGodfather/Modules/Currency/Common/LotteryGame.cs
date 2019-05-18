@@ -17,16 +17,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public sealed class LotteryParticipant
-    {
-        public DiscordUser User { get; internal set; }
-        public int Bid { get; set; }
-        public ulong Id => this.User.Id;
-        public int[] Numbers { get; set; }
-        public int WinAmount { get; set; }
-    }
-
-    public class LotteryGame : ChannelEvent
+    public class LotteryGame : BaseChannelGame
     {
         public static readonly int MaxNumber = 15;
         public static readonly int DrawCount = 3;
@@ -37,17 +28,17 @@ namespace TheGodfather.Modules.Currency.Common
 
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
-        public IReadOnlyList<LotteryParticipant> Winners 
+        public IReadOnlyList<Participant> Winners 
             => this.participants.Where(p => p.WinAmount > 0).ToList().AsReadOnly();
 
-        private readonly ConcurrentQueue<LotteryParticipant> participants;
+        private readonly ConcurrentQueue<Participant> participants;
        
 
         public LotteryGame(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
         {
             this.Started = false;
-            this.participants = new ConcurrentQueue<LotteryParticipant>();
+            this.participants = new ConcurrentQueue<Participant>();
         }
 
 
@@ -64,7 +55,7 @@ namespace TheGodfather.Modules.Currency.Common
                 await this.PrintGameAsync(msg, drawn, i + 1);
             }
 
-            foreach (LotteryParticipant participant in this.participants) {
+            foreach (Participant participant in this.participants) {
                 int guessed = participant.Numbers.Intersect(drawn).Count();
                 participant.WinAmount = Prizes[guessed];
             }
@@ -75,7 +66,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.IsParticipating(user))
                 return;
 
-            this.participants.Enqueue(new LotteryParticipant {
+            this.participants.Enqueue(new Participant {
                 User = user,
                 Numbers = numbers
             });
@@ -91,7 +82,7 @@ namespace TheGodfather.Modules.Currency.Common
             sb.AppendLine(Formatter.Bold($"Drawn numbers:"));
             sb.AppendLine(Formatter.Bold(string.Join(" ", numbers.Take(step)))).AppendLine();
 
-            foreach (LotteryParticipant participant in this.participants) {
+            foreach (Participant participant in this.participants) {
                 sb.Append(participant.User.Mention).Append(" | ");
                 sb.AppendLine(Formatter.Bold(string.Join(" ", participant.Numbers)));
                 sb.AppendLine();
@@ -104,6 +95,16 @@ namespace TheGodfather.Modules.Currency.Common
             };
 
             return msg.ModifyAsync(embed: emb.Build());
+        }
+
+
+        public sealed class Participant
+        {
+            public DiscordUser User { get; internal set; }
+            public int Bid { get; set; }
+            public ulong Id => this.User.Id;
+            public int[] Numbers { get; set; }
+            public int WinAmount { get; set; }
         }
     }
 }

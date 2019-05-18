@@ -20,6 +20,7 @@ using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather
 {
@@ -48,6 +49,7 @@ namespace TheGodfather
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
+        public ServiceProvider Services { get; }
 
         public bool IsListening => this.SharedData.IsBotListening;
         #endregion
@@ -58,6 +60,24 @@ namespace TheGodfather
             this.Id = sid;
             this.Database = dbb;
             this.SharedData = shared;
+            this.Services = new ServiceCollection()
+                .AddSingleton(this)
+                .AddSingleton(this.SharedData)
+                .AddSingleton(this.Database)
+                .AddSingleton(new AntifloodService(this))
+                .AddSingleton(new AntiInstantLeaveService(this))
+                .AddSingleton(new AntispamService(this))
+                .AddSingleton(new ChannelEventService())
+                .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
+                .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
+                .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
+                .AddSingleton(new LinkfilterService(this))
+                .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
+                .AddSingleton(new RatelimitService(this))
+                .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
+                .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
+                .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
+                .BuildServiceProvider();
         }
 
 
@@ -114,23 +134,7 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 PrefixResolver = this.PrefixResolverAsync,
-                Services = new ServiceCollection()
-                    .AddSingleton(this)
-                    .AddSingleton(this.SharedData)
-                    .AddSingleton(this.Database)
-                    .AddSingleton(new AntifloodService(this))
-                    .AddSingleton(new AntiInstantLeaveService(this))
-                    .AddSingleton(new AntispamService(this))
-                    .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
-                    .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
-                    .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
-                    .AddSingleton(new LinkfilterService(this))
-                    .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
-                    .AddSingleton(new RatelimitService(this))
-                    .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
-                    .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
-                    .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
-                    .BuildServiceProvider()
+                Services = this.Services
             });
 
             this.CNext.SetHelpFormatter<CustomHelpFormatter>();

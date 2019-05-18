@@ -14,24 +14,16 @@ using TexasHoldem.Logic.Cards;
 
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public sealed class BlackjackParticipant
-    {
-        public int Bid { get; set; }
-        public List<Card> Hand { get; internal set; } = new List<Card>();
-        public DiscordUser User { get; internal set; }
-        public bool Standing { get; set; } = false;
-        public ulong Id => this.User.Id;
-    }
-
-    public sealed class BlackjackGame : ChannelEvent
+    public sealed class BlackjackGame : BaseChannelGame
     {
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
-        public IReadOnlyList<BlackjackParticipant> Winners
+        public IReadOnlyList<Participant> Winners
         {
             get {
                 int hvalue = this.HandValue(this.hand);
@@ -49,7 +41,7 @@ namespace TheGodfather.Modules.Currency.Common
         private bool GameOver;
         private readonly Deck deck;
         private readonly List<Card> hand;
-        private readonly ConcurrentQueue<BlackjackParticipant> participants;
+        private readonly ConcurrentQueue<Participant> participants;
 
 
         public BlackjackGame(InteractivityExtension interactivity, DiscordChannel channel)
@@ -59,7 +51,7 @@ namespace TheGodfather.Modules.Currency.Common
             this.GameOver = false;
             this.deck = new Deck();
             this.hand = new List<Card>();
-            this.participants = new ConcurrentQueue<BlackjackParticipant>();
+            this.participants = new ConcurrentQueue<Participant>();
         }
 
 
@@ -69,7 +61,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             DiscordMessage msg = await this.Channel.EmbedAsync("Starting blackjack game...");
 
-            foreach (BlackjackParticipant participant in this.participants) {
+            foreach (Participant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
                 participant.Hand.Add(this.deck.GetNextCard());
                 if (this.HandValue(participant.Hand) == 21) {
@@ -85,7 +77,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
             
             while (this.participants.Any(p => !p.Standing)) {
-                foreach (BlackjackParticipant participant in this.participants) {
+                foreach (Participant participant in this.participants) {
                     if (participant.Standing)
                         continue;
 
@@ -119,7 +111,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.IsParticipating(user))
                 return;
 
-            this.participants.Enqueue(new BlackjackParticipant {
+            this.participants.Enqueue(new Participant {
                 User = user,
                 Bid = bid
             });
@@ -149,7 +141,7 @@ namespace TheGodfather.Modules.Currency.Common
             return value;
         }
 
-        private Task PrintGameAsync(DiscordMessage msg, BlackjackParticipant tomove = null)
+        private Task PrintGameAsync(DiscordMessage msg, Participant tomove = null)
         {
             var sb = new StringBuilder();
 
@@ -159,7 +151,7 @@ namespace TheGodfather.Modules.Currency.Common
             else
                 sb.AppendLine(StaticDiscordEmoji.Question).AppendLine();
 
-            foreach (BlackjackParticipant participant in this.participants) {
+            foreach (Participant participant in this.participants) {
                 sb.Append(participant.User.Mention);
                 sb.Append(" (value: ");
                 sb.Append(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
@@ -178,6 +170,16 @@ namespace TheGodfather.Modules.Currency.Common
                 emb.AddField("Deciding whether to hit a card (type yes/no):", tomove?.User.Mention ?? "House");
 
             return msg.ModifyAsync(embed: emb.Build());
+        }
+
+
+        public sealed class Participant
+        {
+            public int Bid { get; set; }
+            public List<Card> Hand { get; internal set; } = new List<Card>();
+            public DiscordUser User { get; internal set; }
+            public bool Standing { get; set; } = false;
+            public ulong Id => this.User.Id;
         }
     }
 }

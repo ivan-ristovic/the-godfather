@@ -25,7 +25,7 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class TypingRace : ChannelEvent
+    public class TypingRaceGame : BaseChannelGame
     {
         private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char> {
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games.Common
         private readonly ConcurrentDictionary<DiscordUser, int> results;
 
 
-        public TypingRace(InteractivityExtension interactivity, DiscordChannel channel)
+        public TypingRaceGame(InteractivityExtension interactivity, DiscordChannel channel)
            : base(interactivity, channel)
         {
             this.results = new ConcurrentDictionary<DiscordUser, int>();

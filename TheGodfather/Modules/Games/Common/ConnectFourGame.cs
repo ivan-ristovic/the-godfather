@@ -14,7 +14,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public sealed class ConnectFourGame : BoardGame
+    public sealed class ConnectFourGame : BaseBoardGame
     {
         private static readonly string _Header = string.Join("", StaticDiscordEmoji.Numbers.Take(9));
 

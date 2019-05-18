@@ -69,9 +69,6 @@ namespace TheGodfather.Extensions
 
         internal static async Task<DiscordUser> WaitForGameOpponentAsync(this CommandContext ctx)
         {
-            SharedData shared = ctx.Services.GetService<SharedData>();
-            shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
-
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
                     if (xm.Author.IsBot || xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
@@ -80,9 +77,6 @@ namespace TheGodfather.Extensions
                     return split.Length == 1 && (split[0] == "me" || split[0] == "i");
                 }
             );
-
-            if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
-                throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return mctx.TimedOut ? null : mctx.Result.Author;
         }

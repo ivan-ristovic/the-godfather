@@ -14,6 +14,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -24,11 +25,11 @@ namespace TheGodfather.Modules.Games
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
         [UsageExampleArgs("@Someone")]
-        public class DuelModule : TheGodfatherModule
+        public class DuelModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public DuelModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public DuelModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -38,7 +39,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Who to fight with?")] DiscordUser opponent)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 if (opponent.Id == ctx.User.Id)
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var duel = new DuelGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-                this.Shared.RegisterEventInChannel(duel, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(duel, ctx.Channel.Id);
 
                 try {
                     await duel.RunAsync();
@@ -65,7 +66,7 @@ namespace TheGodfather.Modules.Games
                     else
                         await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

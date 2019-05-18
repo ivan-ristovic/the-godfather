@@ -18,7 +18,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class CapitalsQuiz : ChannelEvent
+    public class CapitalsQuiz : BaseChannelGame
     {
         private sealed class CapitalInfo
         {
@@ -31,10 +31,6 @@ namespace TheGodfather.Modules.Games.Common
 
         private static Dictionary<string, string> _capitals;
 
-        public ConcurrentDictionary<DiscordUser, int> Results { get; }
-        public int NumberOfQuestions { get; private set; }
-
-
         static CapitalsQuiz()
         {
             string data = File.ReadAllText("Resources/quiz-capitals.json");
@@ -43,6 +39,11 @@ namespace TheGodfather.Modules.Games.Common
             foreach (CapitalInfo info in capitals)
                 _capitals.Add(info.Country, info.Capital);
         }
+
+
+        public ConcurrentDictionary<DiscordUser, int> Results { get; }
+        public int NumberOfQuestions { get; private set; }
+
 
         public CapitalsQuiz(InteractivityExtension interactivity, DiscordChannel channel, int questions)
             : base(interactivity, channel)

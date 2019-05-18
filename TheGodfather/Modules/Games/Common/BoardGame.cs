@@ -11,7 +11,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public abstract class BoardGame : ChannelEvent
+    public abstract class BaseBoardGame : BaseChannelGame
     {
         protected readonly int SizeY;
         protected readonly int SizeX;
@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games.Common
         protected DiscordUser player2;
 
 
-        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1,
+        protected BaseBoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1,
             DiscordUser p2, int sizeX, int sizeY, TimeSpan? movetime = null)
             : base(interactivity, channel)
         {

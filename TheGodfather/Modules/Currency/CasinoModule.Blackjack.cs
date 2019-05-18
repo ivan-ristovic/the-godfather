@@ -15,6 +15,7 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -25,11 +26,11 @@ namespace TheGodfather.Modules.Currency
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
         [UsageExampleArgs("100")]
-        public class BlackjackModule : TheGodfatherModule
+        public class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public BlackjackModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public BlackjackModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
             }
@@ -39,8 +40,8 @@ namespace TheGodfather.Modules.Currency
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Bid amount.")] int bid = 5)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
                         await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -48,7 +49,7 @@ namespace TheGodfather.Modules.Currency
                 }
                 
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
                     await this.JoinAsync(ctx, bid);
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Currency
                                 await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
                                 using (DatabaseContext db = this.Database.CreateContext()) {
-                                    foreach (BlackjackParticipant winner in game.Winners)
+                                    foreach (BlackjackGame.Participant winner in game.Winners)
                                         await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
@@ -86,7 +87,7 @@ namespace TheGodfather.Modules.Currency
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -99,7 +100,7 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame game))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame game))
                     throw new CommandFailedException("There are no Blackjack games running in this channel.");
 
                 if (game.Started)

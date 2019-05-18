@@ -16,6 +16,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -26,11 +27,11 @@ namespace TheGodfather.Modules.Games
         [Description("Starts an \"Othello\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("reversi", "oth", "rev")]
         [UsageExampleArgs("10s")]
-        public class OthelloModule : TheGodfatherModule
+        public class OthelloModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public OthelloModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public OthelloModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -40,7 +41,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Othello against {ctx.User.Username}?");
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var othello = new OthelloGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(othello, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(othello, ctx.Channel.Id);
                 try {
                     await othello.RunAsync();
                     
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Games
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

@@ -14,7 +14,7 @@ using TheGodfather.Common.Collections;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class RussianRouletteGame : ChannelEvent
+    public class RussianRouletteGame : BaseChannelGame
     {
         public int ParticipantCount => this.participants.Count;
         public bool Started { get; private set; }

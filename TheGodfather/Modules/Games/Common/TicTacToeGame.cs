@@ -11,7 +11,7 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class TicTacToeGame : BoardGame
+    public class TicTacToeGame : BaseBoardGame
     {
 
         public TicTacToeGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, TimeSpan? movetime = null)

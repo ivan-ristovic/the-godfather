@@ -10,7 +10,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Polls.Common;
-using TheGodfather.Modules.Polls.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Polls
@@ -20,11 +20,11 @@ namespace TheGodfather.Modules.Polls
     [Aliases("votefor", "vf")]
     [UsageExampleArgs("1")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class VotingModule : TheGodfatherModule
+    public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public VotingModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public VotingModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;
         }
@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Polls
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Option to vote for.")] int option)
         {
-            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no polls running in this channel.");
 
@@ -57,9 +57,9 @@ namespace TheGodfather.Modules.Polls
         [Aliases("c", "reset")]
         public Task CancelAsync(CommandContext ctx)
         {
-            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
-                throw new CommandFailedException("There are no polls running in this channel.");
+                throw new CommandFailedException("There are no text polls running in this channel.");
             
             if (!poll.UserVoted(ctx.User.Id))
                 throw new CommandFailedException("You have not voted in this poll!");

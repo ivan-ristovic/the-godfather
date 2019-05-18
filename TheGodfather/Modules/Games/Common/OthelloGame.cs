@@ -12,7 +12,7 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public sealed class OthelloGame : BoardGame
+    public sealed class OthelloGame : BaseBoardGame
     {
         private static readonly string _Header = StaticDiscordEmoji.ArrowUp + string.Join("", StaticDiscordEmoji.Numbers.Take(8));
 

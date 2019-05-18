@@ -15,7 +15,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class AnimalRace : ChannelEvent
+    public class AnimalRace : BaseChannelGame
     {
         private sealed class AnimalRaceParticipant
         {

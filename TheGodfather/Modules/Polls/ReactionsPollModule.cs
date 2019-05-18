@@ -13,18 +13,18 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
-using TheGodfather.Modules.Polls.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Polls
 {
     [Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class ReactionsPollModule : TheGodfatherModule
+    public class ReactionsPollModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ReactionsPollModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public ReactionsPollModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.Orange;
         }
@@ -42,14 +42,14 @@ namespace TheGodfather.Modules.Polls
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
 
-            if (PollService.IsPollRunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another poll is already running in this channel.");
+            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another event is already running in this channel.");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
-            PollService.RegisterPollInChannel(rpoll, ctx.Channel.Id);
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+            this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
             try {
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
                 System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
@@ -57,9 +57,9 @@ namespace TheGodfather.Modules.Polls
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
                 rpoll.Options = options;
 
-                await rpoll.RunAsync(timeout);
+                await rpoll.RunAsync();
             } finally {
-                PollService.UnregisterPollInChannel(ctx.Channel.Id);
+                this.Service.UnregisterEventInChannel(ctx.Channel.Id);
             }
         }
 

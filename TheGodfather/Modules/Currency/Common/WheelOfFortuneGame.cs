@@ -16,7 +16,7 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public class WheelOfFortune : ChannelEvent
+    public class WheelOfFortuneGame : BaseChannelGame
     {
         private static Bitmap _wheel = null;
         private static readonly ImmutableArray<float> _multipliers = new float[] {
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Currency.Common
         private static Bitmap RotateWheel(Bitmap b, float angle)
         {
             var rotated = new Bitmap(b.Width, b.Height);
-            using (Graphics g = Graphics.FromImage(rotated)) {
+            using (var g = Graphics.FromImage(rotated)) {
                 g.TranslateTransform((float)b.Width / 2, (float)b.Height / 2);
                 g.RotateTransform(angle);
                 g.TranslateTransform(-(float)b.Width / 2, -(float)b.Height / 2);
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        public WheelOfFortune(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid, string currency)
+        public WheelOfFortuneGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid, string currency)
             : base(interactivity, channel)
         {
             this.user = user;

@@ -17,6 +17,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -27,11 +28,11 @@ namespace TheGodfather.Modules.Chickens
         [Description("Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.")]
         [Aliases("gangattack")]
         [UsageExampleArgs("@Someone", "chicken")]
-        public class AmbushModule : TheGodfatherModule
+        public class AmbushModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public AmbushModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public AmbushModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
@@ -41,11 +42,10 @@ namespace TheGodfather.Modules.Chickens
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Whose chicken to ambush?")] DiscordMember member)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
-                        await this.JoinAsync(ctx);
-                    else
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel<ChickenWar>(ctx.Channel.Id) is null)
                         throw new CommandFailedException("Another event is already running in the current channel.");
+                    await this.JoinAsync(ctx);
                     return;
                 }
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("You cannot start an ambush against a weaker chicken!");
 
                 var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
-                this.Shared.RegisterEventInChannel(ambush, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
                     ambush.AddParticipant(ambushed, member, team1: true);
                     await this.JoinAsync(ctx);
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Chickens
                         await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Chickens
             #region HELPER_FUNCTIONS
             private Chicken TryJoinInternal(CommandContext ctx, bool team2 = true)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
                 var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);

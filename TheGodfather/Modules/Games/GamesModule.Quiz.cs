@@ -19,6 +19,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Modules.Games.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -29,11 +30,11 @@ namespace TheGodfather.Modules.Games
         [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
         [UsageExampleArgs("countries", "9", "history", "history hard", "history hard 15", "9 hard", "9 hard 15")]
-        public class QuizModule : TheGodfatherModule
+        public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public QuizModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public QuizModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -45,7 +46,7 @@ namespace TheGodfather.Modules.Games
                                                [Description("Amount of questions.")] int amount = 10,
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy")
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 if (amount < 1 || amount > 20)
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
 
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
@@ -75,7 +76,7 @@ namespace TheGodfather.Modules.Games
 
                     await this.HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -132,11 +133,11 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5, 50]");
 
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
                 
                 var quiz = new CapitalsQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
@@ -149,7 +150,7 @@ namespace TheGodfather.Modules.Games
 
                     await this.HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion
@@ -165,11 +166,11 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 var quiz = new CountriesQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
@@ -182,7 +183,7 @@ namespace TheGodfather.Modules.Games
 
                     await this.HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion

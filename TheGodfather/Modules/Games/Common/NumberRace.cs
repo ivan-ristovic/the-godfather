@@ -13,7 +13,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class NumberRace : ChannelEvent
+    public class NumberRace : BaseChannelGame
     {
         public int ParticipantCount => this.participants.Count();
         public bool Started { get; private set; }

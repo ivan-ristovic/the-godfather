@@ -14,6 +14,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -23,11 +24,11 @@ namespace TheGodfather.Modules.Games
         [Group("russianroulette")]
         [Description("Starts a russian roulette game which I will commentate.")]
         [Aliases("rr", "roulette", "russianr")]
-        public class RussianRouletteModule : TheGodfatherModule
+        public class RussianRouletteModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public RussianRouletteModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public RussianRouletteModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -36,8 +37,8 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is RussianRouletteGame)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is RussianRouletteGame)
                         await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -45,7 +46,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var game = new RussianRouletteGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.");
                     await this.JoinAsync(ctx);
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Games
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Russian roulette pool.");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -73,7 +74,7 @@ namespace TheGodfather.Modules.Games
             [Aliases("+", "compete", "j", "enter")]
             public Task JoinAsync(CommandContext ctx)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is RussianRouletteGame game))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out RussianRouletteGame game))
                     throw new CommandFailedException("There is no Russian roulette game running in this channel.");
 
                 if (game.Started)

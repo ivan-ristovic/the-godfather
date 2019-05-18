@@ -18,6 +18,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -27,11 +28,11 @@ namespace TheGodfather.Modules.Chickens
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExampleArgs("@Someone")]
-    public partial class ChickenModule : TheGodfatherModule
+    public partial class ChickenModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ChickenModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public ChickenModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.Yellow;
         }
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Member whose chicken to fight.")] DiscordMember member)
         {
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No fights are allowed before the war finishes.");
 
             if (member.Id == ctx.User.Id)
@@ -131,7 +132,7 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("cancer", "disease", "blackdeath")]
         public async Task FluAsync(CommandContext ctx)
         {
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to create a disease?"))
@@ -157,7 +158,7 @@ namespace TheGodfather.Modules.Chickens
         [Cooldown(1, 300, CooldownBucketType.Guild)]
         public async Task HealAsync(CommandContext ctx)
         {
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -208,7 +209,7 @@ namespace TheGodfather.Modules.Chickens
             if (!newname.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -230,7 +231,7 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("s")]
         public async Task SellAsync(CommandContext ctx)
         {
-            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);

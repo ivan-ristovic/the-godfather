@@ -14,7 +14,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class DuelGame : ChannelEvent
+    public class DuelGame : BaseChannelGame
     {
         public string FinishingMove { get; private set; }
 
