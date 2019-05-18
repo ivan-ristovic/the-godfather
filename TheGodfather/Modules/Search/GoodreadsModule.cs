@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Search
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("Query.")] string query)
         {
-            if (this.Service.IsDisabled())
+            if (this.Service.IsDisabled)
                 throw new ServiceDisabledException();
 
             Common.GoodreadsSearchInfo res = await this.Service.SearchBooksAsync(query);

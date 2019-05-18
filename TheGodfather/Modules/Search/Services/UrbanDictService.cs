@@ -14,11 +14,9 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class UrbanDictService : TheGodfatherHttpService
     {
+        public override bool IsDisabled => false;
+
         private static readonly string _url = "http://api.urbandictionary.com/v0";
-
-
-        public override bool IsDisabled() 
-            => false;
 
 
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)

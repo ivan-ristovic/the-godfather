@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {
-            if (this.Service.IsDisabled())
+            if (this.Service.IsDisabled)
                 throw new ServiceDisabledException();
 
             DiscordEmbed em = await this.Service.GetEmbeddedInfoAsync(id);

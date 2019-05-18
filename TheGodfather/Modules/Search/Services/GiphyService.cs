@@ -17,6 +17,8 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class GiphyService : ITheGodfatherService
     {
+        public bool IsDisabled => this.giphy is null;
+
         private readonly Giphy giphy;
 
 
@@ -27,13 +29,9 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public bool IsDisabled()
-            => this.giphy is null;
-
-
         public async Task<ImageData[]> SearchAsync(string query, int amount = 1)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))
@@ -52,7 +50,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<RandomImageData> GetRandomGifAsync()
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             RandomImageResult res = await this.giphy.RandomGif(new RandomParameter()).ConfigureAwait(false);
@@ -61,7 +59,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<ImageData[]> GetTrendingGifsAsync(int amount = 1)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (amount < 1 || amount > 20)

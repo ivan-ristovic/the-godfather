@@ -18,6 +18,8 @@ namespace TheGodfather.Modules.Search.Services
     {
         private static readonly string _url = "http://api.openweathermap.org/data/2.5";
 
+        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
+
         private readonly string key;
 
 
@@ -25,10 +27,6 @@ namespace TheGodfather.Modules.Search.Services
         {
             this.key = key;
         }
-
-
-        public override bool IsDisabled() 
-            => string.IsNullOrWhiteSpace(this.key);
 
 
         public static string GetCityUrl(City city)

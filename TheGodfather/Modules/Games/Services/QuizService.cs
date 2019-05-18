@@ -19,8 +19,7 @@ namespace TheGodfather.Modules.Games.Services
         private static readonly string _url = "https://opentdb.com";
 
 
-        public override bool IsDisabled()
-            => false;
+        public override bool IsDisabled => false;
 
 
         public static async Task<int?> GetCategoryIdAsync(string category)

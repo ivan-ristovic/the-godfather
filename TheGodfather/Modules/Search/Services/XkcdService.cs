@@ -41,10 +41,6 @@ namespace TheGodfather.Modules.Search.Services
             => GetComicByIdAsync(GFRandom.Generator.Next(TotalComics));
         
 
-        public override bool IsDisabled() 
-            => false;
-
-
         private static async Task<XkcdComic> GetComicByIdAsync(int id)
         {
             string response = await _http.GetStringAsync($"{XkcdUrl}/{id}/info.0.json").ConfigureAwait(false);
@@ -56,5 +52,8 @@ namespace TheGodfather.Modules.Search.Services
             string response = await _http.GetStringAsync($"{XkcdUrl}/info.0.json").ConfigureAwait(false);
             return JsonConvert.DeserializeObject<XkcdComic>(response);
         }
+
+
+        public override bool IsDisabled => false;
     }
 }

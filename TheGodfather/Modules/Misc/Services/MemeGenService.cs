@@ -34,8 +34,7 @@ namespace TheGodfather.Modules.Misc.Services
         }.ToImmutableDictionary();
 
 
-        public override bool IsDisabled() 
-            => false;
+        public override bool IsDisabled => false;
 
 
         public static string GenerateMeme(string template, string topText, string bottomText)

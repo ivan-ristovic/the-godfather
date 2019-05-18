@@ -19,6 +19,8 @@ namespace TheGodfather.Modules.Search.Services
     {
         private static readonly string _url = "http://www.omdbapi.com/";
 
+        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
+
         private readonly string key;
 
 
@@ -28,13 +30,9 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public override bool IsDisabled() 
-            => string.IsNullOrWhiteSpace(this.key);
-
-
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))
@@ -54,7 +52,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<MovieInfo> GetSingleResultAsync(OMDbQueryType type, string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             if (string.IsNullOrWhiteSpace(query))

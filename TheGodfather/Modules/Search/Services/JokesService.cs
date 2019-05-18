@@ -17,9 +17,8 @@ namespace TheGodfather.Modules.Search.Services
     {
         private static readonly string _url = "https://icanhazdadjoke.com";
 
+        public override bool IsDisabled => false;
 
-        public override bool IsDisabled()
-            => false;
 
 
         public static Task<string> GetRandomJokeAsync()

@@ -15,9 +15,7 @@ namespace TheGodfather.Modules.Search.Services
     {
         private static readonly string _url = "http://ip-api.com/json";
 
-
-        public override bool IsDisabled() 
-            => false;
+        public override bool IsDisabled => false;
 
 
         public static Task<IpInfo> GetInfoForIpAsync(string ipstr)

@@ -17,6 +17,8 @@ namespace TheGodfather.Modules.Search.Services
 {
     public class SteamService : ITheGodfatherService
     {
+        public bool IsDisabled => this.user is null;
+
         private readonly SteamUser user;
 
 
@@ -31,13 +33,9 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        public bool IsDisabled() 
-            => this.user is null;
-
-
         public DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             var em = new DiscordEmbedBuilder {
@@ -85,7 +83,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public async Task<DiscordEmbed> GetEmbeddedInfoAsync(ulong id)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
             SteamCommunityProfileModel profile = null;
