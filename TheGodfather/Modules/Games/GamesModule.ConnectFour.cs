@@ -15,6 +15,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -27,11 +28,11 @@ namespace TheGodfather.Modules.Games
                      "which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
         [UsageExampleArgs("10s")]
-        public class ConnectFourModule : TheGodfatherModule
+        public class ConnectFourModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public ConnectFourModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public ConnectFourModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Connect4 against {ctx.User.Username}?");
@@ -53,7 +54,7 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var connect4 = new ConnectFourGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(connect4, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(connect4, ctx.Channel.Id);
                 try {
                     await connect4.RunAsync();
 
@@ -72,7 +73,7 @@ namespace TheGodfather.Modules.Games
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

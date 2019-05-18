@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
+            var wof = new WheelOfFortuneGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
             await wof.RunAsync();
 
             if (wof.WonAmount > 0) { 

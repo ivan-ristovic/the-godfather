@@ -13,6 +13,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -22,11 +23,11 @@ namespace TheGodfather.Modules.Chickens
         [Group("train"), UsesInteractivity]
         [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
-        public class TrainModule : TheGodfatherModule
+        public class TrainModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TrainModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public TrainModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
@@ -43,7 +44,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("str", "st", "s")]
             public async Task StrengthAsync(CommandContext ctx)
             {
-                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
                 string result;
@@ -87,7 +88,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("vit", "vi", "v")]
             public async Task VitalityAsync(CommandContext ctx)
             {
-                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
                 string result;

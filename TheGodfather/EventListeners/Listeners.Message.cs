@@ -21,6 +21,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -171,7 +172,7 @@ namespace TheGodfather.EventListeners
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
-            if (e.Message.Author == e.Client.CurrentUser && shard.SharedData.IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
@@ -217,7 +218,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (e.Message.Author == e.Client.CurrentUser && shard.SharedData.IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {

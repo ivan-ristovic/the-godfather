@@ -15,6 +15,7 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -25,11 +26,11 @@ namespace TheGodfather.Modules.Currency
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't be repeated.")]
         [Aliases("lotto")]
         [UsageExampleArgs("2 10 8")]
-        public class LotteryModule : TheGodfatherModule
+        public class LotteryModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public LotteryModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public LotteryModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
             }
@@ -39,8 +40,8 @@ namespace TheGodfather.Modules.Currency
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
                         await this.JoinAsync(ctx, numbers);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -48,7 +49,7 @@ namespace TheGodfather.Modules.Currency
                 }
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
                     await this.JoinAsync(ctx, numbers);
@@ -61,7 +62,7 @@ namespace TheGodfather.Modules.Currency
                             await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
                             using (DatabaseContext db = this.Database.CreateContext()) {
-                                foreach (LotteryParticipant winner in game.Winners)
+                                foreach (LotteryGame.Participant winner in game.Winners)
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
                                 await db.SaveChangesAsync();
                             }
@@ -78,7 +79,7 @@ namespace TheGodfather.Modules.Currency
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -97,7 +98,7 @@ namespace TheGodfather.Modules.Currency
                 if (numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))
                     throw new CommandFailedException($"Invalid number given! Numbers must be in range [1, {LotteryGame.MaxNumber}]!");
 
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is LotteryGame game))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out LotteryGame game))
                     throw new CommandFailedException("There are no Lottery games running in this channel.");
 
                 if (game.Started)

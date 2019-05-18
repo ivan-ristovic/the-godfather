@@ -12,6 +12,7 @@ namespace TheGodfather
 {
     public sealed class SharedData : IDisposable
     {
+        #region Properties
         public AsyncExecutor AsyncExecutor { get; }
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
@@ -29,8 +30,8 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
         public UptimeInformation UptimeInformation { get; internal set; }
 
-        private ConcurrentDictionary<ulong, ChannelEvent> ChannelEvents { get; }
         private ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
+        #endregion
 
 
         public SharedData()
@@ -39,7 +40,6 @@ namespace TheGodfather
             this.BlockedChannels = new ConcurrentHashSet<ulong>();
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;
-            this.ChannelEvents = new ConcurrentDictionary<ulong, ChannelEvent>();
             this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
@@ -61,23 +61,6 @@ namespace TheGodfather
                 texec.Dispose();
         }
 
-
-        #region CHANNEL_EVENT_HELPERS
-        public ChannelEvent GetEventInChannel(ulong cid)
-            => this.ChannelEvents.TryGetValue(cid, out ChannelEvent e) ? e : null;
-
-        public bool IsEventRunningInChannel(ulong cid)
-            => !(this.GetEventInChannel(cid) is null);
-
-        public void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
-            => this.ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);
-
-        public void UnregisterEventInChannel(ulong cid)
-        {
-            if (!this.ChannelEvents.TryRemove(cid, out _))
-                this.ChannelEvents[cid] = null;
-        }
-        #endregion
 
         #region RANK_HELPERS
         public short CalculateRankForMessageCount(int msgcount)

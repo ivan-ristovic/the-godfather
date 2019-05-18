@@ -9,32 +9,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Polls.Common
 {
-    public class Poll
+    public class Poll : IChannelEvent
     {
         public string Question { get; }
         public bool IsRunning { get; protected set; }
         public List<string> Options { get; set; }
         public TimeSpan TimeUntilEnd => this.endTime != null ? this.endTime - DateTime.Now : TimeSpan.Zero;
         public DiscordMember Initiator { get; set; }
+        public DiscordChannel Channel { get; protected set; }
+
+        public InteractivityExtension Interactivity { get; protected set; }
 
         protected DateTime endTime;
         protected readonly ConcurrentDictionary<ulong, int> votes;
-        protected readonly DiscordChannel channel;
-        protected readonly InteractivityExtension interactivity;
         protected readonly CancellationTokenSource cts;
 
 
-        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
+        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question, TimeSpan runFor)
         {
+            this.endTime = DateTime.Now + runFor;
+            this.Channel = channel;
+            this.Interactivity = interactivity;
             this.Question = question;
-            this.channel = channel;
-            this.interactivity = interactivity;
             this.Options = new List<string>();
             this.Initiator = sender;
             this.votes = new ConcurrentDictionary<ulong, int>();
@@ -42,22 +44,21 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
 
-        public virtual async Task RunAsync(TimeSpan timespan)
+        public virtual async Task RunAsync()
         {
             this.IsRunning = true;
-            DiscordMessage msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+            DiscordMessage msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
-            this.endTime = DateTime.Now + timespan;
             while (!this.cts.IsCancellationRequested) {
                 try {
-                    if (this.channel.LastMessageId != msgHandle.Id) {
+                    if (this.Channel.LastMessageId != msgHandle.Id) {
                         await msgHandle.DeleteAsync();
-                        msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+                        msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed());
                     } else {
                         await msgHandle.ModifyAsync(embed: this.ToDiscordEmbed());
                     }
                 } catch {
-                    msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+                    msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed());
                 }
 
                 if (this.TimeUntilEnd.TotalSeconds < 1)
@@ -66,13 +67,13 @@ namespace TheGodfather.Modules.Polls.Common
                 try {
                     await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(10) ? this.TimeUntilEnd : TimeSpan.FromSeconds(10), this.cts.Token);
                 } catch (TaskCanceledException) {
-                    await this.channel.InformFailureAsync("The poll has been cancelled!");
+                    await this.Channel.InformFailureAsync("The poll has been cancelled!");
                 }
             }
 
             this.IsRunning = false;
 
-            await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
+            await this.Channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
         }
 
         public virtual DiscordEmbed ToDiscordEmbed()

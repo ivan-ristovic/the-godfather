@@ -1,51 +1,36 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TexasHoldem.Logic;
 using TexasHoldem.Logic.Cards;
 using TexasHoldem.Logic.Helpers;
-
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public sealed class HoldemParticipant
-    {
-        public DiscordUser User { get; internal set; }
-        public Card Card1 { get; set; }
-        public Card Card2 { get; set; }
-        public long Balance { get; set; }
-        public int Bet { get; set; }
-        public bool Folded { get; set; } = false;
-        public ulong Id => this.User.Id;
-        public DiscordMessage DmHandle { get; internal set; }
-        public HandRankType HandRank { get; set; }
-    }
-
-    public sealed class HoldemGame : ChannelEvent
+    public sealed class HoldemGame : BaseChannelGame
     {
         private static readonly HandEvaluator _evaluator = new HandEvaluator();
 
         public int MoneyNeeded { get; private set; }
         public bool Started { get; private set; }
         public long Pot { get; private set; }
-        public ConcurrentQueue<HoldemParticipant> Participants { get; }
+        public ConcurrentQueue<Participant> Participants { get; }
 
         private bool GameOver;
         private readonly Deck deck;
         private readonly List<Card> drawn;
-        private IEnumerable<HoldemParticipant> ActiveParticipants => this.Participants.Where(p => p.Folded == false);
+        private IEnumerable<Participant> ActiveParticipants => this.Participants.Where(p => p.Folded == false);
 
 
         public HoldemGame(InteractivityExtension interactivity, DiscordChannel channel, int balance)
@@ -56,7 +41,7 @@ namespace TheGodfather.Modules.Currency.Common
             this.GameOver = false;
             this.deck = new Deck();
             this.drawn = new List<Card>();
-            this.Participants = new ConcurrentQueue<HoldemParticipant>();
+            this.Participants = new ConcurrentQueue<Participant>();
         }
 
 
@@ -66,7 +51,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             DiscordMessage msg = await this.Channel.EmbedAsync("Starting Hold'Em game... Keep an eye on DM!");
 
-            foreach (HoldemParticipant participant in this.Participants) {
+            foreach (Participant participant in this.Participants) {
                 participant.Card1 = this.deck.GetNextCard();
                 participant.Card2 = this.deck.GetNextCard();
                 try {
@@ -82,11 +67,11 @@ namespace TheGodfather.Modules.Currency.Common
 
             int bet = 5;
             for (int step = 0; step < 2; step++) {
-                foreach (HoldemParticipant participant in this.ActiveParticipants)
+                foreach (Participant participant in this.ActiveParticipants)
                     participant.Bet = 0;
 
                 while (this.ActiveParticipants.Any(p => p.Bet != bet)) {
-                    foreach (HoldemParticipant participant in this.ActiveParticipants) {
+                    foreach (Participant participant in this.ActiveParticipants) {
                         await this.PrintGameAsync(msg, bet, participant);
 
                         if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) {
@@ -115,10 +100,10 @@ namespace TheGodfather.Modules.Currency.Common
             this.GameOver = true;
             await this.PrintGameAsync(msg, bet, showhands: true);
 
-            foreach (HoldemParticipant p in this.ActiveParticipants)
+            foreach (Participant p in this.ActiveParticipants)
                 p.HandRank = _evaluator.GetBestHand(new List<Card>(this.drawn) { p.Card1, p.Card2 }).RankType;
 
-            HoldemParticipant winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
+            Participant winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
             if (!(winner is null))
                 winner.Balance += this.Pot;
             this.Winner = winner?.User;
@@ -129,7 +114,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.IsParticipating(user))
                 return;
 
-            this.Participants.Enqueue(new HoldemParticipant {
+            this.Participants.Enqueue(new Participant {
                 User = user,
                 Balance = MoneyNeeded,
                 DmHandle = dm
@@ -140,7 +125,7 @@ namespace TheGodfather.Modules.Currency.Common
             => this.Participants.Any(p => p.Id == user.Id);
 
 
-        private Task PrintGameAsync(DiscordMessage msg, int bet, HoldemParticipant tomove = null, bool showhands = false)
+        private Task PrintGameAsync(DiscordMessage msg, int bet, Participant tomove = null, bool showhands = false)
         {
             var sb = new StringBuilder();
 
@@ -148,7 +133,7 @@ namespace TheGodfather.Modules.Currency.Common
             sb.Append("Current pot: ").AppendLine(Formatter.Bold(this.Pot.ToString())).AppendLine();
             sb.Append("Call value: ").AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
-            foreach (HoldemParticipant participant in this.Participants) {
+            foreach (Participant participant in this.Participants) {
                 sb.Append(participant.User.Mention)
                   .Append(" | Chips: ")
                   .Append(Formatter.Bold(participant.Balance.ToString()))
@@ -172,6 +157,20 @@ namespace TheGodfather.Modules.Currency.Common
                 emb.AddField("Deciding whether to call (type yes/no):", tomove.User.Mention);
 
             return msg.ModifyAsync(embed: emb.Build());
+        }
+
+
+        public sealed class Participant
+        {
+            public DiscordUser User { get; internal set; }
+            public Card Card1 { get; set; }
+            public Card Card2 { get; set; }
+            public long Balance { get; set; }
+            public int Bet { get; set; }
+            public bool Folded { get; set; } = false;
+            public ulong Id => this.User.Id;
+            public DiscordMessage DmHandle { get; internal set; }
+            public HandRankType HandRank { get; set; }
         }
     }
 }

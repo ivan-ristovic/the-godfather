@@ -17,13 +17,9 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class CountriesQuiz : ChannelEvent
+    public class CountriesQuiz : BaseChannelGame
     {
-        private static Dictionary<string, string> _countries;
-
-        public ConcurrentDictionary<DiscordUser, int> Results { get; }
-        public int NumberOfQuestions { get; private set; }
-
+        private static readonly Dictionary<string, string> _countries;
 
         static CountriesQuiz()
         {
@@ -33,6 +29,11 @@ namespace TheGodfather.Modules.Games.Common
             foreach (FileInfo fi in files)
                 _countries.Add(fi.FullName, fi.Name.Split('.').First());
         }
+
+
+        public ConcurrentDictionary<DiscordUser, int> Results { get; }
+        public int NumberOfQuestions { get; private set; }
+
 
         public CountriesQuiz(InteractivityExtension interactivity, DiscordChannel channel, int questions)
             : base(interactivity, channel)

@@ -13,8 +13,10 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Chickens.Common
 {
-    public class ChickenWar : ChannelEvent
+    public class ChickenWar : IChannelEvent
     {
+        public DiscordChannel Channel { get; protected set; }
+        public InteractivityExtension Interactivity { get; protected set; }
         public int Gain { get; private set; }
         public bool Started { get; private set; }
         public ConcurrentQueue<Chicken> Team1 { get; }
@@ -26,8 +28,10 @@ namespace TheGodfather.Modules.Chickens.Common
 
 
         public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string team1, string team2)
-            : base(interactivity, channel)
         {
+            this.Interactivity = interactivity;
+            this.Channel = channel;
+
             this.Started = false;
 
             if (!string.IsNullOrWhiteSpace(team1))
@@ -40,7 +44,7 @@ namespace TheGodfather.Modules.Chickens.Common
         }
 
 
-        public override async Task RunAsync()
+        public async Task RunAsync()
         {
             this.Started = true;
 

@@ -16,6 +16,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -28,11 +29,11 @@ namespace TheGodfather.Modules.Games
                      "must submit their move.")]
         [Aliases("ttt")]
         [UsageExampleArgs("10s")]
-        public class TicTacToeModule : TheGodfatherModule
+        public class TicTacToeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TicTacToeModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public TicTacToeModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -42,7 +43,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
@@ -54,7 +55,7 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var ttt = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(ttt, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(ttt, ctx.Channel.Id);
                 try {
                     await ttt.RunAsync();
 
@@ -73,7 +74,7 @@ namespace TheGodfather.Modules.Games
                         await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

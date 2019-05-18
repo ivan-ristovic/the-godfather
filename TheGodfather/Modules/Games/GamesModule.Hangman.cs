@@ -16,6 +16,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -25,11 +26,11 @@ namespace TheGodfather.Modules.Games
         [Group("hangman"), UsesInteractivity]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
-        public class HangmanModule : TheGodfatherModule
+        public class HangmanModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public HangmanModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public HangmanModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -38,7 +39,7 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
@@ -56,14 +57,14 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Result.Content, mctx.Result.Author);
-                this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync();
 
                     if (!(hangman.Winner is null))
                         await this.Database.UpdateStatsAsync(hangman.Winner.Id, s => s.HangmanWon++);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

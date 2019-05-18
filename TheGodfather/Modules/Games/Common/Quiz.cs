@@ -16,7 +16,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class Quiz : ChannelEvent
+    public class Quiz : BaseChannelGame
     {
         public ConcurrentDictionary<DiscordUser, int> Results { get; }
 

@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public class HangmanGame : ChannelEvent
+    public class HangmanGame : BaseChannelGame
     {
         private DiscordMessage msgHandle;
         private int lives;

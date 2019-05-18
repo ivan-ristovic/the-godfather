@@ -16,6 +16,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -26,11 +27,11 @@ namespace TheGodfather.Modules.Chickens
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.")]
         [Aliases("perks", "upgrade", "u")]
         [UsageExampleArgs("1", "1 2 3")]
-        public class UpgradeModule : TheGodfatherModule
+        public class UpgradeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public UpgradeModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public UpgradeModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
@@ -47,7 +48,7 @@ namespace TheGodfather.Modules.Chickens
                 if (ids is null || !ids.Any())
                     throw new CommandFailedException("You need to specify the IDs of the upgrades you wish to purchase.");
 
-                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
                 var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);

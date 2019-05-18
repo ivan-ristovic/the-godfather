@@ -35,23 +35,22 @@ namespace TheGodfather.Modules.Polls.Common
         private IReadOnlyCollection<PollEmoji> results;
 
 
-        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
-            : base(interactivity, channel, sender, question)
+        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question, TimeSpan runFor)
+            : base(interactivity, channel, sender, question, runFor)
         {
 
         }
 
 
-        public override async Task RunAsync(TimeSpan timespan)
+        public override async Task RunAsync()
         {
-            this.endTime = DateTime.Now + timespan;
             this.IsRunning = true;
 
-            this.msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+            this.msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
-            this.results = await this.interactivity.DoPollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count).ToArray(), PollBehaviour.Default, timespan);
+            this.results = await this.Interactivity.DoPollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count).ToArray(), PollBehaviour.Default, this.TimeUntilEnd);
 
-            await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
+            await this.Channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
 
             this.IsRunning = false;
         }

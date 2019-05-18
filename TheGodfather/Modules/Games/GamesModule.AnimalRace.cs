@@ -15,6 +15,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -24,11 +25,11 @@ namespace TheGodfather.Modules.Games
         [Group("animalrace")]
         [Description("Start a new animal race!")]
         [Aliases("animr", "arace", "ar", "animalr")]
-        public class AnimalRaceModule : TheGodfatherModule
+        public class AnimalRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public AnimalRaceModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public AnimalRaceModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.Teal;
             }
@@ -37,8 +38,8 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is AnimalRace)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is AnimalRace)
                         await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -46,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.");
                     await this.JoinAsync(ctx);
@@ -61,7 +62,7 @@ namespace TheGodfather.Modules.Games
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             
@@ -72,7 +73,7 @@ namespace TheGodfather.Modules.Games
             [Aliases("+", "compete", "enter", "j")]
             public Task JoinAsync(CommandContext ctx)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is AnimalRace game))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out AnimalRace game))
                     throw new CommandFailedException("There is no animal race game running in this channel.");
 
                 if (game.Started)

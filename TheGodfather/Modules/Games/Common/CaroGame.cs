@@ -11,7 +11,7 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public sealed class CaroGame : BoardGame
+    public sealed class CaroGame : BaseBoardGame
     {
         private static readonly string _Header = StaticDiscordEmoji.ArrowUp + string.Join("", StaticDiscordEmoji.Numbers);
 

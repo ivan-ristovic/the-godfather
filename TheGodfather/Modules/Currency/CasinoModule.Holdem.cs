@@ -15,6 +15,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -25,11 +26,11 @@ namespace TheGodfather.Modules.Currency
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
         [UsageExampleArgs("10000")]
-        public class HoldemModule : TheGodfatherModule
+        public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public HoldemModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public HoldemModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
             }
@@ -42,8 +43,8 @@ namespace TheGodfather.Modules.Currency
                 if (amount < 5)
                     throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}");
 
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
                         await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Currency
                 }
                 
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
                     await this.JoinAsync(ctx);
@@ -64,7 +65,7 @@ namespace TheGodfather.Modules.Currency
                             await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
                         using (DatabaseContext db = this.Database.CreateContext()) {
-                            foreach (HoldemParticipant participant in game.Participants)
+                            foreach (HoldemGame.Participant participant in game.Participants)
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
                             await db.SaveChangesAsync();
                         }
@@ -78,7 +79,7 @@ namespace TheGodfather.Modules.Currency
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -89,7 +90,7 @@ namespace TheGodfather.Modules.Currency
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame game))
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame game))
                     throw new CommandFailedException("There are no Texas Hold'Em games running in this channel.");
 
                 if (game.Started)
