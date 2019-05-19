@@ -75,6 +75,7 @@ namespace TheGodfather
                 .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                 .AddSingleton(new RatelimitService(this))
                 .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
+                .AddSingleton(new UserRanksService())
                 .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
                 .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
                 .BuildServiceProvider();

@@ -55,7 +55,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id))) {
-                short rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
+                short rank = shard.Services.GetService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
                 if (rank != 0) {
                     DatabaseGuildRank rankInfo;
                     using (DatabaseContext db = shard.Database.CreateContext())

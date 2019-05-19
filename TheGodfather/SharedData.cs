@@ -23,7 +23,6 @@ namespace TheGodfather
         public Logger LogProvider { get; internal set; }
         public bool IsBotListening { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
-        public ConcurrentDictionary<ulong, int> MessageCount { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
@@ -45,7 +44,6 @@ namespace TheGodfather
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
-            this.MessageCount = new ConcurrentDictionary<ulong, int>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.RemindExecuters = new ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>>();
             this.StatusRotationEnabled = true;
@@ -61,30 +59,6 @@ namespace TheGodfather
                 texec.Dispose();
         }
 
-
-        #region RANK_HELPERS
-        public short CalculateRankForMessageCount(int msgcount)
-            => (short)Math.Floor(Math.Sqrt(msgcount / 10));
-
-        public short CalculateRankForUser(ulong uid)
-            => this.MessageCount.TryGetValue(uid, out int count) ? this.CalculateRankForMessageCount(count) : (short)0;
-
-        public int CalculateXpNeededForRank(short index)
-            => index * index * 10;
-
-        public int GetMessageCountForUser(ulong uid)
-            => this.MessageCount.TryGetValue(uid, out int count) ? count : 0;
-
-        public short IncrementMessageCountForUser(ulong uid)
-        {
-            this.MessageCount.AddOrUpdate(uid, 1, (k, v) => v + 1);
-
-            short prev = this.CalculateRankForMessageCount(this.MessageCount[uid] - 1);
-            short curr = this.CalculateRankForMessageCount(this.MessageCount[uid]);
-
-            return curr != prev ? curr : (short)0;
-        }
-        #endregion
 
         #region GUILD_DATA_HELPERS
         public CachedGuildConfig GetGuildConfig(ulong gid)
