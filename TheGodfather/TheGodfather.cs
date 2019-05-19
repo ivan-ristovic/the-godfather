@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
@@ -21,6 +22,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather
 {
@@ -52,7 +54,7 @@ namespace TheGodfather
             try {
                 await LoadBotConfigAsync();
                 await InitializeDatabaseAsync();
-                LoadSharedDataFromDatabase();
+                InitializeSharedData();
                 await CreateAndBootShardsAsync();
 
                 Shared.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete!");
@@ -130,7 +132,7 @@ namespace TheGodfather
             await Database.CreateContext().Database.MigrateAsync();
         }
 
-        private static void LoadSharedDataFromDatabase()
+        private static void InitializeSharedData()
         {
             Console.Write("\r[3/5] Loading data from the database...           ");
 
@@ -177,11 +179,6 @@ namespace TheGodfather
                         .GroupBy(f => f.GuildId)
                         .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
                 );
-                msgcount = new ConcurrentDictionary<ulong, int>(
-                    db.MessageCount
-                        .GroupBy(ui => ui.UserId)
-                        .ToDictionary(g => g.Key, g => g.First().MessageCount)
-                );
                 treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                     db.TextReactions
                         .Include(t => t.DbTriggers)
@@ -211,7 +208,6 @@ namespace TheGodfather
                 Filters = filters,
                 GuildConfigurations = guildConfigurations,
                 LogProvider = logger,
-                MessageCount = msgcount,
                 TextReactions = treactions,
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
             };
@@ -236,10 +232,10 @@ namespace TheGodfather
 
         private static async Task RegisterPeriodicTasksAsync()
         {
-            BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
-            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(Config.DatabaseSyncInterval));
-            FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(Config.FeedCheckStartDelay), TimeSpan.FromSeconds(Config.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, Shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
+            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(Config.DatabaseSyncInterval));
+            FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0], TimeSpan.FromSeconds(Config.FeedCheckStartDelay), TimeSpan.FromSeconds(Config.FeedCheckInterval));
+            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
 
             using (DatabaseContext db = Database.CreateContext()) {
                 await RegisterSavedTasksAsync(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
@@ -319,19 +315,18 @@ namespace TheGodfather
         #region Callbacks
         private static void BotActivityChangeCallback(object _)
         {
-            if (!Shared.StatusRotationEnabled)
-                return;
+            var shard = _ as TheGodfatherShard;
 
-            var client = _ as DiscordClient;
+            if (!shard.SharedData.StatusRotationEnabled)
+                return;
 
             try {
                 DatabaseBotStatus status;
-                using (DatabaseContext db = Database.CreateContext())
+                using (DatabaseContext db = shard.Database.CreateContext())
                     status = db.BotStatuses.Shuffle().FirstOrDefault();
 
                 var activity = new DiscordActivity(status?.Status ?? "@TheGodfather help", status?.Activity ?? ActivityType.Playing);
-
-                Shared.AsyncExecutor.Execute(client.UpdateStatusAsync(activity));
+                Shared.AsyncExecutor.Execute(shard.Client.UpdateStatusAsync(activity));
             } catch (Exception e) {
                 Shared.LogProvider.Log(LogLevel.Error, e);
             }
@@ -339,24 +334,10 @@ namespace TheGodfather
 
         private static void DatabaseSyncCallback(object _)
         {
+            var shard = _ as TheGodfatherShard;
             try {
-                using (DatabaseContext db = Database.CreateContext()) {
-                    foreach ((ulong uid, int count) in Shared.MessageCount) {
-                        DatabaseMessageCount msgcount = db.MessageCount.Find((long)uid);
-                        if (msgcount is null) {
-                            db.MessageCount.Add(new DatabaseMessageCount {
-                                MessageCount = count,
-                                UserId = uid
-                            });
-                        } else {
-                            if (count != msgcount.MessageCount) {
-                                msgcount.MessageCount = count;
-                                db.MessageCount.Update(msgcount);
-                            }
-                        }
-                    }
-                    db.SaveChanges();
-                }
+                using (DatabaseContext db = shard.Database.CreateContext())
+                    shard.Services.GetService<UserRanksService>().Sync(db);
             } catch (Exception e) {
                 Shared.LogProvider.Log(LogLevel.Error, e);
             }
@@ -364,10 +345,10 @@ namespace TheGodfather
 
         private static void FeedCheckCallback(object _)
         {
-            var client = _ as DiscordClient;
+            var shard = _ as TheGodfatherShard;
 
             try {
-                Shared.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, Database));
+                Shared.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, Database));
             } catch (Exception e) {
                 Shared.LogProvider.Log(LogLevel.Error, e);
             }
@@ -375,7 +356,7 @@ namespace TheGodfather
 
         private static void MiscellaneousActionsCallback(object _)
         {
-            var client = _ as DiscordClient;
+            var shard = _ as TheGodfatherShard;
 
             try {
                 List<DatabaseBirthday> todayBirthdays;
@@ -385,8 +366,8 @@ namespace TheGodfather
                         .ToList();
                 }
                 foreach (DatabaseBirthday birthday in todayBirthdays) {
-                    DiscordChannel channel = Shared.AsyncExecutor.Execute(client.GetChannelAsync(birthday.ChannelId));
-                    DiscordUser user = Shared.AsyncExecutor.Execute(client.GetUserAsync(birthday.UserId));
+                    DiscordChannel channel = Shared.AsyncExecutor.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
+                    DiscordUser user = Shared.AsyncExecutor.Execute(shard.Client.GetUserAsync(birthday.UserId));
                     Shared.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                         Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
                         Color = DiscordColor.Aquamarine

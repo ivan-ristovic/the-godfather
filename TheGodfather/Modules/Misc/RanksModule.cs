@@ -14,6 +14,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -23,11 +24,11 @@ namespace TheGodfather.Modules.Misc
     [Aliases("ranks", "ranking", "level")]
     [UsageExampleArgs("@Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RanksModule : TheGodfatherModule
+    public class RanksModule : TheGodfatherServiceModule<UserRanksService>
     {
 
-        public RanksModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public RanksModule(UserRanksService service, SharedData shared, DatabaseContextBuilder db) 
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.Gold;
         }
@@ -39,8 +40,8 @@ namespace TheGodfather.Modules.Misc
         {
             user = user ?? ctx.User;
 
-            short rank = this.Shared.CalculateRankForUser(user.Id);
-            int msgcount = this.Shared.GetMessageCountForUser(user.Id);
+            short rank = this.Service.CalculateRankForUser(user.Id);
+            uint msgcount = this.Service.GetMessageCountForUser(user.Id);
 
             DatabaseGuildRank rankInfo;
             using (DatabaseContext db = this.Database.CreateContext())
@@ -109,7 +110,7 @@ namespace TheGodfather.Modules.Misc
             using (DatabaseContext db = this.Database.CreateContext()) {
                 db.GuildRanks.Remove(new DatabaseGuildRank {
                     GuildId = ctx.Guild.Id,
-                    Rank = (short)rank
+                    Rank = rank
                 });
                 await db.SaveChangesAsync();
             }
@@ -138,7 +139,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 "Custom ranks for this guild",
                 ranks,
-                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} | XP needed: {Formatter.InlineCode($"{this.Shared.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
+                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} | XP needed: {Formatter.InlineCode($"{this.Service.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
                 this.ModuleColor
             );
         }
@@ -149,36 +150,43 @@ namespace TheGodfather.Modules.Misc
         [Description("Get rank leaderboard.")]
         public async Task TopAsync(CommandContext ctx)
         {
-            IEnumerable<KeyValuePair<ulong, int>> top = this.Shared.MessageCount
-                .OrderByDescending(v => v.Value)
-                .Take(10);
-
             var emb = new DiscordEmbedBuilder {
                 Title = "Top ranked users (globally)",
                 Color = this.ModuleColor
             };
-            
+
             Dictionary<short, string> ranks;
+            Dictionary<ulong, uint> top;
             using (DatabaseContext db = this.Database.CreateContext()) {
                 ranks = await db.GuildRanks
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .OrderBy(r => r.Rank)
                     .ToDictionaryAsync(r => r.Rank, r => r.Name);
+                top = await db.MessageCount
+                    .OrderByDescending(r => r.MessageCount)
+                    .Take(10)
+                    .ToDictionaryAsync(r => r.UserId, r => r.MessageCount);
             }
 
-            foreach ((ulong uid, int xp) in top) {
+            var notFoundUsers = new List<ulong>();
+            foreach ((ulong uid, uint xp) in top) {
                 DiscordUser user = null;
                 try {
                     user = await ctx.Client.GetUserAsync(uid);
                 } catch (NotFoundException) {
-                    this.Shared.MessageCount.TryRemove(uid, out _);
+                    notFoundUsers.Add(uid);
                 }
 
-                short rank = this.Shared.CalculateRankForMessageCount(xp);
+                short rank = this.Service.CalculateRankForMessageCount(xp);
                 if (ranks.TryGetValue(rank, out string name))
                     emb.AddField(user?.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
                 else
                     emb.AddField(user?.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
+            }
+
+            using (DatabaseContext db = this.Database.CreateContext()) {
+                db.MessageCount.RemoveRange(notFoundUsers.Select(uid => new DatabaseMessageCount() { UserId = uid }));
+                await db.SaveChangesAsync();
             }
 
             await ctx.RespondAsync(embed: emb.Build());

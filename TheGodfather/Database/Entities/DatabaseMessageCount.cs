@@ -16,6 +16,8 @@ namespace TheGodfather.Database.Entities
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("message_count")]
-        public int MessageCount { get; set; }
+        public int MessageCountDb { get; set; }
+        [NotMapped]
+        public uint MessageCount { get => (uint)this.MessageCountDb; set => this.MessageCountDb = (int)value; }
     }
 }
