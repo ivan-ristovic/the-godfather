@@ -4,12 +4,12 @@ using NUnit.Framework;
 namespace TheGodfatherTests.Database
 {
     [TestFixture]
-    public class DatabaseTest : DatabaseTestsBase
+    public class DatabaseTest
     {
         [Test]
         public void Test()
         {
-            this.AlterAndVerify(
+            TestDatabaseProvider.AlterAndVerify(
                 alter: db => {
                     db.MessageCount.Add(new TheGodfather.Database.Entities.DatabaseMessageCount() {
                         UserId = 123,
