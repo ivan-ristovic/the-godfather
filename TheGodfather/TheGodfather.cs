@@ -43,6 +43,7 @@ namespace TheGodfather
         private static Timer DatabaseSyncTimer { get; set; }
         private static Timer FeedCheckTimer { get; set; }
         private static Timer MiscActionsTimer { get; set; }
+        private static Timer SavedTaskLoadTimer { get; set; }
         #endregion
 
 
@@ -142,7 +143,6 @@ namespace TheGodfather
             ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
             ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
             ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
-            ConcurrentDictionary<ulong, int> msgcount;
 
             using (DatabaseContext db = Database.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
@@ -220,7 +220,7 @@ namespace TheGodfather
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < Config.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, Database, Shared);
-                shard.Initialize(async e => await RegisterPeriodicTasksAsync());
+                shard.Initialize(e => RegisterPeriodicTasks());
                 Shards.Add(shard);
             }
 
@@ -230,69 +230,14 @@ namespace TheGodfather
             await Task.WhenAll(Shards.Select(s => s.StartAsync()));
         }
 
-        private static async Task RegisterPeriodicTasksAsync()
+        private static Task RegisterPeriodicTasks()
         {
             BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, Shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(Config.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0], TimeSpan.FromSeconds(Config.FeedCheckStartDelay), TimeSpan.FromSeconds(Config.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-
-            using (DatabaseContext db = Database.CreateContext()) {
-                await RegisterSavedTasksAsync(db.SavedTasks.ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
-                    t => t.Id,
-                    t => {
-                        switch (t.Type) {
-                            case SavedTaskType.Unban:
-                                return new UnbanTaskInfo(t.GuildId, t.UserId, t.ExecutionTime);
-                            case SavedTaskType.Unmute:
-                                return new UnmuteTaskInfo(t.GuildId, t.UserId, t.RoleId, t.ExecutionTime);
-                            default:
-                                return null;
-                        }
-                    })
-                );
-                await RegisterRemindersAsync(db.Reminders.ToDictionary(
-                    t => t.Id,
-                    t => new SendMessageTaskInfo(t.ChannelId, t.UserId, t.Message, t.ExecutionTime, t.IsRepeating, t.RepeatInterval)
-                ));
-            }
-
-
-            async Task RegisterSavedTasksAsync(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
-            {
-                int scheduled = 0, missed = 0;
-                foreach ((int tid, SavedTaskInfo task) in tasks) {
-                    if (await RegisterTaskAsync(tid, task))
-                        scheduled++;
-                    else
-                        missed++;
-                }
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {scheduled} scheduled; {missed} missed.");
-            }
-
-            async Task RegisterRemindersAsync(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
-            {
-                int scheduled = 0, missed = 0;
-                foreach ((int tid, SendMessageTaskInfo task) in reminders) {
-                    if (await RegisterTaskAsync(tid, task))
-                        scheduled++;
-                    else
-                        missed++;
-                }
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {scheduled} scheduled; {missed} missed.");
-            }
-
-            async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
-            {
-                var texec = new SavedTaskExecutor(id, Shards[0].Client, tinfo, Shared, Database);
-                if (texec.TaskInfo.IsExecutionTimeReached) {
-                    await texec.HandleMissedExecutionAsync();
-                    return false;
-                } else {
-                    texec.Schedule();
-                    return true;
-                }
-            }
+            SavedTaskLoadTimer = new Timer(RegisterSavedTasksCallback, Shards[0], TimeSpan.Zero, TimeSpan.FromMinutes(5));
+            return Task.CompletedTask;
         }
 
         private static async Task DisposeAsync()
@@ -303,6 +248,7 @@ namespace TheGodfather
             DatabaseSyncTimer.Dispose();
             FeedCheckTimer.Dispose();
             MiscActionsTimer.Dispose();
+            SavedTaskLoadTimer.Dispose();
 
             foreach (TheGodfatherShard shard in Shards)
                 await shard.DisposeAsync();
@@ -386,6 +332,79 @@ namespace TheGodfather
                 }
             } catch (Exception e) {
                 Shared.LogProvider.Log(LogLevel.Error, e);
+            }
+        }
+
+        private static void RegisterSavedTasksCallback(object _)
+        {
+            var shard = _ as TheGodfatherShard;
+
+            try {
+                using (DatabaseContext db = Database.CreateContext()) {
+                    var savedTasks = db.SavedTasks
+                        .Where(t => t.ExecutionTime <= DateTimeOffset.Now + TimeSpan.FromMinutes(5))
+                        .ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
+                            t => t.Id,
+                            t => {
+                                switch (t.Type) {
+                                    case SavedTaskType.Unban:
+                                        return new UnbanTaskInfo(t.GuildId, t.UserId, t.ExecutionTime);
+                                    case SavedTaskType.Unmute:
+                                        return new UnmuteTaskInfo(t.GuildId, t.UserId, t.RoleId, t.ExecutionTime);
+                                    default:
+                                        return null;
+                                }
+                            }
+                        );
+                    RegisterSavedTasks(savedTasks);
+
+                    var reminders = db.Reminders
+                        .Where(t => t.ExecutionTime <= DateTimeOffset.Now + TimeSpan.FromMinutes(5))
+                        .ToDictionary(
+                            t => t.Id,
+                            t => new SendMessageTaskInfo(t.ChannelId, t.UserId, t.Message, t.ExecutionTime, t.IsRepeating, t.RepeatInterval)
+                        );
+                    RegisterReminders(reminders);
+                }
+            } catch (Exception e) {
+                Shared.LogProvider.Log(LogLevel.Error, e);
+            }
+
+
+            void RegisterSavedTasks(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
+            {
+                int scheduled = 0, missed = 0;
+                foreach ((int tid, SavedTaskInfo task) in tasks) {
+                    if (Shared.AsyncExecutor.Execute(RegisterTaskAsync(tid, task)))
+                        scheduled++;
+                    else
+                        missed++;
+                }
+                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Saved task scheduler: {scheduled} scheduled; {missed} missed.");
+            }
+
+            void RegisterReminders(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
+            {
+                int scheduled = 0, missed = 0;
+                foreach ((int tid, SendMessageTaskInfo task) in reminders) {
+                    if (Shared.AsyncExecutor.Execute(RegisterTaskAsync(tid, task)))
+                        scheduled++;
+                    else
+                        missed++;
+                }
+                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Reminder scheduler: {scheduled} scheduled; {missed} missed.");
+            }
+
+            async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
+            {
+                var texec = new SavedTaskExecutor(id, shard.Client, tinfo, Shared, Database);
+                if (texec.TaskInfo.IsExecutionTimeReached) {
+                    await texec.HandleMissedExecutionAsync();
+                    return false;
+                } else {
+                    texec.Schedule();
+                    return true;
+                }
             }
         }
         #endregion
