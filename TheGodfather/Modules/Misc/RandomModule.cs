@@ -57,14 +57,14 @@ namespace TheGodfather.Modules.Misc
         public Task RaffleAsync(CommandContext ctx,
                                [Description("Role.")] DiscordRole role = null)
         {
-            IEnumerable<DiscordMember> online = ctx.Guild.Members.Values
+            IEnumerable<DiscordMember> online = ctx.Guild.Members.Select(kvp => kvp.Value)
                 .Where(m => !(m.Presence is null) && m.Presence.Status != UserStatus.Offline);
 
             if (!(role is null))
                 online = online.Where(m => m.Roles.Any(r => r.Id == role.Id));
 
             if (online.Count() == 0)
-                throw new CommandFailedException("There are no memebers that meet the given criteria.");
+                throw new CommandFailedException("There are no members that meet the given criteria.");
 
             DiscordMember raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
             return this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"Raffled: {raffled.Mention}");

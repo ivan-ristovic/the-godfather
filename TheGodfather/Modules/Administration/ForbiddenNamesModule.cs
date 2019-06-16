@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
 
                 DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-                foreach (DiscordMember member in ctx.Guild.Members.Values.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
+                foreach (DiscordMember member in ctx.Guild.Members.Select(kvp => kvp.Value).Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
                     if (dbNames.Any(name => name.Regex.IsMatch(member.DisplayName))) {
                         try {
                             await member.ModifyAsync(m => {

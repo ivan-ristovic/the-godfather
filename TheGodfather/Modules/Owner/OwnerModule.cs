@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Owner
 
             var eb = new StringBuilder();
             foreach (TheGodfatherShard shard in TheGodfather.ActiveShards) {
-                foreach (DiscordGuild guild in shard.Client.Guilds.Values) {
+                foreach (DiscordGuild guild in shard.Client.Guilds.Select(kvp => kvp.Value)) {
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {

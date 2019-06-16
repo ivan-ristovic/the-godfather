@@ -131,7 +131,7 @@ namespace TheGodfather.Common
                 PrintTimestamp(timestamp);
                 PrintApplicationInfo(shard, null);
                 PrintLevel(level);
-                foreach (string message in messages)
+                foreach (string message in messages.Where(m => !string.IsNullOrWhiteSpace(m)))
                     PrintLogMessage(message);
                 PrintLogMessage();
                 if (filelog && this.filelog)
@@ -198,7 +198,7 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
-                    foreach (string message in messages)
+                    foreach (string message in messages.Where(m => !string.IsNullOrWhiteSpace(m)))
                         sw.WriteLine($"{_separator}{message.Trim()}");
                     sw.WriteLine();
                     sw.Flush();
