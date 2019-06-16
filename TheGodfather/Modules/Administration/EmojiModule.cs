@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
         {
             return ctx.SendCollectionInPagesAsync(
                 $"Emoji available for guild {ctx.Guild.Name}:",
-                ctx.Guild.Emojis.Values.OrderBy(e => e.Name),
+                ctx.Guild.Emojis.Select(kvp => kvp.Value).OrderBy(e => e.Name),
                 emoji => $"{emoji} | {Formatter.InlineCode(emoji.Id.ToString())} | {Formatter.InlineCode(emoji.Name)}",
                 this.ModuleColor
             );

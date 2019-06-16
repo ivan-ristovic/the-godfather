@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
         {
             return ctx.SendCollectionInPagesAsync(
                 "Roles in this guild:",
-                ctx.Guild.Roles.Values.OrderByDescending(r => r.Position),
+                ctx.Guild.Roles.Select(kvp => kvp.Value).OrderByDescending(r => r.Position),
                 r => $"{Formatter.InlineCode(r.Id.ToString())} | {(r.Mention)}",
                 this.ModuleColor,
                 10
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing role name.");
 
-            if (ctx.Guild.Roles.Values.Any(r => string.Compare(r.Name, name, true) == 0)) {
+            if (ctx.Guild.Roles.Select(kvp => kvp.Value).Any(r => string.Compare(r.Name, name, true) == 0)) {
                 if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue?"))
                     return;
             }
