@@ -11,7 +11,7 @@ namespace TheGodfather.Extensions
         private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
 
 
-        public static bool IsValidRegex(this string pattern)
+        public static bool IsValidRegexString(this string pattern)
         {
             if (string.IsNullOrEmpty(pattern))
                 return false;
@@ -65,7 +65,7 @@ namespace TheGodfather.Extensions
         public static bool TryParseRegex(this string pattern, out Regex result)
         {
             result = null;
-            if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
+            if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegexString(pattern))
                 return false;
 
             result = CreateWordBoundaryRegex(pattern, escape: false);
