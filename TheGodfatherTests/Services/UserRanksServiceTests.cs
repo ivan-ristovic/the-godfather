@@ -7,9 +7,9 @@ using TheGodfatherTests.Database;
 namespace TheGodfatherTests.Services
 {
     [TestFixture]
-    public sealed class UserRanksServiceTests
+    public sealed class UserRanksServiceTests : IServiceTest<UserRanksService>
     {
-        private UserRanksService Service { get; set; }
+        public UserRanksService Service { get; private set; }
 
         private const ulong uid1 = 123456123456;
         private const ulong uid2 = 123456123457;

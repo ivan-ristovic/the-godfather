@@ -9,9 +9,9 @@ using TheGodfather.Services;
 namespace TheGodfatherTests.Services
 {
     [TestFixture]
-    public sealed class ChannelEventServiceTests
+    public sealed class ChannelEventServiceTests : IServiceTest<ChannelEventService>
     {
-        private ChannelEventService Service { get; set; }
+        public ChannelEventService Service { get; private set; }
 
         private const ulong cid1 = 123456123456;
         private const ulong cid2 = 123456123457;
