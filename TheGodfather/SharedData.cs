@@ -17,8 +17,6 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
         public Logger LogProvider { get; internal set; }
         public bool IsBotListening { get; internal set; }
@@ -26,7 +24,6 @@ namespace TheGodfather
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
         public UptimeInformation UptimeInformation { get; internal set; }
 
         private ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
@@ -39,8 +36,6 @@ namespace TheGodfather
             this.BlockedChannels = new ConcurrentHashSet<ulong>();
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;
-            this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
-            this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
@@ -48,7 +43,6 @@ namespace TheGodfather
             this.RemindExecuters = new ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
-            this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
         }
 
 
@@ -60,7 +54,7 @@ namespace TheGodfather
         }
 
 
-        #region GUILD_DATA_HELPERS
+        #region Guild config methods
         public CachedGuildConfig GetGuildConfig(ulong gid)
             => this.GuildConfigurations.GetOrAdd(gid, CachedGuildConfig.Default);
 
@@ -78,23 +72,11 @@ namespace TheGodfather
             return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
         }
 
-        public bool GuildHasTextReaction(ulong gid, string trigger)
-            => this.TextReactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs) && (trs?.Any(tr => tr.ContainsTriggerPattern(trigger)) ?? false);
-
-        public bool MessageContainsFilter(ulong gid, string message)
-        {
-            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
-                return false;
-
-            message = message.ToLowerInvariant();
-            return filters.Any(f => f.Trigger.IsMatch(message));
-        }
-
         public void UpdateGuildConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifier)
             => this.GuildConfigurations[gid] = modifier(this.GuildConfigurations[gid]);
         #endregion
 
-        #region PENDING_RESPONSES_HELPERS
+        #region Pending responses methods
         public void AddPendingResponse(ulong cid, ulong uid)
         {
             this.PendingResponses.AddOrUpdate(
@@ -118,5 +100,20 @@ namespace TheGodfather
             return success;
         }
         #endregion
+
+
+
+
+
+        // TODO remove next
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; set; } = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
+        public bool MessageContainsFilter(ulong gid, string message)
+        {
+            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
+                return false;
+
+            message = message.ToLowerInvariant();
+            return filters.Any(f => f.Trigger.IsMatch(message));
+        }
     }
 }

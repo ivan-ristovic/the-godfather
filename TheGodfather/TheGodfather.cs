@@ -75,7 +75,7 @@ namespace TheGodfather
         }
 
 
-        internal static Task Stop(int exitCode = 0, TimeSpan? after = null)
+        public static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
             Environment.ExitCode = exitCode;
             Shared.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
@@ -141,8 +141,6 @@ namespace TheGodfather
             ConcurrentHashSet<ulong> blockedUsers;
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
             ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
 
             using (DatabaseContext db = Database.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
@@ -174,24 +172,12 @@ namespace TheGodfather
                         SuggestionsEnabled = gcfg.SuggestionsEnabled
                     }
                 )));
+
+                // TODO remove next
                 filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
                     db.Filters
                         .GroupBy(f => f.GuildId)
                         .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
-                );
-                treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
-                    db.TextReactions
-                        .Include(t => t.DbTriggers)
-                        .AsEnumerable()
-                        .GroupBy(tr => tr.GuildId)
-                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g.Select(tr => new TextReaction(tr.Id, tr.Triggers, tr.Response, true))))
-                );
-                ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>(
-                    db.EmojiReactions
-                        .Include(t => t.DbTriggers)
-                        .AsEnumerable()
-                        .GroupBy(er => er.GuildId)
-                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g.Select(er => new EmojiReaction(er.Id, er.Triggers, er.Reaction, true))))
                 );
             }
 
@@ -204,11 +190,7 @@ namespace TheGodfather
                 BlockedUsers = blockedUsers,
                 BotConfiguration = Config,
                 MainLoopCts = new CancellationTokenSource(),
-                EmojiReactions = ereactions,
-                Filters = filters,
-                GuildConfigurations = guildConfigurations,
                 LogProvider = logger,
-                TextReactions = treactions,
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
             };
         }

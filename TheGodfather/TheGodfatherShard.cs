@@ -19,6 +19,7 @@ using TheGodfather.Common.Converters;
 using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 
@@ -70,6 +71,7 @@ namespace TheGodfather
                 .AddSingleton(new ChannelEventService())
                 .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                 .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
+                .AddSingleton(new ReactionsService(this.Database, this.SharedData.LogProvider))
                 .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                 .AddSingleton(new LinkfilterService(this))
                 .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))

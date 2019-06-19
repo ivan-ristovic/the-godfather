@@ -47,6 +47,9 @@ namespace TheGodfather.Modules.Reactions.Common
             return !success;
         }
 
+        public bool CanSend() 
+            => !this.IsCooldownActive();
+
 
         private void Init()
         {

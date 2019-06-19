@@ -7,7 +7,7 @@ namespace TheGodfather.Services
     {
         public bool IsDisabled => false;
 
-        private ConcurrentDictionary<ulong, IChannelEvent> _events;
+        private readonly ConcurrentDictionary<ulong, IChannelEvent> _events;
 
 
         public ChannelEventService()

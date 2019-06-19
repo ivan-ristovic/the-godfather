@@ -18,6 +18,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Modules.Reactions.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reactions
@@ -28,11 +29,11 @@ namespace TheGodfather.Modules.Reactions
     [UsageExampleArgs("hello", "\"hi\" \"Hello, %user%!\"")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class TextReactionsModule : TheGodfatherModule
+    public class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
 
-        public TextReactionsModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public TextReactionsModule(ReactionsService service, SharedData shared, DatabaseContextBuilder db)
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGray;
         }
@@ -82,23 +83,23 @@ namespace TheGodfather.Modules.Reactions
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
+            IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(ctx.Guild.Id);
+            if (!trs.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var eb = new StringBuilder();
+            var validIds = new HashSet<int>();
             foreach (int id in ids) {
-                if (!treactions.Any(tr => tr.Id == id)) {
+                if (!trs.Any(tr => tr.Id == id)) {
                     eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
+                validIds.Add(id);
             }
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id && ids.Contains(tr.Id)));
-                await db.SaveChangesAsync();
-            }
-
-            int count = treactions.RemoveWhere(tr => ids.Contains(tr.Id));
+            int count = 0;
+            if (validIds.Any())
+                count = await this.Service.RemoveTextReactionsAsync(ctx.Guild.Id, validIds);
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
@@ -130,61 +131,36 @@ namespace TheGodfather.Modules.Reactions
             if (triggers is null || !triggers.Any())
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
+            IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(ctx.Guild.Id);
+            if (!trs.Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
-            var trIds = new List<int>();
-
             var eb = new StringBuilder();
-            triggers = triggers.Select(t => t.ToLowerInvariant()).ToArray();
-            foreach (string trigger in triggers) {
-                if (string.IsNullOrWhiteSpace(trigger))
+            var validTriggers = new HashSet<string>();
+            var foundReactions = new HashSet<TextReaction>();
+            foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
+                if (validTriggers.Contains(trigger))
                     continue;
 
-                if (!trigger.IsValidRegex()) {
+                if (!trigger.IsValidRegexString()) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
 
-                IEnumerable<TextReaction> found = treactions.Where(tr => tr.ContainsTriggerPattern(trigger));
+                IEnumerable<TextReaction> found = trs.Where(tr => tr.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
                     eb.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
                 }
 
-                bool success = true;
-                foreach (TextReaction tr in found) {
-                    success |= tr.RemoveTrigger(trigger);
-                    trIds.Add(tr.Id);
-                }
-
-                if (!success) {
-                    eb.AppendLine($"Warning: Failed to remove some text reactions for trigger {Formatter.Bold(trigger)}.");
-                    continue;
-                }
+                validTriggers.Add(trigger);
+                foreach (TextReaction tr in found)
+                    foundReactions.Add(tr);
             }
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                var toUpdate = db.TextReactions
-                    .Include(t => t.DbTriggers)
-                    .AsEnumerable()
-                    .Where(tr => tr.GuildId == ctx.Guild.Id && trIds.Contains(tr.Id))
-                    .ToList();
-                foreach (DatabaseTextReaction tr in toUpdate) {
-                    foreach (string trigger in triggers)
-                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger { ReactionId = tr.Id, Trigger = trigger });
-                    await db.SaveChangesAsync();
+            int removed = await this.Service.RemoveTextReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
 
-                    if (tr.DbTriggers.Any()) {
-                        db.TextReactions.Remove(tr);
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-
-            int count = treactions.RemoveWhere(tr => tr.RegexCount == 0);
-
-            if (count > 0) {
+            if (removed > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
@@ -193,7 +169,7 @@ namespace TheGodfather.Modules.Reactions
                     };
                     emb.AddField("User responsible", ctx.User.Mention, inline: true);
                     emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Removed successfully", $"{count} reactions", inline: true);
+                    emb.AddField("Removed successfully", $"{removed} reactions", inline: true);
                     emb.AddField("Triggers attempted to be removed", string.Join("\n", triggers));
                     if (eb.Length > 0)
                         emb.AddField("With errors", eb.ToString());
@@ -205,7 +181,7 @@ namespace TheGodfather.Modules.Reactions
             if (eb.Length > 0)
                 await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
             else
-                await this.InformAsync(ctx, $"Done! {count} reactions were removed completely.", important: false);
+                await this.InformAsync(ctx, $"Done! {removed} reactions were removed completely.", important: false);
         }
         #endregion
 
@@ -219,14 +195,7 @@ namespace TheGodfather.Modules.Reactions
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
-            if (this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
-                if (!this.Shared.TextReactions.TryRemove(ctx.Guild.Id, out _))
-                    throw new ConcurrentOperationException("Failed to remove text reaction collection!");
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id));
-                await db.SaveChangesAsync();
-            }
+            int removed = await this.Service.RemoveAllEmojiReactionsAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
@@ -236,6 +205,7 @@ namespace TheGodfather.Modules.Reactions
                 };
                 emb.AddField("User responsible", ctx.User.Mention, inline: true);
                 emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Successfully removed", $"{removed} reactions", inline: true);
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
@@ -251,10 +221,7 @@ namespace TheGodfather.Modules.Reactions
         public Task ListAsync(CommandContext ctx, 
                              [RemainingText, Description("Specific trigger.")] string trigger)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
-                throw new CommandFailedException("This guild has no text reactions registered.");
-
-            TextReaction tr = treactions.SingleOrDefault(t => t.IsMatch(trigger));
+            TextReaction tr = this.Service.FindMatchingTextReaction(ctx.Guild.Id, trigger);
             if (tr is null)
                 throw new CommandFailedException("None of the reactions respond to such trigger.");
 
@@ -275,9 +242,10 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("ls", "l", "print")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
-                throw new CommandFailedException("This guild has no text reactions registered.");
-            
+            IReadOnlyCollection<TextReaction> treactions = this.Service.GetGuildTextReactions(ctx.Guild.Id);
+            if (!treactions.Any())
+                throw new CommandFailedException("No text reactions registered for this guild.");
+
             return ctx.SendCollectionInPagesAsync(
                 "Text reactions for this guild",
                 treactions.OrderBy(tr => tr.OrderedTriggerStrings.First()),
@@ -300,48 +268,18 @@ namespace TheGodfather.Modules.Reactions
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
-                this.Shared.TextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
-
-            if (regex && !trigger.IsValidRegex())
+            if (regex && !trigger.IsValidRegexString())
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
-            if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))
+            if (this.Service.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
             if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Administration.Common.Filter> filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
-            int id;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
-                if (dbtr is null) {
-                    dbtr = new DatabaseTextReaction {
-                        GuildId = ctx.Guild.Id,
-                        Response = response,
-                    };
-                    db.TextReactions.Add(dbtr);
-                    await db.SaveChangesAsync();
-                }
-
-                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
-
-                await db.SaveChangesAsync();
-                id = dbtr.Id;
-            }
-
-            var eb = new StringBuilder();
-
-            ConcurrentHashSet<TextReaction> treactions = this.Shared.TextReactions[ctx.Guild.Id];
-            TextReaction reaction = treactions.FirstOrDefault(tr => tr.Response == response);
-            if (reaction is null) {
-                if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            } else {
-                if (!reaction.AddTrigger(trigger, regex))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            }
-
+            if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))
+                throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+            
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
@@ -352,15 +290,10 @@ namespace TheGodfather.Modules.Reactions
                 emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                 emb.AddField("Response", response, inline: true);
                 emb.AddField("Trigger", trigger);
-                if (eb.Length > 0)
-                    emb.AddField("With errors", eb.ToString());
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
             
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, eb.ToString());
-            else
-                await this.InformAsync(ctx, "Successfully added given text reaction.", important: false);
+            await this.InformAsync(ctx, "Successfully added given text reaction.", important: false);
         }
         #endregion
     }

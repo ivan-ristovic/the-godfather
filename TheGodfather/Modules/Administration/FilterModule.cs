@@ -1,13 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
@@ -15,6 +15,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Reactions.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, regexString)) {
+                    if (ctx.Services.GetService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
                         eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot be added because of a conflict with an existing text reaction trigger.");
                         continue;
                     }

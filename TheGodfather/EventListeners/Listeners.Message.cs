@@ -21,6 +21,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -108,7 +109,7 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
-        public static async Task MessageEmojiReactionEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
+        public static async Task MessageReactionEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
@@ -116,50 +117,27 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
                 return;
 
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
-                return;
+            ReactionsService gdata = shard.Services.GetService<ReactionsService>();
 
-            if (!shard.SharedData.EmojiReactions.TryGetValue(e.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
-                return;
-
-            EmojiReaction ereaction = ereactions?
-                .Where(er => er.IsMatch(e.Message?.Content ?? ""))
+            EmojiReaction triggeredEmojiReaction = gdata.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
                 .Shuffle()
                 .FirstOrDefault();
-            if (!(ereaction is null)) {
+            
+            if (!(triggeredEmojiReaction is null) && e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
                 try {
-                    var emoji = DiscordEmoji.FromName(shard.Client, ereaction.Response);
+                    var emoji = DiscordEmoji.FromName(shard.Client, triggeredEmojiReaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
                     using (DatabaseContext db = shard.Database.CreateContext()) {
-                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.Reaction == ereaction.Response));
+                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.Reaction == triggeredEmojiReaction.Response));
                         await db.SaveChangesAsync();
                     }
                 }
             }
-        }
 
-        [AsyncEventListener(DiscordEventType.MessageCreated)]
-        public static async Task MessageTextReactionEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
-        {
-            if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
-                return;
-
-            if (e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id)))
-                return;
-
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
-                return;
-
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                return;
-
-            if (!shard.SharedData.TextReactions.TryGetValue(e.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
-                return;
-
-            TextReaction tr = treactions?.FirstOrDefault(r => r.IsMatch(e.Message.Content));
-            if (!tr?.IsCooldownActive() ?? false)
-                await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
+            TextReaction triggeredTextReaction = gdata.FindMatchingTextReaction(e.Guild.Id, e.Message.Content);
+            if (!(triggeredTextReaction is null) && triggeredTextReaction.CanSend())
+                await e.Channel.SendMessageAsync(triggeredTextReaction.Response.Replace("%user%", e.Author.Mention));
         }
 
         [AsyncEventListener(DiscordEventType.MessageDeleted)]
