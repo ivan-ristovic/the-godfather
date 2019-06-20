@@ -645,10 +645,12 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<int>("MessageCount")
+                    b.Property<uint>("MessageCount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("message_count")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(1u);
+
+                    b.Property<int>("MessageCountDb")
+                        .HasColumnName("message_count");
 
                     b.HasKey("UserIdDb");
 

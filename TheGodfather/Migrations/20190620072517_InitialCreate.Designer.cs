@@ -4,23 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
 
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20190328182736_CommandRules")]
-    partial class CommandRules
+    [Migration("20190620072517_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gf")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "3.0.0-preview.18572.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1");
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
                 {
@@ -133,6 +130,8 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
+                    b.Property<long?>("DbGuildConfigGuildIdDb");
+
                     b.Property<int>("MaxVitality")
                         .HasColumnName("max_vit");
 
@@ -149,6 +148,8 @@ namespace TheGodfather.Migrations
 
                     b.HasKey("GuildIdDb", "UserIdDb");
 
+                    b.HasIndex("DbGuildConfigGuildIdDb");
+
                     b.ToTable("chickens");
                 });
 
@@ -163,7 +164,11 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
+                    b.Property<long?>("DatabaseGuildConfigGuildIdDb");
+
                     b.HasKey("Id", "GuildIdDb", "UserIdDb");
+
+                    b.HasIndex("DatabaseGuildConfigGuildIdDb");
 
                     b.HasIndex("GuildIdDb", "UserIdDb");
 
@@ -209,7 +214,11 @@ namespace TheGodfather.Migrations
                     b.Property<bool>("Allowed")
                         .HasColumnName("allow");
 
+                    b.Property<long?>("DbGuildConfigGuildIdDb");
+
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
+
+                    b.HasIndex("DbGuildConfigGuildIdDb");
 
                     b.ToTable("cmd_rules");
                 });
@@ -585,6 +594,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("gid");
 
                     b.Property<short>("Rank")
+                        .ValueGeneratedOnAdd()
                         .HasColumnName("rank");
 
                     b.Property<string>("Name")
@@ -637,10 +647,12 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<int>("MessageCount")
+                    b.Property<uint>("MessageCount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("message_count")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(1u);
+
+                    b.Property<int>("MessageCountDb")
+                        .HasColumnName("message_count");
 
                     b.HasKey("UserIdDb");
 
@@ -938,7 +950,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("AutoRoles")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseBankAccount", b =>
@@ -946,7 +959,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Accounts")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseBirthday", b =>
@@ -954,41 +968,41 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Birthdays")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseChicken", b =>
                 {
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Chickens")
-                        .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DbGuildConfigGuildIdDb");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseChickenBoughtUpgrade", b =>
                 {
-                    b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig")
+                    b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", null)
                         .WithMany("ChickensBoughtUpgrades")
-                        .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DatabaseGuildConfigGuildIdDb");
 
                     b.HasOne("TheGodfather.Database.Entities.DatabaseChickenUpgrade", "DbChickenUpgrade")
                         .WithMany("BoughtUpgrades")
                         .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TheGodfather.Database.Entities.DatabaseChicken", "DbChicken")
                         .WithMany("DbUpgrades")
                         .HasForeignKey("GuildIdDb", "UserIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseCommandRule", b =>
                 {
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
-                        .WithMany()
-                        .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany("CommandRules")
+                        .HasForeignKey("DbGuildConfigGuildIdDb");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseEmojiReaction", b =>
@@ -996,7 +1010,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("EmojiReactions")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseEmojiReactionTrigger", b =>
@@ -1004,7 +1019,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseEmojiReaction", "DbReaction")
                         .WithMany("DbTriggers")
                         .HasForeignKey("ReactionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseExemptAntispam", b =>
@@ -1012,7 +1028,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("AntispamExempts")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseExemptLogging", b =>
@@ -1020,7 +1037,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("LoggingExempts")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseExemptRatelimit", b =>
@@ -1028,7 +1046,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("RatelimitExempts")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseFilter", b =>
@@ -1036,7 +1055,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Filters")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseForbiddenName", b =>
@@ -1044,7 +1064,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany()
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseGuildRank", b =>
@@ -1052,7 +1073,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Ranks")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseMeme", b =>
@@ -1060,7 +1082,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Memes")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabasePurchasableItem", b =>
@@ -1068,7 +1091,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("PurchasableItems")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabasePurchasedItem", b =>
@@ -1076,7 +1100,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabasePurchasableItem", "DbPurchasableItem")
                         .WithMany("Purchases")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseRssSubscription", b =>
@@ -1084,12 +1109,14 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("Subscriptions")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TheGodfather.Database.Entities.DatabaseRssFeed", "DbRssFeed")
                         .WithMany("Subscriptions")
                         .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSavedTask", b =>
@@ -1097,7 +1124,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("SavedTasks")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSelfRole", b =>
@@ -1105,7 +1133,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("SelfRoles")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerAlias", b =>
@@ -1113,7 +1142,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseSwatPlayer", "DbSwatPlayer")
                         .WithMany("DbAliases")
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseSwatPlayerIP", b =>
@@ -1121,7 +1151,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseSwatPlayer", "DbSwatPlayer")
                         .WithMany("DbIPs")
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseTextReaction", b =>
@@ -1129,7 +1160,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseGuildConfig", "DbGuildConfig")
                         .WithMany("TextReactions")
                         .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseTextReactionTrigger", b =>
@@ -1137,7 +1169,8 @@ namespace TheGodfather.Migrations
                     b.HasOne("TheGodfather.Database.Entities.DatabaseTextReaction", "DbReaction")
                         .WithMany("DbTriggers")
                         .HasForeignKey("ReactionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

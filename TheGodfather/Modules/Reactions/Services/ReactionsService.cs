@@ -13,7 +13,6 @@ using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
@@ -25,16 +24,26 @@ namespace TheGodfather.Modules.Reactions.Services
 
         private readonly DatabaseContextBuilder dbb;
         private readonly Logger log;
-        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
-        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
+        private ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
+        private ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
 
 
-        public ReactionsService(DatabaseContextBuilder dbb, Logger log)
+        public ReactionsService(DatabaseContextBuilder dbb, Logger log, bool loadDataFromDatabase = true)
         {
             this.dbb = dbb;
             this.log = log;
+            this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
+            this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
+            if (loadDataFromDatabase)
+                this.LoadData();
+        }
+
+
+        public void LoadData()
+        {
             try {
-                using (DatabaseContext db = dbb.CreateContext()) {
+                using (DatabaseContext db = this.dbb.CreateContext()) {
+                    var x = db.BlockedChannels.ToList();
                     this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                         db.TextReactions
                             .Include(t => t.DbTriggers)
@@ -51,8 +60,6 @@ namespace TheGodfather.Modules.Reactions.Services
                     );
                 }
             } catch (Exception e) {
-                this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
-                this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
                 this.log.Log(DSharpPlus.LogLevel.Error, e);
             }
         }
