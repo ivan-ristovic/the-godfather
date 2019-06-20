@@ -13,10 +13,6 @@ namespace TheGodfatherTests.Services
     {
         public ChannelEventService Service { get; private set; }
 
-        private const ulong cid1 = 123456123456;
-        private const ulong cid2 = 123456123457;
-        private const ulong cid3 = 123456123458;
-
 
         [SetUp]
         public void InitializeService()
@@ -28,24 +24,24 @@ namespace TheGodfatherTests.Services
         [Test]
         public void GetEventInChannelTest()
         {
-            Assert.IsNull(EventIn(cid1));
-            Assert.IsNull(EventIn(cid2));
-            Assert.IsNull(EventIn(cid3));
+            Assert.IsNull(EventIn(MockData.Ids[0]));
+            Assert.IsNull(EventIn(MockData.Ids[1]));
+            Assert.IsNull(EventIn(MockData.Ids[2]));
 
             IChannelEvent caro = new CaroGame(null, null, null, null);
             IChannelEvent holdem = new HoldemGame(null, null, 0);
-            this.Service.RegisterEventInChannel(caro, cid1);
-            this.Service.RegisterEventInChannel(holdem, cid2);
+            this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
+            this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
 
-            Assert.AreSame(EventIn(cid1), caro);
-            Assert.AreSame(EventIn(cid2), holdem);
-            Assert.IsNull(EventIn(cid3));
+            Assert.AreSame(EventIn(MockData.Ids[0]), caro);
+            Assert.AreSame(EventIn(MockData.Ids[1]), holdem);
+            Assert.IsNull(EventIn(MockData.Ids[2]));
 
-            Assert.AreSame(EventOfTypeIn<CaroGame>(cid1), caro);
-            Assert.IsNull(EventOfTypeIn<HoldemGame>(cid1));
+            Assert.AreSame(EventOfTypeIn<CaroGame>(MockData.Ids[0]), caro);
+            Assert.IsNull(EventOfTypeIn<HoldemGame>(MockData.Ids[0]));
 
-            Assert.AreSame(EventOfTypeIn<HoldemGame>(cid2), holdem);
-            Assert.IsNull(EventOfTypeIn<CaroGame>(cid2));
+            Assert.AreSame(EventOfTypeIn<HoldemGame>(MockData.Ids[1]), holdem);
+            Assert.IsNull(EventOfTypeIn<CaroGame>(MockData.Ids[1]));
 
 
             IChannelEvent EventIn(ulong cid)
@@ -58,34 +54,34 @@ namespace TheGodfatherTests.Services
         [Test]
         public void IsEventRunningInChannelTest()
         {
-            Assert.False(IsEventRunningIn(cid1));
-            Assert.False(IsEventRunningIn(cid2));
-            Assert.False(IsEventRunningIn(cid3));
+            Assert.False(IsEventRunningIn(MockData.Ids[0]));
+            Assert.False(IsEventRunningIn(MockData.Ids[1]));
+            Assert.False(IsEventRunningIn(MockData.Ids[2]));
             
             IChannelEvent caro = new CaroGame(null, null, null, null);
             IChannelEvent holdem = new HoldemGame(null, null, 0);
 
-            this.Service.RegisterEventInChannel(caro, cid1);
-            this.Service.RegisterEventInChannel(holdem, cid2);
+            this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
+            this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
 
-            Assert.True(IsEventRunningIn(cid1));
-            Assert.True(IsEventRunningIn(cid2));
-            Assert.False(IsEventRunningIn(cid3));
+            Assert.True(IsEventRunningIn(MockData.Ids[0]));
+            Assert.True(IsEventRunningIn(MockData.Ids[1]));
+            Assert.False(IsEventRunningIn(MockData.Ids[2]));
 
-            Assert.True(IsOutEventRunningIn(cid1, out IChannelEvent outEvent));
+            Assert.True(IsOutEventRunningIn(MockData.Ids[0], out IChannelEvent outEvent));
             Assert.AreSame(outEvent, caro);
-            Assert.True(IsOutEventRunningIn(cid2, out outEvent));
+            Assert.True(IsOutEventRunningIn(MockData.Ids[1], out outEvent));
             Assert.AreSame(outEvent, holdem);
-            Assert.False(IsOutEventRunningIn(cid3, out outEvent));
+            Assert.False(IsOutEventRunningIn(MockData.Ids[2], out outEvent));
             Assert.IsNull(outEvent);
 
-            Assert.True(IsEventOfTypeRunningIn(cid1, out CaroGame outCaro));
+            Assert.True(IsEventOfTypeRunningIn(MockData.Ids[0], out CaroGame outCaro));
             Assert.AreSame(outCaro, caro);
-            Assert.False(IsEventOfTypeRunningIn(cid1, out HoldemGame outHoldem));
+            Assert.False(IsEventOfTypeRunningIn(MockData.Ids[0], out HoldemGame outHoldem));
             Assert.IsNull(outHoldem);
-            Assert.True(IsEventOfTypeRunningIn(cid2, out outHoldem));
+            Assert.True(IsEventOfTypeRunningIn(MockData.Ids[1], out outHoldem));
             Assert.AreSame(outHoldem, holdem);
-            Assert.False(IsEventOfTypeRunningIn(cid3, out IChannelEvent ret3));
+            Assert.False(IsEventOfTypeRunningIn(MockData.Ids[2], out IChannelEvent ret3));
             Assert.IsNull(ret3);
 
 
@@ -102,24 +98,24 @@ namespace TheGodfatherTests.Services
         [Test]
         public void RegisterEventInChannelTest()
         {
-            Assert.IsNull(EventIn(cid1));
-            Assert.IsNull(EventIn(cid2));
-            Assert.IsNull(EventIn(cid3));
+            Assert.IsNull(EventIn(MockData.Ids[0]));
+            Assert.IsNull(EventIn(MockData.Ids[1]));
+            Assert.IsNull(EventIn(MockData.Ids[2]));
 
             IChannelEvent war = new ChickenWar(null, null, null, null);
             IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
 
-            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(war, cid1));
-            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(ttt, cid2));
+            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]));
+            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]));
 
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, cid1));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, cid1));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, cid2));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, cid2));
+            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]));
+            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[0]));
+            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]));
+            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, MockData.Ids[1]));
 
-            Assert.AreSame(EventIn(cid1), war);
-            Assert.AreSame(EventIn(cid2), ttt);
-            Assert.IsNull(EventIn(cid3));
+            Assert.AreSame(EventIn(MockData.Ids[0]), war);
+            Assert.AreSame(EventIn(MockData.Ids[1]), ttt);
+            Assert.IsNull(EventIn(MockData.Ids[2]));
 
 
             IChannelEvent EventIn(ulong cid)
@@ -129,28 +125,28 @@ namespace TheGodfatherTests.Services
         [Test]
         public void UnregisterEventInChannelTest()
         {
-            Assert.IsNull(EventIn(cid1));
-            Assert.IsNull(EventIn(cid2));
-            Assert.IsNull(EventIn(cid3));
+            Assert.IsNull(EventIn(MockData.Ids[0]));
+            Assert.IsNull(EventIn(MockData.Ids[1]));
+            Assert.IsNull(EventIn(MockData.Ids[2]));
 
             IChannelEvent war = new ChickenWar(null, null, null, null);
             IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
 
-            this.Service.RegisterEventInChannel(war, cid1);
-            this.Service.RegisterEventInChannel(ttt, cid2);
+            this.Service.RegisterEventInChannel(war, MockData.Ids[0]);
+            this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]);
 
-            this.Service.UnregisterEventInChannel(cid1);
+            this.Service.UnregisterEventInChannel(MockData.Ids[0]);
 
-            Assert.IsNull(EventIn(cid1));
-            Assert.AreSame(EventIn(cid2), ttt);
+            Assert.IsNull(EventIn(MockData.Ids[0]));
+            Assert.AreSame(EventIn(MockData.Ids[1]), ttt);
 
-            this.Service.UnregisterEventInChannel(cid2);
+            this.Service.UnregisterEventInChannel(MockData.Ids[1]);
 
-            Assert.IsNull(EventIn(cid1));
-            Assert.IsNull(EventIn(cid2));
+            Assert.IsNull(EventIn(MockData.Ids[0]));
+            Assert.IsNull(EventIn(MockData.Ids[1]));
 
-            this.Service.UnregisterEventInChannel(cid1);
-            this.Service.UnregisterEventInChannel(cid2);
+            this.Service.UnregisterEventInChannel(MockData.Ids[0]);
+            this.Service.UnregisterEventInChannel(MockData.Ids[1]);
 
 
             IChannelEvent EventIn(ulong cid)

@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using TheGodfather.Database.Entities;
 using TheGodfather.Services;
-using TheGodfatherTests.Database;
 
 namespace TheGodfatherTests.Services
 {
@@ -10,10 +9,6 @@ namespace TheGodfatherTests.Services
     public sealed class UserRanksServiceTests : IServiceTest<UserRanksService>
     {
         public UserRanksService Service { get; private set; }
-
-        private const ulong uid1 = 123456123456;
-        private const ulong uid2 = 123456123457;
-        private const ulong uid3 = 123456123458;
 
 
         [SetUp]
@@ -46,57 +41,57 @@ namespace TheGodfatherTests.Services
         [Test]
         public void GetAndIncrementMessageCountForUserTest()
         {
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid1));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid2));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid3));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[0]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[2]));
 
-            Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(uid1));
+            Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(MockData.Ids[0]));
 
-            Assert.AreEqual(1, this.Service.GetMessageCountForUser(uid1));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid2));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid3));
+            Assert.AreEqual(1, this.Service.GetMessageCountForUser(MockData.Ids[0]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[2]));
 
             for (int i = 0; i < 9; i++)
-                Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(uid2));
-            Assert.AreEqual(1, this.Service.IncrementMessageCountForUser(uid2));
-            Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(uid2));
+                Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(1, this.Service.IncrementMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.IncrementMessageCountForUser(MockData.Ids[1]));
 
-            Assert.AreEqual(1, this.Service.GetMessageCountForUser(uid1));
-            Assert.AreEqual(11, this.Service.GetMessageCountForUser(uid2));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid3));
+            Assert.AreEqual(1, this.Service.GetMessageCountForUser(MockData.Ids[0]));
+            Assert.AreEqual(11, this.Service.GetMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[2]));
         }
 
         [Test]
         public void CalculateRankForUserTest()
         {
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid1));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid2));
-            Assert.AreEqual(0, this.Service.GetMessageCountForUser(uid3));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[0]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[2]));
 
             for (int i = 0; i < 10; i++)
-                this.Service.IncrementMessageCountForUser(uid1);
+                this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
 
-            Assert.AreEqual(1, this.Service.CalculateRankForUser(uid1));
-            Assert.AreEqual(0, this.Service.CalculateRankForUser(uid2));
-            Assert.AreEqual(0, this.Service.CalculateRankForUser(uid3));
+            Assert.AreEqual(1, this.Service.CalculateRankForUser(MockData.Ids[0]));
+            Assert.AreEqual(0, this.Service.CalculateRankForUser(MockData.Ids[1]));
+            Assert.AreEqual(0, this.Service.CalculateRankForUser(MockData.Ids[2]));
         }
 
         [Test]
         public void BlankDatabaseSyncTest()
         {
-            this.Service.IncrementMessageCountForUser(uid1);
-            this.Service.IncrementMessageCountForUser(uid1);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
             for (int i = 0; i < 9; i++)
-                this.Service.IncrementMessageCountForUser(uid2);
-            this.Service.IncrementMessageCountForUser(uid3);
+                this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
             TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.Sync(db),
                 verify: db => {
                     Assert.AreEqual(3, db.MessageCount.Count());
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)uid1);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)uid2);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)uid3);
+                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
+                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
+                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
                     Assert.IsNull(db.MessageCount.Find(123451234512345));
                     Assert.IsNotNull(u1);
                     Assert.IsNotNull(u2);
@@ -111,19 +106,19 @@ namespace TheGodfatherTests.Services
         [Test]
         public void FilledDatabaseSyncTest()
         {
-            this.Service.IncrementMessageCountForUser(uid2);
-            this.Service.IncrementMessageCountForUser(uid3);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
                     var msgcount = new DatabaseMessageCount[] {
                         new DatabaseMessageCount() {
                             MessageCount = 5,
-                            UserId = uid1
+                            UserId = MockData.Ids[0]
                         },
                         new DatabaseMessageCount() {
                             MessageCount = 5,
-                            UserId = uid2
+                            UserId = MockData.Ids[1]
                         },
                     };
                     db.MessageCount.AddRange(msgcount);
@@ -131,9 +126,9 @@ namespace TheGodfatherTests.Services
                 alter: db => this.Service.Sync(db),
                 verify: db => {
                     Assert.AreEqual(3, db.MessageCount.Count());
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)uid1);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)uid2);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)uid3);
+                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
+                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
+                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
                     Assert.IsNull(db.MessageCount.Find(123451234512345));
                     Assert.IsNotNull(u1);
                     Assert.IsNotNull(u2);
@@ -148,39 +143,39 @@ namespace TheGodfatherTests.Services
         [Test]
         public void RepetitiveSyncTest()
         {
-            this.Service.IncrementMessageCountForUser(uid2);
-            this.Service.IncrementMessageCountForUser(uid3);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
+            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
                     var msgcount = new DatabaseMessageCount[] {
                         new DatabaseMessageCount() {
                             MessageCount = 5,
-                            UserId = uid1
+                            UserId = MockData.Ids[0]
                         },
                         new DatabaseMessageCount() {
                             MessageCount = 5,
-                            UserId = uid2
+                            UserId = MockData.Ids[1]
                         },
                     };
                     db.MessageCount.AddRange(msgcount);
                 },
                 alter: db => {
                     this.Service.Sync(db);
-                    this.Service.IncrementMessageCountForUser(uid2);
-                    this.Service.IncrementMessageCountForUser(uid3);
+                    this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
+                    this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
                     this.Service.Sync(db);
-                    this.Service.IncrementMessageCountForUser(uid2);
-                    this.Service.IncrementMessageCountForUser(uid3);
+                    this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
+                    this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
                     this.Service.Sync(db);
                     this.Service.Sync(db);
                     this.Service.Sync(db);
                 },
                 verify: db => {
                     Assert.AreEqual(3, db.MessageCount.Count());
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)uid1);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)uid2);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)uid3);
+                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
+                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
+                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
                     Assert.IsNull(db.MessageCount.Find(123451234512345));
                     Assert.IsNotNull(u1);
                     Assert.IsNotNull(u2);

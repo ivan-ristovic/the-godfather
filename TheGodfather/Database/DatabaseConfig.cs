@@ -29,7 +29,7 @@ namespace TheGodfather.Database
         [JsonIgnore]
         public static DatabaseConfig Default => new DatabaseConfig {
             DatabaseName = "gfdb",
-            Provider = DatabaseProvider.SQLite,
+            Provider = DatabaseProvider.Sqlite,
             Hostname = "localhost",
             Password = "gfdb",
             Port = 5432,

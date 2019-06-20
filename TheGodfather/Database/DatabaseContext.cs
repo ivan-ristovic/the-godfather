@@ -82,14 +82,14 @@ namespace TheGodfather.Database
             optionsBuilder.ConfigureWarnings(wb => wb.Throw(CoreEventId.IncludeIgnoredWarning));
 
             switch (this.Provider) {
-                case DatabaseProvider.PostgreSQL:
+                case DatabaseProvider.PostgreSql:
                     optionsBuilder.UseNpgsql(this.ConnectionString);
                     break;
-                case DatabaseProvider.SQLite:
+                case DatabaseProvider.Sqlite:
+                case DatabaseProvider.SqliteInMemory:
                     optionsBuilder.UseSqlite(this.ConnectionString);
                     break;
-                case DatabaseProvider.SQLServer:
-                case DatabaseProvider.InMemoryTestingDatabase:
+                case DatabaseProvider.SqlServer:
                     optionsBuilder.UseSqlServer(this.ConnectionString);
                     break;
                 default:
