@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using static TheGodfather.Database.DatabaseContextBuilder;
@@ -24,6 +27,7 @@ namespace TheGodfatherTests
             };
             DbContextOptions<DatabaseContext> options = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseSqlite(DatabaseConnection)
+                .ConfigureWarnings(wb => wb.Ignore(RelationalEventId.QueryClientEvaluationWarning))
                 .Options;
 
             Database = new DatabaseContextBuilder(cfg, options);
@@ -57,7 +61,6 @@ namespace TheGodfatherTests
                                                bool ensureSave = false)
         {
             DatabaseConnection.Open();
-
             try {
                 CreateDatabase();
                 SeedGuildData();
@@ -80,19 +83,45 @@ namespace TheGodfatherTests
             }
         }
 
+        public static async Task SetupAlterAndVerifyAsync(Func<DatabaseContext, Task> setup,
+                                                          Func<DatabaseContext, Task> alter,
+                                                          Func<DatabaseContext, Task> verify,
+                                                          bool ensureSave = false)
+        {
+            DatabaseConnection.Open();
+            try {
+                CreateDatabase();
+                SeedGuildData();
+
+                using (DatabaseContext context = Database.CreateContext()) {
+                    await setup(context);
+                    await context.SaveChangesAsync();
+                }
+
+                using (DatabaseContext context = Database.CreateContext()) {
+                    await alter(context);
+                    if (ensureSave)
+                        await context.SaveChangesAsync();
+                }
+
+                using (DatabaseContext context = Database.CreateContext())
+                    await verify(context);
+            } finally {
+                DatabaseConnection.Close();
+            }
+        }
+
 
         private static void CreateDatabase()
         {
-            using (DatabaseContext context = Database.CreateContext()) {
+            using (DatabaseContext context = Database.CreateContext())
                 context.Database.EnsureCreated();
-            }
         }
 
         private static void SeedGuildData()
         {
             using (DatabaseContext context = Database.CreateContext()) {
-                foreach (ulong id in MockData.Ids)
-                    context.GuildConfig.Add(new DatabaseGuildConfig() { GuildId = id });
+                context.GuildConfig.AddRange(MockData.Ids.Select(id => new DatabaseGuildConfig() { GuildId = id }));
                 context.SaveChanges();
             }
         }

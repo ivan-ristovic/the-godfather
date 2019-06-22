@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using TheGodfather.Common;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfatherTests.Services;
 
 namespace TheGodfatherTests.Modules.Reactions.Services
 {
     [TestFixture]
-    public sealed class ReactionsServiceTests : IServiceTest<ReactionsService>
+    public class ReactionsServiceTestsBase : IServiceTest<ReactionsService>
     {
         public ReactionsService Service { get; private set; }
 
@@ -16,7 +14,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         [SetUp]
         public void InitializeService()
         {
-
+            this.Service = new ReactionsService(TestDatabaseProvider.Database, new Logger(BotConfig.Default), loadDataFromDatabase: false);
         }
     }
 }
