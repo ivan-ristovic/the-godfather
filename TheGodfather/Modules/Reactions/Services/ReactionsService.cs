@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Reactions.Services
         public IReadOnlyCollection<EmojiReaction> GetGuildEmojiReactions(ulong gid)
         {
             if (this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers))
-                return ers;
+                return ers.ToList();
             else
                 return Array.Empty<EmojiReaction>();
         }
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Reactions.Services
             return removed;
         }
 
-        public async Task<int> RemoveEmojiReactionTriggersAsync(ulong gid, IEnumerable<EmojiReaction> reactions, IEnumerable<string> triggers)
+        public async Task<int> RemoveEmojiReactionTriggersAsync(ulong gid, IReadOnlyCollection<EmojiReaction> reactions, IReadOnlyCollection<string> triggers)
         {
             if (!reactions.Any() || !triggers.Any())
                 return 0;
@@ -200,18 +200,16 @@ namespace TheGodfather.Modules.Reactions.Services
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.EmojiReactions
                    .Include(er => er.DbTriggers)
-                   .AsEnumerable()
                    .Where(er => er.GuildId == gid && reactions.Any(r => r.Id == er.Id))
                    .ToList();
                 foreach (DatabaseEmojiReaction er in toUpdate) {
                     foreach (string trigger in triggers)
-                        er.DbTriggers.Remove(new DatabaseEmojiReactionTrigger { ReactionId = er.Id, Trigger = trigger });
-                    await db.SaveChangesAsync();
-
-                    if (er.DbTriggers.Any()) {
+                        er.DbTriggers.Remove(er.DbTriggers.FirstOrDefault(r => er.Id == r.ReactionId && r.Trigger == trigger));
+                    if (er.DbTriggers.Any())
+                        db.EmojiReactions.Update(er);
+                    else
                         db.EmojiReactions.Remove(er);
-                        await db.SaveChangesAsync();
-                    }
+                    await db.SaveChangesAsync();
                 }
             }
 
@@ -241,7 +239,7 @@ namespace TheGodfather.Modules.Reactions.Services
         public IReadOnlyCollection<TextReaction> GetGuildTextReactions(ulong gid)
         {
             if (this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs))
-                return trs;
+                return trs.ToList();
             else
                 return Array.Empty<TextReaction>();
         }
