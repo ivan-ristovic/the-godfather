@@ -601,7 +601,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
         [UsageExampleArgs("@Someone rate")]
-        [RequirePrivilegedUser]
+        [RequireOwner]
         public Task SudoAsync(CommandContext ctx,
                              [Description("Member to execute as.")] DiscordMember member,
                              [RemainingText, Description("Command text to execute.")] string command)
@@ -610,8 +610,6 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Missing command to execute.");
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
-            if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute || c is RequirePrivilegedUserAttribute))
-                throw new CommandFailedException("Cannot sudo privileged commands!");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
             return cmd is null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
