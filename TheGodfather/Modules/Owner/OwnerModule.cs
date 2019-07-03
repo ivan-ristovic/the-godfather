@@ -610,6 +610,8 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Missing command to execute.");
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute || c is RequirePrivilegedUserAttribute))
+                throw new CommandFailedException("Cannot sudo privileged commands!");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
             return cmd is null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
