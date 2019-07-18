@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Reactions.Common
             => !string.IsNullOrWhiteSpace(str) && this.triggerRegexes.Any(rgx => rgx.IsMatch(str));
 
         public bool ContainsTriggerPattern(string pattern)
-            => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => pattern == s);
+            => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => string.Compare(pattern, s, true) == 0);
 
         public bool HasSameResponseAs<T>(T other) where T : Reaction
             => this.Response == other.Response;

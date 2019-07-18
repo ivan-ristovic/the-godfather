@@ -1,4 +1,4 @@
-﻿namespace TheGodfatherTests.Services
+﻿namespace TheGodfatherTests
 {
     public interface IServiceTest<T>
     {

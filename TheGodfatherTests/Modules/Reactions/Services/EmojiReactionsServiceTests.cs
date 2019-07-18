@@ -326,7 +326,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                         MockData.Ids[0],
-                        ers.Where(er => er.Response == StaticDiscordEmoji.Cloud.GetDiscordName()).ToList(),
+                        ers.Where(er => er.Response == StaticDiscordEmoji.Cloud.GetDiscordName()),
                         new[] { "cde" });
                     Assert.AreEqual(0, removed);
                 },
@@ -353,7 +353,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                         MockData.Ids[0],
-                        ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()).ToList(),
+                        ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()),
                         new[] { "not" });
                     Assert.AreEqual(1, removed);
                 },
@@ -375,7 +375,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                         MockData.Ids[0],
-                        ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()).ToList(),
+                        ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()),
                         new[] { "NO MATCHES" });
                     Assert.AreEqual(0, removed);
                 },

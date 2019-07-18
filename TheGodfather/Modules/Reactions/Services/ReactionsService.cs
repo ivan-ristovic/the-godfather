@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Reactions.Services
             return removed;
         }
 
-        public async Task<int> RemoveEmojiReactionTriggersAsync(ulong gid, IReadOnlyCollection<EmojiReaction> reactions, IReadOnlyCollection<string> triggers)
+        public async Task<int> RemoveEmojiReactionTriggersAsync(ulong gid, IEnumerable<EmojiReaction> reactions, IEnumerable<string> triggers)
         {
             if (!reactions.Any() || !triggers.Any())
                 return 0;
@@ -260,34 +260,38 @@ namespace TheGodfather.Modules.Reactions.Services
                 trs = this.treactions[gid];
             }
 
-            int id;
+            if (trs.Any(tr => tr.ContainsTriggerPattern(trigger)))
+                return false;
+
+            bool success = true;
             using (DatabaseContext db = this.dbb.CreateContext()) {
-                DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == gid && tr.Response == response);
-                if (dbtr is null) {
-                    dbtr = new DatabaseTextReaction {
-                        GuildId = gid,
-                        Response = response,
-                    };
-                    db.TextReactions.Add(dbtr);
+                await db.Database.BeginTransactionAsync();
+                try {
+                    DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == gid && tr.Response == response);
+                    if (dbtr is null) {
+                        dbtr = new DatabaseTextReaction {
+                            GuildId = gid,
+                            Response = response,
+                        };
+                        db.TextReactions.Add(dbtr);
+                        await db.SaveChangesAsync();
+                    }
+
+                    dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+
                     await db.SaveChangesAsync();
+
+                    TextReaction reaction = trs.FirstOrDefault(tr => tr.Response == response);
+                    success = reaction is null ? trs.Add(new TextReaction(dbtr.Id, trigger, response, regex)) : reaction.AddTrigger(trigger, regex);
+                } finally {
+                    if (success)
+                        db.Database.CommitTransaction();
+                    else
+                        db.Database.RollbackTransaction();
                 }
-
-                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
-
-                await db.SaveChangesAsync();
-                id = dbtr.Id;
             }
 
-            TextReaction reaction = trs.FirstOrDefault(tr => tr.Response == response);
-            if (reaction is null) {
-                if (!trs.Add(new TextReaction(id, trigger, response, regex)))
-                    return false;
-            } else {
-                if (!reaction.AddTrigger(trigger, regex))
-                    return false;
-            }
-
-            return true;
+            return success;
         }
 
         public async Task<int> RemoveTextReactionsAsync(ulong gid, IEnumerable<int> ids)
@@ -327,19 +331,17 @@ namespace TheGodfather.Modules.Reactions.Services
 
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.TextReactions
-                    .Include(t => t.DbTriggers)
-                    .AsEnumerable()
+                    .Include(tr => tr.DbTriggers)
                     .Where(tr => tr.GuildId == gid && reactions.Any(r => r.Id == tr.Id))
                     .ToList();
                 foreach (DatabaseTextReaction tr in toUpdate) {
                     foreach (string trigger in triggers)
-                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger { ReactionId = tr.Id, Trigger = trigger });
-                    await db.SaveChangesAsync();
-
-                    if (tr.DbTriggers.Any()) {
+                        tr.DbTriggers.Remove(tr.DbTriggers.FirstOrDefault(r => tr.Id == r.ReactionId && r.Trigger == trigger));
+                    if (tr.DbTriggers.Any())
+                        db.TextReactions.Update(tr);
+                    else
                         db.TextReactions.Remove(tr);
-                        await db.SaveChangesAsync();
-                    }
+                    await db.SaveChangesAsync();
                 }
             }
 

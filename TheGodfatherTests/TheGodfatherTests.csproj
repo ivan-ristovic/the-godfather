@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Database\**" />
+    <Compile Remove="Modules\Games\**" />
+    <Compile Remove="Modules\Search\**" />
+    <EmbeddedResource Remove="Database\**" />
+    <EmbeddedResource Remove="Modules\Games\**" />
+    <EmbeddedResource Remove="Modules\Search\**" />
+    <None Remove="Database\**" />
+    <None Remove="Modules\Games\**" />
+    <None Remove="Modules\Search\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00600" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00600" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00600" />
@@ -38,12 +50,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Database\" />
-    <Folder Include="Modules\Games\Services\" />
-    <Folder Include="Modules\Search\Services\" />
   </ItemGroup>
 
 </Project>

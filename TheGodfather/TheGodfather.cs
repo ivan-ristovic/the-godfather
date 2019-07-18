@@ -28,8 +28,8 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
-        public static readonly string ApplicationName = "TheGodfather";
-        public static readonly string ApplicationVersion = "v5.0-beta";
+        public static string ApplicationName => "TheGodfather";
+        public static string ApplicationVersion => "v5.0.0-beta";
 
         public static IReadOnlyList<TheGodfatherShard> ActiveShards => Shards.AsReadOnly();
 
