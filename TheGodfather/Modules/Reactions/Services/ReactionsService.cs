@@ -28,13 +28,13 @@ namespace TheGodfather.Modules.Reactions.Services
         private ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
 
 
-        public ReactionsService(DatabaseContextBuilder dbb, Logger log, bool loadDataFromDatabase = true)
+        public ReactionsService(DatabaseContextBuilder dbb, Logger log, bool loadData = true)
         {
             this.dbb = dbb;
             this.log = log;
             this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
-            if (loadDataFromDatabase)
+            if (loadData)
                 this.LoadData();
         }
 

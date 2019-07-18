@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
 
 namespace TheGodfather.Migrations
@@ -15,7 +16,9 @@ namespace TheGodfather.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gf")
-                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1");
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn)
+                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
                 {
@@ -645,9 +648,9 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<uint>("MessageCount")
+                    b.Property<long>("MessageCount")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1u);
+                        .HasDefaultValue(1L);
 
                     b.Property<int>("MessageCountDb")
                         .HasColumnName("message_count");

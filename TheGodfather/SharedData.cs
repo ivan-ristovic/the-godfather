@@ -45,7 +45,6 @@ namespace TheGodfather
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
         }
 
-
         public void Dispose()
         {
             this.MainLoopCts.Dispose();
@@ -60,10 +59,9 @@ namespace TheGodfather
 
         public string GetGuildPrefix(ulong gid)
         {
-            if (this.GuildConfigurations.TryGetValue(gid, out CachedGuildConfig gcfg) && !string.IsNullOrWhiteSpace(gcfg.Prefix))
-                return this.GuildConfigurations[gid].Prefix;
-            else
-                return this.BotConfiguration.DefaultPrefix;
+            return this.GuildConfigurations.TryGetValue(gid, out CachedGuildConfig gcfg) && !string.IsNullOrWhiteSpace(gcfg.Prefix)
+                ? this.GuildConfigurations[gid].Prefix
+                : this.BotConfiguration.DefaultPrefix;
         }
 
         public DiscordChannel GetLogChannelForGuild(DiscordGuild guild)
@@ -100,20 +98,5 @@ namespace TheGodfather
             return success;
         }
         #endregion
-
-
-
-
-
-        // TODO remove next
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; set; } = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
-        public bool MessageContainsFilter(ulong gid, string message)
-        {
-            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
-                return false;
-
-            message = message.ToLowerInvariant();
-            return filters.Any(f => f.Trigger.IsMatch(message));
-        }
     }
 }

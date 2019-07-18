@@ -98,7 +98,7 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+            if (!shard.Services.GetService<FilteringService>().ContainsFilter(e.Guild.Id, e.Message.Content))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
@@ -171,7 +171,7 @@ namespace TheGodfather.EventListeners
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
                 emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : FormatterExtensions.StripMarkdown(e.Message.Content.Truncate(1000)))}");
-                if (shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+                if (shard.Services.GetService<FilteringService>().ContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.WithDescription(Formatter.Italic("Message contained a filter."));
             }
             if (e.Message.Embeds.Any())
@@ -189,7 +189,6 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageUpdated)]
         public static async Task MessageUpdateEventHandlerAsync(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
-
             if (e.Author is null || e.Author.IsBot || e.Channel is null || e.Channel.IsPrivate || e.Message is null)
                 return;
 
@@ -199,7 +198,7 @@ namespace TheGodfather.EventListeners
             if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
-            if (!(e.Message.Content is null) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!(e.Message.Content is null) && shard.Services.GetService<FilteringService>().ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update");
                     await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExtensions.Spoiler(Formatter.BlockCode(FormatterExtensions.StripMarkdown(e.Message.Content)))}");

@@ -1,22 +1,19 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 #endregion
@@ -274,7 +271,7 @@ namespace TheGodfather.Modules.Reactions
             if (this.Service.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Administration.Common.Filter> filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
+            if (ctx.Services.GetService<FilteringService>().ContainsFilter(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
             if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))

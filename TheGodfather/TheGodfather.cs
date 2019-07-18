@@ -172,13 +172,6 @@ namespace TheGodfather
                         SuggestionsEnabled = gcfg.SuggestionsEnabled
                     }
                 )));
-
-                // TODO remove next
-                filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
-                    db.Filters
-                        .GroupBy(f => f.GuildId)
-                        .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
-                );
             }
 
             var logger = new Logger(Config);

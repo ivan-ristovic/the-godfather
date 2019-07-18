@@ -69,20 +69,20 @@ namespace TheGodfather
                 .AddSingleton(new AntiInstantLeaveService(this))
                 .AddSingleton(new AntispamService(this))
                 .AddSingleton(new ChannelEventService())
+                .AddSingleton(new FilteringService(this.Database, this.SharedData.LogProvider))
                 .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                 .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
-                .AddSingleton(new ReactionsService(this.Database, this.SharedData.LogProvider, loadDataFromDatabase: true))
                 .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                 .AddSingleton(new LinkfilterService(this))
                 .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                 .AddSingleton(new RatelimitService(this))
+                .AddSingleton(new ReactionsService(this.Database, this.SharedData.LogProvider))
                 .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
                 .AddSingleton(new UserRanksService())
                 .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
                 .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
                 .BuildServiceProvider();
         }
-
 
         public async Task DisposeAsync()
         {

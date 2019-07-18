@@ -15,6 +15,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Services;
 #endregion
 
@@ -27,11 +28,11 @@ namespace TheGodfather.Modules.Administration
     [UsageExampleArgs("fuck fk f+u+c+k+")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class FilterModule : TheGodfatherModule
+    public class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
 
-        public FilterModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public FilterModule(FilteringService service, SharedData shared, DatabaseContextBuilder db) 
+            : base(service, shared, db)
         {
             this.ModuleColor = DiscordColor.DarkRed;
         }
@@ -87,13 +88,13 @@ namespace TheGodfather.Modules.Administration
                         continue;
                     }
 
-                    if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters)) {
+                    if (this.Service.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters)) {
                         if (existingFilters.Any(f => f.BaseRegexString == regex.ToString())) {
                             eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                             continue;
                         }
                     } else {
-                        if (!this.Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>()))
+                        if (!this.Service.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>()))
                             throw new ConcurrentOperationException("Failed to create filter data structure for this guild. This is bad!");
                     }
 
@@ -101,7 +102,7 @@ namespace TheGodfather.Modules.Administration
                     db.Filters.Add(filter);
                     await db.SaveChangesAsync();
 
-                    if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regexString)))
+                    if (filter.Id == 0 || !this.Service.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regexString)))
                         eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
                 }
             }
@@ -138,7 +139,7 @@ namespace TheGodfather.Modules.Administration
             if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
 
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters))
+            if (!this.Service.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
@@ -181,7 +182,7 @@ namespace TheGodfather.Modules.Administration
             if (filters is null || !filters.Any())
                 throw new CommandFailedException("No filters given.");
 
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters))
+            if (!this.Service.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var eb = new StringBuilder();
@@ -232,7 +233,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?"))
                 return;
 
-            if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && !this.Shared.Filters.TryRemove(ctx.Guild.Id, out _))
+            if (this.Service.Filters.ContainsKey(ctx.Guild.Id) && !this.Service.Filters.TryRemove(ctx.Guild.Id, out _))
                 throw new ConcurrentOperationException("Failed to remove filter data structure for this guild. This is bad!");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -261,12 +262,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("ls", "l")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters) || !filters.Any())
+            if (!this.Service.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters) || !filters.Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
             return ctx.SendCollectionInPagesAsync(
                 $"Filters registered for {ctx.Guild.Name}",
-                this.Shared.Filters[ctx.Guild.Id].OrderBy(f => f.Id),
+                this.Service.Filters[ctx.Guild.Id].OrderBy(f => f.Id),
                 f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.BaseRegexString)}",
                 this.ModuleColor
             );

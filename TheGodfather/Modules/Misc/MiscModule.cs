@@ -23,6 +23,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
 #endregion
 
@@ -378,7 +379,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().ContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
@@ -433,7 +434,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().ContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
