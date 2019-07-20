@@ -98,5 +98,20 @@ namespace TheGodfather
             return success;
         }
         #endregion
+
+
+
+
+
+        // TODO remove next
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; set; } = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
+        public bool MessageContainsFilter(ulong gid, string message)
+        {
+            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
+                return false;
+
+            message = message.ToLowerInvariant();
+            return filters.Any(f => f.Trigger.IsMatch(message));
+        }
     }
 }
