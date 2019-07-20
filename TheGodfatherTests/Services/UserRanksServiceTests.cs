@@ -6,7 +6,7 @@ using TheGodfather.Services;
 namespace TheGodfatherTests.Services
 {
     [TestFixture]
-    public sealed class UserRanksServiceTests : IServiceTest<UserRanksService>
+    public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksService>
     {
         public UserRanksService Service { get; private set; }
 

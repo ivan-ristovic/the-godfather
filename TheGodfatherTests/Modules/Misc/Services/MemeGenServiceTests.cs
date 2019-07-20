@@ -1,9 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using NUnit.Framework;
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Modules.Misc.Services;
 #endregion
 

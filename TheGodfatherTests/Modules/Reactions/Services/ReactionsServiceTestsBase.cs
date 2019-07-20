@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
 using TheGodfather.Common;
 using TheGodfather.Modules.Reactions.Services;
-using TheGodfatherTests.Services;
 
 namespace TheGodfatherTests.Modules.Reactions.Services
 {
     [TestFixture]
-    public class ReactionsServiceTestsBase : IServiceTest<ReactionsService>
+    public class ReactionsServiceTestsBase : ITheGodfatherServiceTest<ReactionsService>
     {
         public ReactionsService Service { get; private set; }
 

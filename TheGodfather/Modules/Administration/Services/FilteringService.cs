@@ -48,13 +48,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public bool ContainsFilter(ulong gid, string text)
+        public bool TextContainsFilter(ulong gid, string text)
         {
             return this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs) && !(fs is null)
                 ? fs.Any(f => f.Trigger.IsMatch(text))
                 : false;
         }
-
 
         public IReadOnlyCollection<Filter> GetGuildFilters(ulong gid)
         {

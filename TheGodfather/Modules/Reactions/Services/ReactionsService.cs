@@ -86,33 +86,39 @@ namespace TheGodfather.Modules.Reactions.Services
             ConcurrentHashSet<EmojiReaction> ers = this.ereactions.GetOrAdd(gid, new ConcurrentHashSet<EmojiReaction>());
 
             using (DatabaseContext db = this.dbb.CreateContext()) {
-                DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == gid && er.Reaction == emoji.GetDiscordName());
-                if (dber is null) {
-                    dber = new DatabaseEmojiReaction {
-                        GuildId = gid,
-                        Reaction = emoji.GetDiscordName()
-                    };
-                    db.EmojiReactions.Add(dber);
-                    await db.SaveChangesAsync();
-                }
-
-                foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                    string ename = emoji.GetDiscordName();
-                    if (ers.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename))
-                        continue;
-
-                    EmojiReaction reaction = ers.FirstOrDefault(tr => tr.Response == ename);
-                    if (reaction is null) {
-                        if (!ers.Add(new EmojiReaction(dber.Id, trigger, ename, isRegex: regex)))
-                            throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                    } else {
-                        if (!reaction.AddTrigger(trigger, isRegex: regex))
-                            throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+                await db.Database.BeginTransactionAsync();
+                try {
+                    DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == gid && er.Reaction == emoji.GetDiscordName());
+                    if (dber is null) {
+                        dber = new DatabaseEmojiReaction {
+                            GuildId = gid,
+                            Reaction = emoji.GetDiscordName()
+                        };
+                        db.EmojiReactions.Add(dber);
+                        await db.SaveChangesAsync();
                     }
 
-                    dber.DbTriggers.Add(new DatabaseEmojiReactionTrigger { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
-                }
+                    foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
+                        string ename = emoji.GetDiscordName();
+                        if (ers.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename))
+                            continue;
 
+                        EmojiReaction reaction = ers.FirstOrDefault(tr => tr.Response == ename);
+                        if (reaction is null) {
+                            if (!ers.Add(new EmojiReaction(dber.Id, trigger, ename, isRegex: regex)))
+                                throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+                        } else {
+                            if (!reaction.AddTrigger(trigger, isRegex: regex))
+                                throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+                        }
+
+                        dber.DbTriggers.Add(new DatabaseEmojiReactionTrigger { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                    }
+                } catch {
+                    db.Database.RollbackTransaction();
+                    throw;
+                }
+                db.Database.CommitTransaction();
                 await db.SaveChangesAsync();
             }
         }
@@ -278,10 +284,12 @@ namespace TheGodfather.Modules.Reactions.Services
                     TextReaction reaction = trs.FirstOrDefault(tr => tr.Response == response);
                     success = reaction is null ? trs.Add(new TextReaction(dbtr.Id, trigger, response, regex)) : reaction.AddTrigger(trigger, regex);
                 } finally {
-                    if (success)
+                    if (success) {
                         db.Database.CommitTransaction();
-                    else
+                        await db.SaveChangesAsync();
+                    } else {
                         db.Database.RollbackTransaction();
+                    }
                 }
             }
 

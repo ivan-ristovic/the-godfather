@@ -9,7 +9,7 @@ using TheGodfather.Services;
 namespace TheGodfatherTests.Services
 {
     [TestFixture]
-    public sealed class ChannelEventServiceTests : IServiceTest<ChannelEventService>
+    public sealed class ChannelEventServiceTests : ITheGodfatherServiceTest<ChannelEventService>
     {
         public ChannelEventService Service { get; private set; }
 

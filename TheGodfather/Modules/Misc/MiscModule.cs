@@ -379,7 +379,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<FilteringService>().ContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
@@ -434,7 +434,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<FilteringService>().ContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
