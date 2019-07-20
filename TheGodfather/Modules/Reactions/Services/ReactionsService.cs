@@ -83,10 +83,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
         public async Task AddEmojiReactionAsync(ulong gid, DiscordEmoji emoji, IEnumerable<string> triggers, bool regex)
         {
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers)) {
-                this.ereactions.TryAdd(gid, new ConcurrentHashSet<EmojiReaction>());
-                ers = this.ereactions[gid];
-            }
+            ConcurrentHashSet<EmojiReaction> ers = this.ereactions.GetOrAdd(gid, new ConcurrentHashSet<EmojiReaction>());
 
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == gid && er.Reaction == emoji.GetDiscordName());
@@ -255,10 +252,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
         public async Task<bool> AddTextReactionAsync(ulong gid, string trigger, string response, bool regex)
         {
-            if (!this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs)) {
-                this.treactions.TryAdd(gid, new ConcurrentHashSet<TextReaction>());
-                trs = this.treactions[gid];
-            }
+            ConcurrentHashSet<TextReaction> trs = this.treactions.GetOrAdd(gid, new ConcurrentHashSet<TextReaction>());
 
             if (trs.Any(tr => tr.ContainsTriggerPattern(trigger)))
                 return false;
