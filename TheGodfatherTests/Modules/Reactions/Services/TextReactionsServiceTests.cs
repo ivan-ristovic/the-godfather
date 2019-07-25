@@ -467,7 +467,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.AreEqual(10, db.TextReactions.Count());
-                    Assert.AreEqual(3, await this.Service.RemoveAllTextReactionsAsync(MockData.Ids[1]));
+                    Assert.AreEqual(3, await this.Service.RemoveTextReactionsAsync(MockData.Ids[1]));
                 },
                 verify: db => {
                     Assert.AreEqual(7, db.TextReactions.Count());

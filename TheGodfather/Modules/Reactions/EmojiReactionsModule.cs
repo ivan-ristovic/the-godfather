@@ -243,7 +243,7 @@ namespace TheGodfather.Modules.Reactions
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all emoji reactions for this guild?"))
                 return;
 
-            int removed = await this.Service.RemoveAllEmojiReactionsAsync(ctx.Guild.Id);
+            int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
