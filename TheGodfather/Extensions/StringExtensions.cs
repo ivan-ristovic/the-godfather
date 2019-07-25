@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 #endregion
 
@@ -8,9 +7,6 @@ namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
-        private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
-
-
         public static bool IsValidRegexString(this string pattern)
         {
             if (string.IsNullOrEmpty(pattern))
@@ -68,23 +64,17 @@ namespace TheGodfather.Extensions
             if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegexString(pattern))
                 return false;
 
-            result = CreateWordBoundaryRegex(pattern, escape: false);
+            result = ToRegex(pattern, escape: false);
             return true;
         }
 
-        public static Regex CreateWordBoundaryRegex(this string pattern, bool escape = false)
+        public static Regex ToRegex(this string pattern, bool escape = false)
         {
-            string rstr = pattern.ToLowerInvariant();
-            char fst = pattern[0];
-            char lst = pattern[pattern.Length - 1];
-            rstr = $"{(char.IsLetterOrDigit(fst) ? @"\b" : @"(^|\s)")}({rstr}){(char.IsLetterOrDigit(lst) ? @"\b" : @"($|\s)")}";
-            return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
-        }
+            if (string.IsNullOrEmpty(pattern))
+                throw new ArgumentException("Provided string was empty", nameof(pattern));
 
-        public static string RemoveWordBoundaryEscapes(this string str)
-        {
-            string unbounded = _wordBoundaryRegex.Replace(str, "");
-            return unbounded.Substring(1, unbounded.Length - 2);
+            string rstr = pattern.ToLowerInvariant();
+            return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
         }
     }
 }

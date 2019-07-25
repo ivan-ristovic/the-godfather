@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Reactions.Common
         public int Id { get; }
         public string Response { get; }
         public int RegexCount => this.triggerRegexes.Count;
-        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => rgx.ToString().RemoveWordBoundaryEscapes());
+        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => rgx.ToString());
         public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
 
         private readonly ConcurrentHashSet<Regex> triggerRegexes;

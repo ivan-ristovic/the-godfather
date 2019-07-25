@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (this.Service.GetGuildFilters(ctx.Guild.Id).Any(f => f.BaseRegexString == regex.ToString())) {
+                if (this.Service.GetGuildFilters(ctx.Guild.Id).Any(f => f.TriggerString == regex.ToString())) {
                     eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
                     continue;
                 }
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?"))
                 return;
 
-            int removed = await this.Service.RemoveAllFilters(ctx.Guild.Id);
+            int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id);
 
             DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
@@ -219,7 +219,7 @@ namespace TheGodfather.Modules.Administration
             return ctx.SendCollectionInPagesAsync(
                 $"Filters registered for {ctx.Guild.Name}",
                 fs.OrderBy(f => f.Id),
-                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.BaseRegexString)}",
+                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.TriggerString)}",
                 this.ModuleColor
             );
         }

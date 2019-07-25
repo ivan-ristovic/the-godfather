@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Administration
                     }
 
                     if (!regexString.TryParseRegex(out Regex regex))
-                        regex = regexString.CreateWordBoundaryRegex(escape: true);
+                        regex = regexString.ToRegex(escape: true);
                     
                     if (!db.ForbiddenNames.Any(n => n.RegexString == regexString))
                         dbNames.Add(new DatabaseForbiddenName { GuildId = ctx.Guild.Id, RegexString = regexString });

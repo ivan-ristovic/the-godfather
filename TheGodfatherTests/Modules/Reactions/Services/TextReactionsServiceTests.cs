@@ -63,13 +63,13 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     AssertFindReaction(0, "This is not a test.", true);
                     AssertFindReaction(0, "Ha abc ha", true);
                     AssertFindReaction(0, "This trigger me has only one", true);
-                    AssertFindReaction(1, "rickastley doesnt work", false);
+                    AssertFindReaction(1, "ricckasstley doesnt work", false);
                     AssertFindReaction(1, "But rick works", true);
-                    AssertFindReaction(1, "So does RIcK.", true);
+                    AssertFindReaction(1, "So does 123RIcK.", true);
                     AssertFindReaction(2, "This one doesn't have reactions...", false);
-                    AssertFindReaction(3, "Multiple valid reactions teSt", true);
+                    AssertFindReaction(3, "Multiple valid reactions teSt.", true);
                     AssertFindReaction(3, "But teSting has only one", true);
-                    AssertFindReaction(3, "But testings doesn't match", false);
+                    AssertFindReaction(3, "But t3stings doesn't match", false);
                 }
             );
 
@@ -189,7 +189,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.IsTrue(trs0.Single().IsMatch("This is a test for trig match"));
                     IReadOnlyCollection<TextReaction> trs1 = this.Service.GetGuildTextReactions(MockData.Ids[1]);
                     Assert.IsNotNull(trs1.SingleOrDefault());
-                    Assert.IsTrue(trs1.Single().IsMatch("This is another tRiG example."));
+                    Assert.IsTrue(trs1.Single().IsMatch("This is another 2tRiG@ example."));
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig");
                     AssertTextReactionExists(db, MockData.Ids[1], "h3h3", "trig");
                     return Task.CompletedTask;
@@ -202,7 +202,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     this.Service.LoadData();
                     Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig+ered", "h3h3", true));
                     Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "not regex", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig", "h3h3 again", false));
+                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tr1g", "h3h3 again", false));
                     Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "works because it is regex", true));
                     Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tRigGggeReD", "h3h3", false));
                 },
@@ -210,11 +210,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(4, db.TextReactions.Count());
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
                     Assert.AreEqual(4, trs.Count);
-                    Assert.IsNotNull(trs.SingleOrDefault(tr => tr.IsMatch("I am triggered")));
-                    Assert.IsNotNull(trs.SingleOrDefault(tr => tr.IsMatch("I am n0t trig+ered")));
+                    Assert.IsNotNull(trs.SingleOrDefault(tr => tr.IsMatch("I am tr1ggered")));
+                    Assert.IsNotNull(trs.SingleOrDefault(tr => tr.IsMatch("I am nOt trig+ered")));
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig+ered", "triggggered");
                     AssertTextReactionExists(db, MockData.Ids[0], "not regex", @"not\ trig\+ered");
-                    AssertTextReactionExists(db, MockData.Ids[0], "h3h3 again", "trig");
+                    AssertTextReactionExists(db, MockData.Ids[0], "h3h3 again", "tr1g");
                     return Task.CompletedTask;
                 }
             );

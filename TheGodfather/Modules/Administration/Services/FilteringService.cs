@@ -65,52 +65,31 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task<bool> AddFilterAsync(ulong gid, string regexString)
         {
+            if (!regexString.IsValidRegexString())
+                throw new ArgumentException("Invalid regex string.", nameof(regexString));
+
             ConcurrentHashSet<Filter> fs = this.filters.GetOrAdd(gid, new ConcurrentHashSet<Filter>());
+            if (fs.Any(f => string.Compare(f.TriggerString, regexString, true) == 0))
+                return false;
 
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 var filter = new DatabaseFilter { GuildId = gid, Trigger = regexString };
                 db.Filters.Add(filter);
                 await db.SaveChangesAsync();
-
                 return fs.Add(new Filter(filter.Id, regexString));
             }
         }
 
         public async Task<bool> AddFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
         {
+            if (regexStrings.Any(s => !s.IsValidRegexString()))
+                throw new ArgumentException("Collection contains an invalid regex string.", nameof(regexStrings));
+
             bool[] res = await Task.WhenAll(regexStrings.Select(s => this.AddFilterAsync(gid, s)));
             return res.All(r => r);
         }
 
-        public async Task RemoveFiltersAsync(ulong gid, IEnumerable<int> ids)
-        {
-            if (!this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs))
-                return;
-
-            fs.RemoveWhere(f => ids.Contains(f.Id));
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                db.Filters.RemoveRange(ids.Select(id => new DatabaseFilter { GuildId = gid, Id = id }));
-                await db.SaveChangesAsync();
-            }
-        }
-
-        public async Task RemoveFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
-        {
-            if (!this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs))
-                return;
-
-            var rstrs = regexStrings
-                .Select(rstr => rstr.CreateWordBoundaryRegex().ToString())
-                .ToList();
-
-            fs.RemoveWhere(f => rstrs.Any(rstr => string.Compare(rstr, f.BaseRegexString, true) == 0));
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && rstrs.Any(rstr => string.Compare(rstr, f.Trigger, true) == 0)));
-                await db.SaveChangesAsync();
-            }
-        }
-
-        public async Task<int> RemoveAllFilters(ulong gid)
+        public async Task<int> RemoveFiltersAsync(ulong gid)
         {
             this.filters.TryRemove(gid, out ConcurrentHashSet<Filter> fs);
 
@@ -120,6 +99,36 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             return fs?.Count ?? 0;
+        }
+
+        public async Task<int> RemoveFiltersAsync(ulong gid, IEnumerable<int> ids)
+        {
+            int removed = 0;
+
+            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs)) {
+                removed = fs.RemoveWhere(f => ids.Contains(f.Id));
+                using (DatabaseContext db = this.dbb.CreateContext()) {
+                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && ids.Contains(f.Id)));
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            return removed;
+        }
+
+        public async Task<int> RemoveFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
+        {
+            int removed = 0;
+
+            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs)) {
+                removed = fs.RemoveWhere(f => regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0));
+                using (DatabaseContext db = this.dbb.CreateContext()) {
+                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && regexStrings.Any(rstr => string.Compare(rstr, f.Trigger, true) == 0)));
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            return removed;
         }
     }
 }

@@ -15,11 +15,11 @@ namespace TheGodfather.Modules.Administration.Common
         public Filter(int id, string trigger)
         {
             this.Id = id;
-            this.Trigger = trigger.CreateWordBoundaryRegex();
+            this.Trigger = trigger.ToRegex();
         }
 
 
-        public string BaseRegexString => this.Trigger.ToString().RemoveWordBoundaryEscapes();
+        public string TriggerString => this.Trigger.ToString();
     }
 }
 

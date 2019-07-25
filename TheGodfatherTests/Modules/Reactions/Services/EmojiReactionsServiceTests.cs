@@ -64,9 +64,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     AssertFindReactionsCount(0, "This is not a test.", 1);
                     AssertFindReactionsCount(0, "Ha abc ha", 4);
                     AssertFindReactionsCount(0, "This cde has only one", 1);
-                    AssertFindReactionsCount(1, "abcdef doesnt work", 0);
-                    AssertFindReactionsCount(1, "But abc works", 3);
-                    AssertFindReactionsCount(1, "So does ABC.", 3);
+                    AssertFindReactionsCount(1, "abbcdef doesnt work", 0);
+                    AssertFindReactionsCount(1, "But @abc3 works", 3);
+                    AssertFindReactionsCount(1, "So does @a2ABC.", 3);
                     AssertFindReactionsCount(2, "This one doesn't have reactions...", 0);
                 }
             );
@@ -126,7 +126,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers1 = this.Service.GetGuildEmojiReactions(MockData.Ids[1]);
                     Assert.AreEqual(1, ers1.Count);
                     Assert.AreEqual(1, ers1.First().TriggerStrings.Count());
-                    Assert.IsTrue(ers1.First().IsMatch("This is another teSting example."));
+                    Assert.IsTrue(ers1.First().IsMatch("This is another -teSting example."));
 
                     var ers = db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().ToList();
                     Assert.IsTrue(ers.Any(
@@ -157,8 +157,8 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(2, ers.Count);
                     EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
                     Assert.AreEqual(2, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is a tEst"));
-                    Assert.IsTrue(er.IsMatch("This is a tEsting"));
+                    Assert.IsTrue(er.IsMatch("This is a tEst."));
+                    Assert.IsTrue(er.IsMatch("This is a -tEsting."));
                     Assert.IsFalse(er.IsMatch("This is an alarm"));
                     Assert.IsTrue(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
 
