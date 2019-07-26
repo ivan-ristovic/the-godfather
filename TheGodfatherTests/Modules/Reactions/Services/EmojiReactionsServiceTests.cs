@@ -12,7 +12,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
 {
     public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
     {
-
         private Dictionary<int, int> erCount;
 
 

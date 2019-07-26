@@ -366,8 +366,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                    alter: async db => {
                        this.UpdateFilterCount(db);
                        this.Service.LoadData();
-                       IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[0]);
-                       removed = new[] { fs.First().TriggerString, fs.Last().TriggerString };
+                       removed = new[] { "fish", @"i\ can\ haz\ spaces" };
                        Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
                        Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
                    },
@@ -387,9 +386,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     alter: async db => {
                         this.UpdateFilterCount(db);
                         this.Service.LoadData();
-                        IReadOnlyCollection<Filter> fs0 = this.Service.GetGuildFilters(MockData.Ids[0]);
-                        IReadOnlyCollection<Filter> fs1 = this.Service.GetGuildFilters(MockData.Ids[1]);
-                        removed = new[] { fs0.First().TriggerString, fs1.Last().TriggerString };
+                        removed = new[] { "fish", "doge" };
                         Assert.AreEqual(1, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
                     },
                     verify: db => {
@@ -408,8 +405,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     alter: async db => {
                         this.UpdateFilterCount(db);
                         this.Service.LoadData();
-                        IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[0]);
-                        removed = new[] { fs.First().TriggerString, fs.Last().TriggerString };
+                        removed = new[] { "fish", "(fap)+" };
                         Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
                         Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
                     },
