@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
 using System;
@@ -19,6 +20,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -68,7 +70,7 @@ namespace TheGodfather.EventListeners
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.SharedData.GetGuildConfig(e.Context.Guild.Id).SuggestionsEnabled) {
+                    if (!shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Context.Guild.Id).SuggestionsEnabled) {
                         await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.Question);
                         return;
                     }
@@ -85,7 +87,7 @@ namespace TheGodfather.EventListeners
                 case InvalidCommandUsageException _:
                     sb.Append("Invalid command usage! ");
                     sb.AppendLine(ex.Message);
-                    emb.WithFooter($"Type \"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}\" for a command manual.");
+                    emb.WithFooter($"Type \"{shard.Services.GetService<GuildConfigService>().GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}\" for a command manual.");
                     break;
                 case ArgumentException _:
                     string fcmdStr = $"help {e.Command.QualifiedName}";

@@ -7,6 +7,7 @@ using DSharpPlus.Interactivity;
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
@@ -16,6 +17,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -41,7 +43,7 @@ namespace TheGodfather.Modules.Currency
                                                [Description("Amount of money required to enter.")] int amount = 1000)
             {
                 if (amount < 5)
-                    throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}");
+                    throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}");
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
@@ -54,7 +56,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -112,7 +114,7 @@ namespace TheGodfather.Modules.Currency
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                        throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();
                 }
                 

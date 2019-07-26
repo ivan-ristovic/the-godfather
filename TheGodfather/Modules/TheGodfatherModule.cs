@@ -3,12 +3,15 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Database;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules
@@ -49,7 +52,7 @@ namespace TheGodfather.Modules
 
         protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
         {
-            if (!important && this.Shared.GetGuildConfig(ctx.Guild.Id).ReactionResponse) {
+            if (!important && ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).ReactionResponse) {
                 try {
                     await ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
                 } catch (NotFoundException) {

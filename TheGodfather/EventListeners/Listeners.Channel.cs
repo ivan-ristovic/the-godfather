@@ -1,19 +1,17 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
 using Humanizer;
-
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
 using TheGodfather.EventListeners.Extensions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -23,7 +21,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -46,7 +44,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -70,14 +68,14 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Channel.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Channel.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
             emb.AddField("Channel", e.Channel.Mention, inline: true);
 
-            System.Collections.Generic.IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
+            IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
                 emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
@@ -95,12 +93,12 @@ namespace TheGodfather.EventListeners
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.ChannelBefore.IsExempted(shard))
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel updated");
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);            
+            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);
             if (!(entry is null) && entry is DiscordAuditLogChannelEntry centry) {     // Regular update
                 emb.WithDescription(centry.Target.ToString());
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);

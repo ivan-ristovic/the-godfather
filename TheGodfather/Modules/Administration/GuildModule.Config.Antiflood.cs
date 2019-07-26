@@ -4,6 +4,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,14 +65,9 @@ namespace TheGodfather.Modules.Administration
                         Sensitivity = sensitivity
                     };
 
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
-                        gcfg.AntifloodSettings = settings;
-                        db.GuildConfig.Update(gcfg);
-                        await db.SaveChangesAsync();
-                    }
+                    await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntifloodSettings = settings);
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -122,7 +119,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    AntifloodSettings settings = (await this.GetGuildConfigAsync(ctx.Guild.Id)).AntifloodSettings;
+                    AntifloodSettings settings = (await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).AntifloodSettings;
                     if (settings.Enabled) {
                         var sb = new StringBuilder();
                         sb.Append(Formatter.Bold("Sensitivity: ")).AppendLine(settings.Sensitivity.ToString());
@@ -143,11 +140,11 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodAction = action;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -175,11 +172,11 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 2 || sensitivity > 20)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 20]).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodSensitivity = sensitivity;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -207,11 +204,11 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown.TotalSeconds < 5 || cooldown.TotalSeconds > 60)
                         throw new CommandFailedException("The cooldown timespan is not in the valid range ([5, 60] seconds).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodCooldown = (short)cooldown.TotalSeconds;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",

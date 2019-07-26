@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Misc
                                              [Description("Prefix to set.")] string prefix = null)
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = this.Shared.GetGuildPrefix(ctx.Guild.Id);
+                string p = ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
                 await this.InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
                 return;
             }
@@ -274,7 +274,7 @@ namespace TheGodfather.Modules.Misc
             if (prefix.Length > 12)
                 throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
 
-            DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+            DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.Prefix = (prefix == this.Shared.BotConfiguration.DefaultPrefix) ? null : prefix;
             });
 
@@ -396,7 +396,7 @@ namespace TheGodfather.Modules.Misc
         {
             IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
             string[] parts = messages
-                .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
+                .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id)))
                 .Select(m => SplitMessage(m.Content))
                 .Distinct()
                 .Shuffle()

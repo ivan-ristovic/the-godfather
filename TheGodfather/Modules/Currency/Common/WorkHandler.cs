@@ -38,25 +38,25 @@ namespace TheGodfather.Modules.Currency.Common
         }.ToImmutableArray();
 
 
-        public static string GetWorkString(int earned, string currency = null)
-            => $"worked {GFRandom.Generator.ChooseRandomElement(_workAnswers)} and earned {Formatter.Bold(earned.ToString())} {currency ?? "credits"}!";
+        public static string GetWorkString(int earned, string currency)
+            => $"worked {GFRandom.Generator.ChooseRandomElement(_workAnswers)} and earned {Formatter.Bold(earned.ToString())} {currency}!";
 
-        public static string GetWorkStreetsString(int change, string currency = null)
+        public static string GetWorkStreetsString(int change, string currency)
         {
             if (change > 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsPositiveAnswers)} and earned {Formatter.Bold(change.ToString())} {currency ?? "credits"}!";
+                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsPositiveAnswers)} and earned {Formatter.Bold(change.ToString())} {currency}!";
             else if (change < 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsNegativeAnswers)} and lost {Formatter.Bold((-change).ToString())} {currency ?? "credits"}!";
+                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsNegativeAnswers)} and lost {Formatter.Bold((-change).ToString())} {currency}!";
             else
                 return "had no luck and got nothing this evening!";
         }
 
-        public static string GetCrimeString(int change, string currency = null)
+        public static string GetCrimeString(int change, string currency)
         {
             if (change > 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_crimePositiveAnswers)} and got away with {Formatter.Bold(change.ToString())} {currency ?? "credits"}!";
+                return $"{GFRandom.Generator.ChooseRandomElement(_crimePositiveAnswers)} and got away with {Formatter.Bold(change.ToString())} {currency}!";
             else if (change < 0)
-                return $"got caught and got bailed out of jail for {Formatter.Bold((-change).ToString())} {currency ?? "credits"}!";
+                return $"got caught and got bailed out of jail for {Formatter.Bold((-change).ToString())} {currency}!";
             else
                 return "had no luck and got nothing this evening!";
         }

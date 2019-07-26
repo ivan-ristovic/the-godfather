@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using TheGodfather.EventListeners;
 using TheGodfather.Modules.Administration.Common;
@@ -111,7 +112,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
         {
-            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 

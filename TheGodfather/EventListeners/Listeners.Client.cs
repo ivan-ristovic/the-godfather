@@ -3,6 +3,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -43,11 +46,8 @@ namespace TheGodfather.EventListeners
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
             shard.Log(LogLevel.Debug, $"Guild available: {e.Guild.ToString()}");
-
-            if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
-                return Task.CompletedTask;
-
-            return RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
+            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
+            return gcs.IsGuildRegistered(e.Guild.Id) ? Task.CompletedTask : gcs.RegisterGuildAsync(e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
@@ -62,10 +62,9 @@ namespace TheGodfather.EventListeners
         {
             shard.Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
 
-            await RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
+            await shard.Services.GetService<GuildConfigService>().RegisterGuildAsync(e.Guild.Id);
 
             DiscordChannel defChannel = e.Guild.GetDefaultChannel();
-
             if (!defChannel.PermissionsFor(e.Guild.CurrentMember).HasPermission(Permissions.SendMessages))
                 return;
 
@@ -77,19 +76,6 @@ namespace TheGodfather.EventListeners
                 $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order to send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia Discord server for quick support (https://discord.me/worldmafia)."
                 , StaticDiscordEmoji.Wave
             );
-        }
-
-
-        private static async Task RegisterGuildAsync(SharedData shared, DatabaseContextBuilder dbb, ulong gid)
-        {
-            shared.GuildConfigurations.TryAdd(gid, CachedGuildConfig.Default);
-            using (DatabaseContext db = dbb.CreateContext()) {
-                var gcfg = new DatabaseGuildConfig { GuildId = gid };
-                if (!db.GuildConfig.Contains(gcfg)) {
-                    db.GuildConfig.Add(gcfg);
-                    await db.SaveChangesAsync();
-                }
-            }
         }
     }
 }

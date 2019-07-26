@@ -2,6 +2,7 @@
 using System.Linq;
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -32,7 +33,7 @@ namespace TheGodfather.Common.Attributes
                 return string.Join(separator, this.Examples);
 
             string cname = cmd.QualifiedName;
-            string prefix = ctx.Services.GetService<SharedData>().GetGuildPrefix(ctx.Guild.Id);
+            string prefix = ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
 
             if (cmd.Overloads.Any(o => o.Arguments.All(a => a.IsOptional)))
                 return string.Join(separator, new[] { "" }.Concat(this.Examples).Select(GenerateExampleString));

@@ -19,9 +19,6 @@ using TheGodfather.Common.Converters;
 using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Reactions.Services;
-using TheGodfather.Modules.Search.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather
 {
@@ -163,7 +160,7 @@ namespace TheGodfather
 
         private Task<int> PrefixResolverAsync(DiscordMessage m)
         {
-            string p = this.SharedData.GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.DefaultPrefix;
+            string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion

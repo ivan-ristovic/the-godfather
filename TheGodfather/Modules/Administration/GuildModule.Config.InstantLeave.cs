@@ -4,6 +4,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
@@ -43,12 +45,12 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown < 2 || cooldown > 60)
                         throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntiInstantLeaveCooldown = cooldown;
                         cfg.AntiInstantLeaveEnabled = enable;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -74,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    AntiInstantLeaveSettings settings = (await this.GetGuildConfigAsync(ctx.Guild.Id)).AntiInstantLeaveSettings;
+                    AntiInstantLeaveSettings settings = (await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).AntiInstantLeaveSettings;
                     if (settings.Enabled)
                         await this.InformAsync(ctx, $"Instant leave watch: {Formatter.Bold("enabled")} with {Formatter.Bold(settings.Cooldown.ToString())}s cooldown");
                     else
@@ -93,11 +95,11 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown < 2 || cooldown > 60)
                         throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntiInstantLeaveCooldown = cooldown;
                     });
                     
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",

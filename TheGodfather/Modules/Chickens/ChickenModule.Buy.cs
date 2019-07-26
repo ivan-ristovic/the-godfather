@@ -5,7 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -14,6 +14,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -101,11 +102,13 @@ namespace TheGodfather.Modules.Chickens
                     Color = this.ModuleColor
                 };
 
-                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Default].ToString());
-                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.WellFed].ToString());
-                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Trained].ToString());
-                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
-                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Alien].ToString());
+                CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} {gcfg.Currency})", Chicken.StartingStats[ChickenType.Default].ToString());
+                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} {gcfg.Currency})", Chicken.StartingStats[ChickenType.WellFed].ToString());
+                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} {gcfg.Currency})", Chicken.StartingStats[ChickenType.Trained].ToString());
+                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} {gcfg.Currency})", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
+                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} {gcfg.Currency})", Chicken.StartingStats[ChickenType.Alien].ToString());
 
                 return ctx.RespondAsync(embed: emb.Build());
             }
@@ -127,12 +130,14 @@ namespace TheGodfather.Modules.Chickens
                 if (!(Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id) is null))
                     throw new CommandFailedException("You already own a chicken!");
 
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+                CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {gcfg.Currency}?"))
                     return;
                 
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
+                        throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy a chicken ({Chicken.Price(type)} needed)!");
 
                     ChickenStats stats = Chicken.StartingStats[type];
                     db.Chickens.Add(new DatabaseChicken {

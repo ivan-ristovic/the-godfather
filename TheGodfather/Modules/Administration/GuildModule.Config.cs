@@ -33,11 +33,11 @@ namespace TheGodfather.Modules.Administration
         [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.")]
         [Aliases("configuration", "config", "cfg")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public partial class GuildConfigModule : TheGodfatherModule
+        public partial class GuildConfigModule : TheGodfatherServiceModule<GuildConfigService>
         {
 
-            public GuildConfigModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public GuildConfigModule(GuildConfigService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
             }
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Administration
 
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => this.PrintGuildConfigAsync(ctx.Guild, ctx.Channel);
+                => this.PrintGuildConfigAsync(ctx.Services.GetService<GuildConfigService>(), ctx.Guild, ctx.Channel);
 
 
             #region COMMAND_CONFIG_WIZARD
@@ -79,11 +79,11 @@ namespace TheGodfather.Modules.Administration
 
                 await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
-                    await this.ApplySettingsAsync(ctx.Guild.Id, gcfg, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
+                    await this.ApplySettingsAsync(ctx.Services.GetService<GuildConfigService>(), ctx.Guild.Id, gcfg, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null))
-                        await this.PrintGuildConfigAsync(ctx.Guild, logchn, changed: true);
+                        await this.PrintGuildConfigAsync(ctx.Services.GetService<GuildConfigService>(), ctx.Guild, logchn, changed: true);
 
                     await channel.EmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess);
                 }
@@ -98,11 +98,11 @@ namespace TheGodfather.Modules.Administration
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
-                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.ReactionResponse = !enable;
                 });
 
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
             [Command("verbose"), Priority(0)]
             public Task SilentResponseAsync(CommandContext ctx)
             {
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
                 return this.InformAsync(ctx, $"Verbose responses for this guild are {Formatter.Bold(gcfg.ReactionResponse ? "disabled" : "enabled")}!");
             }
             #endregion
@@ -133,11 +133,11 @@ namespace TheGodfather.Modules.Administration
             public async Task SuggestionsAsync(CommandContext ctx,
                                               [Description("Enable suggestions?")] bool enable)
             {
-                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.SuggestionsEnabled = enable;
                 });
 
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(0)]
             public async Task SuggestionsAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 await this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Administration
             [UsageExampleArgs("on #general", "Welcome, %user%!", "off")]
             public async Task WelcomeAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
                 await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
@@ -186,13 +186,13 @@ namespace TheGodfather.Modules.Administration
                 if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.WelcomeChannelIdDb = enable ? (long)wchn.Id : (long?)null;
                     if (!string.IsNullOrWhiteSpace(message))
                         cfg.WelcomeMessage = message;
                 });
 
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Administration
             [UsageExampleArgs("on #general", "Welcome, %user%!", "off")]
             public async Task LeaveAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(ctx.Guild.Id);
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
                 await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
@@ -250,13 +250,13 @@ namespace TheGodfather.Modules.Administration
                 if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LeaveChannelIdDb = enable ? (long)lchn.Id : (long?)null;
                     if (!string.IsNullOrWhiteSpace(message))
                         cfg.LeaveMessage = message;
                 });
 
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Guild config changed",
@@ -296,7 +296,7 @@ namespace TheGodfather.Modules.Administration
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {
                 DiscordRole mr = null;
-                await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     if (muteRole is null)
                         mr = ctx.Guild.GetRole(cfg.MuteRoleId);
                     else
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Administration
 
 
             #region HELPER_FUNCTIONS
-            private async Task PrintGuildConfigAsync(DiscordGuild guild, DiscordChannel channel, bool changed = false)
+            private async Task PrintGuildConfigAsync(GuildConfigService service, DiscordGuild guild, DiscordChannel channel, bool changed = false)
             {
                 var emb = new DiscordEmbedBuilder {
                     Title = $"Guild configuration {(changed ? " changed" : "")}",
@@ -318,9 +318,9 @@ namespace TheGodfather.Modules.Administration
                     Color = this.ModuleColor
                 };
 
-                DatabaseGuildConfig gcfg = await this.GetGuildConfigAsync(guild.Id);
+                DatabaseGuildConfig gcfg = await service.GetConfigAsync(guild.Id);
 
-                emb.AddField("Prefix", this.Shared.GetGuildPrefix(guild.Id), inline: true);
+                emb.AddField("Prefix", this.Service.GetGuildPrefix(guild.Id), inline: true);
                 emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
                 emb.AddField("Command suggestions active", gcfg.SuggestionsEnabled.ToString(), inline: true);
                 emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
@@ -380,11 +380,11 @@ namespace TheGodfather.Modules.Administration
                 await channel.SendMessageAsync(embed: emb.Build());
             }
 
-            private Task ApplySettingsAsync(ulong gid, CachedGuildConfig cgcfg, DiscordRole muteRole,
+            private Task ApplySettingsAsync(GuildConfigService service, ulong gid, CachedGuildConfig cgcfg, DiscordRole muteRole,
                                             MemberUpdateMessagesSettings ninfo, AntifloodSettings antifloodSettings,
                                             AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
-                return this.ModifyGuildConfigAsync(gid, cfg => {
+                return service.ModifyConfigAsync(gid, cfg => {
                     cfg.AntifloodSettings = antifloodSettings;
                     cfg.AntiInstantLeaveSettings = antiInstantLeaveSettings;
                     cfg.CachedConfig = cgcfg;
@@ -624,10 +624,9 @@ namespace TheGodfather.Modules.Administration
                              (m.MentionedRoles.Count == 1 || ctx.Guild.Roles.Select(kvp => kvp.Value).Any(r => r.Name.Equals(m.Content, StringComparison.InvariantCultureIgnoreCase)))
                     );
                     if (!mctx.TimedOut && !(mctx.Result is null)) {
-                        if (mctx.Result.MentionedRoles.Any())
-                            muteRole = mctx.Result.MentionedRoles.First();
-                        else
-                            muteRole = ctx.Guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.Equals(mctx.Result.Content, StringComparison.InvariantCultureIgnoreCase));
+                        muteRole = mctx.Result.MentionedRoles.Any()
+                            ? mctx.Result.MentionedRoles.First()
+                            : ctx.Guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.Equals(mctx.Result.Content, StringComparison.InvariantCultureIgnoreCase));
                     }
                 }
 

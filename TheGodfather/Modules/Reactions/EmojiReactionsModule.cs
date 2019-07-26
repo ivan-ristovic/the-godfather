@@ -10,12 +10,14 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 #endregion
@@ -104,7 +106,7 @@ namespace TheGodfather.Modules.Reactions
             if (removed == 0)
                 throw new CommandFailedException("No such reaction found!");
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Several emoji reactions have been deleted",
@@ -150,7 +152,7 @@ namespace TheGodfather.Modules.Reactions
             int count = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id, validIds);
 
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
@@ -210,7 +212,7 @@ namespace TheGodfather.Modules.Reactions
             int removed = await this.Service.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
 
             if (removed > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several emoji reactions have been deleted",
@@ -245,7 +247,7 @@ namespace TheGodfather.Modules.Reactions
 
             int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All emoji reactions have been deleted",
@@ -350,7 +352,7 @@ namespace TheGodfather.Modules.Reactions
 
             await this.Service.AddEmojiReactionAsync(ctx.Guild.Id, emoji, validTriggers, regex);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "New emoji reactions added",

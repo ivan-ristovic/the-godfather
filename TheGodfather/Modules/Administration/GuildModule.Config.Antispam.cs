@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -50,13 +51,13 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 3 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([3, 10]).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntispamEnabled = enable;
                         cfg.AntispamAction = action;
                         cfg.AntispamSensitivity = sensitivity;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -90,7 +91,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
 
                     if (gcfg.AntispamSettings.Enabled) {
                         var sb = new StringBuilder();
@@ -130,11 +131,11 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntispamSettings.Action = action;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",
@@ -161,11 +162,11 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 3 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntispamSettings.Sensitivity = sensitivity;
                     });
 
-                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {
                             Title = "Guild config changed",

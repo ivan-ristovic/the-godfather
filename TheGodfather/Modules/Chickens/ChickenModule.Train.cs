@@ -4,13 +4,14 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
@@ -58,17 +59,18 @@ namespace TheGodfather.Modules.Chickens
                     if (chicken.Stats.TotalVitality < 25)
                         throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
+
+                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                     long price = chicken.TrainStrengthPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                         return;
 
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
+                        throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
                     
-                    if (chicken.TrainStrength())
-                        result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.TotalStrength}";
-                    else
-                        result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
+                    result = chicken.TrainStrength()
+                        ? $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.TotalStrength}"
+                        : $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
                     chicken.Stats.BareVitality--;
 
                     dbc.Strength = chicken.Stats.BareStrength;
@@ -102,17 +104,17 @@ namespace TheGodfather.Modules.Chickens
                     if (chicken.Stats.TotalVitality < 25)
                         throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
+                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                     long price = chicken.TrainVitalityPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                         return;
 
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
+                        throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
 
-                    if (chicken.TrainVitality())
-                        result = $"{ctx.User.Mention}'s chicken learned alot from the training. New max vitality: {chicken.Stats.TotalMaxVitality}";
-                    else
-                        result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.TotalMaxVitality}";
+                    result = chicken.TrainVitality()
+                        ? $"{ctx.User.Mention}'s chicken learned alot from the training. New max vitality: {chicken.Stats.TotalMaxVitality}"
+                        : $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.TotalMaxVitality}";
                     chicken.Stats.BareVitality--;
 
                     dbc.MaxVitality = chicken.Stats.BareMaxVitality;

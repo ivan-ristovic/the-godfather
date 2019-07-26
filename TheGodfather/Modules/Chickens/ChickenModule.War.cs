@@ -8,11 +8,12 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
@@ -78,7 +79,7 @@ namespace TheGodfather.Modules.Chickens
                             await db.SaveChangesAsync();
                         }
 
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.\n\n{sb.ToString()}");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.\n\n{sb.ToString()}");
                     } else {
                         await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).");
                     }

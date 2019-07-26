@@ -7,7 +7,7 @@ using DSharpPlus.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -17,6 +17,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -51,9 +52,10 @@ namespace TheGodfather.Modules.Chickens
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
+                CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                 var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
-                    throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
+                    throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {gcfg.Currency}).");
 
                 if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
                     throw new CommandFailedException("Your chicken already one of those upgrades!");
@@ -64,11 +66,11 @@ namespace TheGodfather.Modules.Chickens
                         if (upgrade is null)
                             throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                        if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost :n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+                        if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost :n0}")} {gcfg.Currency}?"))
                             return;
 
                         if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
-                            throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
+                            throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy that upgrade!");
 
                         db.ChickensBoughtUpgrades.Add(new DatabaseChickenBoughtUpgrade {
                             Id = upgrade.Id,

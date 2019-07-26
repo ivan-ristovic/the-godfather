@@ -64,7 +64,7 @@ namespace TheGodfather.EventListeners
                 shard.SharedData.LogProvider.Log(LogLevel.Debug, exc);
             }
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -130,7 +130,7 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -154,7 +154,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberUpdated)]
         public static async Task MemberUpdateEventHandlerAsync(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null)
                 return;
 
@@ -229,7 +229,7 @@ namespace TheGodfather.EventListeners
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
             foreach (DiscordGuild guild in guilds) {
-                DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(guild);
+                DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(guild);
                 if (logchn is null)
                     continue;
                 if (await e.UserAfter.IsMemberOfGuildAsync(guild))

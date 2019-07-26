@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Reactions
                 count = await this.Service.RemoveTextReactionsAsync(ctx.Guild.Id, validIds);
 
             if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Reactions
             int removed = await this.Service.RemoveTextReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
 
             if (removed > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+                DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "Several text reactions have been deleted",
@@ -194,7 +194,7 @@ namespace TheGodfather.Modules.Reactions
 
             int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "All text reactions have been deleted",
@@ -277,7 +277,7 @@ namespace TheGodfather.Modules.Reactions
             if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))
                 throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "New text reaction added",

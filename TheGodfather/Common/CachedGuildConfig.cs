@@ -21,7 +21,7 @@ namespace TheGodfather.Common
 
         public static CachedGuildConfig Default => new CachedGuildConfig {
             AntispamSettings = new AntispamSettings(),
-            Currency = null,
+            Currency = "credits",
             LinkfilterSettings = new LinkfilterSettings(),
             LogChannelId = default,
             Prefix = null,

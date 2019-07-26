@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
@@ -16,6 +17,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -55,8 +57,10 @@ namespace TheGodfather.Modules.Currency
             if (name.Length >= 60)
                 throw new InvalidCommandUsageException("Item name cannot exceed 60 characters");
 
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
             if (price <1  || price > 100_000_000_000)
-                throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
+                throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {gcfg.Currency}.");
 
             using (DatabaseContext db = this.Database.CreateContext()) {
                 db.PurchasableItems.Add(new DatabasePurchasableItem {
@@ -67,7 +71,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
+            await this.InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {gcfg.Currency}) successfully added to this guild's shop.", important: false);
         }
 
         [Command("add"), Priority(0)]
@@ -95,7 +99,9 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You have already purchased this item!");
             }
 
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}?"))
                 return;
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -110,7 +116,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
         }
 
         [Command("buy"), UsesInteractivity, Priority(1)]
@@ -127,7 +133,9 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You have already purchased this item!");
             }
 
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}?"))
                 return;
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -142,7 +150,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
         }
 
 
@@ -168,8 +176,10 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You did not purchase this item!");
             }
 
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
             long retval = item.Price / 2;
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {gcfg.Currency}?"))
                 return;
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -178,7 +188,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
             
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {gcfg.Currency}!", important: false);
         }
         #endregion
 
@@ -227,7 +237,7 @@ namespace TheGodfather.Modules.Currency
             await ctx.SendCollectionInPagesAsync(
                 $"Items for guild {ctx.Guild.Name}",
                 items,
-                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}",
+                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}",
                 this.ModuleColor,
                 5
             );

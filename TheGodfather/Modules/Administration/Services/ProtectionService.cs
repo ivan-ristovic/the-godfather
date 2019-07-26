@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
 using TheGodfather.Database;
@@ -64,7 +65,7 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                 }
             } catch {
-                DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(guild);
+                DiscordChannel logchn = this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(guild);
                 if (!(logchn is null)) {
                     var emb = new DiscordEmbedBuilder {
                         Title = "User punish attempt failed! Check my permissions",

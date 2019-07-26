@@ -8,7 +8,7 @@ using DSharpPlus.Exceptions;
 using Humanizer;
 
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +20,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Extensions;
 #endregion
 
@@ -69,7 +70,7 @@ namespace TheGodfather.Modules.Currency
             };
 
             if (balance.HasValue) {
-                emb.WithDescription($"Account value: {Formatter.Bold(balance.Value.ToWords())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}");
+                emb.WithDescription($"Account value: {Formatter.Bold(balance.Value.ToWords())} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}");
                 emb.AddField("Numeric value", $"{balance.Value:n0}");
             } else {
                 emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
@@ -89,12 +90,12 @@ namespace TheGodfather.Modules.Currency
                                                [RemainingText, Description("New currency.")] string currency = null)
         {
             if (string.IsNullOrWhiteSpace(currency)) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credit"}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency ?? "credit"}");
             } else {
                 if (currency.Length > 30)
                     throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
 
-                DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
+                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.Currency = currency;
                 });
                 
@@ -125,7 +126,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
             
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on the lottery! (seems legit)");
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} on the lottery! (seems legit)");
         }
         
         [Command("grant"), Priority(0)]
@@ -150,7 +151,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {DatabaseBankAccount.StartingBalance} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {DatabaseBankAccount.StartingBalance} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} for free.");
         }
         #endregion
 

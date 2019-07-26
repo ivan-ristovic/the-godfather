@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -19,6 +19,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -101,7 +102,7 @@ namespace TheGodfather.Modules.Chickens
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
                 (loser.Stats.TotalVitality > 0 ? $"{Formatter.Bold(loser.Name)} lost {Formatter.Bold("50")} HP!" : $"{Formatter.Bold(loser.Name)} died in the battle!") +
-                $"\n\n{winner.Owner.Mention} won {gain * 200} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}."
+                $"\n\n{winner.Owner.Mention} won {gain * 200} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}."
                 , important: true
             );
         }
@@ -135,13 +136,15 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to create a disease?"))
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {gcfg.Currency} to create a disease?"))
                 return;
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to pay for the disease creation!");
+                    throw new CommandFailedException($"You do not have enough {gcfg.Currency} to pay for the disease creation!");
 
                 db.Chickens.RemoveRange(db.Chickens.Where(c => c.Vitality < threshold));
                 await db.SaveChangesAsync();
@@ -184,9 +187,10 @@ namespace TheGodfather.Modules.Chickens
         {
             member = member ?? ctx.Member;
 
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
             var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
             if (chicken is null)
-                throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}).");
+                throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {gcfg.Currency}).");
 
             await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(member));
         }
@@ -238,8 +242,9 @@ namespace TheGodfather.Modules.Chickens
             if (chicken is null)
                 throw new CommandFailedException("You do not own a chicken!");
 
+            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
             long price = chicken.SellPrice;
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?"))
                 return;
 
             using (DatabaseContext db = this.Database.CreateContext()) {
@@ -251,7 +256,7 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}!");
         }
         #endregion
 

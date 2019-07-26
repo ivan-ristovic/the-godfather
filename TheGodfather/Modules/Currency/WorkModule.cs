@@ -4,12 +4,14 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -38,7 +40,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkStreetsString(change, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
+                Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkStreetsString(change, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency)}",
                 Color = change > 0 ? DiscordColor.PhthaloGreen : DiscordColor.IndianRed
             }.WithFooter("Who needs dignity?", ctx.Member.AvatarUrl).Build());
         }
@@ -58,7 +60,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkString(earned, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
+                Description = $"{ctx.Member.Mention} {WorkHandler.GetWorkString(earned, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency)}",
                 Color = DiscordColor.SapGreen
             }.WithFooter("Arbeit macht frei.", ctx.Member.AvatarUrl).Build());
         }
@@ -78,7 +80,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{ctx.Member.Mention} {WorkHandler.GetCrimeString(earned, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency)}",
+                Description = $"{ctx.Member.Mention} {WorkHandler.GetCrimeString(earned, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency)}",
                 Color = success ? DiscordColor.SapGreen : DiscordColor.IndianRed
             }.WithFooter("PAYDAY3", ctx.Member.AvatarUrl).Build());
         }

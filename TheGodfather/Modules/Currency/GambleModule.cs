@@ -6,11 +6,13 @@ using DSharpPlus.Entities;
 
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Extensions;
 #endregion
 
@@ -66,7 +68,7 @@ namespace TheGodfather.Modules.Currency
 
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
             }
 
@@ -79,7 +81,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(" and ");
             sb.Append(guess == rnd ? "won " : "lost ");
             sb.Append(Formatter.Bold(bid.ToString()));
-            sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
+            sb.Append(ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
 
             if (rnd == guess) {
                 using (DatabaseContext db = this.Database.CreateContext()) {
@@ -128,7 +130,7 @@ namespace TheGodfather.Modules.Currency
 
             using (DatabaseContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
             }
 
@@ -140,7 +142,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(Formatter.Bold(rnd.ToString()));
             sb.Append(" and ");
             sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
-            sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
+            sb.Append(ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
 
             await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 

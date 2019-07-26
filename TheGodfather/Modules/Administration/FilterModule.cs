@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Administration
                     eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
             }
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Filter addition occured",
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.RemoveFiltersAsync(ctx.Guild.Id, ids);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Filter deletion occured",
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.RemoveFiltersAsync(ctx.Guild.Id, regexStrings);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = "Filter deletion occured",
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
 
             int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id);
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Guild);
+            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
             if (!(logchn is null)) {
                 var emb = new DiscordEmbedBuilder {
                     Title = $"All guild filters have been deleted ({removed} total)",

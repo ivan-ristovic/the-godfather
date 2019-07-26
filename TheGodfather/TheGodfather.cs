@@ -21,7 +21,6 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -201,6 +200,7 @@ namespace TheGodfather
                 .AddSingleton(new FilteringService(_dbb, _shared.LogProvider))
                 .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
                 .AddSingleton(new GoodreadsService(_shared.BotConfiguration.GoodreadsKey))
+                .AddSingleton(new GuildConfigService(_cfg, _dbb))
                 .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                 .AddSingleton(new InteractivityService())
                 .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))

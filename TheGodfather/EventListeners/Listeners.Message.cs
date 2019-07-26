@@ -35,7 +35,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Channel.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Channel.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -55,7 +55,7 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id))) {
+            if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.Services.GetService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
                 short rank = shard.Services.GetService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
                 if (rank != 0) {
                     DatabaseGuildRank rankInfo;
@@ -75,7 +75,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
             if (gcfg.RatelimitSettings.Enabled)
                 await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
 
@@ -92,7 +92,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
             if (gcfg.LinkfilterSettings.Enabled) {
                 if (await shard.CNext.Services.GetService<LinkfilterService>().HandleNewMessageAsync(e, gcfg.LinkfilterSettings))
                     return;
@@ -146,7 +146,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate || e.Message is null)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null || e.Channel.IsExempted(shard))
                 return;
 
@@ -207,7 +207,7 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(e.Guild);
+            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
             if (logchn is null || !e.Message.IsEdited || e.Channel.IsExempted(shard))
                 return;
 
