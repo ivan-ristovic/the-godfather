@@ -11,7 +11,6 @@ namespace TheGodfather
     public sealed class SharedData : IDisposable
     {
         #region Properties
-        public AsyncExecutor AsyncExecutor { get; }
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
@@ -28,7 +27,6 @@ namespace TheGodfather
 
         public SharedData()
         {
-            this.AsyncExecutor = new AsyncExecutor();
             this.BlockedChannels = new ConcurrentHashSet<ulong>();
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;

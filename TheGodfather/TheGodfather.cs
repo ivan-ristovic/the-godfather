@@ -33,12 +33,13 @@ namespace TheGodfather
         public static string ApplicationName => "TheGodfather";
         public static string ApplicationVersion => "v5.0.0-beta";
 
-        public static IReadOnlyList<TheGodfatherShard> ActiveShards => Shards.AsReadOnly();
+        public static IReadOnlyList<TheGodfatherShard> ActiveShards => _shards.AsReadOnly();
 
-        private static BotConfig Config { get; set; }
-        private static DatabaseContextBuilder Database { get; set; }
-        private static List<TheGodfatherShard> Shards { get; set; }
-        private static SharedData Shared { get; set; }
+        private static BotConfig _cfg;
+        private static DatabaseContextBuilder _dbb;
+        private static List<TheGodfatherShard> _shards;
+        private static SharedData _shared;
+        private static AsyncExecutor _async;
 
         #region Timers
         private static Timer BotStatusUpdateTimer { get; set; }
@@ -60,12 +61,12 @@ namespace TheGodfather
                 InitializeSharedData();
                 await CreateAndBootShardsAsync();
 
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete!");
+                _shared.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete!");
 
-                await Task.Delay(Timeout.Infinite, Shared.MainLoopCts.Token);
+                await Task.Delay(Timeout.Infinite, _shared.MainLoopCts.Token);
                 await DisposeAsync();
             } catch (TaskCanceledException) {
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
+                _shared.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
             } catch (Exception e) {
                 Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");
                 if (!(e.InnerException is null))
@@ -80,7 +81,7 @@ namespace TheGodfather
         public static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
             Environment.ExitCode = exitCode;
-            Shared.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
+            _shared.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
             return Task.CompletedTask;
         }
 
@@ -121,18 +122,18 @@ namespace TheGodfather
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
 
-            Config = JsonConvert.DeserializeObject<BotConfig>(json);
+            _cfg = JsonConvert.DeserializeObject<BotConfig>(json);
         }
 
         private static async Task InitializeDatabaseAsync()
         {
             Console.Write("\r[2/5] Establishing database connection...         ");
 
-            Database = new DatabaseContextBuilder(Config.DatabaseConfig);
+            _dbb = new DatabaseContextBuilder(_cfg.DatabaseConfig);
 
             Console.Write("\r[2/5] Migrating the database...                   ");
 
-            await Database.CreateContext().Database.MigrateAsync();
+            await _dbb.CreateContext().Database.MigrateAsync();
         }
 
         private static void InitializeSharedData()
@@ -143,7 +144,7 @@ namespace TheGodfather
             ConcurrentHashSet<ulong> blockedUsers;
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
 
-            using (DatabaseContext db = Database.CreateContext()) {
+            using (DatabaseContext db = _dbb.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
                 blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
                 guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
@@ -175,14 +176,14 @@ namespace TheGodfather
                 )));
             }
 
-            var logger = new Logger(Config);
-            foreach (Logger.SpecialLoggingRule rule in Config.SpecialLoggerRules)
+            var logger = new Logger(_cfg);
+            foreach (Logger.SpecialLoggingRule rule in _cfg.SpecialLoggerRules)
                 logger.ApplySpecialLoggingRule(rule);
 
-            Shared = new SharedData {
+            _shared = new SharedData {
                 BlockedChannels = blockedChannels,
                 BlockedUsers = blockedUsers,
-                BotConfiguration = Config,
+                BotConfiguration = _cfg,
                 MainLoopCts = new CancellationTokenSource(),
                 LogProvider = logger,
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
@@ -191,28 +192,28 @@ namespace TheGodfather
 
         private static async Task CreateAndBootShardsAsync()
         {
-            Console.Write($"\r[4/5] Creating {Config.ShardCount} shards...                  ");
+            Console.Write($"\r[4/5] Creating {_cfg.ShardCount} shards...                  ");
 
             IServiceCollection sharedServices = new ServiceCollection()
-                .AddSingleton(Shared)
-                .AddSingleton(Database)
+                .AddSingleton(_shared)
+                .AddSingleton(_dbb)
                 .AddSingleton(new ChannelEventService())
-                .AddSingleton(new FilteringService(Database, Shared.LogProvider))
-                .AddSingleton(new GiphyService(Shared.BotConfiguration.GiphyKey))
-                .AddSingleton(new GoodreadsService(Shared.BotConfiguration.GoodreadsKey))
-                .AddSingleton(new ImgurService(Shared.BotConfiguration.ImgurKey))
+                .AddSingleton(new FilteringService(_dbb, _shared.LogProvider))
+                .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
+                .AddSingleton(new GoodreadsService(_shared.BotConfiguration.GoodreadsKey))
+                .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                 .AddSingleton(new InteractivityService())
-                .AddSingleton(new OMDbService(Shared.BotConfiguration.OMDbKey))
-                .AddSingleton(new ReactionsService(Database, Shared.LogProvider))
-                .AddSingleton(new SteamService(Shared.BotConfiguration.SteamKey))
+                .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
+                .AddSingleton(new ReactionsService(_dbb, _shared.LogProvider))
+                .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
                 .AddSingleton(new UserRanksService())
-                .AddSingleton(new WeatherService(Shared.BotConfiguration.WeatherKey))
-                .AddSingleton(new YtService(Shared.BotConfiguration.YouTubeKey))
+                .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
+                .AddSingleton(new YtService(_shared.BotConfiguration.YouTubeKey))
                 ;
 
-            Shards = new List<TheGodfatherShard>();
-            for (int i = 0; i < Config.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, Database, Shared);
+            _shards = new List<TheGodfatherShard>();
+            for (int i = 0; i < _cfg.ShardCount; i++) {
+                var shard = new TheGodfatherShard(i, _dbb, _shared);
                 shard.Services = sharedServices
                     .AddSingleton(new AntifloodService(shard))
                     .AddSingleton(new AntiInstantLeaveService(shard))
@@ -221,28 +222,29 @@ namespace TheGodfather
                     .AddSingleton(new RatelimitService(shard))
                     .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
-                Shards.Add(shard);
+                _shards.Add(shard);
             }
 
             Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            await Task.WhenAll(Shards.Select(s => s.StartAsync()));
+            await Task.WhenAll(_shards.Select(s => s.StartAsync()));
         }
 
         private static Task RegisterPeriodicTasks()
         {
-            BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, Shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
-            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(Config.DatabaseSyncInterval));
-            FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0], TimeSpan.FromSeconds(Config.FeedCheckStartDelay), TimeSpan.FromSeconds(Config.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-            SavedTaskLoadTimer = new Timer(RegisterSavedTasksCallback, Shards[0], TimeSpan.Zero, TimeSpan.FromMinutes(5));
+            _async = new AsyncExecutor();
+            BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, _shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
+            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(_cfg.DatabaseSyncInterval));
+            FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(_cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(_cfg.FeedCheckInterval));
+            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, _shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            SavedTaskLoadTimer = new Timer(RegisterSavedTasksCallback, _shards[0], TimeSpan.Zero, TimeSpan.FromMinutes(5));
             return Task.CompletedTask;
         }
 
         private static async Task DisposeAsync()
         {
-            Shared.LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
+            _shared.LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
 
             BotStatusUpdateTimer.Dispose();
             DatabaseSyncTimer.Dispose();
@@ -250,11 +252,11 @@ namespace TheGodfather
             MiscActionsTimer.Dispose();
             SavedTaskLoadTimer.Dispose();
 
-            foreach (TheGodfatherShard shard in Shards)
+            foreach (TheGodfatherShard shard in _shards)
                 await shard.DisposeAsync();
-            Shared.Dispose();
+            _shared.Dispose();
 
-            Shared.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
+            _shared.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
         }
         #endregion
 
@@ -272,9 +274,9 @@ namespace TheGodfather
                     status = db.BotStatuses.Shuffle().FirstOrDefault();
 
                 var activity = new DiscordActivity(status?.Status ?? "@TheGodfather help", status?.Activity ?? ActivityType.Playing);
-                Shared.AsyncExecutor.Execute(shard.Client.UpdateStatusAsync(activity));
+                _async.Execute(shard.Client.UpdateStatusAsync(activity));
             } catch (Exception e) {
-                Shared.LogProvider.Log(LogLevel.Error, e);
+                _shared.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -285,7 +287,7 @@ namespace TheGodfather
                 using (DatabaseContext db = shard.Database.CreateContext())
                     shard.Services.GetService<UserRanksService>().Sync(db);
             } catch (Exception e) {
-                Shared.LogProvider.Log(LogLevel.Error, e);
+                _shared.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -294,9 +296,9 @@ namespace TheGodfather
             var shard = _ as TheGodfatherShard;
 
             try {
-                Shared.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, Database));
+                _async.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, _dbb));
             } catch (Exception e) {
-                Shared.LogProvider.Log(LogLevel.Error, e);
+                _shared.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -306,32 +308,32 @@ namespace TheGodfather
 
             try {
                 List<DatabaseBirthday> todayBirthdays;
-                using (DatabaseContext db = Database.CreateContext()) {
+                using (DatabaseContext db = _dbb.CreateContext()) {
                     todayBirthdays = db.Birthdays
                         .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                         .ToList();
                 }
                 foreach (DatabaseBirthday birthday in todayBirthdays) {
-                    DiscordChannel channel = Shared.AsyncExecutor.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
-                    DiscordUser user = Shared.AsyncExecutor.Execute(shard.Client.GetUserAsync(birthday.UserId));
-                    Shared.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
+                    DiscordChannel channel = _async.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
+                    DiscordUser user = _async.Execute(shard.Client.GetUserAsync(birthday.UserId));
+                    _async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                         Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
                         Color = DiscordColor.Aquamarine
                     }));
 
-                    using (DatabaseContext db = Database.CreateContext()) {
+                    using (DatabaseContext db = _dbb.CreateContext()) {
                         birthday.LastUpdateYear = DateTime.Now.Year;
                         db.Birthdays.Update(birthday);
                         db.SaveChanges();
                     }
                 }
 
-                using (DatabaseContext db = Database.CreateContext()) {
+                using (DatabaseContext db = _dbb.CreateContext()) {
                     db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                     db.SaveChanges();
                 }
             } catch (Exception e) {
-                Shared.LogProvider.Log(LogLevel.Error, e);
+                _shared.LogProvider.Log(LogLevel.Error, e);
             }
         }
 
@@ -340,7 +342,7 @@ namespace TheGodfather
             var shard = _ as TheGodfatherShard;
 
             try {
-                using (DatabaseContext db = Database.CreateContext()) {
+                using (DatabaseContext db = _dbb.CreateContext()) {
                     var savedTasks = db.SavedTasks
                         .Where(t => t.ExecutionTime <= DateTimeOffset.Now + TimeSpan.FromMinutes(5))
                         .ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
@@ -367,7 +369,7 @@ namespace TheGodfather
                     RegisterReminders(reminders);
                 }
             } catch (Exception e) {
-                Shared.LogProvider.Log(LogLevel.Error, e);
+                _shared.LogProvider.Log(LogLevel.Error, e);
             }
 
 
@@ -375,29 +377,29 @@ namespace TheGodfather
             {
                 int scheduled = 0, missed = 0;
                 foreach ((int tid, SavedTaskInfo task) in tasks) {
-                    if (Shared.AsyncExecutor.Execute(RegisterTaskAsync(tid, task)))
+                    if (_async.Execute(RegisterTaskAsync(tid, task)))
                         scheduled++;
                     else
                         missed++;
                 }
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Saved task scheduler: {scheduled} scheduled; {missed} missed.");
+                _shared.LogProvider.ElevatedLog(LogLevel.Info, $"Saved task scheduler: {scheduled} scheduled; {missed} missed.");
             }
 
             void RegisterReminders(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
             {
                 int scheduled = 0, missed = 0;
                 foreach ((int tid, SendMessageTaskInfo task) in reminders) {
-                    if (Shared.AsyncExecutor.Execute(RegisterTaskAsync(tid, task)))
+                    if (_async.Execute(RegisterTaskAsync(tid, task)))
                         scheduled++;
                     else
                         missed++;
                 }
-                Shared.LogProvider.ElevatedLog(LogLevel.Info, $"Reminder scheduler: {scheduled} scheduled; {missed} missed.");
+                _shared.LogProvider.ElevatedLog(LogLevel.Info, $"Reminder scheduler: {scheduled} scheduled; {missed} missed.");
             }
 
             async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
             {
-                var texec = new SavedTaskExecutor(id, shard.Client, tinfo, Shared, Database);
+                var texec = new SavedTaskExecutor(id, shard.Client, tinfo, _shared, _dbb);
                 if (texec.TaskInfo.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
                     return false;
