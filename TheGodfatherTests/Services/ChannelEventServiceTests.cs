@@ -22,7 +22,7 @@ namespace TheGodfatherTests.Services
 
 
         [Test]
-        public void GetEventInChannelTest()
+        public void GetEventInChannelTests()
         {
             Assert.IsNull(EventIn(MockData.Ids[0]));
             Assert.IsNull(EventIn(MockData.Ids[1]));
@@ -52,7 +52,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void IsEventRunningInChannelTest()
+        public void IsEventRunningInChannelTests()
         {
             Assert.False(IsEventRunningIn(MockData.Ids[0]));
             Assert.False(IsEventRunningIn(MockData.Ids[1]));
@@ -96,7 +96,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void RegisterEventInChannelTest()
+        public void RegisterEventInChannelTests()
         {
             Assert.IsNull(EventIn(MockData.Ids[0]));
             Assert.IsNull(EventIn(MockData.Ids[1]));
@@ -123,7 +123,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void UnregisterEventInChannelTest()
+        public void UnregisterEventInChannelTests()
         {
             Assert.IsNull(EventIn(MockData.Ids[0]));
             Assert.IsNull(EventIn(MockData.Ids[1]));

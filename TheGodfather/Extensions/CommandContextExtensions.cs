@@ -91,7 +91,7 @@ namespace TheGodfather.Extensions
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id
             );
 
-            if (!interactivity.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
+            if (!interactivity.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             if (mctx.TimedOut)

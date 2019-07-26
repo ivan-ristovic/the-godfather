@@ -19,7 +19,7 @@ namespace TheGodfatherTests.Services
 
 
         [Test]
-        public void CalculateRankForMessageCountTest()
+        public void CalculateRankForMessageCountTests()
         {
             Assert.AreEqual(0, this.Service.CalculateRankForMessageCount(0));
             Assert.AreEqual(0, this.Service.CalculateRankForMessageCount(1));
@@ -39,7 +39,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void GetAndIncrementMessageCountForUserTest()
+        public void GetAndIncrementMessageCountForUserTests()
         {
             Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[0]));
             Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[1]));
@@ -62,7 +62,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void CalculateRankForUserTest()
+        public void CalculateRankForUserTests()
         {
             Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[0]));
             Assert.AreEqual(0, this.Service.GetMessageCountForUser(MockData.Ids[1]));
@@ -77,7 +77,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void BlankDatabaseSyncTest()
+        public void BlankDatabaseSyncTests()
         {
             this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
@@ -104,7 +104,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void FilledDatabaseSyncTest()
+        public void FilledDatabaseSyncTests()
         {
             this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
@@ -141,7 +141,7 @@ namespace TheGodfatherTests.Services
         }
 
         [Test]
-        public void RepetitiveSyncTest()
+        public void RepetitiveSyncTests()
         {
             this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[2]);

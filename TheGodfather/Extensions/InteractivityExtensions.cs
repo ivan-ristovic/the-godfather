@@ -38,7 +38,7 @@ namespace TheGodfather.Extensions
                 }
             );
 
-            if (!(interactivityService is null) && !interactivityService.TryRemovePendingResponse(cid, uid))
+            if (!(interactivityService is null) && !interactivityService.RemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return response;
@@ -55,7 +55,7 @@ namespace TheGodfather.Extensions
             
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
 
-            if (!(interactivityService is null) && !interactivityService.TryRemovePendingResponse(cid, uid))
+            if (!(interactivityService is null) && !interactivityService.RemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return mctx;
