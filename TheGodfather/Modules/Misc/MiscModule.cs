@@ -482,7 +482,7 @@ namespace TheGodfather.Modules.Misc
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Information,
                 Formatter.Bold($"Uptime information:") +
-                $"\n\n{Formatter.Bold("Shard:")} {ctx.Services.GetService<TheGodfatherShard>().Id}\n" +
+                // $"\n\n{Formatter.Bold("Shard:")} {ctx.Services.GetService<TheGodfatherShard>().Id}\n" +     FIXME invalid now, shard is not in service collection
                 $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
                 $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
             );

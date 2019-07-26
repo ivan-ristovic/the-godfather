@@ -20,7 +20,9 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 
@@ -140,7 +142,6 @@ namespace TheGodfather
             ConcurrentHashSet<ulong> blockedChannels;
             ConcurrentHashSet<ulong> blockedUsers;
             ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
-            ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
 
             using (DatabaseContext db = Database.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
@@ -192,9 +193,33 @@ namespace TheGodfather
         {
             Console.Write($"\r[4/5] Creating {Config.ShardCount} shards...                  ");
 
+            IServiceCollection sharedServices = new ServiceCollection()
+                .AddSingleton(Shared)
+                .AddSingleton(Database)
+                .AddSingleton(new ChannelEventService())
+                .AddSingleton(new FilteringService(Database, Shared.LogProvider))
+                .AddSingleton(new GiphyService(Shared.BotConfiguration.GiphyKey))
+                .AddSingleton(new GoodreadsService(Shared.BotConfiguration.GoodreadsKey))
+                .AddSingleton(new ImgurService(Shared.BotConfiguration.ImgurKey))
+                .AddSingleton(new InteractivityService())
+                .AddSingleton(new OMDbService(Shared.BotConfiguration.OMDbKey))
+                .AddSingleton(new ReactionsService(Database, Shared.LogProvider))
+                .AddSingleton(new SteamService(Shared.BotConfiguration.SteamKey))
+                .AddSingleton(new UserRanksService())
+                .AddSingleton(new WeatherService(Shared.BotConfiguration.WeatherKey))
+                .AddSingleton(new YtService(Shared.BotConfiguration.YouTubeKey))
+                ;
+
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < Config.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, Database, Shared);
+                shard.Services = sharedServices
+                    .AddSingleton(new AntifloodService(shard))
+                    .AddSingleton(new AntiInstantLeaveService(shard))
+                    .AddSingleton(new AntispamService(shard))
+                    .AddSingleton(new LinkfilterService(shard))
+                    .AddSingleton(new RatelimitService(shard))
+                    .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
                 Shards.Add(shard);
             }

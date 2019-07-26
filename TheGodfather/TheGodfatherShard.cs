@@ -44,45 +44,23 @@ namespace TheGodfather
 
         #region Public Properties
         public int Id { get; }
+        public ServiceProvider Services { get; set; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
-        public ServiceProvider Services { get; }
 
         public bool IsListening => this.SharedData.IsBotListening;
         #endregion
 
 
-        public TheGodfatherShard(int sid, DatabaseContextBuilder dbb, SharedData shared)
+        public TheGodfatherShard(int shardId, DatabaseContextBuilder databaseBuilder, SharedData shared)
         {
-            this.Id = sid;
-            this.Database = dbb;
+            this.Id = shardId;
+            this.Database = databaseBuilder;
             this.SharedData = shared;
-            this.Services = new ServiceCollection()
-                .AddSingleton(this)
-                .AddSingleton(this.SharedData)
-                .AddSingleton(this.Database)
-                .AddSingleton(new AntifloodService(this))
-                .AddSingleton(new AntiInstantLeaveService(this))
-                .AddSingleton(new AntispamService(this))
-                .AddSingleton(new ChannelEventService())
-                .AddSingleton(new FilteringService(this.Database, this.SharedData.LogProvider))
-                .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
-                .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
-                .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
-                .AddSingleton(new InteractivityService())
-                .AddSingleton(new LinkfilterService(this))
-                .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
-                .AddSingleton(new RatelimitService(this))
-                .AddSingleton(new ReactionsService(this.Database, this.SharedData.LogProvider))
-                .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
-                .AddSingleton(new UserRanksService())
-                .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
-                .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
-                .BuildServiceProvider();
         }
 
         public async Task DisposeAsync()

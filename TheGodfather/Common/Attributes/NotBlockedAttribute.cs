@@ -23,6 +23,7 @@ namespace TheGodfather.Common.Attributes
             if (this.BlockingCommandRuleExists(ctx))
                 return Task.FromResult(false);
 
+            /* FIXME invalid now, shard is not in service collection
             if (!help) {
                 TheGodfatherShard shard = ctx.Services.GetService<TheGodfatherShard>();
                 shard.LogMany(LogLevel.Debug, 
@@ -32,6 +33,7 @@ namespace TheGodfather.Common.Attributes
                     $"Full message: {ctx.Message.Content}"
                 );
             }
+            */
 
             return Task.FromResult(true);
         }
