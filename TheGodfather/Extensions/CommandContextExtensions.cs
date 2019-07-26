@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Extensions
@@ -83,14 +84,14 @@ namespace TheGodfather.Extensions
 
         internal static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)
         {
-            SharedData shared = ctx.Services.GetService<SharedData>();
-            shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
+            InteractivityService interactivity = ctx.Services.GetService<InteractivityService>();
+            interactivity.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id
             );
 
-            if (!shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
+            if (!interactivity.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             if (mctx.TimedOut)

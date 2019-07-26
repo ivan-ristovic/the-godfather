@@ -73,6 +73,7 @@ namespace TheGodfather
                 .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                 .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                 .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
+                .AddSingleton(new InteractivityService())
                 .AddSingleton(new LinkfilterService(this))
                 .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                 .AddSingleton(new RatelimitService(this))

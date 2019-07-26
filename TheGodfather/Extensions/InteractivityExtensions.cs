@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Extensions
@@ -16,12 +17,15 @@ namespace TheGodfather.Extensions
     internal static class InteractivityExtensions
     {
         public static Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx, ulong uid = 0)
-            => interactivity.WaitForBoolReplyAsync(ctx.Channel.Id, uid != 0 ? uid : ctx.User.Id, ctx.Services.GetService<SharedData>());
+            => interactivity.WaitForBoolReplyAsync(ctx.Channel.Id, uid != 0 ? uid : ctx.User.Id, ctx.Services.GetService<InteractivityService>());
 
-        public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, ulong cid, ulong uid, SharedData shared = null)
+        public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity,
+                                                             ulong cid,
+                                                             ulong uid,
+                                                             InteractivityService interactivityService = null)
         {
-            if (!(shared is null))
-                shared.AddPendingResponse(cid, uid);
+            if (!(interactivityService is null))
+                interactivityService.AddPendingResponse(cid, uid);
 
             bool response = false;
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
@@ -34,20 +38,24 @@ namespace TheGodfather.Extensions
                 }
             );
 
-            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
+            if (!(interactivityService is null) && !interactivityService.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return response;
         }
 
-        public static async Task<InteractivityResult<DiscordMessage>> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
+        public static async Task<InteractivityResult<DiscordMessage>> WaitForDmReplyAsync(this InteractivityExtension interactivity,
+                                                                                          DiscordDmChannel dm,
+                                                                                          ulong cid,
+                                                                                          ulong uid,
+                                                                                          InteractivityService interactivityService = null)
         {
-            if (!(shared is null))
-                shared.AddPendingResponse(cid, uid);
+            if (!(interactivityService is null))
+                interactivityService.AddPendingResponse(cid, uid);
             
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
 
-            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
+            if (!(interactivityService is null) && !interactivityService.TryRemovePendingResponse(cid, uid))
                 throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
 
             return mctx;

@@ -5,8 +5,6 @@ using System.Threading;
 using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Reactions.Common;
 
 namespace TheGodfather
 {
@@ -25,8 +23,6 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
         public UptimeInformation UptimeInformation { get; internal set; }
-
-        private ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
         #endregion
 
 
@@ -39,7 +35,6 @@ namespace TheGodfather
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
-            this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.RemindExecuters = new ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
@@ -73,45 +68,5 @@ namespace TheGodfather
         public void UpdateGuildConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifier)
             => this.GuildConfigurations[gid] = modifier(this.GuildConfigurations[gid]);
         #endregion
-
-        #region Pending responses methods
-        public void AddPendingResponse(ulong cid, ulong uid)
-        {
-            this.PendingResponses.AddOrUpdate(
-                cid,
-                new ConcurrentHashSet<ulong> { uid },
-                (k, v) => { v.Add(uid); return v; }
-            );
-        }
-
-        public bool IsResponsePending(ulong cid, ulong uid)
-            => this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending) && pending.Contains(uid);
-
-        public bool TryRemovePendingResponse(ulong cid, ulong uid)
-        {
-            if (!this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending))
-                return true;
-
-            bool success = pending.TryRemove(uid);
-            if (!this.PendingResponses[cid].Any())
-                this.PendingResponses.TryRemove(cid, out _);
-            return success;
-        }
-        #endregion
-
-
-
-
-
-        // TODO remove next
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; set; } = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
-        public bool MessageContainsFilter(ulong gid, string message)
-        {
-            if (!this.Filters.TryGetValue(gid, out ConcurrentHashSet<Filter> filters) || filters is null)
-                return false;
-
-            message = message.ToLowerInvariant();
-            return filters.Any(f => f.Trigger.IsMatch(message));
-        }
     }
 }

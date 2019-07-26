@@ -5,6 +5,8 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,7 +50,12 @@ namespace TheGodfather.Modules.Games
 
                 await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
                 await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
-                InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(dm, ctx.Channel.Id, ctx.User.Id, this.Shared);
+                InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(
+                    dm,
+                    ctx.Channel.Id,
+                    ctx.User.Id,
+                    ctx.Services.GetService<InteractivityService>()
+                );
                 if (mctx.TimedOut) {
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
