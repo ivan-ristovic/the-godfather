@@ -51,17 +51,12 @@ namespace TheGodfather.EventListeners
                             else
                                 db.AutoAssignableRoles.Remove(db.AutoAssignableRoles.Single(r => r.GuildId == e.Guild.Id && r.RoleId == rid));
                         } catch (Exception exc) {
-                            shard.Log(LogLevel.Debug,
-                                $"| Failed to assign an automatic role to a new member!\n" +
-                                $"| {e.Guild.ToString()}\n" +
-                                $"| Exception: {exc.GetType()}\n" +
-                                $"| Message: {exc.Message}"
-                            );
+                            LogExt.Debug(e.Client.ShardId, exc, new[] { "Failed to assign auto role", "{RoleId}", "{Guild}", "{Member}" }, rid, e.Guild, e.Member);
                         }
                     }
                 }
             } catch (Exception exc) {
-                shard.SharedData.LogProvider.Log(LogLevel.Debug, exc);
+                LogExt.Warning(e.Client.ShardId, exc, new[] { "Failed to assign auto role(s)", "{Guild}", "{Member}" }, e.Guild, e.Member);
             }
 
             DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);

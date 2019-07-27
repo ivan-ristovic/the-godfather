@@ -165,14 +165,14 @@ namespace TheGodfather.Modules.Owner
                         DiscordChannel channel = await ctx.Client.GetChannelAsync(chn.ChannelId);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(chn.Reason ?? "No reason provided.")}");
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 blocked channel with ID {chn.ChannelId}");
+                        LogExt.Debug(ctx, "Removed 404 blocked channel {ChannelId}", chn.ChannelId);
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedChannels.Remove(new DatabaseBlockedChannel { ChannelIdDb = chn.ChannelIdDb });
                             await db.SaveChangesAsync();
                         }
                     } catch (UnauthorizedException) {
-                        this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 403 blocked channel with ID {chn.ChannelId}");
+                        LogExt.Debug(ctx, "Removed 403 blocked channel {ChannelId}", chn.ChannelId);
                         this.Shared.BlockedChannels.TryRemove(chn.ChannelId);
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedChannels.Remove(new DatabaseBlockedChannel { ChannelIdDb = chn.ChannelIdDb});

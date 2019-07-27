@@ -39,7 +39,7 @@ namespace TheGodfather.Modules
             _http = new HttpClient(_handler, true);
         }
 
-        protected TheGodfatherModule(SharedData shared, DatabaseContextBuilder dbb = null)
+        protected TheGodfatherModule(SharedData shared, DatabaseContextBuilder dbb)
         {
             this.Shared = shared;
             this.Database = dbb;

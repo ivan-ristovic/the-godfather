@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
+using Serilog;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -28,7 +29,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
+                        Log.Error(ex, "Async listener");
                     }
                 });
                 return Task.CompletedTask;
@@ -43,7 +44,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
                     } catch (Exception ex) {
-                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
+                        Log.Error(ex, "Async listener");
                     }
                 });
                 return Task.CompletedTask;

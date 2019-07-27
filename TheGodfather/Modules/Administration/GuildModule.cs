@@ -197,7 +197,6 @@ namespace TheGodfather.Modules.Administration
                 using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
-                this.Shared.LogProvider.Log(LogLevel.Debug, e);
                 throw new CommandFailedException("An error occured.", e);
             }
 

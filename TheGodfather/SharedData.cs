@@ -8,18 +8,15 @@ namespace TheGodfather
 {
     public sealed class SharedData : IDisposable
     {
-        #region Properties
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
-        public Logger LogProvider { get; internal set; }
         public bool IsBotListening { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>> RemindExecuters { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
         public UptimeInformation UptimeInformation { get; internal set; }
-        #endregion
 
 
         public SharedData()

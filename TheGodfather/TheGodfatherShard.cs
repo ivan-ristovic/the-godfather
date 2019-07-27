@@ -14,6 +14,7 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
@@ -67,7 +68,9 @@ namespace TheGodfather
         }
 
 
-        #region Setup
+        public async Task StartAsync()
+            => await this.Client.ConnectAsync();
+
         public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
             this.SetupClient(onGuildDownloadCompleted);
@@ -88,7 +91,7 @@ namespace TheGodfather
                 ShardCount = this.SharedData.BotConfiguration.ShardCount,
                 ShardId = this.Id,
                 UseInternalLogHandler = false,
-                LogLevel = this.SharedData.BotConfiguration.LogLevel
+                LogLevel = LogLevel.Debug
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -96,11 +99,9 @@ namespace TheGodfather
 
             this.Client = new DiscordClient(cfg);
 
-            this.Client.DebugLogger.LogMessageReceived += (s, e) => {
-                this.SharedData.LogProvider.Log(this.Id, e);
-            };
+            this.Client.DebugLogger.LogMessageReceived += LogExt.Event;
             this.Client.Ready += e => {
-                this.SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", this.Id);
+                Log.Information("Client ready!");
                 return Task.CompletedTask;
             };
             this.Client.GuildDownloadCompleted += onGuildDownloadCompleted;
@@ -112,7 +113,10 @@ namespace TheGodfather
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
-                PrefixResolver = this.PrefixResolverAsync,
+                PrefixResolver = m => {
+                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.DefaultPrefix;
+                    return Task.FromResult(m.GetStringPrefixLength(p));
+                },
                 Services = this.Services
             });
 
@@ -120,6 +124,7 @@ namespace TheGodfather
 
             this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());
 
+            // TODO load these like event listeners
             this.CNext.RegisterConverter(new CustomActivityTypeConverter());
             this.CNext.RegisterConverter(new CustomBoolConverter());
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());
@@ -146,23 +151,5 @@ namespace TheGodfather
             this.Voice = this.Client.UseVoiceNext();
         }
 
-        public async Task StartAsync()
-            => await this.Client.ConnectAsync();
-
-        #endregion
-
-        #region Misc
-        public void Log(LogLevel level, string message)
-            => this.SharedData.LogProvider.Log(level, message, this.Id, DateTime.Now);
-
-        public void LogMany(LogLevel level, params string[] messages)
-            => this.SharedData.LogProvider.LogMany(level, this.Id, DateTime.Now, this.SharedData.LogProvider.LogToFile, messages);
-
-        private Task<int> PrefixResolverAsync(DiscordMessage m)
-        {
-            string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.DefaultPrefix;
-            return Task.FromResult(m.GetStringPrefixLength(p));
-        }
-        #endregion
     }
 }

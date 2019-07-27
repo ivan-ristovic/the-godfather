@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TheGodfather.Common;
+using Serilog;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
@@ -18,14 +18,12 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsDisabled => false;
 
         private readonly DatabaseContextBuilder dbb;
-        private readonly Logger log;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
 
 
-        public FilteringService(DatabaseContextBuilder dbb, Logger log, bool loadData = true)
+        public FilteringService(DatabaseContextBuilder dbb, bool loadData = true)
         {
             this.dbb = dbb;
-            this.log = log;
             this.filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             if (loadData)
                 this.LoadData();
@@ -43,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
                     );
                 }
             } catch (Exception e) {
-                this.log.Log(DSharpPlus.LogLevel.Error, e);
+                Log.Error(e, "Loading filters failed");
             }
         }
 

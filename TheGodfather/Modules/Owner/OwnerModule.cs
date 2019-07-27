@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -125,23 +127,6 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
-        #region COMMAND_CLEARLOG
-        [Command("clearlog"), NotBlocked, UsesInteractivity]
-        [Description("Clear bot logs.")]
-        [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [RequireOwner]
-        public async Task ClearLogAsync(CommandContext ctx)
-        {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to clear the logs?"))
-                return;
-
-            if (!this.Shared.LogProvider.ClearLog())
-                throw new CommandFailedException("Failed to delete log file!");
-
-            await this.InformAsync(ctx, $"Logs cleared!", important: false);
-        }
-        #endregion
-
         #region COMMAND_DBQUERY
         [Command("dbquery"), NotBlocked, Priority(0)]
         [Description("Execute SQL query on the bot database.")]
@@ -208,7 +193,7 @@ namespace TheGodfather.Modules.Owner
             try {
                 query = await _http.GetStringAsync(attachment.Url).ConfigureAwait(false);
             } catch (Exception e) {
-                this.Shared.LogProvider.Log(LogLevel.Debug, e);
+                LogExt.Debug(ctx, e, "Failed to upload attachment");
                 throw new CommandFailedException("An error occured while getting the file.", e);
             }
 
@@ -326,8 +311,9 @@ namespace TheGodfather.Modules.Owner
         public Task FileLogAsync(CommandContext ctx,
                                 [Description("Enable?")] bool enable = true)
         {
-            this.Shared.LogProvider.LogToFile = enable;
-            return this.InformAsync(ctx, $"File logging {(enable ? "enabled" : "disabled")}", important: false);
+            // TODO rework needed since Serilog introduction
+            return ctx.RespondAsync("This command is broken dude, remember?");
+            //return this.InformAsync(ctx, $"File logging {(enable ? "enabled" : "disabled")}", important: false);
         }
         #endregion
 
@@ -528,6 +514,9 @@ namespace TheGodfather.Modules.Owner
         public async Task LogAsync(CommandContext ctx, 
                                   [Description("Bypass current configuration and search file anyway?")] bool bypassConfig = false)
         {
+            // TODO rework needed since Serilog introduction
+            await ctx.RespondAsync("This command is broken dude, remember?");
+
             if (!bypassConfig && !this.Shared.BotConfiguration.LogToFile)
                 throw new CommandFailedException("Logs aren't dumped to any files.");
             var fi = new FileInfo(this.Shared.BotConfiguration.LogPath);
@@ -542,9 +531,9 @@ namespace TheGodfather.Modules.Owner
                             [Description("Log level.")] string level,
                             [RemainingText, Description("Remark.")] string text)
         {
-            if (!Enum.TryParse(level.Titleize(), out LogLevel logLevel))
+            if (!Enum.TryParse(level.Titleize(), out LogEventLevel logLevel))
                 throw new CommandFailedException($"Invalid log level!");
-            this.Shared.LogProvider.Log(logLevel, text);
+            Log.Write(logLevel, "{LogRemark}", text);
             return this.InformAsync(ctx, "Done!", important: false);
         }
         #endregion

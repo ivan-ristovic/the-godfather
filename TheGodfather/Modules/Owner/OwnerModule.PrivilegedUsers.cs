@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Owner
                         DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
                         valid.Add(user);
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 privileged user with ID {usr.UserId}");
+                        LogExt.Debug(ctx, "Removing 404 privileged user {UserId}", usr.UserId);
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             db.PrivilegedUsers.Remove(new DatabasePrivilegedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();

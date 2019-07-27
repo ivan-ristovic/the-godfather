@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -47,17 +48,16 @@ namespace TheGodfather.Common
                 texec.Schedule();
             } catch (Exception e) {
                 await texec?.UnscheduleAsync();
-                shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Warning(e, "Saved Task schedule failed");
                 throw;
             }
         }
 
         public static Task UnscheduleAsync(SharedData shared, ulong uid, int id)
         {
-            if (shared.RemindExecuters.TryGetValue(uid, out ConcurrentDictionary<int, SavedTaskExecutor> texecs))
-                return texecs.TryGetValue(id, out SavedTaskExecutor texec) ? texec.UnscheduleAsync() : Task.CompletedTask;
-            else
-                return Task.CompletedTask;
+            return shared.RemindExecuters.TryGetValue(uid, out ConcurrentDictionary<int, SavedTaskExecutor> texecs)
+                ? texecs.TryGetValue(id, out SavedTaskExecutor texec) ? texec.UnscheduleAsync() : Task.CompletedTask
+                : Task.CompletedTask;
         }
 
 
@@ -108,10 +108,9 @@ namespace TheGodfather.Common
                 switch (this.TaskInfo) {
                     case SendMessageTaskInfo smti:
                         DiscordChannel channel;
-                        if (smti.ChannelId != 0)
-                            channel = await this.client.GetChannelAsync(smti.ChannelId);
-                        else
-                            channel = await this.client.CreateDmChannelAsync(smti.InitiatorId);
+                        channel = smti.ChannelId != 0
+                            ? await this.client.GetChannelAsync(smti.ChannelId)
+                            : await this.client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.client.GetUserAsync(smti.InitiatorId);
                         await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                             Description = $"{StaticDiscordEmoji.X} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
@@ -125,15 +124,15 @@ namespace TheGodfather.Common
                         this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
-                this.shared.LogProvider.Log(LogLevel.Debug, $"Executed missed saved task of type: {this.TaskInfo.GetType().ToString()}");
+                Log.Debug($"Executed missed saved task of type: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Debug, e);
+                Log.Debug(e, "Error while handling missed saved task");
             } finally {
                 try {
                     if (unschedule)
                         await this.UnscheduleAsync();
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Debug, e);
+                    Log.Error(e, "Error while unscheduling missed saved task");
                 }
             }
         }
@@ -179,11 +178,9 @@ namespace TheGodfather.Common
             var info = _ as SendMessageTaskInfo;
 
             try {
-                DiscordChannel channel;
-                if (info.ChannelId != 0)
-                    channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
-                else
-                    channel = this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
+                DiscordChannel channel = info.ChannelId != 0
+                    ? this.Execute(this.client.GetChannelAsync(info.ChannelId))
+                    : this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
                 this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                     Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
@@ -192,13 +189,13 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Debug(e, "Error while handling send message saved task");
             } finally {
                 if (!info.IsRepeating) {
                     try {
                         this.Execute(this.UnscheduleAsync());
                     } catch (Exception e) {
-                        this.shared.LogProvider.Log(LogLevel.Error, e);
+                        Log.Error(e, "Error while unscheduling send message saved task");
                     }
                 }
             }
@@ -214,12 +211,12 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unban removed in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Debug(e, "Error while handling unban saved task");
             } finally {
                 try {
                     this.Execute(this.UnscheduleAsync());
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                    Log.Error(e, "Error while unscheduling unban saved task");
                 }
             }
         }
@@ -238,12 +235,12 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unmute removed in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Debug(e, "Error while handling unmute saved task");
             } finally {
                 try {
                     this.Execute(this.UnscheduleAsync());
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                    Log.Error(e, "Error while unscheduling unmute saved task");
                 }
             }
         }

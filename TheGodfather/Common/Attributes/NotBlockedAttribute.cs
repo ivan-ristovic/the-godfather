@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Extensions;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -23,17 +24,8 @@ namespace TheGodfather.Common.Attributes
             if (this.BlockingCommandRuleExists(ctx))
                 return Task.FromResult(false);
 
-            /* FIXME invalid now, shard is not in service collection
-            if (!help) {
-                TheGodfatherShard shard = ctx.Services.GetService<TheGodfatherShard>();
-                shard.LogMany(LogLevel.Debug, 
-                    $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}",
-                    $"{ctx.User.ToString()}",
-                    $"{ctx.Guild.ToString()} ; {ctx.Channel.ToString()}",
-                    $"Full message: {ctx.Message.Content}"
-                );
-            }
-            */
+            if (!help)
+                LogExt.Debug(ctx, "Executing {Command} in {Message}", ctx.Command?.QualifiedName ?? "<unknown command>", ctx.Message.Content);
 
             return Task.FromResult(true);
         }

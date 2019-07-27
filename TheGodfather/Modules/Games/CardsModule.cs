@@ -12,6 +12,7 @@ using TexasHoldem.Logic.Cards;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Services;
@@ -25,9 +26,8 @@ namespace TheGodfather.Modules.Games
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CardsModule : TheGodfatherModule
     {
-
-        public CardsModule(SharedData shared) 
-            : base(shared: shared)
+        public CardsModule(SharedData shared, DatabaseContextBuilder dbb) 
+            : base(shared, dbb)
         {
             this.ModuleColor = DiscordColor.Blurple;
         }

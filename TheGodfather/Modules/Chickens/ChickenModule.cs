@@ -286,7 +286,7 @@ namespace TheGodfather.Modules.Chickens
                         await db.SaveChangesAsync();
                     }
                 } catch (Exception e) {
-                    this.Shared.LogProvider.Log(LogLevel.Warning, e);
+                    LogExt.Warning(ctx, e, "Removing chickens failed");
                 }
             }
 
@@ -328,7 +328,7 @@ namespace TheGodfather.Modules.Chickens
                         await db.SaveChangesAsync();
                     }
                 } catch (Exception e) {
-                    this.Shared.LogProvider.Log(LogLevel.Warning, e);
+                    LogExt.Warning(ctx, e, "Removing chickens failed");
                 }
             }
 

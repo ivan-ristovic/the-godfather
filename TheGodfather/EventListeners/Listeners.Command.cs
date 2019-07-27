@@ -1,4 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -8,14 +14,6 @@ using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
@@ -30,10 +28,13 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
         public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
-            shard.LogMany(LogLevel.Info,
-                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}",
-                $"{e.Context.User.ToString()}",
-                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
+            if (e.Command.Name == "help")
+                return Task.CompletedTask;
+
+            LogExt.Information(
+                shard.Id, 
+                new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
+                e.Command?.QualifiedName ?? "<unknown command>", e.Context.User, e.Context.Guild, e.Context.Channel
             );
             return Task.CompletedTask;
         }
@@ -53,15 +54,7 @@ namespace TheGodfather.EventListeners
                 return;
             }
 
-            shard.LogMany(LogLevel.Info,
-                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}",
-                $"{e.Context.User.ToString()}",
-                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}",
-                $"Exception: {ex.GetType()}",
-                $"Message: {ex.Message ?? "<no message provided>"}",
-                ex.InnerException is null ? null : $"Inner exception: {ex.InnerException.GetType()}",
-                ex.InnerException is null ? null : $"Inner exception message: {ex.InnerException.Message}"
-            );
+            LogExt.Information(e.Context, ex, "Tried executing: {AttemptedCommand}", e.Command?.QualifiedName ?? "Unknown command");
 
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
@@ -106,7 +99,6 @@ namespace TheGodfather.EventListeners
                     break;
                 case NpgsqlException dbex:
                     sb.Append($"Database operation failed. Details: {dbex.Message}");
-                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
@@ -153,14 +145,12 @@ namespace TheGodfather.EventListeners
                     break;
                 case ConcurrentOperationException _:
                     sb.Append($"A concurrency error occured - please report this. Details: {ex.Message}");
-                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case UnauthorizedException _:
                     sb.Append("I am unauthorized to do that.");
                     break;
                 case DbUpdateException _:
                     sb.Append("A database update error has occured, possibly due to large amount of update requests. Please try again later.");
-                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
                 case TargetInvocationException _:
                     sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
@@ -175,7 +165,6 @@ namespace TheGodfather.EventListeners
                         sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
                         sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
                     }
-                    shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
                     break;
             }
 

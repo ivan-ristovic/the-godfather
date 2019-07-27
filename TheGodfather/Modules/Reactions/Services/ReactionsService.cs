@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using TheGodfather.Common;
+using Serilog;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
@@ -23,15 +23,13 @@ namespace TheGodfather.Modules.Reactions.Services
         public bool IsDisabled => false;
 
         private readonly DatabaseContextBuilder dbb;
-        private readonly Logger log;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
 
 
-        public ReactionsService(DatabaseContextBuilder dbb, Logger log, bool loadData = true)
+        public ReactionsService(DatabaseContextBuilder dbb, bool loadData = true)
         {
             this.dbb = dbb;
-            this.log = log;
             this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
             if (loadData)
@@ -60,7 +58,7 @@ namespace TheGodfather.Modules.Reactions.Services
                     );
                 }
             } catch (Exception e) {
-                this.log.Log(DSharpPlus.LogLevel.Error, e);
+                Log.Error(e, "Loading reactions failed");
             }
         }
 
