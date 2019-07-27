@@ -352,7 +352,7 @@ namespace TheGodfather.Modules.Misc
 
             if (await ctx.WaitForBoolReplyAsync("Are you okay with your user and guild info being sent for further inspection?")) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id);
+                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owners.First().Id);
                 if (dm is null)
                     throw new CommandFailedException("Owner has disabled DMs.");
                 var emb = new DiscordEmbedBuilder {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -20,7 +21,7 @@ namespace TheGodfather.Common.Attributes
 
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.User.Id == ctx.Client.CurrentApplication?.Owner.Id)
+            if (ctx.Client.CurrentApplication?.Owners.Any(o => o.Id == ctx.User.Id) ?? false)
                 return Task.FromResult(true);
 
             if (ctx.User.Id == ctx.Client.CurrentUser.Id)

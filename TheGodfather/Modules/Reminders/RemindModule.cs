@@ -231,8 +231,8 @@ namespace TheGodfather.Modules.Reminders
             using (DatabaseContext db = this.Database.CreateContext())
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
-            if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !privileged) {
-                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
+            if (!ctx.Client.CurrentApplication.Owners.Any(o => ctx.User.Id == o.Id) && !privileged) {
+                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 

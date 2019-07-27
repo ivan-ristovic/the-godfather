@@ -172,38 +172,10 @@ namespace TheGodfather
 
             ConcurrentHashSet<ulong> blockedChannels;
             ConcurrentHashSet<ulong> blockedUsers;
-            ConcurrentDictionary<ulong, CachedGuildConfig> guildConfigurations;
 
             using (DatabaseContext db = _dbb.CreateContext()) {
                 blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
                 blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
-                guildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
-                    gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig {
-                        AntispamSettings = new AntispamSettings {
-                            Action = gcfg.AntispamAction,
-                            Enabled = gcfg.AntispamEnabled,
-                            Sensitivity = gcfg.AntispamSensitivity
-                        },
-                        Currency = gcfg.Currency,
-                        LinkfilterSettings = new LinkfilterSettings {
-                            BlockBooterWebsites = gcfg.LinkfilterBootersEnabled,
-                            BlockDiscordInvites = gcfg.LinkfilterDiscordInvitesEnabled,
-                            BlockDisturbingWebsites = gcfg.LinkfilterDisturbingWebsitesEnabled,
-                            BlockIpLoggingWebsites = gcfg.LinkfilterIpLoggersEnabled,
-                            BlockUrlShorteners = gcfg.LinkfilterUrlShortenersEnabled,
-                            Enabled = gcfg.LinkfilterEnabled
-                        },
-                        LogChannelId = gcfg.LogChannelId,
-                        Prefix = gcfg.Prefix,
-                        RatelimitSettings = new RatelimitSettings {
-                            Action = gcfg.RatelimitAction,
-                            Enabled = gcfg.RatelimitEnabled,
-                            Sensitivity = gcfg.RatelimitSensitivity
-                        },
-                        ReactionResponse = gcfg.ReactionResponse,
-                        SuggestionsEnabled = gcfg.SuggestionsEnabled
-                    }
-                )));
             }
 
             _shared = new SharedData {

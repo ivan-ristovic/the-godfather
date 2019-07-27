@@ -13,7 +13,7 @@ namespace TheGodfather.Common.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.User.Id == ctx.Client.CurrentApplication.Owner.Id)
+            if (ctx.Client.CurrentApplication?.Owners.Any(o => o.Id == ctx.User.Id) ?? false)
                 return Task.FromResult(true);
 
             using (DatabaseContext db = ctx.Services.GetService<DatabaseContextBuilder>().CreateContext())

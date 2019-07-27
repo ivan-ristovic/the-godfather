@@ -17,8 +17,8 @@ namespace TheGodfather.Modules.Administration.Services
     {
         public bool IsDisabled => false;
 
-        private readonly DatabaseContextBuilder dbb;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
+        private readonly DatabaseContextBuilder dbb;
 
 
         public FilteringService(DatabaseContextBuilder dbb, bool loadData = true)
@@ -32,6 +32,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void LoadData()
         {
+            Log.Debug("Loading filters...");
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     this.filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(

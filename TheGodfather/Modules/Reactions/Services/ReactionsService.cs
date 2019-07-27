@@ -39,6 +39,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
         public void LoadData()
         {
+            Log.Debug("Loading reactions...");
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     var x = db.BlockedChannels.ToList();

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
@@ -14,16 +17,57 @@ namespace TheGodfather.Modules.Administration.Services
     {
         public bool IsDisabled => false;
 
-        private readonly ConcurrentDictionary<ulong, CachedGuildConfig> gcfg;
+        private ConcurrentDictionary<ulong, CachedGuildConfig> gcfg;
         private readonly BotConfig cfg;
         private readonly DatabaseContextBuilder dbb;
 
 
-        public GuildConfigService(BotConfig cfg, DatabaseContextBuilder dbb)
+        public GuildConfigService(BotConfig cfg, DatabaseContextBuilder dbb, bool loadData = true)
         {
             this.cfg = cfg;
             this.dbb = dbb;
             this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
+            if (loadData)
+                this.LoadData();
+        }
+
+
+        public void LoadData()
+        {
+            Log.Debug("Loading guild config...");
+            try {
+                using (DatabaseContext db = this.dbb.CreateContext()) {
+                    this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
+                        gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig {
+                            AntispamSettings = new AntispamSettings {
+                                Action = gcfg.AntispamAction,
+                                Enabled = gcfg.AntispamEnabled,
+                                Sensitivity = gcfg.AntispamSensitivity
+                            },
+                            Currency = gcfg.Currency,
+                            LinkfilterSettings = new LinkfilterSettings {
+                                BlockBooterWebsites = gcfg.LinkfilterBootersEnabled,
+                                BlockDiscordInvites = gcfg.LinkfilterDiscordInvitesEnabled,
+                                BlockDisturbingWebsites = gcfg.LinkfilterDisturbingWebsitesEnabled,
+                                BlockIpLoggingWebsites = gcfg.LinkfilterIpLoggersEnabled,
+                                BlockUrlShorteners = gcfg.LinkfilterUrlShortenersEnabled,
+                                Enabled = gcfg.LinkfilterEnabled
+                            },
+                            LogChannelId = gcfg.LogChannelId,
+                            Prefix = gcfg.Prefix,
+                            RatelimitSettings = new RatelimitSettings {
+                                Action = gcfg.RatelimitAction,
+                                Enabled = gcfg.RatelimitEnabled,
+                                Sensitivity = gcfg.RatelimitSensitivity
+                            },
+                            ReactionResponse = gcfg.ReactionResponse,
+                            SuggestionsEnabled = gcfg.SuggestionsEnabled
+                        }
+                    )));
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Loading guild configs failed");
+            }
         }
 
 
