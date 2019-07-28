@@ -71,12 +71,12 @@ namespace TheGodfather.Database.Entities
         [Column("welcome_cid")]
         public long? WelcomeChannelIdDb { get; set; }
         [NotMapped]
-        public ulong WelcomeChannelId => (ulong)this.WelcomeChannelIdDb.GetValueOrDefault();
+        public ulong WelcomeChannelId { get => (ulong)this.WelcomeChannelIdDb.GetValueOrDefault(); set => this.WelcomeChannelIdDb = (long)value; }
 
         [Column("leave_cid")]
         public long? LeaveChannelIdDb { get; set; }
         [NotMapped]
-        public ulong LeaveChannelId => (ulong)this.LeaveChannelIdDb.GetValueOrDefault();
+        public ulong LeaveChannelId { get => (ulong)this.LeaveChannelIdDb.GetValueOrDefault(); set => this.LeaveChannelIdDb = (long)value; }
 
         [Column("welcome_msg"), MaxLength(128)]
         public string WelcomeMessage { get; set; }
@@ -222,7 +222,7 @@ namespace TheGodfather.Database.Entities
         public CachedGuildConfig CachedConfig {
             get => new CachedGuildConfig {
                 AntispamSettings = this.AntispamSettings,
-                Currency = this.Currency,
+                Currency = this.Currency ?? "credits",
                 LinkfilterSettings = this.LinkfilterSettings,
                 LogChannelId = this.LogChannelId,
                 Prefix = this.Prefix,

@@ -16,7 +16,7 @@ namespace TheGodfather.Common
         public int DatabaseSyncInterval { get; private set; }
 
         [JsonProperty("prefix")]
-        public string DefaultPrefix { get; private set; }
+        public string Prefix { get; private set; }
 
         [JsonProperty("feed_check_interval")]
         public int FeedCheckInterval { get; private set; }
@@ -68,7 +68,7 @@ namespace TheGodfather.Common
         public static BotConfig Default => new BotConfig {
             DatabaseConfig = DatabaseConfig.Default,
             DatabaseSyncInterval = 600,
-            DefaultPrefix = "!",
+            Prefix = "!",
             FeedCheckInterval = 300,
             FeedCheckStartDelay = 30,
             GiphyKey = "<insert GIPHY API key>",

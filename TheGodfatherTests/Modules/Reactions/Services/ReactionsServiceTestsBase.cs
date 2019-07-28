@@ -13,7 +13,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new ReactionsService(TestDatabaseProvider.Database, new Logger(BotConfig.Default), loadData: false);
+            this.Service = new ReactionsService(TestDatabaseProvider.Database, loadData: false);
         }
     }
 }

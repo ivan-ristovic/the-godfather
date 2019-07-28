@@ -37,7 +37,6 @@ namespace TheGodfatherTests
         public static void AlterAndVerify(Action<DatabaseContext> alter, Action<DatabaseContext> verify, bool ensureSave = false)
         {
             DatabaseConnection.Open();
-
             try {
                 CreateDatabase();
                 SeedGuildData();
@@ -50,6 +49,26 @@ namespace TheGodfatherTests
 
                 using (DatabaseContext context = Database.CreateContext())
                     verify(context);
+            } finally {
+                DatabaseConnection.Close();
+            }
+        }
+
+        public static async Task AlterAndVerifyAsync(Func<DatabaseContext, Task> alter, Func<DatabaseContext, Task> verify, bool ensureSave = false)
+        {
+            DatabaseConnection.Open();
+            try {
+                CreateDatabase();
+                SeedGuildData();
+
+                using (DatabaseContext context = Database.CreateContext()) {
+                    await alter(context);
+                    if (ensureSave)
+                        await context.SaveChangesAsync();
+                }
+
+                using (DatabaseContext context = Database.CreateContext())
+                    await verify(context);
             } finally {
                 DatabaseConnection.Close();
             }

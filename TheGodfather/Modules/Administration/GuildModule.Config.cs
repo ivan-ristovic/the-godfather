@@ -424,7 +424,7 @@ namespace TheGodfather.Modules.Administration
                                                     AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 StringBuilder sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
-                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
+                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.Prefix));
                 sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
                 sb.Append("Silent responses: ").AppendLine(Formatter.Bold((gcfg.ReactionResponse ? "on" : "off")));

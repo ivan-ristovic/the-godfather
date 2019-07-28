@@ -38,31 +38,7 @@ namespace TheGodfather.Modules.Administration.Services
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
-                        gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, new CachedGuildConfig {
-                            AntispamSettings = new AntispamSettings {
-                                Action = gcfg.AntispamAction,
-                                Enabled = gcfg.AntispamEnabled,
-                                Sensitivity = gcfg.AntispamSensitivity
-                            },
-                            Currency = gcfg.Currency,
-                            LinkfilterSettings = new LinkfilterSettings {
-                                BlockBooterWebsites = gcfg.LinkfilterBootersEnabled,
-                                BlockDiscordInvites = gcfg.LinkfilterDiscordInvitesEnabled,
-                                BlockDisturbingWebsites = gcfg.LinkfilterDisturbingWebsitesEnabled,
-                                BlockIpLoggingWebsites = gcfg.LinkfilterIpLoggersEnabled,
-                                BlockUrlShorteners = gcfg.LinkfilterUrlShortenersEnabled,
-                                Enabled = gcfg.LinkfilterEnabled
-                            },
-                            LogChannelId = gcfg.LogChannelId,
-                            Prefix = gcfg.Prefix,
-                            RatelimitSettings = new RatelimitSettings {
-                                Action = gcfg.RatelimitAction,
-                                Enabled = gcfg.RatelimitEnabled,
-                                Sensitivity = gcfg.RatelimitSensitivity
-                            },
-                            ReactionResponse = gcfg.ReactionResponse,
-                            SuggestionsEnabled = gcfg.SuggestionsEnabled
-                        }
+                        gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig
                     )));
                 }
             } catch (Exception e) {
@@ -75,16 +51,13 @@ namespace TheGodfather.Modules.Administration.Services
             => this.gcfg.TryGetValue(gid, out _);
 
         public CachedGuildConfig GetCachedConfig(ulong gid)
-            => this.gcfg.GetOrAdd(gid, CachedGuildConfig.Default);
-
-        public void ModifyCachedConfig(ulong gid, Func<CachedGuildConfig, CachedGuildConfig> modifyAction)
-            => this.gcfg[gid] = modifyAction(this.gcfg[gid]);
+            => this.gcfg.GetValueOrDefault(gid);
 
         public string GetGuildPrefix(ulong gid)
         {
             return this.gcfg.TryGetValue(gid, out CachedGuildConfig gcfg) && !string.IsNullOrWhiteSpace(gcfg.Prefix)
                 ? this.gcfg[gid].Prefix
-                : this.cfg.DefaultPrefix;
+                : this.cfg.Prefix;
         }
 
         public DiscordChannel GetLogChannelForGuild(DiscordGuild guild)
@@ -97,12 +70,15 @@ namespace TheGodfather.Modules.Administration.Services
         {
             DatabaseGuildConfig gcfg = null;
             using (DatabaseContext db = this.dbb.CreateContext())
-                gcfg = await db.GuildConfig.FindAsync((long)gid) ?? new DatabaseGuildConfig();
+                gcfg = await db.GuildConfig.FindAsync((long)gid);
             return gcfg;
         }
 
         public async Task<DatabaseGuildConfig> ModifyConfigAsync(ulong gid, Action<DatabaseGuildConfig> modifyAction)
         {
+            if (modifyAction is null || !this.gcfg.ContainsKey(gid))
+                return null;
+
             DatabaseGuildConfig gcfg = null;
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 gcfg = await db.GuildConfig.FindAsync((long)gid) ?? new DatabaseGuildConfig();
@@ -111,11 +87,7 @@ namespace TheGodfather.Modules.Administration.Services
                 await db.SaveChangesAsync();
             }
 
-            // TODO wtf did i write here???
-            CachedGuildConfig cgcfg = this.GetCachedConfig(gid);
-            cgcfg = gcfg.CachedConfig;
-            this.ModifyCachedConfig(gid, _ => cgcfg);
-
+            this.gcfg.AddOrUpdate(gid, gcfg.CachedConfig, (k, v) => gcfg.CachedConfig);
             return gcfg;
         }
 
@@ -136,8 +108,11 @@ namespace TheGodfather.Modules.Administration.Services
         {
             this.gcfg.TryRemove(gid, out _);
             using (DatabaseContext db = this.dbb.CreateContext()) {
-                db.GuildConfig.Remove(db.GuildConfig.Find(gid));
-                await db.SaveChangesAsync();
+                DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)gid);
+                if (!(gcfg is null)) {
+                    db.GuildConfig.Remove(gcfg);
+                    await db.SaveChangesAsync();
+                }
             }
         }
     }

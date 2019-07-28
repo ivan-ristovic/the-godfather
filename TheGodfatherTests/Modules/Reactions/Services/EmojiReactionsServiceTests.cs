@@ -19,8 +19,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         {
             this.erCount = new Dictionary<int, int>(
                 Enumerable.Range(0, MockData.Ids.Count)
-                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count))
-                          .Select(tup => new KeyValuePair<int, int>(tup.First, tup.Second))
+                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
             );
         }
 
@@ -30,8 +29,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         {
             CollectionAssert.IsEmpty(this.Service.GetGuildEmojiReactions(MockData.Ids[0]));
 
-            TestDatabaseProvider.SetupAlterAndVerify(
-                setup: db => { },
+            TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     for (int i = 0; i < MockData.Ids.Count; i++)
@@ -125,8 +123,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -159,8 +156,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -172,11 +168,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(2, db.EmojiReactions.Count());
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.AreEqual(2, ers.Count);
-                    EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is a tEst."));
-                    Assert.IsTrue(er.IsMatch("This is a -tEsting."));
-                    Assert.IsFalse(er.IsMatch("This is an alarm"));
+                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
+                    Assert.AreEqual(2, info.TriggerStrings.Count());
+                    Assert.IsTrue(info.IsMatch("This is a tEst."));
+                    Assert.IsTrue(info.IsMatch("This is a -tEsting."));
+                    Assert.IsFalse(info.IsMatch("This is an alarm"));
                     Assert.IsTrue(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
 
                     Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
@@ -188,8 +184,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -199,12 +194,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(1, db.EmojiReactions.Count());
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.AreEqual(1, ers.Count);
-                    EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(1, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(er.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(er.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(er.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
+                    Assert.AreEqual(1, info.TriggerStrings.Count());
+                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
+                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
 
                     Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
@@ -230,12 +225,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value) + 1, db.EmojiReactions.Count());
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.AreEqual(this.erCount[0] + 1, ers.Count);
-                    EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(er.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(er.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(er.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
+                    Assert.AreEqual(2, info.TriggerStrings.Count());
+                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
+                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
 
                     Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
@@ -260,12 +255,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value) + 1, db.EmojiReactions.Count());
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.AreEqual(this.erCount[0] + 1, ers.Count);
-                    EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(er.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(er.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(er.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
+                    Assert.AreEqual(2, info.TriggerStrings.Count());
+                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
+                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
 
                     Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
@@ -291,13 +286,13 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value), db.EmojiReactions.Count());
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.AreEqual(this.erCount[0], ers.Count);
-                    EmojiReaction er = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Chicken.GetDiscordName());
-                    Assert.AreEqual(3, er.TriggerStrings.Count());
-                    Assert.IsTrue(er.IsMatch("This is old abc abc test which passes"));
-                    Assert.IsTrue(er.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(er.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(er.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(er.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    EmojiReaction chicken = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Chicken.GetDiscordName());
+                    Assert.AreEqual(3, chicken.TriggerStrings.Count());
+                    Assert.IsTrue(chicken.IsMatch("This is old abc abc test which passes"));
+                    Assert.IsTrue(chicken.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.IsTrue(chicken.IsMatch("This is another tEst regex example which passes"));
+                    Assert.IsFalse(chicken.IsMatch("This is a tEst which wont pass"));
+                    Assert.IsFalse(chicken.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
 
                     Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
@@ -308,8 +303,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, true));
@@ -368,8 +362,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.AreEqual(0, await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken));

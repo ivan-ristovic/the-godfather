@@ -114,7 +114,7 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 PrefixResolver = m => {
-                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.DefaultPrefix;
+                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));
                 },
                 Services = this.Services

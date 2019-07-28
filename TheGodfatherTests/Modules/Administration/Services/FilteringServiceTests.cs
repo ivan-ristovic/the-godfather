@@ -22,8 +22,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
         {
             this.filterCount = new Dictionary<int, int>(
                 Enumerable.Range(0, MockData.Ids.Count)
-                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count))
-                          .Select(tup => new KeyValuePair<int, int>(tup.First, tup.Second))
+                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
             );
         }
 
@@ -31,7 +30,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new FilteringService(TestDatabaseProvider.Database, new Logger(BotConfig.Default), loadData: false);
+            this.Service = new FilteringService(TestDatabaseProvider.Database, loadData: false);
         }
 
 
@@ -535,8 +534,8 @@ namespace TheGodfatherTests.Modules.Administration.Services
             if (tests is null || !tests.Any())
                 Assert.Fail("No tests provided to assert function.");
 
-            Filter f = this.Service.GetGuildFilters(MockData.Ids[index]).Single(f => string.Compare(f.TriggerString, regex, true) == 0);
-            Assert.IsNotNull(f);
+            Filter filter = this.Service.GetGuildFilters(MockData.Ids[index]).Single(f => string.Compare(f.TriggerString, regex, true) == 0);
+            Assert.IsNotNull(filter);
 
             DatabaseFilter dbf = db.Filters
                 .Where(f => f.GuildId == MockData.Ids[index])
@@ -545,9 +544,9 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
             foreach (string test in tests) {
                 if (match)
-                    Assert.IsTrue(f.Trigger.IsMatch(test));
+                    Assert.IsTrue(filter.Trigger.IsMatch(test));
                 else
-                    Assert.IsFalse(f.Trigger.IsMatch(test));
+                    Assert.IsFalse(filter.Trigger.IsMatch(test));
             }
         }
 

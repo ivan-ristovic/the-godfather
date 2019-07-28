@@ -18,8 +18,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         {
             this.trCount = new Dictionary<int, int>(
                 Enumerable.Range(0, MockData.Ids.Count)
-                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count))
-                          .Select(tup => new KeyValuePair<int, int>(tup.First, tup.Second))
+                          .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
             );
         }
 
@@ -279,7 +278,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         tr => tr.Response == response && CheckTriggers(triggers, tr.TriggerStrings.ToList())
                     ));
 
-                    static bool CheckTriggers(IReadOnlyCollection<string> expected, IReadOnlyCollection<string> actual)
+                    bool CheckTriggers(IReadOnlyCollection<string> expected, IReadOnlyCollection<string> actual)
                     {
                         CollectionAssert.AreEquivalent(expected, actual);
                         return true;
