@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
         public GuildModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.SpringGreen;
+            
         }
 
 

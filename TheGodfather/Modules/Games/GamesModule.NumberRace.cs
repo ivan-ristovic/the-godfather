@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games
             public NumberRaceModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Teal;
+                
             }
 
 

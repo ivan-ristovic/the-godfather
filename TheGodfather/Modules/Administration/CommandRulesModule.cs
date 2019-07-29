@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration
         public CommandRulesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Goldenrod;
+            
         }
 
 

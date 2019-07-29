@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
                 public LinkfilterModule(SharedData shared, DatabaseContextBuilder db)
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.DarkRed;
+                    
                 }
 
 

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Services;
 #endregion
@@ -23,12 +24,7 @@ namespace TheGodfather.Modules
 
         public SharedData Shared { get; }
         public DatabaseContextBuilder Database { get; }
-        public DiscordColor ModuleColor {
-            get { return this.moduleColor ?? DiscordColor.Green; }
-            set { this.moduleColor = value; }
-        }
-
-        private DiscordColor? moduleColor;
+        public DiscordColor ModuleColor { get; }
 
 
         static TheGodfatherModule()
@@ -39,11 +35,13 @@ namespace TheGodfather.Modules
             _http = new HttpClient(_handler, true);
         }
 
+
         protected TheGodfatherModule(SharedData shared, DatabaseContextBuilder dbb)
         {
             this.Shared = shared;
             this.Database = dbb;
-            this.ModuleColor = DiscordColor.Green;
+            var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
+            this.ModuleColor = moduleAttr is null ? DiscordColor.Green : moduleAttr.Module.ToDiscordColor();
         }
 
 
@@ -72,6 +70,13 @@ namespace TheGodfather.Modules
                 Description = $"{StaticDiscordEmoji.X} {message}",
                 Color = DiscordColor.IndianRed
             });
+        }
+
+        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb)
+        {
+            return ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb
+                .WithColor(this.ModuleColor)
+            );
         }
 
         protected async Task<bool> IsValidImageUriAsync(Uri uri)

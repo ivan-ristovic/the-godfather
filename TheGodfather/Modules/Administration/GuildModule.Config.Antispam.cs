@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
                 public AntispamModule(AntispamService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
-                    this.ModuleColor = DiscordColor.DarkRed;
+                    
                 }
 
 

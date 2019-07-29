@@ -11,6 +11,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -20,49 +21,45 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildBanAdded)]
         public static async Task GuildBanEventHandlerAsync(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "User BANNED");
+            var emb = new DiscordLogEmbedBuilder("Member BANNED", null, DiscordEventType.GuildBanAdded);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Ban);
-            if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
-                emb.WithDescription(e.Member?.ToString() ?? _unknown);
+            DiscordAuditLogBanEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogBanEntry>(AuditLogActionType.Ban);
+            if (entry is null) {
+                emb.WithDescription(e.Member?.ToString());
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
-                emb.WithDescription(bentry.Target.ToString());
-                emb.AddField("User responsible", bentry.UserResponsible.Mention, inline: true);
-                if (!string.IsNullOrWhiteSpace(bentry.Reason))
-                    emb.AddField("Reason", bentry.Reason);
-                emb.WithFooter(bentry.CreationTimestamp.ToUtcTimestamp(), bentry.UserResponsible.AvatarUrl);
+                emb.WithDescription(entry.Target.ToString());
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildBanRemoved)]
         public static async Task GuildUnbanEventHandlerAsync(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.KickOrBan, "Member unbanned");
+            var emb = new DiscordLogEmbedBuilder("Member unbanned", null, DiscordEventType.GuildBanRemoved);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.Unban);
-            if (entry is null || !(entry is DiscordAuditLogBanEntry bentry)) {
-                emb.WithDescription(e.Member?.ToString() ?? _unknown);
+            DiscordAuditLogBanEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogBanEntry>(AuditLogActionType.Unban);
+            if (entry is null) {
+                emb.WithDescription(e.Member?.ToString());
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
-                emb.WithDescription(bentry.Target.ToString());
-                emb.AddField("User responsible", bentry.UserResponsible.Mention, inline: true);
-                if (!string.IsNullOrWhiteSpace(bentry.Reason))
-                    emb.AddField("Reason", bentry.Reason);
-                emb.WithFooter(bentry.CreationTimestamp.ToUtcTimestamp(), bentry.UserResponsible.AvatarUrl);
+                emb.WithDescription(entry.Target.ToString());
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildDeleted)]
@@ -75,12 +72,11 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Emoji, "Guild emojis updated");
-            
+            var emb = new DiscordLogEmbedBuilder("Emojis updated", null, DiscordEventType.GuildEmojisUpdated);
+
             AuditLogActionType action;
             if (e.EmojisAfter.Count > e.EmojisBefore.Count)
                 action = AuditLogActionType.EmojiCreate;
@@ -88,104 +84,91 @@ namespace TheGodfather.EventListeners
                 action = AuditLogActionType.EmojiDelete;
             else
                 action = AuditLogActionType.EmojiUpdate;
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(action);
+            DiscordAuditLogEmojiEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEmojiEntry>(action);
 
-            emb.WithTitle($"Guild emoji action occured: {action.ToString()}");
-            if (entry is null || !(entry is DiscordAuditLogEmojiEntry eentry)) {
+            emb.WithDescription($"Action: {action.ToString()}");
+            if (entry is null) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-                emb.AddField("Emojis before", e.EmojisBefore?.Count.ToString() ?? _unknown, inline: true);
-                emb.AddField("Emojis after", e.EmojisAfter?.Count.ToString() ?? _unknown, inline: true);
+                emb.AddField("Emojis before", e.EmojisBefore?.Count.ToString(), inline: true);
+                emb.AddField("Emojis after", e.EmojisAfter?.Count.ToString(), inline: true);
             } else {
                 switch (action) {
                     case AuditLogActionType.EmojiCreate:
-                        emb.WithDescription(eentry.Target.Name ?? _unknown);
-                        emb.WithThumbnailUrl(eentry.Target.Url);
+                        emb.AddField("Created", entry.Target.Name);
+                        emb.WithThumbnailUrl(entry.Target.Url);
                         break;
                     case AuditLogActionType.EmojiDelete:
-                        emb.WithDescription(eentry.NameChange.Before ?? _unknown);
+                        emb.AddField("Deleted", entry.NameChange.Before);
                         break;
                     case AuditLogActionType.EmojiUpdate:
-                        emb.WithDescription(eentry.Target.Name ?? _unknown);
-                        if (!(eentry.NameChange is null))
-                            emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
+                        emb.AddField("Renamed", entry.Target.Name);
+                        emb.AddPropertyChangeField("Name changed", entry.NameChange);
                         break;
                     default:
                         break;
                 }
-                emb.AddField("User responsible", eentry.UserResponsible.Mention, inline: true);
-                if (!string.IsNullOrWhiteSpace(eentry.Reason))
-                    emb.AddField("Reason", eentry.Reason);
-                emb.WithFooter(eentry.CreationTimestamp.ToUtcTimestamp(), eentry.UserResponsible.AvatarUrl);
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildIntegrationsUpdated)]
         public static async Task GuildIntegrationsUpdateEventHandlerAsync(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Guild integrations updated");
-
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, new DiscordLogEmbedBuilder("Integrations updated", null, DiscordEventType.GuildIntegrationsUpdated));
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleCreated)]
         public static async Task GuildRoleCreateEventHandlerAsync(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role created", e.Role.ToString());
+            var emb = new DiscordLogEmbedBuilder("Role created", e.Role?.ToString(), DiscordEventType.GuildRoleCreated);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleCreate);
-            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
-                emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
-                if (!(rentry.NameChange is null))
-                    emb.AddField("Name change", $"{rentry.NameChange.Before ?? _unknown} -> {rentry.NameChange.After ?? _unknown}", inline: true);
-                if (!(rentry.ColorChange is null))
-                    emb.AddField("Color change", $"{rentry.ColorChange.Before?.ToString() ?? _unknown} -> {rentry.ColorChange.After?.ToString() ?? _unknown}", inline: true);
-                if (!(rentry.HoistChange is null))
-                    emb.AddField("Hoist changed to", rentry.HoistChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(rentry.MentionableChange is null))
-                    emb.AddField("Mentionable changed to", rentry.MentionableChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(rentry.PermissionChange is null))
-                    emb.AddField("Permissions changed to", rentry.PermissionChange.After?.ToPermissionString() ?? _unknown, inline: true);
-                if (!(rentry.PositionChange is null))
-                    emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
-                if (!string.IsNullOrWhiteSpace(rentry.Reason))
-                    emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(rentry.CreationTimestamp.ToUtcTimestamp(), rentry.UserResponsible.AvatarUrl);
-            } else {
+            DiscordAuditLogRoleUpdateEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleCreate);
+            if (entry is null) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
+            } else {
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("User responsible", entry.UserResponsible.Mention, inline: true);
+                emb.AddPropertyChangeField("Name changed", entry.NameChange);
+                emb.AddPropertyChangeField("Color changed", entry.ColorChange);
+                emb.AddField("Hoist changed to", entry.HoistChange.After?.ToString(), null, inline: true);
+                emb.AddField("Mentionable changed to", entry.MentionableChange.After?.ToString(), null, inline: true);
+                emb.AddField("Permissions changed to", entry.PermissionChange.After?.ToPermissionString(), null, inline: true);
+                emb.AddField("Position changed to", entry.PositionChange.After?.ToString(), null, inline: true);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleDeleted)]
         public static async Task GuildRoleDeleteEventHandlerAsync(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role deleted", e.Role.ToString());
+            var emb = new DiscordLogEmbedBuilder("Role deleted", e.Role?.ToString(), DiscordEventType.GuildRoleDeleted);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleDelete);
-            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
-                emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true); if (!string.IsNullOrWhiteSpace(rentry.Reason))
-                    emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(rentry.CreationTimestamp.ToUtcTimestamp(), rentry.UserResponsible.AvatarUrl);
-            } else {
+            DiscordAuditLogRoleUpdateEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleDelete);
+            if (entry is null) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
+            } else {
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleUpdated)]
@@ -194,82 +177,70 @@ namespace TheGodfather.EventListeners
             if (e.RoleBefore.Position != e.RoleAfter.Position)
                 return;
 
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Role updated");
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.RoleUpdate);
-            if (!(entry is null) && entry is DiscordAuditLogRoleUpdateEntry rentry) {
-                emb.WithDescription(rentry.Target.Id.ToString());
-                emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true);
-                if (!(rentry.NameChange is null))
-                    emb.AddField("Name change", $"{rentry.NameChange.Before ?? _unknown} -> {rentry.NameChange.After ?? _unknown}", inline: true);
-                if (!(rentry.ColorChange is null))
-                    emb.AddField("Color changed", $"{rentry.ColorChange.Before?.ToString() ?? _unknown} -> {rentry.ColorChange.After?.ToString() ?? _unknown}", inline: true);
-                if (!(rentry.HoistChange is null))
-                    emb.AddField("Hoist", rentry.HoistChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(rentry.MentionableChange is null))
-                    emb.AddField("Mentionable", rentry.MentionableChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(rentry.PermissionChange is null))
-                    emb.AddField("Permissions changed to", rentry.PermissionChange.After?.ToPermissionString() ?? _unknown, inline: true);
-                if (!(rentry.PositionChange is null))
-                    emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
-                if (!string.IsNullOrWhiteSpace(rentry.Reason))
-                    emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(rentry.CreationTimestamp.ToUtcTimestamp(), rentry.UserResponsible.AvatarUrl);
-            } else {
+            var emb = new DiscordLogEmbedBuilder("Role updated", e.RoleBefore?.ToString(), DiscordEventType.GuildRoleUpdated);
+
+            DiscordAuditLogRoleUpdateEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleUpdate);
+            if (entry is null) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-                emb.AddField("Role", e.RoleBefore?.ToString() ?? _unknown);
+            } else {
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddPropertyChangeField("Name changed", entry.NameChange);
+                emb.AddPropertyChangeField("Color changed", entry.ColorChange);
+                emb.AddField("Hoist changed to", entry.HoistChange.After?.ToString(), null, inline: true);
+                emb.AddField("Mentionable changed to", entry.MentionableChange.After?.ToString(), null, inline: true);
+                emb.AddField("Permissions changed to", entry.PermissionChange.After?.ToPermissionString(), null, inline: true);
+                emb.AddField("Position changed to", entry.PositionChange.After?.ToString(), null, inline: true);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildUpdated)]
         public static async Task GuildUpdateEventHandlerAsync(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.GuildAfter);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.GuildAfter) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Guild settings updated");
+            var emb = new DiscordLogEmbedBuilder("Guild updated", null, DiscordEventType.GuildRoleCreated);
 
-            DiscordAuditLogEntry entry = await e.GuildAfter.GetLatestAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
-            if (!(entry is null) && entry is DiscordAuditLogGuildEntry gentry) {
-                emb.AddField("User responsible", gentry.UserResponsible.Mention, inline: true);
-                if (!(gentry.NameChange is null))
-                    emb.AddField("Name change", $"{gentry.NameChange.Before ?? _unknown} -> {gentry.NameChange.After ?? _unknown}", inline: true);
-                if (!(gentry.AfkChannelChange is null))
-                    emb.AddField("AFK channel changed to", gentry.AfkChannelChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(gentry.EmbedChannelChange is null))
-                    emb.AddField("Embed channel changed to", gentry.EmbedChannelChange.After?.ToString() ?? _unknown, inline: true);
-                if (!(gentry.IconChange is null))
-                    emb.AddField("Icon changed to", gentry.IconChange.After ?? _unknown, inline: true);
-                if (!(gentry.NotificationSettingsChange is null))
-                    emb.AddField("Notifications changed to", gentry.NotificationSettingsChange.After.HasFlag(DefaultMessageNotifications.AllMessages) ? "All messages" : "Mentions only", inline: true);
-                if (!(gentry.OwnerChange is null))
-                    emb.AddField("Owner changed to", gentry.OwnerChange.After?.ToString() ?? _unknown, inline: true);
-                if (!string.IsNullOrWhiteSpace(gentry.Reason))
-                    emb.AddField("Reason", gentry.Reason);
-                emb.WithFooter(gentry.CreationTimestamp.ToUtcTimestamp(), gentry.UserResponsible.AvatarUrl);
-            } else {
+            DiscordAuditLogGuildEntry entry = await e.GuildAfter.GetLatestAuditLogEntryAsync<DiscordAuditLogGuildEntry>(AuditLogActionType.GuildUpdate);
+            if (entry is null) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
+            } else {
+                emb.AddField("User responsible", entry.UserResponsible.Mention, inline: true);
+                emb.AddPropertyChangeField("Name changed", entry.NameChange);
+                emb.AddPropertyChangeField("AFK channel changed", entry.AfkChannelChange);
+                emb.AddPropertyChangeField("Embed channel changed", entry.EmbedChannelChange);
+                emb.AddPropertyChangeField("NSFW filter changed", entry.ExplicitContentFilterChange);
+                emb.AddPropertyChangeField("Icon changed", entry.IconChange);
+                emb.AddPropertyChangeField("MFA level changed", entry.MfaLevelChange);
+                emb.AddPropertyChangeField("Notifications changed", entry.NotificationSettingsChange);
+                emb.AddPropertyChangeField("Owner changed", entry.OwnerChange);
+                emb.AddPropertyChangeField("Splash changed", entry.SplashChange);
+                emb.AddPropertyChangeField("System channel changed", entry.SystemChannelChange);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.GuildAfter, emb);
         }
 
         [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
         public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Guild, "Webhooks updated", $"For {e.Channel.ToString()}");
+            var emb = new DiscordLogEmbedBuilder("Webhooks updated", e.Channel.ToString(), DiscordEventType.WebhooksUpdated);
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            // TODO get webhook audit log entry
+
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
     }
 }

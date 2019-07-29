@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search
         public RedditModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Orange;
+            
         }
 
 

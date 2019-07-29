@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
         public RandomModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.HotPink;
+            
         }
 
 

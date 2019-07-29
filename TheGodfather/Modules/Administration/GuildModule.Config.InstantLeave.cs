@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
                 public InstantLeaveModule(AntiInstantLeaveService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
-                    this.ModuleColor = DiscordColor.IndianRed;
+                    
                 }
 
 

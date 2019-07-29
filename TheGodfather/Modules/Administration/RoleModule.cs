@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
         public RoleModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Lilac;
+            
         }
 
 

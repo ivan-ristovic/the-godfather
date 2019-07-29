@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Administration
                 public AntifloodModule(AntifloodService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
-                    this.ModuleColor = DiscordColor.HotPink;
+                    
                 }
 
 

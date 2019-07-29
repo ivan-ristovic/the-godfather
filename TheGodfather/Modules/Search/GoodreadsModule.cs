@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search
         public GoodreadsModule(GoodreadsService goodreads, SharedData shared, DatabaseContextBuilder db)
             : base(goodreads, shared, db)
         {
-            this.ModuleColor = DiscordColor.DarkGray;
+            
         }
 
 

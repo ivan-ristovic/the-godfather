@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
             public CaroModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Teal;
+                
             }
 
 

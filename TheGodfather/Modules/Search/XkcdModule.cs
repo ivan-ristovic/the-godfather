@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search
         public XkcdModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Blue;
+            
         }
 
 

@@ -244,6 +244,20 @@ namespace TheGodfatherTests.Modules.Administration.Services
             );
         }
 
+        [Test]
+        public void IsChannelExemptedTests()
+        {
+            // TODO
+            Assert.Fail();
+        }
+
+        [Test]
+        public void IsMemberExemptedTests()
+        {
+            // TODO
+            Assert.Fail();
+        }
+
 
         private void SetMockGuildConfig(DatabaseContext db)
         {

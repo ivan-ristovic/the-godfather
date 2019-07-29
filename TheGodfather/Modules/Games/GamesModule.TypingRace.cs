@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
             public TypingRaceModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Teal;
+                
             }
 
 

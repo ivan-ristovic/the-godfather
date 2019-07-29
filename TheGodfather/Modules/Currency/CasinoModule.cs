@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Currency
         public CasinoModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.DarkGreen;
+            
         }
 
 

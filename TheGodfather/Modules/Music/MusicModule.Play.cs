@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Music
             public PlayModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
                 : base(yt, shared, db)
             {
-                this.ModuleColor = DiscordColor.Grayple;
+                
             }
 
 

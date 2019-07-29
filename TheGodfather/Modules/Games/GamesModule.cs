@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Games
         public GamesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Teal;
+            
         }
         
 

@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Misc
         public MiscModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.LightGray;
+            
         }
 
 

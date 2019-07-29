@@ -191,6 +191,7 @@ namespace TheGodfather
         {
             Log.Information("Creating {ShardCount} shards...", _cfg.ShardCount);
 
+            var gcs = new GuildConfigService(_cfg, _dbb);
             IServiceCollection sharedServices = new ServiceCollection()
                 .AddSingleton(_shared)
                 .AddSingleton(_dbb)
@@ -198,9 +199,10 @@ namespace TheGodfather
                 .AddSingleton(new FilteringService(_dbb))
                 .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
                 .AddSingleton(new GoodreadsService(_shared.BotConfiguration.GoodreadsKey))
-                .AddSingleton(new GuildConfigService(_cfg, _dbb))
+                .AddSingleton(gcs)
                 .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                 .AddSingleton(new InteractivityService())
+                .AddSingleton(new LoggingService(gcs))
                 .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
                 .AddSingleton(new ReactionsService(_dbb))
                 .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
@@ -213,11 +215,11 @@ namespace TheGodfather
             for (int i = 0; i < _cfg.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, _dbb, _shared);
                 shard.Services = sharedServices
-                    .AddSingleton(new AntifloodService(shard))
-                    .AddSingleton(new AntiInstantLeaveService(shard))
-                    .AddSingleton(new AntispamService(shard))
-                    .AddSingleton(new LinkfilterService(shard))
-                    .AddSingleton(new RatelimitService(shard))
+                    .AddSingleton(new AntifloodService(shard, gcs))
+                    .AddSingleton(new AntiInstantLeaveService(shard, gcs))
+                    .AddSingleton(new AntispamService(shard, gcs))
+                    .AddSingleton(new LinkfilterService(shard, gcs))
+                    .AddSingleton(new RatelimitService(shard, gcs))
                     .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
                 _shards.Add(shard);

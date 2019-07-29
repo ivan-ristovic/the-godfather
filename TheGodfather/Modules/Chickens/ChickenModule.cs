@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Chickens
         public ChickenModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.Yellow;
+            
         }
 
 

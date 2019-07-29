@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Misc
         public MemeModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Goldenrod;
+            
         }
 
 

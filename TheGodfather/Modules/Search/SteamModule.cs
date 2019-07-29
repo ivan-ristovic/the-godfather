@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
         public SteamModule(SteamService steam, SharedData shared, DatabaseContextBuilder db)
             : base(steam, shared, db)
         {
-            this.ModuleColor = DiscordColor.Blue;
+            
         }
 
 

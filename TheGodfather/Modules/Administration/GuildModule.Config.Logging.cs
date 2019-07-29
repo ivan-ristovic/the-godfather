@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration
                 public LoggingModule(SharedData shared, DatabaseContextBuilder db)
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.DarkRed;
+                    
                 }
 
 

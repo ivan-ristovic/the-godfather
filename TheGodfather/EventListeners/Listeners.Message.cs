@@ -1,24 +1,18 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-
-using Humanizer;
-
-using Microsoft.Extensions.DependencyInjection;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
-using TheGodfather.EventListeners.Extensions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
@@ -35,12 +29,15 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate)
                 return;
 
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Channel.Guild);
-            if (logchn is null || e.Channel.IsExempted(shard))
+            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
+            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
-            await logchn.SendMessageAsync(embed: emb.Build());
+            var emb = new DiscordLogEmbedBuilder("Bulk message deletion occured", null, DiscordEventType.MessagesBulkDeleted);
+            emb.AddField("Channel", e.Channel.Mention, inline: true);
+            emb.AddField("Count", e.Messages.Count.ToString(), inline: true);
+
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -146,27 +143,25 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate || e.Message is null)
                 return;
 
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null || e.Channel.IsExempted(shard))
+            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
+            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
                 return;
 
             if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
-            emb.AddField("Location", e.Channel.Mention, inline: true);
-            emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
+            var emb = new DiscordLogEmbedBuilder("Message deleted", null, DiscordEventType.MessageDeleted);
+            emb.AddField("Channel", e.Channel.Mention, inline: true);
+            emb.AddField("Author", e.Message.Author?.Mention, inline: true);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.MessageDelete);
-            if (!(entry is null) && entry is DiscordAuditLogMessageEntry mentry) {
-                DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
-                if (member.IsExempted(shard))
+            DiscordAuditLogMessageEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
+            if (!(entry is null)) {
+                DiscordMember member = await e.Guild.GetMemberAsync(entry.UserResponsible.Id);
+                if (!(member is null) && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id).ToList()))
                     return;
-
-                emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
-                if (!string.IsNullOrWhiteSpace(mentry.Reason))
-                    emb.AddField("Reason", mentry.Reason);
-                emb.WithFooter(mentry.CreationTimestamp.ToUtcTimestamp(), mentry.UserResponsible.AvatarUrl);
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddField("Reason", entry.Reason, null);
+                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
@@ -177,13 +172,13 @@ namespace TheGodfather.EventListeners
             if (e.Message.Embeds.Any())
                 emb.AddField("Embeds", e.Message.Embeds.Count.ToString(), inline: true);
             if (e.Message.Reactions.Any())
-                emb.AddField("Reactions", string.Join(" ", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName())), inline: true);
+                emb.AddField("Reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()), inline: true, sep: " ");
             if (e.Message.Attachments.Any())
-                emb.AddField("Attachments", string.Join("\n", e.Message.Attachments.Select(a => a.FileName)), inline: true);
+                emb.AddField("Attachments", e.Message.Attachments.Select(a => a.FileName), inline: true);
             if (e.Message.CreationTimestamp != null)
                 emb.AddField("Message creation time", e.Message.CreationTimestamp.ToUtcTimestamp(), inline: true);
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.MessageUpdated)]
@@ -207,29 +202,28 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            DiscordChannel logchn = shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null || !e.Message.IsEdited || e.Channel.IsExempted(shard))
+            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
+            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
                 return;
 
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
-            if (member.IsExempted(shard))
+            if (!(member is null) && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id).ToList()))
                 return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);
-            string ctime = e.Message.CreationTimestamp == null ? _unknown : e.Message.CreationTimestamp.ToUtcTimestamp();
-            string etime = e.Message.EditedTimestamp is null ? _unknown : e.Message.EditedTimestamp.Value.ToUtcTimestamp();
+            string ctime = e.Message.CreationTimestamp == null ? "Unknown" : e.Message.CreationTimestamp.ToUtcTimestamp();
+            string etime = e.Message.EditedTimestamp is null ? "Unknown" : e.Message.EditedTimestamp.Value.ToUtcTimestamp();
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message updated");
-            emb.WithDescription(Formatter.MaskedUrl("Jump to message", e.Message.JumpLink));
+            var emb = new DiscordLogEmbedBuilder("Message updated", Formatter.MaskedUrl("Jump to message", e.Message.JumpLink), DiscordEventType.MessageUpdated);
             emb.AddField("Location", e.Channel.Mention, inline: true);
-            emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
+            emb.AddField("Author", e.Message.Author?.Mention, inline: true);
             emb.AddField("Before update", $"Created {ctime}\n{bextra}\nContent:{Formatter.BlockCode(FormatterExtensions.StripMarkdown(pcontent))}");
             emb.AddField("After update", $"Edited {etime}\n{aextra}\nContent:{Formatter.BlockCode(FormatterExtensions.StripMarkdown(acontent))}");
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Owner
             public CommandsModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.NotQuiteBlack;
+                
             }
 
 
@@ -67,7 +67,7 @@ public sealed class DynamicCommands : TheGodfatherModule
 {{
     public DynamicCommands(SharedData shared, DatabaseContextBuilder db) : base(shared, db)
     {{
-        this.ModuleColor = DiscordColor.NotQuiteBlack;
+        
     }}
 
     {code.Substring(cs1, cs2 - cs1)}

@@ -13,6 +13,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
@@ -32,7 +33,7 @@ namespace TheGodfather.Modules.Reactions
         public TextReactionsModule(ReactionsService service, SharedData shared, DatabaseContextBuilder db)
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.DarkGray;
+            
         }
 
 

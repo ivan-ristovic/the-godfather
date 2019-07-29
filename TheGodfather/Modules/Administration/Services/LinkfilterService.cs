@@ -1,19 +1,20 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using TheGodfather.EventListeners;
+using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
     public class LinkfilterService : ProtectionService
     {
-        public LinkfilterService(TheGodfatherShard shard)
-            : base(shard)
+        public LinkfilterService(TheGodfatherShard shard, GuildConfigService gcs)
+            : base(shard, gcs)
         {
             this.reason = "_gf: Linkfilter";
         }
@@ -112,14 +113,13 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
         {
-            DiscordChannel logchn = this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild);
-            if (logchn is null)
+            if (this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            DiscordEmbedBuilder emb = Listeners.FormEmbedBuilder(EventOrigin.Linkfilter, "Linkfilter action triggered", desc);
-            emb.AddField("User responsible", e.Author.Mention);
+            var emb = new DiscordLogEmbedBuilder("Linkfilter action triggered", desc, DiscordEventType.MessageDeleted);
+            emb.AddInvocationFields(e.Author);
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await this.shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
     }
 }

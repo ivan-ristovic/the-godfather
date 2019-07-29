@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Search
         public RssFeedsModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Orange;
+            
         }
 
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Search
             public SubscribeModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Orange;
+                
             }
 
 
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Search
             public UnsubscribeModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Orange;
+                
             }
 
 

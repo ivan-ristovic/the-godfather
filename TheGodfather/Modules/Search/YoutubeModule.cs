@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search
         public YoutubeModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
             : base(yt, shared, db)
         {
-            this.ModuleColor = DiscordColor.Red;
+            
         }
 
 

@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Administration
         public UserModule(SharedData shared, DatabaseContextBuilder db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Sienna;
+            
         }
 
 

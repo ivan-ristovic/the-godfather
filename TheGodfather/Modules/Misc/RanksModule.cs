@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Misc
         public RanksModule(UserRanksService service, SharedData shared, DatabaseContextBuilder db) 
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.Gold;
+            
         }
 
 

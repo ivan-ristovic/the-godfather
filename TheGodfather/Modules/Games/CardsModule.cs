@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
         public CardsModule(SharedData shared, DatabaseContextBuilder dbb) 
             : base(shared, dbb)
         {
-            this.ModuleColor = DiscordColor.Blurple;
+            
         }
 
 

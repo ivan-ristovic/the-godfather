@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Owner
         public OwnerModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.NotQuiteBlack;
+            
         }
 
 

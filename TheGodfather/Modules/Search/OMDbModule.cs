@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search
         public OMDbModule(OMDbService omdb, SharedData shared, DatabaseContextBuilder db)
             : base(omdb, shared, db)
         {
-            this.ModuleColor = DiscordColor.Yellow;
+            
         }
 
 

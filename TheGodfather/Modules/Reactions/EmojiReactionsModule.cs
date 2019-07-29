@@ -12,11 +12,10 @@ using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
@@ -36,7 +35,7 @@ namespace TheGodfather.Modules.Reactions
         public EmojiReactionsModule(ReactionsService service, SharedData shared, DatabaseContextBuilder db)
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.VeryDarkGray;
+            
         }
 
 

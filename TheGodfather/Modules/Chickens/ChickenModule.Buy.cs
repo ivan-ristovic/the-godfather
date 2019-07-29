@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Chickens
             public BuyModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Yellow;
+                
             }
 
 

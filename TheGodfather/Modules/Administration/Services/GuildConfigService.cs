@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
@@ -60,12 +59,6 @@ namespace TheGodfather.Modules.Administration.Services
                 : this.cfg.Prefix;
         }
 
-        public DiscordChannel GetLogChannelForGuild(DiscordGuild guild)
-        {
-            CachedGuildConfig gcfg = this.GetCachedConfig(guild.Id);
-            return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
-        }
-
         public async Task<DatabaseGuildConfig> GetConfigAsync(ulong gid)
         {
             DatabaseGuildConfig gcfg = null;
@@ -114,6 +107,31 @@ namespace TheGodfather.Modules.Administration.Services
                     await db.SaveChangesAsync();
                 }
             }
+        }
+
+        public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId)
+        {
+            using (DatabaseContext db = this.dbb.CreateContext()) {
+                return db.LoggingExempts
+                    .Where(e => e.GuildId == gid)
+                    .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
+            }
+        }
+
+        public bool IsMemberExempted(ulong gid, ulong uid, IReadOnlyList<ulong> rids)
+        {
+            bool exempted = false;
+
+            using (DatabaseContext db = this.dbb.CreateContext()) {
+                exempted |= db.LoggingExempts
+                    .Where(e => e.GuildId == gid)
+                    .Any(e => e.Type == ExemptedEntityType.Member && e.Id == uid);
+                exempted |= db.LoggingExempts
+                    .Where(e => e.GuildId == gid)
+                    .Any(e => e.Type == ExemptedEntityType.Role && rids.Contains(e.Id));
+            }
+
+            return exempted;
         }
     }
 }

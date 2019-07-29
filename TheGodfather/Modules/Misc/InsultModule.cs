@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Misc
         public InsultModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Brown;
+            
         }
 
 

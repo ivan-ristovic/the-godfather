@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Owner
             public BlockedChannelsModule(SharedData shared, DatabaseContextBuilder db) 
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.NotQuiteBlack;
+                
             }
 
 

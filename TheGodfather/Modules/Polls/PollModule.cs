@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Polls
         public PollModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.Orange;
+            
         }
 
 

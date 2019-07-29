@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 
 namespace TheGodfather.Common.Attributes
 {
-    internal enum ModuleType
+    public enum ModuleType
     {
         Administration,
         Chickens,
@@ -22,8 +23,44 @@ namespace TheGodfather.Common.Attributes
     }
 
 
+    public static class ModuleTypeExtensions
+    {
+        public static DiscordColor ToDiscordColor(this ModuleType type)
+        {
+            switch (type) {
+                case ModuleType.Administration:
+                    return DiscordColor.Azure;
+                case ModuleType.Chickens:
+                    return DiscordColor.Azure;
+                case ModuleType.Currency:
+                    return DiscordColor.Azure;
+                case ModuleType.Games:
+                    return DiscordColor.Azure;
+                case ModuleType.Miscellaneous:
+                    return DiscordColor.Azure;
+                case ModuleType.Music:
+                    return DiscordColor.Azure;
+                case ModuleType.Owner:
+                    return DiscordColor.Azure;
+                case ModuleType.Polls:
+                    return DiscordColor.Azure;
+                case ModuleType.Reactions:
+                    return DiscordColor.Azure;
+                case ModuleType.Reminders:
+                    return DiscordColor.Azure;
+                case ModuleType.SWAT:
+                    return DiscordColor.Azure;
+                case ModuleType.Uncategorized:
+                    return DiscordColor.Azure;
+                default:
+                    return DiscordColor.Green;
+            }
+        }
+    }
+
+
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    internal sealed class ModuleAttribute : Attribute
+    public sealed class ModuleAttribute : Attribute
     {
         public static ModuleAttribute ForCommand(Command cmd)
         {

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search
         public WeatherModule(WeatherService weather, SharedData shared, DatabaseContextBuilder db)
             : base(weather, shared, db)
         {
-            this.ModuleColor = DiscordColor.Aquamarine;
+            
         }
 
 

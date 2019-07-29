@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
         public GrantModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Wheat;
+            
         }
 
 
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Misc
         public RevokeModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Wheat;
+            
         }
 
 

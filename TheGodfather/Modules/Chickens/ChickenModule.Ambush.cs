@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Chickens
             public AmbushModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Yellow;
+                
             }
 
 

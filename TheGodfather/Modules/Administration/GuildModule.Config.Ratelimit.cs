@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
                 public RatelimitModule(RatelimitService service, SharedData shared, DatabaseContextBuilder db)
                     : base(service, shared, db)
                 {
-                    this.ModuleColor = DiscordColor.Rose;
+                    
                 }
 
 

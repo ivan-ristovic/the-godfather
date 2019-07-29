@@ -16,6 +16,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Services;
 #endregion
@@ -35,7 +36,7 @@ namespace TheGodfather.Modules.Administration
         public FilterModule(FilteringService service, SharedData shared, DatabaseContextBuilder db)
             : base(service, shared, db)
         {
-            this.ModuleColor = DiscordColor.DarkRed;
+            
         }
 
 

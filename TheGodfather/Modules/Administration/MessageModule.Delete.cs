@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
             public MessageDeleteModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Azure;
+                
             }
 
 

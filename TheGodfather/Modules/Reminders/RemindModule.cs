@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Reminders
         public RemindModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.LightGray;
+            
         }
 
 

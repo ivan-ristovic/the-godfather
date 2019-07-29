@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Swat
             public SwatServersModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Black;
+                
             }
 
 

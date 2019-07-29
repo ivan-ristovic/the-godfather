@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search
         public JokesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.PhthaloBlue;
+            
         }
 
 

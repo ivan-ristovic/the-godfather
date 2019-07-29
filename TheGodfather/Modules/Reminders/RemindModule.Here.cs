@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Reminders
             public RemindHereModule(SharedData shared, DatabaseContextBuilder db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.NotQuiteBlack;
+                
             }
 
 
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Reminders
                 public RemindHereInModule(SharedData shared, DatabaseContextBuilder db)
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.NotQuiteBlack;
+                    
                 }
 
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Reminders
                 public RemindHereAtModule(SharedData shared, DatabaseContextBuilder db)
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.NotQuiteBlack;
+                    
                 }
 
 

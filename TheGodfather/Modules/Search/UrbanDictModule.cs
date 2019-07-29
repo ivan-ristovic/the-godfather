@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Search
         public UrbanDictModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.CornflowerBlue;
+            
         }
 
 

@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
         public ChannelModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Turquoise;
+            
         }
 
 

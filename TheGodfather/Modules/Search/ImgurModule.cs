@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search
         public ImgurModule(ImgurService imgur, SharedData shared, DatabaseContextBuilder db)
             : base(imgur, shared, db)
         {
-            this.ModuleColor = DiscordColor.Green;
+            
         }
 
 

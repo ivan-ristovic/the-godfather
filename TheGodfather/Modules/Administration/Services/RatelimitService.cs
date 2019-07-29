@@ -38,8 +38,8 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public RatelimitService(TheGodfatherShard shard)
-            : base(shard)
+        public RatelimitService(TheGodfatherShard shard, GuildConfigService gcs)
+            : base(shard, gcs)
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildRatelimitInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>>();

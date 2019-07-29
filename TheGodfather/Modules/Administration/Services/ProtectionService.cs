@@ -13,22 +13,25 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
     public abstract class ProtectionService : ITheGodfatherService
     {
-        protected TheGodfatherShard shard;
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
         protected string reason;
+        protected readonly TheGodfatherShard shard;
+        protected readonly GuildConfigService gcs;
 
         public bool IsDisabled => false;
 
 
-        protected ProtectionService(TheGodfatherShard shard)
+        protected ProtectionService(TheGodfatherShard shard, GuildConfigService gcs)
         {
             this.shard = shard;
+            this.gcs = gcs;
         }
 
 
@@ -85,7 +88,7 @@ namespace TheGodfather.Modules.Administration.Services
             await this.csem.WaitAsync();
             try {
                 using (DatabaseContext db = this.shard.Database.CreateContext()) {
-                    DatabaseGuildConfig gcfg = guild.GetGuildConfig(db);
+                    DatabaseGuildConfig gcfg = await gcs.GetConfigAsync(guild.Id);
                     muteRole = guild.GetRole(gcfg.MuteRoleId);
                     if (muteRole is null)
                         muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
         public GiphyModule(GiphyService giphy, SharedData shared, DatabaseContextBuilder db) 
             : base(giphy, shared, db)
         {
-            this.ModuleColor = DiscordColor.Violet;
+            
         }
 
 

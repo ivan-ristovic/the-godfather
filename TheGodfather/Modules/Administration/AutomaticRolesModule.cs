@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
         public AutomaticRolesModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Goldenrod;
+            
         }
 
 
@@ -69,18 +69,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Automatic roles change occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Roles added", string.Join("\n", roles.Select(r => r.ToString())));
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
+            await this.LogAsync(ctx, new DiscordLogEmbedBuilder(ctx, "Automatic roles change occured").AddField("Roles added", roles));
             await this.InformAsync(ctx, $"Added automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion
@@ -101,18 +90,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Automatic roles change occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Roles removed", string.Join("\n", roles.Select(r => r.ToString())));
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
+            await this.LogAsync(ctx, new DiscordLogEmbedBuilder(ctx, "Automatic roles change occured").AddField("Roles removed", roles));
             await this.InformAsync(ctx, $"Removed automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion
@@ -131,18 +109,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "All automatic roles have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-
+            await this.LogAsync(ctx, new DiscordLogEmbedBuilder(ctx, "All automatic roles have been deleted"));
             await this.InformAsync(ctx, "Removed all automatic roles for this guild!", important: false);
         }
         #endregion

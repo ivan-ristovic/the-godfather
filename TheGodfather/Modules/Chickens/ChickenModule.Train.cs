@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Chickens
             public TrainModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Yellow;
+                
             }
 
 

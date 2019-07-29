@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Misc
         public BirthdayModule(SharedData shared, DatabaseContextBuilder db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Wheat;
+            
         }
 
 

@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Games
             public DuelModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
                 : base(service, shared, db)
             {
-                this.ModuleColor = DiscordColor.Teal;
+                
             }
 
 
