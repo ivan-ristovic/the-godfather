@@ -201,7 +201,7 @@ namespace TheGodfather
                 .AddSingleton(gcs)
                 .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                 .AddSingleton(new InteractivityService())
-                .AddSingleton(new LocalizationService(_cfg, gcs, _dbb, "Translations"))
+                .AddSingleton(new LocalizationService(gcs, "Translations", _cfg.Locale))
                 .AddSingleton(new LoggingService(gcs))
                 .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
                 .AddSingleton(new ReactionsService(_dbb))

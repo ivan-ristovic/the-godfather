@@ -128,9 +128,11 @@ namespace TheGodfather.Modules.Administration.Services
                 exempted |= db.LoggingExempts
                     .Where(e => e.GuildId == gid)
                     .Any(e => e.Type == ExemptedEntityType.Member && e.Id == uid);
-                exempted |= db.LoggingExempts
-                    .Where(e => e.GuildId == gid)
-                    .Any(e => e.Type == ExemptedEntityType.Role && rids.Contains(e.Id));
+                if (rids?.Any() ?? false) {
+                    exempted |= db.LoggingExempts
+                        .Where(e => e.GuildId == gid)
+                        .Any(e => e.Type == ExemptedEntityType.Role && rids.Contains(e.Id));
+                }
             }
 
             return exempted;

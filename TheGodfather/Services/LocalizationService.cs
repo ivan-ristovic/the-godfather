@@ -20,15 +20,13 @@ namespace TheGodfather.Services
         private ImmutableDictionary<string, ImmutableDictionary<string, string>> strings;
         private ImmutableDictionary<string, CommandInfo> commands;
         private readonly GuildConfigService gcs;
-        private readonly DatabaseContextBuilder dbb;
         private readonly string defLocale;
 
 
-        public LocalizationService(BotConfig cfg, GuildConfigService gcs, DatabaseContextBuilder dbb, string root)
+        public LocalizationService(GuildConfigService gcs, string root, string defaultLocale)
         {
             this.gcs = gcs;
-            this.dbb = dbb;
-            this.defLocale = cfg.Locale;
+            this.defLocale = defaultLocale;
             this.LoadData(root);
         }
 

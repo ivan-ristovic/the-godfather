@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Common;
@@ -247,15 +245,92 @@ namespace TheGodfatherTests.Modules.Administration.Services
         [Test]
         public void IsChannelExemptedTests()
         {
-            // TODO
-            Assert.Fail();
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Channel });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Channel });
+                },
+                alter: db => this.Service.LoadData(),
+                verify: db => {
+                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null));
+                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null));
+                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null));
+                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null));
+                }
+            );
+
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
+                },
+                alter: db => this.Service.LoadData(),
+                verify: db => {
+                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null));
+                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null));
+                }
+            );
         }
 
         [Test]
         public void IsMemberExemptedTests()
         {
-            // TODO
-            Assert.Fail();
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[4], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                },
+                alter: db => this.Service.LoadData(),
+                verify: db => {
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], new ulong[] { MockData.Ids[0] }));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], new ulong[] { MockData.Ids[1] }));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[1], null));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], null));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[4], uid: MockData.Ids[3], new ulong[] { MockData.Ids[0] }));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[1], null));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], null));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[3], null));
+                }
+            );
+
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                },
+                alter: db => this.Service.LoadData(),
+                verify: db => {
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], null));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], null));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[0], null));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[0], null));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }));
+                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }));
+                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }));
+                }
+            );
         }
 
 
