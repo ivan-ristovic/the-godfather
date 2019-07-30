@@ -131,11 +131,11 @@ namespace TheGodfather.Services
                     Log.Error(new KeyNotFoundException(), "Failed to find string for {Key} in locale {Locale}", key, locale);
             }
 
-            return response ?? $"I do not have a translation ready for {key}. Please report this.";
+            return response ?? $"I do not have a translation ready for `{key}`. Please report this.";
         }
 
         public string GetGuildLocale(ulong gid)
-            => this.gcs.GetCachedConfig(gid)?.Locale;
+            => this.gcs.GetCachedConfig(gid)?.Locale ?? this.defLocale;
 
         public async Task<bool> SetGuildLocaleAsync(ulong gid, string locale)
         {
