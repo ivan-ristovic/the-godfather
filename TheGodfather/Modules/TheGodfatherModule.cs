@@ -1,14 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-
-using Microsoft.Extensions.DependencyInjection;
-
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -55,7 +52,7 @@ namespace TheGodfather.Modules
                 try {
                     await ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
                 } catch (NotFoundException) {
-                    await this.InformAsync(ctx, "Action completed!");
+                    await this.InformAsync(ctx, ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, "Action completed"));
                 }
             } else {
                 string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message);
@@ -69,7 +66,7 @@ namespace TheGodfather.Modules
         protected Task InformFailureAsync(CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.X} {message}",
+                Description = $"{StaticDiscordEmoji.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message)}",
                 Color = DiscordColor.IndianRed
             });
         }

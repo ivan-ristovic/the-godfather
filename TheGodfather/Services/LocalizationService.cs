@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Common;
@@ -14,6 +15,7 @@ namespace TheGodfather.Services
     public sealed class LocalizationService : ITheGodfatherService
     {
         public bool IsDisabled => false;
+        public IReadOnlyList<string> AvailableLocales => this.strings.Keys.ToList().AsReadOnly();
 
         private ImmutableDictionary<string, ImmutableDictionary<string, string>> strings;
         private ImmutableDictionary<string, CommandInfo> commands;
@@ -130,6 +132,17 @@ namespace TheGodfather.Services
             }
 
             return response ?? $"I do not have a translation ready for {key}. Please report this.";
+        }
+
+        public string GetGuildLocale(ulong gid)
+            => this.gcs.GetCachedConfig(gid)?.Locale;
+
+        public async Task<bool> SetGuildLocaleAsync(ulong gid, string locale)
+        {
+            if (!this.strings.ContainsKey(locale))
+                return false;
+            await this.gcs.ModifyConfigAsync(gid, cfg => cfg.Locale = locale);
+            return true;
         }
     }
 
