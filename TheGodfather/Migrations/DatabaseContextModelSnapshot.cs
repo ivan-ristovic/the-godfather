@@ -17,8 +17,7 @@ namespace TheGodfather.Migrations
             modelBuilder
                 .HasDefaultSchema("gf")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn)
-                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1");
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
                 {
@@ -532,6 +531,10 @@ namespace TheGodfather.Migrations
                         .HasColumnName("linkfilter_shorteners")
                         .HasDefaultValue(true);
 
+                    b.Property<string>("Locale")
+                        .HasColumnName("locale")
+                        .HasMaxLength(8);
+
                     b.Property<long?>("LogChannelIdDb")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("log_cid")
@@ -648,9 +651,9 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<long>("MessageCount")
+                    b.Property<uint>("MessageCount")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1L);
+                        .HasDefaultValue(1u);
 
                     b.Property<int>("MessageCountDb")
                         .HasColumnName("message_count");

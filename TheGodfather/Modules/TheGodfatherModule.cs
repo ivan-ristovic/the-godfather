@@ -13,6 +13,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules
@@ -57,8 +58,9 @@ namespace TheGodfather.Modules
                     await this.InformAsync(ctx, "Action completed!");
                 }
             } else {
+                string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Description = $"{(emoji ?? StaticDiscordEmoji.CheckMarkSuccess)} {message ?? "Done!"}",
+                    Description = $"{emoji ?? StaticDiscordEmoji.CheckMarkSuccess} {response}",
                     Color = this.ModuleColor
                 });
             }

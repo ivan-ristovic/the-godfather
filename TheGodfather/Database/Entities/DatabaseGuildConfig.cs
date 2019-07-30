@@ -45,6 +45,9 @@ namespace TheGodfather.Database.Entities
         [Column("prefix"), MaxLength(16)]
         public string Prefix { get; set; }
 
+        [Column("locale"), MaxLength(8)]
+        public string Locale { get; set; }
+
         [Column("currency"), MaxLength(32)]
         public string Currency { get; set; }
 
@@ -224,6 +227,7 @@ namespace TheGodfather.Database.Entities
                 AntispamSettings = this.AntispamSettings,
                 Currency = this.Currency ?? "credits",
                 LinkfilterSettings = this.LinkfilterSettings,
+                Locale = this.Locale,
                 LogChannelId = this.LogChannelId,
                 Prefix = this.Prefix,
                 RatelimitSettings = this.RatelimitSettings,
@@ -234,6 +238,7 @@ namespace TheGodfather.Database.Entities
                 this.AntispamSettings = value.AntispamSettings;
                 this.Currency = value.Currency;
                 this.LinkfilterSettings = value.LinkfilterSettings;
+                this.Locale = value.Locale;
                 this.LogChannelId = value.LogChannelId;
                 this.Prefix = value.Prefix;
                 this.RatelimitSettings = value.RatelimitSettings;

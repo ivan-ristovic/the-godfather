@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
         public void LoadData()
         {
-            Log.Debug("Loading reactions...");
+            Log.Debug("Loading text and emoji reactions");
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     var x = db.BlockedChannels.ToList();

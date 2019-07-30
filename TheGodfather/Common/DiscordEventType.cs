@@ -59,35 +59,67 @@ namespace TheGodfather.Common
     {
         public static DiscordColor ToDiscordColor(this DiscordEventType type)
         {
-            // TODO
             switch (type) {
+                // Channels
                 case DiscordEventType.ChannelCreated:
                 case DiscordEventType.ChannelDeleted:
                 case DiscordEventType.ChannelPinsUpdated:
                 case DiscordEventType.ChannelUpdated:
+                    return DiscordColor.Aquamarine;
+
+                // Errors and serious events
                 case DiscordEventType.ClientErrored:
                 case DiscordEventType.CommandErrored:
-                case DiscordEventType.CommandExecuted:
+                case DiscordEventType.GuildBanAdded:
+                case DiscordEventType.GuildDeleted:
+                case DiscordEventType.GuildUnavailable:
+                    return DiscordColor.Red;
+
+                // Availability
                 case DiscordEventType.DmChannelCreated:
                 case DiscordEventType.DmChannelDeleted:
                 case DiscordEventType.GuildAvailable:
-                case DiscordEventType.GuildBanAdded:
-                case DiscordEventType.GuildBanRemoved:
                 case DiscordEventType.GuildCreated:
-                case DiscordEventType.GuildDeleted:
+                case DiscordEventType.GuildBanRemoved:
+                    return DiscordColor.Green;
+
+                // Successful execution
+                case DiscordEventType.CommandExecuted:
                 case DiscordEventType.GuildDownloadCompleted:
+                    return DiscordColor.SpringGreen;
+
+                // Emojis
                 case DiscordEventType.GuildEmojisUpdated:
-                case DiscordEventType.GuildIntegrationsUpdated:
-                case DiscordEventType.GuildMemberAdded:
-                case DiscordEventType.GuildMemberRemoved:
+                    return DiscordColor.Yellow;
+
+                // Members and Users
                 case DiscordEventType.GuildMemberUpdated:
+                case DiscordEventType.PresenceUpdated:
+                case DiscordEventType.TypingStarted:
+                case DiscordEventType.UserSettingsUpdated:
+                case DiscordEventType.UserUpdated:
+                    return DiscordColor.DarkGreen;
+                case DiscordEventType.GuildMemberAdded:
                 case DiscordEventType.GuildMembersChunked:
+                    return DiscordColor.Turquoise;
+                case DiscordEventType.GuildMemberRemoved:
+                    return DiscordColor.DarkRed;
+
+                // Roles
                 case DiscordEventType.GuildRoleCreated:
                 case DiscordEventType.GuildRoleDeleted:
                 case DiscordEventType.GuildRoleUpdated:
-                case DiscordEventType.GuildUnavailable:
+                    return DiscordColor.Orange;
+
+                // Guild 
+                case DiscordEventType.GuildIntegrationsUpdated:
                 case DiscordEventType.GuildUpdated:
-                case DiscordEventType.Heartbeated:
+                case DiscordEventType.VoiceServerUpdated:
+                case DiscordEventType.VoiceStateUpdated:
+                case DiscordEventType.WebhooksUpdated:
+                    return DiscordColor.SapGreen;
+
+                // Messages
                 case DiscordEventType.MessageAcknowledged:
                 case DiscordEventType.MessageCreated:
                 case DiscordEventType.MessageDeleted:
@@ -96,21 +128,20 @@ namespace TheGodfather.Common
                 case DiscordEventType.MessageReactionsCleared:
                 case DiscordEventType.MessageUpdated:
                 case DiscordEventType.MessagesBulkDeleted:
-                case DiscordEventType.PresenceUpdated:
+                    return DiscordColor.CornflowerBlue;
+
+                // Application
+                case DiscordEventType.Heartbeated:
                 case DiscordEventType.Ready:
                 case DiscordEventType.Resumed:
                 case DiscordEventType.SocketClosed:
                 case DiscordEventType.SocketErrored:
                 case DiscordEventType.SocketOpened:
-                case DiscordEventType.TypingStarted:
+                    return DiscordColor.White;
+
                 case DiscordEventType.UnknownEvent:
-                case DiscordEventType.UserSettingsUpdated:
-                case DiscordEventType.UserUpdated:
-                case DiscordEventType.VoiceServerUpdated:
-                case DiscordEventType.VoiceStateUpdated:
-                case DiscordEventType.WebhooksUpdated:
                 default:
-                    return DiscordColor.Aquamarine;
+                    return DiscordColor.Black;
             }
         }
     }

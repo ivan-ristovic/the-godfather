@@ -75,7 +75,7 @@ namespace TheGodfather
                 await DisposeAsync();
             }
 
-            Log.Information("Powering off...");
+            Log.Information("Powering off");
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -98,7 +98,7 @@ namespace TheGodfather
 
         private static void SetupLogger()
         {
-            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message}{NewLine}{Exception}";
+            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
 
             LoggerConfiguration lcfg = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -153,22 +153,21 @@ namespace TheGodfather
 
             _cfg = JsonConvert.DeserializeObject<BotConfig>(json);
 
-            Console.WriteLine("Done!");
-            Console.WriteLine();
+            Console.Write("\r");
         }
 
         private static async Task InitializeDatabaseAsync()
         {
-            Log.Information("Establishing database connection...");
+            Log.Information("Establishing database connection");
             _dbb = new DatabaseContextBuilder(_cfg.DatabaseConfig);
 
-            Log.Information("Migrating the database...");
+            Log.Information("Migrating the database");
             await _dbb.CreateContext().Database.MigrateAsync();
         }
 
         private static void InitializeSharedData()
         {
-            Log.Information("Loading data from the database...");
+            Log.Information("Loading data from the database");
 
             ConcurrentHashSet<ulong> blockedChannels;
             ConcurrentHashSet<ulong> blockedUsers;
@@ -189,7 +188,7 @@ namespace TheGodfather
 
         private static async Task CreateAndBootShardsAsync()
         {
-            Log.Information("Creating {ShardCount} shards...", _cfg.ShardCount);
+            Log.Information("Creating {ShardCount} shard(s)", _cfg.ShardCount);
 
             var gcs = new GuildConfigService(_cfg, _dbb);
             IServiceCollection sharedServices = new ServiceCollection()
@@ -202,6 +201,7 @@ namespace TheGodfather
                 .AddSingleton(gcs)
                 .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                 .AddSingleton(new InteractivityService())
+                .AddSingleton(new LocalizationService(_cfg, gcs, _dbb, "Translations"))
                 .AddSingleton(new LoggingService(gcs))
                 .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
                 .AddSingleton(new ReactionsService(_dbb))
@@ -225,7 +225,7 @@ namespace TheGodfather
                 _shards.Add(shard);
             }
 
-            Log.Information("Booting the shards...");
+            Log.Information("Booting the shards");
 
             await Task.WhenAll(_shards.Select(s => s.StartAsync()));
         }
@@ -243,19 +243,20 @@ namespace TheGodfather
 
         private static async Task DisposeAsync()
         {
-            Log.Information("Cleaning up...");
+            Log.Information("Cleaning up");
 
-            BotStatusUpdateTimer.Dispose();
-            DatabaseSyncTimer.Dispose();
-            FeedCheckTimer.Dispose();
-            MiscActionsTimer.Dispose();
-            SavedTaskLoadTimer.Dispose();
+            BotStatusUpdateTimer?.Dispose();
+            DatabaseSyncTimer?.Dispose();
+            FeedCheckTimer?.Dispose();
+            MiscActionsTimer?.Dispose();
+            SavedTaskLoadTimer?.Dispose();
 
-            foreach (TheGodfatherShard shard in _shards)
-                await shard.DisposeAsync();
-            _shared.Dispose();
+            if (!(_shards is null))
+                foreach (TheGodfatherShard shard in _shards)
+                    await shard?.DisposeAsync();
+            _shared?.Dispose();
 
-            Log.Information("Cleanup complete! Powering off...");
+            Log.Information("Cleanup complete! Powering off");
         }
         #endregion
 

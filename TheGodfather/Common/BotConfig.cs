@@ -33,6 +33,9 @@ namespace TheGodfather.Common
         [JsonProperty("key-imgur")]
         public string ImgurKey { get; private set; }
 
+        [JsonProperty("locale")]
+        public string Locale { get; private set; }
+
         [JsonProperty("log-level")]
         public LogEventLevel LogLevel { get; private set; }
 
@@ -74,6 +77,7 @@ namespace TheGodfather.Common
             GiphyKey = "<insert GIPHY API key>",
             GoodreadsKey = "<insert Goodreads API key>",
             ImgurKey = "<insert Imgur API key>",
+            Locale = "en-US",
             LogLevel = LogEventLevel.Information,
             LogPath = "log.txt",
             LogToFile = false,

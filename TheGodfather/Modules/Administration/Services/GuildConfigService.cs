@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void LoadData()
         {
-            Log.Debug("Loading guild config...");
+            Log.Debug("Loading guild config");
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
@@ -92,6 +92,7 @@ namespace TheGodfather.Modules.Administration.Services
                 if (!db.GuildConfig.Contains(gcfg)) {
                     db.GuildConfig.Add(gcfg);
                     await db.SaveChangesAsync();
+                    Log.Debug("Registered guild: {GuildId}", gid);
                 }
             }
             return success;
@@ -105,6 +106,7 @@ namespace TheGodfather.Modules.Administration.Services
                 if (!(gcfg is null)) {
                     db.GuildConfig.Remove(gcfg);
                     await db.SaveChangesAsync();
+                    Log.Debug("Unregistered guild: {GuildId}", gid);
                 }
             }
         }

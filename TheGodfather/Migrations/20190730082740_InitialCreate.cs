@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TheGodfather.Migrations
 {
@@ -43,7 +42,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     status = table.Column<string>(maxLength: 64, nullable: false),
                     activity_type = table.Column<int>(nullable: false)
                 },
@@ -74,20 +73,34 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     uid = table.Column<long>(nullable: false),
-                    duel_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    duel_lost = table.Column<int>(nullable: false, defaultValue: 0),
-                    hangman_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    quizes_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    animalraces_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    numberraces_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    ttt_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    ttt_lost = table.Column<int>(nullable: false, defaultValue: 0),
-                    chain4_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    chain4_lost = table.Column<int>(nullable: false, defaultValue: 0),
-                    caro_won = table.Column<int>(nullable: false, defaultValue: 0),
-                    caro_lost = table.Column<int>(nullable: false, defaultValue: 0),
-                    othello_won = table.Column<int>(nullable: false, defaultValue: 0),
+                    duel_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    duel_lost = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    hangman_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    quizes_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    animalraces_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    numberraces_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ttt_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ttt_lost = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    chain4_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    chain4_lost = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    caro_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    caro_lost = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    othello_won = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true),
                     othello_lost = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true)
                 },
                 constraints: table =>
                 {
@@ -101,13 +114,18 @@ namespace TheGodfather.Migrations
                 {
                     gid = table.Column<long>(nullable: false),
                     prefix = table.Column<string>(maxLength: 16, nullable: true),
+                    locale = table.Column<string>(maxLength: 8, nullable: true),
                     currency = table.Column<string>(maxLength: 32, nullable: true),
                     suggestions_enabled = table.Column<bool>(nullable: false, defaultValue: false),
-                    log_cid = table.Column<long>(nullable: true),
-                    mute_rid = table.Column<long>(nullable: true),
+                    log_cid = table.Column<long>(nullable: true)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    mute_rid = table.Column<long>(nullable: true)
+                        .Annotation("Sqlite:Autoincrement", true),
                     silent_response_enabled = table.Column<bool>(nullable: false, defaultValue: false),
-                    welcome_cid = table.Column<long>(nullable: true),
-                    leave_cid = table.Column<long>(nullable: true),
+                    welcome_cid = table.Column<long>(nullable: true)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    leave_cid = table.Column<long>(nullable: true)
+                        .Annotation("Sqlite:Autoincrement", true),
                     welcome_msg = table.Column<string>(maxLength: 128, nullable: true),
                     leave_msg = table.Column<string>(maxLength: 128, nullable: true),
                     linkfilter_enabled = table.Column<bool>(nullable: false, defaultValue: false),
@@ -118,16 +136,21 @@ namespace TheGodfather.Migrations
                     linkfilter_shorteners = table.Column<bool>(nullable: false, defaultValue: true),
                     antiflood_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     antiflood_action = table.Column<byte>(nullable: false, defaultValue: (byte)4),
-                    antiflood_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5),
-                    antiflood_cooldown = table.Column<short>(nullable: false, defaultValue: (short)10),
+                    antiflood_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    antiflood_cooldown = table.Column<short>(nullable: false, defaultValue: (short)10)
+                        .Annotation("Sqlite:Autoincrement", true),
                     antiinstantleave_enabled = table.Column<bool>(nullable: false, defaultValue: false),
-                    antiinstantleave_cooldown = table.Column<short>(nullable: false, defaultValue: (short)3),
+                    antiinstantleave_cooldown = table.Column<short>(nullable: false, defaultValue: (short)3)
+                        .Annotation("Sqlite:Autoincrement", true),
                     antispam_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     antispam_action = table.Column<byte>(nullable: false, defaultValue: (byte)0),
-                    antispam_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5),
+                    antispam_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5)
+                        .Annotation("Sqlite:Autoincrement", true),
                     ratelimit_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     ratelimit_action = table.Column<byte>(nullable: false, defaultValue: (byte)1),
                     ratelimit_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5)
+                        .Annotation("Sqlite:Autoincrement", true)
                 },
                 constraints: table =>
                 {
@@ -140,7 +163,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     content = table.Column<string>(maxLength: 128, nullable: false)
                 },
                 constraints: table =>
@@ -166,7 +189,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     uid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: true),
                     message = table.Column<string>(maxLength: 256, nullable: false),
@@ -185,7 +208,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     url = table.Column<string>(nullable: false),
                     last_post_url = table.Column<string>(nullable: false)
                 },
@@ -200,7 +223,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     name = table.Column<string>(maxLength: 32, nullable: false),
                     additional_info = table.Column<string>(nullable: true),
                     is_blacklisted = table.Column<bool>(nullable: false, defaultValue: false)
@@ -216,7 +239,8 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     ip = table.Column<string>(maxLength: 16, nullable: false),
-                    join_port = table.Column<int>(nullable: false, defaultValue: 10480),
+                    join_port = table.Column<int>(nullable: false, defaultValue: 10480)
+                        .Annotation("Sqlite:Autoincrement", true),
                     query_port = table.Column<int>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false)
                 },
@@ -232,7 +256,8 @@ namespace TheGodfather.Migrations
                 {
                     uid = table.Column<long>(nullable: false),
                     message_count = table.Column<int>(nullable: false),
-                    MessageCount = table.Column<long>(nullable: false, defaultValue: 1L)
+                    MessageCount = table.Column<uint>(nullable: false, defaultValue: 1u)
+                        .Annotation("Sqlite:Autoincrement", true)
                 },
                 constraints: table =>
                 {
@@ -420,7 +445,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     trigger = table.Column<string>(maxLength: 128, nullable: false)
                 },
@@ -442,7 +467,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     name_regex = table.Column<string>(maxLength: 64, nullable: false)
                 },
@@ -465,7 +490,7 @@ namespace TheGodfather.Migrations
                 {
                     gid = table.Column<long>(nullable: false),
                     rank = table.Column<short>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     name = table.Column<string>(maxLength: 32, nullable: false)
                 },
                 constraints: table =>
@@ -507,7 +532,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     name = table.Column<string>(maxLength: 64, nullable: false),
                     price = table.Column<long>(nullable: false)
@@ -530,7 +555,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     reaction = table.Column<string>(maxLength: 128, nullable: false)
                 },
@@ -552,7 +577,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     response = table.Column<string>(maxLength: 128, nullable: false)
                 },
@@ -574,7 +599,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                        .Annotation("Sqlite:Autoincrement", true),
                     gid = table.Column<long>(nullable: false),
                     uid = table.Column<long>(nullable: false),
                     rid = table.Column<long>(nullable: true),
@@ -696,7 +721,7 @@ namespace TheGodfather.Migrations
                 {
                     table.PrimaryKey("PK_chicken_bought_upgrades", x => new { x.id, x.gid, x.uid });
                     table.ForeignKey(
-                        name: "FK_chicken_bought_upgrades_guild_cfg_DatabaseGuildConfigGuildI~",
+                        name: "FK_chicken_bought_upgrades_guild_cfg_DatabaseGuildConfigGuildIdDb",
                         column: x => x.DatabaseGuildConfigGuildIdDb,
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
