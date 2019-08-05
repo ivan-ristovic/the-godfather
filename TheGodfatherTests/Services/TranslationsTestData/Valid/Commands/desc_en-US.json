@@ -1,0 +1,8 @@
+{
+  "cmd1": "one",
+  "cmd1 subcommand": "one sub",
+  "cmd2": "two",
+  "cmd3": "three",
+  "cmd3 sub subcommand": "three sub sub",
+  "cmd4": "four"
+}

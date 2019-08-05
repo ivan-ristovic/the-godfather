@@ -21,13 +21,20 @@ namespace TheGodfather.Services
         private ImmutableDictionary<string, CommandInfo> commands;
         private readonly GuildConfigService gcs;
         private readonly string defLocale;
+        private bool isDataLoaded;
 
 
-        public LocalizationService(GuildConfigService gcs, string root, string defaultLocale)
+        public LocalizationService(GuildConfigService gcs, string defaultLocale)
         {
             this.gcs = gcs;
             this.defLocale = defaultLocale;
-            this.LoadData(root);
+            this.isDataLoaded = false;
+        }
+
+        public LocalizationService(GuildConfigService gcs, string translationDataPath, string defaultLocale)
+            : this(gcs, defaultLocale)
+        {
+            this.LoadData(translationDataPath);
         }
 
 
@@ -38,6 +45,8 @@ namespace TheGodfather.Services
 
             if (!this.strings.ContainsKey(this.defLocale))
                 throw new KeyNotFoundException($"The default locale {this.defLocale} is not loaded");
+
+            this.isDataLoaded = true;
 
 
             void TryLoadCommands(string path)
@@ -50,7 +59,7 @@ namespace TheGodfather.Services
                     foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("desc_*.json", SearchOption.TopDirectoryOnly)) {
                         try {
                             string json = File.ReadAllText(fi.FullName);
-                            string locale = fi.Name.Substring(5, fi.Name.IndexOf('.'));
+                            string locale = fi.Name.Substring(5, fi.Name.IndexOf('.') - 5);
                             Dictionary<string, string> localeDesc = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                             desc.Add(locale, localeDesc);
                             Log.Debug("Loaded descriptions for locale: {Locale}", locale);
@@ -122,9 +131,11 @@ namespace TheGodfather.Services
 
         public string GetString(ulong gid, string key)
         {
+            this.AssertIsDataLoaded();
+
             string response = null;
             if (!string.IsNullOrWhiteSpace(key)) {
-                string locale = this.gcs.GetCachedConfig(gid).Locale ?? this.defLocale;
+                string locale = this.GetGuildLocale(gid);
                 if (!this.strings[locale].TryGetValue(key, out response))
                     Log.Error(new KeyNotFoundException(), "Failed to find string for {Key} in locale {Locale}", key, locale);
             }
@@ -133,14 +144,40 @@ namespace TheGodfather.Services
         }
 
         public string GetGuildLocale(ulong gid)
-            => this.gcs.GetCachedConfig(gid)?.Locale ?? this.defLocale;
+        {
+            this.AssertIsDataLoaded();
+            return this.gcs.GetCachedConfig(gid)?.Locale ?? this.defLocale;
+        }
+
+        public string GetCommandDescription(ulong gid, string command)
+        {
+            this.AssertIsDataLoaded();
+
+            if (!this.commands.TryGetValue(command, out CommandInfo cmdInfo))
+                throw new KeyNotFoundException("No translations for this command have been found.");
+
+            string locale = this.GetGuildLocale(gid);
+            if (!cmdInfo.Descriptions.TryGetValue(locale, out string desc) && !cmdInfo.Descriptions.TryGetValue(this.defLocale, out desc))
+                throw new KeyNotFoundException("No translations found in guild or default locale for given command.");
+
+            return desc;
+        }
 
         public async Task<bool> SetGuildLocaleAsync(ulong gid, string locale)
         {
+            this.AssertIsDataLoaded();
+
             if (!this.strings.ContainsKey(locale))
                 return false;
             await this.gcs.ModifyConfigAsync(gid, cfg => cfg.Locale = locale);
             return true;
+        }
+
+
+        private void AssertIsDataLoaded()
+        {
+            if (!this.isDataLoaded)
+                throw new InvalidOperationException("The translation data has not been loaded.");
         }
     }
 

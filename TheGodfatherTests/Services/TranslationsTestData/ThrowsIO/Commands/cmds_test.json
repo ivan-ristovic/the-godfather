@@ -1,0 +1,11 @@
+{
+  "cmd1": {
+    "usage": [ "", "@Someone" ]
+  },
+  "cmd1 subcommand": {
+    "usage": [ "", "@Someone" ]
+  },
+  "cmd2": {
+    "usage": [ "", "@Someone" ]
+  }
+}
