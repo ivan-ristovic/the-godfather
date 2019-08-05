@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using TheGodfather.Common;
 using TheGodfather.Modules.Reactions.Services;
 
 namespace TheGodfatherTests.Modules.Reactions.Services

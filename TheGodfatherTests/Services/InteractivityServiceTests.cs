@@ -21,41 +21,41 @@ namespace TheGodfatherTests.Services
         [Test]
         public void Tests()
         {
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]));
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]), Is.False);
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[0]);
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[0]);
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[1], MockData.Ids[0]));
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[1], MockData.Ids[0]), Is.False);
 
-            Assert.IsFalse(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[0]));
-            Assert.IsFalse(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[0]));
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[0]), Is.False);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[1], MockData.Ids[0]), Is.False);
 
-            Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[0]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]));
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[0]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]), Is.False);
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[0]);
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]));
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[0]), Is.True);
 
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[1]);
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[2]);
             this.Service.AddPendingResponse(MockData.Ids[0], MockData.Ids[3]);
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]));
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]));
-            Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]));
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]));
-            Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[2]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]));
-            Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]));
-            Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[3]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]));
-            Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]));
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]), Is.True);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[1]), Is.True);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]), Is.True);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[2]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]), Is.True);
+            Assert.That(this.Service.RemovePendingResponse(MockData.Ids[0], MockData.Ids[3]), Is.True);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[1]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[2]), Is.False);
+            Assert.That(this.Service.IsResponsePending(MockData.Ids[0], MockData.Ids[3]), Is.False);
         }
 
         [Test]
@@ -67,15 +67,15 @@ namespace TheGodfatherTests.Services
                               this.Service.AddPendingResponse(MockData.Ids[i], MockData.Ids[0]);
                               this.Service.AddPendingResponse(MockData.Ids[i], MockData.Ids[1]);
                               this.Service.AddPendingResponse(MockData.Ids[i], MockData.Ids[2]);
-                              Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[0]));
-                              Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[0]));
-                              Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[0]));
-                              Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[1]));
-                              Assert.IsTrue(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[2]));
-                              Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[1]));
-                              Assert.IsTrue(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[2]));
-                              Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[1]));
-                              Assert.IsFalse(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[2]));
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[0]), Is.True);
+                              Assert.That(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[0]), Is.True);
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[0]), Is.False);
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[1]), Is.True);
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[2]), Is.True);
+                              Assert.That(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[1]), Is.True);
+                              Assert.That(this.Service.RemovePendingResponse(MockData.Ids[i], MockData.Ids[2]), Is.True);
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[1]), Is.False);
+                              Assert.That(this.Service.IsResponsePending(MockData.Ids[i], MockData.Ids[2]), Is.False);
                           }))
             );
         }

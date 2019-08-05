@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheGodfather.Common;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Common;
@@ -24,24 +23,25 @@ namespace TheGodfatherTests.Services
         [Test]
         public void GetEventInChannelTests()
         {
-            Assert.IsNull(EventIn(MockData.Ids[0]));
-            Assert.IsNull(EventIn(MockData.Ids[1]));
-            Assert.IsNull(EventIn(MockData.Ids[2]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[1]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
             IChannelEvent caro = new CaroGame(null, null, null, null);
             IChannelEvent holdem = new HoldemGame(null, null, 0);
+
             this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
 
-            Assert.AreSame(EventIn(MockData.Ids[0]), caro);
-            Assert.AreSame(EventIn(MockData.Ids[1]), holdem);
-            Assert.IsNull(EventIn(MockData.Ids[2]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.SameAs(caro));
+            Assert.That(EventIn(MockData.Ids[1]), Is.SameAs(holdem));
+            Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
-            Assert.AreSame(EventOfTypeIn<CaroGame>(MockData.Ids[0]), caro);
-            Assert.IsNull(EventOfTypeIn<HoldemGame>(MockData.Ids[0]));
+            Assert.That(EventOfTypeIn<CaroGame>(MockData.Ids[0]), Is.SameAs(caro));
+            Assert.That(EventOfTypeIn<HoldemGame>(MockData.Ids[0]), Is.Null);
 
-            Assert.AreSame(EventOfTypeIn<HoldemGame>(MockData.Ids[1]), holdem);
-            Assert.IsNull(EventOfTypeIn<CaroGame>(MockData.Ids[1]));
+            Assert.That(EventOfTypeIn<HoldemGame>(MockData.Ids[1]), Is.SameAs(holdem));
+            Assert.That(EventOfTypeIn<CaroGame>(MockData.Ids[1]), Is.Null);
 
 
             IChannelEvent EventIn(ulong cid)
@@ -54,9 +54,9 @@ namespace TheGodfatherTests.Services
         [Test]
         public void IsEventRunningInChannelTests()
         {
-            Assert.False(IsEventRunningIn(MockData.Ids[0]));
-            Assert.False(IsEventRunningIn(MockData.Ids[1]));
-            Assert.False(IsEventRunningIn(MockData.Ids[2]));
+            Assert.That(IsEventRunningIn(MockData.Ids[0]), Is.False);
+            Assert.That(IsEventRunningIn(MockData.Ids[1]), Is.False);
+            Assert.That(IsEventRunningIn(MockData.Ids[2]), Is.False);
             
             IChannelEvent caro = new CaroGame(null, null, null, null);
             IChannelEvent holdem = new HoldemGame(null, null, 0);
@@ -64,25 +64,25 @@ namespace TheGodfatherTests.Services
             this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
 
-            Assert.True(IsEventRunningIn(MockData.Ids[0]));
-            Assert.True(IsEventRunningIn(MockData.Ids[1]));
-            Assert.False(IsEventRunningIn(MockData.Ids[2]));
+            Assert.That(IsEventRunningIn(MockData.Ids[0]), Is.True);
+            Assert.That(IsEventRunningIn(MockData.Ids[1]), Is.True);
+            Assert.That(IsEventRunningIn(MockData.Ids[2]), Is.False);
 
-            Assert.True(IsOutEventRunningIn(MockData.Ids[0], out IChannelEvent outEvent));
-            Assert.AreSame(outEvent, caro);
-            Assert.True(IsOutEventRunningIn(MockData.Ids[1], out outEvent));
-            Assert.AreSame(outEvent, holdem);
-            Assert.False(IsOutEventRunningIn(MockData.Ids[2], out outEvent));
-            Assert.IsNull(outEvent);
+            Assert.That(IsOutEventRunningIn(MockData.Ids[0], out IChannelEvent outEvent), Is.True);
+            Assert.That(outEvent, Is.SameAs(caro));
+            Assert.That(IsOutEventRunningIn(MockData.Ids[1], out outEvent), Is.True);
+            Assert.That(outEvent, Is.SameAs(holdem));
+            Assert.That(IsOutEventRunningIn(MockData.Ids[2], out outEvent), Is.False);
+            Assert.That(outEvent, Is.Null);
 
-            Assert.True(IsEventOfTypeRunningIn(MockData.Ids[0], out CaroGame outCaro));
-            Assert.AreSame(outCaro, caro);
-            Assert.False(IsEventOfTypeRunningIn(MockData.Ids[0], out HoldemGame outHoldem));
-            Assert.IsNull(outHoldem);
-            Assert.True(IsEventOfTypeRunningIn(MockData.Ids[1], out outHoldem));
-            Assert.AreSame(outHoldem, holdem);
-            Assert.False(IsEventOfTypeRunningIn(MockData.Ids[2], out IChannelEvent ret3));
-            Assert.IsNull(ret3);
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out CaroGame outCaro), Is.True);
+            Assert.That(outCaro, Is.SameAs(caro));
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out HoldemGame outHoldem), Is.False);
+            Assert.That(outHoldem, Is.Null);
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[1], out outHoldem), Is.True);
+            Assert.That(outHoldem, Is.SameAs(holdem));
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[2], out IChannelEvent ret3), Is.False);
+            Assert.That(ret3, Is.Null);
 
 
             bool IsEventRunningIn(ulong cid)
@@ -98,24 +98,24 @@ namespace TheGodfatherTests.Services
         [Test]
         public void RegisterEventInChannelTests()
         {
-            Assert.IsNull(EventIn(MockData.Ids[0]));
-            Assert.IsNull(EventIn(MockData.Ids[1]));
-            Assert.IsNull(EventIn(MockData.Ids[2]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[1]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
             IChannelEvent war = new ChickenWar(null, null, null, null);
             IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
 
-            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]));
-            Assert.DoesNotThrow(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]));
+            Assert.That(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]), Throws.Nothing);
+            Assert.That(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]), Throws.Nothing);
 
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[0]));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]));
-            Assert.Throws<InvalidOperationException>(() => this.Service.RegisterEventInChannel(war, MockData.Ids[1]));
+            Assert.That(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[0]), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.RegisterEventInChannel(war, MockData.Ids[1]), Throws.InvalidOperationException);
 
-            Assert.AreSame(EventIn(MockData.Ids[0]), war);
-            Assert.AreSame(EventIn(MockData.Ids[1]), ttt);
-            Assert.IsNull(EventIn(MockData.Ids[2]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.SameAs(war));
+            Assert.That(EventIn(MockData.Ids[1]), Is.SameAs(ttt));
+            Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
 
             IChannelEvent EventIn(ulong cid)
@@ -125,9 +125,9 @@ namespace TheGodfatherTests.Services
         [Test]
         public void UnregisterEventInChannelTests()
         {
-            Assert.IsNull(EventIn(MockData.Ids[0]));
-            Assert.IsNull(EventIn(MockData.Ids[1]));
-            Assert.IsNull(EventIn(MockData.Ids[2]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[1]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
             IChannelEvent war = new ChickenWar(null, null, null, null);
             IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
@@ -135,18 +135,18 @@ namespace TheGodfatherTests.Services
             this.Service.RegisterEventInChannel(war, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]);
 
-            this.Service.UnregisterEventInChannel(MockData.Ids[0]);
+            Assert.That(() => this.Service.UnregisterEventInChannel(MockData.Ids[0]), Throws.Nothing);
 
-            Assert.IsNull(EventIn(MockData.Ids[0]));
-            Assert.AreSame(EventIn(MockData.Ids[1]), ttt);
+            Assert.That(EventIn(MockData.Ids[0]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[1]), Is.SameAs(ttt));
 
-            this.Service.UnregisterEventInChannel(MockData.Ids[1]);
+            Assert.That(() => this.Service.UnregisterEventInChannel(MockData.Ids[1]), Throws.Nothing);
 
-            Assert.IsNull(EventIn(MockData.Ids[0]));
-            Assert.IsNull(EventIn(MockData.Ids[1]));
+            Assert.That(EventIn(MockData.Ids[0]), Is.Null);
+            Assert.That(EventIn(MockData.Ids[1]), Is.Null);
 
-            this.Service.UnregisterEventInChannel(MockData.Ids[0]);
-            this.Service.UnregisterEventInChannel(MockData.Ids[1]);
+            Assert.That(() => this.Service.UnregisterEventInChannel(MockData.Ids[0]), Throws.Nothing);
+            Assert.That(() => this.Service.UnregisterEventInChannel(MockData.Ids[1]), Throws.Nothing);
 
 
             IChannelEvent EventIn(ulong cid)

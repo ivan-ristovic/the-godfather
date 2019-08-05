@@ -26,7 +26,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         [Test]
         public void GetGuildTextReactionsTests()
         {
-            CollectionAssert.IsEmpty(this.Service.GetGuildTextReactions(MockData.Ids[0]));
+            Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Is.Empty);
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => { },
@@ -47,9 +47,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     for (int i = 0; i < MockData.Ids.Count; i++)
                         AssertGuildReactionCount(i, this.trCount[i]);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[1]);
-                    Assert.IsNotNull(trs.Single(tr => tr.Response == "response12" && tr.TriggerStrings.Single() == "y u do dis"));
-                    Assert.IsNotNull(trs.Single(tr => tr.Response == "response23" && tr.TriggerStrings.Single() == "rick"));
-                    Assert.IsNotNull(trs.Single(tr => tr.Response == "response34" && tr.TriggerStrings.Single() == "astley"));
+                    Assert.That(trs.Single(tr => tr.Response == "response12" && tr.TriggerStrings.Single() == "y u do dis"), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.Response == "response23" && tr.TriggerStrings.Single() == "rick"), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.Response == "response34" && tr.TriggerStrings.Single() == "astley"), Is.Not.Null);
                 }
             );
 
@@ -57,10 +57,10 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             void AssertGuildReactionCount(int id, int count)
             {
                 IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[id]);
-                Assert.AreEqual(count, trs.Count);
-                CollectionAssert.AllItemsAreUnique(trs.Select(tr => tr.Id));
+                Assert.That(trs, Has.Exactly(count).Items);
+                Assert.That(trs.Select(tr => tr.Id), Is.Unique);
                 foreach (IEnumerable<string> triggers in trs.Select(tr => tr.TriggerStrings))
-                    CollectionAssert.IsNotEmpty(triggers);
+                    Assert.That(triggers, Is.Not.Empty);
             }
         }
 
@@ -90,10 +90,10 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             {
                 TextReaction tr = this.Service.FindMatchingTextReaction(MockData.Ids[id], text);
                 if (exists) {
-                    Assert.IsNotNull(tr);
-                    Assert.IsTrue(tr.IsMatch(text));
+                    Assert.That(tr, Is.Not.Null);
+                    Assert.That(tr.IsMatch(text));
                 } else {
-                    Assert.IsNull(tr);
+                    Assert.That(tr, Is.Null);
                 }
             }
         }
@@ -105,21 +105,21 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => this.AddMockReactions(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "y u DO dis"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "pls"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[1], "y u do dis"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[1], "rIck"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[1], "astLey"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[3], "test"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[3], "test(ing)?"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "asstley"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "abcd"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "ABCCC"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[1], "RICKY"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[2], "Ha"));
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "y u DO dis"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "pls"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "y u do dis"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "rIck"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "astLey"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[3], "test"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[3], "test(ing)?"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "asstley"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abcd"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "ABCCC"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "RICKY"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[2], "Ha"), Is.False);
                 }
             );
 
@@ -127,19 +127,19 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => { },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "y u DO dis"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "pls"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[1], "y u do dis"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[1], "rIck"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[1], "astLey"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "asstley"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "abcd"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[0], "ABCCC"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[1], "RICK"));
-                    Assert.IsFalse(this.Service.GuildHasTextReaction(MockData.Ids[2], "Ha"));
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "y u DO dis"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "pls"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "y u do dis"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "rIck"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "astLey"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "asstley"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abcd"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "ABCCC"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[1], "RICK"), Is.False);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[2], "Ha"), Is.False);
                 }
             );
 
@@ -147,9 +147,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => Task.CompletedTask,
                 alter: async db => await this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "response", false),
                 verify: db => {
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "teSt"));
-                    Assert.IsTrue(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"));
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "teSt"), Is.True);
+                    Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
                     return Task.CompletedTask;
                 }
             );
@@ -166,21 +166,21 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "triggerino", "h3h3", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp?", "regex response", true));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "another", "regex response", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp", "different trigger even though it has collisions in some cases", false));
-                    Assert.IsFalse(await this.Service.AddTextReactionAsync(MockData.Ids[0], "triggerino", "already exists", false));
-                    Assert.IsFalse(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp?", "already exists", true));
-                    Assert.IsFalse(await this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "already exists", false));
-                    Assert.IsFalse(await this.Service.AddTextReactionAsync(MockData.Ids[0], "kill", "already exists", false));
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "triggerino", "h3h3", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp?", "regex response", true), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "another", "regex response", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp", "different trigger even though it has collisions in some cases", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "triggerino", "already exists", false), Is.False);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "regexp?", "already exists", true), Is.False);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "already exists", false), Is.False);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "kill", "already exists", false), Is.False);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value) + 3, db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value) + 3).Items);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.trCount[0] + 3, trs.Count);
-                    CollectionAssert.AllItemsAreUnique(trs.Select(tr => tr.Id));
-                    CollectionAssert.AllItemsAreUnique(trs.Select(tr => tr.Response));
+                    Assert.That(trs, Has.Exactly(this.trCount[0] + 3).Items);
+                    Assert.That(trs.Select(tr => tr.Id), Is.Unique);
+                    Assert.That(trs.Select(tr => tr.Response), Is.Unique);
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "triggerino");
                     AssertTextReactionExists(db, MockData.Ids[0], "regex response", "regexp?", "another");
                     AssertTextReactionExists(db, MockData.Ids[0], "different trigger even though it has collisions in some cases", "regexp");
@@ -192,17 +192,17 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => Task.CompletedTask,
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig", "h3h3", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[1], "trig", "h3h3", false));
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig", "h3h3", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[1], "trig", "h3h3", false), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(2, db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(2).Items);
                     IReadOnlyCollection<TextReaction> trs0 = this.Service.GetGuildTextReactions(MockData.Ids[0]);
-                    Assert.IsNotNull(trs0.Single());
-                    Assert.IsTrue(trs0.Single().IsMatch("This is a test for trig match"));
+                    Assert.That(trs0.Single(), Is.Not.Null);
+                    Assert.That(trs0.Single().IsMatch("This is a test for trig match"));
                     IReadOnlyCollection<TextReaction> trs1 = this.Service.GetGuildTextReactions(MockData.Ids[1]);
-                    Assert.IsNotNull(trs1.Single());
-                    Assert.IsTrue(trs1.Single().IsMatch("This is another 2tRiG@ example."));
+                    Assert.That(trs1.Single(), Is.Not.Null);
+                    Assert.That(trs1.Single().IsMatch("This is another 2tRiG@ example."));
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig");
                     AssertTextReactionExists(db, MockData.Ids[1], "h3h3", "trig");
                     return Task.CompletedTask;
@@ -213,18 +213,18 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => Task.CompletedTask,
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig+ered", "h3h3", true));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "not regex", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tr1g", "h3h3 again", false));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "works because it is regex", true));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tRigGggeReD", "h3h3", false));
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig+ered", "h3h3", true), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "not regex", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tr1g", "h3h3 again", false), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "not trig+ered", "works because it is regex", true), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "tRigGggeReD", "h3h3", false), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(4, db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(4).Items);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
-                    Assert.AreEqual(4, trs.Count);
-                    Assert.IsNotNull(trs.Single(tr => tr.IsMatch("I am tr1ggered")));
-                    Assert.IsNotNull(trs.Single(tr => tr.IsMatch("I am nOt trig+ered")));
+                    Assert.That(trs, Has.Exactly(4).Items);
+                    Assert.That(trs.Single(tr => tr.IsMatch("I am tr1ggered")), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.IsMatch("I am nOt trig+ered")), Is.Not.Null);
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig+ered", "triggggered");
                     AssertTextReactionExists(db, MockData.Ids[0], "not regex", @"not\ trig\+ered");
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3 again", "tr1g");
@@ -236,12 +236,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 setup: db => Task.CompletedTask,
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response", true));
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response", true), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(1, db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(1).Items);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
-                    Assert.AreEqual(1, trs.Count);
+                    Assert.That(trs, Has.Exactly(1).Items);
                     AssertTextReactionExists(db, MockData.Ids[0], "response", @"test(ing)?\ regex(es)?");
                     return Task.CompletedTask;
                 }
@@ -255,12 +255,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], "test(ing)?regex(es)?", "response1", true));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response1", true));
-                    Assert.IsTrue(await this.Service.AddTextReactionAsync(MockData.Ids[1], "test(ing)?regex(es)?", "response12", true));
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "test(ing)?regex(es)?", "response1", true), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response1", true), Is.True);
+                    Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[1], "test(ing)?regex(es)?", "response12", true), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value), db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
                     AssertTextReactionExists(db, MockData.Ids[0], "response1", "test(ing)?regex(es)?", "abc", @"test(ing)?\ regex(es)?");
                     AssertTextReactionExists(db, MockData.Ids[1], "response12", "test(ing)?regex(es)?", "y u do dis");
                     return Task.CompletedTask;
@@ -271,16 +271,16 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             void AssertTextReactionExists(DatabaseContext db, ulong gid, string response, params string[] triggers)
             {
                 if (triggers?.Any() ?? false) {
-                    Assert.IsNotNull(db.TextReactions.Include(tr => tr.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.TextReactions.Include(tr => tr.DbTriggers).AsEnumerable().Single(
                         tr => tr.GuildId == gid && tr.Response == response && CheckTriggers(triggers, tr.Triggers.Select(t => t.ToLower()).ToList())
-                    ));
-                    Assert.IsNotNull(this.Service.GetGuildTextReactions(gid).Single(
+                    ), Is.Not.Null);
+                    Assert.That(this.Service.GetGuildTextReactions(gid).Single(
                         tr => tr.Response == response && CheckTriggers(triggers, tr.TriggerStrings.ToList())
-                    ));
+                    ), Is.Not.Null);
 
                     bool CheckTriggers(IReadOnlyCollection<string> expected, IReadOnlyCollection<string> actual)
                     {
-                        CollectionAssert.AreEquivalent(expected, actual);
+                        Assert.That(actual, Is.EquivalentTo(expected));
                         return true;
                     }
                 } else {
@@ -300,12 +300,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 1 }));
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 1 }), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value) - 1, db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0] - 1, this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.trCount[1], this.Service.GetGuildTextReactions(MockData.Ids[1]).Count);
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value) - 1).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0] - 1).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[1]), Has.Exactly(this.trCount[1]).Items);
                     AssertReactionsRemoved(db, MockData.Ids[0], 1);
                     return Task.CompletedTask;
                 }
@@ -319,17 +319,17 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 100 }));
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { -1 }));
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[1], new[] { 1 }));
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[2], new[] { 1 }));
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 100 }), Is.Zero);
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { -1 }), Is.Zero);
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[1], new[] { 1 }), Is.Zero);
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[2], new[] { 1 }), Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value), db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0], this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.trCount[0], db.TextReactions.Where(tr => tr.GuildId == MockData.Ids[0]).Count());
-                    Assert.AreEqual(this.trCount[1], this.Service.GetGuildTextReactions(MockData.Ids[1]).Count);
-                    Assert.AreEqual(this.trCount[1], db.TextReactions.Where(tr => tr.GuildId == MockData.Ids[1]).Count());
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
+                    for (int i = 0; i < MockData.Ids.Count; i++) {
+                        Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[i]), Has.Exactly(this.trCount[i]).Items);
+                        Assert.That(db.TextReactions.Where(tr => tr.GuildId == MockData.Ids[i]), Has.Exactly(this.trCount[i]).Items);
+                    }
                     return Task.CompletedTask;
                 }
             );
@@ -342,14 +342,14 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(3, await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 1, 2, 3 }));
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[1], new[] { 1, 2, 3 }));
-                    Assert.AreEqual(0, await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { -1, 6, 7, 1000 }));
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { 1, 2, 3 }), Is.EqualTo(3));
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[1], new[] { 1, 2, 3 }), Is.Zero);
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[0], new[] { -1, 6, 7, 1000 }), Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value) - 3, db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0] - 3, this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.trCount[1], this.Service.GetGuildTextReactions(MockData.Ids[1]).Count);
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value) - 3).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0] - 3).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[1]), Has.Exactly(this.trCount[1]).Items);
                     AssertReactionsRemoved(db, MockData.Ids[0], 1, 2, 3);
                     return Task.CompletedTask;
                 }
@@ -359,11 +359,8 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             void AssertReactionsRemoved(DatabaseContext db, ulong gid, params int[] ids)
             {
                 if (ids?.Any() ?? false) {
-                    IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(gid);
-                    foreach (int id in ids) {
-                        Assert.IsFalse(db.TextReactions.Any(tr => tr.GuildId == gid && tr.Id == id));
-                        Assert.IsFalse(trs.Any(tr => tr.Id == id));
-                    }
+                    Assert.That(db.TextReactions.Where(tr => tr.GuildId == gid).Select(tr => tr.Id), Has.No.AnyOf(ids));
+                    Assert.That(this.Service.GetGuildTextReactions(gid).Select(f => f.Id), Has.No.AnyOf(ids));
                 } else {
                     Assert.Fail("No IDs provided to assert function.");
                 }
@@ -386,16 +383,16 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         trs.Where(tr => tr.Response == "response5"),
                         new[] { "me", "pls" });
-                    Assert.AreEqual(0, removed);
+                    Assert.That(removed, Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value), db.TextReactions.Count());
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
                     DatabaseTextReaction dber = db.TextReactions
                         .Include(tr => tr.DbTriggers)
                         .Where(tr => tr.GuildId == MockData.Ids[0])
                         .Single(tr => tr.Response == "response5");
-                    Assert.AreEqual("kill", dber.Triggers.Single());
-                    Assert.AreEqual(this.trCount[0], this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
+                    Assert.That(dber.Triggers.Single(), Is.EqualTo("kill"));
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0]).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -419,11 +416,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         trs.Where(tr => tr.Id == dbtr.Id),
                         new[] { "abc" });
-                    Assert.AreEqual(1, removed);
+                    Assert.That(removed, Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value) - 1, db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0] - 1, this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value) - 1).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0] - 1).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -441,11 +438,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         trs.Where(tr => tr.Response == "response1"),
                         new[] { "NO MATCHES" });
-                    Assert.AreEqual(0, removed);
+                    Assert.That(removed, Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value), db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0], this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0]).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -463,12 +460,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[2],
                         trs,
                         new[] { "test" });
-                    Assert.AreEqual(0, removed);
+                    Assert.That(removed, Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value), db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0], this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.trCount[1], this.Service.GetGuildTextReactions(MockData.Ids[1]).Count);
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0]).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[1]), Has.Exactly(this.trCount[1]).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -485,13 +482,13 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateTextReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(3, await this.Service.RemoveTextReactionsAsync(MockData.Ids[1]));
+                    Assert.That(await this.Service.RemoveTextReactionsAsync(MockData.Ids[1]), Is.EqualTo(3));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.trCount.Sum(kvp => kvp.Value) - 3, db.TextReactions.Count());
-                    Assert.AreEqual(this.trCount[0], this.Service.GetGuildTextReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(0, this.Service.GetGuildTextReactions(MockData.Ids[1]).Count);
-                    Assert.IsFalse(db.TextReactions.Any(tr => tr.GuildId == MockData.Ids[1]));
+                    Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value) - 3).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0]).Items);
+                    Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[1]), Is.Empty);
+                    Assert.That(db.TextReactions.Any(tr => tr.GuildId == MockData.Ids[1]), Is.False);
                     return Task.CompletedTask;
                 }
             );

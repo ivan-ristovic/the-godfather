@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Swat.Services
                 );
             }
 
-             Start();
+            Start();
         }
 
         public static bool IsListening(DiscordChannel channel)

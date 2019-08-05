@@ -146,6 +146,7 @@ namespace TheGodfather.Modules.Reactions.Services
             return removed;
         }
 
+        // TODO remove
         public async Task<int> RemoveEmojiReactionsAsync(ulong gid, IEnumerable<string> toRemove)
         {
             if (!toRemove.Any())
@@ -192,6 +193,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             int removed = ers.RemoveWhere(er => ids.Contains(er.Id));
 
+            // TODO remove
             var eb = new StringBuilder();
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 foreach (int id in ids) {

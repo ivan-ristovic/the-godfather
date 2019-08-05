@@ -27,7 +27,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         [Test]
         public void GetGuildEmojiReactionsTests()
         {
-            CollectionAssert.IsEmpty(this.Service.GetGuildEmojiReactions(MockData.Ids[0]));
+            Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Is.Empty);
 
             TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
@@ -47,9 +47,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     for (int i = 0; i < MockData.Ids.Count; i++)
                         AssertGuildReactionCount(i, this.erCount[i]);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[1]);
-                    Assert.IsNotNull(ers.Single(er => er.Response == StaticDiscordEmoji.Cake.GetDiscordName() && er.TriggerStrings.Single() == "abc"));
-                    Assert.IsNotNull(ers.Single(er => er.Response == StaticDiscordEmoji.ArrowUp.GetDiscordName() && er.TriggerStrings.Single() == "abc"));
-                    Assert.IsNotNull(ers.Single(er => er.Response == StaticDiscordEmoji.ArrowDown.GetDiscordName() && er.TriggerStrings.Single() == "abc"));
+                    Assert.That(ers.Single(er => er.Response == StaticDiscordEmoji.Cake.GetDiscordName() && er.TriggerStrings.Single() == "abc"), Is.Not.Null);
+                    Assert.That(ers.Single(er => er.Response == StaticDiscordEmoji.ArrowUp.GetDiscordName() && er.TriggerStrings.Single() == "abc"), Is.Not.Null);
+                    Assert.That(ers.Single(er => er.Response == StaticDiscordEmoji.ArrowDown.GetDiscordName() && er.TriggerStrings.Single() == "abc"), Is.Not.Null);
                 }
             );
 
@@ -57,10 +57,10 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             void AssertGuildReactionCount(int id, int count)
             {
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[id]);
-                Assert.AreEqual(count, ers.Count);
-                CollectionAssert.AllItemsAreUnique(ers.Select(er => er.Id));
+                Assert.That(ers, Has.Exactly(count).Items);
+                Assert.That(ers.Select(er => er.Id), Is.Unique);
                 foreach (IEnumerable<string> triggers in ers.Select(er => er.TriggerStrings))
-                    CollectionAssert.IsNotEmpty(triggers);
+                    Assert.That(triggers, Is.Not.Empty);
             }
         }
 
@@ -86,13 +86,13 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             void AssertFindReactionsCount(int id, string text, int count)
             {
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.FindMatchingEmojiReactions(MockData.Ids[id], text);
-                Assert.AreEqual(count, ers.Count);
+                Assert.That(ers, Has.Exactly(count).Items);
                 foreach (EmojiReaction er in ers)
-                    Assert.IsTrue(er.IsMatch(text));
+                    Assert.That(er.IsMatch(text));
                 IReadOnlyCollection<EmojiReaction> all = this.Service.GetGuildEmojiReactions(MockData.Ids[id]);
-                CollectionAssert.IsSubsetOf(ers, all);
+                Assert.That(ers, Is.SubsetOf(all));
                 foreach (EmojiReaction er in all.Except(ers))
-                    Assert.IsFalse(er.IsMatch(text));
+                    Assert.That(er.IsMatch(text), Is.False);
             }
         }
 
@@ -107,17 +107,18 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value) + 1, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.erCount[0] + 1, ers.Count);
-                    CollectionAssert.AllItemsAreUnique(ers.Select(er => er.Id));
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
+                    Assert.That(ers.Select(er => er.Id), Is.Unique);
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Single() == "test")
+                        er.Triggers.Single() == "test"),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -127,30 +128,32 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false));
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[1], StaticDiscordEmoji.Information, new[] { "testing" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[1], StaticDiscordEmoji.Information, new[] { "testing" }, false), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(2, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(2).Items);
                     IReadOnlyCollection<EmojiReaction> ers0 = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(1, ers0.Count);
-                    Assert.AreEqual(1, ers0.First().TriggerStrings.Count());
-                    Assert.IsTrue(ers0.First().IsMatch("This is a tEst"));
+                    Assert.That(ers0, Has.Exactly(1).Items);
+                    Assert.That(ers0.First().TriggerStrings, Has.Exactly(1).Items);
+                    Assert.That(ers0.First().IsMatch("This is a tEst"));
                     IReadOnlyCollection<EmojiReaction> ers1 = this.Service.GetGuildEmojiReactions(MockData.Ids[1]);
-                    Assert.AreEqual(1, ers1.Count);
-                    Assert.AreEqual(1, ers1.First().TriggerStrings.Count());
-                    Assert.IsTrue(ers1.First().IsMatch("This is another -teSting example."));
+                    Assert.That(ers1, Has.Exactly(1).Items);
+                    Assert.That(ers1.First().TriggerStrings, Has.Exactly(1).Items);
+                    Assert.That(ers1.First().IsMatch("This is another -teSting example."));
 
-                    var ers = db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable();
-                    Assert.IsNotNull(ers.Single(
+                    IEnumerable<DatabaseEmojiReaction> ers = db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable();
+                    Assert.That(ers.Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Single() == "test")
+                        er.Triggers.Single() == "test"),
+                        Is.Not.Null
                     );
-                    Assert.IsNotNull(ers.Single(
+                    Assert.That(ers.Single(
                         er => er.GuildId == MockData.Ids[1] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Single() == "testing")
+                        er.Triggers.Single() == "testing"),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -160,25 +163,26 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false));
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.AlarmClock, new[] { "regex(es)? (much)+" }, false));
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "testing" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test" }, false), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.AlarmClock, new[] { "regex(es)? (much)+" }, false), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "testing" }, false), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(2, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(2).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(2, ers.Count);
+                    Assert.That(ers, Has.Exactly(2).Items);
                     EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, info.TriggerStrings.Count());
-                    Assert.IsTrue(info.IsMatch("This is a tEst."));
-                    Assert.IsTrue(info.IsMatch("This is a -tEsting."));
-                    Assert.IsFalse(info.IsMatch("This is an alarm"));
-                    Assert.IsTrue(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
+                    Assert.That(info.TriggerStrings, Has.Exactly(2).Items);
+                    Assert.That(info.IsMatch("This is a tEst."));
+                    Assert.That(info.IsMatch("This is a -tEsting."));
+                    Assert.That(info.IsMatch("This is an alarm"), Is.False);
+                    Assert.That(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
 
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Count == 2)
+                        er.Triggers.Count == 2),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -188,23 +192,24 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test(ing)? regex(es)?" }, true));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(1, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(1, ers.Count);
+                    Assert.That(ers, Has.Exactly(1).Items);
                     EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(1, info.TriggerStrings.Count());
-                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    Assert.That(info.TriggerStrings, Has.Exactly(1).Items);
+                    Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Count == 1)
+                        er.Triggers.Count == 1),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -218,24 +223,25 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test(ing)? regex(es)?" }, true));
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "another test" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "another test" }, false), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value) + 1, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.erCount[0] + 1, ers.Count);
+                    Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
                     EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, info.TriggerStrings.Count());
-                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    Assert.That(info.TriggerStrings, Has.Exactly(2).Items);
+                    Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Count == 2)
+                        er.Triggers.Count == 2),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -249,23 +255,30 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(2, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Information, new[] { "test(ing)? regex(es)?", "another test" }, true));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(
+                        MockData.Ids[0], 
+                        StaticDiscordEmoji.Information, 
+                        new[] { "test(ing)? regex(es)?", "another test" }, 
+                        true), 
+                        Is.EqualTo(2)
+                    );
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value) + 1, db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.erCount[0] + 1, ers.Count);
+                    Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
                     EmojiReaction info = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Information.GetDiscordName());
-                    Assert.AreEqual(2, info.TriggerStrings.Count());
-                    Assert.IsTrue(info.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(info.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(info.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    Assert.That(info.TriggerStrings, Has.Exactly(2).Items);
+                    Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Information.GetDiscordName() &&
-                        er.Triggers.Count == 2)
+                        er.Triggers.Count == 2),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -279,25 +292,26 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, true));
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "another test" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "another test" }, true), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value), db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.erCount[0], ers.Count);
+                    Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
                     EmojiReaction chicken = ers.SingleOrDefault(e => e.Response == StaticDiscordEmoji.Chicken.GetDiscordName());
-                    Assert.AreEqual(3, chicken.TriggerStrings.Count());
-                    Assert.IsTrue(chicken.IsMatch("This is old abc abc test which passes"));
-                    Assert.IsTrue(chicken.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.IsTrue(chicken.IsMatch("This is another tEst regex example which passes"));
-                    Assert.IsFalse(chicken.IsMatch("This is a tEst which wont pass"));
-                    Assert.IsFalse(chicken.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"));
+                    Assert.That(chicken.TriggerStrings, Has.Exactly(3).Items);
+                    Assert.That(chicken.IsMatch("This is old abc abc test which passes"));
+                    Assert.That(chicken.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(chicken.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(chicken.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(chicken.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
-                    Assert.IsNotNull(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
+                    Assert.That(db.EmojiReactions.Include(er => er.DbTriggers).AsEnumerable().Single(
                         er => er.GuildId == MockData.Ids[0] &&
                         er.Reaction == StaticDiscordEmoji.Chicken.GetDiscordName() &&
-                        er.Triggers.Count == 3)
+                        er.Triggers.Count == 3),
+                        Is.Not.Null
                     );
                     return Task.CompletedTask;
                 }
@@ -306,12 +320,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, true));
-                    Assert.AreEqual(0, await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, false));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
+                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken, new[] { "test(ing)? regex(es)?" }, false), Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(1, db.EmojiReactions.Where(er => er.GuildId == MockData.Ids[0]).Count());
-                    Assert.AreEqual(1, this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
+                    Assert.That(db.EmojiReactions, Has.Exactly(1).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(1).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -328,14 +342,14 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(0, await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Information));
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Information), Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(kvp => kvp.Value), db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
-                    Assert.AreEqual(this.erCount[0], ers.Count);
-                    Assert.IsFalse(ers.Any(er => er.Response == StaticDiscordEmoji.Information.GetDiscordName()));
-                    Assert.IsFalse(db.EmojiReactions.Any(er => er.GuildId == MockData.Ids[0] && er.Reaction == StaticDiscordEmoji.Information.GetDiscordName()));
+                    Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
+                    Assert.That(ers.Any(er => er.Response == StaticDiscordEmoji.Information.GetDiscordName()), Is.False);
+                    Assert.That(db.EmojiReactions.Any(er => er.GuildId == MockData.Ids[0] && er.Reaction == StaticDiscordEmoji.Information.GetDiscordName()), Is.False);
                     return Task.CompletedTask;
                 }
             );
@@ -348,16 +362,16 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.AreEqual(1, await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken));
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value) - 1, db.EmojiReactions.Count());
-                    Assert.AreEqual(this.erCount[0] - 1, this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.erCount[1], this.Service.GetGuildEmojiReactions(MockData.Ids[1]).Count);
-                    Assert.IsFalse(this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Any(er => er.Response == StaticDiscordEmoji.Chicken.GetDiscordName()));
-                    Assert.IsFalse(db.EmojiReactions.Any(er => er.GuildId == MockData.Ids[0] && er.Reaction == StaticDiscordEmoji.Chicken.GetDiscordName()));
-                    Assert.IsNotNull(this.Service.GetGuildEmojiReactions(MockData.Ids[2]).Single(er => er.Response == StaticDiscordEmoji.Chicken.GetDiscordName()));
-                    Assert.IsNotNull(db.EmojiReactions.Single(er => er.GuildId == MockData.Ids[2] && er.Reaction == StaticDiscordEmoji.Chicken.GetDiscordName()));
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) - 1).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(this.erCount[0] - 1).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[1]), Has.Exactly(this.erCount[1]).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Any(er => er.Response == StaticDiscordEmoji.Chicken.GetDiscordName()), Is.False);
+                    Assert.That(db.EmojiReactions.Any(er => er.GuildId == MockData.Ids[0] && er.Reaction == StaticDiscordEmoji.Chicken.GetDiscordName()), Is.False);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[2]).Single(er => er.Response == StaticDiscordEmoji.Chicken.GetDiscordName()), Is.Not.Null);
+                    Assert.That(db.EmojiReactions.Single(er => er.GuildId == MockData.Ids[2] && er.Reaction == StaticDiscordEmoji.Chicken.GetDiscordName()), Is.Not.Null);
                     return Task.CompletedTask;
                 }
             );
@@ -365,12 +379,12 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.AreEqual(0, await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken));
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], StaticDiscordEmoji.Chicken), Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(0, db.EmojiReactions.Count());
-                    Assert.AreEqual(0, this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(0, this.Service.GetGuildEmojiReactions(MockData.Ids[1]).Count);
+                    Assert.That(db.EmojiReactions, Is.Empty);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Is.Empty);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[1]), Is.Empty);
                     return Task.CompletedTask;
                 }
             );
@@ -392,16 +406,16 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         ers.Where(er => er.Response == StaticDiscordEmoji.Cloud.GetDiscordName()),
                         new[] { "cde" });
-                    Assert.AreEqual(0, removed);
+                    Assert.That(removed, Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value), db.EmojiReactions.Count());
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     DatabaseEmojiReaction dber = db.EmojiReactions
                         .Include(er => er.DbTriggers)
                         .Where(er => er.GuildId == MockData.Ids[0])
                         .Single(er => er.Reaction == StaticDiscordEmoji.Cloud.GetDiscordName());
-                    Assert.AreEqual("abc", dber.Triggers.Single());
-                    Assert.AreEqual(5, this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
+                    Assert.That(dber.Triggers.Single(), Is.EqualTo("abc"));
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(5).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -419,11 +433,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()),
                         new[] { "not" });
-                    Assert.AreEqual(1, removed);
+                    Assert.That(removed, Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value) - 1, db.EmojiReactions.Count());
-                    Assert.AreEqual(4, this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) - 1).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(4).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -441,11 +455,11 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[0],
                         ers.Where(er => er.Response == StaticDiscordEmoji.Joystick.GetDiscordName()),
                         new[] { "NO MATCHES" });
-                    Assert.AreEqual(0, removed);
+                    Assert.That(removed, Is.Zero);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value), db.EmojiReactions.Count());
-                    Assert.AreEqual(this.erCount[0], this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(this.erCount[0]).Items);
                     return Task.CompletedTask;
                 }
             );
@@ -463,12 +477,36 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         MockData.Ids[1],
                         ers,
                         new[] { "abc" });
-                    Assert.AreEqual(3, removed);
+                    Assert.That(removed, Is.EqualTo(3));
                 },
                 verify: db => {
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value) - 3, db.EmojiReactions.Count());
-                    Assert.AreEqual(this.erCount[0], this.Service.GetGuildEmojiReactions(MockData.Ids[0]).Count);
-                    Assert.AreEqual(this.erCount.Sum(er => er.Value), db.EmojiReactions.Count(), this.erCount[0]);
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) - 3).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(this.erCount[0]).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[1]), Has.Exactly(this.erCount[1] - 3).Items);
+                    return Task.CompletedTask;
+                }
+            );
+        }
+
+        [Test]
+        public async Task RemoveAllEmojiReactionsTests()
+        {
+            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+                setup: db => {
+                    this.AddMockReactions(db);
+                    return Task.CompletedTask;
+                },
+                alter: async db => {
+                    this.UpdateEmojiReactionCount(db);
+                    this.Service.LoadData();
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[1]), Is.EqualTo(3));
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[1]), Is.EqualTo(0));
+                },
+                verify: db => {
+                    Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) - 3).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(this.erCount[0]).Items);
+                    Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[1]), Is.Empty);
+                    Assert.That(db.EmojiReactions.Select(tr => tr.GuildId), Does.Not.Contain(MockData.Ids[1]));
                     return Task.CompletedTask;
                 }
             );

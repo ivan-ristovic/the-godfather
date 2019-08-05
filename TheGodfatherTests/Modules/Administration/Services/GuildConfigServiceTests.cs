@@ -57,19 +57,19 @@ namespace TheGodfatherTests.Modules.Administration.Services
         public void IsGuildRegisteredTests()
         {
             foreach (ulong id in MockData.Ids)
-                Assert.IsFalse(this.Service.IsGuildRegistered(id));
-            Assert.IsFalse(this.Service.IsGuildRegistered(1));
-            Assert.IsFalse(this.Service.IsGuildRegistered(MockData.Ids[0] + 1));
-            Assert.IsFalse(this.Service.IsGuildRegistered(MockData.Ids[0] - 1));
+                Assert.That(this.Service.IsGuildRegistered(id), Is.False);
+            Assert.That(this.Service.IsGuildRegistered(1), Is.False);
+            Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] + 1), Is.False);
+            Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] - 1), Is.False);
 
             TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     foreach (ulong id in MockData.Ids)
-                        Assert.IsTrue(this.Service.IsGuildRegistered(id));
-                    Assert.IsFalse(this.Service.IsGuildRegistered(1));
-                    Assert.IsFalse(this.Service.IsGuildRegistered(MockData.Ids[0] + 1));
-                    Assert.IsFalse(this.Service.IsGuildRegistered(MockData.Ids[0] - 1));
+                        Assert.That(this.Service.IsGuildRegistered(id), Is.True);
+                    Assert.That(this.Service.IsGuildRegistered(1), Is.False);
+                    Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] + 1), Is.False);
+                    Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] - 1), Is.False);
                 }
             );
         }
@@ -81,9 +81,9 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsNull(this.Service.GetCachedConfig(1));
-                    Assert.IsTrue(this.HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[0])));
-                    Assert.IsTrue(this.HaveSamePropertyValues(this.gcfg[MockData.Ids[1]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[1])));
+                    Assert.That(this.Service.GetCachedConfig(1), Is.Null);
+                    Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[0])));
+                    Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[1]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[1])));
                 }
             );
         }
@@ -95,10 +95,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.AreEqual(this.gcfg[MockData.Ids[0]].Prefix, this.Service.GetGuildPrefix(MockData.Ids[0]));
-                    Assert.AreEqual(BotConfig.Default.Prefix, this.Service.GetGuildPrefix(MockData.Ids[1]));
-                    Assert.AreEqual(BotConfig.Default.Prefix, this.Service.GetGuildPrefix(MockData.Ids[2]));
-                    Assert.AreEqual(BotConfig.Default.Prefix, this.Service.GetGuildPrefix(1));
+                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[0]), Is.EqualTo(this.gcfg[MockData.Ids[0]].Prefix));
+                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[1]), Is.EqualTo(BotConfig.Default.Prefix));
+                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[2]), Is.EqualTo(BotConfig.Default.Prefix));
+                    Assert.That(this.Service.GetGuildPrefix(1), Is.EqualTo(BotConfig.Default.Prefix));
                 }
             );
         }
@@ -116,15 +116,15 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     return Task.CompletedTask;
                 }, 
                 verify: async db => {
-                    Assert.IsTrue(this.HaveSamePropertyValues(
+                    Assert.That(HaveSamePropertyValues(
                         this.gcfg[MockData.Ids[0]].CachedConfig, 
                         (await this.Service.GetConfigAsync(MockData.Ids[0])).CachedConfig
                     ));
-                    Assert.IsTrue(this.HaveSamePropertyValues(
+                    Assert.That(HaveSamePropertyValues(
                         this.gcfg[MockData.Ids[1]].CachedConfig,
                         (await this.Service.GetConfigAsync(MockData.Ids[1])).CachedConfig
                     ));
-                    Assert.IsNull(await this.Service.GetConfigAsync(1));
+                    Assert.That(await this.Service.GetConfigAsync(1), Is.Null);
                 }
             );
         }
@@ -143,9 +143,9 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
-                    Assert.AreEqual("!!", gcfg.Prefix);
-                    Assert.AreEqual("!!", this.Service.GetCachedConfig(MockData.Ids[0]).Prefix);
-                    Assert.AreEqual("!!", (await this.Service.GetConfigAsync(MockData.Ids[0])).Prefix);
+                    Assert.That(gcfg.Prefix, Is.EqualTo("!!"));
+                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]).Prefix, Is.EqualTo("!!"));
+                    Assert.That((await this.Service.GetConfigAsync(MockData.Ids[0])).Prefix, Is.EqualTo("!!"));
                 }
             );
 
@@ -160,16 +160,16 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[1]);
-                    Assert.IsTrue(gcfg.AntispamEnabled);
-                    Assert.AreEqual(PunishmentActionType.TemporaryBan, gcfg.AntispamAction);
-                    Assert.AreEqual(10, gcfg.AntispamSensitivity);
+                    Assert.That(gcfg.AntispamEnabled, Is.True);
+                    Assert.That(gcfg.AntispamAction, Is.EqualTo(PunishmentActionType.TemporaryBan));
+                    Assert.That(gcfg.AntispamSensitivity, Is.EqualTo(10));
                 }
             );
 
             await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.IsNull(await this.Service.ModifyConfigAsync(1, null));
+                    Assert.That(await this.Service.ModifyConfigAsync(1, null), Is.Null);
                 },
                 verify: db => Task.CompletedTask
             );
@@ -181,12 +181,12 @@ namespace TheGodfatherTests.Modules.Administration.Services
             await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.IsNull(await db.GuildConfig.FindAsync(1L));
-                    await this.Service.RegisterGuildAsync(1);
+                    Assert.That(await db.GuildConfig.FindAsync(1L), Is.Null);
+                    Assert.That(await this.Service.RegisterGuildAsync(1), Is.True);
                 },
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync(1L);
-                    Assert.IsTrue(this.HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
+                    Assert.That(HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
                 }
             );
 
@@ -197,11 +197,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 alter: async db => {
                     this.Service.LoadData();
-                    await this.Service.RegisterGuildAsync(MockData.Ids[0]);
+                    Assert.That(await this.Service.RegisterGuildAsync(MockData.Ids[0]), Is.False);
                 },
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
-                    Assert.IsTrue(this.HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, gcfg.CachedConfig));
+                    Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, gcfg.CachedConfig));
                 }
             );
         }
@@ -214,7 +214,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     this.Service.LoadData();
                     await this.Service.UnregisterGuildAsync(MockData.Ids[0]);
                 },
-                verify: async db => Assert.IsNull(await db.GuildConfig.FindAsync((long)MockData.Ids[0]))
+                verify: async db => Assert.That(await db.GuildConfig.FindAsync((long)MockData.Ids[0]), Is.Null)
             );
 
             await TestDatabaseProvider.AlterAndVerifyAsync(
@@ -237,7 +237,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
-                    Assert.IsTrue(this.HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
+                    Assert.That(HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
                 }
             );
         }
@@ -254,14 +254,14 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null));
-                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null));
-                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null));
-                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null));
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null), Is.True);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null), Is.True);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null), Is.True);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null), Is.True);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null), Is.False);
                 }
             );
 
@@ -273,14 +273,14 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null));
-                    Assert.IsFalse(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null));
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[0], null), Is.True);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[0], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[2], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[0], cid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[1], cid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[2], cid: MockData.Ids[2], null), Is.False);
+                    Assert.That(this.Service.IsChannelExempted(gid: MockData.Ids[3], cid: MockData.Ids[3], null), Is.False);
                 }
             );
         }
@@ -298,15 +298,15 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], new ulong[] { MockData.Ids[0] }));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], new ulong[] { MockData.Ids[1] }));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[1], null));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], null));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[4], uid: MockData.Ids[3], new ulong[] { MockData.Ids[0] }));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[1], null));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], null));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[3], null));
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], new ulong[] { MockData.Ids[0] }), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], new ulong[] { MockData.Ids[1] }), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[1], null), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], null), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[4], uid: MockData.Ids[3], new ulong[] { MockData.Ids[0] }), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[1], null), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], null), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[3], null), Is.False);
                 }
             );
 
@@ -321,14 +321,14 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], null));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], null));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[0], null));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[0], null));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }));
-                    Assert.IsTrue(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }));
-                    Assert.IsFalse(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }));
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[0], null), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[0], null), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[0], null), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[0], null), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[0], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[1], uid: MockData.Ids[2], new ulong[] { MockData.Ids[0] }), Is.True);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[2], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }), Is.False);
+                    Assert.That(this.Service.IsMemberExempted(gid: MockData.Ids[3], uid: MockData.Ids[2], new ulong[] { MockData.Ids[2] }), Is.False);
                 }
             );
         }
@@ -342,7 +342,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
             }
         }
 
-        private bool HaveSamePropertyValues(CachedGuildConfig first, CachedGuildConfig second)
+        private static bool HaveSamePropertyValues(CachedGuildConfig first, CachedGuildConfig second)
         {
             if (first.Currency != second.Currency)
                 return false;

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
@@ -38,7 +36,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
         public void GetGuildFiltersTests()
         {
             foreach (ulong id in MockData.Ids)
-                CollectionAssert.IsEmpty(this.Service.GetGuildFilters(id));
+                Assert.That(this.Service.GetGuildFilters(id), Is.Empty);
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => { },
@@ -79,7 +77,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 setup: db => { },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "cat"));
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat"), Is.False);
                 }
             );
 
@@ -87,34 +85,34 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 setup: db => this.AddMockFilters(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "cat"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "doG."));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "what a nice Cat, indeed."));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "a fiSh?? and a cAt???"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "i can haz spaces :)"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "what a cute doge!"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "doggy dooby doo"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[0], "fapfapfapfap"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[1], "cat"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[1], "cat@catmail.com"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[1], "a nice Doge"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[1], "whyyyYyyyyyyyy"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[2], "catmail@something.dot.com!"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot.com?abc"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[2], "no-way i will do that!"));
-                    Assert.IsTrue(this.Service.TextContainsFilter(MockData.Ids[2], "spam @every1"));
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "doG."), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "what a nice Cat, indeed."), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "a fiSh?? and a cAt???"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i can haz spaces :)"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "what a cute doge!"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "doggy dooby doo"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "fapfapfapfap"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "cat"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "cat@catmail.com"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "a nice Doge"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "whyyyYyyyyyyyy"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "catmail@something.dot.com!"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot.com?abc"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "no-way i will do that!"), Is.True);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "spam @every1"), Is.True);
 
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "caat"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "c4tz"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "i like c@t."));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "i like d0ges."));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "so fisshy..."));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[0], "dooggggy"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[1], "whhy"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[2], "mail@something.dot=com!"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot&com?abc"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[2], "no--way i will do that!"));
-                    Assert.IsFalse(this.Service.TextContainsFilter(MockData.Ids[2], "spam every1"));
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "caat"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "c4tz"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i like c@t."), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i like d0ges."), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "so fisshy..."), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "dooggggy"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "whhy"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "mail@something.dot=com!"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot&com?abc"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "no--way i will do that!"), Is.False);
+                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "spam every1"), Is.False);
                 }
             );
         }
@@ -130,11 +128,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddFilterAsync(MockData.Ids[0], "abcd"));
-                    Assert.IsTrue(await this.Service.AddFilterAsync(MockData.Ids[0], "tes?t"));
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "abcd"), Is.True);
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "tes?t"), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 2, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 2).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 2);
                     this.AssertSingleAndTest(db, 0, "abcd", match: true, "This is a for abcdef.", ".abcd.", "AbCd", "AABCDE", "-aBcd=");
                     this.AssertSingleAndTest(db, 0, "abcd", match: false, "aabbccdd", "@bcd", "ABC");
@@ -149,11 +147,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddFilterAsync(MockData.Ids[0], "abcd"));
-                    Assert.IsTrue(await this.Service.AddFilterAsync(MockData.Ids[1], "abcd"));
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "abcd"), Is.True);
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[1], "abcd"), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 2, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 2).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 1);
                     this.AssertGuildFilterCount(db, 1, this.filterCount[1] + 1);
                     this.AssertSingleAndTest(db, 0, "abcd", match: true, "This is a test for abcdef.", ".abcd.", "AbCd", "AABCDE", "-aBcd=");
@@ -172,10 +170,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsFalse(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"));
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"), Is.False);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value), db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value)).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0]);
                     return Task.CompletedTask;
                 }
@@ -186,17 +184,17 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"));
-                    Assert.IsFalse(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"));
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"), Is.True);
+                    Assert.That(await this.Service.AddFilterAsync(MockData.Ids[0], "fish"), Is.False);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 1, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 1).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 1);
                     return Task.CompletedTask;
                 }
             );
 
-            Assert.ThrowsAsync<ArgumentException>(() => this.Service.AddFilterAsync(0, "aaa**("));
+            Assert.That(() => this.Service.AddFilterAsync(0, "aaa**("), Throws.ArgumentException);
         }
 
         [Test]
@@ -210,11 +208,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "abcd", "efgh" }));
-                    Assert.IsTrue(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "tes?t" }));
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "abcd", "efgh" }), Is.True);
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "tes?t" }), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 3, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 3).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 3);
                     this.AssertSingleAndTest(db, 0, "abcd", match: true, "This is a t for abcdef.", ".abcd.", "AbCd", "AABCDE", "-aBcd=");
                     this.AssertSingleAndTest(db, 0, "abcd", match: false, "aabbccdd", "@bcd", "ABC");
@@ -231,11 +229,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsTrue(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "abcd", "ab+" }));
-                    Assert.IsTrue(await this.Service.AddFiltersAsync(MockData.Ids[1], new[] { "abcd", "ab{4,}" }));
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "abcd", "ab+" }), Is.True);
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[1], new[] { "abcd", "ab{4,}" }), Is.True);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 4, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 4).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 2);
                     this.AssertGuildFilterCount(db, 1, this.filterCount[1] + 2);
                     this.AssertSingleAndTest(db, 0, "abcd", match: true, "This is a test for abcdef.", ".abcd.", "AbCd", "AABCDE", "-aBcd=");
@@ -258,10 +256,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsFalse(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "fish", "fish" }));
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "fish", "fish" }), Is.False);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value), db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value)).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0]);
                     return Task.CompletedTask;
                 }
@@ -272,16 +270,16 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
-                    Assert.IsFalse(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "fish", "fish" }));
+                    Assert.That(await this.Service.AddFiltersAsync(MockData.Ids[0], new[] { "fish", "fish" }), Is.False);
                 },
                 verify: db => {
-                    Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) + 1, db.Filters.Count());
+                    Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) + 1).Items);
                     this.AssertGuildFilterCount(db, 0, this.filterCount[0] + 1);
                     return Task.CompletedTask;
                 }
             );
 
-            Assert.ThrowsAsync<ArgumentException>(() => this.Service.AddFiltersAsync(0, new[] { "abc", "aaa**(" }));
+            Assert.That(() => this.Service.AddFiltersAsync(0, new[] { "abc", "aaa**(" }), Throws.ArgumentException);
         }
 
         [Test]
@@ -300,11 +298,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                        this.Service.LoadData();
                        IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[0]);
                        removed = new[] { fs.First().Id, fs.Last().Id };
-                       Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
-                       Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                       Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(2));
+                       Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.Zero);
                    },
                    verify: db => {
-                       Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 2, db.Filters.Count());
+                       Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 2).Items);
                        this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 2);
                        AssertFiltersRemoved(db, 0, removed);
                        return Task.CompletedTask;
@@ -322,10 +320,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         IReadOnlyCollection<Filter> fs0 = this.Service.GetGuildFilters(MockData.Ids[0]);
                         IReadOnlyCollection<Filter> fs1 = this.Service.GetGuildFilters(MockData.Ids[1]);
                         removed = new[] { fs0.First().Id, fs1.First().Id };
-                        Assert.AreEqual(1, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(1));
                     },
                     verify: db => {
-                        Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 1, db.Filters.Count());
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 1).Items);
                         this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 1);
                         AssertFiltersRemoved(db, 0, removed);
                         return Task.CompletedTask;
@@ -342,11 +340,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         this.Service.LoadData();
                         IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[0]);
                         removed = new[] { fs.First().Id, fs.Last().Id };
-                        Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
-                        Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(2));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.Zero);
                     },
                     verify: db => {
-                        Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 2, db.Filters.Count());
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 2).Items);
                         this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 2);
                         AssertFiltersRemoved(db, 0, removed);
                         return Task.CompletedTask;
@@ -366,11 +364,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                        this.UpdateFilterCount(db);
                        this.Service.LoadData();
                        removed = new[] { "fish", @"i\ can\ haz\ spaces" };
-                       Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
-                       Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                       Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(2));
+                       Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.Zero);
                    },
                    verify: db => {
-                       Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 2, db.Filters.Count());
+                       Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 2).Items);
                        this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 2);
                        AssertFiltersRemoved(db, 0, removed.Length);
                        return Task.CompletedTask;
@@ -386,10 +384,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         this.UpdateFilterCount(db);
                         this.Service.LoadData();
                         removed = new[] { "fish", "doge" };
-                        Assert.AreEqual(1, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(1));
                     },
                     verify: db => {
-                        Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 1, db.Filters.Count());
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 1).Items);
                         this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 1);
                         AssertFilterRegexesRemoved(db, 0, removed);
                         return Task.CompletedTask;
@@ -405,11 +403,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         this.UpdateFilterCount(db);
                         this.Service.LoadData();
                         removed = new[] { "fish", "(fap)+" };
-                        Assert.AreEqual(2, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
-                        Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.EqualTo(2));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0], removed), Is.Zero);
                     },
                     verify: db => {
-                        Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - 2, db.Filters.Count());
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 2).Items);
                         this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 2);
                         AssertFilterRegexesRemoved(db, 0, removed);
                         return Task.CompletedTask;
@@ -430,10 +428,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         this.Service.LoadData();
                         int count = this.Service.GetGuildFilters(MockData.Ids[0]).Count;
                         removedNum = await this.Service.RemoveFiltersAsync(MockData.Ids[0]);
-                        Assert.AreEqual(count, removedNum);
+                        Assert.That(count, Is.EqualTo(removedNum));
                     },
                     verify: db => {
-                        Assert.AreEqual(this.filterCount.Sum(kvp => kvp.Value) - removedNum, db.Filters.Count());
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - removedNum).Items);
                         this.AssertGuildFilterCount(db, 0, this.filterCount[0] - removedNum);
                         for (int i = 1; i < MockData.Ids.Count; i++)
                             this.AssertGuildFilterCount(db, i, this.filterCount[i]);
@@ -448,7 +446,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0]));
                     },
                     verify: db => {
-                        Assert.AreEqual(0, db.Filters.Count());
+                        Assert.That(db.Filters, Is.Empty);
                         for (int i = 0; i < MockData.Ids.Count; i++)
                             this.AssertGuildFilterCount(db, i, 0);
                         return Task.CompletedTask;
@@ -458,14 +456,22 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
             void AssertFiltersRemoved(DatabaseContext db, ulong gid, params int[] ids)
             {
-                Assert.IsFalse(db.Filters.Where(f => f.GuildId == gid).Any(f => ids.Any(id => f.Id == id)));
-                Assert.IsFalse(this.Service.GetGuildFilters(gid).Any(f => ids.Any(id => f.Id == id)));
+                if (ids?.Any() ?? false) {
+                    Assert.That(db.Filters.Where(f => f.GuildId == gid).Select(f => f.Id), Has.No.AnyOf(ids));
+                    Assert.That(this.Service.GetGuildFilters(gid).Select(f => f.Id), Has.No.AnyOf(ids));
+                } else {
+                    Assert.Fail("No IDs provided to assert function.");
+                }
             }
 
             void AssertFilterRegexesRemoved(DatabaseContext db, ulong gid, params string[] regexStrings)
             {
-                Assert.IsFalse(db.Filters.Where(f => f.GuildId == gid).Any(f => regexStrings.Any(s => string.Compare(s, f.Trigger, true) == 0)));
-                Assert.IsFalse(this.Service.GetGuildFilters(gid).Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)));
+                if (regexStrings?.Any() ?? false) {
+                    Assert.That(db.Filters.Where(f => f.GuildId == gid).Any(f => regexStrings.Any(s => string.Compare(s, f.Trigger, true) == 0)), Is.False);
+                    Assert.That(this.Service.GetGuildFilters(gid).Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), Is.False);
+                } else {
+                    Assert.Fail("No strings provided to assert function.");
+                }
             }
         }
 
