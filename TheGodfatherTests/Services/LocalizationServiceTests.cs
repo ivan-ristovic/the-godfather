@@ -19,7 +19,7 @@ namespace TheGodfatherTests.Services
         public string EnLocale => "en-US";
         public string SrLocale => "Lt-sr-SP";
 
-        private readonly string testDataPath = @"D:\Work\GitHub\the-godfather\TheGodfatherTests\Services\TranslationsTestData";
+        private readonly string testDataPath = "Services/TranslationsTestData";
 
 
         [SetUp]
@@ -27,16 +27,15 @@ namespace TheGodfatherTests.Services
         {
             this.Configs = new GuildConfigService(BotConfig.Default, TestDatabaseProvider.Database, false);
             this.Service = new LocalizationService(this.Configs, BotConfig.Default.Locale);
-            Assume.That(Directory.Exists(this.ValidTestDataPath));
-            Assume.That(Directory.Exists(this.ThrowsIOTestDataPath));
+            var x = Directory.GetCurrentDirectory();
+            Assume.That(Directory.Exists(this.ValidTestDataPath), "Valid tests dir not present");
+            Assume.That(Directory.Exists(this.ThrowsIOTestDataPath), "Invalid tests dir not present");
         }
 
 
         [Test]
         public void LoadDataTests()
         {
-            Assume.That(Directory.Exists(this.ValidTestDataPath));
-
             Assert.That(() => this.Service.GetCommandDescription(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.GetGuildLocale(0), Throws.InvalidOperationException);
             Assert.That(() => this.Service.GetString(0, "not loaded"), Throws.InvalidOperationException);

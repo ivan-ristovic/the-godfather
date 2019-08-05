@@ -59,4 +59,37 @@
     <Folder Include="Services\TranslationsTestData\Valid\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_test2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\ThrowsIO\en-US.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\ThrowsIO\Lt-sr-SP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_test2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\Commands\desc_en-US.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\Commands\desc_Lt-sr-SP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\en-US.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\TranslationsTestData\Valid\Lt-sr-SP.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
