@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Search
         [Command("ipstack")]
         [Description("Retrieve IP geolocation information.")]
         [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
-        [UsageExampleArgs("123.123.123.123")]
+        
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("IP.")] IPAddress ip)
         {
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Search
         [Command("quoteoftheday")]
         [Description("Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.")]
         [Aliases("qotd", "qod", "quote", "q")]
-        [UsageExampleArgs("life")]
+        
         public async Task QotdAsync(CommandContext ctx,
                                    [Description("Category.")] string category = null)
         {

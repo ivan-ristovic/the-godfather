@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
             [Group("antispam")]
             [Description("Prevents users from posting more than specified amount of same messages.")]
             [Aliases("as")]
-            [UsageExampleArgs("on", "on mute", "on 5", "on 6 kick")]
+            
             public class AntispamModule : TheGodfatherServiceModule<AntispamService>
             {
 
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute when the antispam quota is hit.")]
                 [Aliases("setaction", "a")]
-                [UsageExampleArgs("mute", "temporaryban")]
+                
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("sensitivity")]
                 [Description("Set the antispam sensitivity - max amount of repeated messages before an action is taken.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                [UsageExampleArgs("9")]
+                
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (max repeated messages).")] short sensitivity)
                 {
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the antispam watch for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                [UsageExampleArgs("@Someone", " #spam", "Role")]
+                
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
@@ -239,7 +239,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow antispam watch for that entity.")]
                 [Aliases("unex", "uex")]
-                [UsageExampleArgs("@Someone", "#spam", "Category")]
+                
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {

@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration
             [Group("localization")]
             [Description("Change the bot locale (language and date formats) for this guild. Group call shows current guild locale.")]
             [Aliases("locale", "language", "lang", "region")]
-            [UsageExampleArgs("locale", "locale sr-RS")]
+            
             public class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
             {
 
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Administration
                 #region COMMAND_LOCALE_SET
                 [Command("set")]
                 [Description("Change the locale for the guild.")]
-                [UsageExampleArgs("locale", "locale sr-RS")]
+                
                 public async Task SetLocaleAsync(CommandContext ctx,
                                                 [Description("Members to exempt.")] string locale)
                 {

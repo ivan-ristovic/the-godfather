@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Chickens
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExampleArgs("@Someone")]
+    
     public partial class ChickenModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("fight"), Priority(1)]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
-        [UsageExampleArgs("@Someone")]
+        
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Member whose chicken to fight.")] DiscordMember member)
         {
@@ -181,7 +181,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("info")]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
-        [UsageExampleArgs("@Someone")]
+        
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordMember member = null)
         {
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("rename")]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
-        [UsageExampleArgs("New Name")]
+        
         public async Task RenameAsync(CommandContext ctx,
                                      [RemainingText, Description("New chicken name.")] string newname)
         {

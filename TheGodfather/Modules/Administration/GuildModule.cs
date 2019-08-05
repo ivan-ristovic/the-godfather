@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
         [Command("log")]
         [Description("View guild audit logs. You can also specify an amount of entries to fetch.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-        [UsageExampleArgs("5")]
+        
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Amount of entries to fetch")] int amount = 10)
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Administration
         [Command("prune"), UsesInteractivity]
         [Description("Prune guild members who weren't active in the given amount of days [1-30].")]
         [Aliases("p", "clean", "purge")]
-        [UsageExampleArgs("5")]
+        
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembersAsync(CommandContext ctx,
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
         [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
-        [UsageExampleArgs("New guild name", "\"Reason for renaming\" New guild name")]
+        
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
                                           [RemainingText, Description("New name.")] string newname)
@@ -181,7 +181,7 @@ namespace TheGodfather.Modules.Administration
         [Command("seticon")]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
-        [UsageExampleArgs("http://imgur.com/someimage.png")]
+        
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] Uri url)

@@ -1,5 +1,7 @@
 {
   "test": {
-    "usage": [ "", "@Someone" ]
+    "usage": [
+      [],
+      [ "arg-user" ]
   }
 }

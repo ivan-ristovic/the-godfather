@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Group("birthdays"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.")]
     [Aliases("birthday", "bday", "bd", "bdays")]
-    [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
+    
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class BirthdayModule : TheGodfatherModule
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Priority(0)]
         [Description("Schedule a birthday notification. If the date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("new", "+", "a", "+=", "<", "<<")]
-        [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
+        
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Birthday boy/girl.")] DiscordUser user,
                                   [Description("Birth date.")] string date_str = null,
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Priority(1), UsesInteractivity]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        [UsageExampleArgs("@Someone", "#channel")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("User whose birthday to remove.")] DiscordUser user)
         {

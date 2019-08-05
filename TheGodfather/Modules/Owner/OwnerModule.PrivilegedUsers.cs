@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add users to privileged users list.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExampleArgs("add @Someone", "add @Someone @SomeoneElse")]
+            
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to grant privilege to.")] params DiscordUser[] users)
             {
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from privileged users list.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            [UsageExampleArgs("remove @Someone", "remove 123123123123123", "remove @Someone 123123123123123")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to revoke privileges from.")] params DiscordUser[] users)
             {

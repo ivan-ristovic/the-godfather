@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
         [Command("allow")]
         [Description("Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).")]
         [Aliases("a", "only")]
-        [UsageExampleArgs("8ball", "8ball #spam", "\"g cfg\" #config")]
+        
         public async Task AllowAsync(CommandContext ctx,
                                     [Description("Command or group to allow.")] string command,
                                     [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Administration
         [Command("forbid")]
         [Description("Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).")]
         [Aliases("f", "deny")]
-        [UsageExampleArgs("giphy", "game #general", "\"g cfg\" #general")]
+        
         public async Task ForbidAsync(CommandContext ctx,
                                      [Description("Command or group to forbid.")] string command,
                                      [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)

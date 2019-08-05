@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a status to running status queue.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExampleArgs("Playing CS:GO", "Streaming on Twitch")]
+            
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                       [RemainingText, Description("Status.")] string status)
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            [UsageExampleArgs("2")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Owner
             [Command("setrotation")]
             [Description("Set automatic rotation of bot statuses.")]
             [Aliases("sr", "setr")]
-            [UsageExampleArgs("off")]
+            
             public Task SetRotationAsync(CommandContext ctx,
                                         [Description("Enabled?")] bool enable = true)
             {
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Owner
             [Command("set"), Priority(1)]
             [Description("Set status to given string or status with given index in database. This sets rotation to false.")]
             [Aliases("s")]
-            [UsageExampleArgs("Playing with fire", "5")]
+            
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType type,
                                       [RemainingText, Description("Status.")] string status)

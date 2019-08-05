@@ -27,7 +27,6 @@ namespace TheGodfather.Modules.Administration
                  "arbitrary amount of roles will add those roles to the automatic roles list for the " +
                  "guild, effective immediately.")]
     [Aliases("autoroles", "automaticr", "autorole", "aroles", "arole", "arl", "ar", "aar")]
-    [UsageExampleArgs("@Guests")]
     [RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class AutomaticRolesModule : TheGodfatherModule
@@ -54,7 +53,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add automatic role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
-        [UsageExampleArgs("@Notifications", "@Notifications @Role1 @Role2")]
+        
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
@@ -78,7 +77,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove automatic role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("@Notifications", "@Notifications @Role1 @Role2")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {

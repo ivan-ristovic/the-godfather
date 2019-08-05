@@ -1,4 +1,6 @@
 {
-  "suc": "Uspeh!",
-  "err": "Greska!"
+  "arg-usr": "@Korisnik",
+  "arg-rsn": "Razlog za akciju",
+  "msg-suc": "Uspeh!",
+  "msg-err": "Greska!"
 }

@@ -5,12 +5,15 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
-
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Common
@@ -48,12 +51,17 @@ namespace TheGodfather.Common
         public override BaseHelpFormatter WithCommand(Command cmd)
         {
             this.name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
-            this.description = cmd.Description;
+            LocalizationService localization = this.Context.Services.GetService<LocalizationService>();
+            try {
+                this.description = localization.GetCommandDescription(this.Context.Guild.Id, cmd.QualifiedName);
+            } catch (KeyNotFoundException e) {
+                LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
+            }
 
             if (cmd.Aliases?.Any() ?? false)
                 this.emb.AddField("Aliases", string.Join(", ", cmd.Aliases.Select(a => Formatter.InlineCode(a))), inline: true);
 
-            this.emb.AddField("Category", ModuleAttribute.ForCommand(cmd).Module.ToString(), inline: true);
+            this.emb.AddField("Category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
             IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
             IEnumerable<string> perms = checks
@@ -77,11 +85,11 @@ namespace TheGodfather.Common
                 pb.AppendLine(Formatter.Bold("Owner-only."));
             if (checks.Any(chk => chk is RequirePrivilegedUserAttribute))
                 pb.AppendLine(Formatter.Bold("Privileged users only."));
-            if (perms.Any()) 
+            if (perms.Any())
                 pb.AppendLine(Formatter.InlineCode(string.Join(", ", perms)));
-            if (uperms.Any()) 
+            if (uperms.Any())
                 pb.Append(Formatter.Bold("User permissions: ")).AppendLine(Formatter.InlineCode(string.Join(", ", uperms)));
-            if (bperms.Any()) 
+            if (bperms.Any())
                 pb.Append(Formatter.Bold("Bot permissions: ")).AppendLine(Formatter.InlineCode(string.Join(", ", bperms)));
 
             string pstr = pb.ToString();
@@ -113,12 +121,11 @@ namespace TheGodfather.Common
                     }
 
                     string args = ab.ToString();
-                    this.emb.AddField($"{(cmd.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "No arguments.": args, inline: true);
+                    this.emb.AddField($"{(cmd.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}", string.IsNullOrWhiteSpace(args) ? "No arguments." : args, inline: true);
                 }
             }
 
-            if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExampleArgsAttribute) is UsageExampleArgsAttribute eattr)
-                this.emb.AddField("Examples of use", Formatter.BlockCode(eattr.JoinExamples(cmd, this.Context)));                
+            this.emb.AddField("Examples of use", Formatter.BlockCode(string.Join("\n", localization.GetCommandUsageExamples(this.Context.Guild.Id, cmd.QualifiedName))));
 
             return this;
         }

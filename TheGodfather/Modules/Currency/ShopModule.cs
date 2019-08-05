@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Currency
         [Command("add"), Priority(1)]
         [Description("Add a new item to guild purchasable items list.")]
         [Aliases("+", "a", "+=", "<", "<<", "additem")]
-        [UsageExampleArgs("Barbie 500", "\"New Barbie\" 500", "500 Newest Barbie")]
+        
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Item price.")] long price,
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency
         [Command("buy"), UsesInteractivity, Priority(1)]
         [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
-        [UsageExampleArgs("3")]
+        
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Currency
         [Command("sell"), UsesInteractivity]
         [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
-        [UsageExampleArgs("3")]
+        
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Currency
         [Command("delete"), Priority(1)]
         [Description("Remove purchasable item from this guild item list. You can remove an item by ID or by name.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        [UsageExampleArgs("Barbie", "5", "1 2 3 4 5")]
+        
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("ID list of items to remove.")] params int[] ids)

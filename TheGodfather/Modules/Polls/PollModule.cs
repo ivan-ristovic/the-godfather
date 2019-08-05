@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
-    [UsageExampleArgs("Do you vote for User1 or User2?", "5m Do you vote for User1 or User2?")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {

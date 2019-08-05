@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Group("goodreads"), Module(ModuleType.Searches), NotBlocked]
     [Description("Goodreads commands. Group call searches Goodreads books with given query.")]
     [Aliases("gr")]
-    [UsageExampleArgs("Ender's Game")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
         [Command("book")]
         [Description("Search Goodreads books by title, author, or ISBN.")]
         [Aliases("books", "b")]
-        [UsageExampleArgs("Ender's Game")]
+        
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("Query.")] string query)
         {

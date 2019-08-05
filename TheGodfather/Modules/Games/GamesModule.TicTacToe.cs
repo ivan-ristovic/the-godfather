@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Games
                      "to the field where you wish to play. You can also specify a time window in which players " +
                      "must submit their move.")]
         [Aliases("ttt")]
-        [UsageExampleArgs("10s")]
+        
         public class TicTacToeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

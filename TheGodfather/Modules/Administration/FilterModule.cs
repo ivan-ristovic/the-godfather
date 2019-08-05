@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or " +
                  "adds a new filter for the given word list. Filters are regular expressions.")]
     [Aliases("f", "filters")]
-    [UsageExampleArgs("fuck fk f+u+c+k+")]
+    
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class FilterModule : TheGodfatherServiceModule<FilteringService>
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add filter to guild filter list.")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
-        [UsageExampleArgs("fuck f+u+c+k+")]
+        
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
         {
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Priority(1)]
         [Description("Removes filter either by ID or plain text match.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("fuck f+u+c+k+", "3 4")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
         {

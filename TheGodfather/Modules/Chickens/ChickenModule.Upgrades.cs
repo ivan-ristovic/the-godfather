@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("upgrades"), UsesInteractivity]
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.")]
         [Aliases("perks", "upgrade", "u")]
-        [UsageExampleArgs("1", "1 2 3")]
+        
         public class UpgradeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

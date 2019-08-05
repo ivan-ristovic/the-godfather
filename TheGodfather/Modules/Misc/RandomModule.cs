@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Misc
         [Command("choose")]
         [Description("Choose one of the provided options separated by comma.")]
         [Aliases("select")]
-        [UsageExampleArgs("option 1, option 2, option 3...")]
+        
         public Task ChooseAsync(CommandContext ctx,
                                [RemainingText, Description("Option list (comma separated).")] string list)
         {
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Misc
         [Command("raffle")]
         [Description("Choose a user from the online members list optionally belonging to a given role.")]
         [Aliases("chooseuser")]
-        [UsageExampleArgs("Admins")]
+        
         public Task RaffleAsync(CommandContext ctx,
                                [Description("Role.")] DiscordRole role = null)
         {

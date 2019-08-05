@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Currency
         [Group("holdem")]
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
-        [UsageExampleArgs("10000")]
+        
         public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

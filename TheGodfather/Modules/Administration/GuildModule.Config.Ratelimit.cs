@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
             [Group("ratelimit")]
             [Description("Prevents users from posting more than specified amount of messages in 5s.")]
             [Aliases("rl", "rate")]
-            [UsageExampleArgs("on", "on mute", "on 5", "on 6 kick")]
+            
             public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
             {
 
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute when the ratelimit is hit.")]
                 [Aliases("setaction", "a")]
-                [UsageExampleArgs("mute", "temporaryban")]
+                
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("sensitivity")]
                 [Description("Set the ratelimit sensitivity. Ratelimit will be hit if member sends more messages in 5 seconds than given sensitivity number.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                [UsageExampleArgs("9")]
+                
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity)
                 {
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the ratelimit watch for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                [UsageExampleArgs("@Someone", "#spam", "Role")]
+                
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
@@ -239,7 +239,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow ratelimit watch for that entity.")]
                 [Aliases("unex", "uex")]
-                [UsageExampleArgs("@Someone", "#spam", "Role")]
+                
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {

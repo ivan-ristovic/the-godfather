@@ -1,11 +1,21 @@
 {
   "cmd1": {
-
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
   },
   "cmd1 subcommand": {
-
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
   },
   "cmd2": {
-
+    "usage": [
+      [],
+      [ "arg-member" ],
+      [ "arg-reason" ]
+    ]
   }
 }

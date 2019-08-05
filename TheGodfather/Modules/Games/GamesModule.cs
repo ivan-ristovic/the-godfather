@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Games
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        [UsageExampleArgs("scissors")]
+        
         public async Task RpsAsync(CommandContext ctx,
                                   [Description("rock/paper/scissors")] string rps)
         {
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Games
         [Command("stats")]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
-        [UsageExampleArgs("@Someone")]
+        
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {

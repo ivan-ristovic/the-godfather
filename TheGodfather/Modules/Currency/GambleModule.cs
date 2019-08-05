@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Currency
         [Command("coinflip"), Priority(1)]
         [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
-        [UsageExampleArgs("10 heads", "tails 20")]
+        
         public async Task CoinflipAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Currency
         [Command("dice"), Priority(1)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
-        [UsageExampleArgs("50 six", "three 10")]
+        
         public async Task RollDiceAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)

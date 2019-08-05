@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(1)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            [UsageExampleArgs("4u 109.70.149.158:10480", "4u 109.70.149.158:10480 10481")]
+            
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
                                       [Description("IP.")] CustomIPFormat ip,
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete")]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
-            [UsageExampleArgs("4u")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name)
             {

@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Currency
     [Description("WM bank commands. Group call prints out given user's bank balance. Accounts periodically get an increase.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExampleArgs("@Someone")]
+    
     public class BankModule : TheGodfatherModule
     {
 
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Currency
         [Command("balance")]
         [Description("View someone's bank account in this guild.")]
         [Aliases("s", "status", "bal", "money")]
-        [UsageExampleArgs("@Someone")]
+        
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
         {
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency
         [Command("currency")]
         [Description("Set currency for this guild. Currency can be either emoji or text.")]
         [Aliases("sc", "setcurrency")]
-        [UsageExampleArgs(":euro:", "My Custom Currency Name")]
+        
         public async Task GetOrSetCurrencyAsync(CommandContext ctx,
                                                [RemainingText, Description("New currency.")] string currency = null)
         {
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Currency
         [Command("grant"), Priority(1)]
         [Description("Magically increase another user's bank balance.")]
         [Aliases("give")]
-        [UsageExampleArgs("@Someone 1000", "1000 @Someone")]
+        
         [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Currency
         [Command("transfer"), Priority(1)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
-        [UsageExampleArgs("@Someone 40", "40 @Someone")]
+        
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser user,
                                               [Description("Amount of currency to transfer.")] long amount)
@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Currency
         [Command("unregister"), Priority(1)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-        [UsageExampleArgs("@Someone")]
+        
         [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
                                          [Description("User whose account to delete.")] DiscordUser user,

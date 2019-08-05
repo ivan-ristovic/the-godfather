@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
                      "to the row and column where you wish to play. You can also specify a time window in which " +
                      "players must submit their move.")]
         [Aliases("c", "gomoku", "gobang")]
-        [UsageExampleArgs("10s")]
+        
         public class CaroModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

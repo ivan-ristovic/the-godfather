@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [Group("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        [UsageExampleArgs("@Someone")]
+        
         public class DuelModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.")]
     [Aliases("emojis", "e")]
-    [UsageExampleArgs(":some_emoji:")]
+    
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiModule : TheGodfatherModule
     {
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can " +
                      "also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("addnew", "create", "install", "a", "+", "+=", "<", "<<")]
-        [UsageExampleArgs("pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg", "pepe [ATTACHED IMAGE]", "pepe :pepe_from_other_server:")]
+        
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name for the emoji.")] string name,
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove guild emoji. Note: Bots can only delete emojis they created!")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("pepe")]
+        
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to delete.")] DiscordEmoji emoji)
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
         [Command("info")]
         [Description("Prints information for given guild emoji.")]
         [Aliases("details", "information", "i")]
-        [UsageExampleArgs(":pepe:")]
+        
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("Emoji.")] DiscordEmoji emoji)
         {
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify"), Priority(1)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
-        [UsageExampleArgs(":pepe: newname", "newname :pepe:")]
+        
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("Emoji to rename.")] DiscordEmoji emoji,

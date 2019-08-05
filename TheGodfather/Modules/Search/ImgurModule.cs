@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
     [Group("imgur"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search imgur. Group call retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
-    [UsageExampleArgs("aww", "10 aww", "aww 10")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Search
         [Command("latest"), Priority(1)]
         [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
-        [UsageExampleArgs("aww", "10 aww", "aww 10")]
+        
         public async Task LatestAsync(CommandContext ctx,
                                      [Description("Number of images to print [1-10].")] int amount,
                                      [RemainingText, Description("Subreddit.")] string sub)
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Search
         [Command("top"), Priority(3)]
         [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
-        [UsageExampleArgs("day 10 aww", "10 day aww", "5 aww", "day aww")]
+        
         public async Task TopAsync(CommandContext ctx,
                                   [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
                                   [Description("Number of images to print [1-10].")] int amount,

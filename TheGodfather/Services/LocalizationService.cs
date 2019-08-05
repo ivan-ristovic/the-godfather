@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Serilog;
-using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services
@@ -151,16 +149,29 @@ namespace TheGodfather.Services
 
         public string GetCommandDescription(ulong gid, string command)
         {
-            this.AssertIsDataLoaded();
-
-            if (!this.commands.TryGetValue(command, out CommandInfo cmdInfo))
-                throw new KeyNotFoundException("No translations for this command have been found.");
-
+            CommandInfo cmdInfo = this.GetInfoForCommand(command);
             string locale = this.GetGuildLocale(gid);
+
             if (!cmdInfo.Descriptions.TryGetValue(locale, out string desc) && !cmdInfo.Descriptions.TryGetValue(this.defLocale, out desc))
-                throw new KeyNotFoundException("No translations found in guild or default locale for given command.");
+                throw new KeyNotFoundException("No translations found in either guild or default locale for given command.");
 
             return desc;
+        }
+
+        public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
+        {
+            CommandInfo cmdInfo = this.GetInfoForCommand(command);
+            string locale = this.GetGuildLocale(gid);
+            var examples = new List<string>();
+
+            if (cmdInfo.UsageExamples.Any()) {
+                foreach (List<string> args in cmdInfo.UsageExamples) {
+                    string example = string.Join(" ", args.Select(arg => this.GetString(gid, arg)));
+                    examples.Add($"{this.gcs.GetGuildPrefix(gid)}{command} {example}");
+                }
+            }
+
+            return examples.AsReadOnly();
         }
 
         public async Task<bool> SetGuildLocaleAsync(ulong gid, string locale)
@@ -179,15 +190,25 @@ namespace TheGodfather.Services
             if (!this.isDataLoaded)
                 throw new InvalidOperationException("The translation data has not been loaded.");
         }
-    }
+
+        private CommandInfo GetInfoForCommand(string command)
+        {
+            this.AssertIsDataLoaded();
+
+            if (!this.commands.TryGetValue(command, out CommandInfo cmdInfo))
+                throw new KeyNotFoundException("No translations for this command have been found.");
+
+            return cmdInfo;
+        }
 
 
-    public sealed class CommandInfo
-    {
-        [JsonProperty("examples")]
-        public List<string> UsageExamples { get; set; }
+        private sealed class CommandInfo
+        {
+            [JsonProperty("usage")]
+            public List<List<string>> UsageExamples { get; set; }
 
-        [JsonIgnore]
-        public Dictionary<string, string> Descriptions { get; set; } = new Dictionary<string, string>();
+            [JsonIgnore]
+            public Dictionary<string, string> Descriptions { get; set; } = new Dictionary<string, string>();
+        }
     }
 }

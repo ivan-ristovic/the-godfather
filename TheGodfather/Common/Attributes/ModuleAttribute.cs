@@ -62,10 +62,10 @@ namespace TheGodfather.Common.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
     public sealed class ModuleAttribute : Attribute
     {
-        public static ModuleAttribute ForCommand(Command cmd)
+        public static ModuleAttribute AttachedTo(Command cmd)
         {
             var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
-            return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : ForCommand(cmd.Parent));
+            return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : AttachedTo(cmd.Parent));
         }
 
 

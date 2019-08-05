@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
                      "the column where you wish to insert your piece. You can also specify a time window in " +
                      "which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
-        [UsageExampleArgs("10s")]
+        
         public class ConnectFourModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

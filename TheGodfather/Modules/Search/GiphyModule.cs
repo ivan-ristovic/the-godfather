@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("gif"), Module(ModuleType.Searches), NotBlocked]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
-    [UsageExampleArgs("wat")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Search
         [Command("trending")]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
-        [UsageExampleArgs("3")]
+        
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
                  "Group call with an arbitrary amount of roles will add those roles to the self-assignable " +
                  "roles list for this guild, effective immediately.")]
     [Aliases("sar", "selfroles", "selfrole")]
-    [UsageExampleArgs("@Announcements")]
+    
     [RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class SelfAssignableRolesModule : TheGodfatherModule
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add a self-assignable role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
-        [UsageExampleArgs("@Notifications", "@Role1 @Role2 ...")]
+        
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove self-assignable role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("@Notifications", "@Role1 @Role2 ...")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {

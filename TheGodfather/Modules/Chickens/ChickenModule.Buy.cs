@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("buy"), UsesInteractivity]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
-        [UsageExampleArgs("My Chicken Name")]
+        
         public class BuyModule : TheGodfatherModule
         {
 
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("default")]
             [Description("Buy a chicken of default strength (cheapest).")]
             [Aliases("d", "def")]
-            [UsageExampleArgs("My Chicken Name")]
+            
             public Task DefaultAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("wellfed")]
             [Description("Buy a well-fed chicken.")]
             [Aliases("wf", "fed")]
-            [UsageExampleArgs("My Chicken Name")]
+            
             public Task WellFedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("trained")]
             [Description("Buy a trained chicken.")]
             [Aliases("tr", "train")]
-            [UsageExampleArgs("My Chicken Name")]
+            
             public Task TrainedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("steroidempowered")]
             [Description("Buy a steroid-empowered chicken.")]
             [Aliases("steroid", "empowered")]
-            [UsageExampleArgs("My Chicken Name")]
+            
             public Task EmpoweredAsync(CommandContext ctx,
                                       [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("alien")]
             [Description("Buy an alien chicken.")]
             [Aliases("a", "extraterrestrial")]
-            [UsageExampleArgs("My Chicken Name")]
+            
             public Task AlienAsync(CommandContext ctx,
                                   [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);

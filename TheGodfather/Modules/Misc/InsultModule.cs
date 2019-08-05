@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Misc
     [Group("insult"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Insults manipulation. Group call insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
-    [UsageExampleArgs("@Someone")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class InsultModule : TheGodfatherModule
     {
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add")]
         [Description("Add insult to list (use %user% instead of user mention).")]
         [Aliases("new", "a", "+", "+=", "<", "<<")]
-        [UsageExampleArgs("%user% is lowering the IQ of the entire street!")]
+        
         [RequirePrivilegedUser]
         public async Task AddInsultAsync(CommandContext ctx,
                                         [RemainingText, Description("Insult (must contain ``%user%``).")] string content)
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete")]
         [Description("Remove insult with a given ID from list. (use command ``insults list`` to view insult indexes).")]
         [Aliases("-", "remove", "del", "rm", "rem", "d", ">", ">>", "-=")]
-        [UsageExampleArgs("!insult delete 2")]
+        
         [RequirePrivilegedUser]
         public async Task DeleteInsultAsync(CommandContext ctx,
                                            [Description("ID of the insult to remove.")] int id)

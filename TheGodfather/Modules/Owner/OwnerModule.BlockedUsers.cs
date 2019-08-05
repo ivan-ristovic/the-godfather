@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(2)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a", "block", "<", "<<", "+=")]
-            [UsageExampleArgs("@Someone", "@Someone Troublemaker", "123123123123123", "@Someone 123123123123123", "\"This is some reason\" @Someone 123123123123123")]
+            
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] params DiscordUser[] users)
                 => this.AddAsync(ctx, null, users);
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from blocked users list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
-            [UsageExampleArgs("@Someone", "123123123123123", "@Someone 123123123123123")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {

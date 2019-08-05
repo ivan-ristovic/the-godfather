@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Music
         [Group("play")]
         [Description("Commands for playing music. Group call plays given URL or searches YouTube for given query and plays the first result.")]
         [Aliases("music", "p")]
-        [UsageExampleArgs("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "what is love?")]
+        
         [RequireBotPermissions(Permissions.UseVoice | Permissions.Speak)]
         [RequireOwner]
         public class PlayModule : MusicModule
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Music
             [Command("file")]
             [Description("Plays an audio file from the server filesystem.")]
             [Aliases("f")]
-            [UsageExampleArgs("test.mp3")]
+            
             public async Task PlayFileAsync(CommandContext ctx,
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
             {

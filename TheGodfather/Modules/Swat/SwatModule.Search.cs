@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Swat
             #region COMMAND_SEARCH_IP
             [Command("ip")]
             [Description("Search for a given IP or range.")]
-            [UsageExampleArgs("123.123.123.123")]
+            
             public async Task SearchIpAsync(CommandContext ctx,
                                            [Description("IP or range.")] CustomIPFormat ip,
                                            [Description("Number of results")] int amount = 10)
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Swat
             [Command("name")]
             [Description("Search for a given name.")]
             [Aliases("player", "nickname", "nick")]
-            [UsageExampleArgs("EmoPig")]
+            
             public async Task SearchNameAsync(CommandContext ctx,
                                              [Description("Player name.")] string name,
                                              [Description("Number of results")] int amount = 10)

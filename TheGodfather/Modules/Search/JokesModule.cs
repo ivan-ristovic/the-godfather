@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
-        [UsageExampleArgs("blonde")]
+        
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {

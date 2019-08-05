@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Polls
     [Group("vote"), Module(ModuleType.Polls), NotBlocked]
     [Description("Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.")]
     [Aliases("votefor", "vf")]
-    [UsageExampleArgs("1")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {

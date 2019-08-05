@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration
                          "cooldown of 10s will execute action if 5 or more users join the guild in period of " +
                          "10s. The action is applied to all of the users that are currently under watch.")]
             [Aliases("antiraid", "ar", "af")]
-            [UsageExampleArgs("on", "on kick 5s")]
+            
             public class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
             {
 
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute on the users when they flood/raid the guild.")]
                 [Aliases("setaction", "a")]
-                [UsageExampleArgs("mute", "temporaryban")]
+                
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentActionType action)
                 {
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Administration
                 [Description("Set the antiflood sensitivity. Antiflood action will be executed if the specified " +
                              "amount of users join the guild in the given cooldown period.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                [UsageExampleArgs("9")]
+                
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity)
                 {
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
                 [Description("Set the antiflood sensitivity. Antiflood action will be executed if the specified " +
                              "amount of users join the guild in the given cooldown period.")]
                 [Aliases("setcooldown", "setcool", "cool", "c")]
-                [UsageExampleArgs("9s")]
+                
                 public async Task SetCooldownAsync(CommandContext ctx,
                                                   [Description("Cooldown.")] TimeSpan cooldown)
                 {

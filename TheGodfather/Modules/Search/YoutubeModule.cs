@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Group("youtube"), Module(ModuleType.Searches), NotBlocked]
     [Description("Youtube search commands. Group call searches YouTube for given query.")]
     [Aliases("y", "yt", "ytube")]
-    [UsageExampleArgs("never gonna give you up")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Advanced youtube search.")]
         [Aliases("s")]
-        [UsageExampleArgs("5 rick astley")]
+        
         public Task AdvancedSearchAsync(CommandContext ctx,
                                        [Description("Amount of results. [1-20]")] int amount,
                                        [RemainingText, Description("Search query.")] string query)
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchvideo")]
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchv", "video")]
-        [UsageExampleArgs("rick astley")]
+        
         public Task SearchVideoAsync(CommandContext ctx,
                                     [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "video");
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchchannel")]
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchc", "channel")]
-        [UsageExampleArgs("rick astley")]
+        
         public Task SearchChannelAsync(CommandContext ctx,
                                       [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "channel");
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist", "playlist")]
-        [UsageExampleArgs("rick astley")]
+        
         public Task SearchPlaylistAsync(CommandContext ctx,
                                        [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "playlist");
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe")]
         [Description("Add a new subscription for a YouTube channel.")]
         [Aliases("add", "a", "+", "sub")]
-        [UsageExampleArgs("https://www.youtube.com/user/RickAstleyVEVO", "https://www.youtube.com/user/RickAstleyVEVO rick")]
+        
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("Channel URL.")] string url,
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Search
         [Command("unsubscribe")]
         [Description("Remove a YouTube channel subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExampleArgs("https://www.youtube.com/user/RickAstleyVEVO", "rick")]
+        
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task UnsubscribeAsync(CommandContext ctx,
                                     [Description("Channel URL or subscription name.")] string name_url)

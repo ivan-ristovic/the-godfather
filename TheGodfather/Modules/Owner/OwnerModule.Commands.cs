@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a new command.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            [UsageExampleArgs("\\`\\`\\`[Command(\"test\")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync(\"Hello world!\");\\`\\`\\`")]
+            
             public Task AddAsync(CommandContext ctx,
                                 [RemainingText, Description("Code to evaluate.")] string code)
             {
@@ -117,7 +117,7 @@ public sealed class DynamicCommands : TheGodfatherModule
             [Command("delete")]
             [Description("Remove an existing command.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            [UsageExampleArgs("say")]
+            
             public Task DeleteAsync(CommandContext ctx,
                                    [RemainingText, Description("Command to remove.")] string command)
             {

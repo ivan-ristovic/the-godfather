@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
         [Group("blackjack")]
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
-        [UsageExampleArgs("100")]
+        
         public class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Description("Join a pending Blackjack game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            [UsageExampleArgs("100")]
+            
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {

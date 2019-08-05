@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(2)]
             [Description("Add channel to blocked channels list.")]
             [Aliases("+", "a", "block", "<", "<<", "+=")]
-            [UsageExampleArgs("#channel", "#channel Some reason", "123123123123123", "#channel 123123123123123", "\"This is some reason\" #channel 123123123123123")]
+            
             public Task AddAsync(CommandContext ctx,
                                 [Description("Channels to block.")] params DiscordChannel[] channels)
                 => this.AddAsync(ctx, null, channels);
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove channel from blocked channels list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
-            [UsageExampleArgs("#channel", "123123123123123", "#channel1 #channel2 123123123123123")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {

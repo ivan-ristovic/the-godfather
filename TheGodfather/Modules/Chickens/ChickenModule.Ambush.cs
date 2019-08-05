@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("ambush")]
         [Description("Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.")]
         [Aliases("gangattack")]
-        [UsageExampleArgs("@Someone", "chicken")]
+        
         public class AmbushModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

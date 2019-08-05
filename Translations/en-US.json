@@ -1,4 +1,6 @@
 {
-  "suc": "Success!",
-  "err": "Error!"
+  "arg-usr": "@User",
+  "arg-rsn": "Reason for the action",
+  "msg-suc": "Success!",
+  "msg-err": "Error!"
 }

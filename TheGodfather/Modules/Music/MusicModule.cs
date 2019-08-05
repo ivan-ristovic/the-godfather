@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Music
         [Command("connect")]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
-        [UsageExampleArgs("Music")]
+        
         public async Task ConnectAsync(CommandContext ctx, 
                                       [Description("Channel.")] DiscordChannel channel = null)
         {

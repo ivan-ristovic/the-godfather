@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Search
     [Group("imdb"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search Open Movie Database. Group call searches by title.")]
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
-    [UsageExampleArgs("Airplane")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Searches IMDb for given query and returns paginated results.")]
         [Aliases("s", "find")]
-        [UsageExampleArgs("Sharknado")]
+        
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)
         {
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Search
         [Command("title")]
         [Description("Search by title.")]
         [Aliases("t", "name", "n")]
-        [UsageExampleArgs("Airplane")]
+        
         public Task SearchByTitleAsync(CommandContext ctx,
                                       [RemainingText, Description("Title.")] string title)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_IMDB_ID
         [Command("id")]
         [Description("Search by IMDb ID.")]
-        [UsageExampleArgs("tt4158110")]
+        
         public Task SearchByIdAsync(CommandContext ctx,
                                    [Description("ID.")] string id)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);

@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("textreaction"), Module(ModuleType.Reactions), NotBlocked]
     [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
-    [UsageExampleArgs("hello", "\"hi\" \"Hello, %user%!\"")]
+    
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("add")]
         [Description("Add a new text reaction to guild text reaction list.")]
         [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExampleArgs("\"hi\" \"Hello, %user%!\"")]
+        
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger string (case insensitive).")] string trigger,
                             [RemainingText, Description("Response.")] string response)
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("addregex")]
         [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExampleArgs("\"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
+        
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Regex (case insensitive).")] string trigger,
                                  [RemainingText, Description("Response.")] string response)
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("delete"), Priority(1)]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExampleArgs("5", "5 8", "hi")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("find")]
         [Description("Show a text reactions that matches the specified trigger.")]
         [Aliases("f")]
-        [UsageExampleArgs("hello")]
+        
         public Task ListAsync(CommandContext ctx, 
                              [RemainingText, Description("Specific trigger.")] string trigger)
         {

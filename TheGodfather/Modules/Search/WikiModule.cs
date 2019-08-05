@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Group("wikipedia"), Module(ModuleType.Searches), NotBlocked]
     [Description("Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.")]
     [Aliases("wiki")]
-    [UsageExampleArgs("Linux")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WikiModule : TheGodfatherModule
     {
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Search Wikipedia for a given query.")]
         [Aliases("s", "find")]
-        [UsageExampleArgs("Linux")]
+        
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {

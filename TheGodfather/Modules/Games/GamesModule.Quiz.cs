@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
         [Group("quiz")]
         [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExampleArgs("countries", "9", "history", "history hard", "history hard 15", "9 hard", "9 hard 15")]
+        
         public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Games
             [Command("capitals")]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            [UsageExampleArgs("15")]
+            
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Games
             [Command("countries")]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            [UsageExampleArgs("15")]
+            
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {

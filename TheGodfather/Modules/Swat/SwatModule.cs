@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Swat
         [Command("ip")]
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
-        [UsageExampleArgs("wm")]
+        
         public Task QueryAsync(CommandContext ctx,
                               [Description("Registered name.")] string name)
         {
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Swat
         [Command("query"), Priority(1)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
-        [UsageExampleArgs("109.70.149.158", "109.70.149.158:10480", "wm")]
+        
         public Task QueryAsync(CommandContext ctx,
                               [Description("Server IP.")] CustomIPFormat ip,
                               [Description("Query port")] int queryport = 10481)
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Swat
         #region COMMAND_SETTIMEOUT
         [Command("settimeout"), Hidden]
         [Description("Set checking timeout.")]
-        [UsageExampleArgs("500")]
+        
         [RequireOwner]
         public Task SetTimeoutAsync(CommandContext ctx,
                                    [Description("Timeout (in ms).")] int timeout)
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Swat
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers.")]
         [Aliases("sl", "list")]
-        [UsageExampleArgs("wm")]
+        
         public async Task ServerlistAsync(CommandContext ctx,
                                          [Description("Server name group.")] string group = null)
         {
@@ -178,7 +178,7 @@ namespace TheGodfather.Modules.Swat
         [Command("startcheck"), Priority(1), UsesInteractivity]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck", "sc")]
-        [UsageExampleArgs("109.70.149.158", "109.70.149.158:10480", "wm")]
+        
         public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip,
                                          [Description("Query port")] int queryport = 10481)

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("emojireaction"), Module(ModuleType.Reactions), NotBlocked]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
-    [UsageExampleArgs(":smile: haha laughing")]
+    
     [RequirePermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("add"), Priority(1)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExampleArgs(":smile: haha", "haha :smile:")]
+        
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
                             [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("addregex"), Priority(1)]
         [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExampleArgs(":smile: (ha)+", "(ha)+ :smile:")]
+        
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
                                  [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("delete"), Priority(2)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExampleArgs("haha sometrigger", "5", "5 4", ":joy:")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {
@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("find")]
         [Description("Show all emoji reactions that matches the specified trigger.")]
         [Aliases("f")]
-        [UsageExampleArgs("hello")]
+        
         public Task ListAsync(CommandContext ctx,
                              [RemainingText, Description("Specific trigger.")] string trigger)
         {

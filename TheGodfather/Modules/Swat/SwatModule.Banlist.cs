@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(2)]
             [Description("Add a player to banlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            [UsageExampleArgs("Name 109.70.149.158", "Name 109.70.149.158 Reason for ban")]
+            
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
                                       [Description("IP.")] CustomIPFormat ip,
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete"), Priority(1)]
             [Description("Remove ban entry from database.")]
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
-            [UsageExampleArgs("123.123.123.123")]
+            
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] CustomIPFormat ip)
             {

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Reminders
     [Group("remind"), Module(ModuleType.Reminders), NotBlocked]
     [Description("Manage reminders.")]
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
-    [UsageExampleArgs("1h Drink water!")]
+    
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class RemindModule : TheGodfatherModule
     {
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("delete")]
         [Description("Unschedules reminders.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
-        [UsageExampleArgs("1")]
+        
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Reminder ID.")] params int[] ids)
         {
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("repeat"), Priority(2)]
         [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
         [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
-        [UsageExampleArgs("1h Drink water!")]
+        
         public Task RepeatAsync(CommandContext ctx,
                                [Description("Repeat timespan.")] TimeSpan timespan,
                                [Description("Channel to send message to.")] DiscordChannel channel,
