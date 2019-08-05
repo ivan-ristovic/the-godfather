@@ -1,4 +1,7 @@
 {
+  "arg-usr": "@Korisnik",
+  "arg-mem": "@Clan",
+  "arg-rsn": "Razlog razlog",
   "suc": "Uspeh!",
   "err": "Greska!"
 }

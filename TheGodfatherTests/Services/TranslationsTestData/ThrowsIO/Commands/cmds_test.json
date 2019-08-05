@@ -1,11 +1,20 @@
 {
   "cmd1": {
-    "usage": [ "", "@Someone" ]
+    "usage": [
+	  [], 
+	  [ "arg-usr" ]
+	]
   },
   "cmd1 subcommand": {
-    "usage": [ "", "@Someone" ]
+    "usage": [
+	  [], 
+	  [ "arg-usr" ]
+	]
   },
   "cmd2": {
-    "usage": [ "", "@Someone" ]
+    "usage": [
+	  [], 
+	  [ "arg-usr" ]
+	]
   }
 }

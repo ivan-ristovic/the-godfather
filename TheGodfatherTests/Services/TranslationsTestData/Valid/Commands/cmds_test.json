@@ -14,8 +14,7 @@
   "cmd2": {
     "usage": [
       [],
-      [ "arg-member" ],
-      [ "arg-reason" ]
+      [ "arg-mem", "arg-rsn" ]
     ]
   }
 }

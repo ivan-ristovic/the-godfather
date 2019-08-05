@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Serilog;
+using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services
@@ -42,7 +43,7 @@ namespace TheGodfather.Services
             TryLoadCommands(Path.Combine(root, "Commands"));
 
             if (!this.strings.ContainsKey(this.defLocale))
-                throw new KeyNotFoundException($"The default locale {this.defLocale} is not loaded");
+                throw new LocalizationException($"The default locale {this.defLocale} is not loaded");
 
             this.isDataLoaded = true;
 
@@ -74,7 +75,7 @@ namespace TheGodfather.Services
 
                             foreach ((string cmd, CommandInfo info) in cmdsPart) {
                                 if (cmds.ContainsKey(cmd))
-                                    throw new IOException($"Duplicate command info: {cmd}");
+                                    throw new LocalizationException($"Duplicate command info: {cmd}");
                                 foreach ((string locale, Dictionary<string, string> localeDesc) in desc) {
                                     if (localeDesc.TryGetValue(cmd, out string cmdDesc))
                                         info.Descriptions.Add(locale, cmdDesc);
@@ -88,7 +89,7 @@ namespace TheGodfather.Services
                             Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     Log.Fatal(e, "Failed to load command translations");
                     throw e;
                 }
@@ -134,11 +135,13 @@ namespace TheGodfather.Services
             string response = null;
             if (!string.IsNullOrWhiteSpace(key)) {
                 string locale = this.GetGuildLocale(gid);
-                if (!this.strings[locale].TryGetValue(key, out response))
-                    Log.Error(new KeyNotFoundException(), "Failed to find string for {Key} in locale {Locale}", key, locale);
+                if (!this.strings[locale].TryGetValue(key, out response)) {
+                    Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
+                    throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
+                }
             }
 
-            return response ?? $"I do not have a translation ready for `{key}`. Please report this.";
+            return response;
         }
 
         public string GetGuildLocale(ulong gid)
@@ -153,7 +156,7 @@ namespace TheGodfather.Services
             string locale = this.GetGuildLocale(gid);
 
             if (!cmdInfo.Descriptions.TryGetValue(locale, out string desc) && !cmdInfo.Descriptions.TryGetValue(this.defLocale, out desc))
-                throw new KeyNotFoundException("No translations found in either guild or default locale for given command.");
+                throw new LocalizationException("No translations found in either guild or default locale for given command.");
 
             return desc;
         }
@@ -166,8 +169,11 @@ namespace TheGodfather.Services
 
             if (cmdInfo.UsageExamples.Any()) {
                 foreach (List<string> args in cmdInfo.UsageExamples) {
-                    string example = string.Join(" ", args.Select(arg => this.GetString(gid, arg)));
-                    examples.Add($"{this.gcs.GetGuildPrefix(gid)}{command} {example}");
+                    string cmd = $"{this.gcs.GetGuildPrefix(gid)}{command}";
+                    if (args.Any())
+                        examples.Add($"{cmd} {string.Join(" ", args.Select(arg => this.GetString(gid, arg)))}");
+                    else
+                        examples.Add(cmd);
                 }
             }
 
@@ -196,7 +202,7 @@ namespace TheGodfather.Services
             this.AssertIsDataLoaded();
 
             if (!this.commands.TryGetValue(command, out CommandInfo cmdInfo))
-                throw new KeyNotFoundException("No translations for this command have been found.");
+                throw new LocalizationException("No translations for this command have been found.");
 
             return cmdInfo;
         }

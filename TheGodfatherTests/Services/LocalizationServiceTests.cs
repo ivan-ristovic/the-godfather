@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Common;
 using TheGodfather.Database.Entities;
+using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 
@@ -19,9 +19,7 @@ namespace TheGodfatherTests.Services
         public string EnLocale => "en-US";
         public string SrLocale => "Lt-sr-SP";
 
-
         private readonly string testDataPath = @"D:\Work\GitHub\the-godfather\TheGodfatherTests\Services\TranslationsTestData";
-
 
 
         [SetUp]
@@ -47,7 +45,7 @@ namespace TheGodfatherTests.Services
             this.Service.LoadData(this.ValidTestDataPath);
             Assert.That(this.Service.AvailableLocales, Is.EquivalentTo(new[] { this.EnLocale, this.SrLocale }));
 
-            Assert.That(() => this.Service.LoadData(this.ThrowsIOTestDataPath), Throws.InstanceOf<IOException>());
+            Assert.That(() => this.Service.LoadData(this.ThrowsIOTestDataPath), Throws.InstanceOf<LocalizationException>());
         }
 
         [Test]
@@ -90,7 +88,7 @@ namespace TheGodfatherTests.Services
                     Assert.That(this.Service.GetString(MockData.Ids[1], "suc"), Is.EqualTo("Uspeh!"));
                     Assert.That(this.Service.GetString(MockData.Ids[1], "err"), Is.EqualTo("Greska!"));
                     Assert.That(this.Service.GetString(123, "err"), Is.EqualTo("Error!"));
-                    Assert.That(this.Service.GetString(MockData.Ids[0], "does not exist"), Does.StartWith("I do not have"));
+                    Assert.That(() => this.Service.GetString(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
                 }
             );
         }
@@ -103,7 +101,7 @@ namespace TheGodfatherTests.Services
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd1"), Is.EqualTo("one"));
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd2"), Is.EqualTo("two"));
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo("one sub"));
-            Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[0], "does not exist"), Throws.InstanceOf<KeyNotFoundException>());
+            Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd1"), Is.EqualTo("one"));
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd2"), Is.EqualTo("two"));
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd1 subcommand"), Is.EqualTo("one sub"));
@@ -122,13 +120,50 @@ namespace TheGodfatherTests.Services
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd1"), Is.EqualTo("one"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd2"), Is.EqualTo("two"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo("one sub"));
-                    Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[0], "does not exist"), Throws.InstanceOf<KeyNotFoundException>());
+                    Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd2"), Is.EqualTo("dva"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd3"), Is.EqualTo("tri"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd1 subcommand"), Is.EqualTo("jedan pod"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd1"), Is.EqualTo("one"));
                     Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd4"), Is.EqualTo("four"));
-                    Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[1], "does not exist"), Throws.InstanceOf<KeyNotFoundException>());
+                    Assert.That(() => this.Service.GetCommandDescription(MockData.Ids[1], "does not exist"), Throws.InstanceOf<LocalizationException>());
+                }
+            );
+        }
+
+        [Test]
+        public void GetCommandUsageExamplesTests()
+        {
+            this.Service.LoadData(this.ValidTestDataPath);
+
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @User" }));
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Member Reason reason" }));
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @User" }));
+            Assert.That(() => this.Service.GetCommandUsageExamples(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @User" }));
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Member Reason reason" }));
+            Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @User" }));
+            Assert.That(() => this.Service.GetCommandUsageExamples(MockData.Ids[1], "does not exist"), Throws.InstanceOf<LocalizationException>());
+
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    gcfg.Locale = "Lt-sr-SP";
+                    db.GuildConfig.Update(gcfg);
+                },
+                alter: db => {
+                    this.Configs.LoadData();
+                    this.Service.LoadData(this.ValidTestDataPath);
+                },
+                verify: db => {
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @User" }));
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Member Reason reason" }));
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @User" }));
+                    Assert.That(() => this.Service.GetCommandUsageExamples(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @Korisnik" }));
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Clan Razlog razlog" }));
+                    Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[1], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @Korisnik" }));
+                    Assert.That(() => this.Service.GetCommandUsageExamples(MockData.Ids[1], "does not exist"), Throws.InstanceOf<LocalizationException>());
                 }
             );
         }

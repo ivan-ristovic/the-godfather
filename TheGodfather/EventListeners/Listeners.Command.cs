@@ -157,6 +157,9 @@ namespace TheGodfather.EventListeners
                     break;
                 case TaskCanceledException _:
                     return;
+                case LocalizationException lex:
+                    sb.Append(ex.Message);
+                    break;
                 default:
                     sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
                     sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");

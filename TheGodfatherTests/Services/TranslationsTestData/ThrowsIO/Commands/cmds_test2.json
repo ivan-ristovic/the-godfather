@@ -1,5 +1,8 @@
 {
   "cmd1": {
-    "usage": [ "", "@Someone" ]
+    "usage": [
+	  [], 
+	  [ "arg-usr" ]
+	]
   }
 }
