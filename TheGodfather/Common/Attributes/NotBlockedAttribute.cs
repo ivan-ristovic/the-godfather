@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -15,10 +16,9 @@ namespace TheGodfather.Common.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            SharedData shared = ctx.Services.GetService<SharedData>();
-            if (!shared.IsBotListening)
+            if (!ctx.Services.GetService<SharedData>().IsBotListening)
                 return Task.FromResult(false);
-            if (shared.BlockedUsers.Contains(ctx.User.Id) || shared.BlockedChannels.Contains(ctx.Channel.Id))
+            if (ctx.Services.GetService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);
             if (BlockingCommandRuleExists())
                 return Task.FromResult(false);
@@ -31,6 +31,7 @@ namespace TheGodfather.Common.Attributes
 
             bool BlockingCommandRuleExists()
             {
+                // TODO when moved to service create a cached set of guilds which have command rules and query it before accessing the database
                 DatabaseContextBuilder dbb = ctx.Services.GetService<DatabaseContextBuilder>();
                 using (DatabaseContext db = dbb.CreateContext()) {
                     IQueryable<DatabaseCommandRule> dbrules = db.CommandRules

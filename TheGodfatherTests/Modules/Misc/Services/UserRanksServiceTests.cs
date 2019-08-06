@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using TheGodfather.Database.Entities;
-using TheGodfather.Services;
+using TheGodfather.Misc.Services;
 
-namespace TheGodfatherTests.Services
+namespace TheGodfatherTests.Misc.Services
 {
     [TestFixture]
     public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksService>

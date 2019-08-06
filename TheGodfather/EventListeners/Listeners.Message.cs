@@ -12,8 +12,10 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
+using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
@@ -46,7 +48,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate)
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
+            if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
@@ -69,7 +71,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
             CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
@@ -86,7 +88,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
             CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
@@ -111,7 +113,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
+            if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;
 
             ReactionsService gdata = shard.Services.GetService<ReactionsService>();
@@ -187,7 +189,7 @@ namespace TheGodfather.EventListeners
             if (e.Author is null || e.Author.IsBot || e.Channel is null || e.Channel.IsPrivate || e.Message is null)
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
             if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))

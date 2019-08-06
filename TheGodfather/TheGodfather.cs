@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,14 +14,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -169,17 +168,7 @@ namespace TheGodfather
         {
             Log.Information("Loading data from the database");
 
-            ConcurrentHashSet<ulong> blockedChannels;
-            ConcurrentHashSet<ulong> blockedUsers;
-
-            using (DatabaseContext db = _dbb.CreateContext()) {
-                blockedChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
-                blockedUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
-            }
-
             _shared = new SharedData {
-                BlockedChannels = blockedChannels,
-                BlockedUsers = blockedUsers,
                 BotConfiguration = _cfg,
                 MainLoopCts = new CancellationTokenSource(),
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
@@ -194,6 +183,7 @@ namespace TheGodfather
             IServiceCollection sharedServices = new ServiceCollection()
                 .AddSingleton(_shared)
                 .AddSingleton(_dbb)
+                .AddSingleton(new BlockingService(_dbb))
                 .AddSingleton(new ChannelEventService())
                 .AddSingleton(new FilteringService(_dbb))
                 .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))

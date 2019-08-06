@@ -3,8 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Services;
 
-namespace TheGodfather.Services
+namespace TheGodfather.Misc.Services
 {
     public sealed class UserRanksService : ITheGodfatherService
     {

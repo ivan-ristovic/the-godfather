@@ -15,6 +15,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Owner.Services;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -25,11 +26,11 @@ namespace TheGodfather.Modules.Owner
         [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
         [RequirePrivilegedUser]
-        public class BlockedUsersModule : TheGodfatherModule
+        public class BlockedUsersModule : TheGodfatherServiceModule<BlockingService>
         {
 
-            public BlockedUsersModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public BlockedUsersModule(BlockingService service, SharedData shared, DatabaseContextBuilder db) 
+                : base(service, shared, db)
             {
                 
             }
@@ -77,32 +78,8 @@ namespace TheGodfather.Modules.Owner
                 if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users to block.");
 
-                var eb = new StringBuilder();
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    foreach (DiscordUser user in users) {
-                        if (this.Shared.BlockedUsers.Contains(user.Id)) {
-                            eb.AppendLine($"Error: {user.ToString()} is already blocked!");
-                            continue;
-                        }
-
-                        if (!this.Shared.BlockedUsers.Add(user.Id)) {
-                            eb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
-                            continue;
-                        }
-
-                        db.BlockedUsers.Add(new DatabaseBlockedUser {
-                            UserId = user.Id,
-                            Reason = reason
-                        });
-                    }
-
-                    await db.SaveChangesAsync();
-                }
-
-                if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-                else
-                    await this.InformAsync(ctx, $"Blocked all given users.", important: false);
+                int blocked = await this.Service.BlockUsersAsync(users.Select(u => u.Id), reason);
+                await this.InformAsync(ctx, $"Successfully blocked {blocked} users.", important: false);
             }
 
             [Command("add"), Priority(0)]
@@ -121,31 +98,10 @@ namespace TheGodfather.Modules.Owner
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {
                 if (users is null || !users.Any())
-                    throw new InvalidCommandUsageException("Missing users to block.");
+                    throw new InvalidCommandUsageException("Missing users to unblock.");
 
-                var eb = new StringBuilder();
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    foreach (DiscordUser user in users) {
-                        if (!this.Shared.BlockedUsers.Contains(user.Id)) {
-                            eb.AppendLine($"Warning: {user.ToString()} is not blocked!");
-                            continue;
-                        }
-
-                        if (!this.Shared.BlockedUsers.TryRemove(user.Id)) {
-                            eb.AppendLine($"Error: Failed to remove {user.ToString()} from blocked users list!");
-                            continue;
-                        }
-
-                        db.BlockedUsers.Remove(new DatabaseBlockedUser { UserId = user.Id });
-                    }
-
-                    await db.SaveChangesAsync();
-                }
-
-                if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-                else
-                    await this.InformAsync(ctx, $"Unlocked all given users.", important: false);
+                int unblocked = await this.Service.UnblockUsersAsync(users.Select(u => u.Id));
+                await this.InformAsync(ctx, $"Successfully unblocked {unblocked} users.", important: false);
             }
             #endregion
 
@@ -155,34 +111,39 @@ namespace TheGodfather.Modules.Owner
             [Aliases("ls", "l", "print")]
             public async Task ListAsync(CommandContext ctx)
             {
-                List<DatabaseBlockedUser> blocked;
-                using (DatabaseContext db = this.Database.CreateContext())
-                    blocked = await db.BlockedUsers.ToListAsync();
-
-                var lines = new List<string>();
-                foreach (DatabaseBlockedUser usr in blocked) {
-                    try {
-                        DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
-                        lines.Add($"{user.ToString()} ({Formatter.Italic(usr.Reason ?? "No reason provided.")})");
-                    } catch (NotFoundException) {
-                        LogExt.Debug(ctx, "Removed 403 blocked user {UserId}", usr.UserId);
-                        using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.BlockedUsers.Remove(new DatabaseBlockedUser { UserIdDb = usr.UserIdDb });
-                            await db.SaveChangesAsync();
-                        }
-                    }
-                }
-
-                if (!lines.Any())
-                    throw new CommandFailedException("No blocked users registered!");
+                List<(DiscordUser User, string Reason)> blockedUsers = await GetBlockedUsers();
+                if (!blockedUsers.Any())
+                    throw new CommandFailedException("No blocked channels registered!");
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Blocked users (in database):",
-                    lines,
-                    line => line,
+                    "Blocked users:",
+                    blockedUsers,
+                    tup => $"{tup.User.ToString()} ({Formatter.Italic(tup.Reason ?? "No reason provided.")}",
                     this.ModuleColor,
                     5
                 );
+
+
+                async Task<List<(DiscordUser User, string Reason)>> GetBlockedUsers()
+                {
+                    var validBlocked = new List<(DiscordUser, string)>();
+                    var toRemove = new List<ulong>();
+
+                    foreach (DatabaseBlockedUser blocked in await this.Service.GetBlockedUsers()) {
+                        try {
+                            DiscordUser chn = await ctx.Client.GetUserAsync(blocked.UserId);
+                            validBlocked.Add((chn, blocked.Reason));
+                        } catch (NotFoundException) {
+                            LogExt.Debug(ctx, "Found 404 blocked channel {UserId}", blocked.UserId);
+                            toRemove.Add(blocked.UserId);
+                        } catch (UnauthorizedException) {
+                            LogExt.Debug(ctx, "Found 403 blocked channel {UserId}", blocked.UserId);
+                        }
+                    }
+
+                    await this.Service.UnblockChannelsAsync(toRemove);
+                    return validBlocked;
+                }
             }
             #endregion
         }

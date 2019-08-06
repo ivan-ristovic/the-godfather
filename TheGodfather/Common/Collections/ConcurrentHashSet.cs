@@ -1,7 +1,4 @@
-﻿// License MIT
-// Source: https://github.com/i3arnon/ConcurrentHashSet
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +16,7 @@ namespace TheGodfather.Common.Collections
     /// concurrently from multiple threads.
     /// </remarks>
     [DebuggerDisplay("Count = {Count}")]
-    public sealed class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
+    public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private const int DefaultCapacity = 31;
         private const int MaxLockNumber = 1024;
@@ -30,7 +27,7 @@ namespace TheGodfather.Common.Collections
         private int _budget;
         private volatile Tables _tables;
 
-        private static int DefaultConcurrencyLevel => Environment.ProcessorCount;
+        private static int DefaultConcurrencyLevel => PlatformHelper.ProcessorCount;
 
         /// <summary>
         /// Gets the number of items contained in the <see
@@ -41,8 +38,7 @@ namespace TheGodfather.Common.Collections
         /// <remarks>Count has snapshot semantics and represents the number of items in the <see
         /// cref="ConcurrentHashSet{T}"/>
         /// at the moment when Count was accessed.</remarks>
-        public int Count
-        {
+        public int Count {
             get {
                 int count = 0;
                 int acquiredLocks = 0;
@@ -65,8 +61,7 @@ namespace TheGodfather.Common.Collections
         /// </summary>
         /// <value>true if the <see cref="ConcurrentHashSet{T}"/> is empty; otherwise,
         /// false.</value>
-        public bool IsEmpty
-        {
+        public bool IsEmpty {
             get {
                 int acquiredLocks = 0;
                 try {
@@ -92,7 +87,7 @@ namespace TheGodfather.Common.Collections
         /// uses the default comparer for the item type.
         /// </summary>
         public ConcurrentHashSet()
-            : this(DefaultConcurrencyLevel, DefaultCapacity, true, EqualityComparer<T>.Default)
+            : this(DefaultConcurrencyLevel, DefaultCapacity, true, null)
         {
         }
 
@@ -112,7 +107,7 @@ namespace TheGodfather.Common.Collections
         /// <exception cref="T:System.ArgumentOutOfRangeException"> <paramref name="capacity"/> is less than
         /// 0.</exception>
         public ConcurrentHashSet(int concurrencyLevel, int capacity)
-            : this(concurrencyLevel, capacity, false, EqualityComparer<T>.Default)
+            : this(concurrencyLevel, capacity, false, null)
         {
         }
 
@@ -128,7 +123,7 @@ namespace TheGodfather.Common.Collections
         /// <see cref="ConcurrentHashSet{T}"/>.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is a null reference.</exception>
         public ConcurrentHashSet(IEnumerable<T> collection)
-            : this(collection, EqualityComparer<T>.Default)
+            : this(collection, null)
         {
         }
 
@@ -139,7 +134,6 @@ namespace TheGodfather.Common.Collections
         /// </summary>
         /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer{T}"/>
         /// implementation to use when comparing items.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="comparer"/> is a null reference.</exception>
         public ConcurrentHashSet(IEqualityComparer<T> comparer)
             : this(DefaultConcurrencyLevel, DefaultCapacity, true, comparer)
         {
@@ -159,13 +153,12 @@ namespace TheGodfather.Common.Collections
         /// <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer{T}"/>
         /// implementation to use when comparing items.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is a null reference
-        /// (Nothing in Visual Basic). -or-
-        /// <paramref name="comparer"/> is a null reference (Nothing in Visual Basic).
+        /// (Nothing in Visual Basic).
         /// </exception>
         public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : this(comparer)
         {
-            if (collection is null) throw new ArgumentNullException(nameof(collection));
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
 
             this.InitializeFromCollection(collection);
         }
@@ -185,8 +178,6 @@ namespace TheGodfather.Common.Collections
         /// when comparing items.</param>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="collection"/> is a null reference.
-        /// -or-
-        /// <paramref name="comparer"/> is a null reference.
         /// </exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
         /// <paramref name="concurrencyLevel"/> is less than 1.
@@ -194,8 +185,7 @@ namespace TheGodfather.Common.Collections
         public ConcurrentHashSet(int concurrencyLevel, IEnumerable<T> collection, IEqualityComparer<T> comparer)
             : this(concurrencyLevel, DefaultCapacity, false, comparer)
         {
-            if (collection is null) throw new ArgumentNullException(nameof(collection));
-            if (comparer is null) throw new ArgumentNullException(nameof(comparer));
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
 
             this.InitializeFromCollection(collection);
         }
@@ -216,7 +206,6 @@ namespace TheGodfather.Common.Collections
         /// <paramref name="concurrencyLevel"/> is less than 1. -or-
         /// <paramref name="capacity"/> is less than 0.
         /// </exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="comparer"/> is a null reference.</exception>
         public ConcurrentHashSet(int concurrencyLevel, int capacity, IEqualityComparer<T> comparer)
             : this(concurrencyLevel, capacity, false, comparer)
         {
@@ -226,7 +215,6 @@ namespace TheGodfather.Common.Collections
         {
             if (concurrencyLevel < 1) throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
             if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
-            if (comparer is null) throw new ArgumentNullException(nameof(comparer));
 
             // The capacity should be at least as large as the concurrency level. Otherwise, we would have locks that don't guard
             // any buckets.
@@ -245,7 +233,7 @@ namespace TheGodfather.Common.Collections
 
             this._growLockArray = growLockArray;
             this._budget = buckets.Length / locks.Length;
-            this._comparer = comparer;
+            this._comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
         /// <summary>
@@ -316,8 +304,7 @@ namespace TheGodfather.Common.Collections
             while (true) {
                 Tables tables = this._tables;
 
-                int bucketNo, lockNo;
-                GetBucketAndLockNo(hashcode, out bucketNo, out lockNo, tables.Buckets.Length, tables.Locks.Length);
+                GetBucketAndLockNo(hashcode, out int bucketNo, out int lockNo, tables.Buckets.Length, tables.Locks.Length);
 
                 lock (tables.Locks[lockNo]) {
                     // If the table just got resized, we may not be holding the right lock, and must retry.
@@ -328,10 +315,10 @@ namespace TheGodfather.Common.Collections
 
                     Node previous = null;
                     for (Node current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
-                        Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
+                        Debug.Assert((previous == null && current == tables.Buckets[bucketNo]) || previous.Next == current);
 
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
-                            if (previous is null) {
+                            if (previous == null) {
                                 Volatile.Write(ref tables.Buckets[bucketNo], current.Next);
                             } else {
                                 previous.Next = current.Next;
@@ -380,7 +367,7 @@ namespace TheGodfather.Common.Collections
 
         void ICollection<T>.CopyTo(T[] array, int arrayIndex)
         {
-            if (array is null) throw new ArgumentNullException(nameof(array));
+            if (array == null) throw new ArgumentNullException(nameof(array));
             if (arrayIndex < 0) throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 
             int locksAcquired = 0;
@@ -420,10 +407,9 @@ namespace TheGodfather.Common.Collections
         private bool AddInternal(T item, int hashcode, bool acquireLock)
         {
             while (true) {
-                int bucketNo, lockNo;
-
                 Tables tables = this._tables;
-                GetBucketAndLockNo(hashcode, out bucketNo, out lockNo, tables.Buckets.Length, tables.Locks.Length);
+
+                GetBucketAndLockNo(hashcode, out int bucketNo, out int lockNo, tables.Buckets.Length, tables.Locks.Length);
 
                 bool resizeDesired = false;
                 bool lockTaken = false;
@@ -440,7 +426,7 @@ namespace TheGodfather.Common.Collections
                     // Try to find this item in the bucket
                     Node previous = null;
                     for (Node current = tables.Buckets[bucketNo]; current != null; current = current.Next) {
-                        Debug.Assert((previous is null && current == tables.Buckets[bucketNo]) || previous.Next == current);
+                        Debug.Assert((previous == null && current == tables.Buckets[bucketNo]) || previous.Next == current);
                         if (hashcode == current.Hashcode && this._comparer.Equals(current.Item, item)) {
                             return false;
                         }
@@ -589,8 +575,7 @@ namespace TheGodfather.Common.Collections
                     Node current = tables.Buckets[i];
                     while (current != null) {
                         Node next = current.Next;
-                        int newBucketNo, newLockNo;
-                        GetBucketAndLockNo(current.Hashcode, out newBucketNo, out newLockNo, newBuckets.Length, newLocks.Length);
+                        GetBucketAndLockNo(current.Hashcode, out int newBucketNo, out int newLockNo, newBuckets.Length, newLocks.Length);
 
                         newBuckets[newBucketNo] = new Node(current.Item, current.Hashcode, newBuckets[newBucketNo]);
 
@@ -611,17 +596,6 @@ namespace TheGodfather.Common.Collections
                 // Release all locks that we took earlier
                 this.ReleaseLocks(0, locksAcquired);
             }
-        }
-
-        public int RemoveWhere(Func<T, bool> predicate)
-        {
-            IEnumerable<T> elems = this.Where(predicate);
-            int removed = 0;
-            foreach (T elem in elems) {
-                if (this.TryRemove(elem))
-                    removed++;
-            }
-            return removed;
         }
 
         private void AcquireAllLocks(ref int locksAcquired)
@@ -672,7 +646,18 @@ namespace TheGodfather.Common.Collections
             }
         }
 
-        private sealed class Tables
+        public int RemoveWhere(Func<T, bool> predicate)
+        {
+            IEnumerable<T> elems = this.Where(predicate);
+            int removed = 0;
+            foreach (T elem in elems) {
+                if (this.TryRemove(elem))
+                    removed++;
+            }
+            return removed;
+        }
+
+        private class Tables
         {
             public readonly Node[] Buckets;
             public readonly object[] Locks;
@@ -687,7 +672,7 @@ namespace TheGodfather.Common.Collections
             }
         }
 
-        private sealed class Node
+        private class Node
         {
             public readonly T Item;
             public readonly int Hashcode;
@@ -699,6 +684,26 @@ namespace TheGodfather.Common.Collections
                 this.Item = item;
                 this.Hashcode = hashcode;
                 this.Next = next;
+            }
+        }
+
+        private static class PlatformHelper
+        {
+            private const int ProcessorCountRefreshIntervalMs = 30000;
+
+            private static volatile int _processorCount;
+            private static volatile int _lastProcessorCountRefreshTicks;
+
+            internal static int ProcessorCount {
+                get {
+                    int now = Environment.TickCount;
+                    if (_processorCount == 0 || now - _lastProcessorCountRefreshTicks >= ProcessorCountRefreshIntervalMs) {
+                        _processorCount = Environment.ProcessorCount;
+                        _lastProcessorCountRefreshTicks = now;
+                    }
+
+                    return _processorCount;
+                }
             }
         }
     }
