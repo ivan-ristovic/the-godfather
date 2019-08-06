@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Owner
                     var validBlocked = new List<(DiscordChannel, string)>();
                     var toRemove = new List<ulong>();
 
-                    foreach (DatabaseBlockedChannel blocked in await this.Service.GetBlockedChannels()) {
+                    foreach (DatabaseBlockedChannel blocked in await this.Service.GetBlockedChannelsAsync()) {
                         try {
                             DiscordChannel chn = await ctx.Client.GetChannelAsync(blocked.ChannelId);
                             validBlocked.Add((chn, blocked.Reason));

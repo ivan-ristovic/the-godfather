@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TheGodfather.Common.Collections;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Services;
@@ -46,20 +46,24 @@ namespace TheGodfather.Modules.Owner.Services
             }
         }
 
-        public bool IsChannelBlocked(ulong cid)
+        public void Sync()
         {
-            return false;
+            this.bUsers.Clear();
+            this.bChannels.Clear();
+            this.LoadData();
         }
 
+        public bool IsChannelBlocked(ulong cid)
+
+            => this.bChannels.Contains(cid);
+
         public bool IsUserBlocked(ulong uid)
-        {
-            return false;
-        }
+            => this.bUsers.Contains(uid);
 
         public bool IsBlocked(ulong cid, ulong uid)
             => this.IsChannelBlocked(cid) || this.IsUserBlocked(uid);
 
-        public async Task<IReadOnlyList<DatabaseBlockedChannel>> GetBlockedChannels()
+        public async Task<IReadOnlyList<DatabaseBlockedChannel>> GetBlockedChannelsAsync()
         {
             List<DatabaseBlockedChannel> blocked;
             using (DatabaseContext db = this.dbb.CreateContext())
@@ -67,7 +71,7 @@ namespace TheGodfather.Modules.Owner.Services
             return blocked.AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<DatabaseBlockedUser>> GetBlockedUsers()
+        public async Task<IReadOnlyList<DatabaseBlockedUser>> GetBlockedUsersAsync()
         {
             List<DatabaseBlockedUser> blocked;
             using (DatabaseContext db = this.dbb.CreateContext())
@@ -77,11 +81,9 @@ namespace TheGodfather.Modules.Owner.Services
 
         public async Task<bool> BlockChannelAsync(ulong cid, string reason = null)
         {
+            if (!this.bChannels.Add(cid))
+                return false;
             using (DatabaseContext db = this.dbb.CreateContext()) {
-                if (this.bChannels.Contains(cid))
-                    return false;
-                if (!this.bChannels.Add(cid))
-                    return false;
                 db.BlockedChannels.Add(new DatabaseBlockedChannel {
                     ChannelId = cid,
                     Reason = reason
@@ -100,8 +102,6 @@ namespace TheGodfather.Modules.Owner.Services
 
             using (DatabaseContext db = this.dbb.CreateContext()) {
                 foreach (ulong cid in cids) {
-                    if (this.bChannels.Contains(cid))
-                        continue;
                     if (!this.bChannels.Add(cid))
                         continue;
                     db.BlockedChannels.Add(new DatabaseBlockedChannel {
