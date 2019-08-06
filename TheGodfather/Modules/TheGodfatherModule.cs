@@ -77,18 +77,5 @@ namespace TheGodfather.Modules
                 .WithColor(this.ModuleColor)
             );
         }
-
-        protected async Task<bool> IsValidImageUriAsync(Uri uri)
-        {
-            try {
-                HttpResponseMessage response = await _http.GetAsync(uri).ConfigureAwait(false);
-                if (response.Content.Headers.ContentType.MediaType.StartsWith("image/"))
-                    return true;
-            } catch {
-
-            }
-
-            return false;
-        }
     }
 }

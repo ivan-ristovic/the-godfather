@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,26 +20,26 @@ namespace TheGodfather.Common.Attributes
                 return Task.FromResult(false);
             if (shared.BlockedUsers.Contains(ctx.User.Id) || shared.BlockedChannels.Contains(ctx.Channel.Id))
                 return Task.FromResult(false);
-            if (this.BlockingCommandRuleExists(ctx))
+            if (BlockingCommandRuleExists())
                 return Task.FromResult(false);
 
             if (!help)
                 LogExt.Debug(ctx, "Executing {Command} in {Message}", ctx.Command?.QualifiedName ?? "<unknown command>", ctx.Message.Content);
 
             return Task.FromResult(true);
-        }
 
 
-        private bool BlockingCommandRuleExists(CommandContext ctx)
-        {
-            DatabaseContextBuilder dbb = ctx.Services.GetService<DatabaseContextBuilder>();
-            using (DatabaseContext db = dbb.CreateContext()) {
-                IQueryable<DatabaseCommandRule> dbrules = db.CommandRules
-                    .Where(cr => cr.IsMatchFor(ctx.Guild.Id, ctx.Channel.Id) && ctx.Command.QualifiedName.StartsWith(cr.Command));
-                if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelId == ctx.Channel.Id && cr.Allowed))
-                    return false;
+            bool BlockingCommandRuleExists()
+            {
+                DatabaseContextBuilder dbb = ctx.Services.GetService<DatabaseContextBuilder>();
+                using (DatabaseContext db = dbb.CreateContext()) {
+                    IQueryable<DatabaseCommandRule> dbrules = db.CommandRules
+                        .Where(cr => cr.IsMatchFor(ctx.Guild.Id, ctx.Channel.Id) && ctx.Command.QualifiedName.StartsWith(cr.Command));
+                    if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelId == ctx.Channel.Id && cr.Allowed))
+                        return false;
+                }
+                return true;
             }
-            return true;
         }
     }
 }

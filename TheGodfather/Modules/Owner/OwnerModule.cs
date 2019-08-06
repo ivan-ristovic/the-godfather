@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Owner
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] Uri url)
         {
-            if (!await this.IsValidImageUriAsync(url))
+            if (!await url.IsValidImageUriAsync())
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
