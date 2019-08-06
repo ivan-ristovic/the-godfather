@@ -17,8 +17,8 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildNewMembers;
 
 
-        public AntiInstantLeaveService(TheGodfatherShard shard, GuildConfigService gcs)
-            : base(shard, gcs)
+        public AntiInstantLeaveService(TheGodfatherShard shard)
+            : base(shard)
         {
             this.guildNewMembers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
             this.reason = "_gf: Instant leave";

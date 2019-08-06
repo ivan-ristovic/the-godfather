@@ -7,6 +7,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 
 namespace TheGodfatherTests.Modules.Administration.Services
 {
@@ -49,7 +50,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new GuildConfigService(BotConfig.Default, TestDatabaseProvider.Database, loadData: false);
+            this.Service = new GuildConfigService(new BotConfigService(), TestDatabaseProvider.Database, loadData: false);
         }
 
 

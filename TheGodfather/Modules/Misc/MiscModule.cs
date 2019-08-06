@@ -25,6 +25,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -275,10 +276,10 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
 
             DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.Prefix = (prefix == this.Shared.BotConfiguration.Prefix) ? null : prefix;
+                cfg.Prefix = (prefix == ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix) ? null : prefix;
             });
 
-            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.Prefix)}", important: false);
+            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(gcfg.Prefix ?? ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix)}", important: false);
         }
         #endregion
 

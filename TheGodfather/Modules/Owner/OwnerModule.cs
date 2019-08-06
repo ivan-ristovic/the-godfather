@@ -21,7 +21,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -29,6 +29,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Owner.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -519,12 +520,14 @@ namespace TheGodfather.Modules.Owner
             // TODO rework needed since Serilog introduction
             await ctx.RespondAsync("This command is broken dude, remember?");
 
-            if (!bypassConfig && !this.Shared.BotConfiguration.LogToFile)
+            BotConfig cfg = ctx.Services.GetService<BotConfigService>().CurrentConfiguration;
+
+            if (!bypassConfig && !cfg.LogToFile)
                 throw new CommandFailedException("Logs aren't dumped to any files.");
-            var fi = new FileInfo(this.Shared.BotConfiguration.LogPath);
+            var fi = new FileInfo(cfg.LogPath);
             if (fi.Exists && fi.Length > 8 * 1024 * 1024)
                 throw new CommandFailedException("The file is too big to upload!");
-            using (var fs = new FileStream(this.Shared.BotConfiguration.LogPath, FileMode.Open))
+            using (var fs = new FileStream(cfg.LogPath, FileMode.Open))
                 await ctx.RespondWithFileAsync(fs);
         }
 

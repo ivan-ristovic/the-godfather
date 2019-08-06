@@ -18,8 +18,8 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildFloodUsers;
 
 
-        public AntifloodService(TheGodfatherShard shard, GuildConfigService gcs)
-            : base(shard, gcs)
+        public AntifloodService(TheGodfatherShard shard)
+            : base(shard)
         {
             this.guildFloodUsers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
             this.reason = "_gf: Flooding";

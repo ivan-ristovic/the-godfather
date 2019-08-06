@@ -15,14 +15,10 @@ using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 using TheGodfather.Common;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
-using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Owner.Services;
-using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 
@@ -35,7 +31,7 @@ namespace TheGodfather
 
         public static IReadOnlyList<TheGodfatherShard> ActiveShards => _shards.AsReadOnly();
 
-        private static BotConfig _cfg;
+        private static BotConfigService _cfg;
         private static DatabaseContextBuilder _dbb;
         private static List<TheGodfatherShard> _shards;
         private static SharedData _shared;
@@ -104,14 +100,14 @@ namespace TheGodfather
                 .Enrich.With<Enrichers.ThreadIdEnricher>()
                 .Enrich.With<Enrichers.ShardIdEnricher>()
                 .Enrich.With<Enrichers.ApplicationNameEnricher>()
-                .MinimumLevel.Is(_cfg.LogLevel)
+                .MinimumLevel.Is(_cfg.CurrentConfiguration.LogLevel)
                 .WriteTo.Console(outputTemplate: template)
                 ;
 
-            if (_cfg.LogToFile)
-                lcfg = lcfg.WriteTo.File(_cfg.LogPath, _cfg.LogLevel, outputTemplate: template, rollingInterval: RollingInterval.Day);
+            if (_cfg.CurrentConfiguration.LogToFile)
+                lcfg = lcfg.WriteTo.File(_cfg.CurrentConfiguration.LogPath, _cfg.CurrentConfiguration.LogLevel, outputTemplate: template, rollingInterval: RollingInterval.Day);
 
-            foreach (BotConfig.SpecialLoggingRule rule in _cfg.SpecialLoggerRules) {
+            foreach (BotConfig.SpecialLoggingRule rule in _cfg.CurrentConfiguration.SpecialLoggerRules) {
                 lcfg.Filter.ByExcluding(e => {
                     string app = (e.Properties.GetValueOrDefault("Application") as ScalarValue)?.Value as string;
                     return app == rule.Application && e.Level < rule.MinLevel;
@@ -126,31 +122,8 @@ namespace TheGodfather
         {
             Console.Write("Loading configuration... ");
 
-            string json = "{}";
-            var utf8 = new UTF8Encoding(false);
-            var fi = new FileInfo("Resources/config.json");
-            if (!fi.Exists) {
-                Console.WriteLine("Loading configuration failed!");
-
-                json = JsonConvert.SerializeObject(BotConfig.Default, Formatting.Indented);
-                using (FileStream fs = fi.Create())
-                using (var sw = new StreamWriter(fs, utf8)) {
-                    await sw.WriteAsync(json);
-                    await sw.FlushAsync();
-                }
-
-                Console.WriteLine("New default configuration file has been created at:");
-                Console.WriteLine(fi.FullName);
-                Console.WriteLine("Please fill it with appropriate values and re-run the bot.");
-
-                throw new IOException("Configuration file not found!");
-            }
-
-            using (FileStream fs = fi.OpenRead())
-            using (var sr = new StreamReader(fs, utf8))
-                json = await sr.ReadToEndAsync();
-
-            _cfg = JsonConvert.DeserializeObject<BotConfig>(json);
+            _cfg = new BotConfigService();
+            await _cfg.LoadConfigAsync();
 
             Console.Write("\r");
         }
@@ -158,10 +131,11 @@ namespace TheGodfather
         private static async Task InitializeDatabaseAsync()
         {
             Log.Information("Establishing database connection");
-            _dbb = new DatabaseContextBuilder(_cfg.DatabaseConfig);
+            _dbb = new DatabaseContextBuilder(_cfg.CurrentConfiguration.DatabaseConfig);
 
             Log.Information("Migrating the database");
-            await _dbb.CreateContext().Database.MigrateAsync();
+            using (DatabaseContext db = _dbb.CreateContext())
+                await db.Database.MigrateAsync();
         }
 
         private static void InitializeSharedData()
@@ -169,7 +143,6 @@ namespace TheGodfather
             Log.Information("Loading data from the database");
 
             _shared = new SharedData {
-                BotConfiguration = _cfg,
                 MainLoopCts = new CancellationTokenSource(),
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
             };
@@ -177,39 +150,14 @@ namespace TheGodfather
 
         private static async Task CreateAndBootShardsAsync()
         {
-            Log.Information("Creating {ShardCount} shard(s)", _cfg.ShardCount);
+            Log.Information("Initializing services");
+            IServiceCollection sharedServices = TheGodfatherServiceCollectionProvider.CreateSharedServicesCollection(_shared, _cfg, _dbb);
 
-            var gcs = new GuildConfigService(_cfg, _dbb);
-            IServiceCollection sharedServices = new ServiceCollection()
-                .AddSingleton(_shared)
-                .AddSingleton(_dbb)
-                .AddSingleton(new BlockingService(_dbb))
-                .AddSingleton(new ChannelEventService())
-                .AddSingleton(new FilteringService(_dbb))
-                .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
-                .AddSingleton(new GoodreadsService(_shared.BotConfiguration.GoodreadsKey))
-                .AddSingleton(gcs)
-                .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
-                .AddSingleton(new InteractivityService())
-                .AddSingleton(new LocalizationService(gcs, "Translations", _cfg.Locale))
-                .AddSingleton(new LoggingService(gcs))
-                .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
-                .AddSingleton(new ReactionsService(_dbb))
-                .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
-                .AddSingleton(new UserRanksService())
-                .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
-                .AddSingleton(new YtService(_shared.BotConfiguration.YouTubeKey))
-                ;
-
+            Log.Information("Creating {ShardCount} shard(s)", _cfg.CurrentConfiguration.ShardCount);
             _shards = new List<TheGodfatherShard>();
-            for (int i = 0; i < _cfg.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, _dbb, _shared);
-                shard.Services = sharedServices
-                    .AddSingleton(new AntifloodService(shard, gcs))
-                    .AddSingleton(new AntiInstantLeaveService(shard, gcs))
-                    .AddSingleton(new AntispamService(shard, gcs))
-                    .AddSingleton(new LinkfilterService(shard, gcs))
-                    .AddSingleton(new RatelimitService(shard, gcs))
+            for (int i = 0; i < _cfg.CurrentConfiguration.ShardCount; i++) {
+                var shard = new TheGodfatherShard(_cfg.CurrentConfiguration, i, _dbb, _shared);
+                shard.Services = TheGodfatherServiceCollectionProvider.AddShardSpecificServices(sharedServices, shard)
                     .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
                 _shards.Add(shard);
@@ -224,8 +172,8 @@ namespace TheGodfather
         {
             _async = new AsyncExecutor();
             BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, _shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
-            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(_cfg.DatabaseSyncInterval));
-            FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(_cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(_cfg.FeedCheckInterval));
+            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.DatabaseSyncInterval));
+            FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, _shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
             SavedTaskLoadTimer = new Timer(RegisterSavedTasksCallback, _shards[0], TimeSpan.Zero, TimeSpan.FromMinutes(5));
             return Task.CompletedTask;

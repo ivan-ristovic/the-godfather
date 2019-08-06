@@ -2,13 +2,11 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using TheGodfather.Common;
-using TheGodfather.Common.Collections;
 
 namespace TheGodfather
 {
     public sealed class SharedData : IDisposable
     {
-        public BotConfig BotConfiguration { get; internal set; }
         public bool IsBotListening { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
@@ -19,7 +17,6 @@ namespace TheGodfather
 
         public SharedData()
         {
-            this.BotConfiguration = BotConfig.Default;
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
             this.RemindExecuters = new ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>>();

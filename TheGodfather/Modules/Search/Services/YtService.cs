@@ -37,13 +37,13 @@ namespace TheGodfather.Modules.Search.Services
         private readonly string key;
 
 
-        public YtService(string key)
+        public YtService(BotConfigService cfg)
         {
-            this.key = key;
+            this.key = cfg.CurrentConfiguration.YouTubeKey;
             this.ytExplode = new YoutubeClient();
-            if (!string.IsNullOrWhiteSpace(key)) {
+            if (!string.IsNullOrWhiteSpace(this.key)) {
                 this.yt = new YouTubeService(new BaseClientService.Initializer {
-                    ApiKey = key,
+                    ApiKey = this.key,
                     ApplicationName = TheGodfather.ApplicationName
                 });
             }

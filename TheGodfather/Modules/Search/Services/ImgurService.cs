@@ -23,10 +23,10 @@ namespace TheGodfather.Modules.Search.Services
         //private readonly ImageEndpoint iEndpoint;
 
 
-        public ImgurService(string key)
+        public ImgurService(BotConfigService cfg)
         {
-            if (!string.IsNullOrWhiteSpace(key)) {
-                this.imgur = new ImgurClient(key);
+            if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.ImgurKey)) {
+                this.imgur = new ImgurClient(cfg.CurrentConfiguration.ImgurKey);
                 this.gEndpoint = new GalleryEndpoint(this.imgur);
                 //this.iEndpoint = new ImageEndpoint(this.imgur);
             }

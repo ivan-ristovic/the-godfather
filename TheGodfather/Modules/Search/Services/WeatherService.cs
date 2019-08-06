@@ -23,9 +23,9 @@ namespace TheGodfather.Modules.Search.Services
         private readonly string key;
 
 
-        public WeatherService(string key)
+        public WeatherService(BotConfigService cfg)
         {
-            this.key = key;
+            this.key = cfg.CurrentConfiguration.WeatherKey;
         }
 
 

@@ -25,9 +25,9 @@ namespace TheGodfatherTests.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Configs = new GuildConfigService(BotConfig.Default, TestDatabaseProvider.Database, false);
-            this.Service = new LocalizationService(this.Configs, BotConfig.Default.Locale);
-            var x = Directory.GetCurrentDirectory();
+            var bcs = new BotConfigService();
+            this.Configs = new GuildConfigService(bcs, TestDatabaseProvider.Database, false);
+            this.Service = new LocalizationService(this.Configs, bcs, false);
             Assume.That(Directory.Exists(this.ValidTestDataPath), "Valid tests dir not present");
             Assume.That(Directory.Exists(this.ThrowsIOTestDataPath), "Invalid tests dir not present");
         }

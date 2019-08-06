@@ -38,8 +38,8 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public AntispamService(TheGodfatherShard shard, GuildConfigService gcs)
-            : base(shard, gcs)
+        public AntispamService(TheGodfatherShard shard)
+            : base(shard)
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildSpamInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserSpamInfo>>();

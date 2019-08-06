@@ -23,6 +23,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -424,7 +425,7 @@ namespace TheGodfather.Modules.Administration
                                                     AntifloodSettings antifloodSettings, AntiInstantLeaveSettings antiInstantLeaveSettings)
             {
                 StringBuilder sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
-                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.Prefix));
+                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix));
                 sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
                 sb.Append("Silent responses: ").AppendLine(Formatter.Bold((gcfg.ReactionResponse ? "on" : "off")));

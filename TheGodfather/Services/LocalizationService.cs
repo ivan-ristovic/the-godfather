@@ -23,17 +23,12 @@ namespace TheGodfather.Services
         private bool isDataLoaded;
 
 
-        public LocalizationService(GuildConfigService gcs, string defaultLocale)
+        public LocalizationService(GuildConfigService gcs, BotConfigService cfg, bool loadData = true)
         {
             this.gcs = gcs;
-            this.defLocale = defaultLocale;
-            this.isDataLoaded = false;
-        }
-
-        public LocalizationService(GuildConfigService gcs, string translationDataPath, string defaultLocale)
-            : this(gcs, defaultLocale)
-        {
-            this.LoadData(translationDataPath);
+            this.defLocale = cfg.CurrentConfiguration.Locale;
+            if (loadData)
+                this.LoadData("Translations");
         }
 
 

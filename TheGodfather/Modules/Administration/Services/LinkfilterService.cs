@@ -13,8 +13,8 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public class LinkfilterService : ProtectionService
     {
-        public LinkfilterService(TheGodfatherShard shard, GuildConfigService gcs)
-            : base(shard, gcs)
+        public LinkfilterService(TheGodfatherShard shard)
+            : base(shard)
         {
             this.reason = "_gf: Linkfilter";
         }

@@ -22,10 +22,10 @@ namespace TheGodfather.Modules.Search.Services
         private readonly Giphy giphy;
 
 
-        public GiphyService(string key)
+        public GiphyService(BotConfigService cfg)
         {
-            if (!string.IsNullOrWhiteSpace(key))
-                this.giphy = new Giphy(key);
+            if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.GiphyKey))
+                this.giphy = new Giphy(cfg.CurrentConfiguration.GiphyKey);
         }
 
 

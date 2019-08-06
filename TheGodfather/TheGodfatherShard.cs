@@ -49,16 +49,18 @@ namespace TheGodfather
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
+        public BotConfig Config { get; private set; }
 
         public bool IsListening => this.SharedData.IsBotListening;
         #endregion
 
 
-        public TheGodfatherShard(int shardId, DatabaseContextBuilder databaseBuilder, SharedData shared)
+        public TheGodfatherShard(BotConfig cfg, int shardId, DatabaseContextBuilder databaseBuilder, SharedData shared)
         {
             this.Id = shardId;
             this.Database = databaseBuilder;
             this.SharedData = shared;
+            this.Config = cfg;
         }
 
         public async Task DisposeAsync()
@@ -84,11 +86,11 @@ namespace TheGodfather
         private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
         {
             var cfg = new DiscordConfiguration {
-                Token = this.SharedData.BotConfiguration.Token,
+                Token = this.Config.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 LargeThreshold = 250,
-                ShardCount = this.SharedData.BotConfiguration.ShardCount,
+                ShardCount = this.Config.ShardCount,
                 ShardId = this.Id,
                 UseInternalLogHandler = false,
                 LogLevel = LogLevel.Debug
@@ -114,7 +116,7 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 PrefixResolver = m => {
-                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.SharedData.BotConfiguration.Prefix;
+                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));
                 },
                 Services = this.Services

@@ -26,10 +26,10 @@ namespace TheGodfather.Modules.Search.Services
             => $"http://steamcommunity.com/id/{ id }/";
 
 
-        public SteamService(string key)
+        public SteamService(BotConfigService cfg)
         {
-            if (!string.IsNullOrWhiteSpace(key))
-                this.user = new SteamUser(key);
+            if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.SteamKey))
+                this.user = new SteamUser(cfg.CurrentConfiguration.SteamKey);
         }
 
 

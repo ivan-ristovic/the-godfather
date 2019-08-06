@@ -24,9 +24,9 @@ namespace TheGodfather.Modules.Search.Services
         private readonly string key;
 
 
-        public OMDbService(string key)
+        public OMDbService(BotConfigService cfg)
         {
-            this.key = key;
+            this.key = cfg.CurrentConfiguration.OMDbKey;
         }
 
 

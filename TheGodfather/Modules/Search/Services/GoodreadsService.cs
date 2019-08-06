@@ -24,9 +24,9 @@ namespace TheGodfather.Modules.Search.Services
         private readonly string key;
 
 
-        public GoodreadsService(string key)
+        public GoodreadsService(BotConfigService cfg)
         {
-            this.key = key;
+            this.key = cfg.CurrentConfiguration.GoodreadsKey;
         }
 
 
