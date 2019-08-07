@@ -2,7 +2,9 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using TheGodfather.Services;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -20,9 +22,11 @@ namespace TheGodfather.Common.Attributes
 
         public void Register(TheGodfatherShard shard, DiscordClient client, MethodInfo mi)
         {
+            BotActivityService bas = shard.Services.GetService<BotActivityService>();
+
             Task OnEventWithArgs(object e)
             {
-                if (!shard.IsListening)
+                if (!bas.IsBotListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {
@@ -37,7 +41,7 @@ namespace TheGodfather.Common.Attributes
 
             Task OnEventVoid()
             {
-                if (!shard.IsListening)
+                if (!bas.IsBotListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {

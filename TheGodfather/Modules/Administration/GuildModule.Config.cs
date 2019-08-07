@@ -37,8 +37,8 @@ namespace TheGodfather.Modules.Administration
         public partial class GuildConfigModule : TheGodfatherServiceModule<GuildConfigService>
         {
 
-            public GuildConfigModule(GuildConfigService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public GuildConfigModule(GuildConfigService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
                 
             }

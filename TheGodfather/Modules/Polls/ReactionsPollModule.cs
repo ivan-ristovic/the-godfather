@@ -23,8 +23,8 @@ namespace TheGodfather.Modules.Polls
     public class ReactionsPollModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ReactionsPollModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
-            : base(service, shared, db)
+        public ReactionsPollModule(ChannelEventService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

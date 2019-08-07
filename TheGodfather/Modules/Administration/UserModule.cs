@@ -36,8 +36,8 @@ namespace TheGodfather.Modules.Administration
     public class UserModule : TheGodfatherModule
     {
 
-        public UserModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public UserModule(DatabaseContextBuilder db) 
+            : base(db)
         {
             
         }

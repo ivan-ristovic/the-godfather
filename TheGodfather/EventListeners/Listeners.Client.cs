@@ -70,5 +70,12 @@ namespace TheGodfather.EventListeners
                 , StaticDiscordEmoji.Wave
             );
         }
+
+        [AsyncEventListener(DiscordEventType.SocketOpened)]
+        public static Task SocketOpenedEventHandlerAsync(TheGodfatherShard shard)
+        {
+            shard.Services.GetService<BotActivityService>().ShardUptimeInformation[shard.Id].SocketStartTime = DateTimeOffset.Now;
+            return Task.CompletedTask;
+        }
     }
 }

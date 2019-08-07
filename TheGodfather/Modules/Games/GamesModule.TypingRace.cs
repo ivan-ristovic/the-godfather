@@ -26,8 +26,8 @@ namespace TheGodfather.Modules.Games
         public class TypingRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TypingRaceModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public TypingRaceModule(ChannelEventService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
                 
             }

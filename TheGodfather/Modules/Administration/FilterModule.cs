@@ -33,8 +33,8 @@ namespace TheGodfather.Modules.Administration
     public class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
 
-        public FilterModule(FilteringService service, SharedData shared, DatabaseContextBuilder db)
-            : base(service, shared, db)
+        public FilterModule(FilteringService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

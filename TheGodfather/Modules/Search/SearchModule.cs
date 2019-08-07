@@ -23,8 +23,8 @@ namespace TheGodfather.Modules.Search
     public class SearchModule : TheGodfatherModule
     {
 
-        public SearchModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public SearchModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

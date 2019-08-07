@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Misc
     public class GrantModule : TheGodfatherModule
     {
 
-        public GrantModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public GrantModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }
@@ -110,8 +110,8 @@ namespace TheGodfather.Modules.Misc
     public class RevokeModule : TheGodfatherModule
     {
 
-        public RevokeModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public RevokeModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

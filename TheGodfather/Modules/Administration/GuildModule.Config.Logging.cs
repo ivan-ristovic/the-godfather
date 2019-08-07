@@ -36,8 +36,8 @@ namespace TheGodfather.Modules.Administration
             public class LoggingModule : TheGodfatherModule
             {
 
-                public LoggingModule(SharedData shared, DatabaseContextBuilder db)
-                    : base(shared, db)
+                public LoggingModule(DatabaseContextBuilder db)
+                    : base(db)
                 {
                     
                 }

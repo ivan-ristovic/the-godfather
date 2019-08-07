@@ -32,8 +32,8 @@ namespace TheGodfather.Modules.Administration
     public class ForbiddenNamesModule : TheGodfatherModule
     {
 
-        public ForbiddenNamesModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public ForbiddenNamesModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

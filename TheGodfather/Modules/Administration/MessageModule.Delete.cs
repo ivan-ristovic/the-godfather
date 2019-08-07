@@ -26,8 +26,8 @@ namespace TheGodfather.Modules.Administration
         public class MessageDeleteModule : TheGodfatherModule
         {
 
-            public MessageDeleteModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public MessageDeleteModule(DatabaseContextBuilder db)
+                : base(db)
             {
                 
             }

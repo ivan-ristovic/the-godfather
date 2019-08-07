@@ -32,8 +32,8 @@ namespace TheGodfather.Modules.Administration
     public class AutomaticRolesModule : TheGodfatherModule
     {
 
-        public AutomaticRolesModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public AutomaticRolesModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

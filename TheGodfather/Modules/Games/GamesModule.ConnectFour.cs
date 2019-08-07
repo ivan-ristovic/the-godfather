@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Games
         public class ConnectFourModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public ConnectFourModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public ConnectFourModule(ChannelEventService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
                 
             }

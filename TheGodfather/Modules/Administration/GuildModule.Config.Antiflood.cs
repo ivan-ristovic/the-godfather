@@ -38,8 +38,8 @@ namespace TheGodfather.Modules.Administration
             public class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
             {
 
-                public AntifloodModule(AntifloodService service, SharedData shared, DatabaseContextBuilder db)
-                    : base(service, shared, db)
+                public AntifloodModule(AntifloodService service, DatabaseContextBuilder db)
+                    : base(service, db)
                 {
                     
                 }

@@ -35,8 +35,8 @@ namespace TheGodfather.Modules.Administration
             public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
             {
 
-                public RatelimitModule(RatelimitService service, SharedData shared, DatabaseContextBuilder db)
-                    : base(service, shared, db)
+                public RatelimitModule(RatelimitService service, DatabaseContextBuilder db)
+                    : base(service, db)
                 {
                     
                 }

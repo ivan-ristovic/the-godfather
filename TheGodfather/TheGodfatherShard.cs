@@ -47,19 +47,15 @@ namespace TheGodfather
         public CommandsNextExtension CNext { get; private set; }
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
-        public SharedData SharedData { get; private set; }
         public DatabaseContextBuilder Database { get; private set; }
         public BotConfig Config { get; private set; }
-
-        public bool IsListening => this.SharedData.IsBotListening;
         #endregion
 
 
-        public TheGodfatherShard(BotConfig cfg, int shardId, DatabaseContextBuilder databaseBuilder, SharedData shared)
+        public TheGodfatherShard(BotConfig cfg, int shardId, DatabaseContextBuilder databaseBuilder)
         {
             this.Id = shardId;
             this.Database = databaseBuilder;
-            this.SharedData = shared;
             this.Config = cfg;
         }
 
@@ -152,6 +148,5 @@ namespace TheGodfather
         {
             this.Voice = this.Client.UseVoiceNext();
         }
-
     }
 }

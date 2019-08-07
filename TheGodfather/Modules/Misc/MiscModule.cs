@@ -26,6 +26,7 @@ using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -35,8 +36,8 @@ namespace TheGodfather.Modules.Misc
     public class MiscModule : TheGodfatherModule
     {
 
-        public MiscModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public MiscModule(DatabaseContextBuilder db) 
+            : base(db)
         {
             
         }
@@ -478,8 +479,10 @@ namespace TheGodfather.Modules.Misc
         [Description("Prints out bot runtime information.")]
         public Task UptimeAsync(CommandContext ctx)
         {
-            TimeSpan processUptime = this.Shared.UptimeInformation.ProgramUptime;
-            TimeSpan socketUptime = this.Shared.UptimeInformation.SocketUptime;
+            BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+            UptimeInformation uptimeInfo = bas.ShardUptimeInformation[ctx.Client.ShardId];
+            TimeSpan processUptime = uptimeInfo.ProgramUptime;
+            TimeSpan socketUptime = uptimeInfo.SocketUptime;
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Information,
                 Formatter.Bold($"Uptime information:") +

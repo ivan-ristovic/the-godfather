@@ -27,8 +27,8 @@ namespace TheGodfather.Modules.Games
         public class RussianRouletteModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public RussianRouletteModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public RussianRouletteModule(ChannelEventService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
                 
             }

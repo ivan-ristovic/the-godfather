@@ -25,8 +25,8 @@ namespace TheGodfather.Modules.Search
     public class RedditModule : TheGodfatherModule
     {
 
-        public RedditModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public RedditModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

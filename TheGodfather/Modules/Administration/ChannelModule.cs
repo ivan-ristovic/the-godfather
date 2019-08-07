@@ -28,8 +28,8 @@ namespace TheGodfather.Modules.Administration
         private static ImmutableArray<int> _ratelimitValues = new[] { 0, 5, 10, 15, 30, 45, 60, 75, 90, 120 }.ToImmutableArray();
 
 
-        public ChannelModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public ChannelModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

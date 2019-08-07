@@ -20,8 +20,8 @@ namespace TheGodfather.Modules.Currency
     public class WorkModule : TheGodfatherModule
     {
 
-        public WorkModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public WorkModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

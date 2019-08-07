@@ -6,12 +6,13 @@ using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -25,8 +26,8 @@ namespace TheGodfather.Modules.Owner
         public class StatusModule : TheGodfatherModule
         {
 
-            public StatusModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public StatusModule(DatabaseContextBuilder db) 
+                : base(db)
             {
                 
             }
@@ -112,7 +113,8 @@ namespace TheGodfather.Modules.Owner
             public Task SetRotationAsync(CommandContext ctx,
                                         [Description("Enabled?")] bool enable = true)
             {
-                this.Shared.StatusRotationEnabled = enable;
+                BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+                bas.StatusRotationEnabled = enable;
                 return this.InformAsync(ctx, $"Status rotation {(enable ? "enabled" : "disabled")}");
             }
             #endregion
@@ -134,7 +136,8 @@ namespace TheGodfather.Modules.Owner
 
                 var activity = new DiscordActivity(status, type);
 
-                this.Shared.StatusRotationEnabled = false;
+                BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+                bas.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(activity);
                 await this.InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
             }
@@ -152,7 +155,8 @@ namespace TheGodfather.Modules.Owner
 
                 var activity = new DiscordActivity(status.Status, status.Activity);
 
-                this.Shared.StatusRotationEnabled = false;
+                BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+                bas.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(activity);
                 await this.InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
             }

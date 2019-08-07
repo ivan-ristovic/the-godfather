@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 using TheGodfather.Common;
@@ -32,17 +29,17 @@ namespace TheGodfather
         public static IReadOnlyList<TheGodfatherShard> ActiveShards => _shards.AsReadOnly();
 
         private static BotConfigService _cfg;
+        private static BotActivityService _bas;
         private static DatabaseContextBuilder _dbb;
         private static List<TheGodfatherShard> _shards;
-        private static SharedData _shared;
         private static AsyncExecutor _async;
+        private static List<ITheGodfatherService> _services;
 
         #region Timers
         private static Timer BotStatusUpdateTimer { get; set; }
         private static Timer DatabaseSyncTimer { get; set; }
         private static Timer FeedCheckTimer { get; set; }
         private static Timer MiscActionsTimer { get; set; }
-        private static Timer SavedTaskLoadTimer { get; set; }
         #endregion
 
 
@@ -55,12 +52,11 @@ namespace TheGodfather
                 await LoadBotConfigAsync();
                 SetupLogger();
                 await InitializeDatabaseAsync();
-                InitializeSharedData();
                 await CreateAndBootShardsAsync();
 
                 Log.Information("Booting complete!");
 
-                await Task.Delay(Timeout.Infinite, _shared.MainLoopCts.Token);
+                await Task.Delay(Timeout.Infinite, _bas.MainLoopCts.Token);
             } catch (TaskCanceledException) {
                 Log.Information("Shutdown signal received!");
             } catch (Exception e) {
@@ -77,7 +73,7 @@ namespace TheGodfather
         public static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
             Environment.ExitCode = exitCode;
-            _shared.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
+            _bas.MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
             Log.CloseAndFlush();
             return Task.CompletedTask;
         }
@@ -138,25 +134,16 @@ namespace TheGodfather
                 await db.Database.MigrateAsync();
         }
 
-        private static void InitializeSharedData()
-        {
-            Log.Information("Loading data from the database");
-
-            _shared = new SharedData {
-                MainLoopCts = new CancellationTokenSource(),
-                UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
-            };
-        }
-
         private static async Task CreateAndBootShardsAsync()
         {
             Log.Information("Initializing services");
-            IServiceCollection sharedServices = BotServiceCollectionProvider.CreateSharedServicesCollection(_shared, _cfg, _dbb);
+            _bas = new BotActivityService(_cfg.CurrentConfiguration.ShardCount);
+            IServiceCollection sharedServices = BotServiceCollectionProvider.CreateSharedServicesCollection(_cfg, _dbb, _bas);
 
             Log.Information("Creating {ShardCount} shard(s)", _cfg.CurrentConfiguration.ShardCount);
             _shards = new List<TheGodfatherShard>();
             for (int i = 0; i < _cfg.CurrentConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(_cfg.CurrentConfiguration, i, _dbb, _shared);
+                var shard = new TheGodfatherShard(_cfg.CurrentConfiguration, i, _dbb);
                 shard.Services = BotServiceCollectionProvider.AddShardSpecificServices(sharedServices, shard)
                     .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
@@ -175,7 +162,6 @@ namespace TheGodfather
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, _shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-            SavedTaskLoadTimer = new Timer(RegisterSavedTasksCallback, _shards[0], TimeSpan.Zero, TimeSpan.FromMinutes(5));
             return Task.CompletedTask;
         }
 
@@ -187,12 +173,18 @@ namespace TheGodfather
             DatabaseSyncTimer?.Dispose();
             FeedCheckTimer?.Dispose();
             MiscActionsTimer?.Dispose();
-            SavedTaskLoadTimer?.Dispose();
 
-            if (!(_shards is null))
+            if (!(_shards is null)) {
                 foreach (TheGodfatherShard shard in _shards)
                     await shard?.DisposeAsync();
-            _shared?.Dispose();
+            }
+
+            if (!(_services is null)) {
+                foreach (ITheGodfatherService service in _services) {
+                    if (service is IDisposable disposable)
+                        disposable.Dispose();
+                }
+            }
 
             Log.Information("Cleanup complete! Powering off");
         }
@@ -203,7 +195,7 @@ namespace TheGodfather
         {
             var shard = _ as TheGodfatherShard;
 
-            if (!shard.SharedData.StatusRotationEnabled)
+            if (!_bas.StatusRotationEnabled)
                 return;
 
             try {
@@ -273,10 +265,6 @@ namespace TheGodfather
             } catch (Exception e) {
                 Log.Error(e, "An error occured during misc timer callback");
             }
-        }
-
-        private static void RegisterSavedTasksCallback(object _)
-        {
         }
         #endregion
     }

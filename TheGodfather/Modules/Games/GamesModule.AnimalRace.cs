@@ -28,8 +28,8 @@ namespace TheGodfather.Modules.Games
         public class AnimalRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public AnimalRaceModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public AnimalRaceModule(ChannelEventService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
                 
             }

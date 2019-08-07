@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Owner
         public class BlockedChannelsModule : TheGodfatherServiceModule<BlockingService>
         {
 
-            public BlockedChannelsModule(BlockingService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public BlockedChannelsModule(BlockingService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
 
             }

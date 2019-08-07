@@ -20,7 +20,6 @@ namespace TheGodfather.Modules
         protected static readonly HttpClient _http;
         private static readonly HttpClientHandler _handler;
 
-        public SharedData Shared { get; }
         public DatabaseContextBuilder Database { get; }
         public DiscordColor ModuleColor { get; }
 
@@ -34,9 +33,8 @@ namespace TheGodfather.Modules
         }
 
 
-        protected TheGodfatherModule(SharedData shared, DatabaseContextBuilder dbb)
+        protected TheGodfatherModule(DatabaseContextBuilder dbb)
         {
-            this.Shared = shared;
             this.Database = dbb;
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
             this.ModuleColor = moduleAttr is null ? DiscordColor.Green : moduleAttr.Module.ToDiscordColor();

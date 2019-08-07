@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Misc
     public class RandomModule : TheGodfatherModule
     {
         
-        public RandomModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public RandomModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

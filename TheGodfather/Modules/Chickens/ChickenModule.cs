@@ -32,8 +32,8 @@ namespace TheGodfather.Modules.Chickens
     public partial class ChickenModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ChickenModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
-            : base(service, shared, db)
+        public ChickenModule(ChannelEventService service, DatabaseContextBuilder db) 
+            : base(service, db)
         {
             
         }

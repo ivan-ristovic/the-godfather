@@ -30,8 +30,8 @@ namespace TheGodfather.Modules.Administration
             public class LinkfilterModule : TheGodfatherModule
             {
 
-                public LinkfilterModule(SharedData shared, DatabaseContextBuilder db)
-                    : base(shared, db)
+                public LinkfilterModule(DatabaseContextBuilder db)
+                    : base(db)
                 {
                     
                 }

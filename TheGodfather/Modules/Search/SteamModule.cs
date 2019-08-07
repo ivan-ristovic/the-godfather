@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Search
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 
-        public SteamModule(SteamService steam, SharedData shared, DatabaseContextBuilder db)
-            : base(steam, shared, db)
+        public SteamModule(SteamService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

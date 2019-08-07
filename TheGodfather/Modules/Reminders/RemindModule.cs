@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Reminders
     public partial class RemindModule : TheGodfatherServiceModule<SavedTasksService>
     {
 
-        public RemindModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
-            : base(service, shared, db)
+        public RemindModule(SavedTasksService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

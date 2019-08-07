@@ -26,8 +26,8 @@ namespace TheGodfather.Modules.Games
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CardsModule : TheGodfatherModule
     {
-        public CardsModule(SharedData shared, DatabaseContextBuilder dbb) 
-            : base(shared, dbb)
+        public CardsModule(DatabaseContextBuilder db) 
+            : base(db)
         {
             
         }

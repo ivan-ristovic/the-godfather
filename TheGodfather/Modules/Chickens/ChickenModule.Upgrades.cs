@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Chickens
         public class UpgradeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public UpgradeModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
-                : base(service, shared, db)
+            public UpgradeModule(ChannelEventService service, DatabaseContextBuilder db) 
+                : base(service, db)
             {
                 
             }

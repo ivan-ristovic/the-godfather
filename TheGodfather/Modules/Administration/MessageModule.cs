@@ -27,8 +27,8 @@ namespace TheGodfather.Modules.Administration
     public partial class MessageModule : TheGodfatherModule
     {
 
-        public MessageModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public MessageModule(DatabaseContextBuilder db)
+            : base(db)
         {
              
         }

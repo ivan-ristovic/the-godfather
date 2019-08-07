@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Music
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
-                : base(yt, shared, db)
+            public PlayModule(YtService service, DatabaseContextBuilder db) 
+                : base(service, db)
             {
                 
             }

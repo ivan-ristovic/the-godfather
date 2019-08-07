@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Music
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
-            : base(yt, shared, db)
+        public MusicModule(YtService service, DatabaseContextBuilder db) 
+            : base(service, db)
         {
             
         }

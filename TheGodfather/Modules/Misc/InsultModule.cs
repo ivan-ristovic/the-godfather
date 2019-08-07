@@ -25,8 +25,8 @@ namespace TheGodfather.Modules.Misc
     public class InsultModule : TheGodfatherModule
     {
 
-        public InsultModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public InsultModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

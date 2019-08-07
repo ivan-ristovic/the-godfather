@@ -8,6 +8,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Common.Attributes
 {
@@ -16,7 +17,7 @@ namespace TheGodfather.Common.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (!ctx.Services.GetService<SharedData>().IsBotListening)
+            if (!ctx.Services.GetService<BotActivityService>().IsBotListening)
                 return Task.FromResult(false);
             if (ctx.Services.GetService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);

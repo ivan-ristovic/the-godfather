@@ -21,8 +21,8 @@ namespace TheGodfather.Modules.Reminders
         public class RemindHereModule : RemindModule
         {
 
-            public RemindHereModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
-                : base(service, shared, db)
+            public RemindHereModule(SavedTasksService service, DatabaseContextBuilder db)
+                : base(service, db)
             {
 
             }
@@ -45,8 +45,8 @@ namespace TheGodfather.Modules.Reminders
             public class RemindHereInModule : RemindHereModule
             {
 
-                public RemindHereInModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
-                    : base(service, shared, db)
+                public RemindHereInModule(SavedTasksService service, DatabaseContextBuilder db)
+                    : base(service, db)
                 {
 
                 }
@@ -66,8 +66,8 @@ namespace TheGodfather.Modules.Reminders
             public class RemindHereAtModule : RemindModule
             {
 
-                public RemindHereAtModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
-                    : base(service, shared, db)
+                public RemindHereAtModule(SavedTasksService service, DatabaseContextBuilder db)
+                    : base(service, db)
                 {
 
                 }

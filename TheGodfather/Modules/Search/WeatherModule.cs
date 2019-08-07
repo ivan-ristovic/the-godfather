@@ -24,8 +24,8 @@ namespace TheGodfather.Modules.Search
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
 
-        public WeatherModule(WeatherService weather, SharedData shared, DatabaseContextBuilder db)
-            : base(weather, shared, db)
+        public WeatherModule(WeatherService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

@@ -28,8 +28,8 @@ namespace TheGodfather.Modules.Chickens
         public class BuyModule : TheGodfatherModule
         {
 
-            public BuyModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public BuyModule(DatabaseContextBuilder db)
+                : base(db)
             {
                 
             }

@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Currency
     public class ShopModule : TheGodfatherModule
     {
 
-        public ShopModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public ShopModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

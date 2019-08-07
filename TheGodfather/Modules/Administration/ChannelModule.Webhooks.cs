@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageWebhooks)]
         public class WebhooksModule : TheGodfatherModule
         {
-            public WebhooksModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public WebhooksModule(DatabaseContextBuilder db)
+                : base(db)
             {
                 
             }

@@ -33,8 +33,8 @@ namespace TheGodfather.Modules.Owner
         public class CommandsModule : TheGodfatherModule
         {
 
-            public CommandsModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public CommandsModule(DatabaseContextBuilder db)
+                : base(db)
             {
                 
             }
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Owner
 [ModuleLifespan(ModuleLifespan.Transient)]
 public sealed class DynamicCommands : TheGodfatherModule
 {{
-    public DynamicCommands(SharedData shared, DatabaseContextBuilder db) : base(shared, db)
+    public DynamicCommands(DatabaseContextBuilder db) : base(db)
     {{
         
     }}

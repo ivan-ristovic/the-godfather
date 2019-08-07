@@ -33,8 +33,8 @@ namespace TheGodfather.Modules.Administration
     public class SelfAssignableRolesModule : TheGodfatherModule
     {
 
-        public SelfAssignableRolesModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
+        public SelfAssignableRolesModule(DatabaseContextBuilder db) 
+            : base(db)
         {
             
         }

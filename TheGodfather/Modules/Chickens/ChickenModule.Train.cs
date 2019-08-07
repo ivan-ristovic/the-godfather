@@ -27,8 +27,8 @@ namespace TheGodfather.Modules.Chickens
         public class TrainModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TrainModule(ChannelEventService service, SharedData shared, DatabaseContextBuilder db) 
-                : base(service, shared, db)
+            public TrainModule(ChannelEventService service, DatabaseContextBuilder db) 
+                : base(service, db)
             {
                 
             }

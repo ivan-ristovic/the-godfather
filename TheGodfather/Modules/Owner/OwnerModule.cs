@@ -41,8 +41,8 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule : TheGodfatherModule
     {
 
-        public OwnerModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public OwnerModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }
@@ -618,8 +618,9 @@ namespace TheGodfather.Modules.Owner
         [RequirePrivilegedUser]
         public Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            this.Shared.IsBotListening = !this.Shared.IsBotListening;
-            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.IsBotListening.ToString())}", important: false);
+            BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+            bool ignoreEnabled = bas.ToggleListeningStatus();
+            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(ignoreEnabled.ToString())}", important: false);
         }
         #endregion
 

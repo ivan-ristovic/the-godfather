@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Services.Common
 {
     public class UptimeInformation
     {

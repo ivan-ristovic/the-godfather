@@ -30,8 +30,8 @@ namespace TheGodfather.Modules.Reactions
     public class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
 
-        public TextReactionsModule(ReactionsService service, SharedData shared, DatabaseContextBuilder db)
-            : base(service, shared, db)
+        public TextReactionsModule(ReactionsService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

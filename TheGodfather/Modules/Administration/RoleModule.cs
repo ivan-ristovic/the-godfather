@@ -24,8 +24,8 @@ namespace TheGodfather.Modules.Administration
     public class RoleModule : TheGodfatherModule
     {
 
-        public RoleModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public RoleModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

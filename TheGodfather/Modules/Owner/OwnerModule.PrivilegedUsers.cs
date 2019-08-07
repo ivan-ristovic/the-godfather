@@ -30,8 +30,8 @@ namespace TheGodfather.Modules.Owner
         public class PrivilegedUsersModule : TheGodfatherModule
         {
 
-            public PrivilegedUsersModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
+            public PrivilegedUsersModule(DatabaseContextBuilder db) 
+                : base(db)
             {
                 
             }

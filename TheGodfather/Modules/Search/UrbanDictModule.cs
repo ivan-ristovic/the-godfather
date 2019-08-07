@@ -26,8 +26,8 @@ namespace TheGodfather.Modules.Search
     public class UrbanDictModule : TheGodfatherModule
     {
 
-        public UrbanDictModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public UrbanDictModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

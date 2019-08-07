@@ -10,12 +10,12 @@ namespace TheGodfather.Services
 {
     public static class BotServiceCollectionProvider
     {
-        public static IServiceCollection CreateSharedServicesCollection(SharedData shared, BotConfigService cfg, DatabaseContextBuilder dbb)
+        public static IServiceCollection CreateSharedServicesCollection(BotConfigService cfg, DatabaseContextBuilder dbb, BotActivityService bas)
         {
             return new ServiceCollection()
                 .AddSingleton(cfg)
                 .AddSingleton(dbb)
-                .AddSingleton(shared)
+                .AddSingleton(bas)
                 .AddSingleton<GuildConfigService>()
                 .AddSingleton<BlockingService>()
                 .AddSingleton<FilteringService>()

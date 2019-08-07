@@ -32,8 +32,8 @@ namespace TheGodfather.Modules.Reactions
     public class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
 
-        public EmojiReactionsModule(ReactionsService service, SharedData shared, DatabaseContextBuilder db)
-            : base(service, shared, db)
+        public EmojiReactionsModule(ReactionsService service, DatabaseContextBuilder db)
+            : base(service, db)
         {
             
         }

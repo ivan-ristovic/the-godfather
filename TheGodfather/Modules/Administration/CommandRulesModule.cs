@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Administration
     public class CommandRulesModule : TheGodfatherModule
     {
 
-        public CommandRulesModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public CommandRulesModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }

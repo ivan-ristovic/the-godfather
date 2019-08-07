@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Currency
     public class BankModule : TheGodfatherModule
     {
 
-        public BankModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public BankModule(DatabaseContextBuilder db)
+            : base(db)
         {
             
         }
