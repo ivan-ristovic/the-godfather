@@ -22,6 +22,8 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -445,8 +447,8 @@ namespace TheGodfather.Modules.Administration
             DateTimeOffset until = DateTimeOffset.Now + timespan;
             await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("BANNED")} {member.DisplayName} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!");
 
-            var task = new UnbanTaskInfo(ctx.Guild.Id, member.Id, until);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            var tinfo = new UnbanTaskInfo(ctx.Guild.Id, member.Id, until);
+            await ctx.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
         }
 
         [Command("tempban"), Priority(2)]
@@ -473,8 +475,8 @@ namespace TheGodfather.Modules.Administration
             DateTime until = DateTime.UtcNow + timespan;
             await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("BANNED")} {user.ToString()} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!");
 
-            var task = new UnbanTaskInfo(ctx.Guild.Id, user.Id, until);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            var tinfo = new UnbanTaskInfo(ctx.Guild.Id, user.Id, until);
+            await ctx.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
         }
 
         [Command("tempban"), Priority(0)]

@@ -20,6 +20,8 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -29,11 +31,11 @@ namespace TheGodfather.Modules.Reminders
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
     
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public partial class RemindModule : TheGodfatherModule
+    public partial class RemindModule : TheGodfatherServiceModule<SavedTasksService>
     {
 
-        public RemindModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
+        public RemindModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
+            : base(service, shared, db)
         {
             
         }
@@ -79,15 +81,7 @@ namespace TheGodfather.Modules.Reminders
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to remove all your reminders" + (channel is null ? "?" : $"in {channel.Mention}?")))
                 return;
 
-            List<DatabaseReminder> reminders;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                if (channel is null)
-                    reminders = await db.Reminders.Where(r => r.UserId == ctx.User.Id).ToListAsync();
-                else
-                    reminders = await db.Reminders.Where(r => r.UserId == ctx.User.Id && r.ChannelId == channel.Id).ToListAsync();
-            }
-
-            await Task.WhenAll(reminders.Select(r => SavedTaskExecutor.UnscheduleAsync(this.Shared, ctx.User.Id, r.Id)));
+            await this.Service.UnscheduleRemindersForUserAsync(ctx.User.Id);
             await this.InformAsync(ctx, "Successfully removed the specified reminders.", important: false);
         }
         #endregion
@@ -103,22 +97,12 @@ namespace TheGodfather.Modules.Reminders
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing IDs of reminders to remove.");
 
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs))
+            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            if (!reminders.Any())
                 throw new CommandFailedException("You have no reminders scheduled.");
 
-            var eb = new StringBuilder();
-            foreach (int id in ids) {
-                if (!texecs.TryGetValue(id, out _)) {
-                    eb.AppendLine($"Reminder with ID {Formatter.Bold(id.ToString())} does not exist (or is not scheduled by you)!");
-                    continue;
-                }
-                await SavedTaskExecutor.UnscheduleAsync(this.Shared, ctx.User.Id, id);
-            }
-
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
-            else
-                await this.InformAsync(ctx, "Successfully removed all specified reminders.", important: false);
+            await Task.WhenAll(reminders.Select(r => this.Service.UnscheduleAsync(r.Id, r.TaskInfo)));
+            await this.InformAsync(ctx, "Successfully removed all specified reminders.", important: false);
         }
         #endregion
 
@@ -132,24 +116,22 @@ namespace TheGodfather.Modules.Reminders
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException("Reminders can only be issued for text channels.");
 
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs) || !texecs.Values.Any(t => (t.TaskInfo as SendMessageTaskInfo).ChannelId == channel.Id))
+            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            if (!reminders.Any(r => r.TaskInfo.ChannelId == channel.Id))
                 throw new CommandFailedException("No reminders are scheduled for that channel.");
 
             return ctx.SendCollectionInPagesAsync(
-                $"Reminders for channel {channel.Name}:",
-                texecs.Values
-                    .Select(t => (TaskId: t.Id, TaskInfo: t.TaskInfo as SendMessageTaskInfo))
-                    .Where(tup => tup.TaskInfo.ChannelId == channel.Id)
-                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
-                tup => {
-                    (int id, SendMessageTaskInfo tinfo) = tup;
-                    if (tinfo.IsRepeating) {
-                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
+                $"Your reminders for channel {channel.Name}:",
+                reminders
+                    .Where(r => r.TaskInfo.ChannelId == channel.Id)
+                    .OrderBy(r => r.TaskInfo.ExecutionTime),
+                r => {
+                    if (r.TaskInfo.IsRepeating) {
+                        return $"ID: {Formatter.Bold(r.Id.ToString())} (repeating every {r.TaskInfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(r.TaskInfo.Message)}";
                     } else {
-                        if (tinfo.TimeUntilExecution > TimeSpan.FromDays(1))
-                            return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
-                        else
-                            return $"ID: {Formatter.Bold(id.ToString())} (in {tinfo.TimeUntilExecution.Humanize(precision: 3, minUnit: TimeUnit.Minute)}):{Formatter.BlockCode(tinfo.Message)}";
+                        return r.TaskInfo.TimeUntilExecution > TimeSpan.FromDays(1)
+                            ? $"ID: {Formatter.Bold(r.Id.ToString())} ({r.TaskInfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(r.TaskInfo.Message)}"
+                            : $"ID: {Formatter.Bold(r.Id.ToString())} (in {r.TaskInfo.TimeUntilExecution.Humanize(precision: 3, minUnit: TimeUnit.Minute)}):{Formatter.BlockCode(r.TaskInfo.Message)}";
                     }
                 },
                 this.ModuleColor,
@@ -160,14 +142,13 @@ namespace TheGodfather.Modules.Reminders
         [Command("list"), Priority(0)]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs))
-                throw new CommandFailedException("You haven't issued any reminders.");
+            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            if (!reminders.Any())
+                throw new CommandFailedException("No reminders are scheduled for that channel.");
 
             return ctx.SendCollectionInPagesAsync(
                 "Your reminders:",
-                texecs.Values
-                    .Select(t => (TaskId: t.Id, TaskInfo: (SendMessageTaskInfo)t.TaskInfo))
-                    .OrderBy(tup => tup.TaskInfo.ExecutionTime),
+                reminders.OrderBy(r => r.TaskInfo.ExecutionTime),
                 tup => {
                     (int id, SendMessageTaskInfo tinfo) = tup;
                     if (tinfo.IsRepeating) {
@@ -232,14 +213,15 @@ namespace TheGodfather.Modules.Reminders
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
             if (!ctx.Client.CurrentApplication.Owners.Any(o => ctx.User.Id == o.Id) && !privileged) {
-                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
+                IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+                if (reminders.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
-            var task = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
-            await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
+            var tinfo = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
+            await this.Service.ScheduleAsync(tinfo);
 
             if (repeat)
                 await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will repeatedly remind {channel?.Mention ?? "you"} every {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))} to:\n\n{message}", important: false);

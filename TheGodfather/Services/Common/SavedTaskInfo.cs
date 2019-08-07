@@ -1,8 +1,6 @@
-﻿#region USING_DIRECTIVES
-using System;
-#endregion
+﻿using System;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Services.Common
 {
     public enum SavedTaskType : byte
     {

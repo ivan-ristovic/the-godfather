@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -20,10 +21,10 @@ namespace TheGodfather.Modules.Reminders
         public class RemindHereModule : RemindModule
         {
 
-            public RemindHereModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public RemindHereModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
-                
+
             }
 
 
@@ -44,10 +45,10 @@ namespace TheGodfather.Modules.Reminders
             public class RemindHereInModule : RemindHereModule
             {
 
-                public RemindHereInModule(SharedData shared, DatabaseContextBuilder db)
-                    : base(shared, db)
+                public RemindHereInModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
+                    : base(service, shared, db)
                 {
-                    
+
                 }
 
 
@@ -65,10 +66,10 @@ namespace TheGodfather.Modules.Reminders
             public class RemindHereAtModule : RemindModule
             {
 
-                public RemindHereAtModule(SharedData shared, DatabaseContextBuilder db)
-                    : base(shared, db)
+                public RemindHereAtModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
+                    : base(service, shared, db)
                 {
-                    
+
                 }
 
 

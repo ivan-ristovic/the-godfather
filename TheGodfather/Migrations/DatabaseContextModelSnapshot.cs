@@ -17,7 +17,8 @@ namespace TheGodfather.Migrations
             modelBuilder
                 .HasDefaultSchema("gf")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn)
-                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1");
+                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseAutoRole", b =>
                 {
@@ -178,6 +179,7 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Entities.DatabaseChickenUpgrade", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
                     b.Property<long>("Cost")
@@ -651,9 +653,9 @@ namespace TheGodfather.Migrations
                     b.Property<long>("UserIdDb")
                         .HasColumnName("uid");
 
-                    b.Property<uint>("MessageCount")
+                    b.Property<long>("MessageCount")
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue(1u);
+                        .HasDefaultValue(1L);
 
                     b.Property<int>("MessageCountDb")
                         .HasColumnName("message_count");

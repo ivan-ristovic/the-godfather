@@ -2,8 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-using TheGodfather.Common;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Database.Entities
@@ -40,6 +39,7 @@ namespace TheGodfather.Database.Entities
 
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey("DbGuildConfig")]

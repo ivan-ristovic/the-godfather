@@ -18,6 +18,7 @@ namespace TheGodfather.Database.Entities
 
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey("DbGuildConfig")]

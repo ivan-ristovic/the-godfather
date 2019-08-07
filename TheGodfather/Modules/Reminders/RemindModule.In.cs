@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -20,10 +21,10 @@ namespace TheGodfather.Modules.Reminders
         public class RemindInModule : RemindModule
         {
 
-            public RemindInModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
+            public RemindInModule(SavedTasksService service, SharedData shared, DatabaseContextBuilder db)
+                : base(service, shared, db)
             {
-                
+
             }
 
 

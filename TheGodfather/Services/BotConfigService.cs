@@ -7,8 +7,10 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Services
 {
-    public sealed class BotConfigService
+    public sealed class BotConfigService : ITheGodfatherService
     {
+        public bool IsDisabled => false;
+
         public BotConfig CurrentConfiguration { get; set; }
 
 

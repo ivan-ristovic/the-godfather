@@ -151,13 +151,13 @@ namespace TheGodfather
         private static async Task CreateAndBootShardsAsync()
         {
             Log.Information("Initializing services");
-            IServiceCollection sharedServices = TheGodfatherServiceCollectionProvider.CreateSharedServicesCollection(_shared, _cfg, _dbb);
+            IServiceCollection sharedServices = BotServiceCollectionProvider.CreateSharedServicesCollection(_shared, _cfg, _dbb);
 
             Log.Information("Creating {ShardCount} shard(s)", _cfg.CurrentConfiguration.ShardCount);
             _shards = new List<TheGodfatherShard>();
             for (int i = 0; i < _cfg.CurrentConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(_cfg.CurrentConfiguration, i, _dbb, _shared);
-                shard.Services = TheGodfatherServiceCollectionProvider.AddShardSpecificServices(sharedServices, shard)
+                shard.Services = BotServiceCollectionProvider.AddShardSpecificServices(sharedServices, shard)
                     .BuildServiceProvider();
                 shard.Initialize(e => RegisterPeriodicTasks());
                 _shards.Add(shard);
@@ -277,75 +277,6 @@ namespace TheGodfather
 
         private static void RegisterSavedTasksCallback(object _)
         {
-            var shard = _ as TheGodfatherShard;
-
-            try {
-                using (DatabaseContext db = _dbb.CreateContext()) {
-                    var savedTasks = db.SavedTasks
-                        .Where(t => t.ExecutionTime <= DateTimeOffset.Now + TimeSpan.FromMinutes(5))
-                        .ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
-                            t => t.Id,
-                            t => {
-                                switch (t.Type) {
-                                    case SavedTaskType.Unban:
-                                        return new UnbanTaskInfo(t.GuildId, t.UserId, t.ExecutionTime);
-                                    case SavedTaskType.Unmute:
-                                        return new UnmuteTaskInfo(t.GuildId, t.UserId, t.RoleId, t.ExecutionTime);
-                                    default:
-                                        return null;
-                                }
-                            }
-                        );
-                    RegisterSavedTasks(savedTasks);
-
-                    var reminders = db.Reminders
-                        .Where(t => t.ExecutionTime <= DateTimeOffset.Now + TimeSpan.FromMinutes(5))
-                        .ToDictionary(
-                            t => t.Id,
-                            t => new SendMessageTaskInfo(t.ChannelId, t.UserId, t.Message, t.ExecutionTime, t.IsRepeating, t.RepeatInterval)
-                        );
-                    RegisterReminders(reminders);
-                }
-            } catch (Exception e) {
-                Log.Error(e, "Lodaing saved tasks and reminders failed");
-            }
-
-
-            void RegisterSavedTasks(IReadOnlyDictionary<int, SavedTaskInfo> tasks)
-            {
-                int scheduled = 0, missed = 0;
-                foreach ((int tid, SavedTaskInfo task) in tasks) {
-                    if (_async.Execute(RegisterTaskAsync(tid, task)))
-                        scheduled++;
-                    else
-                        missed++;
-                }
-                Log.Information("Saved tasks: {ScheduledSavedTasksCount} scheduled; {MissedSavedTasksCount} missed.", scheduled, missed);
-            }
-
-            void RegisterReminders(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
-            {
-                int scheduled = 0, missed = 0;
-                foreach ((int tid, SendMessageTaskInfo task) in reminders) {
-                    if (_async.Execute(RegisterTaskAsync(tid, task)))
-                        scheduled++;
-                    else
-                        missed++;
-                }
-                Log.Information("Saved tasks: {ScheduledRemindersCount} scheduled; {MissedRemindersCount} missed.", scheduled, missed);
-            }
-
-            async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
-            {
-                var texec = new SavedTaskExecutor(id, shard.Client, tinfo, _shared, _dbb);
-                if (texec.TaskInfo.IsExecutionTimeReached) {
-                    await texec.HandleMissedExecutionAsync();
-                    return false;
-                } else {
-                    texec.Schedule();
-                    return true;
-                }
-            }
         }
         #endregion
     }

@@ -20,6 +20,7 @@ namespace TheGodfather.Database.Entities
 
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Column("name"), Required, MaxLength(32)]

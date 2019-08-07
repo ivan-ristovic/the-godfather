@@ -8,7 +8,7 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Services
 {
-    public static class TheGodfatherServiceCollectionProvider
+    public static class BotServiceCollectionProvider
     {
         public static IServiceCollection CreateSharedServicesCollection(SharedData shared, BotConfigService cfg, DatabaseContextBuilder dbb)
         {
@@ -43,6 +43,7 @@ namespace TheGodfather.Services
                 .AddSingleton(new AntispamService(shard))
                 .AddSingleton(new LinkfilterService(shard))
                 .AddSingleton(new RatelimitService(shard))
+                .AddSingleton(new SavedTasksService(shard))
                 ;
         }
     }
