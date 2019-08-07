@@ -33,7 +33,8 @@ namespace TheGodfather
         private static DatabaseContextBuilder _dbb;
         private static List<TheGodfatherShard> _shards;
         private static AsyncExecutor _async;
-        private static List<ITheGodfatherService> _services;
+
+        private static readonly List<IDisposable> _disposableServices = new List<IDisposable>();
 
         #region Timers
         private static Timer BotStatusUpdateTimer { get; set; }
@@ -139,6 +140,7 @@ namespace TheGodfather
             Log.Information("Initializing services");
             _bas = new BotActivityService(_cfg.CurrentConfiguration.ShardCount);
             IServiceCollection sharedServices = BotServiceCollectionProvider.CreateSharedServicesCollection(_cfg, _dbb, _bas);
+            _disposableServices.AddRange(sharedServices.Where(s => s.ImplementationInstance is IDisposable).Select(s => s.ImplementationInstance as IDisposable));
 
             Log.Information("Creating {ShardCount} shard(s)", _cfg.CurrentConfiguration.ShardCount);
             _shards = new List<TheGodfatherShard>();
@@ -179,11 +181,9 @@ namespace TheGodfather
                     await shard?.DisposeAsync();
             }
 
-            if (!(_services is null)) {
-                foreach (ITheGodfatherService service in _services) {
-                    if (service is IDisposable disposable)
-                        disposable.Dispose();
-                }
+            if (!(_disposableServices is null)) {
+                foreach (IDisposable service in _disposableServices)
+                    service.Dispose();
             }
 
             Log.Information("Cleanup complete! Powering off");

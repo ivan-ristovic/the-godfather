@@ -1,4 +1,6 @@
-﻿namespace TheGodfather.Services
+﻿using System;
+
+namespace TheGodfather.Services
 {
     public interface ITheGodfatherService
     {
