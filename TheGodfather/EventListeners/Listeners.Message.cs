@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -8,9 +7,10 @@ using DSharpPlus.EventArgs;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.EventListeners.Attributes;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Extensions;
@@ -19,7 +19,6 @@ using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.EventListeners
 {

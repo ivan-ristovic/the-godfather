@@ -1,24 +1,16 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Context;
-using Serilog.Events;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.EventListeners.Attributes;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.EventListeners
 {

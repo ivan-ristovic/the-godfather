@@ -1,16 +1,12 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DSharpPlus;
+using TheGodfather.EventListeners.Attributes;
 
-using TheGodfather.Common.Attributes;
-#endregion
-
-namespace TheGodfather.Common
+namespace TheGodfather.EventListeners.Common
 {
-    internal static class AsyncExecutionManager
+    public static class AsyncEventManager
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; }
 
@@ -32,7 +28,7 @@ namespace TheGodfather.Common
     }
 
 
-    internal class ListenerMethod
+    public sealed class ListenerMethod
     {
         public MethodInfo Method { get; internal set; }
         public AsyncEventListenerAttribute Attribute { get; internal set; }

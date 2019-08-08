@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,10 +15,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.EventListeners.Attributes;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-#endregion
 
 namespace TheGodfather.EventListeners
 {

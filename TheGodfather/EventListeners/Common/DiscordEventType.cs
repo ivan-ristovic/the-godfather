@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 
-namespace TheGodfather.Common
+namespace TheGodfather.EventListeners.Common
 {
     public enum DiscordEventType
     {

@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
@@ -18,6 +17,7 @@ using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 
@@ -76,7 +76,7 @@ namespace TheGodfather
             this.SetupInteractivity();
             this.SetupVoice();
 
-            AsyncExecutionManager.RegisterEventListeners(this.Client, this);
+            AsyncEventManager.RegisterEventListeners(this.Client, this);
         }
 
         private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)

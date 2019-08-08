@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Services;
 
-namespace TheGodfather.Common.Attributes
+namespace TheGodfather.EventListeners.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    internal sealed class AsyncEventListenerAttribute : Attribute
+    public sealed class AsyncEventListenerAttribute : Attribute
     {
         public DiscordEventType Target { get; }
 
