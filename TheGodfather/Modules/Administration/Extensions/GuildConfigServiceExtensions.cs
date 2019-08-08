@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
-using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {

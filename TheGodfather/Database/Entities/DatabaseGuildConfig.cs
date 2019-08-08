@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Database.Entities

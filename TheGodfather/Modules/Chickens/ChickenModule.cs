@@ -1,14 +1,14 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
@@ -16,10 +16,11 @@ using TheGodfather.Database;
 using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

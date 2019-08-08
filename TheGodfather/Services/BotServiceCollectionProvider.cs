@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Database;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Owner.Services;
@@ -10,12 +9,9 @@ namespace TheGodfather.Services
 {
     public static class BotServiceCollectionProvider
     {
-        public static IServiceCollection CreateSharedServicesCollection(BotConfigService cfg, DatabaseContextBuilder dbb, BotActivityService bas)
+        public static IServiceCollection AddSharedServices(IServiceCollection services)
         {
-            return new ServiceCollection()
-                .AddSingleton(cfg)
-                .AddSingleton(dbb)
-                .AddSingleton(bas)
+            return services
                 .AddSingleton<GuildConfigService>()
                 .AddSingleton<BlockingService>()
                 .AddSingleton<FilteringService>()
@@ -43,7 +39,7 @@ namespace TheGodfather.Services
                 .AddSingleton(new AntispamService(shard))
                 .AddSingleton(new LinkfilterService(shard))
                 .AddSingleton(new RatelimitService(shard))
-                .AddSingleton(new SavedTasksService(shard))
+                .AddSingleton(s => new SavedTasksService(shard, s.GetRequiredService<AsyncExecutionService>()))
                 ;
         }
     }

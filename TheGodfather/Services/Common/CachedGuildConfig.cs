@@ -1,8 +1,6 @@
-﻿#region USING_DIRECTIVES
-using TheGodfather.Modules.Administration.Common;
-#endregion
+﻿using TheGodfather.Modules.Administration.Common;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Services.Common
 {
     public sealed class CachedGuildConfig
     {

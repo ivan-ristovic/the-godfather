@@ -9,7 +9,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Services.Common
 {
-    public sealed class SavedTaskExecutor : AsyncExecutor, IDisposable
+    public sealed class SavedTaskExecutor : IDisposable
     {
         public int Id { get; private set; }
         public SavedTaskInfo TaskInfo { get; }
@@ -18,14 +18,16 @@ namespace TheGodfather.Services.Common
         public event TaskExecuted OnTaskExecuted;
 
         private readonly TheGodfatherShard shard;
+        private readonly AsyncExecutionService async;
         private Timer timer;
 
 
-        public SavedTaskExecutor(int id, TheGodfatherShard shard, SavedTaskInfo task)
+        public SavedTaskExecutor(int id, TheGodfatherShard shard, AsyncExecutionService async, SavedTaskInfo task)
         {
             this.Id = id;
             this.TaskInfo = task;
             this.shard = shard;
+            this.async = async;
         }
 
 
@@ -85,10 +87,10 @@ namespace TheGodfather.Services.Common
 
             try {
                 DiscordChannel channel = info.ChannelId != 0
-                    ? this.Execute(this.shard.Client.GetChannelAsync(info.ChannelId))
-                    : this.Execute(this.shard.Client.CreateDmChannelAsync(info.InitiatorId));
-                DiscordUser user = this.Execute(this.shard.Client.GetUserAsync(info.InitiatorId));
-                this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
+                    ? this.async.Execute(this.shard.Client.GetChannelAsync(info.ChannelId))
+                    : this.async.Execute(this.shard.Client.CreateDmChannelAsync(info.InitiatorId));
+                DiscordUser user = this.async.Execute(this.shard.Client.GetUserAsync(info.InitiatorId));
+                this.async.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                     Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));
@@ -99,7 +101,7 @@ namespace TheGodfather.Services.Common
             } finally {
                 if (!info.IsRepeating) {
                     try {
-                        this.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
+                        this.async.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
                     } catch (Exception e) {
                         Log.Error(e, "Error while unscheduling send message saved task");
                     }
@@ -112,15 +114,15 @@ namespace TheGodfather.Services.Common
             var info = _ as UnbanTaskInfo;
 
             try {
-                DiscordGuild guild = this.Execute(this.shard.Client.GetGuildAsync(info.GuildId));
-                this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
+                DiscordGuild guild = this.async.Execute(this.shard.Client.GetGuildAsync(info.GuildId));
+                this.async.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unban removed in meantime
             } catch (Exception e) {
                 Log.Debug(e, "Error while handling unban saved task");
             } finally {
                 try {
-                    this.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
+                    this.async.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unban saved task");
                 }
@@ -132,19 +134,19 @@ namespace TheGodfather.Services.Common
             var info = _ as UnmuteTaskInfo;
 
             try {
-                DiscordGuild guild = this.Execute(this.shard.Client.GetGuildAsync(info.GuildId));
+                DiscordGuild guild = this.async.Execute(this.shard.Client.GetGuildAsync(info.GuildId));
                 DiscordRole role = guild.GetRole(info.MuteRoleId);
-                DiscordMember member = this.Execute(guild.GetMemberAsync(info.UserId));
+                DiscordMember member = this.async.Execute(guild.GetMemberAsync(info.UserId));
                 if (role is null)
                     return;
-                this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
+                this.async.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unmute removed in meantime
             } catch (Exception e) {
                 Log.Debug(e, "Error while handling unmute saved task");
             } finally {
                 try {
-                    this.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
+                    this.async.Execute(this.OnTaskExecuted(this.Id, this.TaskInfo));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unmute saved task");
                 }

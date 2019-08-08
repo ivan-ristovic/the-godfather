@@ -18,6 +18,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather
 {
@@ -32,7 +33,7 @@ namespace TheGodfather
         private static BotActivityService _bas;
         private static DatabaseContextBuilder _dbb;
         private static List<TheGodfatherShard> _shards;
-        private static AsyncExecutor _async;
+        private static AsyncExecutionService _async;
 
         private static readonly List<IDisposable> _disposableServices = new List<IDisposable>();
 
@@ -138,8 +139,15 @@ namespace TheGodfather
         private static async Task CreateAndBootShardsAsync()
         {
             Log.Information("Initializing services");
+            _async = new AsyncExecutionService();
             _bas = new BotActivityService(_cfg.CurrentConfiguration.ShardCount);
-            IServiceCollection sharedServices = BotServiceCollectionProvider.CreateSharedServicesCollection(_cfg, _dbb, _bas);
+            IServiceCollection sharedServices = new ServiceCollection()
+                .AddSingleton(_cfg)
+                .AddSingleton(_dbb)
+                .AddSingleton(_bas)
+                .AddSingleton(_async)
+                ;
+            sharedServices = BotServiceCollectionProvider.AddSharedServices(sharedServices);
             _disposableServices.AddRange(sharedServices.Where(s => s.ImplementationInstance is IDisposable).Select(s => s.ImplementationInstance as IDisposable));
 
             Log.Information("Creating {ShardCount} shard(s)", _cfg.CurrentConfiguration.ShardCount);
@@ -159,7 +167,6 @@ namespace TheGodfather
 
         private static Task RegisterPeriodicTasks()
         {
-            _async = new AsyncExecutor();
             BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, _shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.DatabaseSyncInterval));
             FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(_cfg.CurrentConfiguration.FeedCheckInterval));

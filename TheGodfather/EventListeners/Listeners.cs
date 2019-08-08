@@ -4,13 +4,13 @@ using System.Reflection;
 using DSharpPlus;
 using TheGodfather.EventListeners.Attributes;
 
-namespace TheGodfather.EventListeners.Common
+namespace TheGodfather.EventListeners
 {
-    public static class AsyncEventManager
+    internal static partial class Listeners
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; }
 
-        public static void RegisterEventListeners(DiscordClient client, TheGodfatherShard shard)
+        public static void FindAndRegister(DiscordClient client, TheGodfatherShard shard)
         {
             ListenerMethods =
                 from types in Assembly.GetExecutingAssembly().GetTypes()
@@ -28,7 +28,7 @@ namespace TheGodfather.EventListeners.Common
     }
 
 
-    public sealed class ListenerMethod
+    internal sealed class ListenerMethod
     {
         public MethodInfo Method { get; internal set; }
         public AsyncEventListenerAttribute Attribute { get; internal set; }

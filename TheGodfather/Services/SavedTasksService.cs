@@ -81,16 +81,16 @@ namespace TheGodfather.Services
         public TimeSpan ReloadSpan { get; }
 
         private readonly TheGodfatherShard shard;
-        private readonly AsyncExecutor async;
+        private readonly AsyncExecutionService async;
         private readonly ConcurrentDictionary<int, SavedTaskExecutor> tasks;
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>> reminders;
         private Timer loadTimer;
 
 
-        public SavedTasksService(TheGodfatherShard shard, bool start = true)
+        public SavedTasksService(TheGodfatherShard shard, AsyncExecutionService async, bool start = true)
         {
             this.shard = shard;
-            this.async = new AsyncExecutor();
+            this.async = async;
             this.tasks = new ConcurrentDictionary<int, SavedTaskExecutor>();
             this.reminders = new ConcurrentDictionary<ulong, ConcurrentDictionary<int, SavedTaskExecutor>>();
             this.ReloadSpan = TimeSpan.FromMinutes(5);
@@ -111,7 +111,7 @@ namespace TheGodfather.Services
 
 
         public void Start()
-            => this.loadTimer = new Timer(LoadCallback, this, TimeSpan.Zero, this.ReloadSpan);
+            => this.loadTimer = new Timer(LoadCallback, this, TimeSpan.FromSeconds(10), this.ReloadSpan);
 
         public async Task ScheduleAsync(SavedTaskInfo tinfo)
         {
@@ -189,25 +189,21 @@ namespace TheGodfather.Services
 
         private async Task<bool> RegisterDbTaskAsync(int id, SavedTaskInfo tinfo)
         {
-            SavedTaskExecutor texec = this.CreateTaskExecutor(id, tinfo, register: false, schedule: false);
+            SavedTaskExecutor texec = this.CreateTaskExecutor(id, tinfo);
             if (tinfo.IsExecutionTimeReached) {
                 await texec.HandleMissedExecutionAsync();
-                texec.Dispose();
+                await this.UnscheduleAsync(id, tinfo);
                 return false;
-            } else {
-                this.RegisterExecutor(texec);
-                texec.ScheduleExecution();
-                return true;
             }
+            return true;
         }
 
-        private SavedTaskExecutor CreateTaskExecutor(int id, SavedTaskInfo tinfo, bool register = true, bool schedule = true)
+        private SavedTaskExecutor CreateTaskExecutor(int id, SavedTaskInfo tinfo)
         {
-            var texec = new SavedTaskExecutor(id, this.shard, tinfo);
+            var texec = new SavedTaskExecutor(id, this.shard, this.async, tinfo);
             texec.OnTaskExecuted += this.UnscheduleAsync;
-            if (register)
-                this.RegisterExecutor(texec);
-            if (schedule)
+            this.RegisterExecutor(texec);
+            if (tinfo.TimeUntilExecution > TimeSpan.Zero)
                 texec.ScheduleExecution();
             return texec;
         }

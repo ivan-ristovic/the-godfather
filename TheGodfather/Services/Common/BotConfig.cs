@@ -5,7 +5,7 @@ using Serilog.Events;
 using TheGodfather.Database;
 #endregion
 
-namespace TheGodfather.Common
+namespace TheGodfather.Services.Common
 {
     public sealed class BotConfig
     {

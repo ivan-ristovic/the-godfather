@@ -1,33 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
-
-using Newtonsoft.Json;
-
-using System.IO;
-using System.Text;
-
-using TheGodfather.Common;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Database
 {
     public class DesignTimeDatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {
-        public DatabaseContext CreateDbContext(params string[] args)
+        private readonly BotConfigService cfg;
+        private readonly AsyncExecutionService async;
+
+
+        public DesignTimeDatabaseContextFactory()
         {
-            BotConfig cfg = BotConfig.Default;
-            string json = "{}";
-            var utf8 = new UTF8Encoding(false);
-            var fi = new FileInfo("Resources/config.json");
-            if (fi.Exists) {
-                try {
-                    using (FileStream fs = fi.OpenRead())
-                    using (var sr = new StreamReader(fs, utf8))
-                        json = sr.ReadToEnd();
-                    cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                } catch {
-                    cfg = BotConfig.Default;
-                }
-            }
-            
+            this.cfg = new BotConfigService();
+            this.async = new AsyncExecutionService();
+        }
+
+
+        public DatabaseContext CreateDbContext(params string[] _)
+        {
+            BotConfig cfg = this.async.Execute(this.cfg.LoadConfigAsync("Resources/config.json"));
             return new DatabaseContextBuilder(cfg.DatabaseConfig).CreateContext();
         }
     }

@@ -13,6 +13,7 @@ using TheGodfather.Database.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Swat.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Swat.Services
@@ -36,14 +37,14 @@ namespace TheGodfather.Modules.Swat.Services
 
         private static readonly ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>> _listeners;
         private static readonly object _lock;
-        private static readonly AsyncExecutor _async;
+        private static readonly AsyncExecutionService _async;   // FIXME
         private static Timer _ticker;
 
         static SwatSpaceCheckService()
         {
             _listeners = new ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>>(new DatabaseSwatServerComparer());
             _lock = new object();
-            _async = new AsyncExecutor();
+            _async = new AsyncExecutionService();
         }
 
 
