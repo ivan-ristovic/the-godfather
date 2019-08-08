@@ -5,7 +5,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Common.Converters
 {
-    public class CustomActivityTypeConverter : IArgumentConverter<ActivityType>
+    public sealed class CustomActivityTypeConverter : IArgumentConverter<ActivityType>
     {
         public static ActivityType? TryConvert(string value)
         {

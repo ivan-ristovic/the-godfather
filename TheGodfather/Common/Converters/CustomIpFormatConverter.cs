@@ -1,10 +1,7 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
-#endregion
 
 namespace TheGodfather.Common.Converters
 {
@@ -12,9 +9,9 @@ namespace TheGodfather.Common.Converters
     {
         public Task<Optional<CustomIPFormat>> ConvertAsync(string value, CommandContext ctx)
         {
-            if (!CustomIPFormat.TryParse(value, out CustomIPFormat ip))
-                return Task.FromResult(new Optional<CustomIPFormat>());
-            return Task.FromResult(new Optional<CustomIPFormat>(ip));
+            return CustomIPFormat.TryParse(value, out CustomIPFormat ip)
+                ? Task.FromResult(new Optional<CustomIPFormat>(ip))
+                : Task.FromResult(new Optional<CustomIPFormat>());
         }
     }
 }

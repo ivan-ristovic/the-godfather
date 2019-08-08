@@ -1,12 +1,8 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
-
 using TheGodfather.Modules.Administration.Common;
-#endregion
 
 namespace TheGodfather.Common.Converters
 {
@@ -24,6 +20,8 @@ namespace TheGodfather.Common.Converters
                     break;
                 case "temporarymute":
                 case "tempmute":
+                case "tempm":
+                case "tmpm":
                 case "tm":
                     result = PunishmentActionType.TemporaryMute;
                     break;
@@ -33,6 +31,9 @@ namespace TheGodfather.Common.Converters
                     break;
                 case "temporaryban":
                 case "tempban":
+                case "tmpban":
+                case "tempb":
+                case "tmpb":
                 case "tb":
                     result = PunishmentActionType.TemporaryBan;
                     break;

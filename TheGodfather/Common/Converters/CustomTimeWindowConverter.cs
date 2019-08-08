@@ -1,12 +1,8 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
-
 using Imgur.API.Enums;
-
-using System.Threading.Tasks;
-#endregion
 
 namespace TheGodfather.Common.Converters
 {
@@ -18,8 +14,8 @@ namespace TheGodfather.Common.Converters
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "day":
-                case "d":
                 case "24h":
+                case "d":
                     result = TimeWindow.Day;
                     break;
                 case "week":
@@ -28,10 +24,14 @@ namespace TheGodfather.Common.Converters
                     result = TimeWindow.Week;
                     break;
                 case "month":
+                case "1mo":
+                case "1m":
+                case "mo":
                 case "m":
                     result = TimeWindow.Month;
                     break;
                 case "year":
+                case "1y":
                 case "y":
                     result = TimeWindow.Year;
                     break;

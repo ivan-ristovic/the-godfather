@@ -1,14 +1,11 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
 
-using System.Threading.Tasks;
-#endregion
-
 namespace TheGodfather.Common.Converters
 {
-    public class CustomBoolConverter : IArgumentConverter<bool>
+    public sealed class CustomBoolConverter : IArgumentConverter<bool>
     {
         public static bool? TryConvert(string value)
         {
