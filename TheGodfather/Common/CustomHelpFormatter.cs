@@ -1,4 +1,6 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -6,15 +8,9 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Common
 {
