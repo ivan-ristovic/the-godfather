@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Swat
             
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
-                                      [Description("IP.")] CustomIPFormat ip,
+                                      [Description("IP.")] IPAddressRange ip,
                                       [Description("Query port")] int queryport = 10481)
             {
                 if (string.IsNullOrWhiteSpace(name))
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Swat
 
             [Command("add"), Priority(0)]
             public Task AddAsync(CommandContext ctx,
-                                [Description("IP.")] CustomIPFormat ip,
+                                [Description("IP.")] IPAddressRange ip,
                                 [Description("Name.")] string name,
                                 [Description("Query port")] int queryport = 10481)
                 => this.AddAsync(ctx, name, ip, queryport);

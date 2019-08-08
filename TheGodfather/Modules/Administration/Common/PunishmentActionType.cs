@@ -1,6 +1,6 @@
 ﻿namespace TheGodfather.Modules.Administration.Common
 {
-    public enum PunishmentActionType : byte
+    public enum PunishmentAction : byte
     {
         PermanentMute = 0,
         TemporaryMute = 1,
@@ -11,14 +11,14 @@
 
     public static class PunishmentActionTypeExtensions
     {
-        public static string ToTypeString(this PunishmentActionType type)
+        public static string ToTypeString(this PunishmentAction type)
         {
             switch (type) {
-                case PunishmentActionType.Kick: return "Kick";
-                case PunishmentActionType.PermanentMute: return "Permanent mute";
-                case PunishmentActionType.PermanentBan: return "Permanent ban";
-                case PunishmentActionType.TemporaryBan: return "Temporary ban";
-                case PunishmentActionType.TemporaryMute: return "Temporary mute";
+                case PunishmentAction.Kick: return "Kick";
+                case PunishmentAction.PermanentMute: return "Permanent mute";
+                case PunishmentAction.PermanentBan: return "Permanent ban";
+                case PunishmentAction.TemporaryBan: return "Temporary ban";
+                case PunishmentAction.TemporaryMute: return "Temporary mute";
                 default: return "Unknown";
             }
         }

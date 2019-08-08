@@ -140,7 +140,7 @@ namespace TheGodfather.Database.Entities
         }
 
         [Column("antiflood_action")]
-        public PunishmentActionType AntifloodAction {
+        public PunishmentAction AntifloodAction {
             get => this.AntifloodSettings.Action;
             set => this.AntifloodSettings.Action = value;
         }
@@ -186,7 +186,7 @@ namespace TheGodfather.Database.Entities
         }
 
         [Column("antispam_action")]
-        public PunishmentActionType AntispamAction {
+        public PunishmentAction AntispamAction {
             get => this.AntispamSettings.Action;
             set => this.AntispamSettings.Action = value;
         }
@@ -209,7 +209,7 @@ namespace TheGodfather.Database.Entities
         }
 
         [Column("ratelimit_action")]
-        public PunishmentActionType RatelimitAction {
+        public PunishmentAction RatelimitAction {
             get => this.RatelimitSettings.Action;
             set => this.RatelimitSettings.Action = value;
         }

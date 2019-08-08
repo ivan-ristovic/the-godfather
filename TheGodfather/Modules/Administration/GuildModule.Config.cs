@@ -650,10 +650,10 @@ namespace TheGodfather.Modules.Administration
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && PunishmentActionConverter.TryConvert(m.Content).HasValue
                         );
                         if (!mctx.TimedOut)
-                            gcfg.RatelimitSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
+                            gcfg.RatelimitSettings.Action = PunishmentActionConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = "Do you wish to change the default ratelimit sensitivity aka number of messages " +
@@ -680,10 +680,10 @@ namespace TheGodfather.Modules.Administration
                     if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && PunishmentActionConverter.TryConvert(m.Content).HasValue
                         );
                         if (!mctx.TimedOut)
-                            gcfg.AntispamSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
+                            gcfg.AntispamSettings.Action = PunishmentActionConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = "Do you wish to change the default antispam sensitivity aka number of same messages " +
@@ -714,10 +714,10 @@ namespace TheGodfather.Modules.Administration
                         query = "Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan";
                         await channel.EmbedAsync(query);
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && CustomPunishmentActionTypeConverter.TryConvert(m.Content).HasValue
+                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && PunishmentActionConverter.TryConvert(m.Content).HasValue
                         );
                         if (!mctx.TimedOut)
-                            antifloodSettings.Action = CustomPunishmentActionTypeConverter.TryConvert(mctx.Result.Content).Value;
+                            antifloodSettings.Action = PunishmentActionConverter.TryConvert(mctx.Result.Content).Value;
                     }
 
                     query = $"Do you wish to change the default antiflood user quota after which the " +

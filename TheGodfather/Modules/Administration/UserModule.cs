@@ -501,7 +501,7 @@ namespace TheGodfather.Modules.Administration
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Given time period cannot be lower than 1 minute or greater than 1 month");
 
-            await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentActionType.TemporaryMute, timespan, ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute"));
+            await ctx.Services.GetService<AntispamService>().PunishMemberAsync(ctx.Guild, member, PunishmentAction.TemporaryMute, timespan, ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute"));
             await this.InformAsync(ctx, $"{ctx.User.Mention} muted {member.Mention} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!", important: false);
         }
 

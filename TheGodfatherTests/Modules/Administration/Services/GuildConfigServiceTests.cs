@@ -26,7 +26,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     GuildId = MockData.Ids[0],
                     AntifloodSettings = new AntifloodSettings {
                         Enabled = true,
-                        Action = PunishmentActionType.Kick,
+                        Action = PunishmentAction.Kick,
                         Cooldown = 5,
                         Sensitivity = 4
                     },
@@ -154,7 +154,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: async db => {
                     this.Service.LoadData();
                     await this.Service.ModifyConfigAsync(MockData.Ids[1], gcfg => gcfg.AntispamSettings = new AntispamSettings {
-                        Action = PunishmentActionType.TemporaryBan,
+                        Action = PunishmentAction.TemporaryBan,
                         Enabled = true,
                         Sensitivity = 10
                     });
@@ -162,7 +162,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 verify: async db => {
                     DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[1]);
                     Assert.That(gcfg.AntispamEnabled, Is.True);
-                    Assert.That(gcfg.AntispamAction, Is.EqualTo(PunishmentActionType.TemporaryBan));
+                    Assert.That(gcfg.AntispamAction, Is.EqualTo(PunishmentAction.TemporaryBan));
                     Assert.That(gcfg.AntispamSensitivity, Is.EqualTo(10));
                 }
             );

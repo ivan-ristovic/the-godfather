@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable,
                                                    [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity,
-                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Kick,
+                                                   [Description("Action type.")] PunishmentAction action = PunishmentAction.Kick,
                                                    [Description("Cooldown.")] TimeSpan? cooldown = null)
                 {
                     if (sensitivity < 2 || sensitivity > 20)
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(4)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable,
-                                             [Description("Action type.")] PunishmentActionType action,
+                                             [Description("Action type.")] PunishmentAction action,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5,
                                              [Description("Cooldown.")] TimeSpan? cooldown = null)
                     => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(3)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable,
-                                             [Description("Action type.")] PunishmentActionType action,
+                                             [Description("Action type.")] PunishmentAction action,
                                              [Description("Cooldown.")] TimeSpan? cooldown = null,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5)
                     => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
@@ -107,14 +107,14 @@ namespace TheGodfather.Modules.Administration
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable,
                                              [Description("Cooldown.")] TimeSpan? cooldown,
-                                             [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Kick,
+                                             [Description("Action type.")] PunishmentAction action = PunishmentAction.Kick,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5)
                     => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
 
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Kick, null);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick, null);
 
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("setaction", "a")]
                 
                 public async Task SetActionAsync(CommandContext ctx,
-                                                [Description("Action type.")] PunishmentActionType action)
+                                                [Description("Action type.")] PunishmentAction action)
                 {
                     DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodAction = action;

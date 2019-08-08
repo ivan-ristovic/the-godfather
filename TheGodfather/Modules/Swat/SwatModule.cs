@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Swat
         [Aliases("q", "info", "i")]
         
         public Task QueryAsync(CommandContext ctx,
-                              [Description("Server IP.")] CustomIPFormat ip,
+                              [Description("Server IP.")] IPAddressRange ip,
                               [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Swat
         [Aliases("checkspace", "spacecheck", "sc")]
         
         public async Task StartCheckAsync(CommandContext ctx,
-                                         [Description("IP.")] CustomIPFormat ip,
+                                         [Description("IP.")] IPAddressRange ip,
                                          [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)

@@ -6,28 +6,28 @@ using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Common.Converters
 {
-    public class CustomPunishmentActionTypeConverter : IArgumentConverter<PunishmentActionType>
+    public class PunishmentActionConverter : IArgumentConverter<PunishmentAction>
     {
-        public static PunishmentActionType? TryConvert(string value)
+        public static PunishmentAction? TryConvert(string value)
         {
-            PunishmentActionType result = PunishmentActionType.Kick;
+            PunishmentAction result = PunishmentAction.Kick;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "silence":
                 case "mute":
                 case "m":
-                    result = PunishmentActionType.PermanentMute;
+                    result = PunishmentAction.PermanentMute;
                     break;
                 case "temporarymute":
                 case "tempmute":
                 case "tempm":
                 case "tmpm":
                 case "tm":
-                    result = PunishmentActionType.TemporaryMute;
+                    result = PunishmentAction.TemporaryMute;
                     break;
                 case "ban":
                 case "b":
-                    result = PunishmentActionType.PermanentBan;
+                    result = PunishmentAction.PermanentBan;
                     break;
                 case "temporaryban":
                 case "tempban":
@@ -35,23 +35,23 @@ namespace TheGodfather.Common.Converters
                 case "tempb":
                 case "tmpb":
                 case "tb":
-                    result = PunishmentActionType.TemporaryBan;
+                    result = PunishmentAction.TemporaryBan;
                     break;
                 case "remove":
                 case "kick":
                 case "k":
-                    result = PunishmentActionType.Kick;
+                    result = PunishmentAction.Kick;
                     break;
                 default:
                     parses = false;
                     break;
             }
 
-            return parses ? result : (PunishmentActionType?)null;
+            return parses ? result : (PunishmentAction?)null;
         }
 
 
-        public Task<Optional<PunishmentActionType>> ConvertAsync(string value, CommandContext ctx)
-            => Task.FromResult(new Optional<PunishmentActionType>(TryConvert(value).GetValueOrDefault()));
+        public Task<Optional<PunishmentAction>> ConvertAsync(string value, CommandContext ctx)
+            => Task.FromResult(new Optional<PunishmentAction>(TryConvert(value).GetValueOrDefault()));
     }
 }

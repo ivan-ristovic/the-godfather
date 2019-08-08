@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Swat
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("IP or range.")] CustomIPFormat ip,
+                                         [Description("IP or range.")] IPAddressRange ip,
                                          [Description("Number of results")] int amount = 10)
                  => this.SearchIpAsync(ctx, ip, amount);
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Swat
             [Description("Search for a given IP or range.")]
             
             public async Task SearchIpAsync(CommandContext ctx,
-                                           [Description("IP or range.")] CustomIPFormat ip,
+                                           [Description("IP or range.")] IPAddressRange ip,
                                            [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)

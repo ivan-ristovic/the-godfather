@@ -5,7 +5,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Common.Converters
 {
-    public sealed class CustomBoolConverter : IArgumentConverter<bool>
+    public sealed class BoolConverter : IArgumentConverter<bool>
     {
         public static bool? TryConvert(string value)
         {
@@ -14,12 +14,13 @@ namespace TheGodfather.Common.Converters
             switch (value.ToLowerInvariant()) {
                 case "t":
                 case "y":
+                case "yy":
                 case "ye":
                 case "ya":
-                case "yup":
-                case "yee":
                 case "yes":
                 case "yea":
+                case "yup":
+                case "yee":
                 case "yeah":
                 case "on":
                 case "enable":
@@ -28,10 +29,12 @@ namespace TheGodfather.Common.Converters
                     break;
                 case "f":
                 case "n":
+                case "no":
+                case "nn":
                 case "nah":
                 case "nope":
                 case "nada":
-                case "no":
+                case "of":
                 case "off":
                 case "disable":
                 case "0":

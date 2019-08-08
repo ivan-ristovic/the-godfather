@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable,
                                                    [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity,
-                                                   [Description("Action type.")] PunishmentActionType action = PunishmentActionType.PermanentMute)
+                                                   [Description("Action type.")] PunishmentAction action = PunishmentAction.PermanentMute)
                 {
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
@@ -75,14 +75,14 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand, Priority(2)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable,
-                                             [Description("Action type.")] PunishmentActionType action,
+                                             [Description("Action type.")] PunishmentAction action,
                                              [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity = 5)
                     => this.ExecuteGroupAsync(ctx, enable, sensitivity, action);
 
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.PermanentMute);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.PermanentMute);
 
                 [GroupCommand, Priority(0)]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Administration
                 [Aliases("setaction", "a")]
                 
                 public async Task SetActionAsync(CommandContext ctx,
-                                                [Description("Action type.")] PunishmentActionType action)
+                                                [Description("Action type.")] PunishmentAction action)
                 {
                     DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.RatelimitSettings.Action = action;

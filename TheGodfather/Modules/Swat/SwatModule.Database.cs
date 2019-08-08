@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Swat
             
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] CustomIPFormat ip,
+                                      [Description("IP.")] IPAddressRange ip,
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IPs.")] params CustomIPFormat[] ips)
+                                      [Description("IPs.")] params IPAddressRange[] ips)
             {
                 if (ips is null || !ips.Any())
                     throw new InvalidCommandUsageException("You need to specify atleast one IP to add.");
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Swat
 
             [Command("add"), Priority(0)]
             public Task AddAsync(CommandContext ctx,
-                                [Description("IP.")] CustomIPFormat ip,
+                                [Description("IP.")] IPAddressRange ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Additional info.")] string reason = null)
                 => this.AddAsync(ctx, name, ip, reason);
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Swat
             [Command("alias"), Priority(1)]
             public async Task AliasAsync(CommandContext ctx,
                                         [Description("Player alias.")] string alias,
-                                        [Description("Player IP.")] CustomIPFormat ip)
+                                        [Description("Player IP.")] IPAddressRange ip)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Swat
 
             [Command("alias"), Priority(0)]
             public Task AliasAsync(CommandContext ctx,
-                                  [Description("Player IP.")] CustomIPFormat ip,
+                                  [Description("Player IP.")] IPAddressRange ip,
                                   [Description("Player alias.")] string alias)
                 => this.AliasAsync(ctx, alias, ip);
             #endregion
@@ -178,7 +178,7 @@ namespace TheGodfather.Modules.Swat
             [Aliases("-", "del", "d", "-=", ">", ">>")]
             
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP or range.")] CustomIPFormat ip)
+                                         [Description("IP or range.")] IPAddressRange ip)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers.Include(p => p.DbIPs).FirstOrDefault(p => p.IPs.Contains(ip.Content));

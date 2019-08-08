@@ -131,13 +131,13 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseGameStats>().Property(s => s.QuizesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(PunishmentActionType.PermanentBan);
+            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(PunishmentAction.PermanentBan);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodCooldown).HasDefaultValue(10);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodEnabled).HasDefaultValue(false);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntifloodSensitivity).HasDefaultValue(5);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveCooldown).HasDefaultValue(3);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveEnabled).HasDefaultValue(false);
-            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(PunishmentActionType.PermanentMute);
+            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(PunishmentAction.PermanentMute);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamEnabled).HasDefaultValue(false);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.AntispamSensitivity).HasDefaultValue(5);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.Currency).HasDefaultValue(null);
@@ -152,7 +152,7 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.LinkfilterIpLoggersEnabled).HasDefaultValue(true);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.LinkfilterUrlShortenersEnabled).HasDefaultValue(true);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.Prefix).HasDefaultValue(null);
-            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.RatelimitAction).HasDefaultValue(PunishmentActionType.TemporaryMute);
+            mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.RatelimitAction).HasDefaultValue(PunishmentAction.TemporaryMute);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.RatelimitEnabled).HasDefaultValue(false);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.RatelimitSensitivity).HasDefaultValue(5);
             mb.Entity<DatabaseGuildConfig>().Property(gcfg => gcfg.ReactionResponse).HasDefaultValue(false);

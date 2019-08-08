@@ -6,7 +6,7 @@ using Imgur.API.Enums;
 
 namespace TheGodfather.Common.Converters
 {
-    public class CustomTimeWindowConverter : IArgumentConverter<TimeWindow>
+    public class ImgurTimeWindowConverter : IArgumentConverter<TimeWindow>
     {
         public static TimeWindow? TryConvert(string value)
         {

@@ -2,7 +2,7 @@
 {
     public sealed class RatelimitSettings
     {
-        public PunishmentActionType Action { get; set; } = PunishmentActionType.TemporaryMute;
+        public PunishmentAction Action { get; set; } = PunishmentAction.TemporaryMute;
         public bool Enabled { get; set; } = false;
         public short Sensitivity { get; set; } = 5;
     }

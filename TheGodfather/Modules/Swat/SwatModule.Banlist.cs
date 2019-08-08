@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Swat
             
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] CustomIPFormat ip,
+                                      [Description("IP.")] IPAddressRange ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Swat
 
             [Command("add"), Priority(1)]
             public Task AddAsync(CommandContext ctx,
-                                [Description("IP.")] CustomIPFormat ip,
+                                [Description("IP.")] IPAddressRange ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Reason for ban.")] string reason = null)
                 => this.AddAsync(ctx, name, ip, reason);
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Swat
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
             
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP.")] CustomIPFormat ip)
+                                         [Description("IP.")] IPAddressRange ip)
             {
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers

@@ -124,12 +124,12 @@ namespace TheGodfather
             this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());
 
             // TODO load these like event listeners
-            this.CNext.RegisterConverter(new CustomActivityTypeConverter());
-            this.CNext.RegisterConverter(new CustomBoolConverter());
-            this.CNext.RegisterConverter(new CustomTimeWindowConverter());
-            this.CNext.RegisterConverter(new CustomIPAddressConverter());
-            this.CNext.RegisterConverter(new CustomIPFormatConverter());
-            this.CNext.RegisterConverter(new CustomPunishmentActionTypeConverter());
+            this.CNext.RegisterConverter(new ActivityTypeConverter());
+            this.CNext.RegisterConverter(new BoolConverter());
+            this.CNext.RegisterConverter(new ImgurTimeWindowConverter());
+            this.CNext.RegisterConverter(new IPAddressConverter());
+            this.CNext.RegisterConverter(new IPAddressRangeConverter());
+            this.CNext.RegisterConverter(new PunishmentActionConverter());
 
             UpdateCommandList(this.CNext);
         }

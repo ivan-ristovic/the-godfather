@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildNewMembers.ContainsKey(e.Guild.Id) || !this.guildNewMembers[e.Guild.Id].Contains(e.Member))
                 return false;
 
-            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentActionType.PermanentBan);
+            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentAction.PermanentBan);
             return true;
         }
     }

@@ -212,6 +212,7 @@ namespace TheGodfather
 
                 var activity = new DiscordActivity(status?.Status ?? "@TheGodfather help", status?.Activity ?? ActivityType.Playing);
                 _async.Execute(shard.Client.UpdateStatusAsync(activity));
+                Log.Debug("Changed bot status to {Activity}", activity);
             } catch (Exception e) {
                 Log.Error(e, "An error occured during activity change");
             }
@@ -223,6 +224,7 @@ namespace TheGodfather
             try {
                 using (DatabaseContext db = shard.Database.CreateContext())
                     shard.Services.GetService<UserRanksService>().Sync(db);
+                Log.Debug("Database sync successful");
             } catch (Exception e) {
                 Log.Error(e, "An error occured during database sync");
             }
@@ -232,8 +234,10 @@ namespace TheGodfather
         {
             var shard = _ as TheGodfatherShard;
 
+            Log.Debug("Feed check starting...");
             try {
                 _async.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, _dbb));
+                Log.Debug("Feed check finished");
             } catch (Exception e) {
                 Log.Error(e, "An error occured during feed check");
             }
@@ -264,11 +268,14 @@ namespace TheGodfather
                         db.SaveChanges();
                     }
                 }
+                Log.Debug("Birthdays checked");
 
                 using (DatabaseContext db = _dbb.CreateContext()) {
                     db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                     db.SaveChanges();
                 }
+                Log.Debug("Currency updated for all users");
+
             } catch (Exception e) {
                 Log.Error(e, "An error occured during misc timer callback");
             }

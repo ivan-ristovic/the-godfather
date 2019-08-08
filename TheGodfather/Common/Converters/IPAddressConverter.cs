@@ -6,7 +6,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Common.Converters
 {
-    public class CustomIPAddressConverter : IArgumentConverter<IPAddress>
+    public class IPAddressConverter : IArgumentConverter<IPAddress>
     {
         public Task<Optional<IPAddress>> ConvertAsync(string value, CommandContext ctx)
         {

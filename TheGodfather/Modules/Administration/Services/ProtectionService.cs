@@ -34,30 +34,30 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type, TimeSpan? cooldown = null, string reason = null)
+        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string reason = null)
         {
             try {
                 DiscordRole muteRole;
                 SavedTaskInfo tinfo;
                 switch (type) {
-                    case PunishmentActionType.Kick:
+                    case PunishmentAction.Kick:
                         await member.RemoveAsync(reason ?? this.reason);
                         break;
-                    case PunishmentActionType.PermanentMute:
+                    case PunishmentAction.PermanentMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, reason ?? this.reason);
                         break;
-                    case PunishmentActionType.PermanentBan:
+                    case PunishmentAction.PermanentBan:
                         await member.BanAsync(1, reason: reason ?? this.reason);
                         break;
-                    case PunishmentActionType.TemporaryBan:
+                    case PunishmentAction.TemporaryBan:
                         await member.BanAsync(0, reason: reason ?? this.reason);
                         tinfo = new UnbanTaskInfo(guild.Id, member.Id, cooldown is null ? null : DateTimeOffset.Now + cooldown);
                         await this.shard.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
                         break;
-                    case PunishmentActionType.TemporaryMute:
+                    case PunishmentAction.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;

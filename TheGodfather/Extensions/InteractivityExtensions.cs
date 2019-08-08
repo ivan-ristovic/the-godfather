@@ -32,7 +32,7 @@ namespace TheGodfather.Extensions
                 m => {
                     if (m.ChannelId != cid || m.Author.Id != uid)
                         return false;
-                    bool? b = CustomBoolConverter.TryConvert(m.Content);
+                    bool? b = BoolConverter.TryConvert(m.Content);
                     response = b ?? false;
                     return b.HasValue;
                 }
