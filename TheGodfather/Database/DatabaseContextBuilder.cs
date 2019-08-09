@@ -1,28 +1,17 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System;
-#endregion
 
 namespace TheGodfather.Database
 {
     public class DatabaseContextBuilder
     {
-        public enum DatabaseProvider
-        {
-            Sqlite = 0,
-            PostgreSql = 1,
-            SqlServer = 2,
-            SqliteInMemory = 3
-        }
-
-
         private string ConnectionString { get; }
-        private DatabaseProvider Provider { get; }
+        private DatabaseManagementSystem Provider { get; }
         private DbContextOptions<DatabaseContext> Options { get; }
 
 
-        public DatabaseContextBuilder(DatabaseProvider provider, string connectionString, DbContextOptions<DatabaseContext> options = null)
+        public DatabaseContextBuilder(DatabaseManagementSystem provider, string connectionString, DbContextOptions<DatabaseContext> options = null)
         {
             this.Provider = provider;
             this.ConnectionString = connectionString;
@@ -36,7 +25,7 @@ namespace TheGodfather.Database
             this.Options = options;
 
             switch (this.Provider) {
-                case DatabaseProvider.PostgreSql:
+                case DatabaseManagementSystem.PostgreSql:
                     this.ConnectionString = new NpgsqlConnectionStringBuilder {
                         Host = cfg.Hostname,
                         Port = cfg.Port,
@@ -50,13 +39,13 @@ namespace TheGodfather.Database
                         TrustServerCertificate = true
                     }.ConnectionString;
                     break;
-                case DatabaseProvider.Sqlite:
+                case DatabaseManagementSystem.Sqlite:
                     this.ConnectionString = $"Data Source={cfg.DatabaseName}.db;";
                     break;
-                case DatabaseProvider.SqlServer:
+                case DatabaseManagementSystem.SqlServer:
                     this.ConnectionString = $@"Data Source=(localdb)\ProjectsV13;Initial Catalog={cfg.DatabaseName};Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
                     break;
-                case DatabaseProvider.SqliteInMemory:
+                case DatabaseManagementSystem.SqliteInMemory:
                     this.ConnectionString = @"DataSource=:memory:;foreign keys=true;";
                     break;
                 default:

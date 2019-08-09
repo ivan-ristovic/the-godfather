@@ -1,14 +1,8 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-
-using System;
-
 using TheGodfather.Database.Entities;
 using TheGodfather.Modules.Administration.Common;
-
-using static TheGodfather.Database.DatabaseContextBuilder;
-#endregion
 
 namespace TheGodfather.Database
 {
@@ -49,16 +43,16 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
 
         private string ConnectionString { get; }
-        private DatabaseProvider Provider { get; }
+        private DatabaseManagementSystem Provider { get; }
 
 
-        public DatabaseContext(DatabaseProvider provider, string connectionString)
+        public DatabaseContext(DatabaseManagementSystem provider, string connectionString)
         {
             this.Provider = provider;
             this.ConnectionString = connectionString;
         }
 
-        public DatabaseContext(DatabaseProvider provider, string connectionString, DbContextOptions<DatabaseContext> options)
+        public DatabaseContext(DatabaseManagementSystem provider, string connectionString, DbContextOptions<DatabaseContext> options)
             : base(options)
         {
             this.Provider = provider;
@@ -82,14 +76,14 @@ namespace TheGodfather.Database
             optionsBuilder.ConfigureWarnings(wb => wb.Throw(CoreEventId.IncludeIgnoredWarning));
 
             switch (this.Provider) {
-                case DatabaseProvider.PostgreSql:
+                case DatabaseManagementSystem.PostgreSql:
                     optionsBuilder.UseNpgsql(this.ConnectionString);
                     break;
-                case DatabaseProvider.Sqlite:
-                case DatabaseProvider.SqliteInMemory:
+                case DatabaseManagementSystem.Sqlite:
+                case DatabaseManagementSystem.SqliteInMemory:
                     optionsBuilder.UseSqlite(this.ConnectionString);
                     break;
-                case DatabaseProvider.SqlServer:
+                case DatabaseManagementSystem.SqlServer:
                     optionsBuilder.UseSqlServer(this.ConnectionString);
                     break;
                 default:

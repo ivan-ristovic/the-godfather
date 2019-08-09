@@ -23,7 +23,7 @@ namespace TheGodfatherTests
             DatabaseConnection = new SqliteConnection(ConnectionString);
 
             var cfg = new DatabaseConfig() {
-                Provider = DatabaseProvider.SqliteInMemory
+                Provider = DatabaseManagementSystem.SqliteInMemory
             };
             DbContextOptions<DatabaseContext> options = new DbContextOptionsBuilder<DatabaseContext>()
                 .UseSqlite(DatabaseConnection)

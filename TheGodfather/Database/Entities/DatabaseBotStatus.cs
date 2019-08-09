@@ -1,9 +1,6 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-#endregion
+using DSharpPlus.Entities;
 
 namespace TheGodfather.Database.Entities
 {
