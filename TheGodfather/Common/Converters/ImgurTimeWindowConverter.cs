@@ -1,16 +1,13 @@
-﻿using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Converters;
-using DSharpPlus.Entities;
-using Imgur.API.Enums;
+﻿using Imgur.API.Enums;
 
 namespace TheGodfather.Common.Converters
 {
-    public class ImgurTimeWindowConverter : IArgumentConverter<TimeWindow>
+    public class ImgurTimeWindowConverter : BaseArgumentConverter<TimeWindow>
     {
-        public static TimeWindow? TryConvert(string value)
+        // TODO remove, use TimeSpan and then convert to apropriate TimeWindow
+        public override bool TryConvert(string value, out TimeWindow result)
         {
-            TimeWindow result = TimeWindow.Day;
+            result = TimeWindow.Day;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "day":
@@ -44,11 +41,7 @@ namespace TheGodfather.Common.Converters
                     break;
             }
 
-            return parses ? result : (TimeWindow?)null;
+            return parses;
         }
-
-
-        public Task<Optional<TimeWindow>> ConvertAsync(string value, CommandContext ctx)
-            => Task.FromResult(new Optional<TimeWindow>(TryConvert(value).GetValueOrDefault()));
     }
 }

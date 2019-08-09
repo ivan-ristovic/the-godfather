@@ -29,13 +29,7 @@ namespace TheGodfather.Extensions
 
             bool response = false;
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
-                m => {
-                    if (m.ChannelId != cid || m.Author.Id != uid)
-                        return false;
-                    bool? b = BoolConverter.TryConvert(m.Content);
-                    response = b ?? false;
-                    return b.HasValue;
-                }
+                m => m.ChannelId != cid || m.Author.Id != uid ? false : new BoolConverter().TryConvert(m.Content, out _)
             );
 
             if (!(interactivityService is null) && !interactivityService.RemovePendingResponse(cid, uid))

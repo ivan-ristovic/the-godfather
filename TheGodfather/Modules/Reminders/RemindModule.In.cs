@@ -29,21 +29,21 @@ namespace TheGodfather.Modules.Reminders
 
 
             [GroupCommand, Priority(2)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
+            public new Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Time span until reminder.")] TimeSpan timespan,
                                              [Description("Channel to send message to.")] DiscordChannel channel,
                                              [RemainingText, Description("What to send?")] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(1)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
+            public new Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Channel to send message to.")] DiscordChannel channel,
                                              [Description("Time span until reminder.")] TimeSpan timespan,
                                              [RemainingText, Description("What to send?")] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(0)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
+            public new Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Time span until reminder.")] TimeSpan timespan,
                                              [RemainingText, Description("What to send?")] string message)
                 => this.AddReminderAsync(ctx, timespan, null, message);

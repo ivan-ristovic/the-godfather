@@ -1,57 +1,35 @@
-﻿using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Converters;
-using DSharpPlus.Entities;
+﻿using System.Text.RegularExpressions;
 using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Common.Converters
 {
-    public class PunishmentActionConverter : IArgumentConverter<PunishmentAction>
+    public class PunishmentActionConverter : BaseArgumentConverter<PunishmentAction>
     {
-        public static PunishmentAction? TryConvert(string value)
+        private static readonly Regex _pmRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _tmRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _pbRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _tbRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _kRegex = new Regex(@"^k+(i+c*k+e*d*)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        public override bool TryConvert(string value, out PunishmentAction result)
         {
-            PunishmentAction result = PunishmentAction.Kick;
+            result = PunishmentAction.Kick;
             bool parses = true;
-            switch (value.ToLowerInvariant()) {
-                case "silence":
-                case "mute":
-                case "m":
-                    result = PunishmentAction.PermanentMute;
-                    break;
-                case "temporarymute":
-                case "tempmute":
-                case "tempm":
-                case "tmpm":
-                case "tm":
-                    result = PunishmentAction.TemporaryMute;
-                    break;
-                case "ban":
-                case "b":
-                    result = PunishmentAction.PermanentBan;
-                    break;
-                case "temporaryban":
-                case "tempban":
-                case "tmpban":
-                case "tempb":
-                case "tmpb":
-                case "tb":
-                    result = PunishmentAction.TemporaryBan;
-                    break;
-                case "remove":
-                case "kick":
-                case "k":
-                    result = PunishmentAction.Kick;
-                    break;
-                default:
-                    parses = false;
-                    break;
-            }
 
-            return parses ? result : (PunishmentAction?)null;
+            if (_kRegex.IsMatch(value))
+                result = PunishmentAction.Kick;
+            else if (_tbRegex.IsMatch(value))
+                result = PunishmentAction.TemporaryBan;
+            else if (_tmRegex.IsMatch(value))
+                result = PunishmentAction.TemporaryMute;
+            else if (_pbRegex.IsMatch(value))
+                result = PunishmentAction.PermanentBan;
+            else if (_pmRegex.IsMatch(value))
+                result = PunishmentAction.PermanentMute;
+            else
+                parses = false;
+
+            return parses;
         }
-
-
-        public Task<Optional<PunishmentAction>> ConvertAsync(string value, CommandContext ctx)
-            => Task.FromResult(new Optional<PunishmentAction>(TryConvert(value).GetValueOrDefault()));
     }
 }

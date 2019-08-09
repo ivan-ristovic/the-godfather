@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Reminders
 
 
             [GroupCommand, Priority(1)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
+            public new Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Time span until reminder.")] TimeSpan timespan,
                                              [RemainingText, Description("What to send?")] string message)
                 => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Reminders
 
 
                 [GroupCommand]
-                new public Task ExecuteGroupAsync(CommandContext ctx,
+                public new Task ExecuteGroupAsync(CommandContext ctx,
                                                  [Description("Time span until reminder.")] TimeSpan timespan,
                                                  [RemainingText, Description("What to send?")] string message)
                     => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
