@@ -15,12 +15,12 @@ namespace TheGodfather.Modules.Currency.Common
     public class SlotMachine
     {
         private static ImmutableArray<DiscordEmoji> _emoji = new DiscordEmoji[] {
-            StaticDiscordEmoji.LargeBlueDiamond,
-            StaticDiscordEmoji.Seven,
-            StaticDiscordEmoji.MoneyBag,
-            StaticDiscordEmoji.Trophy,
-            StaticDiscordEmoji.Gift,
-            StaticDiscordEmoji.Cherries
+            Emojis.LargeBlueDiamond,
+            Emojis.Seven,
+            Emojis.MoneyBag,
+            Emojis.Trophy,
+            Emojis.Gift,
+            Emojis.Cherries
         }.ToImmutableArray();
 
         private static ImmutableArray<int> _multipliers = new[] {
@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Currency.Common
             won = EvaluateSlotResult(res, bid);
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.LargeOrangeDiamond} SLUT MACHINE {StaticDiscordEmoji.LargeOrangeDiamond}",
+                Title = $"{Emojis.LargeOrangeDiamond} SLUT MACHINE {Emojis.LargeOrangeDiamond}",
                 Description = MakeStringFromResult(res),
                 Color = DiscordColor.DarkGreen,
                 ThumbnailUrl = user.AvatarUrl
@@ -70,25 +70,25 @@ namespace TheGodfather.Modules.Currency.Common
         {
             var sb = new StringBuilder();
 
-            sb.Append(StaticDiscordEmoji.BlackSquare);
+            sb.Append(Emojis.BlackSquare);
             for (int i = 0; i < 5; i++)
-                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
+                sb.Append(Emojis.SmallOrangeDiamond);
             sb.AppendLine();
 
             for (int i = 0; i < 3; i++) {
                 if (i % 2 == 1)
-                    sb.Append(StaticDiscordEmoji.Joystick);
+                    sb.Append(Emojis.Joystick);
                 else
-                    sb.Append(StaticDiscordEmoji.BlackSquare);
-                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
+                    sb.Append(Emojis.BlackSquare);
+                sb.Append(Emojis.SmallOrangeDiamond);
                 for (int j = 0; j < 3; j++)
                     sb.Append(_emoji[res[i, j]]);
-                sb.AppendLine(StaticDiscordEmoji.SmallOrangeDiamond);
+                sb.AppendLine(Emojis.SmallOrangeDiamond);
             }
 
-            sb.Append(StaticDiscordEmoji.BlackSquare);
+            sb.Append(Emojis.BlackSquare);
             for (int i = 0; i < 5; i++)
-                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
+                sb.Append(Emojis.SmallOrangeDiamond);
 
             return sb.ToString();
         }

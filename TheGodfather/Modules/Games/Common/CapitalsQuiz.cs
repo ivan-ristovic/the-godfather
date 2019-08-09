@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Games.Common
                 string question = questions.Dequeue();
 
                 await this.Channel.TriggerTypingAsync();
-                await this.Channel.EmbedAsync($"The capital of {Formatter.Bold(question)} is?", StaticDiscordEmoji.Question);
+                await this.Channel.EmbedAsync($"The capital of {Formatter.Bold(question)} is?", Emojis.Question);
 
                 bool timeout = true;
                 var answerRegex = new Regex($@"\b{_capitals[question]}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);

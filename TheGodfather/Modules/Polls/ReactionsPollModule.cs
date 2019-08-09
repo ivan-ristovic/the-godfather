@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Polls
             var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
             this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
             try {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
+                await this.InformAsync(ctx, Emojis.Question, "And what will be the possible answers? (separate with a semicolon)");
                 System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");

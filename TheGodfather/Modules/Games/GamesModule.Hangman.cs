@@ -48,8 +48,8 @@ namespace TheGodfather.Modules.Games
                 if (dm is null)
                     throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
 
-                await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
+                await dm.EmbedAsync("What is the secret word?", Emojis.Question, this.ModuleColor);
+                await this.InformAsync(ctx, Emojis.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
                 InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(
                     dm,
                     ctx.Channel.Id,
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Games
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {
-                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Result.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
+                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Result.Content)}", Emojis.Information, this.ModuleColor);
                 }
 
                 var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Result.Content, mctx.Result.Author);
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Games
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx, 
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
                     " The game ends if the word is guessed or when all lives are spent."
                 );
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopHangmanStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Hangman:\n\n{top}");
             }
             #endregion
         }

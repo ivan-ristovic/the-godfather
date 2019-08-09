@@ -36,18 +36,18 @@ namespace TheGodfather.Modules.Games
             var sb = new StringBuilder();
 
             sb.AppendLine().AppendLine();
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" animalrace");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" caro");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" connect4");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" duel");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" hangman");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" numberrace");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" othello");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" quiz");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" rps");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" russianroulette");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" tictactoe");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" typingrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" animalrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" caro");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" connect4");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" duel");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" hangman");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" numberrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" othello");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" quiz");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" rps");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" russianroulette");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" tictactoe");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" typingrace");
 
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Available games:",
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
         public async Task LeaderboardAsync(CommandContext ctx)
         {
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Trophy} HALL OF FAME {StaticDiscordEmoji.Trophy}",
+                Title = $"{Emojis.Trophy} HALL OF FAME {Emojis.Trophy}",
                 Color = DiscordColor.Chartreuse
             };
 
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Games
                     gfPick = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
+            await this.InformAsync(ctx, Emojis.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
         }
         #endregion
 

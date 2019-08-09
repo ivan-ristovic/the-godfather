@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             return new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Joystick} Typing race results:",
+                Title = $"{Emojis.Joystick} Typing race results:",
                 Description = sb.ToString(),
                 Color = DiscordColor.Green
             }.Build();

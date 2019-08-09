@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.");
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Games
                         foreach (ulong uid in game.WinnerIds)
                             await this.Database.UpdateStatsAsync(uid, s => s.AnimalRacesWon++);
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the race.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User, out DiscordEmoji emoji))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                return this.InformAsync(ctx, StaticDiscordEmoji.Bicyclist, $"{ctx.User.Mention} joined the race as {emoji}");
+                return this.InformAsync(ctx, Emojis.Bicyclist, $"{ctx.User.Mention} joined the race as {emoji}");
             }
             #endregion
 
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopAnimalRaceStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{topStats}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Animal Race:\n\n{topStats}");
             }
             #endregion
         }

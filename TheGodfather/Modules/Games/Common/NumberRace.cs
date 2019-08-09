@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games.Common
             this.Started = true;
 
             int num = GFRandom.Generator.Next(1000);
-            await this.Channel.EmbedAsync(num.ToString(), StaticDiscordEmoji.ArrowUp);
+            await this.Channel.EmbedAsync(num.ToString(), Emojis.ArrowUp);
             
             while (this.participants.Any()) {
                 int guess = 0;
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Games.Common
                     num++;
                     this.Winner = mctx.Result.Author;
                 } else {
-                    await this.Channel.EmbedAsync($"{mctx.Result.Author.Mention} lost!", StaticDiscordEmoji.Dead);
+                    await this.Channel.EmbedAsync($"{mctx.Result.Author.Mention} lost!", Emojis.Dead);
                     if (!(this.Winner is null) && this.Winner.Id == mctx.Result.Author.Id)
                         this.Winner = null;
                     this.participants.RemoveWhere(u => mctx.Result.Author.Id == u.Id);

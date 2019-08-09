@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Chickens
                     await db.SaveChangesAsync();
                 }
                     
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
+                await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
             }
             #endregion
         }

@@ -32,9 +32,9 @@ namespace TheGodfather.EventListeners
             DiscordChannel wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
             if (!(wchn is null)) {
                 if (string.IsNullOrWhiteSpace(gcfg.WelcomeMessage))
-                    await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
+                    await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", Emojis.Wave);
                 else
-                    await wchn.EmbedAsync(gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
+                    await wchn.EmbedAsync(gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention), Emojis.Wave);
             }
 
             try {
@@ -116,9 +116,9 @@ namespace TheGodfather.EventListeners
                 DiscordChannel lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
                 if (!(lchn is null)) {
                     if (string.IsNullOrWhiteSpace(gcfg.LeaveMessage))
-                        await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "Member")} left the server! Bye!", StaticDiscordEmoji.Wave);
+                        await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "Member")} left the server! Bye!", Emojis.Wave);
                     else
-                        await lchn.EmbedAsync(gcfg.LeaveMessage.Replace("%user%", e.Member?.Username ?? "Unknown"), StaticDiscordEmoji.Wave);
+                        await lchn.EmbedAsync(gcfg.LeaveMessage.Replace("%user%", e.Member?.Username ?? "Unknown"), Emojis.Wave);
                 }
             }
 

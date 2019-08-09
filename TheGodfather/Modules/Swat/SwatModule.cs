@@ -111,9 +111,9 @@ namespace TheGodfather.Modules.Swat
 
             DiscordMessage msg = await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
 
-            await msg.CreateReactionAsync(StaticDiscordEmoji.Information);
+            await msg.CreateReactionAsync(Emojis.Information);
             await Task.Delay(250);
-            InteractivityResult<MessageReactionAddEventArgs> rctx = await ctx.Client.GetInteractivity().WaitForEventArgsAsync<MessageReactionAddEventArgs>(e => e.Message == msg && e.Emoji == StaticDiscordEmoji.Information);
+            InteractivityResult<MessageReactionAddEventArgs> rctx = await ctx.Client.GetInteractivity().WaitForEventArgsAsync<MessageReactionAddEventArgs>(e => e.Message == msg && e.Emoji == Emojis.Information);
             if (!rctx.TimedOut) {
                 SwatServerInfo completeInfo = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort, complete: true);
                 if (completeInfo is null) {

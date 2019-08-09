@@ -212,7 +212,7 @@ namespace TheGodfather
 
                 var activity = new DiscordActivity(status?.Status ?? "@TheGodfather help", status?.Activity ?? ActivityType.Playing);
                 _async.Execute(shard.Client.UpdateStatusAsync(activity));
-                Log.Debug("Changed bot status to {Activity}", activity);
+                Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
             } catch (Exception e) {
                 Log.Error(e, "An error occured during activity change");
             }
@@ -258,7 +258,7 @@ namespace TheGodfather
                     DiscordChannel channel = _async.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
                     DiscordUser user = _async.Execute(shard.Client.GetUserAsync(birthday.UserId));
                     _async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
-                        Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
+                        Description = $"{Emojis.Tada} Happy birthday, {user.Mention}! {Emojis.Cake}",
                         Color = DiscordColor.Aquamarine
                     }));
 

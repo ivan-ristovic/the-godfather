@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Swat.Services
                         foreach (DiscordChannelInfo ci in _listeners[server]) {
                             try {
                                 if (ci.Success == false || ci.LastMessageId != ci.Channel.LastMessageId)
-                                    ci.LastMessageId = _async.Execute(ci.Channel.EmbedAsync($"There is space on {Formatter.Bold(info.HostName)}!", StaticDiscordEmoji.AlarmClock, DiscordColor.Black)).Id;
+                                    ci.LastMessageId = _async.Execute(ci.Channel.EmbedAsync($"There is space on {Formatter.Bold(info.HostName)}!", Emojis.AlarmClock, DiscordColor.Black)).Id;
                                 ci.Success = true;
                             } catch {
                                 _listeners[server].TryRemove(ci);

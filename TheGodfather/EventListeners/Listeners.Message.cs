@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
                     DatabaseGuildRank rankInfo;
                     using (DatabaseContext db = shard.Database.CreateContext())
                         rankInfo = db.GuildRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
-                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", StaticDiscordEmoji.Medal);
+                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", Emojis.Medal);
                 }
             }
         }

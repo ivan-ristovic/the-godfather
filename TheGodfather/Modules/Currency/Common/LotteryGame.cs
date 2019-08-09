@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
+            DiscordMessage msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", Emojis.MoneyBag);
 
             IEnumerable<int> drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.MoneyBag} LOTTERY DRAWS {StaticDiscordEmoji.MoneyBag}",
+                Title = $"{Emojis.MoneyBag} LOTTERY DRAWS {Emojis.MoneyBag}",
                 Description = sb.ToString(),
                 Color = DiscordColor.DarkGreen
             };

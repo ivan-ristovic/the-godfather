@@ -44,10 +44,10 @@ namespace TheGodfather.Modules.Currency
             var sb = new StringBuilder();
 
             sb.AppendLine().AppendLine();
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("holdem");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("lottery");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("slot");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("wheeloffortune");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine("holdem");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine("lottery");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine("slot");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine("wheeloffortune");
 
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Available casino games:",

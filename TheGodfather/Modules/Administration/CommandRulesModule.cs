@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.SendCollectionInPagesAsync(
                 $"Command rules for {ctx.Guild.Name}",
                 rules.OrderBy(cr => cr.ChannelId),
-                cr => $"{(cr.Allowed ? StaticDiscordEmoji.CheckMarkSuccess : StaticDiscordEmoji.X)} {(cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : "global")} | {Formatter.InlineCode(cr.Command)}",
+                cr => $"{(cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X)} {(cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : "global")} | {Formatter.InlineCode(cr.Command)}",
                 this.ModuleColor
             );
         }

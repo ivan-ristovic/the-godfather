@@ -42,20 +42,20 @@ namespace TheGodfather.Modules
 
 
         protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = true)
-            => this.InformAsync(ctx, (emoji is null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
+            => this.InformAsync(ctx, (emoji is null ? Emojis.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
         protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
         {
             if (!important && ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).ReactionResponse) {
                 try {
-                    await ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
+                    await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
                     await this.InformAsync(ctx, ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, "Action completed"));
                 }
             } else {
                 string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Description = $"{emoji ?? StaticDiscordEmoji.CheckMarkSuccess} {response}",
+                    Description = $"{emoji ?? Emojis.CheckMarkSuccess} {response}",
                     Color = this.ModuleColor
                 });
             }
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules
         protected Task InformFailureAsync(CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message)}",
+                Description = $"{Emojis.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message)}",
                 Color = DiscordColor.IndianRed
             });
         }

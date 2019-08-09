@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration
                     if (!(logchn is null))
                         await this.PrintGuildConfigAsync(ctx.Services.GetService<GuildConfigService>(), ctx.Guild, logchn, changed: true);
 
-                    await channel.EmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess);
+                    await channel.EmbedAsync($"All done! Have a nice day!", Emojis.CheckMarkSuccess);
                 }
             }
             #endregion

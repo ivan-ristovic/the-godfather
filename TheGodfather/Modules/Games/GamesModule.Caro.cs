@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Caro against {ctx.User.Username}?");
+                await this.InformAsync(ctx, Emojis.Question, $"Who wants to play Caro against {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
                     return;
@@ -60,9 +60,9 @@ namespace TheGodfather.Modules.Games
 
                     if (!(caro.Winner is null)) {
                         if (caro.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {caro.Winner.Mention}!");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"The winner is: {caro.Winner.Mention}!");
 
                         await this.Database.UpdateStatsAsync(caro.Winner.Id, s => s.CaroWon++);
                         if (caro.Winner.Id == ctx.User.Id)
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.CaroLost++);
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await this.InformAsync(ctx, Emojis.Joystick, "A draw... Pathetic...");
                     } 
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "Caro (aka ``Gomoku`` or ``Gobang``) is similar to a Tic-Tac-Toe game played on a 10x10 board." +
                     "The goal is to have an unbroken row of 5 symbols in order to win the game. Players play in " +
                     "turns, placing their symbols on the board. The game ends when someone makes 5 symbols " +
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopCaroStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Caro:\n\n{top}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Caro:\n\n{top}");
             }
             #endregion
         }

@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Connect4 against {ctx.User.Username}?");
+                await this.InformAsync(ctx, Emojis.Question, $"Who wants to play Connect4 against {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
                     return;
@@ -60,9 +60,9 @@ namespace TheGodfather.Modules.Games
 
                     if (!(connect4.Winner is null)) {
                         if (connect4.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await this.InformAsync(ctx, Emojis.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
+                            await this.InformAsync(ctx, Emojis.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
 
                         await this.Database.UpdateStatsAsync(connect4.Winner.Id, s => s.Chain4Won++);
                         if (connect4.Winner.Id == ctx.User.Id)
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.Chain4Lost++);
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await this.InformAsync(ctx, Emojis.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "\nConnect Four (also known as ``Four in a Row``, ``Four in a Line``) is a two-player game " +
                     "in which the players first choose a color and then take turns dropping colored discs from the " +
                     "top into a seven-column, six-row vertically suspended grid. The pieces fall straight down, " +
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Connect4:\n\n{top}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Connect4:\n\n{top}");
             }
             #endregion
         }

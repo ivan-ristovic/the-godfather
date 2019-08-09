@@ -106,7 +106,7 @@ public sealed class DynamicCommands : TheGodfatherModule
                     ctx.CommandsNext.RegisterCommands(moduleType);
                     TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
 
-                    return this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Command(s) successfully added!", important: false);
+                    return this.InformAsync(ctx, Emojis.Information, "Compilation successful! Command(s) successfully added!", important: false);
                 } catch (Exception ex) {
                     return this.InformFailureAsync(ctx, $"Compilation failed!\n\n{Formatter.Bold(ex.GetType().ToString())}: {ex.Message}");
                 }

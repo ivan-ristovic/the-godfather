@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
                     await this.JoinAsync(ctx, numbers);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency
                         await game.RunAsync();
 
                         if (game.Winners.Any()) {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
+                            await this.InformAsync(ctx, Emojis.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
                             using (DatabaseContext db = this.Database.CreateContext()) {
                                 foreach (LotteryGame.Participant winner in game.Winners)
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Currency
                                 await db.SaveChangesAsync();
                             }
                         } else {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!");
+                            await this.InformAsync(ctx, Emojis.MoneyBag, "Better luck next time!");
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Currency
                                 await db.SaveChangesAsync();
                             }
                         }
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Currency
                 }
 
                 game.AddParticipant(ctx.User, numbers);
-                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
+                await this.InformAsync(ctx, Emojis.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
             }
             #endregion
 
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Currency
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "Three numbers will be drawn, and rewards will be given to participants depending on " +
                     "the number of correct guesses."
                 );

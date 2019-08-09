@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Currency
                 }
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
+            await this.InformAsync(ctx, Emojis.Dice, sb.ToString());
         }
 
         [Command("coinflip"), Priority(0)]
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
             sb.Append(ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
+            await this.InformAsync(ctx, Emojis.Dice, sb.ToString());
 
             if (rnd == guess_int) {
                 using (DatabaseContext db = this.Database.CreateContext()) {

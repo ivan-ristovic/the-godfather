@@ -47,14 +47,14 @@ namespace TheGodfather.Modules.Games.Common
         {
             this.UpdateHpBars();
 
-            this.messageHandle = await this.Channel.EmbedAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}");
+            this.messageHandle = await this.Channel.EmbedAsync($"{this.player1.Mention} {this.hp1str} {Emojis.DuelSwords} {this.hp2str} {this.player2.Mention}");
 
             while (this.hp1 > 0 && this.hp2 > 0)
                 await this.AdvanceAsync();
 
             this.Winner = this.hp1 > 0 ? this.player1 : this.player2;
             this.FinishingMove = await this.WaitForFinishingMoveAsync();
-            await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention} {this.FinishingMove ?? "wins"}!");
+            await this.Channel.EmbedAsync($"{Emojis.DuelSwords} {this.Winner.Mention} {this.FinishingMove ?? "wins"}!");
         }
 
         private async Task AdvanceAsync()
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Games.Common
             await this.WaitForPotionUseAsync();
             this.UpdateHpBars();
 
-            this.messageHandle = await this.messageHandle.ModifyAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}", embed: new DiscordEmbedBuilder {
+            this.messageHandle = await this.messageHandle.ModifyAsync($"{this.player1.Mention} {this.hp1str} {Emojis.DuelSwords} {this.hp2str} {this.player2.Mention}", embed: new DiscordEmbedBuilder {
                 Title = "ITS TIME TO DUDUDUDU... DUEL!",
                 Description = this.eb.ToString(),
                 Color = DiscordColor.Teal
@@ -72,18 +72,18 @@ namespace TheGodfather.Modules.Games.Common
 
         private void UpdateHpBars()
         {
-            this.hp1str = string.Join("", Enumerable.Repeat(StaticDiscordEmoji.WhiteSquare, this.hp1)) + string.Join("", Enumerable.Repeat(StaticDiscordEmoji.BlackSquare, 5 - this.hp1));
-            this.hp2str = string.Join("", Enumerable.Repeat(StaticDiscordEmoji.BlackSquare, 5 - this.hp2)) + string.Join("", Enumerable.Repeat(StaticDiscordEmoji.WhiteSquare, this.hp2));
+            this.hp1str = string.Join("", Enumerable.Repeat(Emojis.WhiteSquare, this.hp1)) + string.Join("", Enumerable.Repeat(Emojis.BlackSquare, 5 - this.hp1));
+            this.hp2str = string.Join("", Enumerable.Repeat(Emojis.BlackSquare, 5 - this.hp2)) + string.Join("", Enumerable.Repeat(Emojis.WhiteSquare, this.hp2));
         }
 
         private void DealDamage()
         {
             int damage = 1;
             if (GFRandom.Generator.NextBool()) {
-                this.eb.AppendLine($"{this.player1.Mention} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player2.Mention}");
+                this.eb.AppendLine($"{this.player1.Mention} {Emojis.Weapons.GetRandomDuelWeapon()} {this.player2.Mention}");
                 this.hp2 -= damage;
             } else {
-                this.eb.AppendLine($"{this.player2.Mention} {StaticDiscordEmoji.GetRandomDuelWeapon()} {this.player1.Mention}");
+                this.eb.AppendLine($"{this.player2.Mention} {Emojis.Weapons.GetRandomDuelWeapon()} {this.player1.Mention}");
                 this.hp1 -= damage;
             }
         }
@@ -104,18 +104,18 @@ namespace TheGodfather.Modules.Games.Common
                 if (mctx.Result.Author.Id == this.player1.Id) {
                     this.hp1 = (this.hp1 + 1 > 5) ? 5 : this.hp1 + 1;
                     this.potionUsed1 = true;
-                    this.eb.AppendLine($"{this.player1.Mention} {StaticDiscordEmoji.Syringe}");
+                    this.eb.AppendLine($"{this.player1.Mention} {Emojis.Syringe}");
                 } else {
                     this.hp2 = (this.hp2 + 1 > 5) ? 5 : this.hp2 + 1;
                     this.potionUsed2 = true;
-                    this.eb.AppendLine($"{this.player2.Mention} {StaticDiscordEmoji.Syringe}");
+                    this.eb.AppendLine($"{this.player2.Mention} {Emojis.Syringe}");
                 }
             }
         }
 
         private async Task<string> WaitForFinishingMoveAsync()
         {
-            DiscordMessage msg = await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}");
+            DiscordMessage msg = await this.Channel.EmbedAsync($"{Emojis.DuelSwords} {this.Winner.Mention}, FINISH HIM! {Emojis.DuelSwords}");
 
             InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 m => m.ChannelId == this.Channel.Id && m.Author.Id == this.Winner.Id,

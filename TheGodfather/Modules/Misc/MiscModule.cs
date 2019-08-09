@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Roll a dice.")]
         [Aliases("die", "roll")]
         public Task DiceAsync(CommandContext ctx)
-            => this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
+            => this.InformAsync(ctx, Emojis.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
         #endregion
 
         #region COMMAND_INVITE
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Misc
         public async Task LeaveAsync(CommandContext ctx)
         {
             if (await ctx.WaitForBoolReplyAsync("Are you sure you want me to leave this guild?")) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Wave, "Go find a new bot, since this one is leaving!");
+                await this.InformAsync(ctx, Emojis.Wave, "Go find a new bot, since this one is leaving!");
                 await ctx.Guild.LeaveAsync();
             } else {
                 await this.InformAsync(ctx, "Guess I'll stay then.", ":no_mouth:");
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Misc
                 sb.Append(GFRandom.Generator.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
             }
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
+            return this.InformAsync(ctx, Emojis.Information, sb.ToString());
         }
         #endregion
 
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.Message.DeleteAsync();
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.NoEntry} NSFW link from {ctx.Member.DisplayName} {StaticDiscordEmoji.NoEntry}",
+                Title = $"{Emojis.NoEntry} NSFW link from {ctx.Member.DisplayName} {Emojis.NoEntry}",
                 Description = FormatterExtensions.Spoiler(url.ToString()),
                 Color = DiscordColor.Red
             };
@@ -215,12 +215,12 @@ namespace TheGodfather.Modules.Misc
             if (user.IsCurrent) {
                 sb.AppendLine(Formatter.Bold($"8{new string('=', 45)}"));
                 sb.Append(Formatter.Italic("(Please plug in a second monitor for the entire display)"));
-                return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
+                return this.InformAsync(ctx, Emojis.Ruler, sb.ToString());
             }
 
             sb.Append(Formatter.Bold($"8{new string('=', (int)(user.Id % 40))}D"));
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
+            return this.InformAsync(ctx, Emojis.Ruler, sb.ToString());
         }
         #endregion
 
@@ -243,11 +243,11 @@ namespace TheGodfather.Modules.Misc
             var sb = new StringBuilder();
             foreach (DiscordUser u in users.Distinct()) {
                 if (u.IsCurrent)
-                    return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
+                    return this.InformAsync(ctx, Emojis.Ruler, "Please, I do not want to make everyone laugh at you...");
                 sb.Append('8').Append('=', (int)(u.Id % 40)).Append("D ").AppendLine(u.Mention);
             }
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
+            return this.InformAsync(ctx, Emojis.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
         }
         #endregion
 
@@ -269,7 +269,7 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
+                await this.InformAsync(ctx, Emojis.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
                 return;
             }
 
@@ -409,7 +409,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Not enough messages were sent from that user recently!");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", parts)}",
+                Description = $"{Emojis.Information} {string.Join(" ", parts)}",
                 Color = this.ModuleColor,
             }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
 
@@ -470,7 +470,7 @@ namespace TheGodfather.Modules.Misc
                 sb.Append(add);
             }
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
+            return this.InformAsync(ctx, Emojis.Information, sb.ToString());
         }
         #endregion
 
@@ -484,7 +484,7 @@ namespace TheGodfather.Modules.Misc
             TimeSpan processUptime = uptimeInfo.ProgramUptime;
             TimeSpan socketUptime = uptimeInfo.SocketUptime;
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information,
+            return this.InformAsync(ctx, Emojis.Information,
                 Formatter.Bold($"Uptime information:") +
                 $"\n\n{Formatter.Bold("Shard:")} {ctx.Client.ShardId}\n" +
                 $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
@@ -513,11 +513,11 @@ namespace TheGodfather.Modules.Misc
                     if (c == '0')
                         sb.Append(DiscordEmoji.FromName(ctx.Client, ":zero:"));
                     else
-                        sb.Append(StaticDiscordEmoji.Numbers[c - '0' - 1]);
+                        sb.Append(Emojis.Numbers.Get(c - '0' - 1));
                 } else if (char.IsWhiteSpace(c)) {
                     sb.Append(DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:"));
                 } else if (c == '?')
-                    sb.Append(StaticDiscordEmoji.Question);
+                    sb.Append(Emojis.Question);
                 else if (c == '!')
                     sb.Append(DiscordEmoji.FromName(ctx.Client, ":exclamation:"));
                 else if (c == '.')

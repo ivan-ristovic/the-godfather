@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class ConnectFourGame : BaseBoardGame
     {
-        private static readonly string _Header = string.Join("", StaticDiscordEmoji.Numbers.Take(9));
+        private static readonly string _Header = string.Join("", Emojis.Numbers.All.Take(9));
 
 
         public ConnectFourGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
@@ -124,9 +124,9 @@ namespace TheGodfather.Modules.Games.Common
             for (int i = 0; i < this.SizeX; i++) {
                 for (int j = 0; j < this.SizeY; j++)
                     switch (this.board[i, j]) {
-                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
-                        case 1: sb.Append(StaticDiscordEmoji.BoardPieceBlueCircle); break;
-                        case 2: sb.Append(StaticDiscordEmoji.BoardPieceRedCircle); break;
+                        case 0: sb.Append(Emojis.BoardSquare); break;
+                        case 1: sb.Append(Emojis.BoardPieceBlueCircle); break;
+                        case 2: sb.Append(Emojis.BoardPieceRedCircle); break;
                     }
                 sb.AppendLine();
             }

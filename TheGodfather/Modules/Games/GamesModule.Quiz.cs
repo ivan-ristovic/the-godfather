@@ -65,12 +65,12 @@ namespace TheGodfather.Modules.Games
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
                     await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<QuizCategory> categories = await QuizService.GetCategoriesAsync();
                 await this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Capitals")}\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" +
@@ -139,12 +139,12 @@ namespace TheGodfather.Modules.Games
                 var quiz = new CapitalsQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
                     await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
@@ -172,12 +172,12 @@ namespace TheGodfather.Modules.Games
                 var quiz = new CountriesQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
                     await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopQuizStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Quiz:\n\n{top}");
             }
             #endregion
 

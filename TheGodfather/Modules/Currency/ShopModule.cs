@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
+            await this.InformAsync(ctx, Emojis.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
         }
 
         [Command("buy"), UsesInteractivity, Priority(1)]
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
+            await this.InformAsync(ctx, Emojis.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}!", important: false);
         }
 
 
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
             
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {gcfg.Currency}!", important: false);
+            await this.InformAsync(ctx, Emojis.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {gcfg.Currency}!", important: false);
         }
         #endregion
 

@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Chickens.Common
             int str2 = this.Team2.Sum(c => c.Stats.TotalStrength);
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Chicken} CHICKEN WAR STARTING {StaticDiscordEmoji.Chicken}",
+                Title = $"{Emojis.Chicken} CHICKEN WAR STARTING {Emojis.Chicken}",
                 Description = $"{Formatter.Bold(this.Team1Name)} ({str1} STR) vs {Formatter.Bold(this.Team2Name)} ({str2} STR)",
                 Color = DiscordColor.Aquamarine
             };

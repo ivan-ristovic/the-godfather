@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Owner
             if (eb.Length > 0)
                 await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
             else
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Sent the message to all guilds!", important: false);
+                await this.InformAsync(ctx, Emojis.Information, "Sent the message to all guilds!", important: false);
         }
         #endregion
 
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Owner
             }
 
             if (!res.Any() || !res.First().Any()) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
+                await this.InformAsync(ctx, Emojis.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
                 return;
             }
 
@@ -504,7 +504,7 @@ namespace TheGodfather.Modules.Owner
                 if (eb.Length > 0)
                     await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
                 else
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Successfully left all given guilds!", important: false);
+                    await this.InformAsync(ctx, Emojis.Information, "Successfully left all given guilds!", important: false);
             }
         }
         #endregion

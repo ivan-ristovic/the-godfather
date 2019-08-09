@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
                     await this.JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency
 
                         if (game.Winners.Any()) {
                             if (game.Winner is null) {
-                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
+                                await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
                                 using (DatabaseContext db = this.Database.CreateContext()) {
                                     foreach (BlackjackGame.Participant winner in game.Winners)
@@ -69,14 +69,14 @@ namespace TheGodfather.Modules.Currency
                                     await db.SaveChangesAsync();
                                 }
                             } else {
-                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
+                                await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{game.Winner.Mention} got the BlackJack!");
                                 using (DatabaseContext db = this.Database.CreateContext()) {
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
                             }
                         } else {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");
+                            await this.InformAsync(ctx, Emojis.Cards.Suits[0], "The House always wins!");
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency
                                 await db.SaveChangesAsync();
                             }
                         }
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Blackjack game.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Currency
                 }
 
                 game.AddParticipant(ctx.User, bid);
-                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.");
+                await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{ctx.User.Mention} joined the Blackjack game.");
             }
             #endregion
 
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Currency
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "Each participant attempts to beat the dealer by getting a card value sum as close to 21 as possible, without going over 21. " +
                     "It is up to each individual player if an ace is worth 1 or 11. Face cards are valued as 10 and any other card is its pip value. " +
                     "Each player is dealt two cards in the begining and in turns they decide whether to hit (get one more card dealt) or stand. " +

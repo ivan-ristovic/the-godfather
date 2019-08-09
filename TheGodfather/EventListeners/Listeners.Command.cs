@@ -50,7 +50,7 @@ namespace TheGodfather.EventListeners
                 ex = ex.InnerException ?? ex;
 
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute)) {
-                await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.X);
+                await e.Context.Message.CreateReactionAsync(Emojis.X);
                 return;
             }
 
@@ -59,12 +59,12 @@ namespace TheGodfather.EventListeners
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
             };
-            StringBuilder sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
+            StringBuilder sb = new StringBuilder(Emojis.NoEntry).Append(" ");
 
             switch (ex) {
                 case CommandNotFoundException cne:
                     if (!shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Context.Guild.Id).SuggestionsEnabled) {
-                        await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.Question);
+                        await e.Context.Message.CreateReactionAsync(Emojis.Question);
                         return;
                     }
 

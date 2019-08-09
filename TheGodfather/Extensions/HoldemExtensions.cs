@@ -24,10 +24,9 @@ namespace TheGodfather.Extensions
 
         public static string ToUserFriendlyString(this Card card)
         {
-            if (card.Type >= CardType.Two && card.Type <= CardType.Ace)
-                return StaticDiscordEmoji.CardValues[(int)(card.Type - 1)] + card.Suit.ToFriendlyString();
-            else
-                return StaticDiscordEmoji.Question + card.Suit.ToFriendlyString();
+            return card.Type >= CardType.Two && card.Type <= CardType.Ace
+                ? Emojis.Cards.Values[(int)(card.Type - 1)] + card.Suit.ToFriendlyString()
+                : Emojis.Question + card.Suit.ToFriendlyString();
         }
     }
 }

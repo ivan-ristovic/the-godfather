@@ -54,7 +54,7 @@ namespace TheGodfather.Extensions
             channel = channel ?? ctx.Channel;
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.Question} {question} (y/n)",
+                Description = $"{Emojis.Question} {question} (y/n)",
                 Color = DiscordColor.Yellow
             });
 

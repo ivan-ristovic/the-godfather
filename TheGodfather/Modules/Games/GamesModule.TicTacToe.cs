@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
+                await this.InformAsync(ctx, Emojis.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
                     return;
@@ -61,9 +61,9 @@ namespace TheGodfather.Modules.Games
 
                     if (!(ttt.Winner is null)) {
                         if (ttt.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"The winner is: {ttt.Winner.Mention}!");
 
                         await this.Database.UpdateStatsAsync(ttt.Winner.Id, s => s.TicTacToeWon++);
                         if (ttt.Winner.Id == ctx.User.Id)
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.TicTacToeLost++);
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await this.InformAsync(ctx, Emojis.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "The object of Tic Tac Toe is to get three in a row. " +
                     "You play on a three by three game board. The first player is known as X and the second is O. " +
                     "Players alternate placing Xs and Os on the game board until either oppent has three in a row " +
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Games
             {
                 IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopTicTacToeStatsAsync();
                 string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
+                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
             }
             #endregion
         }

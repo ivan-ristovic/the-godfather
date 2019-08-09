@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.hand.Any())
                 sb.AppendJoin(" | ", this.hand).AppendLine();
             else
-                sb.AppendLine(StaticDiscordEmoji.Question).AppendLine();
+                sb.AppendLine(Emojis.Question).AppendLine();
 
             foreach (Participant participant in this.participants) {
                 sb.Append(participant.User.Mention);
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.CardSuits[0]} BLACKJACK GAME STATE {StaticDiscordEmoji.CardSuits[0]}",
+                Title = $"{Emojis.Cards.Suits[0]} BLACKJACK GAME STATE {Emojis.Cards.Suits[0]}",
                 Description = sb.ToString(),
                 Color = DiscordColor.DarkGreen
             };

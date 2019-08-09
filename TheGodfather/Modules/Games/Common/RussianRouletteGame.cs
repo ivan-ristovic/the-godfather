@@ -44,10 +44,10 @@ namespace TheGodfather.Modules.Games.Common
                 var eb = new StringBuilder();
                 foreach (DiscordUser participant in participants) {
                     if (GFRandom.Generator.Next(6) < round) {
-                        eb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Dead} {StaticDiscordEmoji.Blast} {StaticDiscordEmoji.Gun}");
+                        eb.AppendLine($"{participant.Mention} {Emojis.Dead} {Emojis.Blast} {Emojis.Gun}");
                         this.participants.TryRemove(participant);
                     } else {
-                        eb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Relieved} {StaticDiscordEmoji.Gun}");
+                        eb.AppendLine($"{participant.Mention} {Emojis.Relieved} {Emojis.Gun}");
                     }
                     
                     msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder {

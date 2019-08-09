@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Chickens
                     await db.SaveChangesAsync();
                 }
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                await this.InformAsync(ctx, Emojis.Chicken, result);
             }
             #endregion
 
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Chickens
                     await db.SaveChangesAsync();
                 }
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                await this.InformAsync(ctx, Emojis.Chicken, result);
             }
             #endregion
         }

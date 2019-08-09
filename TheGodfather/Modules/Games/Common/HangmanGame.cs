@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Games
 
         public override async Task RunAsync()
         {
-            this.msgHandle = await this.Channel.EmbedAsync("Game starts!", StaticDiscordEmoji.Joystick);
+            this.msgHandle = await this.Channel.EmbedAsync("Game starts!", Emojis.Joystick);
 
             await this.UpdateHangmanAsync();
 
@@ -48,15 +48,15 @@ namespace TheGodfather.Modules.Games
 
             if (this.IsTimeoutReached) {
                 this.Winner = null;
-                await this.Channel.EmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(this.word)}", StaticDiscordEmoji.Joystick);
+                await this.Channel.EmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(this.word)}", Emojis.Joystick);
                 return;
             }
 
             if (this.lives > 0) {
-                await this.Channel.EmbedAsync($"{this.Winner.Mention} won the game!", StaticDiscordEmoji.Joystick);
+                await this.Channel.EmbedAsync($"{this.Winner.Mention} won the game!", Emojis.Joystick);
             } else {
                 this.Winner = this.initiator;
-                await this.Channel.EmbedAsync($"Nobody guessed the word so {this.Winner.Mention} won the game! The word was: {Formatter.Bold(this.word)}", StaticDiscordEmoji.Joystick);
+                await this.Channel.EmbedAsync($"Nobody guessed the word so {this.Winner.Mention} won the game! The word was: {Formatter.Bold(this.word)}", Emojis.Joystick);
             }
         }
 

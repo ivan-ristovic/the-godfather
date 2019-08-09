@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.MoneyBag} Bank account for {user.Username}",
+                Title = $"{Emojis.MoneyBag} Bank account for {user.Username}",
                 Color = this.ModuleColor,
                 ThumbnailUrl = user.AvatarUrl
             };
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Currency
                                                [RemainingText, Description("New currency.")] string currency = null)
         {
             if (string.IsNullOrWhiteSpace(currency)) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency ?? "credit"}");
+                await this.InformAsync(ctx, Emojis.MoneyBag, $"Currency for this guild: {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency ?? "credit"}");
             } else {
                 if (currency.Length > 30)
                     throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
             
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} on the lottery! (seems legit)");
+            await this.InformAsync(ctx, Emojis.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} on the lottery! (seems legit)");
         }
         
         [Command("grant"), Priority(0)]
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {DatabaseBankAccount.StartingBalance} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} for free.");
+            await this.InformAsync(ctx, Emojis.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {DatabaseBankAccount.StartingBalance} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} for free.");
         }
         #endregion
 

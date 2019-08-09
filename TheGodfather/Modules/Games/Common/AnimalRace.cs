@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             this.Started = false;
             this.participants = new ConcurrentQueue<AnimalRaceParticipant>();
-            this.animals = new ConcurrentBag<DiscordEmoji>(StaticDiscordEmoji.Animals);
+            this.animals = new ConcurrentBag<DiscordEmoji>(Emojis.Animals.All);
         }
 
 
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games.Common
                 sb.Append('‣', _TrackSize - participant.Progress);
                 sb.Append("| " + participant.User.Mention);
                 if (participant.Progress == _TrackSize)
-                    sb.Append(" " + StaticDiscordEmoji.Trophy);
+                    sb.Append(" " + Emojis.Trophy);
                 sb.AppendLine();
             }
 

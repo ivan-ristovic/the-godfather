@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Currency
                         await game.RunAsync();
 
                         if (!(game.Winner is null))
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"Winner: {game.Winner.Mention}");
 
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             foreach (HoldemGame.Participant participant in game.Participants)
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Currency
                                 await db.SaveChangesAsync();
                             }
                         }
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Currency
                 }
                 
                 game.AddParticipant(ctx.User, handle);
-                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
+                await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
             }
             #endregion
 
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Currency
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of " +
                     "the card game of poker. Two cards, known as the hole cards, are dealt face down to " +
                     "each player, and then five community cards are dealt face up in three stages. The " +

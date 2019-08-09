@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Chickens
             if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 75)
                 throw new CommandFailedException("The strength difference is too big (75 max)! Please find a more suitable opponent.");
 
-            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
+            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {Emojis.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {Emojis.Chicken}\n\n";
 
             Chicken winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : member;
@@ -98,9 +98,9 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken,
+            await this.InformAsync(ctx, Emojis.Chicken,
                 header +
-                $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
+                $"{Emojis.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
                 (loser.Stats.TotalVitality > 0 ? $"{Formatter.Bold(loser.Name)} lost {Formatter.Bold("50")} HP!" : $"{Formatter.Bold(loser.Name)} died in the battle!") +
                 $"\n\n{winner.Owner.Mention} won {gain * 200} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}."
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
+            await this.InformAsync(ctx, Emojis.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
         }
         #endregion
 
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
+            await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
         }
         #endregion
 
@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
+            await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
         }
         #endregion
 
@@ -257,7 +257,7 @@ namespace TheGodfather.Modules.Chickens
                 await db.SaveChangesAsync();
             }
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}!");
+            await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}!");
         }
         #endregion
 

@@ -47,19 +47,19 @@ namespace TheGodfather.Modules.Games
                 var race = new TypingRaceGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(race, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.");
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (race.ParticipantCount > 1) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.");
+                        await this.InformAsync(ctx, Emojis.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.");
                         await Task.Delay(TimeSpan.FromSeconds(10));
                         await race.RunAsync();
 
                         if (!(race.Winner is null)) 
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the typing race.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                return this.InformAsync(ctx, StaticDiscordEmoji.Bicyclist, $"{ctx.User.Mention} joined the typing race.");
+                return this.InformAsync(ctx, Emojis.Bicyclist, $"{ctx.User.Mention} joined the typing race.");
             }
             #endregion
         }

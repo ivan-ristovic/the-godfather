@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("There are no members that meet the given criteria.");
 
             DiscordMember raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
-            return this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"Raffled: {raffled.Mention}");
+            return this.InformAsync(ctx, Emojis.Dice, $"Raffled: {raffled.Mention}");
         }
         #endregion
     }

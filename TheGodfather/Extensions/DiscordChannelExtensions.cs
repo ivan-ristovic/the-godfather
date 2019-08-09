@@ -24,7 +24,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> InformFailureAsync(this DiscordChannel channel, string message)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.X} {message}",
+                Description = $"{Emojis.X} {message}",
                 Color = DiscordColor.IndianRed
             });
         }
@@ -32,7 +32,7 @@ namespace TheGodfather.Extensions
         public static async Task<bool> WaitForBoolResponseAsync(this DiscordChannel channel, CommandContext ctx, string question, bool reply = true)
         {
             await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.Question} {question} (y/n)",
+                Description = $"{Emojis.Question} {question} (y/n)",
                 Color = DiscordColor.Yellow
             });
 

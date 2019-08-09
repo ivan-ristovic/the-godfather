@@ -62,7 +62,7 @@ namespace TheGodfather.Services.Common
                             : await this.shard.Client.CreateDmChannelAsync(smti.InitiatorId);
                         DiscordUser user = await this.shard.Client.GetUserAsync(smti.InitiatorId);
                         await channel?.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                            Description = $"{StaticDiscordEmoji.X} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
+                            Description = $"{Emojis.X} I have been asleep and failed to remind {user.Mention} to:\n\n{smti.Message}\n\n{smti.ExecutionTime.ToUtcTimestamp()}",
                             Color = DiscordColor.Red
                         });
                         break;
@@ -91,7 +91,7 @@ namespace TheGodfather.Services.Common
                     : this.async.Execute(this.shard.Client.CreateDmChannelAsync(info.InitiatorId));
                 DiscordUser user = this.async.Execute(this.shard.Client.GetUserAsync(info.InitiatorId));
                 this.async.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                    Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
+                    Description = $"{Emojis.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));
             } catch (UnauthorizedException) {

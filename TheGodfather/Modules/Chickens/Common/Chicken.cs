@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Chickens.Common
         public DiscordEmbed ToDiscordEmbed(DiscordUser owner)
         {
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Chicken} {this.Name}",
+                Title = $"{Emojis.Chicken} {this.Name}",
                 Color = DiscordColor.Yellow
             };
 

@@ -80,9 +80,9 @@ namespace TheGodfather.Modules.Games.Common
             for (int i = 0; i < this.SizeX; i++) {
                 for (int j = 0; j < this.SizeY; j++)
                     switch (this.board[i, j]) {
-                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
-                        case 1: sb.Append(StaticDiscordEmoji.X); break;
-                        case 2: sb.Append(StaticDiscordEmoji.O); break;
+                        case 0: sb.Append(Emojis.BoardSquare); break;
+                        case 1: sb.Append(Emojis.X); break;
+                        case 2: sb.Append(Emojis.O); break;
                     }
                 sb.AppendLine();
             }

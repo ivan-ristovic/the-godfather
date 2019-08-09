@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Chickens
                             GuildId = chicken.GuildId,
                             UserId = chicken.OwnerId
                         });
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
+                        await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
                     }
 
                     await db.SaveChangesAsync();

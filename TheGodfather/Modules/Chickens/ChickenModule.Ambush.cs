@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Chickens
                 try {
                     ambush.AddParticipant(ambushed, member, team1: true);
                     await this.JoinAsync(ctx);
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Chickens
                             await db.SaveChangesAsync();
                         }
 
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
+                        await this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Chickens
             public Task JoinAsync(CommandContext ctx)
             {
                 Chicken chicken = this.TryJoinInternal(ctx, team2: true);
-                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
+                return this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
             }
             #endregion
 
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Chickens
             public Task HelpAsync(CommandContext ctx)
             {
                 Chicken chicken = this.TryJoinInternal(ctx, team2: false);
-                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
+                return this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
             }
             #endregion
 

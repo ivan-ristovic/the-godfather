@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games
                 var game = new RussianRouletteGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.");
+                    await this.InformAsync(ctx, Emojis.Clock1, $"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.");
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -56,11 +56,11 @@ namespace TheGodfather.Modules.Games
                         await game.RunAsync();
 
                         if (game.Survivors.Any())
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Survivors:\n\n{string.Join("\n", game.Survivors.Select(u => u.Mention))}");
+                            await this.InformAsync(ctx, Emojis.Trophy, $"Survivors:\n\n{string.Join("\n", game.Survivors.Select(u => u.Mention))}");
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Dead, "Nobody survived!");
+                            await this.InformAsync(ctx, Emojis.Dead, "Nobody survived!");
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Russian roulette pool.");
+                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Russian roulette pool.");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the Russian roulette!");
 
-                return this.InformAsync(ctx, StaticDiscordEmoji.Gun, $"{ctx.User.Mention} joined the Russian roulette pool.");
+                return this.InformAsync(ctx, Emojis.Gun, $"{ctx.User.Mention} joined the Russian roulette pool.");
             }
             #endregion
 
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games
             public Task RulesAsync(CommandContext ctx)
             {
                 return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
+                    Emojis.Information,
                     "Every user has a gun in hand. The game is played in rounds. Each round everyone adds another " +
                     "bullet to their revolvers and rolls. After that, everyone pulls the trigger. Those that " +
                     "survive, move on the next round. The game stops when there is only one survivor left, or when " +
