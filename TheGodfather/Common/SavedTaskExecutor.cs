@@ -184,11 +184,13 @@ namespace TheGodfather.Common
                     channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
                 else
                     channel = this.Execute(this.client.CreateDmChannelAsync(info.InitiatorId));
-                DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
-                this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                    Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
-                    Color = DiscordColor.Orange
-                }));
+                DiscordMember user = this.Execute(channel.Guild.GetMemberAsync(info.InitiatorId));
+                if (!(user is null) && channel.PermissionsFor(user).HasPermission(Permissions.AccessChannels | Permissions.SendMessages)) {
+                    this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
+                        Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
+                        Color = DiscordColor.Orange
+                    }));
+                }
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime
             } catch (Exception e) {

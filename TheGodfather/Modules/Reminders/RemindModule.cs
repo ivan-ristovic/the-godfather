@@ -224,6 +224,10 @@ namespace TheGodfather.Modules.Reminders
             if (timespan < TimeSpan.Zero || timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
 
+
+            if (!(channel is null) && channel.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels | Permissions.SendMessages))
+                throw new CommandFailedException("You cannot send reminder to that channel!");
+
             if (channel is null && await ctx.Client.CreateDmChannelAsync(ctx.User.Id) is null)
                 throw new CommandFailedException("I cannot send DMs to you, please enable it so that I can remind you.");
 
