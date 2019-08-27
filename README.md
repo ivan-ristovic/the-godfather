@@ -1,4 +1,8 @@
-﻿# the-godfather
+﻿# Disclaimer
+Version 4 of the bot (the master branch) is not being maintained or upgraded anymore except for breaking bug-fixes. All new features will be released with version 5 once it comes out (checkout v5 branch for development status).
+
+
+# the-godfather
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
 [![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
@@ -7,10 +11,6 @@
 [![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
 
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
-
-# Disclaimer
-Version 4 of the bot (the master branch) is not being maintained or upgraded anymore except for breaking bug-fixes. All new features will be released with version 5 once it comes out (checkout v5 branch for development status).
-
 
 Features:
   - Complete administration of the guild, channels, users, emoji etc via categorized commands.
