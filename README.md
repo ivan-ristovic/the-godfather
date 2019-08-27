@@ -8,6 +8,10 @@
 
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
 
+# Disclaimer
+Version 4 of the bot (the master branch) is not being maintained or upgraded anymore except for breaking bug-fixes. All new features will be released with version 5 once it comes out (checkout v5 branch for development status).
+
+
 Features:
   - Complete administration of the guild, channels, users, emoji etc via categorized commands.
   - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
