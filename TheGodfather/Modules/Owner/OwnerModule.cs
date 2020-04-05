@@ -19,6 +19,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
@@ -143,7 +144,7 @@ namespace TheGodfather.Modules.Owner
 
             var res = new List<IReadOnlyDictionary<string, string>>();
             using (DatabaseContext db = this.Database.CreateContext())
-            using (Microsoft.EntityFrameworkCore.Storage.RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query)) {
+            using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
                 DbDataReader reader = dr.DbDataReader;
                 while (await reader.ReadAsync()) {
                     var dict = new Dictionary<string, string>();

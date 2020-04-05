@@ -41,13 +41,13 @@ namespace TheGodfather.Database.Entities
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("prefix"), MaxLength(16)]
-        public string Prefix { get; set; }
+        public string? Prefix { get; set; }
 
         [Column("locale"), MaxLength(8)]
-        public string Locale { get; set; }
+        public string? Locale { get; set; }
 
         [Column("currency"), MaxLength(32)]
-        public string Currency { get; set; }
+        public string? Currency { get; set; }
 
         [Column("suggestions_enabled")]
         public bool SuggestionsEnabled { get; set; }
@@ -80,10 +80,10 @@ namespace TheGodfather.Database.Entities
         public ulong LeaveChannelId { get => (ulong)this.LeaveChannelIdDb.GetValueOrDefault(); set => this.LeaveChannelIdDb = (long)value; }
 
         [Column("welcome_msg"), MaxLength(128)]
-        public string WelcomeMessage { get; set; }
+        public string? WelcomeMessage { get; set; }
 
         [Column("leave_msg"), MaxLength(128)]
-        public string LeaveMessage { get; set; }
+        public string? LeaveMessage { get; set; }
         #endregion
 
         #region LINKFILTER
@@ -225,9 +225,9 @@ namespace TheGodfather.Database.Entities
                 AntispamSettings = this.AntispamSettings,
                 Currency = this.Currency ?? "credits",
                 LinkfilterSettings = this.LinkfilterSettings,
-                Locale = this.Locale,
+                Locale = this.Locale ?? "en-US",
                 LogChannelId = this.LogChannelId,
-                Prefix = this.Prefix,
+                Prefix = this.Prefix ?? "!",
                 RatelimitSettings = this.RatelimitSettings,
                 ReactionResponse = this.ReactionResponse,
                 SuggestionsEnabled = this.SuggestionsEnabled

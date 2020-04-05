@@ -17,7 +17,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     cid = table.Column<long>(nullable: false),
-                    reason = table.Column<string>(maxLength: 64, nullable: true)
+                    reason = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,7 +30,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     uid = table.Column<long>(nullable: false),
-                    reason = table.Column<string>(maxLength: 64, nullable: true)
+                    reason = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -204,7 +204,7 @@ namespace TheGodfather.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
                     name = table.Column<string>(maxLength: 32, nullable: false),
-                    additional_info = table.Column<string>(nullable: true),
+                    additional_info = table.Column<string>(nullable: false),
                     is_blacklisted = table.Column<bool>(nullable: false, defaultValue: false)
                 },
                 constraints: table =>
@@ -315,19 +315,18 @@ namespace TheGodfather.Migrations
                     name = table.Column<string>(maxLength: 32, nullable: false),
                     str = table.Column<int>(nullable: false),
                     vit = table.Column<int>(nullable: false),
-                    max_vit = table.Column<int>(nullable: false),
-                    DbGuildConfigGuildIdDb = table.Column<long>(nullable: true)
+                    max_vit = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_chickens", x => new { x.gid, x.uid });
                     table.ForeignKey(
-                        name: "FK_chickens_guild_cfg_DbGuildConfigGuildIdDb",
-                        column: x => x.DbGuildConfigGuildIdDb,
+                        name: "FK_chickens_guild_cfg_gid",
+                        column: x => x.gid,
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
                         principalColumn: "gid",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,7 +338,7 @@ namespace TheGodfather.Migrations
                     cid = table.Column<long>(nullable: false),
                     commands = table.Column<string>(maxLength: 32, nullable: false),
                     allow = table.Column<bool>(nullable: false),
-                    DbGuildConfigGuildIdDb = table.Column<long>(nullable: true)
+                    DbGuildConfigGuildIdDb = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -350,7 +349,7 @@ namespace TheGodfather.Migrations
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
                         principalColumn: "gid",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -466,8 +465,7 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     gid = table.Column<long>(nullable: false),
-                    rank = table.Column<short>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    rank = table.Column<short>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false)
                 },
                 constraints: table =>
@@ -691,19 +689,18 @@ namespace TheGodfather.Migrations
                 {
                     id = table.Column<int>(nullable: false),
                     uid = table.Column<long>(nullable: false),
-                    gid = table.Column<long>(nullable: false),
-                    DatabaseGuildConfigGuildIdDb = table.Column<long>(nullable: true)
+                    gid = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_chicken_bought_upgrades", x => new { x.id, x.gid, x.uid });
                     table.ForeignKey(
-                        name: "FK_chicken_bought_upgrades_guild_cfg_DatabaseGuildConfigGuildI~",
-                        column: x => x.DatabaseGuildConfigGuildIdDb,
+                        name: "FK_chicken_bought_upgrades_guild_cfg_gid",
+                        column: x => x.gid,
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
                         principalColumn: "gid",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_chicken_bought_upgrades_chicken_upgrades_id",
                         column: x => x.id,
@@ -781,22 +778,10 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_chicken_bought_upgrades_DatabaseGuildConfigGuildIdDb",
-                schema: "gf",
-                table: "chicken_bought_upgrades",
-                column: "DatabaseGuildConfigGuildIdDb");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_chicken_bought_upgrades_gid_uid",
                 schema: "gf",
                 table: "chicken_bought_upgrades",
                 columns: new[] { "gid", "uid" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_chickens_DbGuildConfigGuildIdDb",
-                schema: "gf",
-                table: "chickens",
-                column: "DbGuildConfigGuildIdDb");
 
             migrationBuilder.CreateIndex(
                 name: "IX_cmd_rules_DbGuildConfigGuildIdDb",

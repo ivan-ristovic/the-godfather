@@ -28,8 +28,9 @@ namespace TheGodfather.Modules.Search.Services
 
         public SteamService(BotConfigService cfg)
         {
-            if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.SteamKey))
-                this.user = new SteamUser(cfg.CurrentConfiguration.SteamKey);
+            // FIXME
+            //if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.SteamKey))
+            //    this.user = new SteamUser(cfg.CurrentConfiguration.SteamKey);
         }
 
 

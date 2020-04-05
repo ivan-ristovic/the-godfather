@@ -67,13 +67,7 @@ namespace TheGodfather.Database
 
             //optionsBuilder.EnableSensitiveDataLogging(true);
             //optionsBuilder.UseLazyLoadingProxies();
-
             //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
-
-            // TODO remove when EFCore issue #12089 is closed
-            optionsBuilder.ConfigureWarnings(wb => wb.Ignore(RelationalEventId.QueryClientEvaluationWarning));
-
-            optionsBuilder.ConfigureWarnings(wb => wb.Throw(CoreEventId.IncludeIgnoredWarning));
 
             switch (this.Provider) {
                 case DatabaseManagementSystem.PostgreSql:

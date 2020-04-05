@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 using System.Threading;
 using System.Threading.Tasks;
+using TheGodfather.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Extensions
@@ -13,7 +14,7 @@ namespace TheGodfather.Modules.Administration.Extensions
     {
         public static async Task<RelationalDataReader> ExecuteSqlQueryAsync(this DatabaseFacade databaseFacade,
                                                                             string sql,
-                                                                            CancellationToken cancellationToken = default,
+                                                                            DatabaseContext context,
                                                                             params object[] parameters)
         {
 
@@ -27,11 +28,13 @@ namespace TheGodfather.Modules.Administration.Extensions
                 return await rawSqlCommand
                     .RelationalCommand
                     .ExecuteReaderAsync(
-                        databaseFacade.GetService<IRelationalConnection>(),
-                        parameterValues: rawSqlCommand.ParameterValues,
-                        null,
-                        cancellationToken: cancellationToken
-                );
+                        new RelationalCommandParameterObject(
+                            databaseFacade.GetService<IRelationalConnection>(),
+                            parameterValues: rawSqlCommand.ParameterValues,
+                            context,
+                            null
+                        )
+                    );
             }
         }
     }

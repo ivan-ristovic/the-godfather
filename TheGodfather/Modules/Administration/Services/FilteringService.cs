@@ -37,6 +37,7 @@ namespace TheGodfather.Modules.Administration.Services
                 using (DatabaseContext db = this.dbb.CreateContext()) {
                     this.filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
                         db.Filters
+                            .AsEnumerable()
                             .GroupBy(f => f.GuildId)
                             .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
                     );

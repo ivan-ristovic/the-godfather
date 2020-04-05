@@ -20,7 +20,9 @@ namespace TheGodfather.Services
             var @this = thisService as SavedTasksService;
 
             try {
-                using (DatabaseContext db = @this.shard.Database.CreateContext()) {
+                using (DatabaseContext db = @this!.shard.Database.CreateContext()) {
+
+                    // FIXME
                     var savedTasks = db.SavedTasks
                         .Where(t => t.ExecutionTime <= DateTimeOffset.Now + @this.ReloadSpan)
                         .ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
