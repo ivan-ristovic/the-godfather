@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Administration
             if (timespan?.TotalSeconds < 5 || timespan?.TotalMinutes > 5)
                 throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes or lower than 5 seconds.");
 
-            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, PollBehaviour.Default, timeout: timespan ?? TimeSpan.FromMinutes(1));
+            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { StaticDiscordEmoji.ArrowUp, StaticDiscordEmoji.ArrowDown }, PollBehaviour.DeleteEmojis, timeout: timespan ?? TimeSpan.FromMinutes(1));
             var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Voted.Count);
             if (votes.GetValueOrDefault(StaticDiscordEmoji.ArrowDown) > 2 * votes.GetValueOrDefault(StaticDiscordEmoji.ArrowUp)) {
                 string sanitized = FormatterExtensions.Spoiler(FormatterExtensions.StripMarkdown(msg.Content));

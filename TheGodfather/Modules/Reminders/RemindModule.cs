@@ -221,10 +221,6 @@ namespace TheGodfather.Modules.Reminders
             if (message.Length > 250)
                 throw new InvalidCommandUsageException("Message must be shorter than 250 characters.");
 
-            if (timespan < TimeSpan.Zero || timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
-                throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
-
-
             if (!(channel is null) && !channel.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels | Permissions.SendMessages))
                 throw new CommandFailedException("You cannot send reminder to that channel!");
 
@@ -235,8 +231,10 @@ namespace TheGodfather.Modules.Reminders
             using (DatabaseContext db = this.Database.CreateContext())
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
-            if (ctx.User.Id != ctx.Client.CurrentApplication?.Owner.Id && !privileged) {
-                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out System.Collections.Concurrent.ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
+            if (!ctx.Client.CurrentApplication.Owners.Any(o => o.Id == ctx.User.Id) && !privileged) {
+                if (timespan < TimeSpan.Zero || timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+                    throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
+                if (this.Shared.RemindExecuters.TryGetValue(ctx.User.Id, out ConcurrentDictionary<int, SavedTaskExecutor> texecs) && texecs.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 

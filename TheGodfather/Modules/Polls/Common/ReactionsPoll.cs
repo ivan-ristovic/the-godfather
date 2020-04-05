@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Polls.Common
 
             this.msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
-            this.results = await this.interactivity.DoPollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count).ToArray(), PollBehaviour.Default, timespan);
+            this.results = await this.interactivity.DoPollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count).ToArray(), PollBehaviour.DeleteEmojis, timespan);
 
             await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
 
