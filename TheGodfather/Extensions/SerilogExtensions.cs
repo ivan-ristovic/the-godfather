@@ -34,7 +34,7 @@ namespace TheGodfather.Extensions
 
     public static class LogExt
     {
-        public static void Event(object _, DebugLogMessageEventArgs e)
+        public static void Event(object? _, DebugLogMessageEventArgs e)
         {
 #pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("Application", e.Application)) {

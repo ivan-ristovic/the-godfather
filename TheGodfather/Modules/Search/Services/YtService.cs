@@ -67,8 +67,10 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentException("URL missing!", nameof(url));
 
-            if (YoutubeClient.TryParseChannelId(url, out string id))
-                return id;
+            // FIXME
+            //if (YoutubeClient.TryParseChannelId(url, out string id))
+            //    return id;
+            string id = "";
 
             string[] split = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             if (!split.Any(s => _ytRegex.IsMatch(s)))
@@ -162,8 +164,10 @@ namespace TheGodfather.Modules.Search.Services
         }
 
 
-        private async Task<SongInfo> GetSongInfoViaYtExplodeAsync(string url)
+        private Task<SongInfo> GetSongInfoViaYtExplodeAsync(string url)
         {
+            // FIXME
+            /*
             if (!YoutubeClient.TryParseVideoId(url, out string id))
                 return null;
 
@@ -177,7 +181,6 @@ namespace TheGodfather.Modules.Search.Services
                 .FirstOrDefault();
             if (stream is null)
                 return null;
-
             return new SongInfo {
                 Provider = "YouTube",
                 Query = $"{_ytUrl}/watch?v={video.Id}",
@@ -187,6 +190,8 @@ namespace TheGodfather.Modules.Search.Services
                 VideoId = video.Id,
                 Title = video.Title,
             };
+            */
+            return Task.FromResult<SongInfo>(null);
         }
 
         private async Task<SongInfo> GetSongInfoViaYtDlAsync(string url)

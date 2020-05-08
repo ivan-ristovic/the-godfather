@@ -17,8 +17,11 @@ namespace TheGodfather.Services
         }
 
 
-        public void Execute(Task task)
+        public void Execute(Task? task)
         {
+            if (task is null)
+                return;
+
             Exception tex = null;
 
             this.sem.Wait();
