@@ -5,11 +5,22 @@ namespace TheGodfather.Common.Converters
 {
     public class PunishmentActionConverter : BaseArgumentConverter<PunishmentAction>
     {
-        private static readonly Regex _pmRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex _tmRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex _pbRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex _tbRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex _kRegex = new Regex(@"^k+(i+c*k+e*d*)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _pmRegex;
+        private static readonly Regex _tmRegex;
+        private static readonly Regex _pbRegex;
+        private static readonly Regex _tbRegex;
+        private static readonly Regex _kRegex;
+
+
+        static PunishmentActionConverter()
+        {
+            _pmRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _tmRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(m+(u+t+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _pbRegex = new Regex(@"^(p(erm(a(nent(al+y?)?)?)?)?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _tbRegex = new Regex(@"^t(e?mp(ora(l|ry))?)?(b+([ae]+n+e*d*)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _kRegex = new Regex(@"^k+(i+c*k+e*d*)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        }
+
 
         public override bool TryConvert(string value, out PunishmentAction result)
         {

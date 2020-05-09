@@ -10,7 +10,7 @@ namespace TheGodfather.Common
 
         public InteractivityExtension Interactivity { get; protected set; }
 
-        public DiscordUser Winner { get; protected set; }
+        public DiscordUser? Winner { get; protected set; }
 
         public bool IsTimeoutReached { get; protected set; }
 

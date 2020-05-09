@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Swat
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            var server = DatabaseSwatServer.FromIP(ip.Content, queryport);
+            var server = DatabaseSwatServer.FromIP(ip.Range, queryport);
             return this.QueryAndPrintInfoAsync(ctx, server);
         }
 
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Swat
             if (SwatSpaceCheckService.IsListening(ctx.Channel))
                 throw new CommandFailedException("Already checking space in this channel!");
             
-            var server = DatabaseSwatServer.FromIP(ip.Content, queryport);
+            var server = DatabaseSwatServer.FromIP(ip.Range, queryport);
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
             await this.InformAsync(ctx, $"Starting space listening on {server.IP}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);

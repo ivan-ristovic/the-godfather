@@ -7,7 +7,7 @@ namespace TheGodfather.Common
 {
     public sealed class GFRandom
     {
-        private static GFRandom _instance;
+        private static GFRandom? _instance;
         public static GFRandom Generator {
             get {
                 if (_instance is null)

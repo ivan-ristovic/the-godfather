@@ -17,12 +17,14 @@ namespace TheGodfather.Common
     public sealed class CustomHelpFormatter : BaseHelpFormatter
     {
         private string name;
-        private string description;
+        private string desc;
         private readonly DiscordEmbedBuilder emb;
 
 
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
+            this.name = "";
+            this.desc = "";
             this.emb = new DiscordEmbedBuilder();
             this.emb.WithFooter("Detailed documentation @ https://github.com/ivan-ristovic/the-godfather", ctx.Client.CurrentUser.AvatarUrl);
         }
@@ -35,7 +37,7 @@ namespace TheGodfather.Common
             string desc = $"Listing all commands and groups. Use command {Formatter.InlineCode("help <command>")} for detailed information about the given command.";
             if (!string.IsNullOrWhiteSpace(this.name)) {
                 this.emb.WithTitle(this.name);
-                desc = string.IsNullOrWhiteSpace(this.description) ? "No description provided." : this.description;
+                desc = string.IsNullOrWhiteSpace(this.desc) ? "No description provided." : this.desc;
             } else {
                 this.emb.WithTitle("Help");
             }
@@ -49,7 +51,7 @@ namespace TheGodfather.Common
             this.name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
             LocalizationService localization = this.Context.Services.GetService<LocalizationService>();
             try {
-                this.description = localization.GetCommandDescription(this.Context.Guild.Id, cmd.QualifiedName);
+                this.desc = localization.GetCommandDescription(this.Context.Guild.Id, cmd.QualifiedName);
             } catch (KeyNotFoundException e) {
                 LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
             }
@@ -59,22 +61,21 @@ namespace TheGodfather.Common
 
             this.emb.AddField("Category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
-            IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+            IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks
+                .Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
             IEnumerable<string> perms = checks
-                .Where(chk => chk is RequirePermissionsAttribute)
-                .Select(chk => chk as RequirePermissionsAttribute)
+                .OfType<RequirePermissionsAttribute>()
                 .Select(chk => chk.Permissions.ToPermissionString())
                 .Union(checks
-                    .Where(chk => chk is RequireOwnerOrPermissionsAttribute)
-                    .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
+                    .OfType<RequirePermissionsAttribute>()
                     .Select(chk => chk.Permissions.ToPermissionString())
                 );
-            IEnumerable<string> uperms = checks.Where(chk => chk is RequireUserPermissionsAttribute)
-                                  .Select(chk => chk as RequireUserPermissionsAttribute)
-                                  .Select(chk => chk.Permissions.ToPermissionString());
-            IEnumerable<string> bperms = checks.Where(chk => chk is RequireBotPermissionsAttribute)
-                                  .Select(chk => chk as RequireBotPermissionsAttribute)
-                                  .Select(chk => chk.Permissions.ToPermissionString());
+            IEnumerable<string> uperms = checks
+                .OfType<RequireUserPermissionsAttribute>()
+                .Select(chk => chk.Permissions.ToPermissionString());
+            IEnumerable<string> bperms = checks
+                .OfType<RequireBotPermissionsAttribute>()
+                .Select(chk => chk.Permissions.ToPermissionString());
 
             var pb = new StringBuilder();
             if (checks.Any(chk => chk is RequireOwnerAttribute))

@@ -10,23 +10,24 @@ namespace TheGodfatherTests.Common
         public void TryParseSuccessTests()
         {
             AssertParseSuccess("123.123.132.123");
-            AssertParseSuccess("123.123.132.123:10480");
-            AssertParseSuccess("255.123.132.123:10480");
-            AssertParseSuccess("123.255.132.123:10480");
-            AssertParseSuccess("123.123.255.123:10480");
-            AssertParseSuccess("123.123.123.255:10480");
-            AssertParseSuccess("156.156.156.156:01000");
-            AssertParseSuccess("123.123.123.0:10480");
-            AssertParseSuccess("123.123.0.123:10480");
-            AssertParseSuccess("123.0.123.123:10480");
-            AssertParseSuccess("12.12.12.12:10480");
-            AssertParseSuccess("12.12.12.12:1000");
-            AssertParseSuccess("12.12.12.12:10000");
-            AssertParseSuccess("12.12.12.12:20000");
-            AssertParseSuccess("12.12.12.12:65535");
-            AssertParseSuccess("1.1.1.1:10480");
-            AssertParseSuccess("123.123.132.123:1000");
-            AssertParseSuccess("123.123.132.123:65535");
+            AssertParseSuccess("123.123.132.123:10480", 10480);
+            AssertParseSuccess("255.123.132.123:10480", 10480);
+            AssertParseSuccess("123.255.132.123:10480", 10480);
+            AssertParseSuccess("123.123.255.123:10480", 10480);
+            AssertParseSuccess("123.123.123.255:10480", 10480);
+            AssertParseSuccess("156.156.156.156:01000", 1000);
+            AssertParseSuccess("123.123.123.0:10480", 10480);
+            AssertParseSuccess("123.123.0.123:10480", 10480);
+            AssertParseSuccess("123.0.123.123:10480", 10480);
+            AssertParseSuccess("43.2.123.123:10480", 10480);
+            AssertParseSuccess("12.12.12.12:10480", 10480);
+            AssertParseSuccess("12.12.12.12:1000", 1000);
+            AssertParseSuccess("12.12.12.12:10000", 10000);
+            AssertParseSuccess("12.12.12.12:20000", 20000);
+            AssertParseSuccess("12.12.12.12:65535", 65535);
+            AssertParseSuccess("1.1.1.1:10480", 10480);
+            AssertParseSuccess("123.123.132.123:1000", 1000);
+            AssertParseSuccess("123.123.132.123:65535", 65535);
             AssertParseSuccess("123.123.132.123");
             AssertParseSuccess("255.123.132.123");
             AssertParseSuccess("123.255.132.123");
@@ -56,15 +57,22 @@ namespace TheGodfatherTests.Common
             AssertParseSuccess("123.255");
             AssertParseSuccess("255.23");
             AssertParseSuccess("23.255");
+            AssertParseSuccess("43.22");
             AssertParseSuccess("123.2");
             AssertParseSuccess("2.123");
             AssertParseSuccess("123.0");
 
-            void AssertParseSuccess(string text)
+
+            static void AssertParseSuccess(string text, ushort port = 0)
             {
-                Assert.That(IPAddressRange.TryParse(text, out IPAddressRange parsed), Is.True);
+                Assert.That(IPAddressRange.TryParse(text, out IPAddressRange? parsed), Is.True);
                 Assert.That(parsed, Is.Not.Null);
-                Assert.That(parsed.Content, Is.EqualTo(text));
+                Assert.That(parsed!.CompleteRange, Is.EqualTo(text));
+
+                int sepIndex = text.IndexOf(':');
+                string range = sepIndex == -1 ? text : text.Substring(0, sepIndex);
+                Assert.That(parsed!.Range, Is.EqualTo(range));
+                Assert.That(parsed!.Port, Is.EqualTo(port));
             }
         }
 
@@ -117,13 +125,12 @@ namespace TheGodfatherTests.Common
             AssertParseFail("123");
             AssertParseFail("1");
 
-
-            void AssertParseFail(string text)
+       
+            static void AssertParseFail(string text)
             {
-                Assert.That(IPAddressRange.TryParse(text, out IPAddressRange parsed), Is.False);
+                Assert.That(IPAddressRange.TryParse(text, out IPAddressRange? parsed), Is.False);
                 Assert.That(parsed, Is.Null);
             }
         }
-
     }
 }

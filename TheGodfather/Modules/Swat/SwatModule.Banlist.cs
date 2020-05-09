@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Swat
                     await db.SaveChangesAsync();
                 }
 
-                await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
+                await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Range)})", important: false);
             }
 
             [Command("add"), Priority(1)]
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Swat
                 using (DatabaseContext db = this.Database.CreateContext()) {
                     DatabaseSwatPlayer player = db.SwatPlayers
                         .Include(p => p.DbIPs)
-                        .FirstOrDefault(p => p.IPs.Contains(ip.Content));
+                        .FirstOrDefault(p => p.IPs.Contains(ip.Range));
                     if (!(player is null) && player.IsBlacklisted) {
                         player.IsBlacklisted = false;
                         db.SwatPlayers.Update(player);
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Swat
                     await db.SaveChangesAsync();
                 }
 
-                await this.InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
+                await this.InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Range)}.", important: false);
             }
 
             [Command("delete"), Priority(1)]

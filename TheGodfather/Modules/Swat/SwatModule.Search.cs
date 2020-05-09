@@ -68,14 +68,14 @@ namespace TheGodfather.Modules.Swat
                         .Include(p => p.DbAliases)
                         .Include(p => p.DbIPs)
                         .AsEnumerable()
-                        .Where(p => p.IPs.Any(dbip => dbip.StartsWith(ip.Content)))
+                        .Where(p => p.IPs.Any(dbip => dbip.StartsWith(ip.Range)))
                         .ToList();
                 }
 
                 if (!matches.Any())
                     throw new CommandFailedException("No results.");
 
-                await ctx.SendCollectionInPagesAsync($"Search matches for {ip.Content}", matches, p => p.Stringify(), this.ModuleColor, 1);
+                await ctx.SendCollectionInPagesAsync($"Search matches for {ip.Range}", matches, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
 

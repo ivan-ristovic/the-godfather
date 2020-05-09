@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
                 using (DatabaseContext db = this.Database.CreateContext()) {
-                    var newServer = DatabaseSwatServer.FromIP(ip.Content, queryport, name);
+                    var newServer = DatabaseSwatServer.FromIP(ip.Range, queryport, name);
                     if (db.SwatServers.Any(s => s.Name == name || (s.IP == newServer.IP && s.JoinPort == newServer.JoinPort && s.QueryPort == newServer.QueryPort)))
                         throw new CommandFailedException("A server with such name/IP is already listed!");
                     db.SwatServers.Add(newServer);
