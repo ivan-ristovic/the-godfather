@@ -43,16 +43,16 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
 
         private string ConnectionString { get; }
-        private DatabaseManagementSystem Provider { get; }
+        private DbProvider Provider { get; }
 
 
-        public DatabaseContext(DatabaseManagementSystem provider, string connectionString)
+        public DatabaseContext(DbProvider provider, string connectionString)
         {
             this.Provider = provider;
             this.ConnectionString = connectionString;
         }
 
-        public DatabaseContext(DatabaseManagementSystem provider, string connectionString, DbContextOptions<DatabaseContext> options)
+        public DatabaseContext(DbProvider provider, string connectionString, DbContextOptions<DatabaseContext> options)
             : base(options)
         {
             this.Provider = provider;
@@ -70,14 +70,14 @@ namespace TheGodfather.Database
             //optionsBuilder.ConfigureWarnings(wb => wb.Ignore(CoreEventId.DetachedLazyLoadingWarning));
 
             switch (this.Provider) {
-                case DatabaseManagementSystem.PostgreSql:
+                case DbProvider.PostgreSql:
                     optionsBuilder.UseNpgsql(this.ConnectionString);
                     break;
-                case DatabaseManagementSystem.Sqlite:
-                case DatabaseManagementSystem.SqliteInMemory:
+                case DbProvider.Sqlite:
+                case DbProvider.SqliteInMemory:
                     optionsBuilder.UseSqlite(this.ConnectionString);
                     break;
-                case DatabaseManagementSystem.SqlServer:
+                case DbProvider.SqlServer:
                     optionsBuilder.UseSqlServer(this.ConnectionString);
                     break;
                 default:

@@ -1,6 +1,6 @@
 ﻿namespace TheGodfather.Database
 {
-    public enum DatabaseManagementSystem
+    public enum DbProvider
     {
         Sqlite = 0,
         PostgreSql = 1,

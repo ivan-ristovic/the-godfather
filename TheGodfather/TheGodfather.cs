@@ -13,6 +13,7 @@ using Serilog.Events;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Search.Services;
@@ -213,8 +214,8 @@ namespace TheGodfather
                     return;
 
                 try {
-                    DatabaseBotStatus? status = null;
-                    using (DatabaseContext db = shard.Database.CreateContext())
+                    BotStatus? status = null;
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
                         status = db.BotStatuses.Shuffle().FirstOrDefault();
 
                     if (status is null)
@@ -224,7 +225,7 @@ namespace TheGodfather
                         ? new DiscordActivity(status.Status, status.Activity) 
                         : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.Custom);
                     
-                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
+                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is not active");
                     async.Execute(shard.Client!.UpdateStatusAsync(activity));
                     Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
                 } catch (Exception e) {

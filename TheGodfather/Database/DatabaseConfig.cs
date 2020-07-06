@@ -8,7 +8,7 @@ namespace TheGodfather.Database
         public string DatabaseName { get; set; }
 
         [JsonProperty("provider")]
-        public DatabaseManagementSystem Provider { get; set; }
+        public DbProvider Provider { get; set; }
 
         [JsonProperty("hostname")]
         public string Hostname { get; set; }
@@ -26,7 +26,7 @@ namespace TheGodfather.Database
         [JsonIgnore]
         public static DatabaseConfig Default => new DatabaseConfig {
             DatabaseName = "gfdb",
-            Provider = DatabaseManagementSystem.Sqlite,
+            Provider = DbProvider.Sqlite,
             Hostname = "localhost",
             Password = "gfdb",
             Port = 5432,
