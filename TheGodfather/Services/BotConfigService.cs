@@ -11,24 +11,18 @@ namespace TheGodfather.Services
     {
         public bool IsDisabled => false;
 
-        public BotConfig CurrentConfiguration { get; set; }
+        public BotConfig CurrentConfiguration { get; private set; } = new BotConfig();
 
 
-        public BotConfigService()
-        {
-            this.CurrentConfiguration = BotConfig.Default;
-        }
-
-
-        public async Task<BotConfig> LoadConfigAsync(string path = "config.json")
+        public async Task<BotConfig> LoadConfigAsync(string path = "Resources/config.json")
         {
             string json = "{}";
             var utf8 = new UTF8Encoding(false);
-            var fi = new FileInfo("Resources/config.json");
+            var fi = new FileInfo(path);
             if (!fi.Exists) {
                 Console.WriteLine("Loading configuration failed!");
 
-                json = JsonConvert.SerializeObject(BotConfig.Default, Formatting.Indented);
+                json = JsonConvert.SerializeObject(new BotConfig(), Formatting.Indented);
                 using (FileStream fs = fi.Create())
                 using (var sw = new StreamWriter(stream: fs, utf8)) {
                     await sw.WriteAsync(json);

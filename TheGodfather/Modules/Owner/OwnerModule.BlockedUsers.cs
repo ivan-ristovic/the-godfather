@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Services;
@@ -129,7 +130,7 @@ namespace TheGodfather.Modules.Owner
                     var validBlocked = new List<(DiscordUser, string)>();
                     var toRemove = new List<ulong>();
 
-                    foreach (DatabaseBlockedUser blocked in await this.Service.GetBlockedUsersAsync()) {
+                    foreach (BlockedUser blocked in await this.Service.GetBlockedUsersAsync()) {
                         try {
                             DiscordUser chn = await ctx.Client.GetUserAsync(blocked.UserId);
                             validBlocked.Add((chn, blocked.Reason));

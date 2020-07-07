@@ -139,7 +139,7 @@ namespace TheGodfather
             var dbb = new DatabaseContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
 
             Log.Information("Migrating the database");
-            using (DatabaseContext db = dbb.CreateContext())
+            using (TheGodfatherDbContext db = dbb.CreateDbContext())
                 await db.Database.MigrateAsync();
 
             return dbb;
@@ -206,7 +206,7 @@ namespace TheGodfather
         {
             if (_ is TheGodfatherShard shard) {
                 if (shard.Client is null) {
-                    Log.Fatal("BotActivityChangeCallback detected null client - this should not happen");
+                    Log.Error("BotActivityChangeCallback detected null client - this should not happen");
                     return;
                 }
 
@@ -221,11 +221,11 @@ namespace TheGodfather
                     if (status is null)
                         Log.Error("Failed to retrieve random bot status");
 
-                    DiscordActivity activity = status is { } 
-                        ? new DiscordActivity(status.Status, status.Activity) 
+                    DiscordActivity activity = status is { }
+                        ? new DiscordActivity(status.Status, status.Activity)
                         : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.Custom);
-                    
-                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is not active");
+
+                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
                     async.Execute(shard.Client!.UpdateStatusAsync(activity));
                     Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
                 } catch (Exception e) {
@@ -240,7 +240,7 @@ namespace TheGodfather
         {
             if (_ is TheGodfatherShard shard) {
                 if (shard.Client is null) {
-                    Log.Fatal("DatabaseSyncCallback detected null client - this should not happen");
+                    Log.Error("DatabaseSyncCallback detected null client - this should not happen");
                     return;
                 }
 
@@ -260,7 +260,7 @@ namespace TheGodfather
         {
             if (_ is TheGodfatherShard shard) {
                 if (shard.Client is null) {
-                    Log.Fatal("FeedCheckCallback detected null client - this should not happen");
+                    Log.Error("FeedCheckCallback detected null client - this should not happen");
                     return;
                 }
 
@@ -281,7 +281,7 @@ namespace TheGodfather
         {
             if (_ is TheGodfatherShard shard) {
                 if (shard.Client is null) {
-                    Log.Fatal("MiscellaneousActionsCallback detected null client - this should not happen");
+                    Log.Error("MiscellaneousActionsCallback detected null client - this should not happen");
                     return;
                 }
 

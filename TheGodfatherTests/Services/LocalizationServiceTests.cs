@@ -52,7 +52,7 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
                     db.GuildConfig.Update(gcfg);
                 },
@@ -73,7 +73,7 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
                     db.GuildConfig.Update(gcfg);
                 },
@@ -107,7 +107,7 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
                     db.GuildConfig.Update(gcfg);
                 },
@@ -146,7 +146,7 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
                     db.GuildConfig.Update(gcfg);
                 },
@@ -184,7 +184,7 @@ namespace TheGodfatherTests.Services
 
             await TestDatabaseProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
-                    DatabaseGuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[0]);
+                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[0]);
                     gcfg.Locale = this.EnLocale;
                     db.GuildConfig.Update(gcfg);
                     return db.SaveChangesAsync();

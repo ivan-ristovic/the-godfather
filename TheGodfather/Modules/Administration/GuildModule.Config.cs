@@ -15,6 +15,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordChannel channel = await this.ChooseSetupChannelAsync(ctx);
 
-                CachedGuildConfig gcfg = CachedGuildConfig.Default;
+                CachedGuildConfig gcfg = new CachedGuildConfig();
                 await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you " +
                                          "through the configuration. You can always re-run this setup or " +
                                          "manually change the settings so do not worry if you don't do " +
@@ -97,7 +98,7 @@ namespace TheGodfather.Modules.Administration
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
-                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.ReactionResponse = !enable;
                 });
 
@@ -132,7 +133,7 @@ namespace TheGodfather.Modules.Administration
             public async Task SuggestionsAsync(CommandContext ctx,
                                               [Description("Enable suggestions?")] bool enable)
             {
-                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.SuggestionsEnabled = enable;
                 });
 
@@ -154,7 +155,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(0)]
             public async Task SuggestionsAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
+                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 await this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
@@ -166,7 +167,7 @@ namespace TheGodfather.Modules.Administration
             
             public async Task WelcomeAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
+                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
                 await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
             }
@@ -230,7 +231,7 @@ namespace TheGodfather.Modules.Administration
             
             public async Task LeaveAsync(CommandContext ctx)
             {
-                DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
+                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
                 await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
             }
@@ -317,7 +318,7 @@ namespace TheGodfather.Modules.Administration
                     Color = this.ModuleColor
                 };
 
-                DatabaseGuildConfig gcfg = await service.GetConfigAsync(guild.Id);
+                GuildConfig gcfg = await service.GetConfigAsync(guild.Id);
 
                 emb.AddField("Prefix", this.Service.GetGuildPrefix(guild.Id), inline: true);
                 emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
@@ -514,8 +515,8 @@ namespace TheGodfather.Modules.Administration
             private async Task SetupPrefixAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix?", reply: false)) {
-                    await channel.EmbedAsync("What will the new prefix be?");
-                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.Author == ctx.User);
+                    await channel.EmbedAsync("What will the new prefix be (max 8 characters)?");
+                    InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.Author == ctx.User && m.Content.Length <= 8);
                     gcfg.Prefix = mctx.TimedOut ? null : mctx.Result.Content;
                 }
             }

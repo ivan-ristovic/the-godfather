@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
@@ -9,9 +10,10 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    partial class TheGodfatherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200707132633_GuildConfig1")]
+    partial class GuildConfig1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,11 +29,9 @@ namespace TheGodfather.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Reason")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("reason")
                         .HasColumnType("character varying(64)")
-                        .HasMaxLength(64)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(64);
 
                     b.HasKey("ChannelIdDb");
 
@@ -45,11 +45,9 @@ namespace TheGodfather.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Reason")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("reason")
                         .HasColumnType("character varying(64)")
-                        .HasMaxLength(64)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(64);
 
                     b.HasKey("UserIdDb");
 
@@ -86,114 +84,78 @@ namespace TheGodfather.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<short>("AntiInstantLeaveCooldown")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiinstantleave_cooldown")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)3);
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("AntiInstantLeaveEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiinstantleave_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<byte>("AntifloodAction")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiflood_action")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)4);
+                        .HasColumnType("smallint");
 
                     b.Property<short>("AntifloodCooldown")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiflood_cooldown")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)10);
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("AntifloodEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiflood_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<short>("AntifloodSensitivity")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antiflood_sensitivity")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)5);
+                        .HasColumnType("smallint");
 
                     b.Property<byte>("AntispamAction")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antispam_action")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)0);
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("AntispamEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antispam_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<short>("AntispamSensitivity")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("antispam_sensitivity")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)5);
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Currency")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("currency")
                         .HasColumnType("character varying(32)")
-                        .HasMaxLength(32)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(32);
 
                     b.Property<long?>("LeaveChannelIdDb")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("leave_cid")
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(null);
+                        .HasColumnType("bigint");
 
                     b.Property<string>("LeaveMessage")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("leave_msg")
                         .HasColumnType("character varying(128)")
-                        .HasMaxLength(128)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(128);
 
                     b.Property<bool>("LinkfilterBootersEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_booters")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LinkfilterDiscordInvitesEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_invites")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LinkfilterDisturbingWebsitesEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_disturbing")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LinkfilterEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LinkfilterIpLoggersEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_loggers")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("LinkfilterUrlShortenersEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("linkfilter_shorteners")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Locale")
                         .HasColumnName("locale")
@@ -201,66 +163,46 @@ namespace TheGodfather.Migrations
                         .HasMaxLength(8);
 
                     b.Property<long?>("LogChannelIdDb")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("log_cid")
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(null);
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("MuteRoleIdDb")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("mute_rid")
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(null);
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Prefix")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("prefix")
                         .HasColumnType("character varying(8)")
-                        .HasMaxLength(8)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(8);
 
                     b.Property<byte>("RatelimitAction")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("ratelimit_action")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)1);
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("RatelimitEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("ratelimit_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<short>("RatelimitSensitivity")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("ratelimit_sensitivity")
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((short)5);
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("ReactionResponse")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("silent_response_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("SuggestionsEnabled")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("suggestions_enabled")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                        .HasColumnType("boolean");
 
                     b.Property<long?>("WelcomeChannelIdDb")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("welcome_cid")
-                        .HasColumnType("bigint")
-                        .HasDefaultValue(null);
+                        .HasColumnType("bigint");
 
                     b.Property<string>("WelcomeMessage")
-                        .ValueGeneratedOnAdd()
                         .HasColumnName("welcome_msg")
                         .HasColumnType("character varying(128)")
-                        .HasMaxLength(128)
-                        .HasDefaultValue(null);
+                        .HasMaxLength(128);
 
                     b.HasKey("GuildIdDb");
 

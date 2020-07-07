@@ -20,6 +20,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
@@ -273,10 +274,10 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            if (prefix.Length > 12)
-                throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
+            if (prefix.Length > 8)
+                throw new CommandFailedException("Prefix cannot be longer than 8 characters.");
 
-            DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+            GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.Prefix = (prefix == ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix) ? null : prefix;
             });
 

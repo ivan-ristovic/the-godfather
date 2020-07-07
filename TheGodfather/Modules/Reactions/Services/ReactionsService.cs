@@ -42,7 +42,6 @@ namespace TheGodfather.Modules.Reactions.Services
             Log.Debug("Loading text and emoji reactions");
             try {
                 using (DatabaseContext db = this.dbb.CreateContext()) {
-                    var x = db.BlockedChannels.ToList();
                     this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                         db.TextReactions
                             .Include(t => t.DbTriggers)

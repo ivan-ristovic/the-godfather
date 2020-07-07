@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
@@ -23,7 +24,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            DatabaseGuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
             await Task.Delay(TimeSpan.FromSeconds(gcfg.AntiInstantLeaveSettings.Cooldown + 1));
 
             if (e.Member.Guild is null)
@@ -91,7 +92,7 @@ namespace TheGodfather.EventListeners
             if (e.Member is null || e.Member.IsBot)
                 return;
 
-            DatabaseGuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
 
             if (gcfg.AntifloodEnabled)
                 await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
@@ -106,7 +107,7 @@ namespace TheGodfather.EventListeners
             if (e.Member.IsCurrent)
                 return;
 
-            DatabaseGuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
             bool punished = false;
 
             if (gcfg.AntiInstantLeaveEnabled)

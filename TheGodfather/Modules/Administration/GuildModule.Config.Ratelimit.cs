@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -47,7 +48,7 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.RatelimitEnabled = enable;
                         cfg.RatelimitAction = action;
                         cfg.RatelimitSensitivity = sensitivity;
@@ -127,7 +128,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentAction action)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.RatelimitSettings.Action = action;
                     });
 
@@ -158,7 +159,7 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 4 || sensitivity > 10)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.RatelimitSettings.Sensitivity = sensitivity;
                     });
 

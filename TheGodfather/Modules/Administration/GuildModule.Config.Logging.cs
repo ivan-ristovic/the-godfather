@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
@@ -49,7 +50,7 @@ namespace TheGodfather.Modules.Administration
                     if (channel.Type != ChannelType.Text)
                         throw new CommandFailedException("Action logging channel must be a text channel.");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LogChannelIdDb = enable ? (long?)channel.Id : null;
                     });
 

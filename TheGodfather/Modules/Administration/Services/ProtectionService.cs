@@ -15,6 +15,7 @@ using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services.Common;
+using TheGodfather.Database.Models;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
@@ -86,8 +87,8 @@ namespace TheGodfather.Modules.Administration.Services
 
             await this.csem.WaitAsync();
             try {
-                using (DatabaseContext db = this.shard.Database.CreateContext()) {
-                    DatabaseGuildConfig gcfg = await this.shard.Services.GetService<GuildConfigService>().GetConfigAsync(guild.Id);
+                using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+                    GuildConfig gcfg = await this.shard.Services.GetService<GuildConfigService>().GetConfigAsync(guild.Id);
                     muteRole = guild.GetRole(gcfg.MuteRoleId);
                     if (muteRole is null)
                         muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Administration.Services
                             await Task.Delay(100);
                         }
                         gcfg.MuteRoleId = muteRole.Id;
-                        db.GuildConfig.Update(gcfg);
+                        db.GuildConfigs.Update(gcfg);
                         await db.SaveChangesAsync();
                     }
                 }

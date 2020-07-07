@@ -7,6 +7,7 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
@@ -37,7 +38,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} link filtering!", important: false);
@@ -74,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task BootersAsync(CommandContext ctx,
                                               [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterBootersEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} DDoS/Booter website filtering!", important: false);
@@ -97,7 +98,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task InvitesAsync(CommandContext ctx,
                                               [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterDiscordInvitesEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} Discord invites filtering!", important: false);
@@ -120,7 +121,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task DisturbingSitesAsync(CommandContext ctx,
                                                       [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterDisturbingWebsitesEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} disturbing website filtering!", important: false);
@@ -143,7 +144,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task IpLoggersAsync(CommandContext ctx,
                                                 [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterIpLoggersEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} IP logging website filtering!", important: false);
@@ -166,7 +167,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ShortenersAsync(CommandContext ctx,
                                                  [Description("Enable?")] bool enable)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.LinkfilterUrlShortenersEnabled = enable;
                     });
                     await this.InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} URL shortener website filtering!", important: false);

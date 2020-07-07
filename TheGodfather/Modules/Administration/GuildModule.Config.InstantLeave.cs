@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -45,7 +46,7 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown < 2 || cooldown > 60)
                         throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntiInstantLeaveCooldown = cooldown;
                         cfg.AntiInstantLeaveEnabled = enable;
                     });
@@ -95,7 +96,7 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown < 2 || cooldown > 60)
                         throw new CommandFailedException("The cooldown is not in the valid range ([2, 60]).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntiInstantLeaveCooldown = cooldown;
                     });
                     

@@ -22,7 +22,7 @@ namespace TheGodfather.Services
             if (task is null)
                 return;
 
-            Exception tex = null;
+            Exception? tex = null;
 
             this.sem.Wait();
             try {
@@ -42,14 +42,14 @@ namespace TheGodfather.Services
                 this.sem.Release();
             }
 
-            if (!(tex is null))
+            if (tex is { })
                 throw tex;
         }
 
         public T Execute<T>(Task<T> task)
         {
             T result = default;
-            Exception tex = null;
+            Exception? tex = null;
 
             this.sem.Wait();
             try {
@@ -69,7 +69,7 @@ namespace TheGodfather.Services
                 this.sem.Release();
             }
 
-            if (!(tex is null))
+            if (tex is { })
                 throw tex;
 
             return result;

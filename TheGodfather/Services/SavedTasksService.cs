@@ -24,6 +24,7 @@ namespace TheGodfather.Services
 
                     // FIXME
                     var savedTasks = db.SavedTasks
+                        .AsEnumerable()
                         .Where(t => t.ExecutionTime <= DateTimeOffset.Now + @this.ReloadSpan)
                         .ToDictionary<DatabaseSavedTask, int, SavedTaskInfo>(
                             t => t.Id,

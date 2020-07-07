@@ -14,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -136,11 +137,10 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute on the users when they flood/raid the guild.")]
                 [Aliases("setaction", "a")]
-                
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentAction action)
                 {
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodAction = action;
                     });
 
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Administration
                     if (sensitivity < 2 || sensitivity > 20)
                         throw new CommandFailedException("The sensitivity is not in the valid range ([2, 20]).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodSensitivity = sensitivity;
                     });
 
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Administration
                     if (cooldown.TotalSeconds < 5 || cooldown.TotalSeconds > 60)
                         throw new CommandFailedException("The cooldown timespan is not in the valid range ([5, 60] seconds).");
 
-                    DatabaseGuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntifloodCooldown = (short)cooldown.TotalSeconds;
                     });
 

@@ -2,11 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -36,10 +38,12 @@ namespace TheGodfather.Modules.Administration.Services
         {
             Log.Debug("Loading guild config");
             try {
-                using (DatabaseContext db = this.dbb.CreateContext()) {
-                    this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(db.GuildConfig.Select(
-                        gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig
-                    )));
+                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                    this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
+                        db.GuildConfigs
+                            .AsEnumerable()
+                            .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
+                    ));
                 }
             } catch (Exception e) {
                 Log.Error(e, "Loading guild configs failed");
@@ -50,34 +54,34 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsGuildRegistered(ulong gid)
             => this.gcfg.TryGetValue(gid, out _);
 
-        public CachedGuildConfig GetCachedConfig(ulong gid)
+        public CachedGuildConfig? GetCachedConfig(ulong gid)
             => this.gcfg.GetValueOrDefault(gid);
 
         public string GetGuildPrefix(ulong gid)
         {
-            return this.gcfg.TryGetValue(gid, out CachedGuildConfig gcfg) && !string.IsNullOrWhiteSpace(gcfg.Prefix)
+            return this.gcfg.TryGetValue(gid, out CachedGuildConfig? gcfg) && !string.IsNullOrWhiteSpace(gcfg?.Prefix)
                 ? this.gcfg[gid].Prefix
                 : this.cfg.Prefix;
         }
 
-        public async Task<DatabaseGuildConfig> GetConfigAsync(ulong gid)
+        public async Task<GuildConfig> GetConfigAsync(ulong gid)
         {
-            DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = this.dbb.CreateContext())
-                gcfg = await db.GuildConfig.FindAsync((long)gid);
-            return gcfg;
+            GuildConfig? gcfg = null;
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext())
+                gcfg = await db.GuildConfigs.FindAsync((long)gid);
+            return gcfg ?? new GuildConfig();
         }
 
-        public async Task<DatabaseGuildConfig> ModifyConfigAsync(ulong gid, Action<DatabaseGuildConfig> modifyAction)
+        public async Task<GuildConfig?> ModifyConfigAsync(ulong gid, Action<GuildConfig> modifyAction)
         {
             if (modifyAction is null || !this.gcfg.ContainsKey(gid))
                 return null;
 
-            DatabaseGuildConfig gcfg = null;
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                gcfg = await db.GuildConfig.FindAsync((long)gid) ?? new DatabaseGuildConfig();
+            GuildConfig? gcfg = null;
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                gcfg = await db.GuildConfigs.FindAsync((long)gid) ?? new GuildConfig();
                 modifyAction(gcfg);
-                db.GuildConfig.Update(gcfg);
+                db.GuildConfigs.Update(gcfg);
                 await db.SaveChangesAsync();
             }
 
@@ -87,11 +91,11 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task<bool> RegisterGuildAsync(ulong gid)
         {
-            bool success = this.gcfg.TryAdd(gid, CachedGuildConfig.Default);
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                var gcfg = new DatabaseGuildConfig { GuildId = gid };
-                if (!db.GuildConfig.Contains(gcfg)) {
-                    db.GuildConfig.Add(gcfg);
+            bool success = this.gcfg.TryAdd(gid, new CachedGuildConfig());
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                var gcfg = new GuildConfig { GuildId = gid };
+                if (!db.GuildConfigs.Contains(gcfg)) {
+                    db.GuildConfigs.Add(gcfg);
                     await db.SaveChangesAsync();
                     Log.Debug("Registered guild: {GuildId}", gid);
                 }
@@ -102,10 +106,10 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task UnregisterGuildAsync(ulong gid)
         {
             this.gcfg.TryRemove(gid, out _);
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)gid);
-                if (!(gcfg is null)) {
-                    db.GuildConfig.Remove(gcfg);
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)gid);
+                if (gcfg is { }) {
+                    db.GuildConfigs.Remove(gcfg);
                     await db.SaveChangesAsync();
                     Log.Debug("Unregistered guild: {GuildId}", gid);
                 }

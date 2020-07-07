@@ -58,52 +58,52 @@ namespace TheGodfather.Common
         #endregion
 
         #region Casino
-        public static DiscordEmoji Cherries { get; } = DiscordEmoji.FromUnicode("\U0001f352");
-        public static DiscordEmoji Gift { get; } = DiscordEmoji.FromUnicode("\U0001f381");
-        public static DiscordEmoji LargeBlueDiamond { get; } = DiscordEmoji.FromUnicode("\U0001f537");
-        public static DiscordEmoji LargeOrangeDiamond { get; } = DiscordEmoji.FromUnicode("\U0001f536");
-        public static DiscordEmoji MoneyBag { get; } = DiscordEmoji.FromUnicode("\U0001f4b0");
-        public static DiscordEmoji Peach { get; } = DiscordEmoji.FromUnicode("\U0001f351");
-        public static DiscordEmoji Seven { get; } = DiscordEmoji.FromUnicode("7\u20e3");
-        public static DiscordEmoji SmallBlueDiamond { get; } = DiscordEmoji.FromUnicode("\U0001f539");
-        public static DiscordEmoji SmallOrangeDiamond { get; } = DiscordEmoji.FromUnicode("\U0001f538");
+        public static DiscordEmoji Cherries => DiscordEmoji.FromUnicode("\U0001f352");
+        public static DiscordEmoji Gift => DiscordEmoji.FromUnicode("\U0001f381");
+        public static DiscordEmoji LargeBlueDiamond => DiscordEmoji.FromUnicode("\U0001f537");
+        public static DiscordEmoji LargeOrangeDiamond => DiscordEmoji.FromUnicode("\U0001f536");
+        public static DiscordEmoji MoneyBag => DiscordEmoji.FromUnicode("\U0001f4b0");
+        public static DiscordEmoji Peach => DiscordEmoji.FromUnicode("\U0001f351");
+        public static DiscordEmoji Seven => DiscordEmoji.FromUnicode("7\u20e3");
+        public static DiscordEmoji SmallBlueDiamond => DiscordEmoji.FromUnicode("\U0001f539");
+        public static DiscordEmoji SmallOrangeDiamond => DiscordEmoji.FromUnicode("\U0001f538");
         #endregion
 
         #region Games
-        public static DiscordEmoji Bicyclist { get; } = DiscordEmoji.FromUnicode("\U0001f6b4");
-        public static DiscordEmoji BlackSquare { get; } = DiscordEmoji.FromUnicode("\u2b1b");
-        public static DiscordEmoji Blast { get; } = DiscordEmoji.FromUnicode("\U0001f4a2");
-        public static DiscordEmoji BoardPieceBlueCircle { get; } = DiscordEmoji.FromUnicode("\U0001f535");
-        public static DiscordEmoji BoardPieceRedCircle { get; } = DiscordEmoji.FromUnicode("\U0001f534");
-        public static DiscordEmoji BoardSquare { get; } = DiscordEmoji.FromUnicode("\u25fb");
-        public static DiscordEmoji Dead { get; } = DiscordEmoji.FromUnicode("\U0001f635");
-        public static DiscordEmoji Dice { get; } = DiscordEmoji.FromUnicode("\U0001f3b2");
-        public static DiscordEmoji DuelSwords { get; } = DiscordEmoji.FromUnicode("\u2694");
-        public static DiscordEmoji Gun { get; } = DiscordEmoji.FromUnicode("\U0001f52b");
-        public static DiscordEmoji Headphones { get; } = DiscordEmoji.FromUnicode("\U0001f3a7");
-        public static DiscordEmoji Joystick { get; } = DiscordEmoji.FromUnicode("\U0001f579");
-        public static DiscordEmoji O { get; } = DiscordEmoji.FromUnicode("\u2b55");
-        public static DiscordEmoji Relieved { get; } = DiscordEmoji.FromUnicode("\U0001f616");
-        public static DiscordEmoji Syringe { get; } = DiscordEmoji.FromUnicode("\U0001f489");
-        public static DiscordEmoji Trophy { get; } = DiscordEmoji.FromUnicode("\U0001f3c6");
-        public static DiscordEmoji WhiteSquare { get; } = DiscordEmoji.FromUnicode("\u2b1c");
-        public static DiscordEmoji X { get; } = DiscordEmoji.FromUnicode("\u274c");
+        public static DiscordEmoji Bicyclist => DiscordEmoji.FromUnicode("\U0001f6b4");
+        public static DiscordEmoji BlackSquare => DiscordEmoji.FromUnicode("\u2b1b");
+        public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
+        public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
+        public static DiscordEmoji BoardPieceRedCircle => DiscordEmoji.FromUnicode("\U0001f534");
+        public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
+        public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");
+        public static DiscordEmoji Dice => DiscordEmoji.FromUnicode("\U0001f3b2");
+        public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
+        public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
+        public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
+        public static DiscordEmoji Joystick => DiscordEmoji.FromUnicode("\U0001f579");
+        public static DiscordEmoji O => DiscordEmoji.FromUnicode("\u2b55");
+        public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");
+        public static DiscordEmoji Syringe => DiscordEmoji.FromUnicode("\U0001f489");
+        public static DiscordEmoji Trophy => DiscordEmoji.FromUnicode("\U0001f3c6");
+        public static DiscordEmoji WhiteSquare => DiscordEmoji.FromUnicode("\u2b1c");
+        public static DiscordEmoji X => DiscordEmoji.FromUnicode("\u274c");
         #endregion
 
         #region Misc
-        public static DiscordEmoji AlarmClock { get; } = DiscordEmoji.FromUnicode("\u23f0");
-        public static DiscordEmoji ArrowDown { get; } = DiscordEmoji.FromUnicode("\u2b07");
-        public static DiscordEmoji ArrowUp { get; } = DiscordEmoji.FromUnicode("\u2b06");
-        public static DiscordEmoji Cake { get; } = DiscordEmoji.FromUnicode("\U0001f370");
-        public static DiscordEmoji CheckMarkSuccess { get; } = DiscordEmoji.FromUnicode("\u2705");
-        public static DiscordEmoji Chicken { get; } = DiscordEmoji.FromUnicode("\U0001f414");
-        public static DiscordEmoji Clock1 { get; } = DiscordEmoji.FromUnicode("\U0001f550");
-        public static DiscordEmoji Information { get; } = DiscordEmoji.FromUnicode("\u2139");
-        public static DiscordEmoji Medal { get; } = DiscordEmoji.FromUnicode("\U0001f3c5");
-        public static DiscordEmoji NoEntry { get; } = DiscordEmoji.FromUnicode("\u26d4");
-        public static DiscordEmoji Question { get; } = DiscordEmoji.FromUnicode("\u2753");
-        public static DiscordEmoji Tada { get; } = DiscordEmoji.FromUnicode("\U0001f389");
-        public static DiscordEmoji Wave { get; } = DiscordEmoji.FromUnicode("\U0001f44b");
+        public static DiscordEmoji AlarmClock => DiscordEmoji.FromUnicode("\u23f0");
+        public static DiscordEmoji ArrowDown => DiscordEmoji.FromUnicode("\u2b07");
+        public static DiscordEmoji ArrowUp => DiscordEmoji.FromUnicode("\u2b06");
+        public static DiscordEmoji Cake => DiscordEmoji.FromUnicode("\U0001f370");
+        public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
+        public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
+        public static DiscordEmoji Clock1 => DiscordEmoji.FromUnicode("\U0001f550");
+        public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
+        public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
+        public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
+        public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
+        public static DiscordEmoji Tada => DiscordEmoji.FromUnicode("\U0001f389");
+        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
         #endregion
 
         #region Numbers
@@ -152,12 +152,12 @@ namespace TheGodfather.Common
         #endregion
 
         #region Weather
-        public static DiscordEmoji Cloud { get; } = DiscordEmoji.FromUnicode("\u2601");
-        public static DiscordEmoji Drops { get; } = DiscordEmoji.FromUnicode("\U0001f4a6");
-        public static DiscordEmoji Globe { get; } = DiscordEmoji.FromUnicode("\U0001f30d");
-        public static DiscordEmoji Ruler { get; } = DiscordEmoji.FromUnicode("\U0001f4cf");
-        public static DiscordEmoji Thermometer { get; } = DiscordEmoji.FromUnicode("\U0001f321");
-        public static DiscordEmoji Wind { get; } = DiscordEmoji.FromUnicode("\U0001f4a8");
+        public static DiscordEmoji Cloud => DiscordEmoji.FromUnicode("\u2601");
+        public static DiscordEmoji Drops => DiscordEmoji.FromUnicode("\U0001f4a6");
+        public static DiscordEmoji Globe => DiscordEmoji.FromUnicode("\U0001f30d");
+        public static DiscordEmoji Ruler => DiscordEmoji.FromUnicode("\U0001f4cf");
+        public static DiscordEmoji Thermometer => DiscordEmoji.FromUnicode("\U0001f321");
+        public static DiscordEmoji Wind => DiscordEmoji.FromUnicode("\U0001f4a8");
         #endregion
     }
 }

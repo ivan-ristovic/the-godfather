@@ -19,9 +19,9 @@ namespace TheGodfather.Database
             this.Options = options;
         }
 
-        public DatabaseContextBuilder(DatabaseConfig cfg, DbContextOptions<DatabaseContext>? options = null)
+        public DatabaseContextBuilder(DbConfig cfg, DbContextOptions<DatabaseContext>? options = null)
         {
-            cfg ??= DatabaseConfig.Default;
+            cfg ??= new DbConfig();
             this.Provider = cfg.Provider;
             this.Options = options;
 

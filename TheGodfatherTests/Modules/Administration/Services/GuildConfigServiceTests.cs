@@ -5,6 +5,7 @@ using NUnit.Framework;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
@@ -16,14 +17,14 @@ namespace TheGodfatherTests.Modules.Administration.Services
     {
         public GuildConfigService Service { get; private set; }
 
-        private readonly ImmutableDictionary<ulong, DatabaseGuildConfig> gcfg;
+        private readonly ImmutableDictionary<ulong, GuildConfig> gcfg;
 
 
         public GuildConfigServiceTests()
         {
-            this.gcfg = new Dictionary<ulong, DatabaseGuildConfig> {
+            this.gcfg = new Dictionary<ulong, GuildConfig> {
                 { MockData.Ids[0],
-                  new DatabaseGuildConfig {
+                  new GuildConfig {
                     GuildId = MockData.Ids[0],
                     AntifloodSettings = new AntifloodSettings {
                         Enabled = true,
@@ -40,10 +41,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     WelcomeMessage = "Welcome!",
                   }
                 },
-                { MockData.Ids[1], new DatabaseGuildConfig { GuildId = MockData.Ids[1] } },
-                { MockData.Ids[2], new DatabaseGuildConfig { GuildId = MockData.Ids[2] } },
-                { MockData.Ids[3], new DatabaseGuildConfig { GuildId = MockData.Ids[3] } },
-                { MockData.Ids[4], new DatabaseGuildConfig { GuildId = MockData.Ids[4] } },
+                { MockData.Ids[1], new GuildConfig { GuildId = MockData.Ids[1] } },
+                { MockData.Ids[2], new GuildConfig { GuildId = MockData.Ids[2] } },
+                { MockData.Ids[3], new GuildConfig { GuildId = MockData.Ids[3] } },
+                { MockData.Ids[4], new GuildConfig { GuildId = MockData.Ids[4] } },
             }.ToImmutableDictionary();
         }
 
@@ -93,14 +94,15 @@ namespace TheGodfatherTests.Modules.Administration.Services
         [Test]
         public void GetGuildPrefixTests()
         {
+            string defPrefix = new BotConfig().Prefix;
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     Assert.That(this.Service.GetGuildPrefix(MockData.Ids[0]), Is.EqualTo(this.gcfg[MockData.Ids[0]].Prefix));
-                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[1]), Is.EqualTo(BotConfig.Default.Prefix));
-                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[2]), Is.EqualTo(BotConfig.Default.Prefix));
-                    Assert.That(this.Service.GetGuildPrefix(1), Is.EqualTo(BotConfig.Default.Prefix));
+                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[1]), Is.EqualTo(defPrefix));
+                    Assert.That(this.Service.GetGuildPrefix(MockData.Ids[2]), Is.EqualTo(defPrefix));
+                    Assert.That(this.Service.GetGuildPrefix(1), Is.EqualTo(defPrefix));
                 }
             );
         }
@@ -144,7 +146,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     await this.Service.ModifyConfigAsync(MockData.Ids[0], gcfg => gcfg.Prefix = "!!");
                 },
                 verify: async db => {
-                    DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
+                    GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)MockData.Ids[0]);
                     Assert.That(gcfg.Prefix, Is.EqualTo("!!"));
                     Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]).Prefix, Is.EqualTo("!!"));
                     Assert.That((await this.Service.GetConfigAsync(MockData.Ids[0])).Prefix, Is.EqualTo("!!"));
@@ -161,7 +163,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     });
                 },
                 verify: async db => {
-                    DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[1]);
+                    GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)MockData.Ids[1]);
                     Assert.That(gcfg.AntispamEnabled, Is.True);
                     Assert.That(gcfg.AntispamAction, Is.EqualTo(PunishmentAction.TemporaryBan));
                     Assert.That(gcfg.AntispamSensitivity, Is.EqualTo(10));
@@ -183,12 +185,12 @@ namespace TheGodfatherTests.Modules.Administration.Services
             await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.That(await db.GuildConfig.FindAsync(1L), Is.Null);
+                    Assert.That(await db.GuildConfigs.FindAsync(1L), Is.Null);
                     Assert.That(await this.Service.RegisterGuildAsync(1), Is.True);
                 },
                 verify: async db => {
-                    DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync(1L);
-                    Assert.That(HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
+                    GuildConfig gcfg = await db.GuildConfigs.FindAsync(1L);
+                    Assert.That(HaveSamePropertyValues(new CachedGuildConfig(), gcfg.CachedConfig));
                 }
             );
 
@@ -202,7 +204,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     Assert.That(await this.Service.RegisterGuildAsync(MockData.Ids[0]), Is.False);
                 },
                 verify: async db => {
-                    DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
+                    GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)MockData.Ids[0]);
                     Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, gcfg.CachedConfig));
                 }
             );
@@ -216,7 +218,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     this.Service.LoadData();
                     await this.Service.UnregisterGuildAsync(MockData.Ids[0]);
                 },
-                verify: async db => Assert.That(await db.GuildConfig.FindAsync((long)MockData.Ids[0]), Is.Null)
+                verify: async db => Assert.That(await db.GuildConfigs.FindAsync((long)MockData.Ids[0]), Is.Null)
             );
 
             await TestDatabaseProvider.AlterAndVerifyAsync(
@@ -238,7 +240,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     await this.Service.RegisterGuildAsync(MockData.Ids[0]);
                 },
                 verify: async db => {
-                    DatabaseGuildConfig gcfg = await db.GuildConfig.FindAsync((long)MockData.Ids[0]);
+                    GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)MockData.Ids[0]);
                     Assert.That(HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
                 }
             );
@@ -338,7 +340,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
         private void SetMockGuildConfig(DatabaseContext db)
         {
-            foreach (KeyValuePair<ulong, DatabaseGuildConfig> kvp in this.gcfg) {
+            foreach (KeyValuePair<ulong, GuildConfig> kvp in this.gcfg) {
                 db.Attach(kvp.Value);
                 db.GuildConfig.Update(kvp.Value);
             }
