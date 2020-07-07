@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
             public class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
             {
 
-                public LocalizationModule(LocalizationService service, DatabaseContextBuilder db)
+                public LocalizationModule(LocalizationService service, DbContextBuilder db)
                     : base(service, db)
                 {
 

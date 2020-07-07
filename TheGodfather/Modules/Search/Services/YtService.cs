@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Search.Services
                     emb.WithThumbnailUrl(res.Snippet.Thumbnails.Default__.Url);
 
                 emb.AddField("Channel", res.Snippet.ChannelTitle, inline: true);
-                emb.AddField("Published at", $"{res.Snippet.PublishedAt ?? DateTime.Now}", inline: true);
+                emb.AddField("Published at", res.Snippet.PublishedAt, inline: true);
 
                 switch (res.Id.Kind) {
                     case "youtube#video":

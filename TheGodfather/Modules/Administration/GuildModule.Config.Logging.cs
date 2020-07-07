@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
             public class LoggingModule : TheGodfatherModule
             {
 
-                public LoggingModule(DatabaseContextBuilder db)
+                public LoggingModule(DbContextBuilder db)
                     : base(db)
                 {
                     

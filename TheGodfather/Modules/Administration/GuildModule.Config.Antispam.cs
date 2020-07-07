@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration
             public class AntispamModule : TheGodfatherServiceModule<AntispamService>
             {
 
-                public AntispamModule(AntispamService service, DatabaseContextBuilder db)
+                public AntispamModule(AntispamService service, DbContextBuilder db)
                     : base(service, db)
                 {
                     

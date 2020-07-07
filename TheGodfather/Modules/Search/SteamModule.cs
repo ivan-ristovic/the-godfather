@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 
-        public SteamModule(SteamService service, DatabaseContextBuilder db)
+        public SteamModule(SteamService service, DbContextBuilder db)
             : base(service, db)
         {
             

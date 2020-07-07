@@ -33,7 +33,7 @@ namespace TheGodfather.Common.Attributes
             bool BlockingCommandRuleExists()
             {
                 // TODO when moved to service create a cached set of guilds which have command rules and query it before accessing the database
-                DatabaseContextBuilder dbb = ctx.Services.GetService<DatabaseContextBuilder>();
+                DbContextBuilder dbb = ctx.Services.GetService<DbContextBuilder>();
                 using (DatabaseContext db = dbb.CreateContext()) {
                     IQueryable<DatabaseCommandRule> dbrules = db.CommandRules
                         .Where(cr => cr.IsMatchFor(ctx.Guild.Id, ctx.Channel.Id) && ctx.Command.QualifiedName.StartsWith(cr.Command));

@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
     public class CommandRulesModule : TheGodfatherModule
     {
 
-        public CommandRulesModule(DatabaseContextBuilder db)
+        public CommandRulesModule(DbContextBuilder db)
             : base(db)
         {
             

@@ -9,7 +9,7 @@ namespace TheGodfather.Modules.Search.Extensions
 {
     public static class DatabaseContextBuilderFeedsExtensions
     {
-        public static async Task SubscribeAsync(this DatabaseContextBuilder dbb, ulong gid, ulong cid, string url, string name = null)
+        public static async Task SubscribeAsync(this DbContextBuilder dbb, ulong gid, ulong cid, string url, string name = null)
         {
             System.ServiceModel.Syndication.SyndicationItem newest = RssService.GetFeedResults(url)?.FirstOrDefault();
             if (newest is null)

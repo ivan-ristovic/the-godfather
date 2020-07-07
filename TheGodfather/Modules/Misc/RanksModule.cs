@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Misc
     public class RanksModule : TheGodfatherServiceModule<UserRanksService>
     {
 
-        public RanksModule(UserRanksService service, DatabaseContextBuilder db) 
+        public RanksModule(UserRanksService service, DbContextBuilder db) 
             : base(service, db)
         {
             

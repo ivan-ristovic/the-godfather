@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search
     public class RssFeedsModule : TheGodfatherModule
     {
 
-        public RssFeedsModule(DatabaseContextBuilder db)
+        public RssFeedsModule(DbContextBuilder db)
             : base(db)
         {
             
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Search
         public class SubscribeModule : TheGodfatherModule
         {
 
-            public SubscribeModule(DatabaseContextBuilder db)
+            public SubscribeModule(DbContextBuilder db)
                 : base(db)
             {
                 
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Search
         public class UnsubscribeModule : TheGodfatherModule
         {
 
-            public UnsubscribeModule(DatabaseContextBuilder db)
+            public UnsubscribeModule(DbContextBuilder db)
                 : base(db)
             {
                 

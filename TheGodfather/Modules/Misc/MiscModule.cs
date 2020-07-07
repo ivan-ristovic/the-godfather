@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Misc
     public class MiscModule : TheGodfatherModule
     {
 
-        public MiscModule(DatabaseContextBuilder db) 
+        public MiscModule(DbContextBuilder db) 
             : base(db)
         {
             

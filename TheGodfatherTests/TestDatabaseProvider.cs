@@ -3,16 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
-using static TheGodfather.Database.DatabaseContextBuilder;
+using TheGodfather.Database.Models;
 
 namespace TheGodfatherTests
 {
     public static class TestDatabaseProvider
     {
-        public static DatabaseContextBuilder Database { get; private set; }
+        public static DbContextBuilder Database { get; private set; }
         public static string ConnectionString { get; private set; }
         public static SqliteConnection DatabaseConnection { get; private set; }
 
@@ -25,58 +23,58 @@ namespace TheGodfatherTests
             var cfg = new DbConfig() {
                 Provider = DbProvider.SqliteInMemory
             };
-            DbContextOptions<DatabaseContext> options = new DbContextOptionsBuilder<DatabaseContext>()
+            DbContextOptions<TheGodfatherDbContext> options = new DbContextOptionsBuilder<TheGodfatherDbContext>()
                 .UseSqlite(DatabaseConnection)
-                .ConfigureWarnings(wb => wb.Ignore(RelationalEventId.QueryClientEvaluationWarning))
                 .Options;
 
-            Database = new DatabaseContextBuilder(cfg, options);
+            // TODO
+            Database = new DbContextBuilder(cfg/*, options*/);
         }
 
 
-        public static void AlterAndVerify(Action<DatabaseContext> alter, Action<DatabaseContext> verify, bool ensureSave = false)
+        public static void AlterAndVerify(Action<TheGodfatherDbContext> alter, Action<TheGodfatherDbContext> verify, bool ensureSave = false)
         {
             DatabaseConnection.Open();
             try {
                 CreateDatabase();
                 SeedGuildData();
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     alter(context);
                     if (ensureSave)
                         context.SaveChanges();
                 }
 
-                using (DatabaseContext context = Database.CreateContext())
+                using (TheGodfatherDbContext context = Database.CreateDbContext())
                     verify(context);
             } finally {
                 DatabaseConnection.Close();
             }
         }
 
-        public static async Task AlterAndVerifyAsync(Func<DatabaseContext, Task> alter, Func<DatabaseContext, Task> verify, bool ensureSave = false)
+        public static async Task AlterAndVerifyAsync(Func<TheGodfatherDbContext, Task> alter, Func<TheGodfatherDbContext, Task> verify, bool ensureSave = false)
         {
             DatabaseConnection.Open();
             try {
                 CreateDatabase();
                 SeedGuildData();
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     await alter(context);
                     if (ensureSave)
                         await context.SaveChangesAsync();
                 }
 
-                using (DatabaseContext context = Database.CreateContext())
+                using (TheGodfatherDbContext context = Database.CreateDbContext())
                     await verify(context);
             } finally {
                 DatabaseConnection.Close();
             }
         }
 
-        public static void SetupAlterAndVerify(Action<DatabaseContext> setup,
-                                               Action<DatabaseContext> alter,
-                                               Action<DatabaseContext> verify,
+        public static void SetupAlterAndVerify(Action<TheGodfatherDbContext> setup,
+                                               Action<TheGodfatherDbContext> alter,
+                                               Action<TheGodfatherDbContext> verify,
                                                bool ensureSave = false)
         {
             DatabaseConnection.Open();
@@ -84,27 +82,27 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     setup(context);
                     context.SaveChanges();
                 }
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     alter(context);
                     if (ensureSave)
                         context.SaveChanges();
                 }
 
-                using (DatabaseContext context = Database.CreateContext())
+                using (TheGodfatherDbContext context = Database.CreateDbContext())
                     verify(context);
             } finally {
                 DatabaseConnection.Close();
             }
         }
 
-        public static async Task SetupAlterAndVerifyAsync(Func<DatabaseContext, Task> setup,
-                                                          Func<DatabaseContext, Task> alter,
-                                                          Func<DatabaseContext, Task> verify,
+        public static async Task SetupAlterAndVerifyAsync(Func<TheGodfatherDbContext, Task> setup,
+                                                          Func<TheGodfatherDbContext, Task> alter,
+                                                          Func<TheGodfatherDbContext, Task> verify,
                                                           bool ensureSave = false)
         {
             DatabaseConnection.Open();
@@ -112,18 +110,18 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     await setup(context);
                     await context.SaveChangesAsync();
                 }
 
-                using (DatabaseContext context = Database.CreateContext()) {
+                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
                     await alter(context);
                     if (ensureSave)
                         await context.SaveChangesAsync();
                 }
 
-                using (DatabaseContext context = Database.CreateContext())
+                using (TheGodfatherDbContext context = Database.CreateDbContext())
                     await verify(context);
             } finally {
                 DatabaseConnection.Close();
@@ -133,14 +131,14 @@ namespace TheGodfatherTests
 
         private static void CreateDatabase()
         {
-            using (DatabaseContext context = Database.CreateContext())
+            using (TheGodfatherDbContext context = Database.CreateDbContext())
                 context.Database.EnsureCreated();
         }
 
         private static void SeedGuildData()
         {
-            using (DatabaseContext context = Database.CreateContext()) {
-                context.GuildConfig.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
+            using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                context.GuildConfigs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
                 context.SaveChanges();
             }
         }

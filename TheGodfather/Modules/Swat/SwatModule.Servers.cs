@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatServersModule : TheGodfatherModule
         {
 
-            public SwatServersModule(DatabaseContextBuilder db)
+            public SwatServersModule(DbContextBuilder db)
                 : base(db)
             {
                 

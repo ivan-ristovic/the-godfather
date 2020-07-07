@@ -20,7 +20,7 @@ namespace TheGodfather.Modules
         protected static readonly HttpClient _http;
         private static readonly HttpClientHandler _handler;
 
-        public DatabaseContextBuilder Database { get; }
+        public DbContextBuilder Database { get; }
         public DiscordColor ModuleColor { get; }
 
 
@@ -33,7 +33,7 @@ namespace TheGodfather.Modules
         }
 
 
-        protected TheGodfatherModule(DatabaseContextBuilder dbb)
+        protected TheGodfatherModule(DbContextBuilder dbb)
         {
             this.Database = dbb;
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Owner
         public class StatusModule : TheGodfatherModule
         {
 
-            public StatusModule(DatabaseContextBuilder db) 
+            public StatusModule(DbContextBuilder db) 
                 : base(db)
             {
                 

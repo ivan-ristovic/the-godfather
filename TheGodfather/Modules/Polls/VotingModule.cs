@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Polls
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public VotingModule(ChannelEventService service, DatabaseContextBuilder db)
+        public VotingModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
             

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     public class JokesModule : TheGodfatherModule
     {
 
-        public JokesModule(DatabaseContextBuilder db)
+        public JokesModule(DbContextBuilder db)
             : base(db)
         {
             

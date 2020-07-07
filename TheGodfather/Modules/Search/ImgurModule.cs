@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        public ImgurModule(ImgurService service, DatabaseContextBuilder db)
+        public ImgurModule(ImgurService service, DbContextBuilder db)
             : base(service, db)
         {
             

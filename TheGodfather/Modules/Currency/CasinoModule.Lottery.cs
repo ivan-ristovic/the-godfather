@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency
         public class LotteryModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public LotteryModule(ChannelEventService service, DatabaseContextBuilder db)
+            public LotteryModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

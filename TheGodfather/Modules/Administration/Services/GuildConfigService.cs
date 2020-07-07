@@ -21,10 +21,10 @@ namespace TheGodfather.Modules.Administration.Services
 
         private ConcurrentDictionary<ulong, CachedGuildConfig> gcfg;
         private readonly BotConfig cfg;
-        private readonly DatabaseContextBuilder dbb;
+        private readonly DbContextBuilder dbb;
 
 
-        public GuildConfigService(BotConfigService cfg, DatabaseContextBuilder dbb, bool loadData = true)
+        public GuildConfigService(BotConfigService cfg, DbContextBuilder dbb, bool loadData = true)
         {
             this.cfg = cfg.CurrentConfiguration;
             this.dbb = dbb;

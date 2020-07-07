@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
         public class NumberRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public NumberRaceModule(ChannelEventService service, DatabaseContextBuilder db)
+            public NumberRaceModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
     public partial class GamesModule : TheGodfatherModule
     {
 
-        public GamesModule(DatabaseContextBuilder db)
+        public GamesModule(DbContextBuilder db)
             : base(db)
         {
             

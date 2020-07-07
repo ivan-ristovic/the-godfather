@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule : TheGodfatherModule
     {
 
-        public OwnerModule(DatabaseContextBuilder db)
+        public OwnerModule(DbContextBuilder db)
             : base(db)
         {
             

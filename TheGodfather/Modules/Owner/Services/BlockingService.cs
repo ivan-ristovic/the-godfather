@@ -20,10 +20,10 @@ namespace TheGodfather.Modules.Owner.Services
 
         private ConcurrentHashSet<ulong> bChannels;
         private ConcurrentHashSet<ulong> bUsers;
-        private readonly DatabaseContextBuilder dbb;
+        private readonly DbContextBuilder dbb;
 
 
-        public BlockingService(DatabaseContextBuilder dbb, bool loadData = true)
+        public BlockingService(DbContextBuilder dbb, bool loadData = true)
         {
             this.dbb = dbb;
             this.bChannels = new ConcurrentHashSet<ulong>();

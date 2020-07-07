@@ -10,7 +10,7 @@ namespace TheGodfather.Modules
         protected TService Service { get; }
 
 
-        protected TheGodfatherServiceModule(TService service, DatabaseContextBuilder db)
+        protected TheGodfatherServiceModule(TService service, DbContextBuilder db)
             : base(db)
         {
             this.Service = service;

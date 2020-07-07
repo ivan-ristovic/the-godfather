@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     public partial class GuildModule : TheGodfatherModule
     {
 
-        public GuildModule(DatabaseContextBuilder db) 
+        public GuildModule(DbContextBuilder db) 
             : base(db)
         {
             

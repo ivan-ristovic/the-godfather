@@ -43,7 +43,7 @@ namespace TheGodfather
         public int Id { get; }
         public ServiceProvider Services { get; private set; }
         public BotConfig Config { get; private set; }
-        public DatabaseContextBuilder Database { get; private set; }
+        public DbContextBuilder Database { get; private set; }
         public DiscordClient? Client { get; private set; }
         public CommandsNextExtension? CNext { get; private set; }
         public InteractivityExtension? Interactivity { get; private set; }
@@ -54,7 +54,7 @@ namespace TheGodfather
         {
             this.Id = shardId;
             this.Services = BotServiceCollectionProvider.AddShardSpecificServices(services, this).BuildServiceProvider();
-            this.Database = this.Services.GetService<DatabaseContextBuilder>();
+            this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
         }
 

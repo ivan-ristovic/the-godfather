@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Owner
         public class CommandsModule : TheGodfatherModule
         {
 
-            public CommandsModule(DatabaseContextBuilder db)
+            public CommandsModule(DbContextBuilder db)
                 : base(db)
             {
                 

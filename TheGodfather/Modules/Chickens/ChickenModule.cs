@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Chickens
     public partial class ChickenModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ChickenModule(ChannelEventService service, DatabaseContextBuilder db) 
+        public ChickenModule(ChannelEventService service, DbContextBuilder db) 
             : base(service, db)
         {
             

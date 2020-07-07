@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatSearchModule : TheGodfatherModule
         {
 
-            public SwatSearchModule(DatabaseContextBuilder db)
+            public SwatSearchModule(DbContextBuilder db)
                 : base(db)
             {
                 

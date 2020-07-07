@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     public class EmojiModule : TheGodfatherModule
     {
 
-        public EmojiModule(DatabaseContextBuilder db)
+        public EmojiModule(DbContextBuilder db)
             : base(db)
         {
             

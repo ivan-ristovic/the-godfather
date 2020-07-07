@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Games
         public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public QuizModule(ChannelEventService service, DatabaseContextBuilder db)
+            public QuizModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

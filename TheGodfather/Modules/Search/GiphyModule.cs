@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
 
-        public GiphyModule(GiphyService service, DatabaseContextBuilder db) 
+        public GiphyModule(GiphyService service, DbContextBuilder db) 
             : base(service, db)
         {
             

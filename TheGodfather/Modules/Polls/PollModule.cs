@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Polls
     public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public PollModule(ChannelEventService service, DatabaseContextBuilder db)
+        public PollModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
             

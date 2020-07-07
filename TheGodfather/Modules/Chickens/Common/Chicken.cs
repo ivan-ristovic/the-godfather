@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Chickens.Common
         public static long Price(ChickenType type)
             => PriceForAttribute(StartingStats[type].BareStrength);
 
-        public static Chicken FromDatabase(DatabaseContextBuilder dbb, ulong gid, ulong uid)
+        public static Chicken FromDatabase(DbContextBuilder dbb, ulong gid, ulong uid)
         {
             Chicken chicken = null;
             using (DatabaseContext db = dbb.CreateContext()) {
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Chickens.Common
             return chicken;
         }
 
-        public static Chicken FromDatabase(DatabaseContextBuilder dbb, ulong gid, string name)
+        public static Chicken FromDatabase(DbContextBuilder dbb, ulong gid, string name)
         {
             Chicken chicken = null;
             using (DatabaseContext db = dbb.CreateContext()) {

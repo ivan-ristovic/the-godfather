@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search.Services
 {
     public static class RssService
     {
-        public static async Task CheckFeedsForChangesAsync(DiscordClient client, DatabaseContextBuilder dbb)
+        public static async Task CheckFeedsForChangesAsync(DiscordClient client, DbContextBuilder dbb)
         {
             IReadOnlyList<DatabaseRssFeed> feeds;
             using (DatabaseContext db = dbb.CreateContext())

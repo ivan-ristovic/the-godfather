@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     public class GrantModule : TheGodfatherModule
     {
 
-        public GrantModule(DatabaseContextBuilder db)
+        public GrantModule(DbContextBuilder db)
             : base(db)
         {
             
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Misc
     public class RevokeModule : TheGodfatherModule
     {
 
-        public RevokeModule(DatabaseContextBuilder db)
+        public RevokeModule(DbContextBuilder db)
             : base(db)
         {
             

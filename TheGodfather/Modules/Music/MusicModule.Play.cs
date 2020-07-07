@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Music
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YtService service, DatabaseContextBuilder db) 
+            public PlayModule(YtService service, DbContextBuilder db) 
                 : base(service, db)
             {
                 

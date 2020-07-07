@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Music
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService service, DatabaseContextBuilder db) 
+        public MusicModule(YtService service, DbContextBuilder db) 
             : base(service, db)
         {
             

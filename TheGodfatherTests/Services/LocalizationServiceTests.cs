@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Common;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
@@ -52,9 +53,9 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
-                    db.GuildConfig.Update(gcfg);
+                    db.GuildConfigs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -73,9 +74,9 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
-                    db.GuildConfig.Update(gcfg);
+                    db.GuildConfigs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -107,9 +108,9 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
-                    db.GuildConfig.Update(gcfg);
+                    db.GuildConfigs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -146,9 +147,9 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
-                    db.GuildConfig.Update(gcfg);
+                    db.GuildConfigs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -177,16 +178,16 @@ namespace TheGodfatherTests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], this.EnLocale), Is.True);
                 },
                 verify: db => {
-                    Assert.That(db.GuildConfig.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    Assert.That(db.GuildConfigs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );
 
             await TestDatabaseProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfig.Find((long)MockData.Ids[0]);
+                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[0]);
                     gcfg.Locale = this.EnLocale;
-                    db.GuildConfig.Update(gcfg);
+                    db.GuildConfigs.Update(gcfg);
                     return db.SaveChangesAsync();
                 },
                 alter: async db => {
@@ -195,7 +196,7 @@ namespace TheGodfatherTests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], "non-existing-locale"), Is.False);
                 },
                 verify: db => {
-                    Assert.That(db.GuildConfig.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    Assert.That(db.GuildConfigs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );

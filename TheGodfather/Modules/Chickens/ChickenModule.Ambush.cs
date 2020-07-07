@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Chickens
         public class AmbushModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public AmbushModule(ChannelEventService service, DatabaseContextBuilder db)
+            public AmbushModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration
     public class AutomaticRolesModule : TheGodfatherModule
     {
 
-        public AutomaticRolesModule(DatabaseContextBuilder db)
+        public AutomaticRolesModule(DbContextBuilder db)
             : base(db)
         {
             

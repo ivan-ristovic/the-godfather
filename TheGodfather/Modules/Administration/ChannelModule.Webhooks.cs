@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageWebhooks)]
         public class WebhooksModule : TheGodfatherModule
         {
-            public WebhooksModule(DatabaseContextBuilder db)
+            public WebhooksModule(DbContextBuilder db)
                 : base(db)
             {
                 

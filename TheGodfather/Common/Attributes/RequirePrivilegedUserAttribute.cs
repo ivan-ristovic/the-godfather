@@ -16,7 +16,7 @@ namespace TheGodfather.Common.Attributes
             if (ctx.Client.CurrentApplication?.Owners.Any(o => o.Id == ctx.User.Id) ?? false)
                 return Task.FromResult(true);
 
-            using (DatabaseContext db = ctx.Services.GetService<DatabaseContextBuilder>().CreateContext())
+            using (DatabaseContext db = ctx.Services.GetService<DbContextBuilder>().CreateContext())
                 return Task.FromResult(db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id));
         }
     }

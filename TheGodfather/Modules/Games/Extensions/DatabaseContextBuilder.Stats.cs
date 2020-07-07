@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Games.Extensions
 {
     public static class DatabaseContextBuilderStatsExtensions
     {
-        public static async Task UpdateStatsAsync(this DatabaseContextBuilder dbb, ulong uid, Action<DatabaseGameStats> action)
+        public static async Task UpdateStatsAsync(this DbContextBuilder dbb, ulong uid, Action<DatabaseGameStats> action)
         {
             using (DatabaseContext db = dbb.CreateContext()) {
                 DatabaseGameStats stats = await db.GameStats.FindAsync((long)uid);
@@ -30,35 +30,35 @@ namespace TheGodfather.Modules.Games.Extensions
             }
         }
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopAnimalRaceStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopAnimalRaceStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.AnimalRacesWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopCaroStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopCaroStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.CalculateWinPercentage(s.CaroWon, s.CaroLost), s => s.CaroWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopChain4StatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopChain4StatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.CalculateWinPercentage(s.Chain4Won, s.Chain4Lost), s => s.Chain4Won);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopDuelStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopDuelStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.CalculateWinPercentage(s.DuelsWon, s.DuelsLost), s => s.DuelsWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopHangmanStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopHangmanStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.HangmanWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopNumberRaceStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopNumberRaceStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.NumberRacesWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopOthelloStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopOthelloStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.CalculateWinPercentage(s.OthelloWon, s.OthelloLost), s => s.OthelloWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopQuizStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopQuizStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.QuizesWon);
 
-        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopTicTacToeStatsAsync(this DatabaseContextBuilder dbb, int amount = 10)
+        public static Task<IReadOnlyList<DatabaseGameStats>> GetTopTicTacToeStatsAsync(this DbContextBuilder dbb, int amount = 10)
             => dbb.GetTopStatsCollectionInternalAsync(amount, s => s.CalculateWinPercentage(s.TicTacToeWon, s.TicTacToeLost), s => s.TicTacToeWon);
 
 
-        private static async Task<IReadOnlyList<DatabaseGameStats>> GetTopStatsCollectionInternalAsync(this DatabaseContextBuilder dbb, int amount,
+        private static async Task<IReadOnlyList<DatabaseGameStats>> GetTopStatsCollectionInternalAsync(this DbContextBuilder dbb, int amount,
             Func<DatabaseGameStats, int> orderBy, Func<DatabaseGameStats, int> thenBy = null)
         {
             List<DatabaseGameStats> top;

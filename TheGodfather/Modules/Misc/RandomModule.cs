@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     public class RandomModule : TheGodfatherModule
     {
         
-        public RandomModule(DatabaseContextBuilder db)
+        public RandomModule(DbContextBuilder db)
             : base(db)
         {
             

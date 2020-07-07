@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Currency
     public class WorkModule : TheGodfatherModule
     {
 
-        public WorkModule(DatabaseContextBuilder db)
+        public WorkModule(DbContextBuilder db)
             : base(db)
         {
             

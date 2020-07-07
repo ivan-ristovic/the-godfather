@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     public class RoleModule : TheGodfatherModule
     {
 
-        public RoleModule(DatabaseContextBuilder db)
+        public RoleModule(DbContextBuilder db)
             : base(db)
         {
             

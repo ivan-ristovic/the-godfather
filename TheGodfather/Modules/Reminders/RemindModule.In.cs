@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Reminders
         public class RemindInModule : RemindModule
         {
 
-            public RemindInModule(SavedTasksService service, DatabaseContextBuilder db)
+            public RemindInModule(SavedTasksService service, DbContextBuilder db)
                 : base(service, db)
             {
 

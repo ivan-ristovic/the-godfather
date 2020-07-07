@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfatherTests.Modules.Owner.Services
@@ -69,8 +70,8 @@ namespace TheGodfatherTests.Modules.Owner.Services
                     ulong[] buExpected = new[] { MockData.Ids[0], MockData.Ids[4], MockData.Ids[5] };
                     Assert.That(this.Service.BlockedChannels, Is.EquivalentTo(bcExpected));
                     Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
-                    IReadOnlyList<DatabaseBlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
-                    IReadOnlyList<DatabaseBlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
+                    IReadOnlyList<BlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
+                    IReadOnlyList<BlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
                     Assert.That(bchns.Select(c => c.ChannelId), Is.EquivalentTo(bcExpected));
                     Assert.That(busrs.Select(u => u.UserId), Is.EquivalentTo(buExpected));
                     Assert.That(bchns.Select(c => c.Reason), Is.EquivalentTo(new[] { "chn 1", "chn 1", "chn 2" }));
@@ -284,12 +285,12 @@ namespace TheGodfatherTests.Modules.Owner.Services
         }
 
 
-        private async Task AssertBlockedAsync(DatabaseContext db, ulong[] bcExpected, ulong[] buExpected, string[] bcReasons, string[] buReasons)
+        private async Task AssertBlockedAsync(TheGodfatherDbContext db, ulong[] bcExpected, ulong[] buExpected, string[] bcReasons, string[] buReasons)
         {
             Assert.That(this.Service.BlockedChannels, Is.EquivalentTo(bcExpected));
             Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
-            IReadOnlyList<DatabaseBlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
-            IReadOnlyList<DatabaseBlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
+            IReadOnlyList<BlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
+            IReadOnlyList<BlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
             Assert.That(bchns.Select(c => c.ChannelId), Is.EquivalentTo(bcExpected));
             Assert.That(busrs.Select(u => u.UserId), Is.EquivalentTo(buExpected));
             Assert.That(bchns.Select(c => c.Reason), Is.EquivalentTo(bcReasons));
@@ -300,14 +301,14 @@ namespace TheGodfatherTests.Modules.Owner.Services
             Assert.That(db.BlockedUsers.Select(c => c.Reason), Is.EquivalentTo(buReasons));
         }
 
-        private void AddMockData(DatabaseContext db)
+        private void AddMockData(TheGodfatherDbContext db)
         {
-            db.BlockedChannels.Add(new DatabaseBlockedChannel { ChannelId = MockData.Ids[0], Reason = "chn 1" });
-            db.BlockedChannels.Add(new DatabaseBlockedChannel { ChannelId = MockData.Ids[1], Reason = "chn 1" });
-            db.BlockedChannels.Add(new DatabaseBlockedChannel { ChannelId = MockData.Ids[2], Reason = "chn 2" });
-            db.BlockedUsers.Add(new DatabaseBlockedUser { UserId = MockData.Ids[0], Reason = "usr 1" });
-            db.BlockedUsers.Add(new DatabaseBlockedUser { UserId = MockData.Ids[4], Reason = "usr 1" });
-            db.BlockedUsers.Add(new DatabaseBlockedUser { UserId = MockData.Ids[5], Reason = "usr 2" });
+            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[0], Reason = "chn 1" });
+            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[1], Reason = "chn 1" });
+            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[2], Reason = "chn 2" });
+            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[0], Reason = "usr 1" });
+            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[4], Reason = "usr 1" });
+            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[5], Reason = "usr 2" });
         }
     }
 }

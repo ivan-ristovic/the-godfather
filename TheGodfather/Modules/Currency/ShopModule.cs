@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Currency
     public class ShopModule : TheGodfatherModule
     {
 
-        public ShopModule(DatabaseContextBuilder db)
+        public ShopModule(DbContextBuilder db)
             : base(db)
         {
             

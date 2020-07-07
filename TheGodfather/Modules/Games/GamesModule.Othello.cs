@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Games
         public class OthelloModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public OthelloModule(ChannelEventService service, DatabaseContextBuilder db)
+            public OthelloModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

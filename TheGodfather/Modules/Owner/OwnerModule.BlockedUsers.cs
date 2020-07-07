@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Owner
         public class BlockedUsersModule : TheGodfatherServiceModule<BlockingService>
         {
 
-            public BlockedUsersModule(BlockingService service, DatabaseContextBuilder db) 
+            public BlockedUsersModule(BlockingService service, DbContextBuilder db) 
                 : base(service, db)
             {
                 

@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Chickens
         public class BuyModule : TheGodfatherModule
         {
 
-            public BuyModule(DatabaseContextBuilder db)
+            public BuyModule(DbContextBuilder db)
                 : base(db)
             {
                 

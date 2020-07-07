@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Swat
     public partial class SwatModule : TheGodfatherModule
     {
 
-        public SwatModule(DatabaseContextBuilder db) 
+        public SwatModule(DbContextBuilder db) 
             : base(db)
         {
             

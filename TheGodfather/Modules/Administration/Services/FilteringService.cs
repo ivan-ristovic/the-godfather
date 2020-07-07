@@ -18,10 +18,10 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsDisabled => false;
 
         private ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> filters;
-        private readonly DatabaseContextBuilder dbb;
+        private readonly DbContextBuilder dbb;
 
 
-        public FilteringService(DatabaseContextBuilder dbb, bool loadData = true)
+        public FilteringService(DbContextBuilder dbb, bool loadData = true)
         {
             this.dbb = dbb;
             this.filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();

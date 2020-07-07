@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Games
         public class CaroModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public CaroModule(ChannelEventService service, DatabaseContextBuilder db)
+            public CaroModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games
         public class TicTacToeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TicTacToeModule(ChannelEventService service, DatabaseContextBuilder db)
+            public TicTacToeModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

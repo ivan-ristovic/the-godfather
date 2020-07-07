@@ -22,12 +22,12 @@ namespace TheGodfather.Modules.Reactions.Services
     {
         public bool IsDisabled => false;
 
-        private readonly DatabaseContextBuilder dbb;
+        private readonly DbContextBuilder dbb;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> ereactions;
         private ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> treactions;
 
 
-        public ReactionsService(DatabaseContextBuilder dbb, bool loadData = true)
+        public ReactionsService(DbContextBuilder dbb, bool loadData = true)
         {
             this.dbb = dbb;
             this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();

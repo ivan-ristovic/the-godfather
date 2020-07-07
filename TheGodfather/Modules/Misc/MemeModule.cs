@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Misc
     public partial class MemeModule : TheGodfatherModule
     {
 
-        public MemeModule(DatabaseContextBuilder db)
+        public MemeModule(DbContextBuilder db)
             : base(db)
         {
             

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
 
-        public GoodreadsModule(GoodreadsService service, DatabaseContextBuilder db)
+        public GoodreadsModule(GoodreadsService service, DbContextBuilder db)
             : base(service, db)
         {
             

@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Currency
         public class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public BlackjackModule(ChannelEventService service, DatabaseContextBuilder db)
+            public BlackjackModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

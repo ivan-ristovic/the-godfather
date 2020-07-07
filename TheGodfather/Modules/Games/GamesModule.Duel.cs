@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Games
         public class DuelModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public DuelModule(ChannelEventService service, DatabaseContextBuilder db)
+            public DuelModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

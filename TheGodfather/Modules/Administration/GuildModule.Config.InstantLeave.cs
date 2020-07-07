@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
             public class InstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
             {
 
-                public InstantLeaveModule(AntiInstantLeaveService service, DatabaseContextBuilder db)
+                public InstantLeaveModule(AntiInstantLeaveService service, DbContextBuilder db)
                     : base(service, db)
                 {
                     

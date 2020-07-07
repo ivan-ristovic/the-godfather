@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Swat
         public class SwatBanlistModule : TheGodfatherModule
         {
 
-            public SwatBanlistModule(DatabaseContextBuilder db)
+            public SwatBanlistModule(DbContextBuilder db)
                 : base(db)
             {
                 

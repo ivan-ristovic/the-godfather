@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Misc
     public class BirthdayModule : TheGodfatherModule
     {
 
-        public BirthdayModule(DatabaseContextBuilder db)
+        public BirthdayModule(DbContextBuilder db)
             : base(db)
         {
             

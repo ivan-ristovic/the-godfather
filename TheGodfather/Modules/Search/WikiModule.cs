@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search
     public class WikiModule : TheGodfatherModule
     {
 
-        public WikiModule(DatabaseContextBuilder db)
+        public WikiModule(DbContextBuilder db)
             : base(db)
         {
             

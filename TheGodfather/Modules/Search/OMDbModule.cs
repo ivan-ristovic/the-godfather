@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
 
-        public OMDbModule(OMDbService service, DatabaseContextBuilder db)
+        public OMDbModule(OMDbService service, DbContextBuilder db)
             : base(service, db)
         {
             

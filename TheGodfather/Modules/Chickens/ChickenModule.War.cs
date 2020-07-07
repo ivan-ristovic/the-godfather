@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Chickens
         public class WarModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public WarModule(ChannelEventService service, DatabaseContextBuilder db) 
+            public WarModule(ChannelEventService service, DbContextBuilder db) 
                 : base(service, db)
             {
 

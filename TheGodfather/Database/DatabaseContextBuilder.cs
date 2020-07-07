@@ -5,21 +5,21 @@ using Serilog;
 
 namespace TheGodfather.Database
 {
-    public class DatabaseContextBuilder
+    public class DbContextBuilder
     {
         private string ConnectionString { get; }
         private DbProvider Provider { get; }
         private DbContextOptions<DatabaseContext>? Options { get; }
 
 
-        public DatabaseContextBuilder(DbProvider provider, string connectionString, DbContextOptions<DatabaseContext>? options = null)
+        public DbContextBuilder(DbProvider provider, string connectionString, DbContextOptions<DatabaseContext>? options = null)
         {
             this.Provider = provider;
             this.ConnectionString = connectionString;
             this.Options = options;
         }
 
-        public DatabaseContextBuilder(DbConfig cfg, DbContextOptions<DatabaseContext>? options = null)
+        public DbContextBuilder(DbConfig cfg, DbContextOptions<DatabaseContext>? options = null)
         {
             cfg ??= new DbConfig();
             this.Provider = cfg.Provider;

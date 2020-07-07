@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency
         public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public HoldemModule(ChannelEventService service, DatabaseContextBuilder db)
+            public HoldemModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
                 

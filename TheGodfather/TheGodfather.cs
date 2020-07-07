@@ -53,7 +53,7 @@ namespace TheGodfather
                 BotConfigService cfg = await LoadBotConfigAsync();
                 SetupLogger(cfg);
 
-                DatabaseContextBuilder dbb = await InitializeDatabaseAsync(cfg);
+                DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
                 await CreateAndBootShardsAsync(cfg, dbb);
 
                 Log.Information("Booting complete!");
@@ -133,10 +133,10 @@ namespace TheGodfather
             return cfg;
         }
 
-        private static async Task<DatabaseContextBuilder> InitializeDatabaseAsync(BotConfigService cfg)
+        private static async Task<DbContextBuilder> InitializeDatabaseAsync(BotConfigService cfg)
         {
             Log.Information("Establishing database connection");
-            var dbb = new DatabaseContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
+            var dbb = new DbContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
 
             Log.Information("Migrating the database");
             using (TheGodfatherDbContext db = dbb.CreateDbContext())
@@ -145,7 +145,7 @@ namespace TheGodfather
             return dbb;
         }
 
-        private static async Task CreateAndBootShardsAsync(BotConfigService cfg, DatabaseContextBuilder dbb)
+        private static async Task CreateAndBootShardsAsync(BotConfigService cfg, DbContextBuilder dbb)
         {
             Log.Information("Initializing services");
             IServiceCollection sharedServices = new ServiceCollection()

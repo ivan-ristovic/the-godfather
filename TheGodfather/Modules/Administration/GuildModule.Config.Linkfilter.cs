@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
             public class LinkfilterModule : TheGodfatherModule
             {
 
-                public LinkfilterModule(DatabaseContextBuilder db)
+                public LinkfilterModule(DbContextBuilder db)
                     : base(db)
                 {
                     

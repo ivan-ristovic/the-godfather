@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Currency
     public class BankModule : TheGodfatherModule
     {
 
-        public BankModule(DatabaseContextBuilder db)
+        public BankModule(DbContextBuilder db)
             : base(db)
         {
             

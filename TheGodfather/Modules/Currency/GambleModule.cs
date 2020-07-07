@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Currency
         private static readonly long _maxBet = 5_000_000_000;
 
 
-        public GambleModule(DatabaseContextBuilder db)
+        public GambleModule(DbContextBuilder db)
             : base(db)
         {
             

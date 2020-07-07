@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Owner
         public class PrivilegedUsersModule : TheGodfatherModule
         {
 
-            public PrivilegedUsersModule(DatabaseContextBuilder db) 
+            public PrivilegedUsersModule(DbContextBuilder db) 
                 : base(db)
             {
                 

@@ -338,11 +338,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
         }
 
 
-        private void SetMockGuildConfig(DatabaseContext db)
+        private void SetMockGuildConfig(TheGodfatherDbContext db)
         {
             foreach (KeyValuePair<ulong, GuildConfig> kvp in this.gcfg) {
                 db.Attach(kvp.Value);
-                db.GuildConfig.Update(kvp.Value);
+                db.GuildConfigs.Update(kvp.Value);
             }
         }
 
