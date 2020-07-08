@@ -9,49 +9,51 @@ namespace TheGodfather.Database.Models
     [Table("guild_cfg")]
     public class GuildConfig
     {
+        public virtual ICollection<Filter> Filters { get; set; }
+
         /*
-        public virtual ICollection<DatabaseBankAccount> Accounts { get; set; }
-        public virtual ICollection<DatabaseExemptAntispam> AntispamExempts { get; set; }
-        public virtual ICollection<DatabaseAutoRole> AutoRoles { get; set; }
-        public virtual ICollection<DatabaseBirthday> Birthdays { get; set; }
-        public virtual ICollection<DatabaseChicken> Chickens { get; set; }
-        public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
-        public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
-        public virtual ICollection<DatabaseEmojiReaction> EmojiReactions { get; set; }
-        public virtual ICollection<DatabaseFilter> Filters { get; set; }
-        public virtual ICollection<DatabaseExemptLogging> LoggingExempts { get; set; }
-        public virtual ICollection<DatabaseMeme> Memes { get; set; }
-        public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }
-        public virtual ICollection<DatabaseGuildRank> Ranks { get; set; }
-        public virtual ICollection<DatabaseExemptRatelimit> RatelimitExempts { get; set; }
-        public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
-        public virtual ICollection<DatabaseSelfRole> SelfRoles { get; set; }
-        public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }
-        public virtual ICollection<DatabaseTextReaction> TextReactions { get; set; }
-        
+        public virtual ICollection<BankAccount> Accounts { get; set; }
+        public virtual ICollection<ExemptAntispam> AntispamExempts { get; set; }
+        public virtual ICollection<AutoRole> AutoRoles { get; set; }
+        public virtual ICollection<Birthday> Birthdays { get; set; }
+        public virtual ICollection<Chicken> Chickens { get; set; }
+        public virtual ICollection<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
+        public virtual ICollection<CommandRule> CommandRules { get; set; }
+        public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
+        public virtual ICollection<ExemptLogging> LoggingExempts { get; set; }
+        public virtual ICollection<Meme> Memes { get; set; }
+        public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
+        public virtual ICollection<GuildRank> Ranks { get; set; }
+        public virtual ICollection<ExemptRatelimit> RatelimitExempts { get; set; }
+        public virtual ICollection<SavedTask> SavedTasks { get; set; }
+        public virtual ICollection<SelfRole> SelfRoles { get; set; }
+        public virtual ICollection<RssSubscription> Subscriptions { get; set; }
+        public virtual ICollection<TextReaction> TextReactions { get; set; }
+        */
         
         public GuildConfig()
         {
-            this.Accounts = new HashSet<DatabaseBankAccount>();
-            this.AntispamExempts = new HashSet<DatabaseExemptAntispam>();
-            this.AutoRoles = new HashSet<DatabaseAutoRole>();
-            this.Birthdays = new HashSet<DatabaseBirthday>();
-            this.Chickens = new HashSet<DatabaseChicken>();
-            this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
-            this.CommandRules = new HashSet<DatabaseCommandRule>();
-            this.EmojiReactions = new HashSet<DatabaseEmojiReaction>();
-            this.Filters = new HashSet<DatabaseFilter>();
-            this.LoggingExempts = new HashSet<DatabaseExemptLogging>();
-            this.Memes = new HashSet<DatabaseMeme>();
-            this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
-            this.Ranks = new HashSet<DatabaseGuildRank>();
-            this.RatelimitExempts = new HashSet<DatabaseExemptRatelimit>();
-            this.SavedTasks = new HashSet<DatabaseSavedTask>();
-            this.SelfRoles = new HashSet<DatabaseSelfRole>();
-            this.Subscriptions = new HashSet<DatabaseRssSubscription>();
-            this.TextReactions = new HashSet<DatabaseTextReaction>();
+            this.Filters = new HashSet<Filter>();
+            /*
+            this.Accounts = new HashSet<BankAccount>();
+            this.AntispamExempts = new HashSet<ExemptAntispam>();
+            this.AutoRoles = new HashSet<AutoRole>();
+            this.Birthdays = new HashSet<Birthday>();
+            this.Chickens = new HashSet<Chicken>();
+            this.ChickensBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
+            this.CommandRules = new HashSet<CommandRule>();
+            this.EmojiReactions = new HashSet<EmojiReaction>();
+            this.LoggingExempts = new HashSet<ExemptLogging>();
+            this.Memes = new HashSet<Meme>();
+            this.PurchasableItems = new HashSet<PurchasableItem>();
+            this.Ranks = new HashSet<GuildRank>();
+            this.RatelimitExempts = new HashSet<ExemptRatelimit>();
+            this.SavedTasks = new HashSet<SavedTask>();
+            this.SelfRoles = new HashSet<SelfRole>();
+            this.Subscriptions = new HashSet<RssSubscription>();
+            this.TextReactions = new HashSet<TextReaction>();
+            */
         }
-        */
 
 
         [Key]

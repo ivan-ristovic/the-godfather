@@ -11,6 +11,7 @@ namespace TheGodfather.Database
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
         public virtual DbSet<GuildConfig> GuildConfigs { get; protected set; }
+        public virtual DbSet<Filter> Filters { get; protected set; }
 
         private string ConnectionString { get; }
         private DbProvider Provider { get; }
@@ -56,7 +57,6 @@ namespace TheGodfather.Database
         protected override void OnModelCreating(ModelBuilder mb)
         {
             mb.HasDefaultSchema("gf");
-
 
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             mb.Entity<BlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);

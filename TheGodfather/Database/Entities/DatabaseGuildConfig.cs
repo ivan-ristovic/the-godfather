@@ -20,7 +20,6 @@ namespace TheGodfather.Database.Entities
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
             this.CommandRules = new HashSet<DatabaseCommandRule>();
             this.EmojiReactions = new HashSet<DatabaseEmojiReaction>();
-            this.Filters = new HashSet<DatabaseFilter>();
             this.LoggingExempts = new HashSet<DatabaseExemptLogging>();
             this.Memes = new HashSet<DatabaseMeme>();
             this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
@@ -254,7 +253,6 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
         public virtual ICollection<DatabaseEmojiReaction> EmojiReactions { get; set; }
-        public virtual ICollection<DatabaseFilter> Filters { get; set; }
         public virtual ICollection<DatabaseExemptLogging> LoggingExempts { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
         public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }

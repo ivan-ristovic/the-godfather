@@ -17,7 +17,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseCommandRule> CommandRules { get; set; }
         public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
-        public virtual DbSet<DatabaseFilter> Filters { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseGuildRank> GuildRanks { get; set; }

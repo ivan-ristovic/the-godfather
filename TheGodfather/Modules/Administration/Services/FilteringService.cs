@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Serilog;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
@@ -34,12 +33,12 @@ namespace TheGodfather.Modules.Administration.Services
         {
             Log.Debug("Loading filters");
             try {
-                using (DatabaseContext db = this.dbb.CreateContext()) {
+                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                     this.filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>(
                         db.Filters
                             .AsEnumerable()
                             .GroupBy(f => f.GuildId)
-                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g.Select(f => new Filter(f.Id, f.Trigger))))
+                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<Filter>(g))
                     );
                 }
             } catch (Exception e) {
@@ -48,20 +47,11 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public bool TextContainsFilter(ulong gid, string text)
-        {
-            return this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs) && !(fs is null)
-                ? fs.Any(f => f.Trigger.IsMatch(text))
-                : false;
-        }
+        public bool TextContainsFilter(ulong gid, string text) 
+            => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) && fs is { } && fs.Any(f => f.Trigger.IsMatch(text));
 
-        public IReadOnlyCollection<Filter> GetGuildFilters(ulong gid)
-        {
-            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs))
-                return fs.ToList();
-            else
-                return Array.Empty<Filter>();
-        }
+        public IReadOnlyCollection<Filter> GetGuildFilters(ulong gid) 
+            => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) ? fs.ToList() : (IReadOnlyCollection<Filter>)Array.Empty<Filter>();
 
         public async Task<bool> AddFilterAsync(ulong gid, string regexString)
         {
@@ -72,11 +62,14 @@ namespace TheGodfather.Modules.Administration.Services
             if (fs.Any(f => string.Compare(f.TriggerString, regexString, true) == 0))
                 return false;
 
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                var filter = new DatabaseFilter { GuildId = gid, Trigger = regexString };
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                var filter = new Filter { 
+                    GuildId = gid, 
+                    TriggerString = regexString 
+                };
                 db.Filters.Add(filter);
                 await db.SaveChangesAsync();
-                return fs.Add(new Filter(filter.Id, regexString));
+                return fs.Add(filter);
             }
         }
 
@@ -91,9 +84,9 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task<int> RemoveFiltersAsync(ulong gid)
         {
-            this.filters.TryRemove(gid, out ConcurrentHashSet<Filter> fs);
+            this.filters.TryRemove(gid, out ConcurrentHashSet<Filter>? fs);
 
-            using (DatabaseContext db = this.dbb.CreateContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid));
                 await db.SaveChangesAsync();
             }
@@ -105,9 +98,9 @@ namespace TheGodfather.Modules.Administration.Services
         {
             int removed = 0;
 
-            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs)) {
+            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs)) {
                 removed = fs.RemoveWhere(f => ids.Contains(f.Id));
-                using (DatabaseContext db = this.dbb.CreateContext()) {
+                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                     db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && ids.Contains(f.Id)));
                     await db.SaveChangesAsync();
                 }
@@ -120,10 +113,10 @@ namespace TheGodfather.Modules.Administration.Services
         {
             int removed = 0;
 
-            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter> fs)) {
+            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs)) {
                 removed = fs.RemoveWhere(f => regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0));
-                using (DatabaseContext db = this.dbb.CreateContext()) {
-                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && regexStrings.Any(rstr => string.Compare(rstr, f.Trigger, true) == 0)));
+                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0)));
                     await db.SaveChangesAsync();
                 }
             }
