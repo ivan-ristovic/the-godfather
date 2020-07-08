@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Administration.Services
             try {
                 using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                     this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
-                        db.GuildConfigs
+                        db.Configs
                             .AsEnumerable()
                             .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
                     ));
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             GuildConfig? gcfg = null;
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext())
-                gcfg = await db.GuildConfigs.FindAsync((long)gid);
+                gcfg = await db.Configs.FindAsync((long)gid);
             return gcfg ?? new GuildConfig();
         }
 
@@ -79,9 +79,9 @@ namespace TheGodfather.Modules.Administration.Services
 
             GuildConfig? gcfg = null;
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                gcfg = await db.GuildConfigs.FindAsync((long)gid) ?? new GuildConfig();
+                gcfg = await db.Configs.FindAsync((long)gid) ?? new GuildConfig();
                 modifyAction(gcfg);
-                db.GuildConfigs.Update(gcfg);
+                db.Configs.Update(gcfg);
                 await db.SaveChangesAsync();
             }
 
@@ -94,8 +94,8 @@ namespace TheGodfather.Modules.Administration.Services
             bool success = this.gcfg.TryAdd(gid, new CachedGuildConfig());
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 var gcfg = new GuildConfig { GuildId = gid };
-                if (!db.GuildConfigs.Contains(gcfg)) {
-                    db.GuildConfigs.Add(gcfg);
+                if (!db.Configs.Contains(gcfg)) {
+                    db.Configs.Add(gcfg);
                     await db.SaveChangesAsync();
                     Log.Debug("Registered guild: {GuildId}", gid);
                 }
@@ -107,9 +107,9 @@ namespace TheGodfather.Modules.Administration.Services
         {
             this.gcfg.TryRemove(gid, out _);
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)gid);
+                GuildConfig gcfg = await db.Configs.FindAsync((long)gid);
                 if (gcfg is { }) {
-                    db.GuildConfigs.Remove(gcfg);
+                    db.Configs.Remove(gcfg);
                     await db.SaveChangesAsync();
                     Log.Debug("Unregistered guild: {GuildId}", gid);
                 }

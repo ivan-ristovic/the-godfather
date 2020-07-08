@@ -9,22 +9,21 @@ namespace TheGodfather.Database
     {
         private string ConnectionString { get; }
         private DbProvider Provider { get; }
-        private DbContextOptions<DatabaseContext>? Options { get; }
+        private DbContextOptions<TheGodfatherDbContext>? Options { get; }
 
 
-        public DbContextBuilder(DbProvider provider, string connectionString, DbContextOptions<DatabaseContext>? options = null)
+        public DbContextBuilder(DbProvider provider, string connectionString, DbContextOptions<TheGodfatherDbContext>? options = null)
         {
             this.Provider = provider;
             this.ConnectionString = connectionString;
             this.Options = options;
         }
 
-        public DbContextBuilder(DbConfig cfg, DbContextOptions<DatabaseContext>? options = null)
+        public DbContextBuilder(DbConfig cfg, DbContextOptions<TheGodfatherDbContext>? options = null)
         {
             cfg ??= new DbConfig();
             this.Provider = cfg.Provider;
             this.Options = options;
-
             this.ConnectionString = this.Provider switch
             {
                 DbProvider.PostgreSql => new NpgsqlConnectionStringBuilder {
@@ -49,13 +48,12 @@ namespace TheGodfather.Database
         }
 
 
-        // TODO remove
+        
+        /////////////////////////// TODO remove
         public DatabaseContext CreateContext()
         {
             try {
-                return this.Options is null
-                    ? new DatabaseContext(this.Provider, this.ConnectionString)
-                    : new DatabaseContext(this.Provider, this.ConnectionString, this.Options);
+                return new DatabaseContext(this.Provider, this.ConnectionString);
             } catch (Exception e) {
                 Console.WriteLine("Error during database initialization:");
                 Console.WriteLine(e);
@@ -73,17 +71,16 @@ namespace TheGodfather.Database
                 throw;
             }
         }
-        // END remove
+        /////////////////////////////// END remove
 
 
 
         public TheGodfatherDbContext CreateDbContext()
         {
             try {
-                return new TheGodfatherDbContext(this.Provider, this.ConnectionString);
-                //return this.Options is null
-                //    ? new TheGodfatherDbContext(this.Provider, this.ConnectionString)
-                //    : new TheGodfatherDbContext(this.Provider, this.ConnectionString, this.Options);
+                return this.Options is null
+                    ? new TheGodfatherDbContext(this.Provider, this.ConnectionString)
+                    : new TheGodfatherDbContext(this.Provider, this.ConnectionString, this.Options);
             } catch (Exception e) {
                 Log.Fatal(e, "An exception occured during database initialization:");
                 throw;

@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
-    [Table("user_info")]
-    public class DatabaseMessageCount
+    [Table("xp_count")]
+    public class XpCount
     {
         [Key]
         [Column("uid")]
@@ -13,9 +13,9 @@ namespace TheGodfather.Database.Entities
         [NotMapped]
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
-        [Column("message_count")]
-        public int MessageCountDb { get; set; }
+        [Column("xp")]
+        public int XpDb { get; set; }
         [NotMapped]
-        public uint MessageCount { get => (uint)this.MessageCountDb; set => this.MessageCountDb = (int)value; }
+        public uint Xp { get => (uint)this.XpDb; set => this.XpDb = (int)value; }
     }
 }

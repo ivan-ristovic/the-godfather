@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Misc.Services;
 
 namespace TheGodfatherTests.Modules.Misc.Services
@@ -85,17 +85,17 @@ namespace TheGodfatherTests.Modules.Misc.Services
             TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.Sync(db),
                 verify: db => {
-                    Assert.That(db.MessageCount, Has.Exactly(3).Items);
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
-                    Assert.That(db.MessageCount.Find(123451234512345), Is.Null);
+                    Assert.That(db.XpCounts, Has.Exactly(3).Items);
+                    XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
+                    XpCount u2 = db.XpCounts.Find((long)MockData.Ids[1]);
+                    XpCount u3 = db.XpCounts.Find((long)MockData.Ids[2]);
+                    Assert.That(db.XpCounts.Find(123451234512345), Is.Null);
                     Assert.That(u1, Is.Not.Null);
                     Assert.That(u2, Is.Not.Null);
                     Assert.That(u3, Is.Not.Null);
-                    Assert.That(u1.MessageCount, Is.EqualTo(2));
-                    Assert.That(u2.MessageCount, Is.EqualTo(9));
-                    Assert.That(u3.MessageCount, Is.EqualTo(1));
+                    Assert.That(u1.Xp, Is.EqualTo(2));
+                    Assert.That(u2.Xp, Is.EqualTo(9));
+                    Assert.That(u3.Xp, Is.EqualTo(1));
                 }
             );
         }
@@ -108,31 +108,31 @@ namespace TheGodfatherTests.Modules.Misc.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    var msgcount = new DatabaseMessageCount[] {
-                        new DatabaseMessageCount() {
-                            MessageCount = 5,
+                    var msgcount = new XpCount[] {
+                        new XpCount() {
+                            Xp = 5,
                             UserId = MockData.Ids[0]
                         },
-                        new DatabaseMessageCount() {
-                            MessageCount = 5,
+                        new XpCount() {
+                            Xp = 5,
                             UserId = MockData.Ids[1]
                         },
                     };
-                    db.MessageCount.AddRange(msgcount);
+                    db.XpCounts.AddRange(msgcount);
                 },
                 alter: db => this.Service.Sync(db),
                 verify: db => {
-                    Assert.That(db.MessageCount, Has.Exactly(3).Items);
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
-                    Assert.That(db.MessageCount.Find(123451234512345), Is.Null);
+                    Assert.That(db.XpCounts, Has.Exactly(3).Items);
+                    XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
+                    XpCount u2 = db.XpCounts.Find((long)MockData.Ids[1]);
+                    XpCount u3 = db.XpCounts.Find((long)MockData.Ids[2]);
+                    Assert.That(db.XpCounts.Find(123451234512345), Is.Null);
                     Assert.That(u1, Is.Not.Null);
                     Assert.That(u2, Is.Not.Null);
                     Assert.That(u3, Is.Not.Null);
-                    Assert.That(u1.MessageCount, Is.EqualTo(5));
-                    Assert.That(u2.MessageCount, Is.EqualTo(6));
-                    Assert.That(u3.MessageCount, Is.EqualTo(1));
+                    Assert.That(u1.Xp, Is.EqualTo(5));
+                    Assert.That(u2.Xp, Is.EqualTo(6));
+                    Assert.That(u3.Xp, Is.EqualTo(1));
                 }
             );
         }
@@ -145,17 +145,17 @@ namespace TheGodfatherTests.Modules.Misc.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    var msgcount = new DatabaseMessageCount[] {
-                        new DatabaseMessageCount() {
-                            MessageCount = 5,
+                    var msgcount = new XpCount[] {
+                        new XpCount() {
+                            Xp = 5,
                             UserId = MockData.Ids[0]
                         },
-                        new DatabaseMessageCount() {
-                            MessageCount = 5,
+                        new XpCount() {
+                            Xp = 5,
                             UserId = MockData.Ids[1]
                         },
                     };
-                    db.MessageCount.AddRange(msgcount);
+                    db.XpCounts.AddRange(msgcount);
                 },
                 alter: db => {
                     this.Service.Sync(db);
@@ -169,17 +169,17 @@ namespace TheGodfatherTests.Modules.Misc.Services
                     this.Service.Sync(db);
                 },
                 verify: db => {
-                    Assert.That(db.MessageCount, Has.Exactly(3).Items);
-                    DatabaseMessageCount u1 = db.MessageCount.Find((long)MockData.Ids[0]);
-                    DatabaseMessageCount u2 = db.MessageCount.Find((long)MockData.Ids[1]);
-                    DatabaseMessageCount u3 = db.MessageCount.Find((long)MockData.Ids[2]);
-                    Assert.That(db.MessageCount.Find(123451234512345), Is.Null);
+                    Assert.That(db.XpCounts, Has.Exactly(3).Items);
+                    XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
+                    XpCount u2 = db.XpCounts.Find((long)MockData.Ids[1]);
+                    XpCount u3 = db.XpCounts.Find((long)MockData.Ids[2]);
+                    Assert.That(db.XpCounts.Find(123451234512345), Is.Null);
                     Assert.That(u1, Is.Not.Null);
                     Assert.That(u2, Is.Not.Null);
                     Assert.That(u3, Is.Not.Null);
-                    Assert.That(u1.MessageCount, Is.EqualTo(5));
-                    Assert.That(u2.MessageCount, Is.EqualTo(8));
-                    Assert.That(u3.MessageCount, Is.EqualTo(3));
+                    Assert.That(u1.Xp, Is.EqualTo(5));
+                    Assert.That(u2.Xp, Is.EqualTo(8));
+                    Assert.That(u3.Xp, Is.EqualTo(3));
                 }
             );
         }

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Services;
 
 namespace TheGodfather.Misc.Services
@@ -44,20 +45,20 @@ namespace TheGodfather.Misc.Services
             return curr != prev ? curr : (short)0;
         }
 
-        public void Sync(DatabaseContext db)
+        public void Sync(TheGodfatherDbContext db)
         {
             bool failed = true;
             try {
                 foreach ((ulong uid, uint count) in this.UserXP) {
-                    DatabaseMessageCount msgcount = db.MessageCount.Find((long)uid);
-                    if (msgcount is null) {
-                        db.MessageCount.Add(new DatabaseMessageCount {
-                            MessageCount = count,
+                    XpCount uxp = db.XpCounts.Find((long)uid);
+                    if (uxp is null) {
+                        db.XpCounts.Add(new XpCount {
+                            Xp = count,
                             UserId = uid
                         });
                     } else {
-                        msgcount.MessageCount += count;
-                        db.MessageCount.Update(msgcount);
+                        uxp.Xp += count;
+                        db.XpCounts.Update(uxp);
                     }
                 }
                 db.SaveChanges();

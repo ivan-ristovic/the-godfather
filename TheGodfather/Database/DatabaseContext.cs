@@ -15,10 +15,8 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseCommandRule> CommandRules { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
-        public virtual DbSet<DatabaseGuildRank> GuildRanks { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
         public virtual DbSet<DatabaseMeme> Memes { get; set; }
-        public virtual DbSet<DatabaseMessageCount> MessageCount { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
         public virtual DbSet<DatabasePurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<DatabasePurchasedItem> PurchasedItems { get; set; }
@@ -101,9 +99,7 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseGameStats>().Property(s => s.QuizesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGuildRank>().HasKey(e => new { e.GuildIdDb, e.Rank });
             mb.Entity<DatabaseMeme>().HasKey(e => new { e.GuildIdDb, e.Name });
-            mb.Entity<DatabaseMessageCount>().Property(ui => ui.MessageCount).HasDefaultValue(1);
             mb.Entity<DatabasePurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
             mb.Entity<DatabaseReminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<DatabaseReminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));

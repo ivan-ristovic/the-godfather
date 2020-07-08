@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("guild_ranks")]
-    public class DatabaseGuildRank
+    public class XpRank
     {
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         public long GuildIdDb { get; set; }
         [NotMapped]
@@ -15,10 +15,12 @@ namespace TheGodfather.Database.Entities
         [Column("rank")]
         public short Rank { get; set; }
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         [Column("name"), Required, MaxLength(32)]
         public string Name { get; set; }
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
     }
 }

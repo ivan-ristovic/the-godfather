@@ -245,7 +245,7 @@ namespace TheGodfather
                 }
 
                 try {
-                    using (DatabaseContext db = shard.Database.CreateContext())
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
                         shard.Services.GetService<UserRanksService>().Sync(db);
                     Log.Debug("Database sync successful");
                 } catch (Exception e) {

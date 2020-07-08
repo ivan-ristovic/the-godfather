@@ -20,7 +20,6 @@ namespace TheGodfather.Database.Entities
             this.CommandRules = new HashSet<DatabaseCommandRule>();
             this.Memes = new HashSet<DatabaseMeme>();
             this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
-            this.Ranks = new HashSet<DatabaseGuildRank>();
             this.SavedTasks = new HashSet<DatabaseSavedTask>();
             this.SelfRoles = new HashSet<DatabaseSelfRole>();
             this.Subscriptions = new HashSet<DatabaseRssSubscription>();
@@ -248,7 +247,6 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
         public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }
-        public virtual ICollection<DatabaseGuildRank> Ranks { get; set; }
         public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual ICollection<DatabaseSelfRole> SelfRoles { get; set; }
         public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }

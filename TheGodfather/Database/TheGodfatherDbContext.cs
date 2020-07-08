@@ -10,13 +10,15 @@ namespace TheGodfather.Database
         public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; } 
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
+        public virtual DbSet<GuildConfig> Configs { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; set; }
         public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
-        public virtual DbSet<GuildConfig> GuildConfigs { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; set; }
+        public virtual DbSet<XpCount> XpCounts { get; set; }
+        public virtual DbSet<XpRank> XpRanks { get; set; }
 
 
         private string ConnectionString { get; }
@@ -99,6 +101,8 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(null);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
+            mb.Entity<XpCount>().Property(ui => ui.XpDb).HasDefaultValue(1);
+            mb.Entity<XpRank>().HasKey(e => new { e.GuildIdDb, e.Rank });
         }
     }
 }

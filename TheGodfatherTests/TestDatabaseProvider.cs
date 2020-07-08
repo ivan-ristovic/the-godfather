@@ -27,8 +27,7 @@ namespace TheGodfatherTests
                 .UseSqlite(DatabaseConnection)
                 .Options;
 
-            // TODO
-            Database = new DbContextBuilder(cfg/*, options*/);
+            Database = new DbContextBuilder(cfg, options);
         }
 
 
@@ -138,7 +137,7 @@ namespace TheGodfatherTests
         private static void SeedGuildData()
         {
             using (TheGodfatherDbContext context = Database.CreateDbContext()) {
-                context.GuildConfigs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
+                context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
                 context.SaveChanges();
             }
         }

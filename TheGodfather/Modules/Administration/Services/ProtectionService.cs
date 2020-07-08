@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration.Services
                             await Task.Delay(100);
                         }
                         gcfg.MuteRoleId = muteRole.Id;
-                        db.GuildConfigs.Update(gcfg);
+                        db.Configs.Update(gcfg);
                         await db.SaveChangesAsync();
                     }
                 }

@@ -53,9 +53,9 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
-                    db.GuildConfigs.Update(gcfg);
+                    db.Configs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -74,9 +74,9 @@ namespace TheGodfatherTests.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
-                    db.GuildConfigs.Update(gcfg);
+                    db.Configs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -108,9 +108,9 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
-                    db.GuildConfigs.Update(gcfg);
+                    db.Configs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -147,9 +147,9 @@ namespace TheGodfatherTests.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[1]);
+                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = "Lt-sr-SP";
-                    db.GuildConfigs.Update(gcfg);
+                    db.Configs.Update(gcfg);
                 },
                 alter: db => {
                     this.Configs.LoadData();
@@ -178,16 +178,16 @@ namespace TheGodfatherTests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], this.EnLocale), Is.True);
                 },
                 verify: db => {
-                    Assert.That(db.GuildConfigs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    Assert.That(db.Configs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );
 
             await TestDatabaseProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
-                    GuildConfig gcfg = db.GuildConfigs.Find((long)MockData.Ids[0]);
+                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[0]);
                     gcfg.Locale = this.EnLocale;
-                    db.GuildConfigs.Update(gcfg);
+                    db.Configs.Update(gcfg);
                     return db.SaveChangesAsync();
                 },
                 alter: async db => {
@@ -196,7 +196,7 @@ namespace TheGodfatherTests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], "non-existing-locale"), Is.False);
                 },
                 verify: db => {
-                    Assert.That(db.GuildConfigs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    Assert.That(db.Configs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );

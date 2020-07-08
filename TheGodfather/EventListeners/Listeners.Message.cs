@@ -57,9 +57,9 @@ namespace TheGodfather.EventListeners
             if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.Services.GetService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
                 short rank = shard.Services.GetService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
                 if (rank != 0) {
-                    DatabaseGuildRank rankInfo;
-                    using (DatabaseContext db = shard.Database.CreateContext())
-                        rankInfo = db.GuildRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
+                    XpRank rankInfo;
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
+                        rankInfo = db.XpRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
                     await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", Emojis.Medal);
                 }
             }
