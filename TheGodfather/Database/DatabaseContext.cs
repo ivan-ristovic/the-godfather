@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using TheGodfather.Database.Entities;
-using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Database
 {
@@ -16,7 +14,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseCommandRule> CommandRules { get; set; }
-        public virtual DbSet<DatabaseEmojiReaction> EmojiReactions { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseGuildRank> GuildRanks { get; set; }
@@ -35,7 +32,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseSelfRole> SelfAssignableRoles { get; set; }
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
-        public virtual DbSet<DatabaseTextReaction> TextReactions { get; set; }
 
         private string ConnectionString { get; }
         private DbProvider Provider { get; }
@@ -94,7 +90,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<DatabaseCommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
-            mb.Entity<DatabaseEmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<DatabaseExemptAntispam>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<DatabaseExemptLogging>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<DatabaseExemptRatelimit>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
@@ -126,7 +121,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseSwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
             mb.Entity<DatabaseSwatServer>().HasKey(srv => new { srv.IP, srv.JoinPort, srv.QueryPort });
             mb.Entity<DatabaseSwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
-            mb.Entity<DatabaseTextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
         }
     }
 }

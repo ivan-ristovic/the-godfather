@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
-using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Database.Models;
 
 namespace TheGodfatherTests.Modules.Reactions.Services
 {
@@ -268,7 +268,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             );
 
 
-            void AssertTextReactionExists(DatabaseContext db, ulong gid, string response, params string[] triggers)
+            void AssertTextReactionExists(TheGodfatherDbContext db, ulong gid, string response, params string[] triggers)
             {
                 if (triggers?.Any() ?? false) {
                     Assert.That(db.TextReactions.Include(tr => tr.DbTriggers).AsEnumerable().Single(
@@ -356,7 +356,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
             );
 
 
-            void AssertReactionsRemoved(DatabaseContext db, ulong gid, params int[] ids)
+            void AssertReactionsRemoved(TheGodfatherDbContext db, ulong gid, params int[] ids)
             {
                 if (ids?.Any() ?? false) {
                     Assert.That(db.TextReactions.Where(tr => tr.GuildId == gid).Select(tr => tr.Id), Has.No.AnyOf(ids));
@@ -387,7 +387,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 },
                 verify: db => {
                     Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
-                    DatabaseTextReaction dber = db.TextReactions
+                    TextReaction dber = db.TextReactions
                         .Include(tr => tr.DbTriggers)
                         .Where(tr => tr.GuildId == MockData.Ids[0])
                         .Single(tr => tr.Response == "response5");
@@ -407,7 +407,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     this.Service.LoadData();
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
 
-                    DatabaseTextReaction dbtr = db.TextReactions
+                    TextReaction dbtr = db.TextReactions
                         .Include(tr => tr.DbTriggers)
                         .Where(tr => tr.GuildId == MockData.Ids[0])
                         .Single(tr => tr.Response == "response1");
@@ -495,85 +495,85 @@ namespace TheGodfatherTests.Modules.Reactions.Services
         }
 
 
-        private void AddMockReactions(DatabaseContext db)
+        private void AddMockReactions(TheGodfatherDbContext db)
         {
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[0],
                 Response = "response1",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "abc" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "abc" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[0],
                 Response = "response2",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "test" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "test" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[0],
                 Response = "response3",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "trigger me" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "trigger me" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[0],
                 Response = "response4",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "y u do dis" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "y u do dis" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[0],
                 Response = "response5",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "pls" },
-                    new DatabaseTextReactionTrigger { Trigger = "kill" },
-                    new DatabaseTextReactionTrigger { Trigger = "me" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "pls" },
+                    new TextReactionTrigger { Trigger = "kill" },
+                    new TextReactionTrigger { Trigger = "me" }
                 }
             });
 
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[1],
                 Response = "response12",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "y u do dis" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "y u do dis" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[1],
                 Response = "response23",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "rick" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "rick" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[1],
                 Response = "response34",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "astley" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "astley" }
                 }
             });
 
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[3],
                 Response = "response1",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "test" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "test" }
                 }
             });
-            db.TextReactions.Add(new DatabaseTextReaction {
+            db.TextReactions.Add(new TextReaction {
                 GuildId = MockData.Ids[3],
                 Response = "response2",
-                DbTriggers = new HashSet<DatabaseTextReactionTrigger>() {
-                    new DatabaseTextReactionTrigger { Trigger = "test(ing)?" }
+                DbTriggers = new HashSet<TextReactionTrigger>() {
+                    new TextReactionTrigger { Trigger = "test(ing)?" }
                 }
             });
         }
 
-        private void UpdateTextReactionCount(DatabaseContext db)
+        private void UpdateTextReactionCount(TheGodfatherDbContext db)
         {
             this.trCount = this.trCount.ToDictionary(
                 kvp => kvp.Key,

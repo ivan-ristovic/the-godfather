@@ -19,7 +19,6 @@ namespace TheGodfather.Database.Entities
             this.Chickens = new HashSet<DatabaseChicken>();
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
             this.CommandRules = new HashSet<DatabaseCommandRule>();
-            this.EmojiReactions = new HashSet<DatabaseEmojiReaction>();
             this.LoggingExempts = new HashSet<DatabaseExemptLogging>();
             this.Memes = new HashSet<DatabaseMeme>();
             this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
@@ -28,7 +27,6 @@ namespace TheGodfather.Database.Entities
             this.SavedTasks = new HashSet<DatabaseSavedTask>();
             this.SelfRoles = new HashSet<DatabaseSelfRole>();
             this.Subscriptions = new HashSet<DatabaseRssSubscription>();
-            this.TextReactions = new HashSet<DatabaseTextReaction>();
         }
 
 
@@ -252,7 +250,6 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseChicken> Chickens { get; set; }
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
-        public virtual ICollection<DatabaseEmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<DatabaseExemptLogging> LoggingExempts { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
         public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }
@@ -261,6 +258,5 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual ICollection<DatabaseSelfRole> SelfRoles { get; set; }
         public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }
-        public virtual ICollection<DatabaseTextReaction> TextReactions { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace TheGodfather.Database.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         public long GuildIdDb { get; set; }
         [NotMapped]

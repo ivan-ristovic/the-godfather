@@ -5,7 +5,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Database.Models
 {
     [Table("bot_statuses")]
-    public sealed class BotStatus
+    public class BotStatus
     {
         [Key]
         [Column("id")]

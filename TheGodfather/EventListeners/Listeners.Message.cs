@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
@@ -16,7 +17,6 @@ using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Owner.Services;
-using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -127,8 +127,8 @@ namespace TheGodfather.EventListeners
                     var emoji = DiscordEmoji.FromName(shard.Client, triggeredEmojiReaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
-                    using (DatabaseContext db = shard.Database.CreateContext()) {
-                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.Reaction == triggeredEmojiReaction.Response));
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.HasSameResponseAs(triggeredEmojiReaction)));
                         await db.SaveChangesAsync();
                     }
                 }

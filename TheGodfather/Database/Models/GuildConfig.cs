@@ -9,7 +9,9 @@ namespace TheGodfather.Database.Models
     [Table("guild_cfg")]
     public class GuildConfig
     {
+        public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<Filter> Filters { get; set; }
+        public virtual ICollection<TextReaction> TextReactions { get; set; }
 
         /*
         public virtual ICollection<BankAccount> Accounts { get; set; }
@@ -19,7 +21,6 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<CommandRule> CommandRules { get; set; }
-        public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<ExemptLogging> LoggingExempts { get; set; }
         public virtual ICollection<Meme> Memes { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
@@ -28,12 +29,13 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<SavedTask> SavedTasks { get; set; }
         public virtual ICollection<SelfRole> SelfRoles { get; set; }
         public virtual ICollection<RssSubscription> Subscriptions { get; set; }
-        public virtual ICollection<TextReaction> TextReactions { get; set; }
         */
         
         public GuildConfig()
         {
+            this.EmojiReactions = new HashSet<EmojiReaction>();
             this.Filters = new HashSet<Filter>();
+            this.TextReactions = new HashSet<TextReaction>();
             /*
             this.Accounts = new HashSet<BankAccount>();
             this.AntispamExempts = new HashSet<ExemptAntispam>();
@@ -42,7 +44,6 @@ namespace TheGodfather.Database.Models
             this.Chickens = new HashSet<Chicken>();
             this.ChickensBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
             this.CommandRules = new HashSet<CommandRule>();
-            this.EmojiReactions = new HashSet<EmojiReaction>();
             this.LoggingExempts = new HashSet<ExemptLogging>();
             this.Memes = new HashSet<Meme>();
             this.PurchasableItems = new HashSet<PurchasableItem>();
@@ -51,7 +52,6 @@ namespace TheGodfather.Database.Models
             this.SavedTasks = new HashSet<SavedTask>();
             this.SelfRoles = new HashSet<SelfRole>();
             this.Subscriptions = new HashSet<RssSubscription>();
-            this.TextReactions = new HashSet<TextReaction>();
             */
         }
 

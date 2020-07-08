@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheGodfather.Database.Models
 {
     [Table("blocked_users")]
-    public sealed class BlockedUser
+    public class BlockedUser
     {
         [Key, Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -17,7 +17,7 @@ namespace TheGodfather.Database.Models
     }
 
     [Table("blocked_channels")]
-    public sealed class BlockedChannel
+    public class BlockedChannel
     {
         [Key, Column("cid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

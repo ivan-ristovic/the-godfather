@@ -241,7 +241,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 },
                 verify: async db => {
                     GuildConfig gcfg = await db.GuildConfigs.FindAsync((long)MockData.Ids[0]);
-                    Assert.That(HaveSamePropertyValues(CachedGuildConfig.Default, gcfg.CachedConfig));
+                    Assert.That(HaveSamePropertyValues(new CachedGuildConfig(), gcfg.CachedConfig));
                 }
             );
         }

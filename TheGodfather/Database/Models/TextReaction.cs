@@ -1,28 +1,58 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
-#endregion
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
-namespace TheGodfather.Modules.Reactions.Common
+namespace TheGodfather.Database.Models
 {
+    [Table("reactions_text_triggers")]
+    public class TextReactionTrigger : ReactionTrigger
+    {
+        [ForeignKey("DbReaction")]
+        [Column("id")]
+        public int ReactionId { get; set; }
+
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public virtual TextReaction DbReaction { get; set; }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+    }
+
+
+    [Table("reactions_text")]
     public class TextReaction : Reaction
     {
+        [NotMapped]
+        public IReadOnlyList<string> Triggers => this.DbTriggers.Select(t => t.Trigger).ToList().AsReadOnly();
+        
+        public virtual ICollection<TextReactionTrigger> DbTriggers { get; set; }
+
+        [NotMapped]
         private static readonly TimeSpan _cooldownTimeout = TimeSpan.FromMinutes(5);
 
+        [NotMapped]
         private bool cooldown;
+        [NotMapped]
         private DateTimeOffset resetTime;
-        private object cooldownLock;
+        [NotMapped]
+        private readonly object cooldownLock = new object();
 
+
+        public TextReaction()
+        {
+            this.DbTriggers = new HashSet<TextReactionTrigger>();
+        }
 
         public TextReaction(int id, string trigger, string response, bool isRegex = false)
-            : base(id, trigger, response, isRegex)
+            : base(id, trigger, response, isRegex) 
         {
+            this.DbTriggers = new HashSet<TextReactionTrigger>();
             this.Init();
         }
 
         public TextReaction(int id, IEnumerable<string> triggers, string response, bool isRegex = false)
             : base(id, triggers, response, isRegex)
         {
+            this.DbTriggers = new HashSet<TextReactionTrigger>();
             this.Init();
         }
 
@@ -54,7 +84,6 @@ namespace TheGodfather.Modules.Reactions.Common
         private void Init()
         {
             this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
-            this.cooldownLock = new object();
             this.cooldown = false;
         }
     }

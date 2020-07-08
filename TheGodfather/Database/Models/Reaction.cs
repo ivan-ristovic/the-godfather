@@ -1,43 +1,76 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
-#endregion
 
-namespace TheGodfather.Modules.Reactions.Common
+namespace TheGodfather.Database.Models
 {
+    public abstract class ReactionTrigger
+    {
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        [Column("trigger"), Required, MaxLength(128)]
+        public string Trigger { get; set; }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+    }
+
+
     public abstract class Reaction : IEquatable<Reaction>
     {
+        [Key]
+        [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
-        public int Id { get; }
-        public string Response { get; }
+        [ForeignKey("GuildConfig")]
+        [Column("gid")]
+        public long GuildIdDb { get; set; }
+        [NotMapped]
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
+
+        [Column("reaction"), Required, MaxLength(128)]
+        public string Response { get; set; }
+
+        public virtual GuildConfig GuildConfig { get; set; }
+        
+        [NotMapped]
         public int RegexCount => this.triggerRegexes.Count;
+        [NotMapped]
         public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => rgx.ToString());
+        [NotMapped]
         public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
 
+        [NotMapped]
         private readonly ConcurrentHashSet<Regex> triggerRegexes;
 
 
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public Reaction()
+        {
+            this.Response = "<not_set>";
+            this.triggerRegexes = new ConcurrentHashSet<Regex>();
+        }
+
         protected Reaction(int id, string trigger, string response, bool isRegex = false)
+            : this()
         {
             this.Id = id;
             this.Response = response;
-            this.triggerRegexes = new ConcurrentHashSet<Regex>();
             this.AddTrigger(trigger, isRegex);
         }
 
         protected Reaction(int id, IEnumerable<string> triggers, string response, bool isRegex = false)
+            : this()
         {
             this.Id = id;
             this.Response = response;
-            this.triggerRegexes = new ConcurrentHashSet<Regex>();
             foreach (string trigger in triggers)
                 this.AddTrigger(trigger, isRegex);
         }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
 
         public bool AddTrigger(string trigger, bool isRegex = false)
@@ -64,10 +97,10 @@ namespace TheGodfather.Modules.Reactions.Common
         public bool ContainsTriggerPattern(string pattern)
             => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => string.Compare(pattern, s, true) == 0);
 
-        public bool HasSameResponseAs<T>(T other) where T : Reaction
-            => this.Response == other.Response;
+        public bool HasSameResponseAs<T>(T? other) where T : Reaction
+            => this.Response == other?.Response;
 
-        public bool Equals(Reaction other)
+        public bool Equals(Reaction? other)
             => this.HasSameResponseAs(other);
     }
 }

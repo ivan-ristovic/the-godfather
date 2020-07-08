@@ -1,0 +1,49 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+
+namespace TheGodfather.Database.Models
+{
+    [Table("reactions_emoji_triggers")]
+    public class EmojiReactionTrigger : ReactionTrigger
+    {
+        [ForeignKey("DbReaction")]
+        [Column("id")]
+        public int ReactionId { get; set; }
+
+#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public virtual EmojiReaction DbReaction { get; set; }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+    }
+
+
+    [Table("reactions_emoji")]
+    public class EmojiReaction : Reaction
+    {
+        public virtual ICollection<EmojiReactionTrigger> DbTriggers { get; set; }
+
+
+        [NotMapped]
+        public IReadOnlyList<string> Triggers => this.DbTriggers.Select(t => t.Trigger).ToList().AsReadOnly();
+
+
+        public EmojiReaction()
+            : base()
+        {
+            this.DbTriggers = new HashSet<EmojiReactionTrigger>();
+        }
+
+
+        public EmojiReaction(int id, string trigger, string reaction, bool isRegex = false)
+            : base(id, trigger, reaction, isRegex)
+        {
+            this.DbTriggers = new HashSet<EmojiReactionTrigger>();
+        }
+
+        public EmojiReaction(int id, IEnumerable<string> triggers, string reaction, bool isRegex = false)
+            : base(id, triggers, reaction, isRegex)
+        {
+            this.DbTriggers = new HashSet<EmojiReactionTrigger>();
+        }
+    }
+}
