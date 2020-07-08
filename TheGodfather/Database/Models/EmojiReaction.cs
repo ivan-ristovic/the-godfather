@@ -7,12 +7,12 @@ namespace TheGodfather.Database.Models
     [Table("reactions_emoji_triggers")]
     public class EmojiReactionTrigger : ReactionTrigger
     {
-        [ForeignKey("DbReaction")]
+        [ForeignKey("Reaction")]
         [Column("id")]
         public int ReactionId { get; set; }
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        public virtual EmojiReaction DbReaction { get; set; }
+        public virtual EmojiReaction Reaction { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
     }
 

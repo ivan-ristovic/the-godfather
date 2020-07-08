@@ -251,10 +251,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Channel });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Channel });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Channel });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Channel });
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -271,9 +271,9 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -294,11 +294,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
         {
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[4], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[2], Id = MockData.Ids[1], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[3], Id = MockData.Ids[2], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[4], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -316,12 +316,12 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
             TestDatabaseProvider.SetupAlterAndVerify(
                 setup: db => {
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[2], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
-                    db.LoggingExempts.Add(new DatabaseExemptLogging { GuildId = MockData.Ids[3], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[2], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
+                    db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[3], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
                 },
                 alter: db => this.Service.LoadData(),
                 verify: db => {

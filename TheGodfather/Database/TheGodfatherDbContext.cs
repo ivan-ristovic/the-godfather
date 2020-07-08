@@ -11,6 +11,9 @@ namespace TheGodfather.Database
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; set; }
+        public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
+        public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; set; }
+        public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<GuildConfig> GuildConfigs { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; set; }
@@ -64,6 +67,9 @@ namespace TheGodfather.Database
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             mb.Entity<BlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);
             mb.Entity<EmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
+            mb.Entity<ExemptedAntispamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<ExemptedLoggingEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<ExemptedRatelimitEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(PunishmentAction.PermanentBan);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodCooldown).HasDefaultValue(10);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodEnabled).HasDefaultValue(false);

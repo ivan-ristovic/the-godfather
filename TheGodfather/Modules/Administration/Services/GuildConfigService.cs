@@ -118,8 +118,8 @@ namespace TheGodfather.Modules.Administration.Services
 
         public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId)
         {
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                return db.LoggingExempts
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                return db.ExemptsLogging
                     .Where(e => e.GuildId == gid)
                     .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
             }
@@ -129,12 +129,12 @@ namespace TheGodfather.Modules.Administration.Services
         {
             bool exempted = false;
 
-            using (DatabaseContext db = this.dbb.CreateContext()) {
-                exempted |= db.LoggingExempts
+            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                exempted |= db.ExemptsLogging
                     .Where(e => e.GuildId == gid)
                     .Any(e => e.Type == ExemptedEntityType.Member && e.Id == uid);
                 if (rids?.Any() ?? false) {
-                    exempted |= db.LoggingExempts
+                    exempted |= db.ExemptsLogging
                         .Where(e => e.GuildId == gid)
                         .Any(e => e.Type == ExemptedEntityType.Role && rids.Contains(e.Id));
                 }

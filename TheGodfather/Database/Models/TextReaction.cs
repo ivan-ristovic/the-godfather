@@ -8,12 +8,12 @@ namespace TheGodfather.Database.Models
     [Table("reactions_text_triggers")]
     public class TextReactionTrigger : ReactionTrigger
     {
-        [ForeignKey("DbReaction")]
+        [ForeignKey("Reaction")]
         [Column("id")]
         public int ReactionId { get; set; }
 
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        public virtual TextReaction DbReaction { get; set; }
+        public virtual TextReaction Reaction { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
     }
 

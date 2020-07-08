@@ -6,7 +6,6 @@ namespace TheGodfather.Database
 {
     public class DatabaseContext : DbContext
     {
-        public virtual DbSet<DatabaseExemptAntispam> AntispamExempts { get; set; }
         public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
         public virtual DbSet<DatabaseBankAccount> BankAccounts { get; set; }
         public virtual DbSet<DatabaseBirthday> Birthdays { get; set; }
@@ -18,13 +17,11 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseGuildRank> GuildRanks { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
-        public virtual DbSet<DatabaseExemptLogging> LoggingExempts { get; set; }
         public virtual DbSet<DatabaseMeme> Memes { get; set; }
         public virtual DbSet<DatabaseMessageCount> MessageCount { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
         public virtual DbSet<DatabasePurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<DatabasePurchasedItem> PurchasedItems { get; set; }
-        public virtual DbSet<DatabaseExemptRatelimit> RatelimitExempts { get; set; }
         public virtual DbSet<DatabaseReminder> Reminders { get; set; }
         public virtual DbSet<DatabaseRssFeed> RssFeeds { get; set; }
         public virtual DbSet<DatabaseRssSubscription> RssSubscriptions { get; set; }
@@ -90,9 +87,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<DatabaseCommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
-            mb.Entity<DatabaseExemptAntispam>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
-            mb.Entity<DatabaseExemptLogging>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
-            mb.Entity<DatabaseExemptRatelimit>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<DatabaseGameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroWon).HasDefaultValue(0);

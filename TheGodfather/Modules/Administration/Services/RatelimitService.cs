@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 #endregion
@@ -57,9 +58,9 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using (DatabaseContext db = this.shard.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
                 this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                    db.RatelimitExempts
+                    db.ExemptsRatelimit
                         .Where(ee => ee.GuildId == gid)
                         .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
                 );

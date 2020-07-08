@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 #endregion
 
@@ -21,7 +22,7 @@ namespace TheGodfather.Modules.Administration.Extensions
         }
 
         public static void AddExemptions<TEntity, TExempt>(this DbSet<TEntity> set, ulong gid, IEnumerable<TExempt> exempts, ExemptedEntityType type) 
-            where TEntity : DatabaseExemptedEntity, new()
+            where TEntity : ExemptedEntity, new()
             where TExempt : SnowflakeObject
         {
             set.AddRange(exempts
