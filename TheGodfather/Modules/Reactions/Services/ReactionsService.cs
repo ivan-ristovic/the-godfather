@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Reactions.Services
         }
 
 
-        #region EmojiReactions
+        #region Emoji Reactions
         public IReadOnlyCollection<EmojiReaction> GetGuildEmojiReactions(ulong gid)
         {
             return this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) && ers is { }
@@ -251,7 +251,7 @@ namespace TheGodfather.Modules.Reactions.Services
         }
         #endregion
 
-        #region TextReactions
+        #region Text Reactions
         public IReadOnlyCollection<TextReaction> GetGuildTextReactions(ulong gid)
         {
             return this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction>? trs) && trs is { }
@@ -291,7 +291,7 @@ namespace TheGodfather.Modules.Reactions.Services
                     }
 
                     if (!tr.AddTrigger(trigger, isRegex: regex))
-                        throw new ConcurrentOperationException("Failed to add emoji reaction trigger");
+                        throw new ConcurrentOperationException("Failed to add text reaction trigger");
                     tr.DbTriggers.Add(new TextReactionTrigger { ReactionId = tr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
                     db.TextReactions.Update(tr);
 

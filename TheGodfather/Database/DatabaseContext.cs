@@ -12,7 +12,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseChicken> Chickens { get; set; }
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
-        public virtual DbSet<DatabaseCommandRule> CommandRules { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
@@ -84,7 +83,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
-            mb.Entity<DatabaseCommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
             mb.Entity<DatabaseGameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroWon).HasDefaultValue(0);

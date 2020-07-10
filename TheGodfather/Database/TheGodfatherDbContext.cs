@@ -10,6 +10,7 @@ namespace TheGodfather.Database
         public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; } 
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
+        public virtual DbSet<CommandRule> CommandRules { get; protected set; }
         public virtual DbSet<GuildConfig> Configs { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; set; }
         public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
@@ -68,6 +69,7 @@ namespace TheGodfather.Database
 
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             mb.Entity<BlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);
+            mb.Entity<CommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
             mb.Entity<EmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<ExemptedAntispamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedLoggingEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });

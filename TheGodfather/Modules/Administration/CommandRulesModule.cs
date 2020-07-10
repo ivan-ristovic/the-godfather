@@ -1,20 +1,17 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using Microsoft.EntityFrameworkCore;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 #endregion
@@ -71,8 +68,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx)
         {
-            List<DatabaseCommandRule> rules;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<CommandRule> rules;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 rules = await db.CommandRules
                     .Where(cr => cr.GuildId == ctx.Guild.Id)
                     .ToListAsync();
@@ -97,7 +94,7 @@ namespace TheGodfather.Modules.Administration
             if (cmd is null)
                 throw new CommandFailedException($"Failed to find command {Formatter.InlineCode(command)}");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 db.CommandRules.RemoveRange(
                     db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command.StartsWith(cmd.QualifiedName) && channels.Any(c => c.Id == cr.ChannelId))
                 );
@@ -107,7 +104,7 @@ namespace TheGodfather.Modules.Administration
                 } else {
                     db.CommandRules.AddRange(channels
                         .Distinct()
-                        .Select(c => new DatabaseCommandRule {
+                        .Select(c => new CommandRule {
                             Allowed = allow,
                             ChannelId = c.Id,
                             Command = cmd.QualifiedName,
@@ -117,13 +114,13 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (!allow || channels.Any()) {
-                    var dbrule = new DatabaseCommandRule {
+                    var dbrule = new CommandRule {
                         Allowed = false,
                         ChannelId = 0,
                         Command = cmd.QualifiedName,
                         GuildId = ctx.Guild.Id
                     };
-                    DatabaseCommandRule globalRule = await db.CommandRules.FindAsync(dbrule.GuildIdDb, dbrule.ChannelIdDb, dbrule.Command);
+                    CommandRule globalRule = await db.CommandRules.FindAsync(dbrule.GuildIdDb, dbrule.ChannelIdDb, dbrule.Command);
                     if (globalRule is null)
                         db.CommandRules.Add(dbrule);
                 }

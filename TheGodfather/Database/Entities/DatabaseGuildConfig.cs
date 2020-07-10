@@ -17,7 +17,6 @@ namespace TheGodfather.Database.Entities
             this.Birthdays = new HashSet<DatabaseBirthday>();
             this.Chickens = new HashSet<DatabaseChicken>();
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
-            this.CommandRules = new HashSet<DatabaseCommandRule>();
             this.Memes = new HashSet<DatabaseMeme>();
             this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
             this.SavedTasks = new HashSet<DatabaseSavedTask>();
@@ -244,7 +243,6 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseBirthday> Birthdays { get; set; }
         public virtual ICollection<DatabaseChicken> Chickens { get; set; }
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
-        public virtual ICollection<DatabaseCommandRule> CommandRules { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
         public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }

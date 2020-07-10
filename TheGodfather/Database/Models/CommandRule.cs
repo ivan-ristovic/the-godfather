@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("cmd_rules")]
-    public class DatabaseCommandRule
+    public class CommandRule
     {
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -18,14 +19,14 @@ namespace TheGodfather.Database.Entities
         [NotMapped]
         public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
 
-        [Column("commands"), Required, MaxLength(32)]
+        [Column("command"), Required, MaxLength(32)]
         public string Command { get; set; }
 
         [Column("allow"), Required]
         public bool Allowed { get; set; }
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; }
 
 
         public bool IsMatchFor(ulong gid, ulong cid)

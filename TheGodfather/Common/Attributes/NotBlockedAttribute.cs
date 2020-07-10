@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
@@ -25,7 +26,7 @@ namespace TheGodfather.Common.Attributes
                 return Task.FromResult(false);
 
             if (!help)
-                LogExt.Debug(ctx, "Executing {Command} in {Message}", ctx.Command?.QualifiedName ?? "<unknown command>", ctx.Message.Content);
+                LogExt.Debug(ctx, "Executing {Command} in message: {Message}", ctx.Command?.QualifiedName ?? "<unknown cmd>", ctx.Message.Content);
 
             return Task.FromResult(true);
 
@@ -34,8 +35,10 @@ namespace TheGodfather.Common.Attributes
             {
                 // TODO when moved to service create a cached set of guilds which have command rules and query it before accessing the database
                 DbContextBuilder dbb = ctx.Services.GetService<DbContextBuilder>();
-                using (DatabaseContext db = dbb.CreateContext()) {
-                    IQueryable<DatabaseCommandRule> dbrules = db.CommandRules
+                using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                    IEnumerable<CommandRule> dbrules = db.CommandRules
+                        .Where(cr => cr.GuildIdDb == (long)ctx.Guild.Id && cr.ChannelIdDb == (long)ctx.Channel.Id)
+                        .AsEnumerable()
                         .Where(cr => cr.IsMatchFor(ctx.Guild.Id, ctx.Channel.Id) && ctx.Command.QualifiedName.StartsWith(cr.Command));
                     if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelId == ctx.Channel.Id && cr.Allowed))
                         return false;

@@ -9,6 +9,7 @@ namespace TheGodfather.Database.Models
     [Table("guild_cfg")]
     public class GuildConfig
     {
+        public virtual ICollection<CommandRule> CommandRules { get; set; }
         public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<Filter> Filters { get; set; }
         public virtual ICollection<TextReaction> TextReactions { get; set; }
@@ -22,7 +23,6 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<Birthday> Birthdays { get; set; }
         public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
-        public virtual ICollection<CommandRule> CommandRules { get; set; }
         public virtual ICollection<Meme> Memes { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<GuildRank> Ranks { get; set; }
@@ -33,19 +33,19 @@ namespace TheGodfather.Database.Models
 
         public GuildConfig()
         {
+            this.CommandRules = new HashSet<CommandRule>();
             this.EmojiReactions = new HashSet<EmojiReaction>();
-            this.Filters = new HashSet<Filter>();
-            this.TextReactions = new HashSet<TextReaction>();
             this.ExemptsAntispam = new HashSet<ExemptedAntispamEntity>();
             this.ExemptsLogging = new HashSet<ExemptedLoggingEntity>();
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
+            this.Filters = new HashSet<Filter>();
+            this.TextReactions = new HashSet<TextReaction>();
             /*
             this.Accounts = new HashSet<BankAccount>();
             this.AutoRoles = new HashSet<AutoRole>();
             this.Birthdays = new HashSet<Birthday>();
             this.Chickens = new HashSet<Chicken>();
             this.ChickensBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
-            this.CommandRules = new HashSet<CommandRule>();
             this.LoggingExempts = new HashSet<ExemptLogging>();
             this.Memes = new HashSet<Meme>();
             this.PurchasableItems = new HashSet<PurchasableItem>();
