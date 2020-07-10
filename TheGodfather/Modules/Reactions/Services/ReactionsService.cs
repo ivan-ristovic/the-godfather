@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Reactions.Services
             if (!toRemove.Any())
                 return 0;
 
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers) || !ers.Any())
+            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) || !ers.Any())
                 return 0;
 
             int removed = ers.RemoveWhere(er => toRemove.Contains(er.Response));
@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Reactions.Services
         {
             int removed = 0;
             if (this.ereactions.ContainsKey(gid)) {
-                if (this.ereactions.TryRemove(gid, out ConcurrentHashSet<EmojiReaction> ers))
+                if (this.ereactions.TryRemove(gid, out ConcurrentHashSet<EmojiReaction>? ers))
                     removed = ers.Count;
                 else
                     throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
@@ -194,22 +194,18 @@ namespace TheGodfather.Modules.Reactions.Services
             if (!ids.Any())
                 return 0;
 
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers) || !ers.Any())
+            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) || !ers.Any())
                 return 0;
 
             int removed = ers.RemoveWhere(er => ids.Contains(er.Id));
 
-            // TODO remove
-            var eb = new StringBuilder();
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                foreach (int id in ids) {
-                    if (!ers.Any(er => er.Id == id)) {
-                        eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
-                        continue;
-                    } else {
-                        db.EmojiReactions.Remove(new EmojiReaction { Id = id, GuildId = gid });
-                    }
-                }
+                db.EmojiReactions.RemoveRange(
+                db.EmojiReactions
+                  .Where(er => er.GuildIdDb == (long)gid)
+                  .AsEnumerable()
+                  .Where(er => ids.Contains(er.Id))
+                );
                 await db.SaveChangesAsync();
             }
 
@@ -221,7 +217,7 @@ namespace TheGodfather.Modules.Reactions.Services
             if (!reactions.Any() || !triggers.Any())
                 return 0;
 
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers))
+            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers))
                 return 0;
 
             int removed = 0;
@@ -258,17 +254,13 @@ namespace TheGodfather.Modules.Reactions.Services
         #region TextReactions
         public IReadOnlyCollection<TextReaction> GetGuildTextReactions(ulong gid)
         {
-            if (this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs))
-                return trs.ToList();
-            else
-                return Array.Empty<TextReaction>();
+            return this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction>? trs) && trs is { }
+                ? trs.ToList()
+                : (IReadOnlyCollection<TextReaction>)Array.Empty<TextReaction>();
         }
 
         public TextReaction FindMatchingTextReaction(ulong gid, string trigger)
-        {
-            return this.GetGuildTextReactions(gid)
-                .FirstOrDefault(tr => tr.IsMatch(trigger));
-        }
+            => this.GetGuildTextReactions(gid).FirstOrDefault(tr => tr.IsMatch(trigger));
 
         public bool GuildHasTextReaction(ulong gid, string trigger)
             => this.GetGuildTextReactions(gid).Any(tr => tr.ContainsTriggerPattern(trigger));
@@ -284,24 +276,28 @@ namespace TheGodfather.Modules.Reactions.Services
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 await db.Database.BeginTransactionAsync();
                 try {
-                    TextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == gid && tr.Response == response);
-                    if (dbtr is null) {
-                        dbtr = new TextReaction {
+                    TextReaction? tr = trs.FirstOrDefault(tr => tr.GuildId == gid && tr.Response == response);
+                    if (tr is null) {
+                        tr = new TextReaction {
                             GuildId = gid,
                             Response = response,
                         };
-                        db.TextReactions.Add(dbtr);
+                        if (!trs.Add(tr))
+                            throw new ConcurrentOperationException("Failed to add text reaction to cache");
+                        db.TextReactions.Add(tr);
                         await db.SaveChangesAsync();
+                    } else {
+                        db.TextReactions.Attach(tr);
                     }
 
-                    dbtr.DbTriggers.Add(new TextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                    if (!tr.AddTrigger(trigger, isRegex: regex))
+                        throw new ConcurrentOperationException("Failed to add emoji reaction trigger");
+                    tr.DbTriggers.Add(new TextReactionTrigger { ReactionId = tr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                    db.TextReactions.Update(tr);
 
-                    await db.SaveChangesAsync();
-
-                    TextReaction reaction = trs.FirstOrDefault(tr => tr.Response == response);
-                    success = reaction is null ? trs.Add(new TextReaction(dbtr.Id, trigger, response, regex)) : reaction.AddTrigger(trigger, regex);
+                    success = true;
                 } catch (Exception e) {
-                    Log.Error(e, "Failed to add emoji reaction");
+                    Log.Error(e, "Failed to add text reaction");
                 } finally {
                     if (success) {
                         db.Database.CommitTransaction();
@@ -319,14 +315,14 @@ namespace TheGodfather.Modules.Reactions.Services
         {
             int removed = 0;
             if (this.treactions.ContainsKey(gid)) {
-                if (this.treactions.TryRemove(gid, out ConcurrentHashSet<TextReaction> trs))
+                if (this.treactions.TryRemove(gid, out ConcurrentHashSet<TextReaction>? trs))
                     removed = trs.Count;
                 else
                     throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == gid));
+                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
 
@@ -338,13 +334,18 @@ namespace TheGodfather.Modules.Reactions.Services
             if (!ids.Any())
                 return 0;
 
-            if (!this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs) || !trs.Any())
+            if (!this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction>? trs) || !trs.Any())
                 return 0;
 
             int removed = trs.RemoveWhere(tr => ids.Contains(tr.Id));
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == gid && ids.Contains(tr.Id)));
+                db.TextReactions.RemoveRange(
+                    db.TextReactions
+                      .Where(tr => tr.GuildIdDb == (long)gid)
+                      .AsEnumerable()
+                      .Where(tr => ids.Contains(tr.Id))
+                );
                 await db.SaveChangesAsync();
             }
 
@@ -356,7 +357,7 @@ namespace TheGodfather.Modules.Reactions.Services
             if (!reactions.Any() || !triggers.Any())
                 return 0;
 
-            if (!this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction> trs))
+            if (!this.treactions.TryGetValue(gid, out ConcurrentHashSet<TextReaction>? trs))
                 return 0;
 
             int removed = 0;
@@ -370,8 +371,10 @@ namespace TheGodfather.Modules.Reactions.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 var toUpdate = db.TextReactions
+                    .Where(tr => tr.GuildIdDb == (long)gid)
                     .Include(tr => tr.DbTriggers)
-                    .Where(tr => tr.GuildId == gid && reactions.Any(r => r.Id == tr.Id))
+                    .AsEnumerable()
+                    .Where(tr => reactions.Any(r => r.Id == tr.Id))
                     .ToList();
                 foreach (TextReaction tr in toUpdate) {
                     foreach (string trigger in triggers)

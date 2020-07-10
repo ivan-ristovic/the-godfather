@@ -71,6 +71,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     AssertFindReactionsCount(0, "HAHAHA", 0);
+                    AssertFindReactionsCount(0, "abbbbbbbbbbbbbc", 1);
                     AssertFindReactionsCount(0, "This is not a test.", 1);
                     AssertFindReactionsCount(0, "Ha abc ha", 4);
                     AssertFindReactionsCount(0, "This cde has only one", 1);
@@ -573,7 +574,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Headphones.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
-                    new EmojiReactionTrigger { Trigger = "abc" },
+                    new EmojiReactionTrigger { Trigger = "ab+c" },
                 }
             });
             db.EmojiReactions.Add(new EmojiReaction() {

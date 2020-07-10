@@ -57,7 +57,7 @@ namespace TheGodfather.Database.Models
         public override void CacheDbTriggers()
         {
             foreach (TextReactionTrigger t in this.DbTriggers)
-                this.AddTrigger(t.Trigger); 
+                this.AddTrigger(t.Trigger, isRegex: true); 
         }
 
         public bool IsCooldownActive()
