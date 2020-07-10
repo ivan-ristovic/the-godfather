@@ -39,9 +39,9 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public int RegexCount => this.triggerRegexes.Count;
         [NotMapped]
-        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => rgx.ToString());
+        public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString());
         [NotMapped]
-        public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
+        public IEnumerable<string> OrderedTriggers => this.Triggers.OrderBy(s => s);
 
         [NotMapped]
         private readonly ConcurrentHashSet<Regex> triggerRegexes;
@@ -73,6 +73,9 @@ namespace TheGodfather.Database.Models
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
 
+        public abstract void CacheDbTriggers();
+
+
         public bool AddTrigger(string trigger, bool isRegex = false)
         {
             Regex regex;
@@ -95,7 +98,7 @@ namespace TheGodfather.Database.Models
             => !string.IsNullOrWhiteSpace(str) && this.triggerRegexes.Any(rgx => rgx.IsMatch(str));
 
         public bool ContainsTriggerPattern(string pattern)
-            => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => string.Compare(pattern, s, true) == 0);
+            => !string.IsNullOrWhiteSpace(pattern) && this.Triggers.Any(s => string.Compare(pattern, s, true) == 0);
 
         public bool HasSameResponseAs<T>(T? other) where T : Reaction
             => this.Response == other?.Response;

@@ -128,7 +128,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         this.gcfg[MockData.Ids[1]].CachedConfig,
                         (await this.Service.GetConfigAsync(MockData.Ids[1])).CachedConfig
                     ));
-                    Assert.That(await this.Service.GetConfigAsync(1), Is.Null);
+                    Assert.That(await this.Service.GetConfigAsync(1), Is.Not.Null);
                 }
             );
         }
@@ -148,7 +148,8 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 verify: async db => {
                     GuildConfig gcfg = await db.Configs.FindAsync((long)MockData.Ids[0]);
                     Assert.That(gcfg.Prefix, Is.EqualTo("!!"));
-                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]).Prefix, Is.EqualTo("!!"));
+                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]), Is.Not.Null);
+                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0])!.Prefix, Is.EqualTo("!!"));
                     Assert.That((await this.Service.GetConfigAsync(MockData.Ids[0])).Prefix, Is.EqualTo("!!"));
                 }
             );

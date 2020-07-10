@@ -47,9 +47,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     for (int i = 0; i < MockData.Ids.Count; i++)
                         AssertGuildReactionCount(i, this.trCount[i]);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[1]);
-                    Assert.That(trs.Single(tr => tr.Response == "response12" && tr.TriggerStrings.Single() == "y u do dis"), Is.Not.Null);
-                    Assert.That(trs.Single(tr => tr.Response == "response23" && tr.TriggerStrings.Single() == "rick"), Is.Not.Null);
-                    Assert.That(trs.Single(tr => tr.Response == "response34" && tr.TriggerStrings.Single() == "astley"), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.Response == "response12" && tr.Triggers.Single() == "y u do dis"), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.Response == "response23" && tr.Triggers.Single() == "rick"), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.Response == "response34" && tr.Triggers.Single() == "astley"), Is.Not.Null);
                 }
             );
 
@@ -59,7 +59,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[id]);
                 Assert.That(trs, Has.Exactly(count).Items);
                 Assert.That(trs.Select(tr => tr.Id), Is.Unique);
-                foreach (IEnumerable<string> triggers in trs.Select(tr => tr.TriggerStrings))
+                foreach (IEnumerable<string> triggers in trs.Select(tr => tr.Triggers))
                     Assert.That(triggers, Is.Not.Empty);
             }
         }
@@ -275,7 +275,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         tr => tr.GuildId == gid && tr.Response == response && CheckTriggers(triggers, tr.Triggers.Select(t => t.ToLower()).ToList())
                     ), Is.Not.Null);
                     Assert.That(this.Service.GetGuildTextReactions(gid).Single(
-                        tr => tr.Response == response && CheckTriggers(triggers, tr.TriggerStrings.ToList())
+                        tr => tr.Response == response && CheckTriggers(triggers, tr.Triggers.ToList())
                     ), Is.Not.Null);
 
                     bool CheckTriggers(IReadOnlyCollection<string> expected, IReadOnlyCollection<string> actual)

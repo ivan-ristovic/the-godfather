@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration.Services
             this.filters.TryRemove(gid, out ConcurrentHashSet<Filter>? fs);
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid));
+                db.Filters.RemoveRange(db.Filters.Where(f => f.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
 
@@ -101,7 +101,12 @@ namespace TheGodfather.Modules.Administration.Services
             if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs)) {
                 removed = fs.RemoveWhere(f => ids.Contains(f.Id));
                 using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && ids.Contains(f.Id)));
+                    db.Filters.RemoveRange(
+                        db.Filters
+                          .Where(f => f.GuildIdDb == (long)gid)
+                          .AsEnumerable()
+                          .Where(f => ids.Contains(f.Id))
+                    );
                     await db.SaveChangesAsync();
                 }
             }
@@ -116,7 +121,12 @@ namespace TheGodfather.Modules.Administration.Services
             if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs)) {
                 removed = fs.RemoveWhere(f => regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0));
                 using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == gid && regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0)));
+                    db.Filters.RemoveRange(
+                        db.Filters
+                          .Where(f => f.GuildIdDb == (long)gid)
+                          .AsEnumerable()
+                          .Where(f => regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0))
+                    );
                     await db.SaveChangesAsync();
                 }
             }

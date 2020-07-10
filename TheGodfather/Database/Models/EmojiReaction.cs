@@ -23,16 +23,11 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<EmojiReactionTrigger> DbTriggers { get; set; }
 
 
-        [NotMapped]
-        public IReadOnlyList<string> Triggers => this.DbTriggers.Select(t => t.Trigger).ToList().AsReadOnly();
-
-
         public EmojiReaction()
             : base()
         {
             this.DbTriggers = new HashSet<EmojiReactionTrigger>();
         }
-
 
         public EmojiReaction(int id, string trigger, string reaction, bool isRegex = false)
             : base(id, trigger, reaction, isRegex)
@@ -44,6 +39,13 @@ namespace TheGodfather.Database.Models
             : base(id, triggers, reaction, isRegex)
         {
             this.DbTriggers = new HashSet<EmojiReactionTrigger>();
+        }
+
+
+        public override void CacheDbTriggers()
+        {
+            foreach (EmojiReactionTrigger t in this.DbTriggers)
+                this.AddTrigger(t.Trigger);
         }
     }
 }

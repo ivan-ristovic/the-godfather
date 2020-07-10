@@ -21,9 +21,6 @@ namespace TheGodfather.Database.Models
     [Table("reactions_text")]
     public class TextReaction : Reaction
     {
-        [NotMapped]
-        public IReadOnlyList<string> Triggers => this.DbTriggers.Select(t => t.Trigger).ToList().AsReadOnly();
-        
         public virtual ICollection<TextReactionTrigger> DbTriggers { get; set; }
 
         [NotMapped]
@@ -56,6 +53,12 @@ namespace TheGodfather.Database.Models
             this.Init();
         }
 
+
+        public override void CacheDbTriggers()
+        {
+            foreach (TextReactionTrigger t in this.DbTriggers)
+                this.AddTrigger(t.Trigger); 
+        }
 
         public bool IsCooldownActive()
         {

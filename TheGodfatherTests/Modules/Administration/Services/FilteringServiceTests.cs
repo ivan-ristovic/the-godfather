@@ -19,6 +19,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
         public FilteringServiceTests()
         {
+            this.Service = new FilteringService(TestDatabaseProvider.Database, loadData: false);
             this.filterCount = new Dictionary<int, int>(
                 Enumerable.Range(0, MockData.Ids.Count)
                           .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
@@ -458,7 +459,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
             void AssertFiltersRemoved(TheGodfatherDbContext db, ulong gid, params int[] ids)
             {
                 if (ids?.Any() ?? false) {
-                    Assert.That(db.Filters.Where(f => f.GuildId == gid).Select(f => f.Id), Has.No.AnyOf(ids));
+                    Assert.That(db.Filters.Where(f => f.GuildIdDb == (long)gid).Select(f => f.Id), Has.No.AnyOf(ids));
                     Assert.That(this.Service.GetGuildFilters(gid).Select(f => f.Id), Has.No.AnyOf(ids));
                 } else {
                     Assert.Fail("No IDs provided to assert function.");
@@ -468,8 +469,16 @@ namespace TheGodfatherTests.Modules.Administration.Services
             void AssertFilterRegexesRemoved(TheGodfatherDbContext db, ulong gid, params string[] regexStrings)
             {
                 if (regexStrings?.Any() ?? false) {
-                    Assert.That(db.Filters.Where(f => f.GuildId == gid).Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), Is.False);
-                    Assert.That(this.Service.GetGuildFilters(gid).Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), Is.False);
+                    Assert.That(db.Filters
+                                  .Where(f => f.GuildIdDb == (long)gid)
+                                  .AsEnumerable()
+                                  .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), 
+                                Is.False
+                    );
+                    Assert.That(this.Service.GetGuildFilters(gid)
+                                            .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), 
+                                Is.False
+                    );
                 } else {
                     Assert.Fail("No strings provided to assert function.");
                 }
@@ -529,7 +538,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
         private void AssertGuildFilterCount(TheGodfatherDbContext db, int index, int count)
         {
-            Assert.AreEqual(count, db.Filters.Where(f => f.GuildId == MockData.Ids[index]).Count());
+            Assert.AreEqual(count, db.Filters.Count(f => f.GuildIdDb == (long)MockData.Ids[index]));
             IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[index]);
             Assert.AreEqual(count, fs.Count);
             CollectionAssert.AllItemsAreUnique(fs.Select(f => f.Id));
@@ -538,14 +547,17 @@ namespace TheGodfatherTests.Modules.Administration.Services
 
         private void AssertSingleAndTest(TheGodfatherDbContext db, int index, string regex, bool match, params string[] tests)
         {
-            if (tests is null || !tests.Any())
+            if (tests is null || !tests.Any()) {
                 Assert.Fail("No tests provided to assert function.");
+                return;
+            }
 
             Filter filter = this.Service.GetGuildFilters(MockData.Ids[index]).Single(f => string.Compare(f.TriggerString, regex, true) == 0);
             Assert.IsNotNull(filter);
 
             Filter dbf = db.Filters
-                .Where(f => f.GuildId == MockData.Ids[index])
+                .Where(f => f.GuildIdDb == (long)MockData.Ids[index])
+                .AsEnumerable()
                 .Single(f => string.Compare(f.TriggerString, regex, true) == 0);
             Assert.IsNotNull(dbf);
 
@@ -562,8 +574,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
             this.filterCount = this.filterCount.ToDictionary(
                 kvp => kvp.Key,
                 kvp => db.Filters
-                         .Where(f => f.GuildId == MockData.Ids[kvp.Key])
-                         .Count()
+                         .Count(f => f.GuildIdDb == (long)MockData.Ids[kvp.Key])
             );
         }
     }

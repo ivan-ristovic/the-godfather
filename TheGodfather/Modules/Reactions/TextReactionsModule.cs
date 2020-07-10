@@ -225,7 +225,7 @@ namespace TheGodfather.Modules.Reactions
 
             var emb = new DiscordEmbedBuilder {
                 Title = "Text reaction that matches the trigger",
-                Description = string.Join(" | ", tr.TriggerStrings),
+                Description = string.Join(" | ", tr.Triggers),
                 Color = this.ModuleColor
             };
             emb.AddField("ID", tr.Id.ToString(), inline: true);
@@ -246,8 +246,8 @@ namespace TheGodfather.Modules.Reactions
 
             return ctx.SendCollectionInPagesAsync(
                 "Text reactions for this guild",
-                treactions.OrderBy(tr => tr.OrderedTriggerStrings.First()),
-                tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
+                treactions.OrderBy(tr => tr.OrderedTriggers.First()),
+                tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {string.Join(", ", tr.Triggers)}",
                 this.ModuleColor
             );
         }

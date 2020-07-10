@@ -276,7 +276,7 @@ namespace TheGodfather.Modules.Reactions
 
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = "Text reaction that matches the trigger",
-                Description = string.Join("\n", ers.Select(er => $"{Formatter.InlineCode(er.Id.ToString())} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {Formatter.InlineCode(string.Join(", ", er.TriggerStrings))}")),
+                Description = string.Join("\n", ers.Select(er => $"{Formatter.InlineCode(er.Id.ToString())} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {Formatter.InlineCode(string.Join(", ", er.Triggers))}")),
                 Color = this.ModuleColor
             }.Build());
         }
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Reactions
             await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
                 validReactions.OrderBy(x => x.ReactionObject.Id),
-                x => $"{Formatter.InlineCode($"{x.ReactionObject.Id:D4}")} | {x.Emoji} | {string.Join(", ", x.ReactionObject.TriggerStrings)}",
+                x => $"{Formatter.InlineCode($"{x.ReactionObject.Id:D4}")} | {x.Emoji} | {string.Join(", ", x.ReactionObject.Triggers)}",
                 this.ModuleColor
             );
         }

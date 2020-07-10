@@ -46,15 +46,25 @@ namespace TheGodfather.Modules.Reactions.Services
                             .Include(t => t.DbTriggers)
                             .AsEnumerable()
                             .GroupBy(tr => tr.GuildId)
-                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>())
+                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g))
                     );
                     this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>(
                         db.EmojiReactions
-                            .Include(t => t.DbTriggers)
+                            .Include(e => e.DbTriggers)
                             .AsEnumerable()
                             .GroupBy(er => er.GuildId)
-                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>())
+                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g))
                     );
+                }
+
+                foreach ((ulong _, ConcurrentHashSet<EmojiReaction> ers) in this.ereactions) {
+                    foreach (EmojiReaction er in ers)
+                        er.CacheDbTriggers();
+                }
+
+                foreach ((ulong _, ConcurrentHashSet<TextReaction> trs) in this.treactions) {
+                    foreach (TextReaction tr in trs)
+                        tr.CacheDbTriggers();
                 }
             } catch (Exception e) {
                 Log.Error(e, "Loading reactions failed");
@@ -65,10 +75,9 @@ namespace TheGodfather.Modules.Reactions.Services
         #region EmojiReactions
         public IReadOnlyCollection<EmojiReaction> GetGuildEmojiReactions(ulong gid)
         {
-            if (this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers))
-                return ers.ToList();
-            else
-                return Array.Empty<EmojiReaction>();
+            return this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) && ers is { }
+                ? ers.ToList()
+                : (IReadOnlyCollection<EmojiReaction>)Array.Empty<EmojiReaction>();
         }
 
         public IReadOnlyCollection<EmojiReaction> FindMatchingEmojiReactions(ulong gid, string trigger)
@@ -86,14 +95,18 @@ namespace TheGodfather.Modules.Reactions.Services
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 await db.Database.BeginTransactionAsync();
                 try {
-                    EmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == gid && er.Response == emoji.GetDiscordName());
-                    if (dber is null) {
-                        dber = new EmojiReaction {
+                    EmojiReaction? er = ers.FirstOrDefault(er => er.Response == emoji.GetDiscordName());
+                    if (er is null) {
+                        er = new EmojiReaction {
                             GuildId = gid,
                             Response = emoji.GetDiscordName()
                         };
-                        db.EmojiReactions.Add(dber);
+                        if (!ers.Add(er))
+                            throw new ConcurrentOperationException("Failed to add emoji reaction to cache");
+                        db.EmojiReactions.Add(er);
                         await db.SaveChangesAsync();
+                    } else {
+                        db.EmojiReactions.Attach(er);
                     }
 
                     foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
@@ -101,28 +114,23 @@ namespace TheGodfather.Modules.Reactions.Services
                         if (ers.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename))
                             continue;
 
-                        EmojiReaction reaction = ers.FirstOrDefault(tr => tr.Response == ename);
-                        if (reaction is null) {
-                            if (!ers.Add(new EmojiReaction(dber.Id, trigger, ename, isRegex: regex))) {
-                                db.Database.RollbackTransaction();
-                                return 0;
-                            }
-                        } else {
-                            if (!reaction.AddTrigger(trigger, isRegex: regex)) {
-                                db.Database.RollbackTransaction();
-                                return 0;
-                            }
-                        }
+                        if (!er.AddTrigger(trigger, isRegex: regex))
+                            throw new ConcurrentOperationException("Failed to add emoji reaction trigger");
+                        er.DbTriggers.Add(new EmojiReactionTrigger { ReactionId = er.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+                        db.EmojiReactions.Update(er);
 
-                        dber.DbTriggers.Add(new EmojiReactionTrigger { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
                         added++;
                     }
-                } catch {
-                    db.Database.RollbackTransaction();
-                    return 0;
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to add emoji reaction(s)");
+                } finally {
+                    if (added > 0) {
+                        db.Database.CommitTransaction();
+                        await db.SaveChangesAsync();
+                    } else {
+                        db.Database.RollbackTransaction();
+                    }
                 }
-                db.Database.CommitTransaction();
-                await db.SaveChangesAsync();
             }
 
             return added;
@@ -130,14 +138,14 @@ namespace TheGodfather.Modules.Reactions.Services
 
         public async Task<int> RemoveEmojiReactionsAsync(ulong gid, DiscordEmoji emoji)
         {
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction> ers) || !ers.Any())
+            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) || !ers.Any())
                 return 0;
 
             string ename = emoji.GetDiscordName();
             int removed = ers.RemoveWhere(er => er.Response == ename);
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == gid && er.Response == ename));
+                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid && er.Response == ename));
                 await db.SaveChangesAsync();
             }
 
@@ -174,7 +182,7 @@ namespace TheGodfather.Modules.Reactions.Services
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == gid));
+                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
 
@@ -227,8 +235,10 @@ namespace TheGodfather.Modules.Reactions.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 var toUpdate = db.EmojiReactions
+                   .Where(er => er.GuildIdDb == (long)gid)
                    .Include(er => er.DbTriggers)
-                   .Where(er => er.GuildId == gid && reactions.Any(r => r.Id == er.Id))
+                   .AsEnumerable()
+                   .Where(er => reactions.Any(r => r.Id == er.Id))
                    .ToList();
                 foreach (EmojiReaction er in toUpdate) {
                     foreach (string trigger in triggers)
@@ -270,7 +280,7 @@ namespace TheGodfather.Modules.Reactions.Services
             if (trs.Any(tr => tr.ContainsTriggerPattern(trigger)))
                 return false;
 
-            bool success = true;
+            bool success = false;
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 await db.Database.BeginTransactionAsync();
                 try {
@@ -290,6 +300,8 @@ namespace TheGodfather.Modules.Reactions.Services
 
                     TextReaction reaction = trs.FirstOrDefault(tr => tr.Response == response);
                     success = reaction is null ? trs.Add(new TextReaction(dbtr.Id, trigger, response, regex)) : reaction.AddTrigger(trigger, regex);
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to add emoji reaction");
                 } finally {
                     if (success) {
                         db.Database.CommitTransaction();

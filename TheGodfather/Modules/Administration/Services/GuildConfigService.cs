@@ -2,14 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Serilog;
-using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -41,8 +37,8 @@ namespace TheGodfather.Modules.Administration.Services
                 using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                     this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
                         db.Configs
-                            .AsEnumerable()
-                            .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
+                          .AsEnumerable()
+                          .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
                     ));
                 }
             } catch (Exception e) {
@@ -120,7 +116,8 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 return db.ExemptsLogging
-                    .Where(e => e.GuildId == gid)
+                    .Where(e => e.GuildIdDb == (long)gid)
+                    .AsEnumerable()
                     .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
             }
         }
@@ -131,13 +128,11 @@ namespace TheGodfather.Modules.Administration.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                 exempted |= db.ExemptsLogging
-                    .Where(e => e.GuildId == gid)
-                    .Any(e => e.Type == ExemptedEntityType.Member && e.Id == uid);
-                if (rids?.Any() ?? false) {
-                    exempted |= db.ExemptsLogging
-                        .Where(e => e.GuildId == gid)
-                        .Any(e => e.Type == ExemptedEntityType.Role && rids.Contains(e.Id));
-                }
+                    .Where(e => e.GuildIdDb == (long)gid)
+                    .AsEnumerable()
+                    .Any(e => (e.Type == ExemptedEntityType.Member && e.Id == uid) 
+                           || (e.Type == ExemptedEntityType.Role && (rids?.Contains(e.Id) ?? false))
+                    );
             }
 
             return exempted;
