@@ -30,11 +30,11 @@ namespace TheGodfather.EventListeners
         {
             if (e.Command.Name == "help")
                 return Task.CompletedTask;
-
+            
             LogExt.Information(
                 shard.Id, 
                 new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
-                e.Command?.QualifiedName ?? "<unknown command>", e.Context.User, e.Context.Guild, e.Context.Channel
+                e.Command?.QualifiedName ?? "<unknown command>", e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
             return Task.CompletedTask;
         }

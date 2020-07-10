@@ -111,11 +111,13 @@ namespace TheGodfather
         private void SetupCommands()
         {
             this.CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
-                EnableDms = false,
+                EnableDms = true,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 PrefixResolver = m => {
-                    string p = this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
+                    string p = m.Channel.Guild is null 
+                        ? this.Config.Prefix
+                        : this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));
                 },
                 Services = this.Services

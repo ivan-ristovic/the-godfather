@@ -123,7 +123,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetString(ulong gid, string key)
+        public string GetString(ulong? gid, string key)
         {
             this.AssertIsDataLoaded();
 
@@ -139,10 +139,10 @@ namespace TheGodfather.Services
             return response;
         }
 
-        public string GetGuildLocale(ulong gid)
+        public string GetGuildLocale(ulong? gid)
         {
             this.AssertIsDataLoaded();
-            return this.gcs.GetCachedConfig(gid)?.Locale ?? this.defLocale;
+            return gid is null ? this.defLocale : this.gcs.GetCachedConfig(gid.Value)?.Locale ?? this.defLocale;
         }
 
         public string GetCommandDescription(ulong gid, string command)

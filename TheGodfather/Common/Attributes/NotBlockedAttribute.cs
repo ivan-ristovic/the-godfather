@@ -22,7 +22,7 @@ namespace TheGodfather.Common.Attributes
                 return Task.FromResult(false);
             if (ctx.Services.GetService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);
-            if (BlockingCommandRuleExists())
+            if (ctx.Guild is { } && BlockingCommandRuleExists())
                 return Task.FromResult(false);
 
             if (!help)

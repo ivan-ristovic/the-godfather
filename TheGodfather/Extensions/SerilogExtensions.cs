@@ -155,7 +155,7 @@ namespace TheGodfather.Extensions
 
         private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception ex, string template, params object[] propertyValues)
         {
-            object[] allPropertyValues = new object[] { ctx.User, ctx.Guild, ctx.Channel };
+            object[] allPropertyValues = new object[] { ctx.User, ctx.Guild?.ToString() ?? "DM", ctx.Channel };
             if (propertyValues?.Any() ?? false)
                 allPropertyValues = propertyValues.Concat(allPropertyValues).ToArray();
             InternalLogMany(level, ctx.Client.ShardId, new[] { template, "{User}", "{Guild}", "{Channel}" }, ex, allPropertyValues);
