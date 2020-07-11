@@ -46,6 +46,8 @@ namespace TheGodfather.Database
         {
             if (optionsBuilder.IsConfigured)
                 return;
+            
+            optionsBuilder.UseLazyLoadingProxies();
 
             switch (this.Provider) {
                 case DbProvider.PostgreSql:

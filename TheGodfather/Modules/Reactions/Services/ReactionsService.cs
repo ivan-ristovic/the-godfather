@@ -43,17 +43,17 @@ namespace TheGodfather.Modules.Reactions.Services
                 using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
                     this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                         db.TextReactions
-                            .Include(t => t.DbTriggers)
-                            .AsEnumerable()
-                            .GroupBy(tr => tr.GuildId)
-                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g))
+                          .Include(tr => tr.DbTriggers)
+                          .AsEnumerable()
+                          .GroupBy(tr => tr.GuildId)
+                          .ToDictionary(g => g.Key, g => new ConcurrentHashSet<TextReaction>(g))
                     );
                     this.ereactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>(
                         db.EmojiReactions
-                            .Include(e => e.DbTriggers)
-                            .AsEnumerable()
-                            .GroupBy(er => er.GuildId)
-                            .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g))
+                          .Include(er => er.DbTriggers)
+                          .AsEnumerable()
+                          .GroupBy(er => er.GuildId)
+                          .ToDictionary(g => g.Key, g => new ConcurrentHashSet<EmojiReaction>(g))
                     );
                 }
 

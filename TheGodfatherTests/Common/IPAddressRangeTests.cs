@@ -15,7 +15,6 @@ namespace TheGodfatherTests.Common
             AssertParseSuccess("123.255.132.123:10480", 10480);
             AssertParseSuccess("123.123.255.123:10480", 10480);
             AssertParseSuccess("123.123.123.255:10480", 10480);
-            AssertParseSuccess("156.156.156.156:01000", 1000);
             AssertParseSuccess("123.123.123.0:10480", 10480);
             AssertParseSuccess("123.123.0.123:10480", 10480);
             AssertParseSuccess("123.0.123.123:10480", 10480);
@@ -91,15 +90,13 @@ namespace TheGodfatherTests.Common
             AssertParseFail("156.156.156.256:10480");
             AssertParseFail("156.156.156.156:");
             AssertParseFail("156.156.156.156:0");
-            AssertParseFail("156.156.156.156:10");
-            AssertParseFail("156.156.156.156:100");
-            AssertParseFail("156.156.156.156:999");
+            AssertParseFail("156.156.156.156:9");
             AssertParseFail("156.156.156.156:65536");
             AssertParseFail("156.156.156.156:99999");
             AssertParseFail("156.156.156.156:100000");
             AssertParseFail("156.156.156.156:0000");
             AssertParseFail("156.156.156.156:0001");
-            AssertParseFail("156.156.156.156:0100");
+            AssertParseFail("156.156.156.156:0090");
             AssertParseFail("156.156.156.156:00000");
             AssertParseFail("156.156.156.156:00001");
             AssertParseFail("256.156.156.156");

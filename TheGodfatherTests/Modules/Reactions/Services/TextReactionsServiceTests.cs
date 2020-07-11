@@ -274,7 +274,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(
                         db.TextReactions
                           .Where(tr => tr.GuildIdDb == (long)gid)
-                          .Include(tr => tr.DbTriggers)
                           .AsEnumerable()
                           .SingleOrDefault(tr => tr.Response == response && CheckTriggers(triggers, tr.DbTriggers.Select(t => t.Trigger.ToLower()))),
                         Is.Not.Null
@@ -396,7 +395,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
                     TextReaction dber = db.TextReactions
                         .Where(tr => tr.GuildIdDb == (long)MockData.Ids[0])
-                        .Include(tr => tr.DbTriggers)
                         .Single(tr => tr.Response == "response5");
                     Assert.That(dber.DbTriggers.Single().Trigger, Is.EqualTo("kill"));
                     Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Has.Exactly(this.trCount[0]).Items);
@@ -416,7 +414,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
 
                     TextReaction dbtr = db.TextReactions
                         .Where(tr => tr.GuildIdDb == (long)MockData.Ids[0])
-                        .Include(tr => tr.DbTriggers)
                         .Single(tr => tr.Response == "response1");
 
                     int removed = await this.Service.RemoveTextReactionTriggersAsync(

@@ -25,6 +25,7 @@ namespace TheGodfatherTests
             };
             DbContextOptions<TheGodfatherDbContext> options = new DbContextOptionsBuilder<TheGodfatherDbContext>()
                 .UseSqlite(DatabaseConnection)
+                .UseLazyLoadingProxies()
                 .Options;
 
             Database = new DbContextBuilder(cfg, options);

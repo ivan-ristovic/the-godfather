@@ -114,7 +114,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
                     Assert.That(ers.Select(er => er.Id), Is.Unique);
-                    var x = db.EmojiReactions.Include(er => er.DbTriggers).ToList();
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
@@ -147,19 +146,20 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(ers1.First().Triggers, Has.Exactly(1).Items);
                     Assert.That(ers1.First().IsMatch("This is another -teSting example."));
 
-                    IEnumerable<EmojiReaction> ers = db.EmojiReactions
-                        .Include(er => er.DbTriggers)
-                        .AsEnumerable();
                     Assert.That(
-                        ers.Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
-                                      && er.DbTriggers.Single().Trigger == "test"),
+                        db.EmojiReactions
+                            .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
+                            .AsEnumerable()
+                            .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                                       && er.DbTriggers.Single().Trigger == "test"),
                         Is.Not.Null
                     );
                     Assert.That(
-                        ers.Where(er => er.GuildIdDb == (long)MockData.Ids[1])
-                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
-                                      && er.DbTriggers.Single().Trigger == "testing"),
+                        db.EmojiReactions
+                            .Where(er => er.GuildIdDb == (long)MockData.Ids[1])
+                            .AsEnumerable()
+                            .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                                       && er.DbTriggers.Single().Trigger == "testing"),
                         Is.Not.Null
                     );
                     return Task.CompletedTask;
@@ -185,12 +185,9 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(info.IsMatch("This is an alarm"), Is.False);
                     Assert.That(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
 
-                    var x = db.EmojiReactions.Include(er => er.DbTriggers).ToList();
-
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
                           .AsEnumerable()
                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
                                      && er.DbTriggers.Count == 2
@@ -221,7 +218,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
                           .AsEnumerable()
                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
                                      && er.DbTriggers.Count == 1
@@ -257,7 +253,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
                           .AsEnumerable()
                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
                                      && er.DbTriggers.Count == 2
@@ -298,7 +293,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
                           .AsEnumerable()
                           .Single(er => er.Response == Emojis.Information.GetDiscordName()
                                      && er.DbTriggers.Count == 2
@@ -335,7 +329,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
                           .AsEnumerable()
                           .Single(er => er.Response == Emojis.Chicken.GetDiscordName()
                                      && er.DbTriggers.Count == 3
@@ -459,7 +452,6 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     EmojiReaction dber = db.EmojiReactions
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                        .Include(er => er.DbTriggers)
                         .AsEnumerable()
                         .Single(er => er.Response == Emojis.Cloud.GetDiscordName());
                     Assert.That(dber.DbTriggers.Single().Trigger, Is.EqualTo("abc"));

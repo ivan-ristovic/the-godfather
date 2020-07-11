@@ -6,7 +6,7 @@ namespace TheGodfather.Common
 {
     public sealed class IPAddressRange
     {
-        private static readonly Regex _formatRegex = new Regex(@"^(?<range>(\d{1,3}\.){1,3}\d{1,3})(:(?<port>\d{4,5}))?$", RegexOptions.Compiled);
+        private static readonly Regex _formatRegex = new Regex(@"^(?<range>(\d{1,3}\.){1,3}\d{1,3})(:(?<port>[1-9]\d{0,4}))?$", RegexOptions.Compiled);
 
         public static bool TryParse(string str, out IPAddressRange? res)
         {
@@ -25,7 +25,7 @@ namespace TheGodfather.Common
             }
 
             if (m.Groups.TryGetValue("port", out Group portGroup) && portGroup.Success) {
-                if (!ushort.TryParse(portGroup.Value, out ushort port) || port < 1000)
+                if (!ushort.TryParse(portGroup.Value, out ushort port) || port < 10)
                     return false;
             }
 

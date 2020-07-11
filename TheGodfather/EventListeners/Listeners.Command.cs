@@ -135,6 +135,12 @@ namespace TheGodfather.EventListeners
                                     case RequirePrefixesAttribute pattr:
                                         sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
                                         break;
+                                    case RequireGuildAttribute rgattr:
+                                        sb.AppendLine($"- That command can only be invoked inside a guild!");
+                                        break;
+                                    case RequireDirectMessageAttribute rdmattr:
+                                        sb.AppendLine($"- That command can only be invoked in a direct message!");
+                                        break;
                                     default:
                                         sb.AppendLine($"{attr} was not met! (this should not happen, please report)");
                                         break;
