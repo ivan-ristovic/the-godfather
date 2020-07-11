@@ -286,14 +286,14 @@ namespace TheGodfather
                 }
 
                 try {
-                    List<DatabaseBirthday> todayBirthdays;
-                    using (DatabaseContext db = shard.Database.CreateContext()) {
+                    List<Birthday> todayBirthdays;
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                         todayBirthdays = db.Birthdays
                             .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                             .ToList();
                     }
 
-                    foreach (DatabaseBirthday birthday in todayBirthdays) {
+                    foreach (Birthday birthday in todayBirthdays) {
                         AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
                         DiscordChannel channel = async.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
                         DiscordUser user = async.Execute(shard.Client.GetUserAsync(birthday.UserId));
@@ -302,7 +302,7 @@ namespace TheGodfather
                             Color = DiscordColor.Aquamarine
                         }));
 
-                        using (DatabaseContext db = shard.Database.CreateContext()) {
+                        using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                             birthday.LastUpdateYear = DateTime.Now.Year;
                             db.Birthdays.Update(birthday);
                             db.SaveChanges();
@@ -311,6 +311,9 @@ namespace TheGodfather
                     Log.Debug("Birthdays checked");
 
                     using (DatabaseContext db = shard.Database.CreateContext()) {
+                        // REMOVE THIS - this is here just as a reminder that this has to be changed once accounts are migrated to new context
+                        db.BankAccounts.Find(1, 1);
+                        
                         db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                         db.SaveChanges();
                     }

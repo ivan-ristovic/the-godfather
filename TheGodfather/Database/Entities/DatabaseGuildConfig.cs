@@ -14,7 +14,6 @@ namespace TheGodfather.Database.Entities
         {
             this.Accounts = new HashSet<DatabaseBankAccount>();
             this.AutoRoles = new HashSet<DatabaseAutoRole>();
-            this.Birthdays = new HashSet<DatabaseBirthday>();
             this.Chickens = new HashSet<DatabaseChicken>();
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
             this.Memes = new HashSet<DatabaseMeme>();
@@ -240,7 +239,6 @@ namespace TheGodfather.Database.Entities
 
         public virtual ICollection<DatabaseBankAccount> Accounts { get; set; }
         public virtual ICollection<DatabaseAutoRole> AutoRoles { get; set; }
-        public virtual ICollection<DatabaseBirthday> Birthdays { get; set; }
         public virtual ICollection<DatabaseChicken> Chickens { get; set; }
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }

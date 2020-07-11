@@ -8,7 +8,6 @@ namespace TheGodfather.Database
     {
         public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
         public virtual DbSet<DatabaseBankAccount> BankAccounts { get; set; }
-        public virtual DbSet<DatabaseBirthday> Birthdays { get; set; }
         public virtual DbSet<DatabaseChicken> Chickens { get; set; }
         public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
@@ -78,7 +77,6 @@ namespace TheGodfather.Database
 
             mb.Entity<DatabaseAutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<DatabaseBankAccount>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
-            mb.Entity<DatabaseBirthday>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.UserIdDb });
             mb.Entity<DatabaseChicken>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
             mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);

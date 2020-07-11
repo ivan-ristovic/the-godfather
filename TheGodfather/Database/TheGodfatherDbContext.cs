@@ -7,7 +7,8 @@ namespace TheGodfather.Database
 {
     public class TheGodfatherDbContext : DbContext
     {
-        public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; } 
+        public virtual DbSet<Birthday> Birthdays { get; protected set; } 
+        public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; }
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
         public virtual DbSet<CommandRule> CommandRules { get; protected set; }
@@ -69,6 +70,7 @@ namespace TheGodfather.Database
         {
             mb.HasDefaultSchema("gf");
 
+            mb.Entity<Birthday>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.UserIdDb });
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             mb.Entity<BlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);
             mb.Entity<CommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
