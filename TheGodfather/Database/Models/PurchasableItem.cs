@@ -2,15 +2,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("purchasable_items")]
-    public class DatabasePurchasableItem
+    public class PurchasableItem
     {
 
-        public DatabasePurchasableItem()
+        public PurchasableItem()
         {
-            this.Purchases = new HashSet<DatabasePurchasedItem>();
+            this.Purchases = new HashSet<PurchasedItem>();
         }
 
 
@@ -19,7 +19,7 @@ namespace TheGodfather.Database.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         public long GuildIdDb { get; set; }
         [NotMapped]
@@ -32,7 +32,7 @@ namespace TheGodfather.Database.Entities
         public long Price { get; set; }
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
-        public virtual ICollection<DatabasePurchasedItem> Purchases { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; }
+        public virtual ICollection<PurchasedItem> Purchases { get; set; }
     }
 }

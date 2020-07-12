@@ -17,6 +17,8 @@ using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Database.Models;
+using TheGodfather.Modules.Chickens.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -56,22 +58,22 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        using (DatabaseContext db = this.Database.CreateContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                             foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
                                 chicken.Stats.BareStrength += war.Gain;
                                 chicken.Stats.BareVitality -= 10;
-                                db.Chickens.Update(chicken.ToDatabaseChicken());
-                                await db.ModifyBankAccountAsync(chicken.OwnerId, ctx.Guild.Id, v => v + 100000);
+                                db.Chickens.Update(chicken);
+                                await db.ModifyBankAccountAsync(chicken.UserId, ctx.Guild.Id, v => v + 100000);
                                 sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                             }
 
                             foreach (Chicken chicken in war.Team1Won ? war.Team2 : war.Team1) {
                                 chicken.Stats.BareVitality -= 50;
                                 if (chicken.Stats.TotalVitality > 0) {
-                                    db.Chickens.Update(chicken.ToDatabaseChicken());
+                                    db.Chickens.Update(chicken);
                                     sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 25 HP!");
                                 } else {
-                                    db.Chickens.Remove(chicken.ToDatabaseChicken());
+                                    db.Chickens.Remove(chicken);
                                     sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
                                 }
                             }
@@ -107,9 +109,10 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
+                chicken.Owner = ctx.User;
 
                 if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");
@@ -137,9 +140,10 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
+                chicken.Owner = ctx.User;
 
                 if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");

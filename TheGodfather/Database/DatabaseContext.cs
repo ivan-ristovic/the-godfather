@@ -7,17 +7,11 @@ namespace TheGodfather.Database
     public class DatabaseContext : DbContext
     {
         public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
-        public virtual DbSet<DatabaseBankAccount> BankAccounts { get; set; }
-        public virtual DbSet<DatabaseChicken> Chickens { get; set; }
-        public virtual DbSet<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
-        public virtual DbSet<DatabaseChickenUpgrade> ChickenUpgrades { get; set; }
         public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
         public virtual DbSet<DatabaseMeme> Memes { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
-        public virtual DbSet<DatabasePurchasableItem> PurchasableItems { get; set; }
-        public virtual DbSet<DatabasePurchasedItem> PurchasedItems { get; set; }
         public virtual DbSet<DatabaseReminder> Reminders { get; set; }
         public virtual DbSet<DatabaseRssFeed> RssFeeds { get; set; }
         public virtual DbSet<DatabaseRssSubscription> RssSubscriptions { get; set; }
@@ -76,11 +70,6 @@ namespace TheGodfather.Database
             mb.ForNpgsqlUseIdentityAlwaysColumns();
 
             mb.Entity<DatabaseAutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
-            mb.Entity<DatabaseBankAccount>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
-            mb.Entity<DatabaseChicken>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
-            mb.Entity<DatabaseChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
-            mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChickenUpgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
-            mb.Entity<DatabaseChickenBoughtUpgrade>().HasOne(bu => bu.DbChicken).WithMany(u => u.DbUpgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<DatabaseGameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroWon).HasDefaultValue(0);
@@ -96,7 +85,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
             mb.Entity<DatabaseMeme>().HasKey(e => new { e.GuildIdDb, e.Name });
-            mb.Entity<DatabasePurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
             mb.Entity<DatabaseReminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<DatabaseReminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<DatabaseRssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });

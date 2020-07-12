@@ -66,14 +66,14 @@ namespace TheGodfather.Modules.Currency
                         if (!(game.Winner is null))
                             await this.InformAsync(ctx, Emojis.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        using (DatabaseContext db = this.Database.CreateContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                             foreach (HoldemGame.Participant participant in game.Participants)
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
                             await db.SaveChangesAsync();
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (DatabaseContext db = this.Database.CreateContext()) {
+                            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
                                 await db.SaveChangesAsync();
                             }
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
                         throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();

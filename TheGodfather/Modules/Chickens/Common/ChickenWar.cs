@@ -1,14 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Database.Models;
 #endregion
 
 namespace TheGodfather.Modules.Chickens.Common
@@ -90,6 +89,6 @@ namespace TheGodfather.Modules.Chickens.Common
         }
 
         public bool IsParticipating(DiscordUser user) 
-            => this.Team1.Any(c => c.OwnerId == user.Id) || this.Team2.Any(c => c.OwnerId == user.Id);
+            => this.Team1.Any(c => c.UserId == user.Id) || this.Team2.Any(c => c.UserId == user.Id);
     }
 }

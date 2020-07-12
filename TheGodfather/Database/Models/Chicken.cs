@@ -88,6 +88,9 @@ namespace TheGodfather.Database.Models
         public ChickenStats Stats { get; set; }
 
         [NotMapped]
+        public DiscordUser? Owner { get; set; }
+
+        [NotMapped]
         public long SellPrice => PriceForAttribute(this.Stats.BareStrength);
 
         [NotMapped]
@@ -114,9 +117,15 @@ namespace TheGodfather.Database.Models
             };
         }
 
+        public Chicken(ChickenType type)
+        {
+            this.Upgrades = new HashSet<ChickenBoughtUpgrade>();
+            this.Stats = StartingStats[type];
+            this.BareMaxVitality = this.Stats.BareMaxVitality;
+            this.BareStrength = this.Stats.BareStrength;
+            this.Vitality = this.Stats.BareVitality;
+        }
 
-        public Task<DiscordUser?> FindOwner(DiscordClient client)
-            => client.GetUserAsync(this.UserId);
 
         public bool TrainStrength()
         {

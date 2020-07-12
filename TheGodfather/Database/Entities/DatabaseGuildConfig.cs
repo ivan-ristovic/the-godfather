@@ -13,10 +13,7 @@ namespace TheGodfather.Database.Entities
         public DatabaseGuildConfig()
         {
             this.AutoRoles = new HashSet<DatabaseAutoRole>();
-            this.Chickens = new HashSet<DatabaseChicken>();
-            this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
             this.Memes = new HashSet<DatabaseMeme>();
-            this.PurchasableItems = new HashSet<DatabasePurchasableItem>();
             this.SavedTasks = new HashSet<DatabaseSavedTask>();
             this.SelfRoles = new HashSet<DatabaseSelfRole>();
             this.Subscriptions = new HashSet<DatabaseRssSubscription>();
@@ -237,10 +234,7 @@ namespace TheGodfather.Database.Entities
 
 
         public virtual ICollection<DatabaseAutoRole> AutoRoles { get; set; }
-        public virtual ICollection<DatabaseChicken> Chickens { get; set; }
-        public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
-        public virtual ICollection<DatabasePurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual ICollection<DatabaseSelfRole> SelfRoles { get; set; }
         public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }

@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("purchased_items")]
-    public class DatabasePurchasedItem
+    public class PurchasedItem
     {
-        [ForeignKey("DbPurchasableItem")]
+        [ForeignKey("PurchasableItem")]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ItemId { get; set; }
@@ -17,6 +17,6 @@ namespace TheGodfather.Database.Entities
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
 
-        public virtual DatabasePurchasableItem DbPurchasableItem { get; set; }
+        public virtual PurchasableItem Item { get; set; }
     }
 }

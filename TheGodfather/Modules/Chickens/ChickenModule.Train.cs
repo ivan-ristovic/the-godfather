@@ -8,10 +8,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -48,23 +50,21 @@ namespace TheGodfather.Modules.Chickens
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
+                if (chicken is null)
+                    throw new CommandFailedException("You do not own a chicken!");
+                chicken.Owner = ctx.User;
+
+                if (chicken.Stats.TotalVitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+
+                CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                long price = chicken.TrainStrengthPrice;
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                    return;
+
                 string result;
-
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
-                    var chicken = Chicken.FromDatabaseChicken(dbc);
-                    if (chicken is null)
-                        throw new CommandFailedException("You do not own a chicken!");
-
-                    if (chicken.Stats.TotalVitality < 25)
-                        throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
-
-
-                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                    long price = chicken.TrainStrengthPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
-                        return;
-
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
                     
@@ -73,10 +73,7 @@ namespace TheGodfather.Modules.Chickens
                         : $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
                     chicken.Stats.BareVitality--;
 
-                    dbc.Strength = chicken.Stats.BareStrength;
-                    dbc.Vitality--;
-                    db.Chickens.Update(dbc);
-
+                    db.Chickens.Update(chicken);
                     await db.SaveChangesAsync();
                 }
 
@@ -92,23 +89,22 @@ namespace TheGodfather.Modules.Chickens
             {
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
+                
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
+                if (chicken is null)
+                    throw new CommandFailedException("You do not own a chicken!");
+                chicken.Owner = ctx.User;
+
+                if (chicken.Stats.TotalVitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+
+                CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                long price = chicken.TrainVitalityPrice;
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                    return;
 
                 string result;
-
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
-                    var chicken = Chicken.FromDatabaseChicken(dbc);
-                    if (chicken is null)
-                        throw new CommandFailedException("You do not own a chicken!");
-
-                    if (chicken.Stats.TotalVitality < 25)
-                        throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
-
-                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                    long price = chicken.TrainVitalityPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
-                        return;
-
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
 
@@ -117,9 +113,7 @@ namespace TheGodfather.Modules.Chickens
                         : $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.TotalMaxVitality}";
                     chicken.Stats.BareVitality--;
 
-                    dbc.MaxVitality = chicken.Stats.BareMaxVitality;
-                    dbc.Vitality--;
-                    db.Chickens.Update(dbc);
+                    db.Chickens.Update(chicken);
                     await db.SaveChangesAsync();
                 }
 

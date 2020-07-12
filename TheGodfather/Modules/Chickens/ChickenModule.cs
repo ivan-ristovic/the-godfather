@@ -14,10 +14,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -50,7 +52,6 @@ namespace TheGodfather.Modules.Chickens
         [Command("fight"), Priority(1)]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
-        
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Member whose chicken to fight.")] DiscordMember member)
         {
@@ -60,14 +61,14 @@ namespace TheGodfather.Modules.Chickens
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
 
-            var chicken1 = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+            Chicken? chicken1 = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id);
             if (chicken1 is null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             if (chicken1.Stats.TotalVitality < 25)
                 throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
 
-            var chicken2 = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
+            Chicken? chicken2 = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, member.Id);
             if (chicken2 is null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
@@ -77,7 +78,7 @@ namespace TheGodfather.Modules.Chickens
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {Emojis.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {Emojis.Chicken}\n\n";
 
             Chicken winner = chicken1.Fight(chicken2);
-            winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : member;
+            winner.Owner = winner.UserId == ctx.User.Id ? ctx.User : member;
             Chicken loser = winner == chicken1 ? chicken2 : chicken1;
             int gain = winner.DetermineStrengthGain(loser);
             winner.Stats.BareStrength += gain;
@@ -86,15 +87,13 @@ namespace TheGodfather.Modules.Chickens
                 winner.Stats.BareVitality++;
             loser.Stats.BareVitality -= 50;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Chickens.Update(winner.ToDatabaseChicken());
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                db.Chickens.Update(winner);
                 if (loser.Stats.TotalVitality > 0)
-                    db.Chickens.Update(loser.ToDatabaseChicken());
+                    db.Chickens.Update(loser);
                 else
-                    db.Chickens.Remove(loser.ToDatabaseChicken());
-
+                    db.Chickens.Remove(loser);
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + gain * 200);
-
                 await db.SaveChangesAsync();
             }
 
@@ -112,15 +111,15 @@ namespace TheGodfather.Modules.Chickens
         public async Task FightAsync(CommandContext ctx,
                                     [Description("Name of the chicken to fight.")] string chickenName)
         {
-            var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, chickenName);
+            Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, chickenName);
             if (chicken is null)
                 throw new CommandFailedException("Couldn't find any chickens with that name!");
 
             try {
-                await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
+                await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.UserId));
             } catch (NotFoundException) {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.Chickens.Remove(chicken.ToDatabaseChicken());
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    db.Chickens.Remove(chicken);
                     await db.SaveChangesAsync();
                 }
                 throw new CommandFailedException("The user whose chicken you tried to fight is not currently in this guild. The chicken has been put to sleep.");
@@ -143,10 +142,9 @@ namespace TheGodfather.Modules.Chickens
                 return;
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
                     throw new CommandFailedException($"You do not have enough {gcfg.Currency} to pay for the disease creation!");
-
                 db.Chickens.RemoveRange(db.Chickens.Where(c => c.Vitality < threshold));
                 await db.SaveChangesAsync();
             }
@@ -165,12 +163,12 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
-                if (dbc is null)
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
-                dbc.Vitality = (dbc.Vitality + 100) > dbc.MaxVitality ? dbc.MaxVitality : (dbc.Vitality + 100);
-                db.Chickens.Update(dbc);
+                chicken.Vitality = (chicken.Vitality + 100) > chicken.BareMaxVitality ? chicken.BareMaxVitality : (chicken.Vitality + 100);
+                db.Chickens.Update(chicken);
                 await db.SaveChangesAsync();
             }
 
@@ -189,11 +187,12 @@ namespace TheGodfather.Modules.Chickens
             member = member ?? ctx.Member;
 
             CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-            var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
+            Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, member.Id, findOwner: false);
             if (chicken is null)
                 throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {gcfg.Currency}).");
+            chicken.Owner = member;
 
-            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(member));
+            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed());
         }
         #endregion
 
@@ -217,12 +216,12 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseChicken dbc = db.Chickens.FirstOrDefault(c => c.GuildId == ctx.Guild.Id && c.UserId == ctx.User.Id);
-                if (dbc is null)
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                Chicken chicken = db.Chickens.FirstOrDefault(c => c.GuildIdDb == (long)ctx.Guild.Id && c.UserIdDb == (long)ctx.User.Id);
+                if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
-                dbc.Name = newname;
-                db.Update(dbc);
+                chicken.Name = newname;
+                db.Update(chicken);
                 await db.SaveChangesAsync();
             }
 
@@ -239,21 +238,19 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
-            var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+            Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
             if (chicken is null)
                 throw new CommandFailedException("You do not own a chicken!");
+            chicken.Owner = ctx.User;
 
             CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
             long price = chicken.SellPrice;
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + price);
-                db.Chickens.Remove(new DatabaseChicken {
-                    GuildId = ctx.Guild.Id,
-                    UserId = ctx.User.Id
-                });
+                db.Chickens.Remove(chicken);
                 await db.SaveChangesAsync();
             }
 
@@ -268,28 +265,17 @@ namespace TheGodfather.Modules.Chickens
         public async Task TopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 chickens = await db.Chickens
-                    .Where(c => c.GuildId == ctx.Guild.Id)
-                    .Include(c => c.DbUpgrades)
-                        .ThenInclude(u => u.DbChickenUpgrade)
-                    .Select(c => Chicken.FromDatabaseChicken(c))
+                    .Where(c => c.GuildIdDb == (long)ctx.Guild.Id)
+                    .Include(c => c.Upgrades)
+                        .ThenInclude(u => u.Upgrade)
                     .OrderBy(c => c.Stats.TotalStrength)
                     .ToListAsync();
             }
 
-            foreach (Chicken chicken in chickens) {
-                try {
-                    chicken.Owner = await ctx.Guild.GetMemberAsync(chicken.OwnerId);
-                } catch (NotFoundException) {
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.Chickens.Remove(chicken.ToDatabaseChicken());
-                        await db.SaveChangesAsync();
-                    }
-                } catch (Exception e) {
-                    LogExt.Warning(ctx, e, "Removing chickens failed");
-                }
-            }
+            foreach (Chicken chicken in chickens)
+                await chicken.SetOwnerAsync(ctx.Client, this.Database);
 
             if (!chickens.Any())
                 throw new CommandFailedException("No chickens bought in this guild.");
@@ -310,28 +296,16 @@ namespace TheGodfather.Modules.Chickens
         public async Task GlobalTopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                chickens = db.Chickens
-                    .Include(c => c.DbUpgrades)
-                        .ThenInclude(u => u.DbChickenUpgrade)
-                    .AsEnumerable()
-                    .Select(c => Chicken.FromDatabaseChicken(c))
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                chickens = await db.Chickens
+                    .Include(c => c.Upgrades)
+                        .ThenInclude(u => u.Upgrade)
                     .OrderBy(c => c.Stats.TotalStrength)
-                    .ToList();
+                    .ToListAsync();
             }
 
-            foreach (Chicken chicken in chickens) {
-                try {
-                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
-                } catch (NotFoundException) {
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.Chickens.Remove(chicken.ToDatabaseChicken());
-                        await db.SaveChangesAsync();
-                    }
-                } catch (Exception e) {
-                    LogExt.Warning(ctx, e, "Removing chickens failed");
-                }
-            }
+            foreach (Chicken chicken in chickens)
+                await chicken.SetOwnerAsync(ctx.Client, this.Database);
 
             if (!chickens.Any())
                 throw new CommandFailedException("No chickens bought.");

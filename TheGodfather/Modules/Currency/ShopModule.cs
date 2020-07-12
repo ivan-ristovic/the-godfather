@@ -1,23 +1,21 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services.Common;
 #endregion
 
@@ -63,8 +61,8 @@ namespace TheGodfather.Modules.Currency
             if (price <1  || price > 100_000_000_000)
                 throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {gcfg.Currency}.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.PurchasableItems.Add(new DatabasePurchasableItem {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                db.PurchasableItems.Add(new PurchasableItem {
                     GuildId = ctx.Guild.Id,
                     Name = name,
                     Price = price
@@ -90,8 +88,8 @@ namespace TheGodfather.Modules.Currency
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
-            DatabasePurchasableItem item;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            PurchasableItem item;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 item = await db.PurchasableItems.FindAsync(id);
                 if (item is null || item.GuildId != ctx.Guild.Id)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
@@ -105,11 +103,11 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
 
-                db.PurchasedItems.Add(new DatabasePurchasedItem {
+                db.PurchasedItems.Add(new PurchasedItem {
                     ItemId = item.Id,
                     UserId = ctx.User.Id
                 });
@@ -124,8 +122,8 @@ namespace TheGodfather.Modules.Currency
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item name.")] string name)
         {
-            DatabasePurchasableItem item;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            PurchasableItem item;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 item = db.PurchasableItems.FirstOrDefault(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                 if (item is null || item.GuildId != ctx.Guild.Id)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
@@ -139,11 +137,11 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {gcfg.Currency}?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                     throw new CommandFailedException("You do not have enough money to purchase that item!");
 
-                db.PurchasedItems.Add(new DatabasePurchasedItem {
+                db.PurchasedItems.Add(new PurchasedItem {
                     ItemId = item.Id,
                     UserId = ctx.User.Id
                 });
@@ -165,9 +163,9 @@ namespace TheGodfather.Modules.Currency
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {
-            DatabasePurchasableItem item;
-            DatabasePurchasedItem purchased;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            PurchasableItem item;
+            PurchasedItem purchased;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 item = await db.PurchasableItems.FindAsync(id);
                 if (item is null)
                     throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
@@ -183,7 +181,7 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {gcfg.Currency}?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 db.PurchasedItems.Remove(purchased);
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + retval);
                 await db.SaveChangesAsync();
@@ -205,9 +203,9 @@ namespace TheGodfather.Modules.Currency
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 foreach (int id in ids.Distinct()) {
-                    var item = new DatabasePurchasableItem { Id = id, GuildId = ctx.Guild.Id };
+                    var item = new PurchasableItem { Id = id, GuildId = ctx.Guild.Id };
                     if (db.PurchasableItems.Contains(item))
                         db.PurchasableItems.Remove(item);
                 }
@@ -224,8 +222,8 @@ namespace TheGodfather.Modules.Currency
         [Aliases("ls")]
         public async Task ListAsync(CommandContext ctx)
         {
-            List<DatabasePurchasableItem> items;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<PurchasableItem> items;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 items = await db.PurchasableItems
                     .Where(i => i.GuildId == ctx.Guild.Id)
                     .OrderBy(i => i.Price)

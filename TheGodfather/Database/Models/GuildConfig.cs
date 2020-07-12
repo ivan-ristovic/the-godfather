@@ -13,18 +13,18 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<CommandRule> CommandRules { get; set; }
         public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
-        public virtual ICollection<Filter> Filters { get; set; }
-        public virtual ICollection<TextReaction> TextReactions { get; set; }
         public virtual ICollection<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
         public virtual ICollection<ExemptedLoggingEntity> ExemptsLogging { get; set; }
         public virtual ICollection<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
+        public virtual ICollection<Filter> Filters { get; set; }
+        public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
+        public virtual ICollection<TextReaction> TextReactions { get; set; }
 
         /*
         public virtual ICollection<BankAccount> Accounts { get; set; }
         public virtual ICollection<AutoRole> AutoRoles { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<Meme> Memes { get; set; }
-        public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<GuildRank> Ranks { get; set; }
         public virtual ICollection<SavedTask> SavedTasks { get; set; }
         public virtual ICollection<SelfRole> SelfRoles { get; set; }
@@ -34,21 +34,21 @@ namespace TheGodfather.Database.Models
         public GuildConfig()
         {
             this.Birthdays = new HashSet<Birthday>();
+            this.Chickens = new HashSet<Chicken>();
             this.CommandRules = new HashSet<CommandRule>();
             this.EmojiReactions = new HashSet<EmojiReaction>();
             this.ExemptsAntispam = new HashSet<ExemptedAntispamEntity>();
             this.ExemptsLogging = new HashSet<ExemptedLoggingEntity>();
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
+            this.PurchasableItems = new HashSet<PurchasableItem>();
             this.TextReactions = new HashSet<TextReaction>();
-            this.Chickens = new HashSet<Chicken>();
             /*
             this.Accounts = new HashSet<BankAccount>();
             this.AutoRoles = new HashSet<AutoRole>();
             this.ChickensBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
             this.LoggingExempts = new HashSet<ExemptLogging>();
             this.Memes = new HashSet<Meme>();
-            this.PurchasableItems = new HashSet<PurchasableItem>();
             this.Ranks = new HashSet<GuildRank>();
             this.RatelimitExempts = new HashSet<ExemptRatelimit>();
             this.SavedTasks = new HashSet<SavedTask>();

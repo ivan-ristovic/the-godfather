@@ -10,10 +10,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -52,16 +54,17 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
                 CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+
+                Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
                 if (chicken is null)
                     throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {gcfg.Currency}).");
 
                 if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
                     throw new CommandFailedException("Your chicken already one of those upgrades!");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     foreach (int id in ids) {
-                        DatabaseChickenUpgrade upgrade = db.ChickenUpgrades.FirstOrDefault(u => u.Id == id);
+                        ChickenUpgrade upgrade = await db.ChickenUpgrades.FindAsync(id);
                         if (upgrade is null)
                             throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
@@ -71,10 +74,10 @@ namespace TheGodfather.Modules.Chickens
                         if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
                             throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy that upgrade!");
 
-                        db.ChickensBoughtUpgrades.Add(new DatabaseChickenBoughtUpgrade {
+                        db.ChickensBoughtUpgrades.Add(new ChickenBoughtUpgrade {
                             Id = upgrade.Id,
                             GuildId = chicken.GuildId,
-                            UserId = chicken.OwnerId
+                            UserId = chicken.UserId
                         });
                         await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
                     }
@@ -90,7 +93,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("ls", "view")]
             public async Task ListAsync(CommandContext ctx)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     await ctx.SendCollectionInPagesAsync(
                         "Available chicken upgrades",
                         db.ChickenUpgrades.OrderByDescending(u => u.Cost),

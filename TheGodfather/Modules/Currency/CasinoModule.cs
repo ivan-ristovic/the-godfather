@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Currency
             await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency, out long won));
 
             if (won > 0) {
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + won);
                     await db.SaveChangesAsync();
                 }
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -120,8 +120,8 @@ namespace TheGodfather.Modules.Currency
             var wof = new WheelOfFortuneGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
             await wof.RunAsync();
 
-            if (wof.WonAmount > 0) { 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+            if (wof.WonAmount > 0) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + wof.WonAmount);
                     await db.SaveChangesAsync();
                 }

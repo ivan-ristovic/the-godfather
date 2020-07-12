@@ -10,10 +10,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services.Common;
 #endregion
@@ -128,7 +130,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
                 
-                if (!(Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id) is null))
+                if (await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id) is { })
                     throw new CommandFailedException("You already own a chicken!");
 
                 CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
@@ -136,18 +138,14 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {gcfg.Currency}?"))
                     return;
                 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy a chicken ({Chicken.Price(type)} needed)!");
 
-                    ChickenStats stats = Chicken.StartingStats[type];
-                    db.Chickens.Add(new DatabaseChicken {
+                    db.Chickens.Add(new Chicken(type) {
                         GuildId = ctx.Guild.Id,
-                        MaxVitality = stats.BareMaxVitality,
                         Name = name,
-                        Strength = stats.BareStrength,
                         UserId = ctx.User.Id,
-                        Vitality = stats.BareVitality
                     });
 
                     await db.SaveChangesAsync();

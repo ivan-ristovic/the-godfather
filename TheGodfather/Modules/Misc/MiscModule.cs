@@ -104,12 +104,12 @@ namespace TheGodfather.Modules.Misc
         {
             user = user ?? ctx.User;
 
-            List<DatabasePurchasedItem> items;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<PurchasedItem> items;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 items = await db.PurchasedItems
-                        .Include(i => i.DbPurchasableItem)
-                    .Where(i => i.UserId == ctx.User.Id && i.DbPurchasableItem.GuildId == ctx.Guild.Id)
-                    .OrderBy(i => i.DbPurchasableItem.Price)
+                    .Include(i => i.Item)
+                    .Where(i => i.UserIdDb == (long)ctx.User.Id && i.Item.GuildIdDb == (long)ctx.Guild.Id)
+                    .OrderBy(i => i.Item.Price)
                     .ToListAsync();
             }
             
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 $"Items owned by {user.Username}",
                 items,
-                item => $"{Formatter.Bold(item.DbPurchasableItem.Name)} | {item.DbPurchasableItem.Price}",
+                i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
                 this.ModuleColor,
                 5
             );
