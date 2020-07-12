@@ -305,15 +305,12 @@ namespace TheGodfather
                         using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                             birthday.LastUpdateYear = DateTime.Now.Year;
                             db.Birthdays.Update(birthday);
-                            db.SaveChanges();
+                            db.SaveChanges(); 
                         }
                     }
                     Log.Debug("Birthdays checked");
 
-                    using (DatabaseContext db = shard.Database.CreateContext()) {
-                        // REMOVE THIS - this is here just as a reminder that this has to be changed once accounts are migrated to new context
-                        db.BankAccounts.Find(1, 1);
-                        
+                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                         db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                         db.SaveChanges();
                     }

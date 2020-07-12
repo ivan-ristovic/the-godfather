@@ -10,6 +10,7 @@ namespace TheGodfather.Database.Models
     public class GuildConfig
     {
         public virtual ICollection<Birthday> Birthdays { get; set; }
+        public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<CommandRule> CommandRules { get; set; }
         public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
         public virtual ICollection<Filter> Filters { get; set; }
@@ -21,7 +22,6 @@ namespace TheGodfather.Database.Models
         /*
         public virtual ICollection<BankAccount> Accounts { get; set; }
         public virtual ICollection<AutoRole> AutoRoles { get; set; }
-        public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
         public virtual ICollection<Meme> Memes { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
@@ -41,10 +41,10 @@ namespace TheGodfather.Database.Models
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
             this.TextReactions = new HashSet<TextReaction>();
+            this.Chickens = new HashSet<Chicken>();
             /*
             this.Accounts = new HashSet<BankAccount>();
             this.AutoRoles = new HashSet<AutoRole>();
-            this.Chickens = new HashSet<Chicken>();
             this.ChickensBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
             this.LoggingExempts = new HashSet<ExemptLogging>();
             this.Memes = new HashSet<Meme>();

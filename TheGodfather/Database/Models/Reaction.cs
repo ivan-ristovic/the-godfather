@@ -11,10 +11,8 @@ namespace TheGodfather.Database.Models
 {
     public abstract class ReactionTrigger
     {
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         [Column("trigger"), Required, MaxLength(128)]
-        public string Trigger { get; set; }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public string Trigger { get; set; } = null!;
     }
 
 

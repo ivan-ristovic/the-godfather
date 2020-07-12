@@ -32,6 +32,6 @@ namespace TheGodfather.Database.Models
         public int LastUpdateYear { get; set; } = DateTime.Now.Year;
 
 
-        public virtual GuildConfig GuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
     }
 }

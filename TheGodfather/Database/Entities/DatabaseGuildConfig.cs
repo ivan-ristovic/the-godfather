@@ -12,7 +12,6 @@ namespace TheGodfather.Database.Entities
 
         public DatabaseGuildConfig()
         {
-            this.Accounts = new HashSet<DatabaseBankAccount>();
             this.AutoRoles = new HashSet<DatabaseAutoRole>();
             this.Chickens = new HashSet<DatabaseChicken>();
             this.ChickensBoughtUpgrades = new HashSet<DatabaseChickenBoughtUpgrade>();
@@ -237,7 +236,6 @@ namespace TheGodfather.Database.Entities
         }
 
 
-        public virtual ICollection<DatabaseBankAccount> Accounts { get; set; }
         public virtual ICollection<DatabaseAutoRole> AutoRoles { get; set; }
         public virtual ICollection<DatabaseChicken> Chickens { get; set; }
         public virtual ICollection<DatabaseChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }

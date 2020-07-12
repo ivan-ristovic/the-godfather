@@ -15,12 +15,10 @@ namespace TheGodfather.Database.Models
         [Column("rank")]
         public short Rank { get; set; }
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         [Column("name"), Required, MaxLength(32)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
 
-        public virtual GuildConfig GuildConfig { get; set; }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
     }
 }

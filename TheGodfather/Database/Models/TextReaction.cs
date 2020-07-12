@@ -12,9 +12,7 @@ namespace TheGodfather.Database.Models
         [Column("id")]
         public int ReactionId { get; set; }
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
-        public virtual TextReaction Reaction { get; set; }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public virtual TextReaction Reaction { get; set; } = null!;
     }
 
 

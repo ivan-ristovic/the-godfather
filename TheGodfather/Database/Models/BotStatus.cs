@@ -13,7 +13,7 @@ namespace TheGodfather.Database.Models
         public int Id { get; set; }
 
         [Column("status"), Required, MaxLength(64)]
-        public string Status { get; set; } = "";
+        public string Status { get; set; } = null!;
 
         [Column("activity_type"), Required]
         public ActivityType Activity { get; set; } = ActivityType.Playing;

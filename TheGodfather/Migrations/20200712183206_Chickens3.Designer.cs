@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
@@ -9,9 +10,10 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    partial class TheGodfatherDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200712183206_Chickens3")]
+    partial class Chickens3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,27 +160,6 @@ namespace TheGodfather.Migrations
                     b.ToTable("chickens");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.ChickenBoughtUpgrade", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnName("id")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("GuildIdDb")
-                        .HasColumnName("gid")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserIdDb")
-                        .HasColumnName("uid")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id", "GuildIdDb", "UserIdDb");
-
-                    b.HasIndex("GuildIdDb", "UserIdDb");
-
-                    b.ToTable("chicken_bought_upgrades");
-                });
-
             modelBuilder.Entity("TheGodfather.Database.Models.ChickenUpgrade", b =>
                 {
                     b.Property<int>("Id")
@@ -186,6 +167,12 @@ namespace TheGodfather.Migrations
                         .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long?>("ChickenGuildIdDb")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ChickenUserIdDb")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("Cost")
                         .HasColumnName("cost")
@@ -206,6 +193,8 @@ namespace TheGodfather.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChickenGuildIdDb", "ChickenUserIdDb");
 
                     b.ToTable("chicken_upgrades");
                 });
@@ -229,7 +218,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("allow")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("GuildConfigGuildIdDb")
+                    b.Property<long?>("GuildConfigGuildIdDb")
                         .HasColumnType("bigint");
 
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
@@ -662,28 +651,18 @@ namespace TheGodfather.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.ChickenBoughtUpgrade", b =>
+            modelBuilder.Entity("TheGodfather.Database.Models.ChickenUpgrade", b =>
                 {
-                    b.HasOne("TheGodfather.Database.Models.ChickenUpgrade", "Upgrade")
-                        .WithMany("BoughtUpgrades")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TheGodfather.Database.Models.Chicken", "Chicken")
+                    b.HasOne("TheGodfather.Database.Models.Chicken", null)
                         .WithMany("Upgrades")
-                        .HasForeignKey("GuildIdDb", "UserIdDb")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChickenGuildIdDb", "ChickenUserIdDb");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.CommandRule", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
                         .WithMany("CommandRules")
-                        .HasForeignKey("GuildConfigGuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GuildConfigGuildIdDb");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.EmojiReaction", b =>
