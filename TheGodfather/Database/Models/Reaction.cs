@@ -30,14 +30,15 @@ namespace TheGodfather.Database.Models
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("reaction"), Required, MaxLength(128)]
-        public string Response { get; set; }
+        public string Response { get; set; } = null!;
 
-        public virtual GuildConfig GuildConfig { get; set; }
         
         [NotMapped]
         public int RegexCount => this.triggerRegexes.Count;
+        
         [NotMapped]
         public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString());
+        
         [NotMapped]
         public IEnumerable<string> OrderedTriggers => this.Triggers.OrderBy(s => s);
 
@@ -45,10 +46,11 @@ namespace TheGodfather.Database.Models
         private readonly ConcurrentHashSet<Regex> triggerRegexes;
 
 
-#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
         public Reaction()
         {
-            this.Response = "<not_set>";
             this.triggerRegexes = new ConcurrentHashSet<Regex>();
         }
 
@@ -68,7 +70,6 @@ namespace TheGodfather.Database.Models
             foreach (string trigger in triggers)
                 this.AddTrigger(trigger, isRegex);
         }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
 
         public abstract void CacheDbTriggers();

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using TheGodfather.Common;
@@ -168,13 +167,9 @@ namespace TheGodfather.Database.Models
         {
             int str1 = this.Stats.TotalStrength;
             int str2 = loser.Stats.TotalStrength;
-
-            if (str1 > str2)
-                return Math.Max(7 - (str1 - str2) / 5, 1);
-            else if (str2 > str1)
-                return (str2 - str1) / 5 + 5;
-            else
-                return 5;
+            return str1 > str2 
+                ? Math.Max(7 - (str1 - str2) / 5, 1) 
+                : str2 > str1 ? (str2 - str1) / 5 + 5 : 5;
         }
     }
 
@@ -182,24 +177,14 @@ namespace TheGodfather.Database.Models
     {
         public int BareStrength {
             get => this.strength;
-            set {
-                if (value > 999)
-                    this.strength = 999;
-                else if (value < 0)
-                    this.strength = 0;
-                else
-                    this.strength = value;
-            }
+            set => this.strength = value > 999 ? 999 : (value < 0 ? 0 : value);
         }
         public int BareVitality {
             get => this.vitality;
             set {
-                if (value > this.BareMaxVitality)
-                    this.vitality = this.BareMaxVitality;
-                else if (value < 0)
-                    this.vitality = 0;
-                else
-                    this.vitality = value;
+                this.vitality = value > this.BareMaxVitality 
+                    ? this.BareMaxVitality 
+                    : value < 0 ? 0 : value;
             }
         }
         public int BareMaxVitality {
