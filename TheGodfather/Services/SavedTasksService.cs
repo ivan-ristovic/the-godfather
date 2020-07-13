@@ -50,7 +50,7 @@ namespace TheGodfather.Services
                     RegisterReminders(reminders);
                 }
             } catch (Exception e) {
-                Log.Error(e, "Lodaing saved tasks and reminders failed");
+                Log.Error(e, "Loading saved tasks failed");
             }
 
 

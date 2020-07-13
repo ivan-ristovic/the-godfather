@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search.Extensions
 {
     public static class DatabaseContextBuilderFeedsExtensions
     {
-        public static async Task SubscribeAsync(this DbContextBuilder dbb, ulong gid, ulong cid, string url, string name = null)
+        public static async Task SubscribeAsync(this DbContextBuilder dbb, ulong gid, ulong cid, string url, string? name = null)
         {
-            System.ServiceModel.Syndication.SyndicationItem newest = RssService.GetFeedResults(url)?.FirstOrDefault();
+            SyndicationItem? newest = RssService.GetFeedResults(url)?.FirstOrDefault();
             if (newest is null)
                 throw new Exception("Can't load the feed entries.");
 
-            using (DatabaseContext db = dbb.CreateContext()) {
-                DatabaseRssFeed feed = db.RssFeeds.SingleOrDefault(f => f.Url == url);
+            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                RssFeed? feed = db.RssFeeds.SingleOrDefault(f => f.Url == url);
                 if (feed is null) {
-                    feed = new DatabaseRssFeed {
+                    feed = new RssFeed {
                         Url = url,
                         LastPostUrl = newest.Links[0].Uri.ToString()
                     };
@@ -26,7 +27,7 @@ namespace TheGodfather.Modules.Search.Extensions
                     await db.SaveChangesAsync();
                 }
 
-                db.RssSubscriptions.Add(new DatabaseRssSubscription {
+                db.RssSubscriptions.Add(new RssSubscription {
                     ChannelId = cid,
                     GuildId = gid,
                     Id = feed.Id,

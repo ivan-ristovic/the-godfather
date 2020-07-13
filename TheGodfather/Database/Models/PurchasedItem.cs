@@ -5,7 +5,7 @@ namespace TheGodfather.Database.Models
     [Table("purchased_items")]
     public class PurchasedItem
     {
-        [ForeignKey("PurchasableItem")]
+        [ForeignKey("Item")]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ItemId { get; set; }

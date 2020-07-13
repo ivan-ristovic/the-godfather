@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Extensions;
@@ -95,8 +96,8 @@ namespace TheGodfather.Modules.Search
             [Aliases("ls", "listsubs", "listfeeds")]
             public async Task ListAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseRssSubscription> subs;
-                using (DatabaseContext db = this.Database.CreateContext())
+                IReadOnlyList<RssSubscription> subs;
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext())
                     subs = await db.RssSubscriptions.Where(s => s.ChannelId == ctx.Channel.Id).ToListAsync();
 
                 if (!subs.Any())
@@ -107,7 +108,7 @@ namespace TheGodfather.Modules.Search
                     subs,
                     sub => {
                         string qname = sub.Name;
-                        return $"{Formatter.InlineCode($"{sub.Id:D4}")} | {(string.IsNullOrWhiteSpace(qname) ? sub.DbRssFeed.Url : qname)}";
+                        return $"{Formatter.InlineCode($"{sub.Id:D4}")} | {(string.IsNullOrWhiteSpace(qname) ? sub.Feed.Url : qname)}";
                     },
                     this.ModuleColor
                 );
@@ -175,7 +176,7 @@ namespace TheGodfather.Modules.Search
                 if (ids is null || !ids.Any())
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && ids.Contains(s.Id)));
                     await db.SaveChangesAsync();
                 }
@@ -187,8 +188,8 @@ namespace TheGodfather.Modules.Search
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Name of the subscription.")] string name)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseRssSubscription sub = db.RssSubscriptions.SingleOrDefault(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name);
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    RssSubscription sub = db.RssSubscriptions.SingleOrDefault(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name);
                     if (sub == null)
                         throw new CommandFailedException("Not subscribed to a feed with that name!");
                     db.RssSubscriptions.Remove(sub);
@@ -211,7 +212,7 @@ namespace TheGodfather.Modules.Search
                 if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to remove all subscriptions for channel {channel.Mention}?"))
                     return;
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.ChannelId == ctx.Guild.Id));
                     await db.SaveChangesAsync();
                 }
@@ -231,7 +232,7 @@ namespace TheGodfather.Modules.Search
                 if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == rsub));
                     await db.SaveChangesAsync();
                 }
@@ -251,7 +252,7 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(name_url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name_url));
                     await db.SaveChangesAsync();
                 }
@@ -259,9 +260,9 @@ namespace TheGodfather.Modules.Search
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
                 if (!(chid is null)) {
                     string feedurl = YtService.GetRssUrlForChannel(chid);
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        DatabaseRssSubscription sub = db.RssSubscriptions
-                            .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.DbRssFeed.Url == feedurl);
+                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        RssSubscription sub = db.RssSubscriptions
+                            .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.Feed.Url == feedurl);
                         if (!(sub is null)) {
                             db.RssSubscriptions.Remove(sub);
                             await db.SaveChangesAsync();

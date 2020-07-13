@@ -13,8 +13,6 @@ namespace TheGodfather.Database
         public virtual DbSet<DatabaseMeme> Memes { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
         public virtual DbSet<DatabaseReminder> Reminders { get; set; }
-        public virtual DbSet<DatabaseRssFeed> RssFeeds { get; set; }
-        public virtual DbSet<DatabaseRssSubscription> RssSubscriptions { get; set; }
         public virtual DbSet<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual DbSet<DatabaseSelfRole> SelfAssignableRoles { get; set; }
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
@@ -87,7 +85,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseMeme>().HasKey(e => new { e.GuildIdDb, e.Name });
             mb.Entity<DatabaseReminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<DatabaseReminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
-            mb.Entity<DatabaseRssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
             mb.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
             mb.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();

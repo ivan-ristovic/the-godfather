@@ -2,15 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("rss_feeds")]
-    public class DatabaseRssFeed
+    public class RssFeed
     {
-
-        public DatabaseRssFeed()
+        public RssFeed()
         {
-            this.Subscriptions = new HashSet<DatabaseRssSubscription>();
+            this.Subscriptions = new HashSet<RssSubscription>();
         }
 
 
@@ -20,12 +19,12 @@ namespace TheGodfather.Database.Entities
         public int Id { get; set; }
 
         [Column("url"), Required]
-        public string Url { get; set; }
+        public string Url { get; set; } = null!;
 
         [Column("last_post_url"), Required]
-        public string LastPostUrl { get; set; }
+        public string LastPostUrl { get; set; } = null!;
 
 
-        public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }
+        public virtual ICollection<RssSubscription> Subscriptions { get; set; }
     }
 }

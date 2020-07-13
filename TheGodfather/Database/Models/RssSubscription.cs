@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("rss_subscriptions")]
-    public class DatabaseRssSubscription
+    public class RssSubscription
     {
-        [ForeignKey("DbRssFeed")]
+        [ForeignKey("Feed")]
         [Column("id")]
         public int Id { get; set; }
 
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
@@ -24,10 +24,10 @@ namespace TheGodfather.Database.Entities
         public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
 
         [Column("name"), Required, MaxLength(64)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
-        public virtual DatabaseRssFeed DbRssFeed { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
+        public virtual RssFeed Feed { get; set; } = null!;
     }
 }

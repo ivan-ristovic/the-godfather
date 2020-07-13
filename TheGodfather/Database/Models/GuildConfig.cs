@@ -18,6 +18,7 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual ICollection<Filter> Filters { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
+        public virtual ICollection<RssSubscription> Subscriptions { get; set; }
         public virtual ICollection<TextReaction> TextReactions { get; set; }
 
         /*
@@ -28,7 +29,6 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<GuildRank> Ranks { get; set; }
         public virtual ICollection<SavedTask> SavedTasks { get; set; }
         public virtual ICollection<SelfRole> SelfRoles { get; set; }
-        public virtual ICollection<RssSubscription> Subscriptions { get; set; }
         */
 
         public GuildConfig()
@@ -42,6 +42,7 @@ namespace TheGodfather.Database.Models
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
             this.PurchasableItems = new HashSet<PurchasableItem>();
+            this.Subscriptions = new HashSet<RssSubscription>();
             this.TextReactions = new HashSet<TextReaction>();
             /*
             this.Accounts = new HashSet<BankAccount>();
@@ -53,7 +54,6 @@ namespace TheGodfather.Database.Models
             this.RatelimitExempts = new HashSet<ExemptRatelimit>();
             this.SavedTasks = new HashSet<SavedTask>();
             this.SelfRoles = new HashSet<SelfRole>();
-            this.Subscriptions = new HashSet<RssSubscription>();
             */
         }
 

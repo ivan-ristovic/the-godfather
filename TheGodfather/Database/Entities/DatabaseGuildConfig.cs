@@ -16,7 +16,6 @@ namespace TheGodfather.Database.Entities
             this.Memes = new HashSet<DatabaseMeme>();
             this.SavedTasks = new HashSet<DatabaseSavedTask>();
             this.SelfRoles = new HashSet<DatabaseSelfRole>();
-            this.Subscriptions = new HashSet<DatabaseRssSubscription>();
         }
 
 
@@ -237,6 +236,5 @@ namespace TheGodfather.Database.Entities
         public virtual ICollection<DatabaseMeme> Memes { get; set; }
         public virtual ICollection<DatabaseSavedTask> SavedTasks { get; set; }
         public virtual ICollection<DatabaseSelfRole> SelfRoles { get; set; }
-        public virtual ICollection<DatabaseRssSubscription> Subscriptions { get; set; }
     }
 }

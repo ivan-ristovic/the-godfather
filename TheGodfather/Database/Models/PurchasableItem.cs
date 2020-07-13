@@ -7,7 +7,6 @@ namespace TheGodfather.Database.Models
     [Table("purchasable_items")]
     public class PurchasableItem
     {
-
         public PurchasableItem()
         {
             this.Purchases = new HashSet<PurchasedItem>();
@@ -26,13 +25,13 @@ namespace TheGodfather.Database.Models
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("name"), Required, MaxLength(64)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Column("price"), Required]
         public long Price { get; set; }
 
 
-        public virtual GuildConfig GuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
         public virtual ICollection<PurchasedItem> Purchases { get; set; }
     }
 }

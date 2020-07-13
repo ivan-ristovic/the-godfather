@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
 using System.Collections.Generic;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -128,8 +125,8 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.RssSubscriptions.Remove(new DatabaseRssSubscription { ChannelId = ctx.Channel.Id, Id = id });
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                db.RssSubscriptions.Remove(new RssSubscription { ChannelId = ctx.Channel.Id, Id = id });
                 await db.SaveChangesAsync();
             }
 
