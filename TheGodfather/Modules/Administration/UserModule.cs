@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
@@ -447,8 +448,13 @@ namespace TheGodfather.Modules.Administration
             DateTimeOffset until = DateTimeOffset.Now + timespan;
             await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("BANNED")} {member.DisplayName} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!");
 
-            var tinfo = new UnbanTaskInfo(ctx.Guild.Id, member.Id, until);
-            await ctx.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
+            var task = new GuildTask {
+                ExecutionTime = until,
+                GuildId = ctx.Guild.Id,
+                Type = ScheduledTaskType.Unban,
+                UserId = member.Id,
+            };
+            await ctx.Services.GetService<SchedulingService>().ScheduleAsync(task);
         }
 
         [Command("tempban"), Priority(2)]
@@ -475,8 +481,13 @@ namespace TheGodfather.Modules.Administration
             DateTime until = DateTime.UtcNow + timespan;
             await this.InformAsync(ctx, $"{ctx.Member.Mention} {Formatter.Bold("BANNED")} {user.ToString()} for {Formatter.Bold(timespan.Humanize(4, minUnit: TimeUnit.Second))}!");
 
-            var tinfo = new UnbanTaskInfo(ctx.Guild.Id, user.Id, until);
-            await ctx.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
+            var task = new GuildTask {
+                ExecutionTime = until,
+                GuildId = ctx.Guild.Id,
+                Type = ScheduledTaskType.Unban,
+                UserId = ctx.User.Id,
+            };
+            await ctx.Services.GetService<SchedulingService>().ScheduleAsync(task);
         }
 
         [Command("tempban"), Priority(0)]

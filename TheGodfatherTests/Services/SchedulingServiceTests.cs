@@ -3,7 +3,7 @@
 namespace TheGodfatherTests.Services
 {
     [TestFixture]
-    public sealed class SavedTasksServiceTests
+    public sealed class SchedulingServiceTests
     {
         // TODO
     }

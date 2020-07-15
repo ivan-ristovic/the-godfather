@@ -22,8 +22,10 @@ namespace TheGodfather.Database
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
+        public virtual DbSet<GuildTask> GuildTasks { get; set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; set; }
+        public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<RssFeed> RssFeeds { get; set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; set; }
         public virtual DbSet<TextReaction> TextReactions { get; set; }
@@ -120,6 +122,8 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(null);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
             mb.Entity<PurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
+            mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
+            mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<RssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<XpCount>().Property(ui => ui.XpDb).HasDefaultValue(1);

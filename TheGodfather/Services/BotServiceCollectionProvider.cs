@@ -39,7 +39,7 @@ namespace TheGodfather.Services
                 .AddSingleton(new AntispamService(shard))
                 .AddSingleton(new LinkfilterService(shard))
                 .AddSingleton(new RatelimitService(shard))
-                .AddSingleton(s => new SavedTasksService(shard, s.GetRequiredService<AsyncExecutionService>()))
+                .AddSingleton(s => new SchedulingService(shard, s.GetRequiredService<AsyncExecutionService>()))
                 ;
         }
     }

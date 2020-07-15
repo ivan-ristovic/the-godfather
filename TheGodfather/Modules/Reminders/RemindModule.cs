@@ -18,6 +18,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -31,10 +32,10 @@ namespace TheGodfather.Modules.Reminders
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
     
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public partial class RemindModule : TheGodfatherServiceModule<SavedTasksService>
+    public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
     {
 
-        public RemindModule(SavedTasksService service, DbContextBuilder db)
+        public RemindModule(SchedulingService service, DbContextBuilder db)
             : base(service, db)
         {
             
@@ -97,7 +98,7 @@ namespace TheGodfather.Modules.Reminders
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException("Missing IDs of reminders to remove.");
 
-            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            IReadOnlyList<(int Id, Reminder TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
             if (!reminders.Any())
                 throw new CommandFailedException("You have no reminders scheduled.");
 
@@ -116,7 +117,7 @@ namespace TheGodfather.Modules.Reminders
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException("Reminders can only be issued for text channels.");
 
-            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            IReadOnlyList<(int Id, Reminder TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
             if (!reminders.Any(r => r.TaskInfo.ChannelId == channel.Id))
                 throw new CommandFailedException("No reminders are scheduled for that channel.");
 
@@ -127,7 +128,7 @@ namespace TheGodfather.Modules.Reminders
                     .OrderBy(r => r.TaskInfo.ExecutionTime),
                 r => {
                     if (r.TaskInfo.IsRepeating) {
-                        return $"ID: {Formatter.Bold(r.Id.ToString())} (repeating every {r.TaskInfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(r.TaskInfo.Message)}";
+                        return $"ID: {Formatter.Bold(r.Id.ToString())} (repeating every {r.TaskInfo.RepeatInterval.Humanize()}):{Formatter.BlockCode(r.TaskInfo.Message)}";
                     } else {
                         return r.TaskInfo.TimeUntilExecution > TimeSpan.FromDays(1)
                             ? $"ID: {Formatter.Bold(r.Id.ToString())} ({r.TaskInfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(r.TaskInfo.Message)}"
@@ -142,7 +143,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("list"), Priority(0)]
         public Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            IReadOnlyList<(int Id, Reminder TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
             if (!reminders.Any())
                 throw new CommandFailedException("No reminders are scheduled for that channel.");
 
@@ -150,9 +151,9 @@ namespace TheGodfather.Modules.Reminders
                 "Your reminders:",
                 reminders.OrderBy(r => r.TaskInfo.ExecutionTime),
                 tup => {
-                    (int id, SendMessageTaskInfo tinfo) = tup;
+                    (int id, Reminder tinfo) = tup;
                     if (tinfo.IsRepeating) {
-                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatingInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
+                        return $"ID: {Formatter.Bold(id.ToString())} (repeating every {tinfo.RepeatInterval.Humanize()}):{Formatter.BlockCode(tinfo.Message)}";
                     } else {
                         if (tinfo.TimeUntilExecution > TimeSpan.FromDays(1))
                             return $"ID: {Formatter.Bold(id.ToString())} ({tinfo.ExecutionTime.ToUtcTimestamp()}):{Formatter.BlockCode(tinfo.Message)}";
@@ -213,14 +214,20 @@ namespace TheGodfather.Modules.Reminders
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
             if (!ctx.Client.CurrentApplication.Owners.Any(o => ctx.User.Id == o.Id) && !privileged) {
-                IReadOnlyList<(int Id, SendMessageTaskInfo TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
-                if (reminders.Count >= 20)
+                IReadOnlyList<(int Id, Reminder TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+                if (reminders.Count >= 20) 
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
-            var tinfo = new SendMessageTaskInfo(channel?.Id ?? 0, ctx.User.Id, message, when, repeat, timespan);
+            var tinfo = new Reminder {
+                ChannelId = channel?.Id ?? 0,
+                ExecutionTime = when,
+                IsRepeating = repeat,
+                RepeatIntervalDb = repeat ? timespan : (TimeSpan?)null,
+                UserId = ctx.User.Id,
+            }; 
             await this.Service.ScheduleAsync(tinfo);
 
             if (repeat)

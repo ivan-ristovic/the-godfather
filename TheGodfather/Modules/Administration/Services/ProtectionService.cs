@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             try {
                 DiscordRole muteRole;
-                SavedTaskInfo tinfo;
+                GuildTask gt;
                 switch (type) {
                     case PunishmentAction.Kick:
                         await member.RemoveAsync(reason ?? this.reason);
@@ -55,16 +55,27 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                     case PunishmentAction.TemporaryBan:
                         await member.BanAsync(0, reason: reason ?? this.reason);
-                        tinfo = new UnbanTaskInfo(guild.Id, member.Id, cooldown is null ? null : DateTimeOffset.Now + cooldown);
-                        await this.shard.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
+                        gt = new GuildTask {
+                            ExecutionTime = DateTimeOffset.Now + (cooldown ?? TimeSpan.FromDays(1)),
+                            GuildId = guild.Id,
+                            UserId = member.Id,
+                            Type = ScheduledTaskType.Unban,
+                        };
+                        await this.shard.Services.GetService<SchedulingService>().ScheduleAsync(gt);
                         break;
                     case PunishmentAction.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, reason ?? this.reason);
-                        tinfo = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id, cooldown is null ? null : DateTimeOffset.Now + cooldown);
-                        await this.shard.Services.GetService<SavedTasksService>().ScheduleAsync(tinfo);
+                        gt = new GuildTask {
+                            ExecutionTime = DateTimeOffset.Now + (cooldown ?? TimeSpan.FromHours(1)),
+                            GuildId = guild.Id,
+                            RoleId = muteRole.Id,
+                            UserId = member.Id,
+                            Type = ScheduledTaskType.Unmute,
+                        };
+                        await this.shard.Services.GetService<SchedulingService>().ScheduleAsync(gt);
                         break;
                 }
             } catch {
