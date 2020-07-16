@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Common.Attributes;
+using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Modules.Search.Services;
 #endregion

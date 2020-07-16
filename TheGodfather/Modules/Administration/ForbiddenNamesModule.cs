@@ -11,7 +11,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Common.Attributes;
+using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;

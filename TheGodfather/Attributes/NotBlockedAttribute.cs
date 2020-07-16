@@ -11,7 +11,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
 
-namespace TheGodfather.Common.Attributes
+namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class NotBlockedAttribute : CheckBaseAttribute

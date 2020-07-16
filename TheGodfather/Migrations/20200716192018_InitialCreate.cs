@@ -14,49 +14,42 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "blocked_channels",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     cid = table.Column<long>(nullable: false),
                     reason = table.Column<string>(maxLength: 64, nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_blocked_channels", x => x.cid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "blocked_users",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false),
                     reason = table.Column<string>(maxLength: 64, nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_blocked_users", x => x.uid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "bot_statuses",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     status = table.Column<string>(maxLength: 64, nullable: false),
                     activity_type = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_bot_statuses", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "chicken_upgrades",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(maxLength: 32, nullable: false),
@@ -64,16 +57,14 @@ namespace TheGodfather.Migrations
                     stat = table.Column<int>(nullable: false),
                     mod = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_chicken_upgrades", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "game_stats",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false),
                     duel_won = table.Column<int>(nullable: false, defaultValue: 0),
                     duel_lost = table.Column<int>(nullable: false, defaultValue: 0),
@@ -90,16 +81,14 @@ namespace TheGodfather.Migrations
                     othello_won = table.Column<int>(nullable: false, defaultValue: 0),
                     othello_lost = table.Column<int>(nullable: false, defaultValue: 0)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_game_stats", x => x.uid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "guild_cfg",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     prefix = table.Column<string>(maxLength: 8, nullable: true),
                     locale = table.Column<string>(maxLength: 8, nullable: true),
@@ -131,28 +120,24 @@ namespace TheGodfather.Migrations
                     ratelimit_action = table.Column<byte>(nullable: false, defaultValue: (byte)1),
                     ratelimit_sensitivity = table.Column<short>(nullable: false, defaultValue: (short)5)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_guild_cfg", x => x.gid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "privileged_users",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_privileged_users", x => x.uid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "reminders",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     uid = table.Column<long>(nullable: false),
@@ -162,80 +147,69 @@ namespace TheGodfather.Migrations
                     is_repeating = table.Column<bool>(nullable: false, defaultValue: false),
                     repeat_interval = table.Column<TimeSpan>(type: "interval", nullable: true, defaultValue: new TimeSpan(0, 0, 0, 0, -1))
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_reminders", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "rss_feeds",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     url = table.Column<string>(nullable: false),
                     last_post_url = table.Column<string>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_rss_feeds", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "swat_players",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(maxLength: 32, nullable: false),
                     additional_info = table.Column<string>(nullable: false),
                     is_blacklisted = table.Column<bool>(nullable: false, defaultValue: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_swat_players", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "swat_servers",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     ip = table.Column<string>(maxLength: 16, nullable: false),
                     join_port = table.Column<int>(nullable: false, defaultValue: 10480),
                     query_port = table.Column<int>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_swat_servers", x => new { x.ip, x.join_port, x.query_port });
                 });
 
             migrationBuilder.CreateTable(
                 name: "xp_count",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false),
                     xp = table.Column<int>(nullable: false, defaultValue: 1)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_xp_count", x => x.uid);
                 });
 
             migrationBuilder.CreateTable(
                 name: "auto_roles",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     rid = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_auto_roles", x => new { x.gid, x.rid });
                     table.ForeignKey(
                         name: "FK_auto_roles_guild_cfg_gid",
@@ -249,14 +223,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "bank_accounts",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     balance = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_bank_accounts", x => new { x.gid, x.uid });
                     table.ForeignKey(
                         name: "FK_bank_accounts_guild_cfg_gid",
@@ -270,16 +242,14 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "birthdays",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     uid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: false),
                     date = table.Column<DateTime>(type: "date", nullable: false),
                     last_update_year = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_birthdays", x => new { x.gid, x.cid, x.uid });
                     table.ForeignKey(
                         name: "FK_birthdays_guild_cfg_gid",
@@ -293,8 +263,7 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "chickens",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     uid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false),
@@ -302,8 +271,7 @@ namespace TheGodfather.Migrations
                     vit = table.Column<int>(nullable: false),
                     max_vit = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_chickens", x => new { x.gid, x.uid });
                     table.ForeignKey(
                         name: "FK_chickens_guild_cfg_gid",
@@ -317,16 +285,14 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "cmd_rules",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: false),
                     command = table.Column<string>(maxLength: 32, nullable: false),
                     allow = table.Column<bool>(nullable: false),
                     GuildConfigGuildIdDb = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_cmd_rules", x => new { x.gid, x.cid, x.command });
                     table.ForeignKey(
                         name: "FK_cmd_rules_guild_cfg_GuildConfigGuildIdDb",
@@ -340,14 +306,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "exempt_antispam",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     xid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     type = table.Column<byte>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_exempt_antispam", x => new { x.xid, x.gid, x.type });
                     table.ForeignKey(
                         name: "FK_exempt_antispam_guild_cfg_gid",
@@ -361,14 +325,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "exempt_logging",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     xid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     type = table.Column<byte>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_exempt_logging", x => new { x.xid, x.gid, x.type });
                     table.ForeignKey(
                         name: "FK_exempt_logging_guild_cfg_gid",
@@ -382,14 +344,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "exempt_ratelimit",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     xid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     type = table.Column<byte>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_exempt_ratelimit", x => new { x.xid, x.gid, x.type });
                     table.ForeignKey(
                         name: "FK_exempt_ratelimit_guild_cfg_gid",
@@ -403,15 +363,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "filters",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     trigger = table.Column<string>(maxLength: 128, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_filters", x => x.id);
                     table.ForeignKey(
                         name: "FK_filters_guild_cfg_gid",
@@ -425,15 +383,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "forbidden_names",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     name_regex = table.Column<string>(maxLength: 64, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_forbidden_names", x => x.id);
                     table.ForeignKey(
                         name: "FK_forbidden_names_guild_cfg_gid",
@@ -447,14 +403,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "guild_ranks",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     rank = table.Column<short>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_guild_ranks", x => new { x.gid, x.rank });
                     table.ForeignKey(
                         name: "FK_guild_ranks_guild_cfg_gid",
@@ -468,15 +422,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "insults",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     content = table.Column<string>(maxLength: 128, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_insults", x => x.id);
                     table.ForeignKey(
                         name: "FK_insults_guild_cfg_gid",
@@ -490,14 +442,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "memes",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     name = table.Column<string>(maxLength: 32, nullable: false),
                     url = table.Column<string>(maxLength: 128, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_memes", x => new { x.gid, x.name });
                     table.ForeignKey(
                         name: "FK_memes_guild_cfg_gid",
@@ -511,16 +461,14 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "purchasable_items",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     name = table.Column<string>(maxLength: 64, nullable: false),
                     price = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_purchasable_items", x => x.id);
                     table.ForeignKey(
                         name: "FK_purchasable_items_guild_cfg_gid",
@@ -534,15 +482,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "reactions_emoji",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     reaction = table.Column<string>(maxLength: 128, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_reactions_emoji", x => x.id);
                     table.ForeignKey(
                         name: "FK_reactions_emoji_guild_cfg_gid",
@@ -556,15 +502,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "reactions_text",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     gid = table.Column<long>(nullable: false),
                     reaction = table.Column<string>(maxLength: 128, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_reactions_text", x => x.id);
                     table.ForeignKey(
                         name: "FK_reactions_text_guild_cfg_gid",
@@ -578,8 +522,7 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "scheduled_tasks",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     uid = table.Column<long>(nullable: false),
@@ -588,8 +531,7 @@ namespace TheGodfather.Migrations
                     rid = table.Column<long>(nullable: true),
                     type = table.Column<byte>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_scheduled_tasks", x => x.id);
                     table.ForeignKey(
                         name: "FK_scheduled_tasks_guild_cfg_gid",
@@ -603,13 +545,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "self_roles",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     gid = table.Column<long>(nullable: false),
                     rid = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_self_roles", x => new { x.gid, x.rid });
                     table.ForeignKey(
                         name: "FK_self_roles_guild_cfg_gid",
@@ -623,15 +563,13 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "rss_subscriptions",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false),
                     gid = table.Column<long>(nullable: false),
                     cid = table.Column<long>(nullable: false),
                     name = table.Column<string>(maxLength: 64, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_rss_subscriptions", x => new { x.id, x.gid, x.cid });
                     table.ForeignKey(
                         name: "FK_rss_subscriptions_guild_cfg_gid",
@@ -652,13 +590,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "swat_aliases",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false),
                     alias = table.Column<string>(maxLength: 32, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_swat_aliases", x => new { x.alias, x.id });
                     table.ForeignKey(
                         name: "FK_swat_aliases_swat_players_id",
@@ -672,13 +608,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "swat_ips",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false),
                     ip = table.Column<string>(maxLength: 16, nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_swat_ips", x => new { x.ip, x.id });
                     table.ForeignKey(
                         name: "FK_swat_ips_swat_players_id",
@@ -692,14 +626,12 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "chicken_bought_upgrades",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false),
                     uid = table.Column<long>(nullable: false),
                     gid = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_chicken_bought_upgrades", x => new { x.id, x.gid, x.uid });
                     table.ForeignKey(
                         name: "FK_chicken_bought_upgrades_guild_cfg_gid",
@@ -727,13 +659,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "purchased_items",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     id = table.Column<int>(nullable: false),
                     uid = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_purchased_items", x => new { x.id, x.uid });
                     table.ForeignKey(
                         name: "FK_purchased_items_purchasable_items_id",
@@ -747,13 +677,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "reactions_emoji_triggers",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     trigger = table.Column<string>(maxLength: 128, nullable: false),
                     id = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_reactions_emoji_triggers", x => new { x.id, x.trigger });
                     table.ForeignKey(
                         name: "FK_reactions_emoji_triggers_reactions_emoji_id",
@@ -767,13 +695,11 @@ namespace TheGodfather.Migrations
             migrationBuilder.CreateTable(
                 name: "reactions_text_triggers",
                 schema: "gf",
-                columns: table => new
-                {
+                columns: table => new {
                     trigger = table.Column<string>(maxLength: 128, nullable: false),
                     id = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_reactions_text_triggers", x => new { x.id, x.trigger });
                     table.ForeignKey(
                         name: "FK_reactions_text_triggers_reactions_text_id",

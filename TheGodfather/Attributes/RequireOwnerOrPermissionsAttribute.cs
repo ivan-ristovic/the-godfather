@@ -5,7 +5,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-namespace TheGodfather.Common.Attributes
+namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class RequireOwnerOrPermissionsAttribute : CheckBaseAttribute

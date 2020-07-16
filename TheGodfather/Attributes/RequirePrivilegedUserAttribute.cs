@@ -6,7 +6,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 
-namespace TheGodfather.Common.Attributes
+namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class RequirePrivilegedUserAttribute : CheckBaseAttribute

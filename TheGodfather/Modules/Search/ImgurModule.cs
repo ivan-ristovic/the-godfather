@@ -10,7 +10,7 @@ using Imgur.API;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
-using TheGodfather.Common.Attributes;
+using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;

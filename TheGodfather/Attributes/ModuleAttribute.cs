@@ -3,7 +3,7 @@ using System.Linq;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 
-namespace TheGodfather.Common.Attributes
+namespace TheGodfather.Attributes
 {
     public enum ModuleType
     {

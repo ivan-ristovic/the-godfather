@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using TheGodfather.Common.Attributes;
+using TheGodfather.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;

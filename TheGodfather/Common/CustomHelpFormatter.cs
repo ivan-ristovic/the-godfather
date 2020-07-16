@@ -8,7 +8,7 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Common.Attributes;
+using TheGodfather.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
