@@ -10,6 +10,7 @@ namespace TheGodfather.Database.Models
     public class GuildConfig
     {
         public virtual ICollection<BankAccount> Accounts { get; set; }
+        public virtual ICollection<AutoRole> AutoRoles { get; set; }
         public virtual ICollection<Birthday> Birthdays { get; set; }
         public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickenBoughtUpgrades { get; set; }
@@ -21,20 +22,18 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<Filter> Filters { get; set; }
         public virtual ICollection<ForbiddenName> ForbiddenNames { get; set; }
         public virtual ICollection<GuildTask> GuildTasks { get; set; }
+        public virtual ICollection<Meme> Memes { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<XpRank> Ranks { get; set; }
+        public virtual ICollection<SelfRole> SelfRoles { get; set; }
         public virtual ICollection<RssSubscription> Subscriptions { get; set; }
         public virtual ICollection<TextReaction> TextReactions { get; set; }
 
-        /*
-        public virtual ICollection<AutoRole> AutoRoles { get; set; }
-        public virtual ICollection<Meme> Memes { get; set; }
-        public virtual ICollection<SelfRole> SelfRoles { get; set; }
-        */
 
         public GuildConfig()
         {
             this.Accounts = new HashSet<BankAccount>();
+            this.AutoRoles = new HashSet<AutoRole>();
             this.Birthdays = new HashSet<Birthday>();
             this.Chickens = new HashSet<Chicken>();
             this.ChickenBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
@@ -44,17 +43,14 @@ namespace TheGodfather.Database.Models
             this.ExemptsLogging = new HashSet<ExemptedLoggingEntity>();
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
+            this.GuildTasks = new HashSet<GuildTask>();
             this.ForbiddenNames = new HashSet<ForbiddenName>();
+            this.Memes = new HashSet<Meme>();
             this.PurchasableItems = new HashSet<PurchasableItem>();
             this.Ranks = new HashSet<XpRank>();
-            this.GuildTasks = new HashSet<GuildTask>();
+            this.SelfRoles = new HashSet<SelfRole>();
             this.Subscriptions = new HashSet<RssSubscription>();
             this.TextReactions = new HashSet<TextReaction>();
-            /*
-            this.AutoRoles = new HashSet<AutoRole>();
-            this.Memes = new HashSet<Meme>();
-            this.SelfRoles = new HashSet<SelfRole>();
-            */
         }
 
 

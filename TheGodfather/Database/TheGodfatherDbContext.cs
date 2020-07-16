@@ -7,6 +7,7 @@ namespace TheGodfather.Database
 {
     public class TheGodfatherDbContext : DbContext
     {
+        public virtual DbSet<AutoRole> AutoAssignableRoles { get; set; }
         public virtual DbSet<BankAccount> BankAccounts { get; set; }
         public virtual DbSet<Birthday> Birthdays { get; protected set; }
         public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; }
@@ -24,11 +25,13 @@ namespace TheGodfather.Database
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<GuildTask> GuildTasks { get; set; }
+        public virtual DbSet<Meme> Memes { get; set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; set; }
         public virtual DbSet<Reminder> Reminders { get; set; }
         public virtual DbSet<RssFeed> RssFeeds { get; set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; set; }
+        public virtual DbSet<SelfRole> SelfAssignableRoles { get; set; }
         public virtual DbSet<TextReaction> TextReactions { get; set; }
         public virtual DbSet<XpCount> XpCounts { get; set; }
         public virtual DbSet<XpRank> XpRanks { get; set; }
@@ -81,6 +84,7 @@ namespace TheGodfather.Database
         {
             mb.HasDefaultSchema("gf");
 
+            mb.Entity<AutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<BankAccount>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
             mb.Entity<Birthday>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.UserIdDb });
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
@@ -122,10 +126,12 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.SuggestionsEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(null);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
+            mb.Entity<Meme>().HasKey(e => new { e.GuildIdDb, e.Name });
             mb.Entity<PurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
             mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<RssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
+            mb.Entity<SelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<XpCount>().Property(ui => ui.XpDb).HasDefaultValue(1);
             mb.Entity<XpRank>().HasKey(e => new { e.GuildIdDb, e.Rank });

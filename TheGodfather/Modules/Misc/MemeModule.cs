@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Services;
@@ -38,8 +39,8 @@ namespace TheGodfather.Modules.Misc
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            DatabaseMeme meme;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            Meme meme;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!db.Memes.Where(m => m.GuildId == ctx.Guild.Id).Any())
                     throw new CommandFailedException("No memes registered in this guild!");
                 meme = db.Memes
@@ -63,8 +64,8 @@ namespace TheGodfather.Modules.Misc
             name = name.ToLowerInvariant();
             string text = "DANK MEME YOU ASKED FOR";
 
-            DatabaseMeme meme;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            Meme meme;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!db.Memes.Where(m => m.GuildId == ctx.Guild.Id).Any())
                     throw new CommandFailedException("No memes registered in this guild!");
                 meme = await db.Memes.FindAsync((long)ctx.Guild.Id, name);
@@ -107,8 +108,8 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30 || url.OriginalString.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Memes.Add(new DatabaseMeme {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                db.Memes.Add(new Meme {
                     GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                     Url = url.AbsoluteUri
@@ -158,8 +159,8 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Meme name is missing.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Memes.Remove(new DatabaseMeme {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                db.Memes.Remove(new Meme {
                     GuildId = ctx.Guild.Id,
                     Name = name.ToLowerInvariant(),
                 });
@@ -180,7 +181,7 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all memes for this guild?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 db.Memes.RemoveRange(db.Memes.Where(m => m.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -195,8 +196,8 @@ namespace TheGodfather.Modules.Misc
         [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx)
         {
-            List<DatabaseMeme> memes;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<Meme> memes;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 memes = await db.Memes
                     .Where(m => m.GuildId == ctx.Guild.Id)
                     .OrderBy(m => m.Name)

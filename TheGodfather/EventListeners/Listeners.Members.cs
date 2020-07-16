@@ -39,9 +39,9 @@ namespace TheGodfather.EventListeners
             }
 
             try {
-                using (DatabaseContext db = shard.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                     IQueryable<ulong> rids = db.AutoAssignableRoles
-                        .Where(dbr => dbr.GuildId == e.Guild.Id)
+                        .Where(dbr => dbr.GuildIdDb == (long)e.Guild.Id)
                         .Select(dbr => dbr.RoleId);
                     foreach (ulong rid in rids.ToList()) {
                         try {

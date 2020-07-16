@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Misc
         public async Task RevokeRoleAsync(CommandContext ctx,
                                          [Description("Role to revoke.")] DiscordRole role)
         {
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }

@@ -6,12 +6,10 @@ namespace TheGodfather.Database
 {
     public class DatabaseContext : DbContext
     {
-        public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
-        public virtual DbSet<DatabaseMeme> Memes { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
-        public virtual DbSet<DatabaseSelfRole> SelfAssignableRoles { get; set; }
+
         public virtual DbSet<DatabaseSwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<DatabaseSwatServer> SwatServers { get; set; }
 
@@ -64,7 +62,6 @@ namespace TheGodfather.Database
 
             mb.ForNpgsqlUseIdentityAlwaysColumns();
 
-            mb.Entity<DatabaseAutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<DatabaseGameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.CaroWon).HasDefaultValue(0);
@@ -79,8 +76,6 @@ namespace TheGodfather.Database
             mb.Entity<DatabaseGameStats>().Property(s => s.QuizesWon).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
             mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
-            mb.Entity<DatabaseMeme>().HasKey(e => new { e.GuildIdDb, e.Name });
-            mb.Entity<DatabaseSelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
             mb.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
             mb.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             mb.Entity<DatabaseSwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
-    public class DatabaseSpecialRole : IEquatable<DatabaseSpecialRole> 
+    public abstract class SpecialRole : IEquatable<SpecialRole> 
     {
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
@@ -19,30 +19,30 @@ namespace TheGodfather.Database.Entities
         public ulong RoleId { get => (ulong)this.RoleIdDb; set => this.RoleIdDb = (long)value; }
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
 
 
-        public bool Equals(DatabaseSpecialRole other)
-            => !(other is null) && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
+        public bool Equals(SpecialRole? other)
+            => other is { } && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
 
-        public override bool Equals(object other)
-            => this.Equals(other as DatabaseSpecialRole);
+        public override bool Equals(object? other)
+            => this.Equals(other as SpecialRole);
 
         public override int GetHashCode() 
             => (this.GuildId, this.RoleId).GetHashCode();
     }
 
     [Table("auto_roles")]
-    public class DatabaseAutoRole : DatabaseSpecialRole, IEquatable<DatabaseAutoRole>
+    public class AutoRole : SpecialRole, IEquatable<AutoRole>
     {
-        public bool Equals(DatabaseAutoRole other)
+        public bool Equals(AutoRole? other)
             => base.Equals(other);
     }
 
     [Table("self_roles")]
-    public class DatabaseSelfRole : DatabaseSpecialRole, IEquatable<DatabaseSelfRole>
+    public class SelfRole : SpecialRole, IEquatable<SelfRole>
     {
-        public bool Equals(DatabaseSelfRole other) 
+        public bool Equals(SelfRole? other) 
             => base.Equals(other);
     }
 }

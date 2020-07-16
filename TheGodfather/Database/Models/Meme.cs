@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("memes")]
-    public class DatabaseMeme
+    public class Meme
     {
-        [ForeignKey("DbGuildConfig")]
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
@@ -14,12 +14,12 @@ namespace TheGodfather.Database.Entities
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("name"), Required, MaxLength(32)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Column("url"), Required, MaxLength(128)]
-        public string Url { get; set; }
+        public string Url { get; set; } = null!;
 
 
-        public virtual DatabaseGuildConfig DbGuildConfig { get; set; }
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
     }
 }
