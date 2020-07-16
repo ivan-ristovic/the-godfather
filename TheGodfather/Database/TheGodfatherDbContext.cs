@@ -22,6 +22,7 @@ namespace TheGodfather.Database
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
+        public virtual DbSet<ForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<GuildTask> GuildTasks { get; set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; set; }

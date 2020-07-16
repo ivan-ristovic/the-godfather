@@ -88,8 +88,8 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Nickname missing.");
-            
-            using (DatabaseContext db = this.Database.CreateContext()) {
+
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 if (db.ForbiddenNames.Any(n => n.GuildId == ctx.Guild.Id && n.Regex.IsMatch(name)))
                     throw new CommandFailedException($"Name {name} matches one of the forbidden names in this guild.");
             }

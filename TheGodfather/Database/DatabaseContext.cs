@@ -7,7 +7,6 @@ namespace TheGodfather.Database
     public class DatabaseContext : DbContext
     {
         public virtual DbSet<DatabaseAutoRole> AutoAssignableRoles { get; set; }
-        public virtual DbSet<DatabaseForbiddenName> ForbiddenNames { get; set; }
         public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
         public virtual DbSet<DatabaseMeme> Memes { get; set; }

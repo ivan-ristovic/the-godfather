@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
@@ -62,8 +63,8 @@ namespace TheGodfather.Modules.Administration
 
             var eb = new StringBuilder();
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                var dbNames = new List<DatabaseForbiddenName>();
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                var dbNames = new List<ForbiddenName>();
                 foreach (string regexString in names) {
                     if (regexString.Length < 3 || regexString.Length > 60) {
                         eb.AppendLine($"Error: Name or regex {Formatter.InlineCode(regexString)} doesn't fit the size requirement (3-60).");
@@ -74,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                         regex = regexString.ToRegex(escape: true);
                     
                     if (!db.ForbiddenNames.Any(n => n.RegexString == regexString))
-                        dbNames.Add(new DatabaseForbiddenName { GuildId = ctx.Guild.Id, RegexString = regexString });
+                        dbNames.Add(new ForbiddenName { GuildId = ctx.Guild.Id, RegexString = regexString });
                 }
                 db.ForbiddenNames.AddRange(dbNames);
                 await db.SaveChangesAsync();
@@ -127,7 +128,7 @@ namespace TheGodfather.Modules.Administration
             if (ids is null || !ids.Any())
                 throw new CommandFailedException("No IDs given.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(fn => fn.GuildId == ctx.Guild.Id && ids.Any(id => id == fn.Id)));
                 await db.SaveChangesAsync();
             }
@@ -154,8 +155,8 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing name.");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseForbiddenName fn = db.ForbiddenNames.SingleOrDefault(n => n.GuildId == ctx.Guild.Id && n.RegexString == name);
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                ForbiddenName fn = db.ForbiddenNames.SingleOrDefault(n => n.GuildId == ctx.Guild.Id && n.RegexString == name);
                 if (fn is null)
                     throw new CommandFailedException("Such name is not forbidden.");
                 db.ForbiddenNames.Remove(fn);
@@ -188,7 +189,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all forbidden names for this guild?"))
                 return;
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(n => n.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -214,8 +215,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx)
         {
-            List<DatabaseForbiddenName> names;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<ForbiddenName> names;
+            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
                 names = await db.ForbiddenNames
                     .Where(n => n.GuildId == ctx.Guild.Id)
                     .OrderBy(n => n.Id)

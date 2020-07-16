@@ -5,9 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
-using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Services.Common;
@@ -29,7 +27,7 @@ namespace TheGodfather.Services
                         .Where(t => t.ExecutionTime <= threshold)
                         .AsEnumerable()
                         .ToDictionary(t => t.Id, t => t);
-                    RegisterSavedTasks(guildTasks);
+                    RegisterTasks(guildTasks);
 
                     var reminders = db.Reminders
                         .Where(r => r.ExecutionTime <= threshold)
@@ -38,11 +36,11 @@ namespace TheGodfather.Services
                     RegisterReminders(reminders);
                 }
             } catch (Exception e) {
-                Log.Error(e, "Loading saved tasks failed");
+                Log.Error(e, "Loading scheduled tasks failed");
             }
 
 
-            void RegisterSavedTasks(IReadOnlyDictionary<int, GuildTask> tasks)
+            void RegisterTasks(IReadOnlyDictionary<int, GuildTask> tasks)
             {
                 int scheduled = 0, missed = 0;
                 foreach ((int tid, GuildTask task) in tasks) {
@@ -51,7 +49,7 @@ namespace TheGodfather.Services
                     else
                         missed++;
                 }
-                Log.Information("Saved tasks: {ScheduledSavedTasksCount} scheduled; {MissedSavedTasksCount} missed.", scheduled, missed);
+                Log.Information("Guild tasks: {ScheduledGuildTasksCount} scheduled; {MissedGuildTasksCount} missed.", scheduled, missed);
             }
 
             void RegisterReminders(IReadOnlyDictionary<int, Reminder> reminders)
@@ -125,7 +123,7 @@ namespace TheGodfather.Services
                 }
             } catch (Exception e) {
                 texec?.Dispose();
-                Log.Warning(e, "Saved Task scheduling failed");
+                Log.Warning(e, "Scheduling tasks failed");
                 throw;
             }
         }
@@ -158,7 +156,7 @@ namespace TheGodfather.Services
                     }
                     break;
                 default:
-                    Log.Warning("Unknown saved task info type: {SavedTaskInfoType}", task.GetType());
+                    Log.Warning("Unknown scheduled task type: {ScheduledTaskType}", task.GetType());
                     break;
             }
         }
@@ -207,7 +205,7 @@ namespace TheGodfather.Services
                     throw new ConcurrentOperationException("Failed to schedule reminder. Please report this.");
             } else {
                 if (!this.tasks.TryAdd(texec.Id, texec))
-                    throw new ConcurrentOperationException("Failed to schedule automatic task. Please report this.");
+                    throw new ConcurrentOperationException("Failed to schedule guild task. Please report this.");
             }
         }
     }

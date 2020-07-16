@@ -67,7 +67,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("Email", e.Member.Email);
 
-            using (DatabaseContext db = shard.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                 if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.Member.DisplayName))) {
                     try {
                         await e.Member.ModifyAsync(m => {
@@ -147,7 +147,7 @@ namespace TheGodfather.EventListeners
         {
             bool renamed = false, failed = false;
 
-            using (DatabaseContext db = shard.Database.CreateContext()) {
+            using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
                 if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
                     try {
                         await e.Member.ModifyAsync(m => {
