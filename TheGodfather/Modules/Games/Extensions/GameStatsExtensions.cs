@@ -7,18 +7,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 #endregion
 
 namespace TheGodfather.Modules.Games.Extensions
 {
-    public static class DatabaseGameStatsExtensions
+    public static class GameStatsExtensions
     {
         public static async Task<string> BuildStatsStringAsync(DiscordClient client, 
-            IReadOnlyList<DatabaseGameStats> top, Func<DatabaseGameStats, string> selector)
+            IReadOnlyList<GameStats> top, Func<GameStats, string> selector)
         {
             var sb = new StringBuilder();
 
-            foreach (DatabaseGameStats userStats in top) {
+            foreach (GameStats userStats in top) {
                 try {
                     DiscordUser u = await client.GetUserAsync(userStats.UserId);
                     sb.Append(u.Mention);
@@ -34,7 +35,7 @@ namespace TheGodfather.Modules.Games.Extensions
         }
 
 
-        public static DiscordEmbedBuilder ToPartialDiscordEmbed(this DatabaseGameStats stats)
+        public static DiscordEmbedBuilder ToPartialDiscordEmbed(this GameStats stats)
         {
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Chartreuse
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Games.Extensions
             return emb;
         }
 
-        public static DiscordEmbed ToDiscordEmbed(this DatabaseGameStats stats, DiscordUser user)
+        public static DiscordEmbed ToDiscordEmbed(this GameStats stats, DiscordUser user)
         {
             DiscordEmbedBuilder emb = stats.ToPartialDiscordEmbed();
             emb.WithTitle($"Stats for {user.Username}");
@@ -59,31 +60,31 @@ namespace TheGodfather.Modules.Games.Extensions
             return emb.Build();
         }
 
-        public static string BuildDuelStatsString(this DatabaseGameStats stats)
-            => $"W: {stats.DuelsWon} L: {stats.DuelsLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.DuelsWon, stats.DuelsLost)}")}%)";
+        public static string BuildDuelStatsString(this GameStats stats)
+            => $"W: {stats.DuelWon} L: {stats.DuelLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.DuelWon, stats.DuelLost)}")}%)";
 
-        public static string BuildTicTacToeStatsString(this DatabaseGameStats stats)
+        public static string BuildTicTacToeStatsString(this GameStats stats)
             => $"W: {stats.TicTacToeWon} L: {stats.TicTacToeLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.TicTacToeWon, stats.TicTacToeLost)}")}%)";
 
-        public static string BuildChain4StatsString(this DatabaseGameStats stats)
+        public static string BuildChain4StatsString(this GameStats stats)
             => $"W: {stats.Chain4Won} L: {stats.Chain4Lost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.Chain4Won, stats.Chain4Lost)}")}%)";
 
-        public static string BuildCaroStatsString(this DatabaseGameStats stats)
+        public static string BuildCaroStatsString(this GameStats stats)
             => $"W: {stats.CaroWon} L: {stats.CaroLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.CaroWon, stats.CaroLost)}")}%)";
 
-        public static string BuildNumberRaceStatsString(this DatabaseGameStats stats)
+        public static string BuildNumberRaceStatsString(this GameStats stats)
             => $"W: {stats.NumberRacesWon}";
 
-        public static string BuildQuizStatsString(this DatabaseGameStats stats)
-            => $"W: {stats.QuizesWon}";
+        public static string BuildQuizStatsString(this GameStats stats)
+            => $"W: {stats.QuizWon}";
 
-        public static string BuildAnimalRaceStatsString(this DatabaseGameStats stats)
+        public static string BuildAnimalRaceStatsString(this GameStats stats)
             => $"W: {stats.AnimalRacesWon}";
 
-        public static string BuildHangmanStatsString(this DatabaseGameStats stats)
+        public static string BuildHangmanStatsString(this GameStats stats)
             => $"W: {stats.HangmanWon}";
 
-        public static string BuildOthelloStatsString(this DatabaseGameStats stats)
+        public static string BuildOthelloStatsString(this GameStats stats)
             => $"W: {stats.OthelloWon} L: {stats.OthelloLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.OthelloWon, stats.OthelloLost)}")}%)";
     }
 }

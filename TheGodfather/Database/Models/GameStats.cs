@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("game_stats")]
-    public class DatabaseGameStats
+    public class GameStats
     {
         [Key]
         [Column("uid")]
@@ -15,21 +15,21 @@ namespace TheGodfather.Database.Entities
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
         [Column("duel_won")]
-        public int DuelsWon { get; set; } 
+        public int DuelWon { get; set; } 
 
         [Column("duel_lost")]
-        public int DuelsLost { get; set; } 
+        public int DuelLost { get; set; } 
 
         [Column("hangman_won")]
         public int HangmanWon { get; set; }
 
-        [Column("quizes_won")]
-        public int QuizesWon { get; set; } 
+        [Column("quiz_won")]
+        public int QuizWon { get; set; } 
 
-        [Column("animalraces_won")]
+        [Column("ar_won")]
         public int AnimalRacesWon { get; set; }
 
-        [Column("numberraces_won")]
+        [Column("nr_won")]
         public int NumberRacesWon { get; set; }
 
         [Column("ttt_won")]
@@ -38,10 +38,10 @@ namespace TheGodfather.Database.Entities
         [Column("ttt_lost")]
         public int TicTacToeLost { get; set; } 
 
-        [Column("chain4_won")]
+        [Column("c4_won")]
         public int Chain4Won { get; set; } 
 
-        [Column("chain4_lost")]
+        [Column("c4_lost")]
         public int Chain4Lost { get; set; } 
 
         [Column("caro_won")]
@@ -57,12 +57,7 @@ namespace TheGodfather.Database.Entities
         public int OthelloLost { get; set; }
 
 
-        public int CalculateWinPercentage(int won, int lost)
-        {
-            if (won + lost == 0)
-                return 0;
-
-            return (int)Math.Round((double)won / (won + lost) * 100);
-        }
+        public int CalculateWinPercentage(int won, int lost) 
+            => won + lost == 0 ? 0 : (int)Math.Round((double)won / (won + lost) * 100);
     }
 }

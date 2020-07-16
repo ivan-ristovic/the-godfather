@@ -7,34 +7,35 @@ namespace TheGodfather.Database
 {
     public class TheGodfatherDbContext : DbContext
     {
-        public virtual DbSet<AutoRole> AutoAssignableRoles { get; set; }
-        public virtual DbSet<BankAccount> BankAccounts { get; set; }
+        public virtual DbSet<AutoRole> AutoAssignableRoles { get; protected set; }
+        public virtual DbSet<BankAccount> BankAccounts { get; protected set; }
         public virtual DbSet<Birthday> Birthdays { get; protected set; }
         public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; }
         public virtual DbSet<BlockedUser> BlockedUsers { get; protected set; }
         public virtual DbSet<BotStatus> BotStatuses { get; protected set; }
-        public virtual DbSet<Chicken> Chickens { get; set; }
-        public virtual DbSet<ChickenUpgrade> ChickenUpgrades { get; set; }
-        public virtual DbSet<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; set; }
+        public virtual DbSet<Chicken> Chickens { get; protected set; }
+        public virtual DbSet<ChickenUpgrade> ChickenUpgrades { get; protected set; }
+        public virtual DbSet<ChickenBoughtUpgrade> ChickensBoughtUpgrades { get; protected set; }
         public virtual DbSet<CommandRule> CommandRules { get; protected set; }
+        public virtual DbSet<GameStats> GameStats { get; protected set; }
         public virtual DbSet<GuildConfig> Configs { get; protected set; }
-        public virtual DbSet<EmojiReaction> EmojiReactions { get; set; }
-        public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
-        public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; set; }
-        public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
+        public virtual DbSet<EmojiReaction> EmojiReactions { get; protected set; }
+        public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; protected set; }
+        public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; protected set; }
+        public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; protected set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
-        public virtual DbSet<ForbiddenName> ForbiddenNames { get; set; }
-        public virtual DbSet<GuildTask> GuildTasks { get; set; }
-        public virtual DbSet<Meme> Memes { get; set; }
-        public virtual DbSet<PurchasableItem> PurchasableItems { get; set; }
-        public virtual DbSet<PurchasedItem> PurchasedItems { get; set; }
-        public virtual DbSet<Reminder> Reminders { get; set; }
-        public virtual DbSet<RssFeed> RssFeeds { get; set; }
-        public virtual DbSet<RssSubscription> RssSubscriptions { get; set; }
-        public virtual DbSet<SelfRole> SelfAssignableRoles { get; set; }
-        public virtual DbSet<TextReaction> TextReactions { get; set; }
-        public virtual DbSet<XpCount> XpCounts { get; set; }
-        public virtual DbSet<XpRank> XpRanks { get; set; }
+        public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
+        public virtual DbSet<GuildTask> GuildTasks { get; protected set; }
+        public virtual DbSet<Meme> Memes { get; protected set; }
+        public virtual DbSet<PurchasableItem> PurchasableItems { get; protected set; }
+        public virtual DbSet<PurchasedItem> PurchasedItems { get; protected set; }
+        public virtual DbSet<Reminder> Reminders { get; protected set; }
+        public virtual DbSet<RssFeed> RssFeeds { get; protected set; }
+        public virtual DbSet<RssSubscription> RssSubscriptions { get; protected set; }
+        public virtual DbSet<SelfRole> SelfAssignableRoles { get; protected set; }
+        public virtual DbSet<TextReaction> TextReactions { get; protected set; }
+        public virtual DbSet<XpCount> XpCounts { get; protected set; }
+        public virtual DbSet<XpRank> XpRanks { get; protected set; }
 
 
         private DbProvider Provider { get; }
@@ -98,6 +99,20 @@ namespace TheGodfather.Database
             mb.Entity<ExemptedAntispamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedLoggingEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedRatelimitEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<GameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.CaroWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.Chain4Lost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.Chain4Won).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.DuelLost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.DuelWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.HangmanWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.NumberRacesWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.OthelloLost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.OthelloWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.QuizWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(PunishmentAction.PermanentBan);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodCooldown).HasDefaultValue(10);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodEnabled).HasDefaultValue(false);

@@ -6,7 +6,6 @@ namespace TheGodfather.Database
 {
     public class DatabaseContext : DbContext
     {
-        public virtual DbSet<DatabaseGameStats> GameStats { get; set; }
         public virtual DbSet<DatabaseInsult> Insults { get; set; }
         public virtual DbSet<DatabasePrivilegedUser> PrivilegedUsers { get; set; }
 
@@ -62,20 +61,6 @@ namespace TheGodfather.Database
 
             mb.ForNpgsqlUseIdentityAlwaysColumns();
 
-            mb.Entity<DatabaseGameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.CaroWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.Chain4Lost).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.Chain4Won).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.DuelsLost).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.DuelsWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.HangmanWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.NumberRacesWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.OthelloLost).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.OthelloWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.QuizesWon).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
-            mb.Entity<DatabaseGameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
             mb.Entity<DatabaseSwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
             mb.Entity<DatabaseSwatPlayer>().HasIndex(p => p.Name).IsUnique();
             mb.Entity<DatabaseSwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });

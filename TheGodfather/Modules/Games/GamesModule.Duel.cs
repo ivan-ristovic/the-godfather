@@ -11,6 +11,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -60,11 +61,11 @@ namespace TheGodfather.Modules.Games
 
                 try {
                     await duel.RunAsync();
-                    await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
+                    await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelWon++);
                     if (duel.Winner.Id == ctx.User.Id)
-                        await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);
+                        await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelLost++);
                     else
-                        await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
+                        await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.DuelLost++);
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -91,8 +92,8 @@ namespace TheGodfather.Modules.Games
             [Aliases("top", "leaderboard")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
+                IReadOnlyList<GameStats> topStats = await this.Database.GetTopChain4StatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
                 await this.InformAsync(ctx, Emojis.Trophy, $"Top Duelists:\n\n{top}");
             }
             #endregion

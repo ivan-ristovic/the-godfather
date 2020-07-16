@@ -12,6 +12,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -95,8 +96,8 @@ namespace TheGodfather.Modules.Games
             [Aliases("top", "leaderboard")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopAnimalRaceStatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
+                IReadOnlyList<GameStats> topStats = await this.Database.GetTopAnimalRaceStatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
                 await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Animal Race:\n\n{topStats}");
             }
             #endregion

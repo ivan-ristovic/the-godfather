@@ -15,6 +15,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
@@ -194,8 +195,8 @@ namespace TheGodfather.Modules.Games
             [Aliases("top", "leaderboard")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopQuizStatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
+                IReadOnlyList<GameStats> topStats = await this.Database.GetTopQuizStatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
                 await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Quiz:\n\n{top}");
             }
             #endregion
@@ -213,7 +214,7 @@ namespace TheGodfather.Modules.Games
                     }.Build());
 
                     if (results.Count > 1)
-                        await this.Database.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizesWon++);
+                        await this.Database.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizWon++);
                 }
             }
             #endregion
