@@ -1,12 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using TheGodfather.Database.Entities;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using TheGodfather.Database.Models;
 #endregion
 
@@ -14,7 +13,7 @@ namespace TheGodfather.Modules.Games.Extensions
 {
     public static class GameStatsExtensions
     {
-        public static async Task<string> BuildStatsStringAsync(DiscordClient client, 
+        public static async Task<string> BuildStatsStringAsync(DiscordClient client,
             IReadOnlyList<GameStats> top, Func<GameStats, string> selector)
         {
             var sb = new StringBuilder();

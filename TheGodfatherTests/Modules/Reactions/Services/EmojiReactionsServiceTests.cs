@@ -272,10 +272,10 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
                     Assert.That(await this.Service.AddEmojiReactionAsync(
-                        MockData.Ids[0], 
-                        Emojis.Information, 
-                        new[] { "test(ing)? regex(es)?", "another test" }, 
-                        true), 
+                        MockData.Ids[0],
+                        Emojis.Information,
+                        new[] { "test(ing)? regex(es)?", "another test" },
+                        true),
                         Is.EqualTo(2)
                     );
                 },
@@ -375,7 +375,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                           .AsEnumerable()
-                          .Any(er => er.Response == Emojis.Information.GetDiscordName()), 
+                          .Any(er => er.Response == Emojis.Information.GetDiscordName()),
                         Is.False
                     );
                     return Task.CompletedTask;

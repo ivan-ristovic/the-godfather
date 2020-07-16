@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace TheGodfather.Database.Models
 {
@@ -38,7 +37,7 @@ namespace TheGodfather.Database.Models
         }
 
         public TextReaction(int id, string trigger, string response, bool isRegex = false)
-            : base(id, trigger, response, isRegex) 
+            : base(id, trigger, response, isRegex)
         {
             this.DbTriggers = new HashSet<TextReactionTrigger>();
             this.Init();
@@ -55,7 +54,7 @@ namespace TheGodfather.Database.Models
         public override void CacheDbTriggers()
         {
             foreach (TextReactionTrigger t in this.DbTriggers)
-                this.AddTrigger(t.Trigger, isRegex: true); 
+                this.AddTrigger(t.Trigger, isRegex: true);
         }
 
         public bool IsCooldownActive()
@@ -68,17 +67,17 @@ namespace TheGodfather.Database.Models
                     this.cooldown = false;
                     this.resetTime = now + _cooldownTimeout;
                 }
-                
+
                 if (!this.cooldown) {
                     this.cooldown = true;
                     success = true;
                 }
             }
-            
+
             return !success;
         }
 
-        public bool CanSend() 
+        public bool CanSend()
             => !this.IsCooldownActive();
 
 

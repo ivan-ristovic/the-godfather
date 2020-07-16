@@ -1,17 +1,15 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.EventHandling;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -25,14 +23,14 @@ namespace TheGodfather.Modules.Administration
         [Group("webhooks")]
         [Description("Manage webhooks for given channel. Group call lists all existing webhooks in channel.")]
         [Aliases("wh", "webhook", "whook")]
-        
+
         [RequirePermissions(Permissions.ManageWebhooks)]
         public class WebhooksModule : TheGodfatherModule
         {
             public WebhooksModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -46,7 +44,7 @@ namespace TheGodfather.Modules.Administration
             [Command("add"), Priority(1)]
             [Description("Create a new webhook in channel.")]
             [Aliases("a", "c", "+", "+=", "create", "<<", "<")]
-            
+
             public async Task CreateAsync(CommandContext ctx,
                                          [Description("Channel to list webhooks for.")] DiscordChannel channel,
                                          [Description("Name.")] string name,
@@ -92,7 +90,7 @@ namespace TheGodfather.Modules.Administration
             [Command("delete")]
             [Description("Create a new webhook in channel.")]
             [Aliases("-", "del", "d", "remove", "rm", ">>", ">")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name,
                                          [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
@@ -113,7 +111,7 @@ namespace TheGodfather.Modules.Administration
             [Command("deleteall"), UsesInteractivity]
             [Description("Create a new webhook in channel.")]
             [Aliases("-a", "clear", "delall", "da", "removeall", "rmrf", ">>>")]
-            
+
             public async Task DeleteAllAsync(CommandContext ctx,
                                             [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
             {
@@ -132,7 +130,7 @@ namespace TheGodfather.Modules.Administration
             [Command("list"), UsesInteractivity]
             [Description("Lists all existing webhooks in channel.")]
             [Aliases("l", "ls")]
-            
+
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Channel to list webhooks for.")] DiscordChannel channel = null)
             {
@@ -144,8 +142,8 @@ namespace TheGodfather.Modules.Administration
 
                 bool displayToken = await ctx.WaitForBoolReplyAsync("Do you wish to display the tokens?", reply: false);
 
-                await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, 
-                    ctx.User, 
+                await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel,
+                    ctx.User,
                     whs.Select(wh => new Page(embed: new DiscordEmbedBuilder {
                         Title = $"Webhook: {wh.Name}",
                         Description = $"{(displayToken ? $"Token: {Formatter.InlineCode(wh.Token)}\n" : "")}Created by {wh.User.ToString()}",

@@ -1,19 +1,17 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Swat.Extensions;
@@ -34,7 +32,7 @@ namespace TheGodfather.Modules.Swat
             public SwatSearchModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -54,7 +52,7 @@ namespace TheGodfather.Modules.Swat
             #region COMMAND_SEARCH_IP
             [Command("ip")]
             [Description("Search for a given IP or range.")]
-            
+
             public async Task SearchIpAsync(CommandContext ctx,
                                            [Description("IP or range.")] IPAddressRange ip,
                                            [Description("Number of results")] int amount = 10)
@@ -62,8 +60,8 @@ namespace TheGodfather.Modules.Swat
                 if (amount < 1 || amount > 100)
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 100].");
 
-                List<DatabaseSwatPlayer> matches;
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                List<SwatPlayer> matches;
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     matches = db.SwatPlayers
                         .Include(p => p.DbAliases)
                         .Include(p => p.DbIPs)
@@ -83,7 +81,7 @@ namespace TheGodfather.Modules.Swat
             [Command("name")]
             [Description("Search for a given name.")]
             [Aliases("player", "nickname", "nick")]
-            
+
             public async Task SearchNameAsync(CommandContext ctx,
                                              [Description("Player name.")] string name,
                                              [Description("Number of results")] int amount = 10)
@@ -91,15 +89,15 @@ namespace TheGodfather.Modules.Swat
                 if (amount < 1 || amount > 20)
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 20].");
 
-                var matches = new List<DatabaseSwatPlayer>();
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                var matches = new List<SwatPlayer>();
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     matches = db.SwatPlayers
                         .Include(p => p.DbAliases)
                         .Include(p => p.DbIPs)
                         .AsEnumerable()
                         .Where(p => p.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase) ||
                                p.Aliases.Any(a => a.Contains(name, StringComparison.InvariantCultureIgnoreCase)))
-                        .OrderBy(p => p.Aliases.Any() ? 
+                        .OrderBy(p => p.Aliases.Any() ?
                             Math.Min(Math.Abs(p.Name.LevenshteinDistance(name)), p.Aliases.Min(a => Math.Abs(a.LevenshteinDistance(name)))) :
                             Math.Abs(p.Name.LevenshteinDistance(name))
                         ).Take(amount)

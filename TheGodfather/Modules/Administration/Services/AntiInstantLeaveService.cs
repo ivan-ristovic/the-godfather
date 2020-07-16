@@ -1,10 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;

@@ -1,20 +1,15 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
-
 using Humanizer;
 using Humanizer.Localisation;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -24,7 +19,6 @@ using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -32,15 +26,15 @@ namespace TheGodfather.Modules.Administration
     [Group("user"), Module(ModuleType.Administration), NotBlocked]
     [Description("Miscellaneous user control commands. Group call prints information about given user.")]
     [Aliases("users", "u", "usr")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class UserModule : TheGodfatherModule
     {
 
-        public UserModule(DbContextBuilder db) 
+        public UserModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -59,7 +53,7 @@ namespace TheGodfather.Modules.Administration
         [Command("addrole"), Priority(1)]
         [Description("Assign a role to a member.")]
         [Aliases("+role", "+r", "ar", "addr", "+roles", "addroles", "giverole", "giveroles", "grantrole", "grantroles", "gr")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task GrantRolesAsync(CommandContext ctx,
                                          [Description("Member.")] DiscordMember member,
@@ -88,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         [Command("avatar")]
         [Description("View user's avatar in full size.")]
         [Aliases("a", "pic", "profilepic")]
-        
+
         public Task GetAvatarAsync(CommandContext ctx,
                                   [Description("User whose avatar to show.")] DiscordUser user)
         {
@@ -104,7 +98,7 @@ namespace TheGodfather.Modules.Administration
         [Command("ban")]
         [Description("Bans the user from the guild.")]
         [Aliases("b")]
-        
+
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx,
                                   [Description("Member to ban.")] DiscordMember member,
@@ -122,7 +116,7 @@ namespace TheGodfather.Modules.Administration
         [Command("banid")]
         [Description("Bans the ID from the guild.")]
         [Aliases("bid")]
-        
+
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanIDAsync(CommandContext ctx,
                                     [Description("ID.")] ulong id,
@@ -142,7 +136,7 @@ namespace TheGodfather.Modules.Administration
         [Command("deafen")]
         [Description("Deafen or undeafen a member.")]
         [Aliases("deaf", "d", "df")]
-        
+
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx,
                                      [Description("Deafen?")] bool deafen,
@@ -158,7 +152,7 @@ namespace TheGodfather.Modules.Administration
         [Command("info"), Priority(1)]
         [Description("Print the information about the given user.")]
         [Aliases("i", "information")]
-        
+
         public Task InfoAsync(CommandContext ctx,
                              [Description("Guild member.")] DiscordMember member = null)
         {
@@ -239,7 +233,7 @@ namespace TheGodfather.Modules.Administration
         [Command("kick")]
         [Description("Kicks the member from the guild.")]
         [Aliases("k")]
-        
+
         [RequirePermissions(Permissions.KickMembers)]
         public async Task KickAsync(CommandContext ctx,
                                    [Description("Member.")] DiscordMember member,
@@ -257,7 +251,7 @@ namespace TheGodfather.Modules.Administration
         [Command("kickvoice")]
         [Description("Kicks the member from the voice channels.")]
         [Aliases("kv")]
-        
+
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task KickVoiceAsync(CommandContext ctx,
                                         [Description("Member.")] DiscordMember member,
@@ -279,7 +273,7 @@ namespace TheGodfather.Modules.Administration
         [Command("mute"), Priority(1)]
         [Description("Mute or unmute a member.")]
         [Aliases("m")]
-        
+
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteAsync(CommandContext ctx,
                                    [Description("Mute?")] bool mute,
@@ -305,7 +299,7 @@ namespace TheGodfather.Modules.Administration
         [Command("mutevoice")]
         [Description("Mute or unmute a member in the voice channels.")]
         [Aliases("mv", "voicemute", "vmute", "mutev", "vm")]
-        
+
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteVoiceAsync(CommandContext ctx,
                                         [Description("Mute?")] bool mute,
@@ -327,7 +321,7 @@ namespace TheGodfather.Modules.Administration
         [Command("removerole"), Priority(1)]
         [Description("Revoke a role from member.")]
         [Aliases("remrole", "rmrole", "rr", "-role", "-r", "removeroles", "revokerole", "revokeroles")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RevokeRolesAsync(CommandContext ctx,
                                           [Description("Member.")] DiscordMember member,
@@ -370,7 +364,7 @@ namespace TheGodfather.Modules.Administration
         [Command("removeallroles")]
         [Description("Revoke all roles from user.")]
         [Aliases("remallroles", "-ra", "-rall", "-allr")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRolesAsync(CommandContext ctx,
                                              [Description("Member.")] DiscordMember member,
@@ -388,7 +382,7 @@ namespace TheGodfather.Modules.Administration
         [Command("setname")]
         [Description("Gives someone a new nickname in the current guild.")]
         [Aliases("nick", "newname", "name", "rename")]
-        
+
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task SetNameAsync(CommandContext ctx,
                                       [Description("User.")] DiscordMember member,
@@ -411,7 +405,7 @@ namespace TheGodfather.Modules.Administration
         [Command("softban")]
         [Description("Bans the member from the guild and then unbans him immediately.")]
         [Aliases("sb", "sban")]
-        
+
         [RequirePermissions(Permissions.BanMembers)]
         public async Task SoftBanAsync(CommandContext ctx,
                                       [Description("User.")] DiscordMember member,
@@ -430,7 +424,7 @@ namespace TheGodfather.Modules.Administration
         [Command("tempban"), Priority(3)]
         [Description("Temporarily bans the user from the server and then unbans him after given timespan.")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
-        
+
         [RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
                                       [Description("Time span.")] TimeSpan timespan,
@@ -502,7 +496,7 @@ namespace TheGodfather.Modules.Administration
         [Command("tempmute"), Priority(1)]
         [Description("Temporarily mutes the user and unmutes him after the given timespan.")]
         [Aliases("tm", "tmute", "tmpmute", "tmpm")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task TempMuteAsync(CommandContext ctx,
                                        [Description("Time span.")] TimeSpan timespan,
@@ -528,7 +522,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unban"), Priority(1)]
         [Description("Unbans the user from the server.")]
         [Aliases("ub")]
-        
+
         [RequirePermissions(Permissions.BanMembers)]
         public async Task UnbanAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
@@ -536,7 +530,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't unban yourself...");
-            
+
             await ctx.Guild.UnbanMemberAsync(user.Id, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{ctx.Member.Mention} removed a ban for {user.ToString()}!");
         }
@@ -548,7 +542,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (id == ctx.User.Id)
                 throw new CommandFailedException("You can't unban yourself...");
-            
+
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{ctx.Member.Mention} removed a ban for {Formatter.InlineCode(id.ToString())}!");
         }
@@ -558,7 +552,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unmute"), Priority(1)]
         [Description("Unmute a member.")]
         [Aliases("um")]
-        
+
         [RequirePermissions(Permissions.MuteMembers)]
         public Task UnmuteAsync(CommandContext ctx,
                                [Description("Member to unmute.")] DiscordMember member,
@@ -570,7 +564,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unmutevoice")]
         [Description("Unmute a member in the voice channels.")]
         [Aliases("umv", "voiceunmute", "vunmute", "unmutev", "vum")]
-        
+
         [RequirePermissions(Permissions.MuteMembers)]
         public Task UnmuteVoiceAsync(CommandContext ctx,
                                     [Description("Member to unmute.")] DiscordMember member,
@@ -582,7 +576,7 @@ namespace TheGodfather.Modules.Administration
         [Command("warn")]
         [Description("Warn a member in private message by sending a given warning text.")]
         [Aliases("w")]
-        
+
         [RequireOwnerOrPermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
                                    [Description("Member.")] DiscordMember member,

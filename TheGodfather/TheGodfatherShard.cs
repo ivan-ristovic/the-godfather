@@ -115,7 +115,7 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 PrefixResolver = m => {
-                    string p = m.Channel.Guild is null 
+                    string p = m.Channel.Guild is null
                         ? this.Config.Prefix
                         : this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));

@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -40,7 +38,7 @@ namespace TheGodfather.Modules.Administration.Services
 
             if (!this.guildFloodUsers[e.Guild.Id].Add(e.Member))
                 throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
-            
+
             if (this.guildFloodUsers[e.Guild.Id].Count >= settings.Sensitivity) {
                 foreach (DiscordMember m in this.guildFloodUsers[e.Guild.Id]) {
                     await this.PunishMemberAsync(e.Guild, m, settings.Action);

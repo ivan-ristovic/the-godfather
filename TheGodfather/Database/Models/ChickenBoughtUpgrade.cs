@@ -8,7 +8,7 @@ namespace TheGodfather.Database.Models
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-        
+
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
@@ -21,7 +21,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        
+
         public virtual Chicken Chicken { get; set; } = null!;
         public virtual ChickenUpgrade Upgrade { get; set; } = null!;
     }

@@ -1,15 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using TexasHoldem.Logic.Cards;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -26,10 +22,10 @@ namespace TheGodfather.Modules.Games
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CardsModule : TheGodfatherModule
     {
-        public CardsModule(DbContextBuilder db) 
+        public CardsModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -42,15 +38,15 @@ namespace TheGodfather.Modules.Games
         [Command("draw")]
         [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
         [Aliases("take")]
-        
+
         public Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1, 10]).")] int amount = 1)
         {
             Deck deck = CardDecksService.GetDeckInChannel(ctx.Channel.Id);
             if (deck is null)
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a new deck.");
-            
-            if (amount < 1|| amount > 10)
+
+            if (amount < 1 || amount > 10)
                 throw new InvalidCommandUsageException("Amount of cards to draw must be in range [1, 10].");
 
             IReadOnlyList<Card> drawn = deck.DrawCards(amount);

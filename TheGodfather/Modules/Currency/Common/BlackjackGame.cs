@@ -1,20 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
-
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
@@ -23,8 +19,7 @@ namespace TheGodfather.Modules.Currency.Common
     {
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
-        public IReadOnlyList<Participant> Winners
-        {
+        public IReadOnlyList<Participant> Winners {
             get {
                 int hvalue = this.HandValue(this.hand);
                 if (hvalue > 21)
@@ -75,7 +70,7 @@ namespace TheGodfather.Modules.Currency.Common
                 await this.PrintGameAsync(msg);
                 return;
             }
-            
+
             while (this.participants.Any(p => !p.Standing)) {
                 foreach (Participant participant in this.participants) {
                     if (participant.Standing)
@@ -83,9 +78,9 @@ namespace TheGodfather.Modules.Currency.Common
 
                     await this.PrintGameAsync(msg, participant);
 
-                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) 
+                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id))
                         participant.Hand.Add(this.deck.GetNextCard());
-                    else 
+                    else
                         participant.Standing = true;
 
                     if (this.HandValue(participant.Hand) > 21)
@@ -117,7 +112,7 @@ namespace TheGodfather.Modules.Currency.Common
             });
         }
 
-        public bool IsParticipating(DiscordUser user) 
+        public bool IsParticipating(DiscordUser user)
             => this.participants.Any(p => p.Id == user.Id);
 
         private int HandValue(List<Card> hand)

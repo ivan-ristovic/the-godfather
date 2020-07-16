@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -19,7 +17,7 @@ namespace TheGodfather.Modules.Administration
     [Group("roles"), Module(ModuleType.Administration), NotBlocked]
     [Description("Miscellaneous role control commands. Group call lists all the roles in this guild or prints information about a given role.")]
     [Aliases("role", "rl")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class RoleModule : TheGodfatherModule
     {
@@ -27,7 +25,7 @@ namespace TheGodfather.Modules.Administration
         public RoleModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -53,7 +51,7 @@ namespace TheGodfather.Modules.Administration
         [Command("create"), Priority(2), UsesInteractivity]
         [Description("Create a new role.")]
         [Aliases("new", "add", "a", "c", "+", "+=", "<", "<<")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateAsync(CommandContext ctx,
                                      [Description("Name.")] string name,
@@ -89,7 +87,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Create a new role.")]
         [Aliases("del", "remove", "rm", "d", "-", ">", ">>")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Role.")] DiscordRole role,
@@ -105,7 +103,7 @@ namespace TheGodfather.Modules.Administration
         [Command("info")]
         [Description("Get information about a given role.")]
         [Aliases("i")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public Task InfoAsync(CommandContext ctx,
                              [Description("Role.")] DiscordRole role)
@@ -132,9 +130,9 @@ namespace TheGodfather.Modules.Administration
         [Command("mention")]
         [Description("Mention the given role. This will bypass the mentionable status for the given role.")]
         [Aliases("mentionall", "@", "ma")]
-        
+
         [RequireUserPermissions(Permissions.Administrator), RequireBotPermissions(Permissions.ManageRoles)]
-        public async Task MentionAllFromRoleAsync(CommandContext ctx, 
+        public async Task MentionAllFromRoleAsync(CommandContext ctx,
                                                  [Description("Role.")] DiscordRole role)
         {
             if (role.IsMentionable) {
@@ -152,9 +150,9 @@ namespace TheGodfather.Modules.Administration
         [Command("setcolor"), Priority(1)]
         [Description("Set a color for the role.")]
         [Aliases("clr", "c", "sc", "setc")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task SetColorAsync(CommandContext ctx, 
+        public async Task SetColorAsync(CommandContext ctx,
                                        [Description("Role.")] DiscordRole role,
                                        [Description("Color.")] DiscordColor color)
         {
@@ -171,10 +169,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETNAME
         [Command("setname"), Priority(1)]
-        
+
         [Description("Set a name for the role.")]
         [Aliases("name", "rename", "n")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameAsync(CommandContext ctx,
                                      [Description("Role.")] DiscordRole role,
@@ -199,7 +197,7 @@ namespace TheGodfather.Modules.Administration
         [Command("setmentionable"), Priority(1)]
         [Description("Set role mentionable var.")]
         [Aliases("mentionable", "m", "setm")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetMentionableAsync(CommandContext ctx,
                                              [Description("Role.")] DiscordRole role,
@@ -220,7 +218,7 @@ namespace TheGodfather.Modules.Administration
         [Command("setvisible"), Priority(1)]
         [Description("Set role hoisted var (visibility in online list).")]
         [Aliases("separate", "h", "seth", "hoist", "sethoist")]
-        
+
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetVisibleAsync(CommandContext ctx,
                                          [Description("Role.")] DiscordRole role,

@@ -1,4 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -6,11 +11,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.EventHandling;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
         public MessageModule(DbContextBuilder db)
             : base(db)
         {
-             
+
         }
 
 
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
         [Command("attachments")]
         [Description("View all message attachments. If the message is not provided, scans the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
-        
+
         public async Task ListAttachmentsAsync(CommandContext ctx,
                                               [Description("Message.")] DiscordMessage message = null)
         {
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration
                 Title = "Attachments:",
                 Color = this.ModuleColor
             };
-            foreach (DiscordAttachment attachment in message.Attachments) 
+            foreach (DiscordAttachment attachment in message.Attachments)
                 emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
 
             await ctx.RespondAsync(embed: emb.Build());
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
         [Command("flag")]
         [Description("Flags the message given by ID for deletion vote. If the message is not provided, flags the last sent message before command invocation.")]
         [Aliases("f")]
-        
+
         [RequireBotPermissions(Permissions.ManageMessages)]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task FlagMessageAsync(CommandContext ctx,
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify")]
         [Description("Modify the given message.")]
         [Aliases("edit", "mod", "e", "m")]
-        
+
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task ModifyMessageAsync(CommandContext ctx,
                                             [Description("Message.")] DiscordMessage message,
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (string.IsNullOrWhiteSpace(content))
                 throw new CommandFailedException("Missing new message content!");
-            
+
             await message.ModifyAsync(content);
             await this.InformAsync(ctx, important: false);
         }
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
         [Command("pin")]
         [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
-        
+
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
                                          [Description("Message.")] DiscordMessage message = null)
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unpin"), Priority(1)]
         [Description("Unpins the message at given index (starting from 1) or message ID. If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
-        
+
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinMessageAsync(CommandContext ctx,
                                            [Description("Message.")] DiscordMessage message)

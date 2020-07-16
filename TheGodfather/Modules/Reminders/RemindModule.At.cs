@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Services;
 #endregion
@@ -17,14 +14,14 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("at")]
         [Description("Send a reminder at a specific point in time (given by date and time string).")]
-        
+
         public class RemindAtModule : RemindModule
         {
 
             public RemindAtModule(SchedulingService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 

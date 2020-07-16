@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -30,7 +27,7 @@ namespace TheGodfather.Modules.Currency
         public GambleModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -38,7 +35,7 @@ namespace TheGodfather.Modules.Currency
         [Command("coinflip"), Priority(1)]
         [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
-        
+
         public async Task CoinflipAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
@@ -66,7 +63,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
             }
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -84,7 +81,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
 
             if (rnd == guess) {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 2);
                     await db.SaveChangesAsync();
                 }
@@ -104,7 +101,7 @@ namespace TheGodfather.Modules.Currency
         [Command("dice"), Priority(1)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
-        
+
         public async Task RollDiceAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
@@ -128,7 +125,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -147,7 +144,7 @@ namespace TheGodfather.Modules.Currency
             await this.InformAsync(ctx, Emojis.Dice, sb.ToString());
 
             if (rnd == guess_int) {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 6);
                     await db.SaveChangesAsync();
                 }

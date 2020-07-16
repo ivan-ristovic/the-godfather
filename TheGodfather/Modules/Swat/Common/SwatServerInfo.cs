@@ -1,7 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +15,7 @@ namespace TheGodfather.Modules.Swat.Common
     {
         public static int CheckTimeout { get; set; } = 150;
         public static readonly int RetryAttempts = 2;
-        
+
         private static readonly string _queryString = "\\status\\";
         private static readonly Regex _bbCodeRegex = new Regex(@"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 

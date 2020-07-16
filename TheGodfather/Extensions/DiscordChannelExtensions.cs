@@ -1,11 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 #endregion
 
@@ -48,7 +47,7 @@ namespace TheGodfather.Extensions
         public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
         {
             var messages = new List<DiscordMessage>();
-            
+
             for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
                 ulong? lastId = messages.FirstOrDefault()?.Id;
                 IReadOnlyList<DiscordMessage> requested;

@@ -1,15 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Swat.Common;
@@ -35,20 +33,20 @@ namespace TheGodfather.Modules.Swat.Services
         }
 
 
-        private static readonly ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>> _listeners;
+        private static readonly ConcurrentDictionary<SwatServer, ConcurrentHashSet<DiscordChannelInfo>> _listeners;
         private static readonly object _lock;
         private static readonly AsyncExecutionService _async;   // FIXME
         private static Timer _ticker;
 
         static SwatSpaceCheckService()
         {
-            _listeners = new ConcurrentDictionary<DatabaseSwatServer, ConcurrentHashSet<DiscordChannelInfo>>(new DatabaseSwatServerComparer());
+            _listeners = new ConcurrentDictionary<SwatServer, ConcurrentHashSet<DiscordChannelInfo>>(new SwatServerComparer());
             _lock = new object();
             _async = new AsyncExecutionService();
         }
 
 
-        public static void AddListener(DatabaseSwatServer server, DiscordChannel channel)
+        public static void AddListener(SwatServer server, DiscordChannel channel)
         {
             if (_listeners.Count > 10 || _listeners.Any(kvp => kvp.Value.Count > 10))
                 throw new Exception("Maximum amount of simultanous checks reached. Please try again later.");
@@ -73,7 +71,7 @@ namespace TheGodfather.Modules.Swat.Services
         public static void RemoveListener(DiscordChannel channel)
         {
             lock (_lock) {
-                foreach ((DatabaseSwatServer server, ConcurrentHashSet<DiscordChannelInfo> listeners) in _listeners)
+                foreach ((SwatServer server, ConcurrentHashSet<DiscordChannelInfo> listeners) in _listeners)
                     if (listeners.RemoveWhere(c => c.Channel == channel) <= 0)
                         throw new ConcurrentOperationException("Failed to unregister space check task! Please try again.");
 
@@ -81,7 +79,7 @@ namespace TheGodfather.Modules.Swat.Services
                     .Where(kvp => kvp.Value.IsEmpty)
                     .Select(kvp => kvp.Key)
                     .ToList();
-                foreach (DatabaseSwatServer server in toRemove)
+                foreach (SwatServer server in toRemove)
                     _listeners.TryRemove(server, out _);
             }
         }
@@ -103,7 +101,7 @@ namespace TheGodfather.Modules.Swat.Services
             }
 
             lock (_lock) {
-                foreach (DatabaseSwatServer server in _listeners.Keys) {
+                foreach (SwatServer server in _listeners.Keys) {
                     SwatServerInfo info = _async.Execute(SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort));
                     if (info is null) {
                         foreach (DiscordChannelInfo ci in _listeners[server]) {

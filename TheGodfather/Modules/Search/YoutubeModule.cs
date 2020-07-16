@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -19,15 +16,15 @@ namespace TheGodfather.Modules.Search
     [Group("youtube"), Module(ModuleType.Searches), NotBlocked]
     [Description("Youtube search commands. Group call searches YouTube for given query.")]
     [Aliases("y", "yt", "ytube")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
 
-        public YoutubeModule(YtService service, DbContextBuilder db) 
+        public YoutubeModule(YtService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -41,7 +38,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Advanced youtube search.")]
         [Aliases("s")]
-        
+
         public Task AdvancedSearchAsync(CommandContext ctx,
                                        [Description("Amount of results. [1-20]")] int amount,
                                        [RemainingText, Description("Search query.")] string query)
@@ -52,7 +49,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchvideo")]
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchv", "video")]
-        
+
         public Task SearchVideoAsync(CommandContext ctx,
                                     [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "video");
@@ -62,7 +59,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchchannel")]
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchc", "channel")]
-        
+
         public Task SearchChannelAsync(CommandContext ctx,
                                       [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "channel");
@@ -72,7 +69,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist", "playlist")]
-        
+
         public Task SearchPlaylistAsync(CommandContext ctx,
                                        [RemainingText, Description("Search query.")] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "playlist");
@@ -82,7 +79,7 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe")]
         [Description("Add a new subscription for a YouTube channel.")]
         [Aliases("add", "a", "+", "sub")]
-        
+
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("Channel URL.")] string url,
@@ -99,7 +96,7 @@ namespace TheGodfather.Modules.Search
         [Command("unsubscribe")]
         [Description("Remove a YouTube channel subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        
+
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task UnsubscribeAsync(CommandContext ctx,
                                     [Description("Channel URL or subscription name.")] string name_url)

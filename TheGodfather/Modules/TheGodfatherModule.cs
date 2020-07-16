@@ -53,7 +53,7 @@ namespace TheGodfather.Modules
                     await this.InformAsync(ctx, ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, "Action completed"));
                 }
             } else {
-                string response = message is null  ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild?.Id, message);
+                string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild?.Id, message);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{emoji ?? Emojis.CheckMarkSuccess} {response}",
                     Color = this.ModuleColor

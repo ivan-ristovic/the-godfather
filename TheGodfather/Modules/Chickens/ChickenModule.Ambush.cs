@@ -13,7 +13,6 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
-using TheGodfather.Migrations;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Services;
@@ -26,14 +25,14 @@ namespace TheGodfather.Modules.Chickens
         [Group("ambush")]
         [Description("Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.")]
         [Aliases("gangattack")]
-        
+
         public class AmbushModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public AmbushModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -74,7 +73,7 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             foreach (Chicken chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
                                 chicken.Stats.BareStrength += 5;
                                 chicken.Stats.BareVitality -= 10;
@@ -114,7 +113,7 @@ namespace TheGodfather.Modules.Chickens
                 try {
                     await this.ExecuteGroupAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.UserId));
                 } catch (NotFoundException) {
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.Chickens.Remove(chicken);
                         await db.SaveChangesAsync();
                     }

@@ -10,7 +10,6 @@ using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -22,15 +21,15 @@ namespace TheGodfather.Modules.Misc
     [Group("rank"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("User ranking commands. Group command prints given user's rank.")]
     [Aliases("ranks", "ranking", "level")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RanksModule : TheGodfatherServiceModule<UserRanksService>
     {
 
-        public RanksModule(UserRanksService service, DbContextBuilder db) 
+        public RanksModule(UserRanksService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -44,7 +43,7 @@ namespace TheGodfather.Modules.Misc
             uint msgcount = this.Service.GetMessageCountForUser(user.Id);
 
             XpRank rankInfo;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext())
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
                 rankInfo = await db.XpRanks.FindAsync((long)ctx.Guild.Id, rank);
 
             var emb = new DiscordEmbedBuilder {
@@ -65,7 +64,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Add a custom name for given rank in this guild.")]
         [Aliases("+", "a", "rename", "rn", "newname", "<", "<<", "+=")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        
+
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Rank.")] short rank,
                                   [RemainingText, Description("Rank name.")] string name)
@@ -79,7 +78,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30)
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 XpRank dbr = db.XpRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id && r.Rank == rank);
                 if (dbr is null) {
                     db.XpRanks.Add(new XpRank {
@@ -102,12 +101,12 @@ namespace TheGodfather.Modules.Misc
         [Command("delete")]
         [Description("Remove a custom name for given rank in this guild.")]
         [Aliases("-", "remove", "rm", "del", "revert")]
-        
+
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] short rank)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.XpRanks.Remove(new XpRank {
                     GuildId = ctx.Guild.Id,
                     Rank = rank
@@ -126,7 +125,7 @@ namespace TheGodfather.Modules.Misc
         public async Task RankListAsync(CommandContext ctx)
         {
             List<XpRank> ranks;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 ranks = await db.XpRanks
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .OrderBy(r => r.Rank)
@@ -157,7 +156,7 @@ namespace TheGodfather.Modules.Misc
 
             Dictionary<short, string> ranks;
             Dictionary<ulong, uint> top;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 ranks = await db.XpRanks
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .OrderBy(r => r.Rank)
@@ -184,7 +183,7 @@ namespace TheGodfather.Modules.Misc
                     emb.AddField(user?.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
             }
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.XpCounts.RemoveRange(notFoundUsers.Select(uid => new XpCount() { UserId = uid }));
                 await db.SaveChangesAsync();
             }

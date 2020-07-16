@@ -1,10 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using Newtonsoft.Json;
-
 using System;
 using System.Net;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Services;
 #endregion

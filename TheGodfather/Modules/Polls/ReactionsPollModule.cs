@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -26,7 +23,7 @@ namespace TheGodfather.Modules.Polls
         public ReactionsPollModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -34,7 +31,7 @@ namespace TheGodfather.Modules.Polls
         [Command("reactionspoll"), Priority(1)]
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("rpoll", "pollr", "voter")]
-        
+
         public async Task ReactionsPollAsync(CommandContext ctx,
                                             [Description("Time for poll to run.")] TimeSpan timeout,
                                             [RemainingText, Description("Question.")] string question)

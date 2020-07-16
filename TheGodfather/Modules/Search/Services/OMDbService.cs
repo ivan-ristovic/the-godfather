@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Interactivity;
-
-using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity;
+using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
@@ -37,7 +34,7 @@ namespace TheGodfather.Modules.Search.Services
 
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
-            
+
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&s={query}").ConfigureAwait(false);
             OMDbResponse data = JsonConvert.DeserializeObject<OMDbResponse>(response);
             IReadOnlyList<MovieInfo> results = data.Success ? data.Results?.AsReadOnly() : null;

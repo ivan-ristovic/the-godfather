@@ -48,34 +48,7 @@ namespace TheGodfather.Database
         }
 
 
-        
-        /////////////////////////// TODO remove
-        public DatabaseContext CreateContext()
-        {
-            try {
-                return new DatabaseContext(this.Provider, this.ConnectionString);
-            } catch (Exception e) {
-                Console.WriteLine("Error during database initialization:");
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        public DatabaseContext CreateContext(DbContextOptions<DatabaseContext> options)
-        {
-            try {
-                return new DatabaseContext(this.Provider, this.ConnectionString, options);
-            } catch (Exception e) {
-                Console.WriteLine("Error during database initialization:");
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-        /////////////////////////////// END remove
-
-
-
-        public TheGodfatherDbContext CreateDbContext()
+        public TheGodfatherDbContext CreateContext()
         {
             try {
                 return this.Options is null

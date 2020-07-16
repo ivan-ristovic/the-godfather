@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
 using System;
-
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 #endregion
 
@@ -27,7 +25,7 @@ namespace TheGodfather.Modules.Music.Common
                 ThumbnailUrl = this.Thumbnail,
                 Url = Query
             };
-            
+
             if (!(color is null))
                 emb.WithColor(color.Value);
 

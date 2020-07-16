@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
 using Humanizer;
-
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -34,7 +31,7 @@ namespace TheGodfather.Modules.Currency
         public CasinoModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -61,14 +58,14 @@ namespace TheGodfather.Modules.Currency
         [Command("slot"), Priority(1)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
-        
+
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -77,7 +74,7 @@ namespace TheGodfather.Modules.Currency
             await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency, out long won));
 
             if (won > 0) {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + won);
                     await db.SaveChangesAsync();
                 }
@@ -90,7 +87,7 @@ namespace TheGodfather.Modules.Currency
         {
             if (string.IsNullOrWhiteSpace(bidstr))
                 throw new InvalidCommandUsageException("Bid missing.");
-            
+
             try {
                 long bid = (long)bidstr.FromMetric();
                 return this.SlotAsync(ctx, bid);
@@ -104,14 +101,14 @@ namespace TheGodfather.Modules.Currency
         [Command("wheeloffortune"), Priority(1)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
-        
+
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                 await db.SaveChangesAsync();
@@ -121,7 +118,7 @@ namespace TheGodfather.Modules.Currency
             await wof.RunAsync();
 
             if (wof.WonAmount > 0) {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + wof.WonAmount);
                     await db.SaveChangesAsync();
                 }

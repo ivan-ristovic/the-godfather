@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -28,14 +25,14 @@ namespace TheGodfather.Modules.Games
                      "to the row and column where you wish to play. You can also specify a time window in which " +
                      "players must submit their move.")]
         [Aliases("c", "gomoku", "gobang")]
-        
+
         public class CaroModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public CaroModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -53,7 +50,7 @@ namespace TheGodfather.Modules.Games
 
                 if (moveTime?.TotalSeconds < 2 || moveTime?.TotalSeconds > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
-                    
+
                 var caro = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
                 this.Service.RegisterEventInChannel(caro, ctx.Channel.Id);
                 try {
@@ -72,7 +69,7 @@ namespace TheGodfather.Modules.Games
                             await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.CaroLost++);
                     } else {
                         await this.InformAsync(ctx, Emojis.Joystick, "A draw... Pathetic...");
-                    } 
+                    }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }

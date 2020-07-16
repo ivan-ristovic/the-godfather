@@ -1,15 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-
-using Steam.Models.SteamCommunity;
-
-using SteamWebAPI2.Interfaces;
-using SteamWebAPI2.Utilities;
-
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using Steam.Models.SteamCommunity;
+using SteamWebAPI2.Interfaces;
+using SteamWebAPI2.Utilities;
 using TheGodfather.Services;
 #endregion
 

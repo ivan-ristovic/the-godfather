@@ -1,13 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -21,7 +20,7 @@ namespace TheGodfather.Modules.Administration
         [Group("delete"), UsesInteractivity]
         [Description("Deletes messages from the current channel. Group call deletes given amount of most recent messages.")]
         [Aliases("-", "prune", "del", "d")]
-        
+
         [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
         public class MessageDeleteModule : TheGodfatherModule
         {
@@ -29,7 +28,7 @@ namespace TheGodfather.Modules.Administration
             public MessageDeleteModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -56,7 +55,7 @@ namespace TheGodfather.Modules.Administration
             [Command("after")]
             [Description("Deletes given amount messages after a specified message ID.")]
             [Aliases("aft", "af")]
-            
+
             public async Task DeleteMessagesAfterAsync(CommandContext ctx,
                                                       [Description("Message after which to delete.")] DiscordMessage message,
                                                       [Description("Amount.")] int amount = 5,
@@ -74,7 +73,7 @@ namespace TheGodfather.Modules.Administration
             [Command("before")]
             [Description("Deletes given amount messages before a specified message ID.")]
             [Aliases("bef", "bf")]
-            
+
             public async Task DeleteMessagesBeforeAsync(CommandContext ctx,
                                                        [Description("Message before which to delete.")] DiscordMessage message,
                                                        [Description("Amount.")] int amount = 5,
@@ -92,7 +91,7 @@ namespace TheGodfather.Modules.Administration
             [Command("from"), Priority(1)]
             [Description("Deletes given amount of most recent messages from the given member.")]
             [Aliases("f", "frm")]
-            
+
             public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
                                                          [Description("User whose messages to delete.")] DiscordMember member,
                                                          [Description("Message range.")] int amount = 5,
@@ -118,7 +117,7 @@ namespace TheGodfather.Modules.Administration
             [Command("reactions")]
             [Description("Deletes all reactions from the given message.")]
             [Aliases("react", "re")]
-            
+
             public async Task DeleteReactionsAsync(CommandContext ctx,
                                                   [Description("Message.")] DiscordMessage message = null,
                                                   [RemainingText, Description("Reason.")] string reason = null)
@@ -136,7 +135,7 @@ namespace TheGodfather.Modules.Administration
             [Command("regex"), Priority(1)]
             [Description("Deletes given amount of most-recent messages that match a given regular expression withing a given message amount.")]
             [Aliases("r", "rgx", "regexp", "reg")]
-            
+
             public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                           [Description("Pattern (Regex).")] string pattern,
                                                           [Description("Amount.")] int amount = 100,

@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using GiphyDotNet.Manager;
-using GiphyDotNet.Model.Parameters;
-
 using System;
 using System.Threading.Tasks;
-
+using GiphyDotNet.Manager;
+using GiphyDotNet.Model.Parameters;
 using TheGodfather.Services;
-
 using ImageData = GiphyDotNet.Model.GiphyImage.Data;
 using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
 using RandomImageResult = GiphyDotNet.Model.Results.GiphyRandomResult;

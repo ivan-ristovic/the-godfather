@@ -7,10 +7,10 @@ namespace TheGodfatherTests
 {
     public static class MockData
     {
-        public static MockIdCollection Ids = new MockIdCollection(); 
+        public static MockIdCollection Ids = new MockIdCollection();
 
 
-        public class MockIdCollection : IEnumerable<ulong> , IReadOnlyCollection<ulong>
+        public class MockIdCollection : IEnumerable<ulong>, IReadOnlyCollection<ulong>
         {
             private static ImmutableArray<ulong> _ids = new ulong[] {
                 125649888611401728,

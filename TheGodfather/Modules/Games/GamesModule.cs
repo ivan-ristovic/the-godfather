@@ -1,15 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Extensions;
@@ -27,9 +25,9 @@ namespace TheGodfather.Modules.Games
         public GamesModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
-        
+
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -116,7 +114,7 @@ namespace TheGodfather.Modules.Games
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        
+
         public async Task RpsAsync(CommandContext ctx,
                                   [Description("rock/paper/scissors")] string rps)
         {
@@ -153,13 +151,13 @@ namespace TheGodfather.Modules.Games
         [Command("stats")]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
-        
+
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {
             user = user ?? ctx.User;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 GameStats stats = await db.GameStats.FindAsync((long)user.Id);
                 if (stats is null) {
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder {

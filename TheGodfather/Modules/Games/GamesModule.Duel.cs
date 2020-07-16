@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -25,14 +22,14 @@ namespace TheGodfather.Modules.Games
         [Group("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        
+
         public class DuelModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public DuelModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 

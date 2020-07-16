@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.EntityFrameworkCore;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 #endregion
 
@@ -17,7 +14,7 @@ namespace TheGodfather.Modules.Games.Extensions
     {
         public static async Task UpdateStatsAsync(this DbContextBuilder dbb, ulong uid, Action<GameStats> action)
         {
-            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
                 GameStats stats = await db.GameStats.FindAsync((long)uid);
                 if (stats is null) {
                     stats = new GameStats { UserId = uid };
@@ -63,7 +60,7 @@ namespace TheGodfather.Modules.Games.Extensions
             Func<GameStats, int> orderBy, Func<GameStats, int> thenBy = null)
         {
             List<GameStats> top;
-            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
                 IOrderedEnumerable<GameStats> topOrderedStats = thenBy is null
                     ? db.GameStats
                         .OrderByDescending(orderBy)

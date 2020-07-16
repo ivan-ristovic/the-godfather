@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -29,10 +28,10 @@ namespace TheGodfather.Modules.Chickens
         public class TrainModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public TrainModule(ChannelEventService service, DbContextBuilder db) 
+            public TrainModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -64,10 +63,10 @@ namespace TheGodfather.Modules.Chickens
                     return;
 
                 string result;
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
-                    
+
                     result = chicken.TrainStrength()
                         ? $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.TotalStrength}"
                         : $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
@@ -89,7 +88,7 @@ namespace TheGodfather.Modules.Chickens
             {
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
-                
+
                 Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -104,7 +103,7 @@ namespace TheGodfather.Modules.Chickens
                     return;
 
                 string result;
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to train a chicken ({price:n0} needed)!");
 

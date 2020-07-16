@@ -1,11 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Services;
 #endregion;
@@ -17,9 +16,9 @@ namespace TheGodfather.Modules.Search.Services
         private static readonly Regex _tagMatcher = new Regex("<.*?>", RegexOptions.Compiled);
         private static readonly string _url = "https://quotes.rest/qod.json";
 
-        
+
         public override bool IsDisabled => false;
-        
+
 
         public static async Task<Quote> GetQuoteOfTheDayAsync(string category = null)
         {

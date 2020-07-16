@@ -20,7 +20,7 @@ namespace TheGodfather.Database
         public TheGodfatherDbContext CreateDbContext(params string[] _)
         {
             BotConfig cfg = this.async.Execute(this.cfg.LoadConfigAsync("Resources/config.json"));
-            return new DbContextBuilder(cfg.DatabaseConfig).CreateDbContext();
+            return new DbContextBuilder(cfg.DatabaseConfig).CreateContext();
         }
     }
 }

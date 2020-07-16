@@ -1,12 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,15 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
@@ -37,10 +32,10 @@ namespace TheGodfather.Modules.Misc
     public class MiscModule : TheGodfatherModule
     {
 
-        public MiscModule(DbContextBuilder db) 
+        public MiscModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -48,7 +43,7 @@ namespace TheGodfather.Modules.Misc
         [Command("8ball")]
         [Description("An almighty ball which knows the answer to any question you ask. Alright, the answer is random, so what?")]
         [Aliases("8b")]
-        
+
         public Task EightBallAsync(CommandContext ctx,
                                   [RemainingText, Description("A question for the almighty ball.")] string question)
         {
@@ -97,7 +92,7 @@ namespace TheGodfather.Modules.Misc
         [Command("items")]
         [Description("View user's purchased items (see ``bank`` and ``shop``).")]
         [Aliases("myitems", "purchases")]
-        
+
         [RequirePermissions(Permissions.CreateInstantInvite)]
         public async Task GetPurchasedItemsAsync(CommandContext ctx,
                                                 [Description("User.")] DiscordUser user = null)
@@ -105,14 +100,14 @@ namespace TheGodfather.Modules.Misc
             user = user ?? ctx.User;
 
             List<PurchasedItem> items;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 items = await db.PurchasedItems
                     .Include(i => i.Item)
                     .Where(i => i.UserIdDb == (long)ctx.User.Id && i.Item.GuildIdDb == (long)ctx.Guild.Id)
                     .OrderBy(i => i.Item.Price)
                     .ToListAsync();
             }
-            
+
             if (!items.Any())
                 throw new CommandFailedException("No items purchased!");
 
@@ -145,7 +140,7 @@ namespace TheGodfather.Modules.Misc
         [Command("leet")]
         [Description("Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.")]
         [Aliases("l33t")]
-        
+
         public Task L33tAsync(CommandContext ctx,
                              [RemainingText, Description("Text.")] string text)
         {
@@ -176,7 +171,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_NSFW
         [Command("nsfw")]
         [Description("Wraps the URL into a special NSFW block.")]
-        
+
         [RequireBotPermissions(Permissions.ManageMessages)]
         public async Task NsfwAsync(CommandContext ctx,
                                    [Description("URL to wrap.")] Uri url,
@@ -200,7 +195,7 @@ namespace TheGodfather.Modules.Misc
         [Command("penis"), Priority(1)]
         [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]
-        
+
         public Task PenisAsync(CommandContext ctx,
                               [Description("Who to measure.")] DiscordMember member = null)
             => this.PenisAsync(ctx, member as DiscordUser);
@@ -229,7 +224,7 @@ namespace TheGodfather.Modules.Misc
         [Command("peniscompare"), Priority(1)]
         [Description("Comparison of the results given by ``penis`` command.")]
         [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
-        
+
         public Task PenisCompareAsync(CommandContext ctx,
                                      [Description("User1.")] params DiscordMember[] members)
             => this.PenisCompareAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
@@ -263,7 +258,7 @@ namespace TheGodfather.Modules.Misc
         [Command("prefix")]
         [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix", "pref", "setpref")]
-        
+
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
@@ -289,7 +284,7 @@ namespace TheGodfather.Modules.Misc
         [Command("rate"), Priority(1)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
-        
+
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
                              [Description("Who to measure.")] params DiscordMember[] members)
@@ -346,7 +341,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_REPORT
         [Command("report"), UsesInteractivity]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
-        
+
         public async Task SendErrorReportAsync(CommandContext ctx,
                                               [RemainingText, Description("Issue text.")] string issue)
         {
@@ -375,7 +370,7 @@ namespace TheGodfather.Modules.Misc
         [Command("say")]
         [Description("Echo echo echo.")]
         [Aliases("repeat")]
-        
+
         public Task SayAsync(CommandContext ctx,
                             [RemainingText, Description("Text to say.")] string text)
         {
@@ -393,7 +388,7 @@ namespace TheGodfather.Modules.Misc
         [Command("simulate")]
         [Description("Simulate another user.")]
         [Aliases("sim")]
-        
+
         public async Task SimulateAsync(CommandContext ctx,
                                        [Description("Member to simulate.")] DiscordMember member)
         {
@@ -429,7 +424,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_TTS
         [Command("tts")]
         [Description("Sends a tts message.")]
-        
+
         [RequirePermissions(Permissions.SendTtsMessages)]
         public Task TtsAsync(CommandContext ctx,
                             [RemainingText, Description("Text.")] string text)
@@ -448,7 +443,7 @@ namespace TheGodfather.Modules.Misc
         [Command("unleet")]
         [Description("Translates a message from leetspeak (expecting only letters in translated output).")]
         [Aliases("unl33t")]
-        
+
         public Task Unl33tAsync(CommandContext ctx,
                                [RemainingText, Description("Text to unleet.")] string text)
         {
@@ -498,7 +493,7 @@ namespace TheGodfather.Modules.Misc
         [Command("zugify")]
         [Description("I don't even...")]
         [Aliases("z")]
-        
+
         public Task ZugifyAsync(CommandContext ctx,
                                [RemainingText, Description("Text.")] string text)
         {

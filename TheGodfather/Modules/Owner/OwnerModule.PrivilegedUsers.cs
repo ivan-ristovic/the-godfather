@@ -1,19 +1,15 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
 using Microsoft.EntityFrameworkCore;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
@@ -30,10 +26,10 @@ namespace TheGodfather.Modules.Owner
         public class PrivilegedUsersModule : TheGodfatherModule
         {
 
-            public PrivilegedUsersModule(DbContextBuilder db) 
+            public PrivilegedUsersModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -51,15 +47,15 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add users to privileged users list.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            
+
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to grant privilege to.")] params DiscordUser[] users)
             {
                 if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
-                
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    db.PrivilegedUsers.SafeAddRange(users.Select(u => new DatabasePrivilegedUser {
+
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    db.PrivilegedUsers.SafeAddRange(users.Select(u => new PrivilegedUser {
                         UserId = u.Id
                     }));
                     await db.SaveChangesAsync();
@@ -73,14 +69,15 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from privileged users list.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to revoke privileges from.")] params DiscordUser[] users)
             {
                 if (users is null || !users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    // FIXME
                     db.PrivilegedUsers.RemoveRange(db.PrivilegedUsers.Where(pu => users.Any(u => u.Id == pu.UserId)));
                     await db.SaveChangesAsync();
                 }
@@ -95,19 +92,19 @@ namespace TheGodfather.Modules.Owner
             [Aliases("ls", "l", "print")]
             public async Task ListAsync(CommandContext ctx)
             {
-                List<DatabasePrivilegedUser> privileged;
-                using (DatabaseContext db = this.Database.CreateContext())
+                List<PrivilegedUser> privileged;
+                using (TheGodfatherDbContext db = this.Database.CreateContext())
                     privileged = await db.PrivilegedUsers.ToListAsync();
 
                 var valid = new List<DiscordUser>();
-                foreach (DatabasePrivilegedUser usr in privileged) {
+                foreach (PrivilegedUser usr in privileged) {
                     try {
                         DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
                         valid.Add(user);
                     } catch (NotFoundException) {
                         LogExt.Debug(ctx, "Removing 404 privileged user {UserId}", usr.UserId);
-                        using (DatabaseContext db = this.Database.CreateContext()) {
-                            db.PrivilegedUsers.Remove(new DatabasePrivilegedUser { UserIdDb = usr.UserIdDb });
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                            db.PrivilegedUsers.Remove(new PrivilegedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();
                         }
                     }

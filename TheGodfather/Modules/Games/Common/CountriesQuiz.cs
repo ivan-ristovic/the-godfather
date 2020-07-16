@@ -1,8 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -46,7 +44,7 @@ namespace TheGodfather.Modules.Games.Common
         public override async Task RunAsync()
         {
             var questions = new Queue<string>(_countries.Keys.Shuffle());
-            
+
             int timeouts = 0;
             for (int i = 1; i < this.NumberOfQuestions; i++) {
                 string question = questions.Dequeue();
@@ -61,7 +59,7 @@ namespace TheGodfather.Modules.Games.Common
                         if (xm.ChannelId != this.Channel.Id || xm.Author.IsBot) return false;
                         timeout = false;
                         return answerRegex.IsMatch(xm.Content);
-                    }, 
+                    },
                     TimeSpan.FromSeconds(10)
                 );
                 if (mctx.TimedOut) {

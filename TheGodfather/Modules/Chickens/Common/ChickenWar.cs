@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Chickens.Common
             return true;
         }
 
-        public bool IsParticipating(DiscordUser user) 
+        public bool IsParticipating(DiscordUser user)
             => this.Team1.Any(c => c.UserId == user.Id) || this.Team2.Any(c => c.UserId == user.Id);
     }
 }

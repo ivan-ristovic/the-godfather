@@ -95,7 +95,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public long TrainStrengthPrice
             => PriceForAttribute(this.Stats.BareStrength + 3) - PriceForAttribute(this.Stats.BareStrength);
-        
+
         [NotMapped]
         public long TrainVitalityPrice
             => PriceForAttribute(this.Stats.BareMaxVitality + 3) - PriceForAttribute(this.Stats.BareMaxVitality);
@@ -167,8 +167,8 @@ namespace TheGodfather.Database.Models
         {
             int str1 = this.Stats.TotalStrength;
             int str2 = loser.Stats.TotalStrength;
-            return str1 > str2 
-                ? Math.Max(7 - (str1 - str2) / 5, 1) 
+            return str1 > str2
+                ? Math.Max(7 - (str1 - str2) / 5, 1)
                 : str2 > str1 ? (str2 - str1) / 5 + 5 : 5;
         }
     }
@@ -182,8 +182,8 @@ namespace TheGodfather.Database.Models
         public int BareVitality {
             get => this.vitality;
             set {
-                this.vitality = value > this.BareMaxVitality 
-                    ? this.BareMaxVitality 
+                this.vitality = value > this.BareMaxVitality
+                    ? this.BareMaxVitality
                     : value < 0 ? 0 : value;
             }
         }

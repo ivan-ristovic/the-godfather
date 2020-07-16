@@ -1,20 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -36,7 +32,7 @@ namespace TheGodfather.Modules.Owner
             public CommandsModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -49,7 +45,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a new command.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            
+
             public Task AddAsync(CommandContext ctx,
                                 [RemainingText, Description("Code to evaluate.")] string code)
             {
@@ -72,7 +68,7 @@ public sealed class DynamicCommands : TheGodfatherModule
 
     {code.Substring(cs1, cs2 - cs1)}
 }}";
-                
+
                 string type = $"DynamicCommands{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
                 Type moduleType = null;
 
@@ -83,14 +79,14 @@ public sealed class DynamicCommands : TheGodfatherModule
 
                     SyntaxTree ast = SyntaxFactory.ParseSyntaxTree(code, new CSharpParseOptions().WithKind(SourceCodeKind.Script).WithLanguageVersion(LanguageVersion.Latest));
                     var opts = new CSharpCompilationOptions(
-                        OutputKind.DynamicallyLinkedLibrary, 
+                        OutputKind.DynamicallyLinkedLibrary,
                         scriptClassName: type,
                         usings: new[] { "System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities", "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity" },
                         optimizationLevel: OptimizationLevel.Release,
-                        allowUnsafe: true, 
+                        allowUnsafe: true,
                         platform: Platform.X64
                     );
-                    
+
                     var compilation = CSharpCompilation.CreateScriptCompilation(type, ast, refs, opts, returnType: typeof(object));
 
                     Assembly assembly = null;
@@ -117,7 +113,7 @@ public sealed class DynamicCommands : TheGodfatherModule
             [Command("delete")]
             [Description("Remove an existing command.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            
+
             public Task DeleteAsync(CommandContext ctx,
                                    [RemainingText, Description("Command to remove.")] string command)
             {

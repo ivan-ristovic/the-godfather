@@ -1,26 +1,21 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
 using Humanizer;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Extensions;
 #endregion
@@ -31,14 +26,14 @@ namespace TheGodfather.Modules.Currency
     [Description("WM bank commands. Group call prints out given user's bank balance. Accounts periodically get an increase.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    
+
     public class BankModule : TheGodfatherModule
     {
 
         public BankModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -52,14 +47,14 @@ namespace TheGodfather.Modules.Currency
         [Command("balance")]
         [Description("View someone's bank account in this guild.")]
         [Aliases("s", "status", "bal", "money")]
-        
+
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
         {
             user = user ?? ctx.User;
 
             long? balance;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 BankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
                 balance = account?.Balance;
             }
@@ -86,7 +81,7 @@ namespace TheGodfather.Modules.Currency
         [Command("currency")]
         [Description("Set currency for this guild. Currency can be either emoji or text.")]
         [Aliases("sc", "setcurrency")]
-        
+
         public async Task GetOrSetCurrencyAsync(CommandContext ctx,
                                                [RemainingText, Description("New currency.")] string currency = null)
         {
@@ -99,7 +94,7 @@ namespace TheGodfather.Modules.Currency
                 GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.Currency = currency;
                 });
-                
+
                 await this.InformAsync(ctx, $"Changed the currency to: {gcfg.Currency}", important: false);
             }
         }
@@ -109,7 +104,7 @@ namespace TheGodfather.Modules.Currency
         [Command("grant"), Priority(1)]
         [Description("Magically increase another user's bank balance.")]
         [Aliases("give")]
-        
+
         [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
@@ -118,7 +113,7 @@ namespace TheGodfather.Modules.Currency
             if (amount < 0 || amount > 1_000_000_000_000)
                 throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1_000_000_000_000:n0}]");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 BankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
                 if (account is null)
                     throw new CommandFailedException("Given user does not have a WM bank account!");
@@ -126,10 +121,10 @@ namespace TheGodfather.Modules.Currency
                 db.BankAccounts.Update(account);
                 await db.SaveChangesAsync();
             }
-            
+
             await this.InformAsync(ctx, Emojis.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} on the lottery! (seems legit)");
         }
-        
+
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
                               [Description("Amount.")] long amount,
@@ -143,7 +138,7 @@ namespace TheGodfather.Modules.Currency
         [Aliases("r", "signup", "activate")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
                     db.BankAccounts.Add(new BankAccount { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
                 else
@@ -164,7 +159,7 @@ namespace TheGodfather.Modules.Currency
         {
             List<BankAccount> topAccounts;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 topAccounts = await db.BankAccounts
                     .Where(a => a.GuildId == ctx.Guild.Id)
                     .OrderByDescending(a => a.Balance)
@@ -198,7 +193,7 @@ namespace TheGodfather.Modules.Currency
         {
             List<BankAccount> topAccounts;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 topAccounts = await db.BankAccounts
                     .OrderByDescending(a => a.Balance)
                     .Take(10)
@@ -227,7 +222,7 @@ namespace TheGodfather.Modules.Currency
         [Command("transfer"), Priority(1)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
-        
+
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser user,
                                               [Description("Amount of currency to transfer.")] long amount)
@@ -238,7 +233,7 @@ namespace TheGodfather.Modules.Currency
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 try {
                     await db.Database.BeginTransactionAsync();
 
@@ -246,7 +241,7 @@ namespace TheGodfather.Modules.Currency
                         throw new CommandFailedException("You have insufficient funds.");
                     await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
                     await db.SaveChangesAsync();
-                    
+
                     db.Database.CommitTransaction();
                 } catch {
                     db.Database.RollbackTransaction();
@@ -268,14 +263,14 @@ namespace TheGodfather.Modules.Currency
         [Command("unregister"), Priority(1)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-        
+
         [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
                                          [Description("User whose account to delete.")] DiscordUser user,
                                          [Description("Globally delete?")] bool global = false)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
-                if (global) { 
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                if (global) {
                     db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
                 } else {
                     BankAccount acc = db.BankAccounts.SingleOrDefault(a => a.GuildId == ctx.Guild.Id && a.UserId == user.Id);

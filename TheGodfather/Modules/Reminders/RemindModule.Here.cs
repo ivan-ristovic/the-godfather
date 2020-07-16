@@ -1,12 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
 using System;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Services;
 #endregion
@@ -17,7 +13,7 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("here")]
         [Description("Send a reminder to the current channel after specific time span.")]
-        
+
         public class RemindHereModule : RemindModule
         {
 
@@ -41,7 +37,7 @@ namespace TheGodfather.Modules.Reminders
 
             [Group("in")]
             [Description("Send a reminder to the current channel after specific time span.")]
-            
+
             public class RemindHereInModule : RemindHereModule
             {
 
@@ -62,7 +58,7 @@ namespace TheGodfather.Modules.Reminders
 
             [Group("at")]
             [Description("Send a reminder to the current channel at a specific point in time (given by date and time string).")]
-            
+
             public class RemindHereAtModule : RemindModule
             {
 

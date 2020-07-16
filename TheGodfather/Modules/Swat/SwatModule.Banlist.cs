@@ -1,19 +1,17 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Swat.Extensions;
@@ -33,7 +31,7 @@ namespace TheGodfather.Modules.Swat
             public SwatBanlistModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -46,16 +44,16 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(2)]
             [Description("Add a player to banlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            
+
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
                                       [Description("IP.")] IPAddressRange ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                     if (player is null) {
-                        db.SwatPlayers.Add(new DatabaseSwatPlayer {
+                        db.SwatPlayers.Add(new SwatPlayer {
                             Info = reason,
                             IsBlacklisted = true
                         });
@@ -81,8 +79,8 @@ namespace TheGodfather.Modules.Swat
                                       [Description("Player name.")] string name,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                     if (player is null)
                         throw new CommandFailedException($"Player with name {Formatter.Bold(name)} is not present in the database!");
                     player.IsBlacklisted = true;
@@ -98,12 +96,12 @@ namespace TheGodfather.Modules.Swat
             [Command("delete"), Priority(1)]
             [Description("Remove ban entry from database.")]
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] IPAddressRange ip)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    SwatPlayer player = db.SwatPlayers
                         .Include(p => p.DbIPs)
                         .FirstOrDefault(p => p.IPs.Contains(ip.Range));
                     if (!(player is null) && player.IsBlacklisted) {
@@ -120,8 +118,8 @@ namespace TheGodfather.Modules.Swat
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Player name.")] string name)
             {
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                     if (!(player is null) && player.IsBlacklisted) {
                         player.IsBlacklisted = false;
                         db.SwatPlayers.Update(player);
@@ -138,8 +136,8 @@ namespace TheGodfather.Modules.Swat
             [Aliases("ls", "l", "print")]
             public async Task ListAsync(CommandContext ctx)
             {
-                List<DatabaseSwatPlayer> banned;
-                using (DatabaseContext db = this.Database.CreateContext()) {
+                List<SwatPlayer> banned;
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     banned = await db.SwatPlayers
                         .Include(p => p.DbIPs)
                         .Include(p => p.DbAliases)

@@ -1,19 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Text;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -35,14 +29,14 @@ namespace TheGodfather.Modules.Administration
                          "cooldown of 10s will execute action if 5 or more users join the guild in period of " +
                          "10s. The action is applied to all of the users that are currently under watch.")]
             [Aliases("antiraid", "ar", "af")]
-            
+
             public class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
             {
 
                 public AntifloodModule(AntifloodService service, DbContextBuilder db)
                     : base(service, db)
                 {
-                    
+
                 }
 
 
@@ -165,7 +159,7 @@ namespace TheGodfather.Modules.Administration
                 [Description("Set the antiflood sensitivity. Antiflood action will be executed if the specified " +
                              "amount of users join the guild in the given cooldown period.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                
+
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity)
                 {
@@ -197,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                 [Description("Set the antiflood sensitivity. Antiflood action will be executed if the specified " +
                              "amount of users join the guild in the given cooldown period.")]
                 [Aliases("setcooldown", "setcool", "cool", "c")]
-                
+
                 public async Task SetCooldownAsync(CommandContext ctx,
                                                   [Description("Cooldown.")] TimeSpan cooldown)
                 {

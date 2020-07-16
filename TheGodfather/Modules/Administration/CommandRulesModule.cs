@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
         public CommandRulesModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration
         [Command("allow")]
         [Description("Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).")]
         [Aliases("a", "only")]
-        
+
         public async Task AllowAsync(CommandContext ctx,
                                     [Description("Command or group to allow.")] string command,
                                     [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration
         [Command("forbid")]
         [Description("Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).")]
         [Aliases("f", "deny")]
-        
+
         public async Task ForbidAsync(CommandContext ctx,
                                      [Description("Command or group to forbid.")] string command,
                                      [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Administration
         public async Task ListAsync(CommandContext ctx)
         {
             List<CommandRule> rules;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 rules = await db.CommandRules
                     .Where(cr => cr.GuildId == ctx.Guild.Id)
                     .ToListAsync();
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Administration
             if (cmd is null)
                 throw new CommandFailedException($"Failed to find command {Formatter.InlineCode(command)}");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.CommandRules.RemoveRange(
                     db.CommandRules.Where(cr => cr.GuildId == ctx.Guild.Id && cr.Command.StartsWith(cmd.QualifiedName) && channels.Any(c => c.Id == cr.ChannelId))
                 );

@@ -1,12 +1,12 @@
 ﻿#region USING_DIRECTIVES
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
         public GrantModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Misc
             DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
             if (bot is null)
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
-            
+
             if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
                 await this.GiveRoleAsync(ctx, role);
             else
@@ -62,12 +62,12 @@ namespace TheGodfather.Modules.Misc
         [Command("role")]
         [Description("Grants you a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
-        
+
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         [Command("nickname")]
         [Description("Grants you a given nickname.")]
         [Aliases("nick", "name", "n")]
-        
+
         [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task GiveNameAsync(CommandContext ctx,
                                        [RemainingText, Description("Nickname to set.")] string name)
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Nickname missing.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (db.ForbiddenNames.Any(n => n.GuildId == ctx.Guild.Id && n.Regex.IsMatch(name)))
                     throw new CommandFailedException($"Name {name} matches one of the forbidden names in this guild.");
             }
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Misc
         public RevokeModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -136,12 +136,12 @@ namespace TheGodfather.Modules.Misc
         [Command("role")]
         [Description("Revokes from your role list a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
-        
+
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task RevokeRoleAsync(CommandContext ctx,
                                          [Description("Role to revoke.")] DiscordRole role)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search.Services
         public static string ToUrlPartString(this RedditCategory category)
         {
             switch (category) {
-                case RedditCategory.Controversial: return "controversial"; 
+                case RedditCategory.Controversial: return "controversial";
                 case RedditCategory.Gilded: return "gilded";
                 case RedditCategory.Hot: return "hot";
                 case RedditCategory.New: return "new";
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Search.Services
 
             sub = _subPrefixRegex.Replace(sub, string.Empty);
             rsub = "/r/" + sub.ToLowerInvariant();
-            
+
             string url = $"https://www.reddit.com{rsub}/{category.ToUrlPartString()}.rss";
             if (!RssService.IsValidFeedURL(url))
                 return null;

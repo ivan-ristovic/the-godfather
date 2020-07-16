@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search.Common
 
         [JsonProperty("query")]
         public string Ip { get; set; }
-        
+
         [JsonProperty("countryCode")]
         public string CountryCode { get; set; }
 

@@ -77,7 +77,7 @@ namespace TheGodfatherTests.Common
 
         [Test]
         public void TryParseFailTests()
-        { 
+        {
             AssertParseFail("asd123.123.132.123:10480");
             AssertParseFail("123.123.132.123:10480asd");
             AssertParseFail("asd123.123.132.123:10480asd");
@@ -122,7 +122,7 @@ namespace TheGodfatherTests.Common
             AssertParseFail("123");
             AssertParseFail("1");
 
-       
+
             static void AssertParseFail(string text)
             {
                 Assert.That(IPAddressRange.TryParse(text, out IPAddressRange? parsed), Is.False);

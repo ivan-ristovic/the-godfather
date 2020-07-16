@@ -14,7 +14,6 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -39,7 +38,7 @@ namespace TheGodfather.Modules.Administration
             public GuildConfigModule(GuildConfigService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -94,7 +93,7 @@ namespace TheGodfather.Modules.Administration
             [Command("verbose"), Priority(1)]
             [Description("Configuration of bot's responding options.")]
             [Aliases("fullresponse", "verbosereact", "verboseresponse", "v", "vr")]
-            
+
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
@@ -129,7 +128,7 @@ namespace TheGodfather.Modules.Administration
             [Command("suggestions"), Priority(1)]
             [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "cmdsug", "sugg", "sug", "cs", "s")]
-            
+
             public async Task SuggestionsAsync(CommandContext ctx,
                                               [Description("Enable suggestions?")] bool enable)
             {
@@ -164,7 +163,7 @@ namespace TheGodfather.Modules.Administration
             [Command("welcome"), Priority(3)]
             [Description("Allows user welcoming configuration.")]
             [Aliases("enter", "join", "wlc", "wm", "w")]
-            
+
             public async Task WelcomeAsync(CommandContext ctx)
             {
                 GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
@@ -228,7 +227,7 @@ namespace TheGodfather.Modules.Administration
             [Command("leave"), Priority(3)]
             [Description("Allows user leaving message configuration.")]
             [Aliases("exit", "drop", "lvm", "lm", "l")]
-            
+
             public async Task LeaveAsync(CommandContext ctx)
             {
                 GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
@@ -291,7 +290,7 @@ namespace TheGodfather.Modules.Administration
             [Command("setmuterole")]
             [Description("Gets or sets mute role for this guild.")]
             [Aliases("muterole", "mr", "muterl", "mrl")]
-            
+
             public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {

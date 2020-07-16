@@ -22,6 +22,7 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<Filter> Filters { get; set; }
         public virtual ICollection<ForbiddenName> ForbiddenNames { get; set; }
         public virtual ICollection<GuildTask> GuildTasks { get; set; }
+        public virtual ICollection<Insult> Insults { get; set; }
         public virtual ICollection<Meme> Memes { get; set; }
         public virtual ICollection<PurchasableItem> PurchasableItems { get; set; }
         public virtual ICollection<XpRank> Ranks { get; set; }
@@ -44,6 +45,7 @@ namespace TheGodfather.Database.Models
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
             this.GuildTasks = new HashSet<GuildTask>();
+            this.Insults = new HashSet<Insult>();
             this.ForbiddenNames = new HashSet<ForbiddenName>();
             this.Memes = new HashSet<Meme>();
             this.PurchasableItems = new HashSet<PurchasableItem>();
@@ -74,7 +76,7 @@ namespace TheGodfather.Database.Models
         public bool SuggestionsEnabled { get; set; }
 
         [Column("log_cid")]
-        public long? LogChannelIdDb { get; set; } 
+        public long? LogChannelIdDb { get; set; }
         [NotMapped]
         public ulong LogChannelId { get => (ulong)this.LogChannelIdDb.GetValueOrDefault(); set => this.LogChannelIdDb = (long)value; }
         [NotMapped]
@@ -83,7 +85,7 @@ namespace TheGodfather.Database.Models
         [Column("mute_rid")]
         public long? MuteRoleIdDb { get; set; }
         [NotMapped]
-        public ulong MuteRoleId { get => (ulong) this.MuteRoleIdDb.GetValueOrDefault(); set => this.MuteRoleIdDb = (long)value; }
+        public ulong MuteRoleId { get => (ulong)this.MuteRoleIdDb.GetValueOrDefault(); set => this.MuteRoleIdDb = (long)value; }
 
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }

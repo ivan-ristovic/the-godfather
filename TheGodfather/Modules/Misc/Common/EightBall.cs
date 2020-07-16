@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 #endregion
 
@@ -63,14 +61,14 @@ namespace TheGodfather.Modules.Misc.Common
                 return rng.ChooseRandomElement(_timeAnswers);
             if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase))
                 return rng.ChooseRandomElement(rng.NextBool(3) ? members.Where(m => IsOnline(m)) : members.Where(m => !IsOnline(m))).DisplayName;
-            if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) || 
+            if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) ||
                 question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase))
                 return rng.ChooseRandomElement(_quantityAnswers);
             else
                 return rng.ChooseRandomElement(_regularAnswers);
 
 
-            bool IsOnline(DiscordMember m) 
+            bool IsOnline(DiscordMember m)
                 => (m?.Presence?.Status ?? UserStatus.Offline) >= UserStatus.Online;
         }
     }

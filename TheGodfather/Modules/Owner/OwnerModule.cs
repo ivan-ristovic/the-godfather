@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Owner
         public OwnerModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Owner
         [Command("announce"), NotBlocked, UsesInteractivity]
         [Description("Send a message to all guilds the bot is in.")]
         [Aliases("a", "ann")]
-        
+
         [RequireOwner]
         public async Task AnnounceAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botavatar"), NotBlocked]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        
+
         [RequireOwner]
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] Uri url)
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botname"), NotBlocked]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        
+
         [RequireOwner]
         public async Task SetBotNameAsync(CommandContext ctx,
                                          [RemainingText, Description("New name.")] string name)
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Owner
         [Command("dbquery"), NotBlocked, Priority(0)]
         [Description("Execute SQL query on the bot database.")]
         [Aliases("sql", "dbq", "q")]
-        
+
         [RequireOwner]
         public async Task DatabaseQuery(CommandContext ctx,
                                        [RemainingText, Description("SQL Query.")] string query)
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Query missing.");
 
             var res = new List<IReadOnlyDictionary<string, string>>();
-            using (DatabaseContext db = this.Database.CreateContext())
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
             using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
                 DbDataReader reader = dr.DbDataReader;
                 while (await reader.ReadAsync()) {
@@ -208,7 +208,7 @@ namespace TheGodfather.Modules.Owner
         [Command("eval"), NotBlocked]
         [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
         [Aliases("compile", "run", "e", "c", "r")]
-        
+
         [RequireOwner]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
@@ -309,7 +309,7 @@ namespace TheGodfather.Modules.Owner
         [Command("filelog"), NotBlocked]
         [Description("Toggle writing to log file.")]
         [Aliases("setfl", "fl", "setfilelog")]
-        
+
         [RequireOwner]
         public Task FileLogAsync(CommandContext ctx,
                                 [Description("Enable?")] bool enable = true)
@@ -324,7 +324,7 @@ namespace TheGodfather.Modules.Owner
         [Command("generatecommandlist"), NotBlocked]
         [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
-        
+
         [RequireOwner]
         public async Task GenerateCommandListAsync(CommandContext ctx,
                                                   [RemainingText, Description("File path.")] string path = null)
@@ -442,7 +442,7 @@ namespace TheGodfather.Modules.Owner
                             sb.AppendLine().AppendLine();
                         }
                     }
-                    
+
                     /* FIXME
                     if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExampleArgsAttribute) is UsageExampleArgsAttribute examples)
                         sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine(Formatter.BlockCode(examples.JoinExamples(cmd, ctx), "xml"));
@@ -481,7 +481,7 @@ namespace TheGodfather.Modules.Owner
         [Command("leaveguilds"), NotBlocked]
         [Description("Leaves the given guilds.")]
         [Aliases("leave", "gtfo")]
-        
+
         [RequireOwner]
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] gids)
@@ -514,9 +514,9 @@ namespace TheGodfather.Modules.Owner
         [Command("log"), NotBlocked, Priority(1)]
         [Description("Upload the bot log file or add a remark to it.")]
         [Aliases("getlog", "remark", "rem")]
-        
+
         [RequireOwner]
-        public async Task LogAsync(CommandContext ctx, 
+        public async Task LogAsync(CommandContext ctx,
                                   [Description("Bypass current configuration and search file anyway?")] bool bypassConfig = false)
         {
             // TODO rework needed since Serilog introduction
@@ -549,7 +549,7 @@ namespace TheGodfather.Modules.Owner
         [Command("sendmessage"), NotBlocked]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
-        
+
         [RequirePrivilegedUser]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
@@ -579,7 +579,7 @@ namespace TheGodfather.Modules.Owner
         [Command("shutdown"), Priority(1), NotBlocked]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        
+
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
                              [Description("Time until shutdown.")] TimeSpan timespan,
@@ -596,7 +596,7 @@ namespace TheGodfather.Modules.Owner
         [Command("sudo"), NotBlocked]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        
+
         [RequirePrivilegedUser]
         public Task SudoAsync(CommandContext ctx,
                              [Description("Member to execute as.")] DiscordMember member,

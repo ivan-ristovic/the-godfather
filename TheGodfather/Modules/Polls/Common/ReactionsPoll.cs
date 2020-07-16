@@ -1,14 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Enums;
-using DSharpPlus.Interactivity.EventHandling;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.EventHandling;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -89,7 +88,7 @@ namespace TheGodfather.Modules.Polls.Common
             if (!this.results.Any())
                 return emb.WithDescription("Nobody voted!").Build();
 
-            foreach (PollEmoji pe in this.results) 
+            foreach (PollEmoji pe in this.results)
                 emb.AddField(this.Options[_emojiid[pe.Emoji.Name]], pe.Voted.Count.ToString(), inline: true);
 
             return emb.Build();

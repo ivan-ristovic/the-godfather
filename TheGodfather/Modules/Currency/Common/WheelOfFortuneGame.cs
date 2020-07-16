@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using Humanizer;
-
 using System;
 using System.Collections.Immutable;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Humanizer;
 using TheGodfather.Common;
 #endregion
 
@@ -23,7 +20,7 @@ namespace TheGodfather.Modules.Currency.Common
             2.4f, 0.3f, 1.7f, 0.5f, 1.2f, 0.1f, 0.2f, 1.5f
         }.ToImmutableArray();
 
-        public long WonAmount 
+        public long WonAmount
             => (long)(this.bid * _multipliers[this.index]);
 
         private readonly long bid;

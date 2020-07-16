@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             Log.Debug("Loading guild config");
             try {
-                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                     this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
                         db.Configs
                           .AsEnumerable()
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task<GuildConfig> GetConfigAsync(ulong gid)
         {
             GuildConfig? gcfg = null;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext())
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
                 gcfg = await db.Configs.FindAsync((long)gid);
             return gcfg ?? new GuildConfig();
         }
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration.Services
                 return null;
 
             GuildConfig? gcfg = null;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 gcfg = await db.Configs.FindAsync((long)gid) ?? new GuildConfig();
                 modifyAction(gcfg);
                 db.Configs.Update(gcfg);
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task<bool> RegisterGuildAsync(ulong gid)
         {
             bool success = this.gcfg.TryAdd(gid, new CachedGuildConfig());
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var gcfg = new GuildConfig { GuildId = gid };
                 if (!db.Configs.Contains(gcfg)) {
                     db.Configs.Add(gcfg);
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task UnregisterGuildAsync(ulong gid)
         {
             this.gcfg.TryRemove(gid, out _);
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 GuildConfig gcfg = await db.Configs.FindAsync((long)gid);
                 if (gcfg is { }) {
                     db.Configs.Remove(gcfg);
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 return db.ExemptsLogging
                     .Where(e => e.GuildIdDb == (long)gid)
                     .AsEnumerable()
@@ -126,11 +126,11 @@ namespace TheGodfather.Modules.Administration.Services
         {
             bool exempted = false;
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 exempted |= db.ExemptsLogging
                     .Where(e => e.GuildIdDb == (long)gid)
                     .AsEnumerable()
-                    .Any(e => (e.Type == ExemptedEntityType.Member && e.Id == uid) 
+                    .Any(e => (e.Type == ExemptedEntityType.Member && e.Id == uid)
                            || (e.Type == ExemptedEntityType.Role && (rids?.Contains(e.Id) ?? false))
                     );
             }

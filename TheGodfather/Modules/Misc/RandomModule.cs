@@ -1,12 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -21,11 +19,11 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RandomModule : TheGodfatherModule
     {
-        
+
         public RandomModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -33,7 +31,7 @@ namespace TheGodfather.Modules.Misc
         [Command("choose")]
         [Description("Choose one of the provided options separated by comma.")]
         [Aliases("select")]
-        
+
         public Task ChooseAsync(CommandContext ctx,
                                [RemainingText, Description("Option list (comma separated).")] string list)
         {
@@ -53,7 +51,7 @@ namespace TheGodfather.Modules.Misc
         [Command("raffle")]
         [Description("Choose a user from the online members list optionally belonging to a given role.")]
         [Aliases("chooseuser")]
-        
+
         public Task RaffleAsync(CommandContext ctx,
                                [Description("Role.")] DiscordRole role = null)
         {

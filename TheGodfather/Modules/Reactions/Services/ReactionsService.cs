@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -40,7 +39,7 @@ namespace TheGodfather.Modules.Reactions.Services
         {
             Log.Debug("Loading text and emoji reactions");
             try {
-                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                     this.treactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>(
                         db.TextReactions
                           .Include(tr => tr.DbTriggers)
@@ -92,7 +91,7 @@ namespace TheGodfather.Modules.Reactions.Services
             ConcurrentHashSet<EmojiReaction> ers = this.ereactions.GetOrAdd(gid, new ConcurrentHashSet<EmojiReaction>());
 
             int added = 0;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 await db.Database.BeginTransactionAsync();
                 try {
                     EmojiReaction? er = ers.FirstOrDefault(er => er.Response == emoji.GetDiscordName());
@@ -144,7 +143,7 @@ namespace TheGodfather.Modules.Reactions.Services
             string ename = emoji.GetDiscordName();
             int removed = ers.RemoveWhere(er => er.Response == ename);
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid && er.Response == ename));
                 await db.SaveChangesAsync();
             }
@@ -163,7 +162,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             int removed = ers.RemoveWhere(er => toRemove.Contains(er.Response));
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == gid && toRemove.Contains(er.Response)));
                 await db.SaveChangesAsync();
             }
@@ -181,7 +180,7 @@ namespace TheGodfather.Modules.Reactions.Services
                     throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
             }
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
@@ -199,7 +198,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             int removed = ers.RemoveWhere(er => ids.Contains(er.Id));
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.EmojiReactions.RemoveRange(
                 db.EmojiReactions
                   .Where(er => er.GuildIdDb == (long)gid)
@@ -229,7 +228,7 @@ namespace TheGodfather.Modules.Reactions.Services
                 }
             }
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.EmojiReactions
                    .Where(er => er.GuildIdDb == (long)gid)
                    .Include(er => er.DbTriggers)
@@ -273,7 +272,7 @@ namespace TheGodfather.Modules.Reactions.Services
                 return false;
 
             bool success = false;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 await db.Database.BeginTransactionAsync();
                 try {
                     TextReaction? tr = trs.FirstOrDefault(tr => tr.GuildId == gid && tr.Response == response);
@@ -321,7 +320,7 @@ namespace TheGodfather.Modules.Reactions.Services
                     throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
             }
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
@@ -339,7 +338,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             int removed = trs.RemoveWhere(tr => ids.Contains(tr.Id));
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.TextReactions.RemoveRange(
                     db.TextReactions
                       .Where(tr => tr.GuildIdDb == (long)gid)
@@ -369,7 +368,7 @@ namespace TheGodfather.Modules.Reactions.Services
                 }
             }
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.TextReactions
                     .Where(tr => tr.GuildIdDb == (long)gid)
                     .Include(tr => tr.DbTriggers)

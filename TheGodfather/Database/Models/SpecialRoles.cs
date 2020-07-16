@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
-    public abstract class SpecialRole : IEquatable<SpecialRole> 
+    public abstract class SpecialRole : IEquatable<SpecialRole>
     {
         [ForeignKey("GuildConfig")]
         [Column("gid")]
@@ -28,7 +28,7 @@ namespace TheGodfather.Database.Models
         public override bool Equals(object? other)
             => this.Equals(other as SpecialRole);
 
-        public override int GetHashCode() 
+        public override int GetHashCode()
             => (this.GuildId, this.RoleId).GetHashCode();
     }
 
@@ -42,7 +42,7 @@ namespace TheGodfather.Database.Models
     [Table("self_roles")]
     public class SelfRole : SpecialRole, IEquatable<SelfRole>
     {
-        public bool Equals(SelfRole? other) 
+        public bool Equals(SelfRole? other)
             => base.Equals(other);
     }
 }

@@ -1,30 +1,27 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using DSharpPlus.VoiceNext;
-
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using DSharpPlus.VoiceNext;
 #endregion
 
 namespace TheGodfather.Modules.Music.Common
 {
     public class MusicPlayer
     {
-        public bool IsPlaying
-        {
+        public bool IsPlaying {
             get {
                 lock (this.operationLock) {
                     return this.playing;
                 };
             }
         }
-        public bool IsStopped
-        {
+        public bool IsStopped {
             get {
                 lock (this.operationLock) {
                     return this.stopped;

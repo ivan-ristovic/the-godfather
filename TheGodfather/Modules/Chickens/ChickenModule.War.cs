@@ -1,24 +1,22 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Database.Models;
-using TheGodfather.Modules.Chickens.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -28,11 +26,11 @@ namespace TheGodfather.Modules.Chickens
         [Group("war")]
         [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
         [Aliases("gangwar", "battle")]
-        
+
         public class WarModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public WarModule(ChannelEventService service, DbContextBuilder db) 
+            public WarModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
 
@@ -58,7 +56,7 @@ namespace TheGodfather.Modules.Chickens
 
                         var sb = new StringBuilder();
 
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
                                 chicken.Stats.BareStrength += war.Gain;
                                 chicken.Stats.BareVitality -= 10;
@@ -96,7 +94,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("join"), Priority(1)]
             [Description("Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.")]
             [Aliases("+", "compete", "enter", "j")]
-            
+
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Number 1 or 2 depending of team you wish to join.")] int team)
             {

@@ -1,14 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
-
-using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,10 +6,15 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
+using Google.Apis.YouTube.v3.Data;
+using Newtonsoft.Json.Linq;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services;
-
 using YoutubeExplode;
 #endregion
 

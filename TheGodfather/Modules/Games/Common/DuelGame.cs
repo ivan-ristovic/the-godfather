@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -41,7 +39,7 @@ namespace TheGodfather.Modules.Games.Common
             this.potionUsed2 = false;
             this.eb = new StringBuilder();
         }
-        
+
 
         public override async Task RunAsync()
         {
@@ -94,7 +92,7 @@ namespace TheGodfather.Modules.Games.Common
                 msg => {
                     if (msg.ChannelId != this.Channel.Id) return false;
                     if (msg.Content.ToLowerInvariant() != "hp") return false;
-                    if (!this.potionUsed1 && msg.Author.Id == this.player1.Id) return true; 
+                    if (!this.potionUsed1 && msg.Author.Id == this.player1.Id) return true;
                     if (!this.potionUsed2 && msg.Author.Id == this.player2.Id) return true;
                     return false;
                 },

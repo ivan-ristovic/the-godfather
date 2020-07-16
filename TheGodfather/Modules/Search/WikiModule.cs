@@ -1,15 +1,12 @@
 ﻿#region USING_DIRECTIVES
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -19,7 +16,7 @@ namespace TheGodfather.Modules.Search
     [Group("wikipedia"), Module(ModuleType.Searches), NotBlocked]
     [Description("Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.")]
     [Aliases("wiki")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WikiModule : TheGodfatherModule
     {
@@ -27,7 +24,7 @@ namespace TheGodfather.Modules.Search
         public WikiModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -41,7 +38,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Search Wikipedia for a given query.")]
         [Aliases("s", "find")]
-        
+
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {

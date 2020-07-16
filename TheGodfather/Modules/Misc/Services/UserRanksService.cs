@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Services;
 

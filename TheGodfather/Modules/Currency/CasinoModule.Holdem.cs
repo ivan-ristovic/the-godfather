@@ -1,23 +1,20 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -27,14 +24,14 @@ namespace TheGodfather.Modules.Currency
         [Group("holdem")]
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
-        
+
         public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public HoldemModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -52,7 +49,7 @@ namespace TheGodfather.Modules.Currency
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
-                
+
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
@@ -66,14 +63,14 @@ namespace TheGodfather.Modules.Currency
                         if (!(game.Winner is null))
                             await this.InformAsync(ctx, Emojis.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             foreach (HoldemGame.Participant participant in game.Participants)
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
                             await db.SaveChangesAsync();
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
                                 await db.SaveChangesAsync();
                             }
@@ -112,12 +109,12 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
                         throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();
                 }
-                
+
                 game.AddParticipant(ctx.User, handle);
                 await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
             }

@@ -18,7 +18,7 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public CommandFailedException(string message, Exception inner) 
+        public CommandFailedException(string message, Exception inner)
             : base(message, inner)
         {
 

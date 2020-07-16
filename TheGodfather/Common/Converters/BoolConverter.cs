@@ -11,11 +11,11 @@ namespace TheGodfather.Common.Converters
         static BoolConverter()
         {
             _tRegex = new Regex(
-                @"^(y+e*(s*|(a*|u*)(h*|p*))|d+a+(v+a+j+)?|1+|e+n+a+b+l+e|o+n+|t+(r+u+e+)?)$", 
+                @"^(y+e*(s*|(a*|u*)(h*|p*))|d+a+(v+a+j+)?|1+|e+n+a+b+l+e|o+n+|t+(r+u+e+)?)$",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled
             );
             _fRegex = new Regex(
-                @"^(n+(o*(p+e+)?|a*h*|e*i*|y*e*t*)|0+|d+i+s+a+b+l+e|o+f+|f+(a+l+s+e+)?)$", 
+                @"^(n+(o*(p+e+)?|a*h*|e*i*|y*e*t*)|0+|d+i+s+a+b+l+e|o+f+|f+(a+l+s+e+)?)$",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled
             );
         }

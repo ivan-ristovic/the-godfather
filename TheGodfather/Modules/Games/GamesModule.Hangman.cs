@@ -1,20 +1,15 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -35,7 +30,7 @@ namespace TheGodfather.Modules.Games
             public HangmanModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -83,7 +78,7 @@ namespace TheGodfather.Modules.Games
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return this.InformAsync(ctx, 
+                return this.InformAsync(ctx,
                     Emojis.Information,
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
                     " The game ends if the word is guessed or when all lives are spent."

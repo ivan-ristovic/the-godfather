@@ -1,15 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-
 using System;
 using System.IO;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.VoiceNext;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
@@ -23,16 +19,16 @@ namespace TheGodfather.Modules.Music
         [Group("play")]
         [Description("Commands for playing music. Group call plays given URL or searches YouTube for given query and plays the first result.")]
         [Aliases("music", "p")]
-        
+
         [RequireBotPermissions(Permissions.UseVoice | Permissions.Speak)]
         [RequireOwner]
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YtService service, DbContextBuilder db) 
+            public PlayModule(YtService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -70,7 +66,7 @@ namespace TheGodfather.Modules.Music
             [Command("file")]
             [Description("Plays an audio file from the server filesystem.")]
             [Aliases("f")]
-            
+
             public async Task PlayFileAsync(CommandContext ctx,
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
             {

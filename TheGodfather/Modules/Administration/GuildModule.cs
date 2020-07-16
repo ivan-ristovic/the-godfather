@@ -1,16 +1,14 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.Models;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -26,10 +24,10 @@ namespace TheGodfather.Modules.Administration
     public partial class GuildModule : TheGodfatherModule
     {
 
-        public GuildModule(DbContextBuilder db) 
+        public GuildModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -60,7 +58,7 @@ namespace TheGodfather.Modules.Administration
         [Command("log")]
         [Description("View guild audit logs. You can also specify an amount of entries to fetch.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-        
+
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Amount of entries to fetch")] int amount = 10)
@@ -130,7 +128,7 @@ namespace TheGodfather.Modules.Administration
         [Command("prune"), UsesInteractivity]
         [Description("Prune guild members who weren't active in the given amount of days [1-30].")]
         [Aliases("p", "clean", "purge")]
-        
+
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembersAsync(CommandContext ctx,
@@ -158,7 +156,7 @@ namespace TheGodfather.Modules.Administration
         [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
-        
+
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
                                           [RemainingText, Description("New name.")] string newname)
@@ -181,7 +179,7 @@ namespace TheGodfather.Modules.Administration
         [Command("seticon")]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
-        
+
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] Uri url)

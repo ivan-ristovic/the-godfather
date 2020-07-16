@@ -1,22 +1,19 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
-
 using Microsoft.EntityFrameworkCore;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Swat.Common;
 using TheGodfather.Modules.Swat.Extensions;
@@ -32,10 +29,10 @@ namespace TheGodfather.Modules.Swat
     public partial class SwatModule : TheGodfatherModule
     {
 
-        public SwatModule(DbContextBuilder db) 
+        public SwatModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -43,7 +40,7 @@ namespace TheGodfather.Modules.Swat
         [Command("ip")]
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
-        
+
         public Task QueryAsync(CommandContext ctx,
                               [Description("Registered name.")] string name)
         {
@@ -51,8 +48,8 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Name missing.");
             name = name.ToLowerInvariant();
 
-            DatabaseSwatServer server;
-            using (DatabaseContext db = this.Database.CreateContext())
+            SwatServer server;
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             if (server is null)
@@ -66,7 +63,7 @@ namespace TheGodfather.Modules.Swat
         [Command("query"), Priority(1)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
-        
+
         public Task QueryAsync(CommandContext ctx,
                               [Description("Server IP.")] IPAddressRange ip,
                               [Description("Query port")] int queryport = 10481)
@@ -74,7 +71,7 @@ namespace TheGodfather.Modules.Swat
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            var server = DatabaseSwatServer.FromIP(ip.Range, queryport);
+            var server = SwatServer.FromIP(ip.Range, queryport);
             return this.QueryAndPrintInfoAsync(ctx, server);
         }
 
@@ -90,8 +87,8 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Name missing.");
             name = name.ToLowerInvariant();
 
-            DatabaseSwatServer server;
-            using (DatabaseContext db = this.Database.CreateContext())
+            SwatServer server;
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             if (server is null)
@@ -101,7 +98,7 @@ namespace TheGodfather.Modules.Swat
         }
 
 
-        private async Task QueryAndPrintInfoAsync(CommandContext ctx, DatabaseSwatServer server)
+        private async Task QueryAndPrintInfoAsync(CommandContext ctx, SwatServer server)
         {
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort);
             if (info is null) {
@@ -128,7 +125,7 @@ namespace TheGodfather.Modules.Swat
         #region COMMAND_SETTIMEOUT
         [Command("settimeout"), Hidden]
         [Description("Set checking timeout.")]
-        
+
         [RequireOwner]
         public Task SetTimeoutAsync(CommandContext ctx,
                                    [Description("Timeout (in ms).")] int timeout)
@@ -145,7 +142,7 @@ namespace TheGodfather.Modules.Swat
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers.")]
         [Aliases("sl", "list")]
-        
+
         public async Task ServerlistAsync(CommandContext ctx,
                                          [Description("Server name group.")] string group = null)
         {
@@ -155,8 +152,8 @@ namespace TheGodfather.Modules.Swat
                 Url = "https://swat4stats.com/servers/"
             };
 
-            List<DatabaseSwatServer> servers;
-            using (DatabaseContext db = this.Database.CreateContext()) {
+            List<SwatServer> servers;
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (string.IsNullOrWhiteSpace(group))
                     servers = await db.SwatServers.ToListAsync();
                 else
@@ -178,7 +175,7 @@ namespace TheGodfather.Modules.Swat
         [Command("startcheck"), Priority(1), UsesInteractivity]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck", "sc")]
-        
+
         public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("IP.")] IPAddressRange ip,
                                          [Description("Query port")] int queryport = 10481)
@@ -188,8 +185,8 @@ namespace TheGodfather.Modules.Swat
 
             if (SwatSpaceCheckService.IsListening(ctx.Channel))
                 throw new CommandFailedException("Already checking space in this channel!");
-            
-            var server = DatabaseSwatServer.FromIP(ip.Range, queryport);
+
+            var server = SwatServer.FromIP(ip.Range, queryport);
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
             await this.InformAsync(ctx, $"Starting space listening on {server.IP}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
@@ -210,8 +207,8 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Name missing.");
             name = name.ToLowerInvariant();
 
-            DatabaseSwatServer server;
-            using (DatabaseContext db = this.Database.CreateContext())
+            SwatServer server;
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
                 server = db.SwatServers.FirstOrDefault(s => s.Name == name);
 
             if (server is null)

@@ -10,7 +10,6 @@ using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -28,14 +27,14 @@ namespace TheGodfather.Modules.Administration
             [Group("ratelimit")]
             [Description("Prevents users from posting more than specified amount of messages in 5s.")]
             [Aliases("rl", "rate")]
-            
+
             public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
             {
 
                 public RatelimitModule(RatelimitService service, DbContextBuilder db)
                     : base(service, db)
                 {
-                    
+
                 }
 
 
@@ -98,7 +97,7 @@ namespace TheGodfather.Modules.Administration
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
                         List<ExemptedRatelimitEntity> exempted;
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             exempted = await db.ExemptsRatelimit
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -124,7 +123,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute when the ratelimit is hit.")]
                 [Aliases("setaction", "a")]
-                
+
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentAction action)
                 {
@@ -152,7 +151,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("sensitivity")]
                 [Description("Set the ratelimit sensitivity. Ratelimit will be hit if member sends more messages in 5 seconds than given sensitivity number.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                
+
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity)
                 {
@@ -183,14 +182,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the ratelimit watch for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                
+
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
                         await db.SaveChangesAsync();
                     }
@@ -206,7 +205,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
                         await db.SaveChangesAsync();
                     }
@@ -214,7 +213,7 @@ namespace TheGodfather.Modules.Administration
                     this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
                     await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
                 }
-                
+
                 [Command("exempt"), Priority(0)]
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Channels to exempt.")] params DiscordChannel[] channels)
@@ -222,7 +221,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
                         await db.SaveChangesAsync();
                     }
@@ -236,14 +235,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow ratelimit watch for that entity.")]
                 [Aliases("unex", "uex")]
-                
+
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.RemoveRange(
                             db.ExemptsRatelimit.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Member && members.Any(m => m.Id == ex.Id))
                         );
@@ -261,7 +260,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.RemoveRange(
                             db.ExemptsRatelimit.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Role && roles.Any(r => r.Id == ex.Id))
                         );
@@ -279,7 +278,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsRatelimit.RemoveRange(
                             db.ExemptsRatelimit.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Channel && channels.Any(c => c.Id == ex.Id))
                         );

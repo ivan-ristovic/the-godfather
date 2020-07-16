@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
@@ -26,14 +23,14 @@ namespace TheGodfather.Modules.Currency
         [Group("blackjack")]
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
-        
+
         public class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public BlackjackModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -48,7 +45,7 @@ namespace TheGodfather.Modules.Currency
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
-                
+
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
@@ -63,14 +60,14 @@ namespace TheGodfather.Modules.Currency
                             if (game.Winner is null) {
                                 await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
-                                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                     foreach (BlackjackGame.Participant winner in game.Winners)
                                         await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
                             } else {
                                 await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{game.Winner.Mention} got the BlackJack!");
-                                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
                                     await db.SaveChangesAsync();
                                 }
@@ -80,7 +77,7 @@ namespace TheGodfather.Modules.Currency
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
                                 await db.SaveChangesAsync();
                             }
@@ -97,7 +94,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Description("Join a pending Blackjack game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            
+
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {
@@ -113,7 +110,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     if (bid <= 0 || !await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
                         throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
                     await db.SaveChangesAsync();

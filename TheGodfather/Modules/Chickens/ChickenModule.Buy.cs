@@ -9,12 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services.Common;
@@ -27,14 +25,14 @@ namespace TheGodfather.Modules.Chickens
         [Group("buy"), UsesInteractivity]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
-        
+
         public class BuyModule : TheGodfatherModule
         {
 
             public BuyModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -48,7 +46,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("default")]
             [Description("Buy a chicken of default strength (cheapest).")]
             [Aliases("d", "def")]
-            
+
             public Task DefaultAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
@@ -58,7 +56,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("wellfed")]
             [Description("Buy a well-fed chicken.")]
             [Aliases("wf", "fed")]
-            
+
             public Task WellFedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
@@ -68,7 +66,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("trained")]
             [Description("Buy a trained chicken.")]
             [Aliases("tr", "train")]
-            
+
             public Task TrainedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
@@ -78,7 +76,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("steroidempowered")]
             [Description("Buy a steroid-empowered chicken.")]
             [Aliases("steroid", "empowered")]
-            
+
             public Task EmpoweredAsync(CommandContext ctx,
                                       [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
@@ -88,7 +86,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("alien")]
             [Description("Buy an alien chicken.")]
             [Aliases("a", "extraterrestrial")]
-            
+
             public Task AlienAsync(CommandContext ctx,
                                   [RemainingText, Description("Chicken name.")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);
@@ -129,7 +127,7 @@ namespace TheGodfather.Modules.Chickens
 
                 if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
-                
+
                 if (await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id) is { })
                     throw new CommandFailedException("You already own a chicken!");
 
@@ -137,9 +135,9 @@ namespace TheGodfather.Modules.Chickens
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {gcfg.Currency}?"))
                     return;
-                
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
+
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)))
                         throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy a chicken ({Chicken.Price(type)} needed)!");
 
                     db.Chickens.Add(new Chicken(type) {
@@ -150,7 +148,7 @@ namespace TheGodfather.Modules.Chickens
 
                     await db.SaveChangesAsync();
                 }
-                    
+
                 await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
             }
             #endregion

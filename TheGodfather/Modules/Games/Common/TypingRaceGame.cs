@@ -1,10 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using Humanizer;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,7 +11,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Humanizer;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Games.Common
             {'―', '-'}
         #endregion
         }.ToImmutableDictionary();
-        
+
         public bool Started { get; private set; }
         public IReadOnlyList<ulong> WinnerIds { get; private set; }
         public int ParticipantCount => this.results.Count;
@@ -98,7 +95,7 @@ namespace TheGodfather.Modules.Games.Common
                 },
                 TimeSpan.FromSeconds(60)
             );
-            
+
             IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = this.results
                 .Where(kvp => kvp.Value < 100)
                 .OrderBy(kvp => kvp.Value);
@@ -133,7 +130,7 @@ namespace TheGodfather.Modules.Games.Common
                 Color = DiscordColor.Green
             }.Build();
         }
-        
+
 
         private string PrepareText(string text)
         {

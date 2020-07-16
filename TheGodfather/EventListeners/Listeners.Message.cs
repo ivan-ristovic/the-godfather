@@ -8,7 +8,6 @@ using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
@@ -58,7 +57,7 @@ namespace TheGodfather.EventListeners
                 short rank = shard.Services.GetService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
                 if (rank != 0) {
                     XpRank rankInfo;
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
                         rankInfo = db.XpRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
                     await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", Emojis.Medal);
                 }
@@ -121,13 +120,13 @@ namespace TheGodfather.EventListeners
             EmojiReaction triggeredEmojiReaction = gdata.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
                 .Shuffle()
                 .FirstOrDefault();
-            
+
             if (!(triggeredEmojiReaction is null) && e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
                 try {
                     var emoji = DiscordEmoji.FromName(shard.Client, triggeredEmojiReaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                         db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.HasSameResponseAs(triggeredEmojiReaction)));
                         await db.SaveChangesAsync();
                     }

@@ -1,10 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
-
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using TheGodfather.Database;
 #endregion
 
@@ -14,7 +11,7 @@ namespace TheGodfather.Modules.Administration.Extensions
     {
         public static async Task<RelationalDataReader> ExecuteSqlQueryAsync(this DatabaseFacade databaseFacade,
                                                                             string sql,
-                                                                            DatabaseContext context,
+                                                                            TheGodfatherDbContext context,
                                                                             params object[] parameters)
         {
 

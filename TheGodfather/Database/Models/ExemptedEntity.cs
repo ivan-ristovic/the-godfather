@@ -24,7 +24,7 @@ namespace TheGodfather.Database.Models
         }
 
         public static string ToUserFriendlyString(this ExemptedEntityType entity)
-            => Enum.GetName(typeof(ExemptedEntityType), entity) ?? "Unknown"; 
+            => Enum.GetName(typeof(ExemptedEntityType), entity) ?? "Unknown";
     }
 
     public class ExemptedEntity

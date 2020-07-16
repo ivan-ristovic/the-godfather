@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -19,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("weather"), Module(ModuleType.Searches), NotBlocked]
     [Description("Weather search commands. Group call returns weather information for given query.")]
     [Aliases("w")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
@@ -27,7 +25,7 @@ namespace TheGodfather.Modules.Search
         public WeatherModule(WeatherService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -53,7 +51,7 @@ namespace TheGodfather.Modules.Search
         [Command("forecast"), Priority(1)]
         [Description("Get weather forecast for the following days (def: 7).")]
         [Aliases("f")]
-        
+
         public async Task ForecastAsync(CommandContext ctx,
                                        [Description("Amount of days to fetch the forecast for.")] int amount,
                                        [RemainingText, Description("Query.")] string query)

@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             Log.Debug("Loading blocked entities");
             try {
-                using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                     this.bChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
                     this.bUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
                 }
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Owner.Services
         public async Task<IReadOnlyList<BlockedChannel>> GetBlockedChannelsAsync()
         {
             List<BlockedChannel> blocked;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext())
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
                 blocked = await db.BlockedChannels.ToListAsync();
             return blocked.AsReadOnly();
         }
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Owner.Services
         public async Task<IReadOnlyList<BlockedUser>> GetBlockedUsersAsync()
         {
             List<BlockedUser> blocked;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext())
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
                 blocked = await db.BlockedUsers.ToListAsync();
             return blocked.AsReadOnly();
         }
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             if (!this.bChannels.Add(cid))
                 return false;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.BlockedChannels.Add(new BlockedChannel {
                     ChannelId = cid,
                     Reason = reason
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             int blocked = 0;
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 foreach (ulong cid in cids) {
                     if (!this.bChannels.Add(cid))
                         continue;
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             if (!this.bUsers.Add(uid))
                 return false;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.BlockedUsers.Add(new BlockedUser {
                     UserId = uid,
                     Reason = reason
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             int blocked = 0;
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 foreach (ulong uid in uids) {
                     if (!this.bUsers.Add(uid))
                         continue;
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             if (!this.bChannels.TryRemove(cid))
                 return false;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.BlockedChannels.Remove(new BlockedChannel { ChannelId = cid });
                 await db.SaveChangesAsync();
             }
@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             int unblocked = 0;
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 foreach (ulong cid in cids) {
                     if (!this.bChannels.TryRemove(cid))
                         continue;
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             if (!this.bUsers.TryRemove(uid))
                 return false;
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.BlockedUsers.Remove(new BlockedUser { UserId = uid });
                 await db.SaveChangesAsync();
             }
@@ -202,7 +202,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             int unblocked = 0;
 
-            using (TheGodfatherDbContext db = this.dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 foreach (ulong uid in uids) {
                     if (!this.bUsers.TryRemove(uid))
                         continue;

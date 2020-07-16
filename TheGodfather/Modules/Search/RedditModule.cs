@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
     [Description("Reddit commands. Group call prints hottest posts from given sub.")]
     [Aliases("r")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RedditModule : TheGodfatherModule
     {
@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
         public RedditModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_REDDIT_CONTROVERSIAL
         [Command("controversial")]
         [Description("Get newest controversial posts for a subreddit.")]
-        
+
         public Task ControversialAsync(CommandContext ctx,
                                       [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Controversial);
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_REDDIT_GILDED
         [Command("gilded")]
         [Description("Get newest gilded posts for a subreddit.")]
-        
+
         public Task GildedAsync(CommandContext ctx,
                                [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Gilded);
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_REDDIT_HOT
         [Command("hot")]
         [Description("Get newest hot posts for a subreddit.")]
-        
+
         public Task HotAsync(CommandContext ctx,
                             [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Search
         [Command("new")]
         [Description("Get newest posts for a subreddit.")]
         [Aliases("newest", "latest")]
-        
+
         public Task NewAsync(CommandContext ctx,
                             [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.New);
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_REDDIT_RISING
         [Command("rising")]
         [Description("Get newest rising posts for a subreddit.")]
-        
+
         public Task RisingAsync(CommandContext ctx,
                                [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Rising);
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_REDDIT_TOP
         [Command("top")]
         [Description("Get top posts for a subreddit.")]
-        
+
         public Task TopAsync(CommandContext ctx,
                             [Description("Subreddit.")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Top);
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe")]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
-        
+
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("Subreddit.")] string sub)
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Search
         [Command("unsubscribe"), Priority(1)]
         [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        
+
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task UnsubscribeAsync(CommandContext ctx,
                                     [Description("Subreddit.")] string sub)
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.RssSubscriptions.Remove(new RssSubscription { ChannelId = ctx.Channel.Id, Id = id });
                 await db.SaveChangesAsync();
             }

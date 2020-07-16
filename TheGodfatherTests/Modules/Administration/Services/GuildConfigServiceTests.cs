@@ -2,9 +2,7 @@
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
@@ -118,10 +116,10 @@ namespace TheGodfatherTests.Modules.Administration.Services
                 alter: db => {
                     this.Service.LoadData();
                     return Task.CompletedTask;
-                }, 
+                },
                 verify: async db => {
                     Assert.That(HaveSamePropertyValues(
-                        this.gcfg[MockData.Ids[0]].CachedConfig, 
+                        this.gcfg[MockData.Ids[0]].CachedConfig,
                         (await this.Service.GetConfigAsync(MockData.Ids[0])).CachedConfig
                     ));
                     Assert.That(HaveSamePropertyValues(

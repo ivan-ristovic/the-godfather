@@ -1,18 +1,14 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -30,10 +26,10 @@ namespace TheGodfather.Modules.Owner
         public class BlockedUsersModule : TheGodfatherServiceModule<BlockingService>
         {
 
-            public BlockedUsersModule(BlockingService service, DbContextBuilder db) 
+            public BlockedUsersModule(BlockingService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -63,7 +59,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(2)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a", "block", "<", "<<", "+=")]
-            
+
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] params DiscordUser[] users)
                 => this.AddAsync(ctx, null, users);
@@ -94,7 +90,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove users from blocked users list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {

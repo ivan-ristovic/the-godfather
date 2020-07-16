@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -21,7 +18,7 @@ namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
@@ -29,7 +26,7 @@ namespace TheGodfather.Modules.Polls
         public PollModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 

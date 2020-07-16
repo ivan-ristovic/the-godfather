@@ -1,15 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.EventHandling;
-using Microsoft.Extensions.DependencyInjection;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
@@ -22,7 +19,7 @@ namespace TheGodfather.Extensions
         public static string BuildInvocationDetailsString(this CommandContext ctx, string reason = null)
             => $"{ctx.User} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel}";
 
-        public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string title, 
+        public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string title,
             IEnumerable<T> collection, Func<T, string> selector, DiscordColor? color = null, int pageSize = 10)
         {
             var pages = new List<Page>();

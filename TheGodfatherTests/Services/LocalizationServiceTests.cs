@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TheGodfather.Common;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;

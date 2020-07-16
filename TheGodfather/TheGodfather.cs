@@ -12,7 +12,6 @@ using Serilog;
 using Serilog.Events;
 using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
@@ -139,7 +138,7 @@ namespace TheGodfather
             var dbb = new DbContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
 
             Log.Information("Migrating the database");
-            using (TheGodfatherDbContext db = dbb.CreateDbContext())
+            using (TheGodfatherDbContext db = dbb.CreateContext())
                 await db.Database.MigrateAsync();
 
             return dbb;
@@ -215,7 +214,7 @@ namespace TheGodfather
 
                 try {
                     BotStatus? status = null;
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
                         status = db.BotStatuses.Shuffle().FirstOrDefault();
 
                     if (status is null)
@@ -245,7 +244,7 @@ namespace TheGodfather
                 }
 
                 try {
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext())
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
                         shard.Services.GetService<UserRanksService>().Sync(db);
                     Log.Debug("Database sync successful");
                 } catch (Exception e) {
@@ -287,7 +286,7 @@ namespace TheGodfather
 
                 try {
                     List<Birthday> todayBirthdays;
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                         todayBirthdays = db.Birthdays
                             .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                             .ToList();
@@ -302,15 +301,15 @@ namespace TheGodfather
                             Color = DiscordColor.Aquamarine
                         }));
 
-                        using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                             birthday.LastUpdateYear = DateTime.Now.Year;
                             db.Birthdays.Update(birthday);
-                            db.SaveChanges(); 
+                            db.SaveChanges();
                         }
                     }
                     Log.Debug("Birthdays checked");
 
-                    using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                         db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                         db.SaveChanges();
                     }

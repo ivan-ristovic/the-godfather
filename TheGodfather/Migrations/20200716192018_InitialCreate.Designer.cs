@@ -10,8 +10,8 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20200712183206_Chickens3")]
-    partial class Chickens3
+    [Migration("20200716192018_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,21 @@ namespace TheGodfather.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            modelBuilder.Entity("TheGodfather.Database.Models.AutoRole", b =>
+                {
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RoleIdDb")
+                        .HasColumnName("rid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("GuildIdDb", "RoleIdDb");
+
+                    b.ToTable("auto_roles");
+                });
 
             modelBuilder.Entity("TheGodfather.Database.Models.BankAccount", b =>
                 {
@@ -160,6 +175,27 @@ namespace TheGodfather.Migrations
                     b.ToTable("chickens");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.ChickenBoughtUpgrade", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnName("id")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id", "GuildIdDb", "UserIdDb");
+
+                    b.HasIndex("GuildIdDb", "UserIdDb");
+
+                    b.ToTable("chicken_bought_upgrades");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.ChickenUpgrade", b =>
                 {
                     b.Property<int>("Id")
@@ -167,12 +203,6 @@ namespace TheGodfather.Migrations
                         .HasColumnName("id")
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<long?>("ChickenGuildIdDb")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("ChickenUserIdDb")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("Cost")
                         .HasColumnName("cost")
@@ -193,8 +223,6 @@ namespace TheGodfather.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChickenGuildIdDb", "ChickenUserIdDb");
 
                     b.ToTable("chicken_upgrades");
                 });
@@ -218,7 +246,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("allow")
                         .HasColumnType("boolean");
 
-                    b.Property<long?>("GuildConfigGuildIdDb")
+                    b.Property<long>("GuildConfigGuildIdDb")
                         .HasColumnType("bigint");
 
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
@@ -355,6 +383,126 @@ namespace TheGodfather.Migrations
                     b.HasIndex("GuildIdDb");
 
                     b.ToTable("filters");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.ForbiddenName", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RegexString")
+                        .IsRequired()
+                        .HasColumnName("name_regex")
+                        .HasColumnType("character varying(64)")
+                        .HasMaxLength(64);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildIdDb");
+
+                    b.ToTable("forbidden_names");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.GameStats", b =>
+                {
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("AnimalRacesWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ar_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("CaroLost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("caro_lost")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("CaroWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("caro_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Chain4Lost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("c4_lost")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Chain4Won")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("c4_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("DuelLost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("duel_lost")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("DuelWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("duel_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("HangmanWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("hangman_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("NumberRacesWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("nr_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("OthelloLost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("othello_lost")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("OthelloWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("othello_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("QuizWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("quiz_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("TicTacToeLost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ttt_lost")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("TicTacToeWon")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ttt_won")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("UserIdDb");
+
+                    b.ToTable("game_stats");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.GuildConfig", b =>
@@ -545,6 +693,348 @@ namespace TheGodfather.Migrations
                     b.ToTable("guild_cfg");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.GuildTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTimeOffset>("ExecutionTime")
+                        .HasColumnName("execution_time")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("RoleIdDb")
+                        .HasColumnName("rid")
+                        .HasColumnType("bigint");
+
+                    b.Property<byte>("Type")
+                        .HasColumnName("type")
+                        .HasColumnType("smallint");
+
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildIdDb");
+
+                    b.ToTable("scheduled_tasks");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.Insult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnName("content")
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildIdDb");
+
+                    b.ToTable("insults");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.Meme", b =>
+                {
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnName("url")
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
+
+                    b.HasKey("GuildIdDb", "Name");
+
+                    b.ToTable("memes");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.PrivilegedUser", b =>
+                {
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("UserIdDb");
+
+                    b.ToTable("privileged_users");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.PurchasableItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasColumnType("character varying(64)")
+                        .HasMaxLength(64);
+
+                    b.Property<long>("Price")
+                        .HasColumnName("price")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuildIdDb");
+
+                    b.ToTable("purchasable_items");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.PurchasedItem", b =>
+                {
+                    b.Property<int>("ItemId")
+                        .HasColumnName("id")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ItemId", "UserIdDb");
+
+                    b.ToTable("purchased_items");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.Reminder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long?>("ChannelIdDb")
+                        .HasColumnName("cid")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("ExecutionTime")
+                        .HasColumnName("execution_time")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<bool>("IsRepeating")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("is_repeating")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnName("message")
+                        .HasColumnType("character varying(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<TimeSpan?>("RepeatIntervalDb")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("repeat_interval")
+                        .HasColumnType("interval")
+                        .HasDefaultValue(new TimeSpan(0, 0, 0, 0, -1));
+
+                    b.Property<long>("UserIdDb")
+                        .HasColumnName("uid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("reminders");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.RssFeed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("LastPostUrl")
+                        .IsRequired()
+                        .HasColumnName("last_post_url")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnName("url")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("rss_feeds");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.RssSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnName("id")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ChannelIdDb")
+                        .HasColumnName("cid")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasColumnType("character varying(64)")
+                        .HasMaxLength(64);
+
+                    b.HasKey("Id", "GuildIdDb", "ChannelIdDb");
+
+                    b.HasIndex("GuildIdDb");
+
+                    b.ToTable("rss_subscriptions");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SelfRole", b =>
+                {
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnName("gid")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RoleIdDb")
+                        .HasColumnName("rid")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("GuildIdDb", "RoleIdDb");
+
+                    b.ToTable("self_roles");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Info")
+                        .IsRequired()
+                        .HasColumnName("additional_info")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsBlacklisted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("is_blacklisted")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("swat_players");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerAlias", b =>
+                {
+                    b.Property<string>("Alias")
+                        .HasColumnName("alias")
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnName("id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Alias", "PlayerId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("swat_aliases");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerIP", b =>
+                {
+                    b.Property<string>("IP")
+                        .HasColumnName("ip")
+                        .HasColumnType("character varying(16)")
+                        .HasMaxLength(16);
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnName("id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("IP", "PlayerId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("swat_ips");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatServer", b =>
+                {
+                    b.Property<string>("IP")
+                        .HasColumnName("ip")
+                        .HasColumnType("character varying(16)")
+                        .HasMaxLength(16);
+
+                    b.Property<int>("JoinPort")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("join_port")
+                        .HasColumnType("integer")
+                        .HasDefaultValue(10480);
+
+                    b.Property<int>("QueryPort")
+                        .HasColumnName("query_port")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
+
+                    b.HasKey("IP", "JoinPort", "QueryPort");
+
+                    b.ToTable("swat_servers");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.TextReaction", b =>
                 {
                     b.Property<int>("Id")
@@ -624,10 +1114,19 @@ namespace TheGodfather.Migrations
                     b.ToTable("guild_ranks");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.AutoRole", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("AutoRoles")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.BankAccount", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
-                        .WithMany()
+                        .WithMany("Accounts")
                         .HasForeignKey("GuildIdDb")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -651,18 +1150,34 @@ namespace TheGodfather.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.ChickenUpgrade", b =>
+            modelBuilder.Entity("TheGodfather.Database.Models.ChickenBoughtUpgrade", b =>
                 {
-                    b.HasOne("TheGodfather.Database.Models.Chicken", null)
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", null)
+                        .WithMany("ChickenBoughtUpgrades")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TheGodfather.Database.Models.ChickenUpgrade", "Upgrade")
+                        .WithMany("BoughtUpgrades")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TheGodfather.Database.Models.Chicken", "Chicken")
                         .WithMany("Upgrades")
-                        .HasForeignKey("ChickenGuildIdDb", "ChickenUserIdDb");
+                        .HasForeignKey("GuildIdDb", "UserIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.CommandRule", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
                         .WithMany("CommandRules")
-                        .HasForeignKey("GuildConfigGuildIdDb");
+                        .HasForeignKey("GuildConfigGuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.EmojiReaction", b =>
@@ -719,6 +1234,102 @@ namespace TheGodfather.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.ForbiddenName", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("ForbiddenNames")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.GuildTask", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("GuildTasks")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.Insult", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("Insults")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.Meme", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("Memes")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.PurchasableItem", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("PurchasableItems")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.PurchasedItem", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.PurchasableItem", "Item")
+                        .WithMany("Purchases")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.RssSubscription", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TheGodfather.Database.Models.RssFeed", "Feed")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SelfRole", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany("SelfRoles")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerAlias", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.SwatPlayer", "Player")
+                        .WithMany("DbAliases")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerIP", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.SwatPlayer", "Player")
+                        .WithMany("DbIPs")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.TextReaction", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
@@ -740,7 +1351,7 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.XpRank", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
-                        .WithMany()
+                        .WithMany("Ranks")
                         .HasForeignKey("GuildIdDb")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

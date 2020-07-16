@@ -1,23 +1,19 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -27,14 +23,14 @@ namespace TheGodfather.Modules.Currency
         [Group("lottery")]
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't be repeated.")]
         [Aliases("lotto")]
-        
+
         public class LotteryModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public LotteryModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -63,7 +59,7 @@ namespace TheGodfather.Modules.Currency
                         if (game.Winners.Any()) {
                             await this.InformAsync(ctx, Emojis.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
-                            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                 foreach (LotteryGame.Participant winner in game.Winners)
                                     await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
                                 await db.SaveChangesAsync();
@@ -73,7 +69,7 @@ namespace TheGodfather.Modules.Currency
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + LotteryGame.TicketPrice);
                                 await db.SaveChangesAsync();
                             }
@@ -90,7 +86,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Description("Join a pending Lottery game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            
+
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
@@ -112,7 +108,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
                         throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}!");
                     await db.SaveChangesAsync();

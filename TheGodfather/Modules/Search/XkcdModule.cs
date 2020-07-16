@@ -1,10 +1,7 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -18,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("xkcd"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search xkcd. Group call returns random comic or, if an ID is provided, a comic with given ID.")]
     [Aliases("x")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class XkcdModule : TheGodfatherModule
     {
@@ -26,7 +23,7 @@ namespace TheGodfather.Modules.Search
         public XkcdModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -43,7 +40,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_XKCD_ID
         [Command("id")]
         [Description("Retrieves comic with given ID from xkcd.")]
-        
+
         public async Task ByIdAsync(CommandContext ctx,
                                  [Description("Comic ID.")] int? id = null)
         {

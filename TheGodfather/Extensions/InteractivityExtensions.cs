@@ -1,12 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
@@ -46,7 +44,7 @@ namespace TheGodfather.Extensions
         {
             if (!(interactivityService is null))
                 interactivityService.AddPendingResponse(cid, uid);
-            
+
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
 
             if (!(interactivityService is null) && !interactivityService.RemovePendingResponse(cid, uid))

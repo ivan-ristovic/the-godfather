@@ -1,28 +1,21 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
 using Humanizer;
 using Humanizer.Localisation;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -30,7 +23,7 @@ namespace TheGodfather.Modules.Reminders
     [Group("remind"), Module(ModuleType.Reminders), NotBlocked]
     [Description("Manage reminders.")]
     [Aliases("reminders", "reminder", "todo", "todolist", "note")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
     {
@@ -38,7 +31,7 @@ namespace TheGodfather.Modules.Reminders
         public RemindModule(SchedulingService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -91,7 +84,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("delete")]
         [Description("Unschedules reminders.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
-        
+
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Reminder ID.")] params int[] ids)
         {
@@ -171,7 +164,7 @@ namespace TheGodfather.Modules.Reminders
         [Command("repeat"), Priority(2)]
         [Description("Schedule a new repeating reminder. You can also specify a channel where to send the reminder.")]
         [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
-        
+
         public Task RepeatAsync(CommandContext ctx,
                                [Description("Repeat timespan.")] TimeSpan timespan,
                                [Description("Channel to send message to.")] DiscordChannel channel,
@@ -210,12 +203,12 @@ namespace TheGodfather.Modules.Reminders
                 throw new CommandFailedException("I cannot send DMs to you, please enable it so that I can remind you.");
 
             bool privileged;
-            using (DatabaseContext db = this.Database.CreateContext())
+            using (TheGodfatherDbContext db = this.Database.CreateContext())
                 privileged = db.PrivilegedUsers.Any(u => u.UserId == ctx.User.Id);
 
             if (!ctx.Client.CurrentApplication.Owners.Any(o => ctx.User.Id == o.Id) && !privileged) {
                 IReadOnlyList<(int Id, Reminder TaskInfo)> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
-                if (reminders.Count >= 20) 
+                if (reminders.Count >= 20)
                     throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
             }
 
@@ -227,7 +220,7 @@ namespace TheGodfather.Modules.Reminders
                 IsRepeating = repeat,
                 RepeatIntervalDb = repeat ? timespan : (TimeSpan?)null,
                 UserId = ctx.User.Id,
-            }; 
+            };
             await this.Service.ScheduleAsync(tinfo);
 
             if (repeat)

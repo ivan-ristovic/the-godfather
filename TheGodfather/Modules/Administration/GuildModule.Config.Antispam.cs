@@ -10,7 +10,6 @@ using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -28,14 +27,14 @@ namespace TheGodfather.Modules.Administration
             [Group("antispam")]
             [Description("Prevents users from posting more than specified amount of same messages.")]
             [Aliases("as")]
-            
+
             public class AntispamModule : TheGodfatherServiceModule<AntispamService>
             {
 
                 public AntispamModule(AntispamService service, DbContextBuilder db)
                     : base(service, db)
                 {
-                    
+
                 }
 
 
@@ -94,11 +93,11 @@ namespace TheGodfather.Modules.Administration
                         var sb = new StringBuilder();
                         sb.Append(Formatter.Bold("Sensitivity: ")).AppendLine(gcfg.AntispamSettings.Sensitivity.ToString());
                         sb.Append(Formatter.Bold("Action: ")).AppendLine(gcfg.AntispamSettings.Action.ToString());
-                        
+
                         sb.AppendLine().Append(Formatter.Bold("Exempts:"));
 
                         List<ExemptedAntispamEntity> exempted;
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             exempted = await db.ExemptsAntispam
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -124,7 +123,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("action")]
                 [Description("Set the action to execute when the antispam quota is hit.")]
                 [Aliases("setaction", "a")]
-                
+
                 public async Task SetActionAsync(CommandContext ctx,
                                                 [Description("Action type.")] PunishmentAction action)
                 {
@@ -152,7 +151,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("sensitivity")]
                 [Description("Set the antispam sensitivity - max amount of repeated messages before an action is taken.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
-                
+
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Sensitivity (max repeated messages).")] short sensitivity)
                 {
@@ -183,14 +182,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the antispam watch for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                
+
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
                         await db.SaveChangesAsync();
                     }
@@ -206,7 +205,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
                         await db.SaveChangesAsync();
                     }
@@ -222,7 +221,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
                         await db.SaveChangesAsync();
                     }
@@ -236,14 +235,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow antispam watch for that entity.")]
                 [Aliases("unex", "uex")]
-                
+
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.RemoveRange(
                             db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Member && members.Any(m => m.Id == ex.Id))
                         );
@@ -261,7 +260,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.RemoveRange(
                             db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Role && roles.Any(r => r.Id == ex.Id))
                         );
@@ -278,7 +277,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsAntispam.RemoveRange(
                             db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Channel && channels.Any(c => c.Id == ex.Id))
                         );

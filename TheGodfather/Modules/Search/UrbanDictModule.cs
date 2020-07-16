@@ -1,13 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using Humanizer;
-using System.Text;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Extensions;
@@ -21,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("urbandict"), Module(ModuleType.Searches), NotBlocked]
     [Description("Urban Dictionary commands. Group call searches Urban Dictionary for a given query.")]
     [Aliases("ud", "urban")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class UrbanDictModule : TheGodfatherModule
     {
@@ -29,7 +23,7 @@ namespace TheGodfather.Modules.Search
         public UrbanDictModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 

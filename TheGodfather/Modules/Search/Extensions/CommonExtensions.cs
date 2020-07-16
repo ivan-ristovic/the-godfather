@@ -1,15 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using Humanizer;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Humanizer;
 using TheGodfather.Common;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;

@@ -1,11 +1,8 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -18,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("goodreads"), Module(ModuleType.Searches), NotBlocked]
     [Description("Goodreads commands. Group call searches Goodreads books with given query.")]
     [Aliases("gr")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
@@ -26,7 +23,7 @@ namespace TheGodfather.Modules.Search
         public GoodreadsModule(GoodreadsService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Search
         [Command("book")]
         [Description("Search Goodreads books by title, author, or ISBN.")]
         [Aliases("books", "b")]
-        
+
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("Query.")] string query)
         {

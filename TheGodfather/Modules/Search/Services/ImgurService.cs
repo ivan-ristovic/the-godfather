@@ -1,14 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using Imgur.API.Authentication.Impl;
-using Imgur.API.Endpoints.Impl;
-using Imgur.API.Enums;
-using Imgur.API.Models;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Imgur.API.Authentication.Impl;
+using Imgur.API.Endpoints.Impl;
+using Imgur.API.Enums;
+using Imgur.API.Models;
 using TheGodfather.Services;
 #endregion
 

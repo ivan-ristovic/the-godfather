@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
-using System;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Extensions

@@ -32,13 +32,13 @@ namespace TheGodfather.Database.Models
         [Column("reaction"), Required, MaxLength(128)]
         public string Response { get; set; } = null!;
 
-        
+
         [NotMapped]
         public int RegexCount => this.triggerRegexes.Count;
-        
+
         [NotMapped]
         public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString());
-        
+
         [NotMapped]
         public IEnumerable<string> OrderedTriggers => this.Triggers.OrderBy(s => s);
 

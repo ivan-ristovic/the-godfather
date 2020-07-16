@@ -3,16 +3,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("swat_players")]
-    public class DatabaseSwatPlayer
+    public class SwatPlayer
     {
-
-        public DatabaseSwatPlayer()
+        public SwatPlayer()
         {
-            this.DbAliases = new HashSet<DatabaseSwatPlayerAlias>();
-            this.DbIPs = new HashSet<DatabaseSwatPlayerIP>();
+            this.DbAliases = new HashSet<SwatPlayerAlias>();
+            this.DbIPs = new HashSet<SwatPlayerIP>();
         }
 
 
@@ -22,10 +21,10 @@ namespace TheGodfather.Database.Entities
         public int Id { get; set; }
 
         [Column("name"), Required, MaxLength(32)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Column("additional_info")]
-        public string Info { get; set; }
+        public string Info { get; set; } = null!;
 
         [Column("is_blacklisted")]
         public bool IsBlacklisted { get; set; }
@@ -37,37 +36,37 @@ namespace TheGodfather.Database.Entities
         public IReadOnlyList<string> IPs => this.DbIPs.Select(ip => ip.IP).ToList().AsReadOnly();
 
 
-        public virtual ICollection<DatabaseSwatPlayerAlias> DbAliases { get; set; }
-        public virtual ICollection<DatabaseSwatPlayerIP> DbIPs { get; set; }
+        public virtual ICollection<SwatPlayerAlias> DbAliases { get; set; }
+        public virtual ICollection<SwatPlayerIP> DbIPs { get; set; }
     }
 
 
     [Table("swat_aliases")]
-    public class DatabaseSwatPlayerAlias
+    public class SwatPlayerAlias
     {
-        [ForeignKey("DbSwatPlayer")]
+        [ForeignKey("Player")]
         [Column("id")]
         public int PlayerId { get; set; }
 
         [Column("alias"), Required, MaxLength(32)]
-        public string Alias { get; set; }
+        public string Alias { get; set; } = null!;
 
 
-        public virtual DatabaseSwatPlayer DbSwatPlayer { get; set; }
+        public virtual SwatPlayer Player { get; set; } = null!;
     }
 
 
     [Table("swat_ips")]
-    public class DatabaseSwatPlayerIP
+    public class SwatPlayerIP
     {
-        [ForeignKey("DbSwatPlayer")]
+        [ForeignKey("Player")]
         [Column("id")]
         public int PlayerId { get; set; }
-        
+
         [Column("ip"), Required, MaxLength(16)]
-        public string IP { get; set; }
+        public string IP { get; set; } = null!;
 
 
-        public virtual DatabaseSwatPlayer DbSwatPlayer { get; set; }
+        public virtual SwatPlayer Player { get; set; } = null!;
     }
 }

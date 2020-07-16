@@ -1,12 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 #endregion
 
@@ -48,10 +46,10 @@ namespace TheGodfather.Modules.Games.Common
                     int posY = row + y;
                     bool found = false;
                     int current = this.BoardElementAt(posY, posX);
-                    
+
                     if (current == -1 || current == 0 || current == val)
                         continue;
-                    
+
                     while (!found) {
                         posX += x;
                         posY += y;

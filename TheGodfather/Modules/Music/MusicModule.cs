@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
-
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
@@ -29,10 +27,10 @@ namespace TheGodfather.Modules.Music
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService service, DbContextBuilder db) 
+        public MusicModule(YtService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -40,8 +38,8 @@ namespace TheGodfather.Modules.Music
         [Command("connect")]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
-        
-        public async Task ConnectAsync(CommandContext ctx, 
+
+        public async Task ConnectAsync(CommandContext ctx,
                                       [Description("Channel.")] DiscordChannel channel = null)
         {
             VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
@@ -72,7 +70,7 @@ namespace TheGodfather.Modules.Music
         public Task DisconnectAsync(CommandContext ctx)
         {
             VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-            if (vnext is null) 
+            if (vnext is null)
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
             VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);

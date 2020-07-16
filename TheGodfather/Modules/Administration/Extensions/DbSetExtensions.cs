@@ -1,27 +1,23 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using TheGodfather.Database.Entities;
+using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Extensions
 {
     public static class ExemptedEntityExtensions
     {
-        public static void SafeAddRange<TEntity>(this DbSet<TEntity> set, IEnumerable<TEntity> entities) 
+        public static void SafeAddRange<TEntity>(this DbSet<TEntity> set, IEnumerable<TEntity> entities)
             where TEntity : class, IEquatable<TEntity>
         {
             set.AddRange(entities.Except(set));
         }
 
-        public static void AddExemptions<TEntity, TExempt>(this DbSet<TEntity> set, ulong gid, IEnumerable<TExempt> exempts, ExemptedEntityType type) 
+        public static void AddExemptions<TEntity, TExempt>(this DbSet<TEntity> set, ulong gid, IEnumerable<TExempt> exempts, ExemptedEntityType type)
             where TEntity : ExemptedEntity, new()
             where TExempt : SnowflakeObject
         {

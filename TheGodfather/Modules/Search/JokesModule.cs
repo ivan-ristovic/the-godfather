@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Modules.Search.Services;
@@ -24,7 +21,7 @@ namespace TheGodfather.Modules.Search
         public JokesModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
-        
+
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {

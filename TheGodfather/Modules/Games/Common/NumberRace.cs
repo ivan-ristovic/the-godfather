@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
@@ -35,7 +33,7 @@ namespace TheGodfather.Modules.Games.Common
 
             int num = GFRandom.Generator.Next(1000);
             await this.Channel.EmbedAsync(num.ToString(), Emojis.ArrowUp);
-            
+
             while (this.participants.Any()) {
                 int guess = 0;
                 InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(

@@ -1,13 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -63,7 +62,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
                 this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
                     db.ExemptsAntispam
                         .Where(ee => ee.GuildId == gid)

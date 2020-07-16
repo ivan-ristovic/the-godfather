@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Owner.Services;
 

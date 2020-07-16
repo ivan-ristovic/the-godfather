@@ -21,13 +21,13 @@ namespace TheGodfather.Modules.Search.Services
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DbContextBuilder dbb)
         {
             IReadOnlyList<RssFeed> feeds;
-            using (TheGodfatherDbContext db = dbb.CreateDbContext())
+            using (TheGodfatherDbContext db = dbb.CreateContext())
                 feeds = await db.RssFeeds.Include(f => f.Subscriptions).ToListAsync();
-            
+
             foreach (RssFeed feed in feeds) {
                 try {
                     if (!feed.Subscriptions.Any()) {
-                        using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = dbb.CreateContext()) {
                             db.RssFeeds.Remove(feed);
                             await db.SaveChangesAsync();
                         }
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Search.Services
                         continue;
 
                     if (string.Compare(url, feed.LastPostUrl, true) != 0) {
-                        using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = dbb.CreateContext()) {
                             feed.LastPostUrl = url;
                             db.RssFeeds.Update(feed);
                             await db.SaveChangesAsync();
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Search.Services
                             try {
                                 chn = await client.GetChannelAsync(sub.ChannelId);
                             } catch (NotFoundException) {
-                                using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                                using (TheGodfatherDbContext db = dbb.CreateContext()) {
                                     db.RssSubscriptions.Remove(sub);
                                     await db.SaveChangesAsync();
                                 }

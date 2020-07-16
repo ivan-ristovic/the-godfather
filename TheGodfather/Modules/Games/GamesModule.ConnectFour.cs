@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -28,14 +25,14 @@ namespace TheGodfather.Modules.Games
                      "the column where you wish to insert your piece. You can also specify a time window in " +
                      "which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
-        
+
         public class ConnectFourModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public ConnectFourModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 

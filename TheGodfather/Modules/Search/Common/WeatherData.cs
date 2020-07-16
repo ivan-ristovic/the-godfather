@@ -1,8 +1,7 @@
 ﻿#region USING_DIRECTIVES
 
-using Newtonsoft.Json;
-
 using System.Collections.Generic;
+using Newtonsoft.Json;
 #endregion
 
 namespace TheGodfather.Modules.Search.Common

@@ -14,7 +14,7 @@ namespace TheGodfather.Database.Models
         public long UserIdDb { get; set; }
         [NotMapped]
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
-        
+
         [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

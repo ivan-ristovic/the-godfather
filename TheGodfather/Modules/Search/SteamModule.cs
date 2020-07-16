@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -17,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("steam"), Module(ModuleType.Searches), NotBlocked]
     [Description("Steam commands. Group call searches steam profiles for a given ID.")]
     [Aliases("s", "st")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
@@ -25,7 +23,7 @@ namespace TheGodfather.Modules.Search
         public SteamModule(SteamService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -33,7 +31,7 @@ namespace TheGodfather.Modules.Search
         [Command("profile")]
         [Description("Get Steam user information for user based on his ID.")]
         [Aliases("id", "user")]
-        
+
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {

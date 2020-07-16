@@ -1,17 +1,15 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
-using TheGodfather.Modules.Administration.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -23,7 +21,7 @@ namespace TheGodfather.Modules.Currency
         public WorkModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -34,7 +32,7 @@ namespace TheGodfather.Modules.Currency
         public async Task StreetsAsync(CommandContext ctx)
         {
             int change = GFRandom.Generator.NextBool() ? GFRandom.Generator.Next(1000, 5000) : -GFRandom.Generator.Next(5, 2500);
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + change);
                 await db.SaveChangesAsync();
             }
@@ -54,7 +52,7 @@ namespace TheGodfather.Modules.Currency
         public async Task WorkAsync(CommandContext ctx)
         {
             int earned = GFRandom.Generator.Next(1000) + 1;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + earned);
                 await db.SaveChangesAsync();
             }
@@ -74,7 +72,7 @@ namespace TheGodfather.Modules.Currency
         {
             bool success = GFRandom.Generator.Next(10) == 0;
             int earned = success ? GFRandom.Generator.Next(10000, 100000) : -10000;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + earned);
                 await db.SaveChangesAsync();
             }

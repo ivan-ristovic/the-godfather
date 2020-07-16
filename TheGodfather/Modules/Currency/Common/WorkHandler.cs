@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-
 using System.Collections.Immutable;
-
+using DSharpPlus;
 using TheGodfather.Common;
 #endregion
 

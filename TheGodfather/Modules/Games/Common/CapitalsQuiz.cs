@@ -1,17 +1,14 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using Newtonsoft.Json;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Newtonsoft.Json;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -71,7 +68,7 @@ namespace TheGodfather.Modules.Games.Common
                         if (xm.ChannelId != this.Channel.Id || xm.Author.IsBot) return false;
                         timeout = false;
                         return answerRegex.IsMatch(xm.Content);
-                    }, 
+                    },
                     TimeSpan.FromSeconds(10)
                 );
                 if (mctx.TimedOut) {

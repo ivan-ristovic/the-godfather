@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -20,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("imdb"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search Open Movie Database. Group call searches by title.")]
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
@@ -28,7 +25,7 @@ namespace TheGodfather.Modules.Search
         public OMDbModule(OMDbService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -42,7 +39,7 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Description("Searches IMDb for given query and returns paginated results.")]
         [Aliases("s", "find")]
-        
+
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)
         {
@@ -63,7 +60,7 @@ namespace TheGodfather.Modules.Search
         [Command("title")]
         [Description("Search by title.")]
         [Aliases("t", "name", "n")]
-        
+
         public Task SearchByTitleAsync(CommandContext ctx,
                                       [RemainingText, Description("Title.")] string title)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
@@ -72,7 +69,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_IMDB_ID
         [Command("id")]
         [Description("Search by IMDb ID.")]
-        
+
         public Task SearchByIdAsync(CommandContext ctx,
                                    [Description("ID.")] string id)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);

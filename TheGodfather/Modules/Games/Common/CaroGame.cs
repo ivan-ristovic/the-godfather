@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 #endregion
 
@@ -21,7 +19,7 @@ namespace TheGodfather.Modules.Games.Common
         {
 
         }
-        
+
 
         protected override bool IsGameOver()
         {

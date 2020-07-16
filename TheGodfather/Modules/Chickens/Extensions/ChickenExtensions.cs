@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
         public static Task<Chicken?> FindAsync(DiscordClient client, DbContextBuilder dbb, ulong gid, ulong uid, bool findOwner = true)
         {
             Chicken? chicken = null;
-            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
                 chicken = db.Chickens
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)
@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
         public static Task<Chicken?> FindAsync(DiscordClient client, DbContextBuilder dbb, ulong gid, string name, bool findOwner = true)
         {
             Chicken? chicken = null;
-            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
                 Chicken dbc = db.Chickens
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Chickens.Extensions
                 return chicken;
             } catch (NotFoundException) {
                 Log.Debug("Deleting chicken for user {UserId} in guild {GuildId} due to owner 404", chicken.UserId, chicken.GuildId);
-                using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                using (TheGodfatherDbContext db = dbb.CreateContext()) {
                     db.Chickens.Remove(chicken);
                     await db.SaveChangesAsync();
                 }

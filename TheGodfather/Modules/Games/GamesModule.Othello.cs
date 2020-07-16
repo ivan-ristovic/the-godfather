@@ -1,17 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -22,19 +18,19 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule 
+    public partial class GamesModule
     {
         [Group("othello")]
         [Description("Starts an \"Othello\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("reversi", "oth", "rev")]
-        
+
         public class OthelloModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public OthelloModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -57,7 +53,7 @@ namespace TheGodfather.Modules.Games
                 this.Service.RegisterEventInChannel(othello, ctx.Channel.Id);
                 try {
                     await othello.RunAsync();
-                    
+
                     if (!(othello.Winner is null)) {
                         if (othello.IsTimeoutReached)
                             await this.InformAsync(ctx, Emojis.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!");
@@ -84,7 +80,7 @@ namespace TheGodfather.Modules.Games
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return this.InformAsync(ctx, 
+                return this.InformAsync(ctx,
                     Emojis.Information,
                     "Othello (or ``Reversi``) is a strategy board game for two players, played on an 8×8 " +
                     "uncheckered board. There are sixty-four identical game pieces called disks (often spelled " +

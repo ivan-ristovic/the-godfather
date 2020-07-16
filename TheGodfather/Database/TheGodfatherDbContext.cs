@@ -26,13 +26,17 @@ namespace TheGodfather.Database
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
         public virtual DbSet<GuildTask> GuildTasks { get; protected set; }
+        public virtual DbSet<Insult> Insults { get; protected set; }
         public virtual DbSet<Meme> Memes { get; protected set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; protected set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; protected set; }
+        public virtual DbSet<PrivilegedUser> PrivilegedUsers { get; protected set; }
         public virtual DbSet<Reminder> Reminders { get; protected set; }
         public virtual DbSet<RssFeed> RssFeeds { get; protected set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; protected set; }
         public virtual DbSet<SelfRole> SelfAssignableRoles { get; protected set; }
+        public virtual DbSet<SwatPlayer> SwatPlayers { get; set; }
+        public virtual DbSet<SwatServer> SwatServers { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; protected set; }
         public virtual DbSet<XpCount> XpCounts { get; protected set; }
         public virtual DbSet<XpRank> XpRanks { get; protected set; }
@@ -62,7 +66,7 @@ namespace TheGodfather.Database
         {
             if (optionsBuilder.IsConfigured)
                 return;
-            
+
             optionsBuilder.UseLazyLoadingProxies();
 
             switch (this.Provider) {
@@ -85,13 +89,13 @@ namespace TheGodfather.Database
         {
             mb.HasDefaultSchema("gf");
 
-            mb.Entity<AutoRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
-            mb.Entity<BankAccount>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
-            mb.Entity<Birthday>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.UserIdDb });
+            mb.Entity<AutoRole>().HasKey(ar => new { ar.GuildIdDb, ar.RoleIdDb });
+            mb.Entity<BankAccount>().HasKey(acc => new { acc.GuildIdDb, acc.UserIdDb });
+            mb.Entity<Birthday>().HasKey(b => new { b.GuildIdDb, b.ChannelIdDb, b.UserIdDb });
             mb.Entity<BlockedChannel>().Property(bc => bc.Reason).HasDefaultValue(null);
             mb.Entity<BlockedUser>().Property(bu => bu.Reason).HasDefaultValue(null);
-            mb.Entity<Chicken>().HasKey(e => new { e.GuildIdDb, e.UserIdDb });
-            mb.Entity<ChickenBoughtUpgrade>().HasKey(e => new { e.Id, e.GuildIdDb, e.UserIdDb });
+            mb.Entity<Chicken>().HasKey(c => new { c.GuildIdDb, c.UserIdDb });
+            mb.Entity<ChickenBoughtUpgrade>().HasKey(bu => new { bu.Id, bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<ChickenBoughtUpgrade>().HasOne(bu => bu.Upgrade).WithMany(u => u.BoughtUpgrades).HasForeignKey(u => u.Id);
             mb.Entity<ChickenBoughtUpgrade>().HasOne(bu => bu.Chicken).WithMany(u => u.Upgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<CommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
@@ -141,15 +145,21 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.SuggestionsEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(null);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
-            mb.Entity<Meme>().HasKey(e => new { e.GuildIdDb, e.Name });
-            mb.Entity<PurchasedItem>().HasKey(e => new { e.ItemId, e.UserIdDb });
+            mb.Entity<Meme>().HasKey(m => new { m.GuildIdDb, m.Name });
+            mb.Entity<PurchasedItem>().HasKey(i => new { i.ItemId, i.UserIdDb });
             mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
-            mb.Entity<RssSubscription>().HasKey(e => new { e.Id, e.GuildIdDb, e.ChannelIdDb });
-            mb.Entity<SelfRole>().HasKey(e => new { e.GuildIdDb, e.RoleIdDb });
+            mb.Entity<RssSubscription>().HasKey(sub => new { sub.Id, sub.GuildIdDb, sub.ChannelIdDb });
+            mb.Entity<SelfRole>().HasKey(sr => new { sr.GuildIdDb, sr.RoleIdDb });
+            mb.Entity<SwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
+            mb.Entity<SwatPlayer>().HasIndex(p => p.Name).IsUnique();
+            mb.Entity<SwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });
+            mb.Entity<SwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
+            mb.Entity<SwatServer>().HasKey(srv => new { srv.IP, srv.JoinPort, srv.QueryPort });
+            mb.Entity<SwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
-            mb.Entity<XpCount>().Property(ui => ui.XpDb).HasDefaultValue(1);
-            mb.Entity<XpRank>().HasKey(e => new { e.GuildIdDb, e.Rank });
+            mb.Entity<XpCount>().Property(xpc => xpc.XpDb).HasDefaultValue(1);
+            mb.Entity<XpRank>().HasKey(xpr => new { xpr.GuildIdDb, xpr.Rank });
         }
     }
 }

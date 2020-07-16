@@ -1,14 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
-
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 #endregion
 
 namespace TheGodfather.Modules.Swat.Extensions
 {
-    public static class DatabaseSwatPlayerExtensions
+    public static class SwatPlayerExtensions
     {
-        public static string Stringify(this DatabaseSwatPlayer p)
+        public static string Stringify(this SwatPlayer p)
         {
             return $"{Formatter.Bold(p.Name)} {(p.IsBlacklisted ? " (BLACKLISTED)" : "")}\n" +
                 string.Join(", ", p.Aliases) + "\n" +

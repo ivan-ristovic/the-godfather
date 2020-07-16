@@ -3,9 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfatherTests.Modules.Administration.Services
@@ -472,11 +470,11 @@ namespace TheGodfatherTests.Modules.Administration.Services
                     Assert.That(db.Filters
                                   .Where(f => f.GuildIdDb == (long)gid)
                                   .AsEnumerable()
-                                  .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), 
+                                  .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)),
                                 Is.False
                     );
                     Assert.That(this.Service.GetGuildFilters(gid)
-                                            .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)), 
+                                            .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)),
                                 Is.False
                     );
                 } else {

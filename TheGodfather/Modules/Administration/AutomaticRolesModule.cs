@@ -1,18 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -36,7 +31,7 @@ namespace TheGodfather.Modules.Administration
         public AutomaticRolesModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -54,14 +49,14 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Description("Add automatic role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
-        
+
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.SafeAddRange(roles.Select(r => new AutoRole {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
@@ -78,14 +73,14 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Remove automatic role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        
+
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.RemoveRange(db.AutoAssignableRoles.Where(ar => ar.GuildId == ctx.Guild.Id && roles.Any(r => r.Id == ar.RoleId)));
                 await db.SaveChangesAsync();
             }
@@ -104,7 +99,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all automatic roles for this guild?"))
                 return;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.AutoAssignableRoles.RemoveRange(db.AutoAssignableRoles.Where(r => r.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
@@ -122,7 +117,7 @@ namespace TheGodfather.Modules.Administration
         {
             var roles = new List<DiscordRole>();
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 IReadOnlyList<ulong> rids = db.AutoAssignableRoles
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .Select(r => r.RoleId)

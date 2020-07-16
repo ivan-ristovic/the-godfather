@@ -4,7 +4,6 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Common;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;

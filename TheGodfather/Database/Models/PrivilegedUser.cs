@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("privileged_users")]
-    public class DatabasePrivilegedUser : IEquatable<DatabasePrivilegedUser>
+    public class PrivilegedUser : IEquatable<PrivilegedUser>
     {
         [Key]
         [Column("uid")]
@@ -15,11 +15,11 @@ namespace TheGodfather.Database.Entities
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
 
-        public bool Equals(DatabasePrivilegedUser other)
+        public bool Equals(PrivilegedUser? other)
             => !(other is null) && this.UserId == other.UserId;
 
-        public override bool Equals(object other)
-            => this.Equals(other as DatabasePrivilegedUser);
+        public override bool Equals(object? other)
+            => this.Equals(other as PrivilegedUser);
 
         public override int GetHashCode()
             => this.UserId.GetHashCode();

@@ -1,11 +1,8 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -18,7 +15,7 @@ namespace TheGodfather.Modules.Polls
     [Group("vote"), Module(ModuleType.Polls), NotBlocked]
     [Description("Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.")]
     [Aliases("votefor", "vf")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
@@ -26,7 +23,7 @@ namespace TheGodfather.Modules.Polls
         public VotingModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -60,7 +57,7 @@ namespace TheGodfather.Modules.Polls
             Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
-            
+
             if (!poll.UserVoted(ctx.User.Id))
                 throw new CommandFailedException("You have not voted in this poll!");
 

@@ -1,18 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 #endregion
@@ -31,7 +29,7 @@ namespace TheGodfather.Modules.Swat
             public SwatServersModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -44,7 +42,7 @@ namespace TheGodfather.Modules.Swat
             [Command("add"), Priority(1)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
-            
+
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
                                       [Description("IP.")] IPAddressRange ip,
@@ -56,8 +54,8 @@ namespace TheGodfather.Modules.Swat
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    var newServer = DatabaseSwatServer.FromIP(ip.Range, queryport, name);
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    var newServer = SwatServer.FromIP(ip.Range, queryport, name);
                     if (db.SwatServers.Any(s => s.Name == name || (s.IP == newServer.IP && s.JoinPort == newServer.JoinPort && s.QueryPort == newServer.QueryPort)))
                         throw new CommandFailedException("A server with such name/IP is already listed!");
                     db.SwatServers.Add(newServer);
@@ -79,7 +77,7 @@ namespace TheGodfather.Modules.Swat
             [Command("delete")]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d", "-=", ">", ">>")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name)
             {
@@ -87,8 +85,8 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Name missing.");
                 name = name.ToLowerInvariant();
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseSwatServer server = db.SwatServers.SingleOrDefault(s => s.Name == name);
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                    SwatServer server = db.SwatServers.SingleOrDefault(s => s.Name == name);
                     if (!(server is null)) {
                         db.SwatServers.Remove(server);
                         await db.SaveChangesAsync();
@@ -105,8 +103,8 @@ namespace TheGodfather.Modules.Swat
             [Aliases("ls", "l")]
             public async Task ListAsync(CommandContext ctx)
             {
-                List<DatabaseSwatServer> servers;
-                using (DatabaseContext db = this.Database.CreateContext())
+                List<SwatServer> servers;
+                using (TheGodfatherDbContext db = this.Database.CreateContext())
                     servers = await db.SwatServers.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(

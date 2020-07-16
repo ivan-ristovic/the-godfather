@@ -1,20 +1,17 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -32,7 +29,7 @@ namespace TheGodfather.Modules.Search
         public RssFeedsModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Search
         [Command("rss")]
         [Description("Get the latest topics from the given RSS feed URL.")]
         [Aliases("feed")]
-        
+
         public Task RssAsync(CommandContext ctx,
                             [Description("RSS feed URL.")] Uri url)
         {
@@ -61,7 +58,7 @@ namespace TheGodfather.Modules.Search
         [Description("Commands for managing feed subscriptions. The bot will send a message when the latest topic " +
                      "is changed. Group call subscribes the bot to the given RSS feed URL or lists active subs.")]
         [Aliases("sub", "subscriptions", "subscription")]
-        
+
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class SubscribeModule : TheGodfatherModule
         {
@@ -69,7 +66,7 @@ namespace TheGodfather.Modules.Search
             public SubscribeModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -97,7 +94,7 @@ namespace TheGodfather.Modules.Search
             public async Task ListAsync(CommandContext ctx)
             {
                 IReadOnlyList<RssSubscription> subs;
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext())
+                using (TheGodfatherDbContext db = this.Database.CreateContext())
                     subs = await db.RssSubscriptions.Where(s => s.ChannelId == ctx.Channel.Id).ToListAsync();
 
                 if (!subs.Any())
@@ -119,7 +116,7 @@ namespace TheGodfather.Modules.Search
             [Command("reddit")]
             [Description("Add new subscription for a subreddit.")]
             [Aliases("r")]
-            
+
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
@@ -136,7 +133,7 @@ namespace TheGodfather.Modules.Search
             [Command("youtube")]
             [Description("Add a new subscription for a YouTube channel.")]
             [Aliases("y", "yt", "ytube")]
-            
+
             public async Task SubscribeAsync(CommandContext ctx,
                                             [Description("Channel URL.")] string url,
                                             [Description("Friendly name.")] string name = null)
@@ -157,7 +154,7 @@ namespace TheGodfather.Modules.Search
         [Group("unsubscribe")]
         [Description("Remove an existing feed subscription.")]
         [Aliases("unsub")]
-        
+
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class UnsubscribeModule : TheGodfatherModule
         {
@@ -165,7 +162,7 @@ namespace TheGodfather.Modules.Search
             public UnsubscribeModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -176,7 +173,7 @@ namespace TheGodfather.Modules.Search
                 if (ids is null || !ids.Any())
                     throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && ids.Contains(s.Id)));
                     await db.SaveChangesAsync();
                 }
@@ -188,7 +185,7 @@ namespace TheGodfather.Modules.Search
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Name of the subscription.")] string name)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     RssSubscription sub = db.RssSubscriptions.SingleOrDefault(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name);
                     if (sub == null)
                         throw new CommandFailedException("Not subscribed to a feed with that name!");
@@ -212,7 +209,7 @@ namespace TheGodfather.Modules.Search
                 if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to remove all subscriptions for channel {channel.Mention}?"))
                     return;
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.ChannelId == ctx.Guild.Id));
                     await db.SaveChangesAsync();
                 }
@@ -225,14 +222,14 @@ namespace TheGodfather.Modules.Search
             [Command("reddit")]
             [Description("Remove a subscription using subreddit name or subscription ID (use command ``subscriptions list`` to see IDs).")]
             [Aliases("r")]
-            
+
             public async Task RedditAsync(CommandContext ctx,
                                          [Description("Subreddit.")] string sub)
             {
                 if (RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string rsub) is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == rsub));
                     await db.SaveChangesAsync();
                 }
@@ -245,14 +242,14 @@ namespace TheGodfather.Modules.Search
             [Command("youtube")]
             [Description("Remove a YouTube channel subscription.")]
             [Aliases("y", "yt", "ytube")]
-            
+
             public async Task UnsubscribeAsync(CommandContext ctx,
                                               [Description("Channel URL or subscription name.")] string name_url)
             {
                 if (string.IsNullOrWhiteSpace(name_url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.RssSubscriptions.RemoveRange(db.RssSubscriptions.Where(s => s.GuildId == ctx.Guild.Id && s.ChannelId == ctx.Channel.Id && s.Name == name_url));
                     await db.SaveChangesAsync();
                 }
@@ -260,7 +257,7 @@ namespace TheGodfather.Modules.Search
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
                 if (!(chid is null)) {
                     string feedurl = YtService.GetRssUrlForChannel(chid);
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         RssSubscription sub = db.RssSubscriptions
                             .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.Feed.Url == feedurl);
                         if (!(sub is null)) {

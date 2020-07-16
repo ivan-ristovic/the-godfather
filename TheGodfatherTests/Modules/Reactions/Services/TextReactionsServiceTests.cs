@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 
 namespace TheGodfatherTests.Modules.Reactions.Services
@@ -279,7 +277,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                         Is.Not.Null
                     );
                     Assert.That(
-                        this.Service.GetGuildTextReactions(gid).Single(tr => tr.Response == response && CheckTriggers(triggers, tr.Triggers)), 
+                        this.Service.GetGuildTextReactions(gid).Single(tr => tr.Response == response && CheckTriggers(triggers, tr.Triggers)),
                         Is.Not.Null
                     );
 
@@ -294,7 +292,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             }
         }
-    
+
         [Test]
         public async Task RemoveTextReactionTests()
         {
@@ -372,7 +370,7 @@ namespace TheGodfatherTests.Modules.Reactions.Services
                 }
             }
         }
-        
+
         [Test]
         public async Task RemoveTextReactionTriggersTests()
         {

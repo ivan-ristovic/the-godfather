@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Services;
 #endregion
@@ -17,7 +14,7 @@ namespace TheGodfather.Modules.Reminders
     {
         [Group("in")]
         [Description("Send a reminder after specific time span.")]
-        
+
         public class RemindInModule : RemindModule
         {
 

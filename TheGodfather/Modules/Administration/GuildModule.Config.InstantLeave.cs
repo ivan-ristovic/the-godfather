@@ -1,16 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
 using Microsoft.Extensions.DependencyInjection;
-
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
@@ -27,14 +22,14 @@ namespace TheGodfather.Modules.Administration
             [Group("instantleave")]
             [Description("Automatically bans users which leave in certain timespan after joining.")]
             [Aliases("joinleave", "instaleave", "il", "jl")]
-            
+
             public class InstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
             {
 
                 public InstantLeaveModule(AntiInstantLeaveService service, DbContextBuilder db)
                     : base(service, db)
                 {
-                    
+
                 }
 
 
@@ -89,7 +84,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("cooldown")]
                 [Description("Set the instant leave sensitivity. User will be banned if he leaves within the given time window (in seconds).")]
                 [Aliases("setcooldown", "setcool", "cool", "c")]
-                
+
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Cooldown (in seconds).")] short cooldown)
                 {
@@ -99,7 +94,7 @@ namespace TheGodfather.Modules.Administration
                     GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                         cfg.AntiInstantLeaveCooldown = cooldown;
                     });
-                    
+
                     DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
                     if (!(logchn is null)) {
                         var emb = new DiscordEmbedBuilder {

@@ -1,17 +1,14 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -32,7 +29,7 @@ namespace TheGodfather.Modules.Games
             public AnimalRaceModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -66,7 +63,7 @@ namespace TheGodfather.Modules.Games
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
-            
+
 
             #region COMMAND_ANIMALRACE_JOIN
             [Command("join")]

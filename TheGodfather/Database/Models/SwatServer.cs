@@ -2,12 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TheGodfather.Database.Entities
+namespace TheGodfather.Database.Models
 {
     [Table("swat_servers")]
-    public class DatabaseSwatServer
+    public class SwatServer
     {
-        public static DatabaseSwatServer FromIP(string ip, int queryport = 10481, string name = null)
+        public static SwatServer FromIP(string ip, int queryport = 10481, string? name = null)
         {
             int joinport = 10480;
 
@@ -20,37 +20,36 @@ namespace TheGodfather.Database.Entities
             if (queryport == 10481)
                 queryport = joinport + 1;
 
-
-            return new DatabaseSwatServer {
+            return new SwatServer {
                 IP = ip,
                 JoinPort = joinport,
-                Name = name,
+                Name = name ?? "<unknown>",
                 QueryPort = queryport
             };
         }
 
-        
+
         [Column("ip"), Required, MaxLength(16)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string IP { get; set; }
+        public string IP { get; set; } = null!;
 
         [Column("join_port")]
         public int JoinPort { get; set; } = 10480;
 
         [Column("query_port")]
         public int QueryPort { get; set; }
-        
+
         [Column("name"), Required, MaxLength(32)]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
 
-    public sealed class DatabaseSwatServerComparer : IEqualityComparer<DatabaseSwatServer>
+    public sealed class SwatServerComparer : IEqualityComparer<SwatServer>
     {
-        public bool Equals(DatabaseSwatServer x, DatabaseSwatServer y)
-            => x.IP == y.IP && x.JoinPort == y.JoinPort && x.QueryPort == y.QueryPort;
+        public bool Equals(SwatServer? x, SwatServer? y)
+            => Equals(x?.IP, y?.IP) && Equals(x?.JoinPort, y?.JoinPort) && Equals(x?.QueryPort, y?.QueryPort);
 
-        public int GetHashCode(DatabaseSwatServer obj)
+        public int GetHashCode(SwatServer obj)
             => $"{obj.IP}:{obj.JoinPort}:{obj.QueryPort}".GetHashCode();
     }
 }

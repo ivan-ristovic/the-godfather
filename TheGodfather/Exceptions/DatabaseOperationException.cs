@@ -1,7 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using Npgsql;
-
 using System;
+using Npgsql;
 #endregion
 
 namespace TheGodfather.Exceptions
@@ -13,19 +12,19 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public DatabaseOperationException(string message) 
+        public DatabaseOperationException(string message)
             : base(message)
         {
 
         }
 
-        public DatabaseOperationException(Exception inner) 
+        public DatabaseOperationException(Exception inner)
             : base("Database operation failed!", inner)
         {
 
         }
 
-        public DatabaseOperationException(string message, Exception inner) 
+        public DatabaseOperationException(string message, Exception inner)
             : base(message, inner)
         {
 

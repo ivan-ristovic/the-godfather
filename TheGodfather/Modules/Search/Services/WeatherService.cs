@@ -1,12 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-
-using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
@@ -64,7 +61,7 @@ namespace TheGodfather.Modules.Search.Services
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing", nameof(query));
-            
+
             if (amount < 1 || amount > 20)
                 throw new ArgumentException("Days amount out of range (max 20)", nameof(amount));
 

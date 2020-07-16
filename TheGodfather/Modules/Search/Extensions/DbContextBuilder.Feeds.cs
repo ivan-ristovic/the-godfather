@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Search.Extensions
             if (newest is null)
                 throw new Exception("Can't load the feed entries.");
 
-            using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
                 RssFeed? feed = db.RssFeeds.SingleOrDefault(f => f.Url == url);
                 if (feed is null) {
                     feed = new RssFeed {

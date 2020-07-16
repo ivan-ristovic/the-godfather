@@ -9,7 +9,6 @@ using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
@@ -39,7 +38,7 @@ namespace TheGodfather.EventListeners
             }
 
             try {
-                using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                     IQueryable<ulong> rids = db.AutoAssignableRoles
                         .Where(dbr => dbr.GuildIdDb == (long)e.Guild.Id)
                         .Select(dbr => dbr.RoleId);
@@ -67,7 +66,7 @@ namespace TheGodfather.EventListeners
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("Email", e.Member.Email);
 
-            using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                 if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.Member.DisplayName))) {
                     try {
                         await e.Member.ModifyAsync(m => {
@@ -147,7 +146,7 @@ namespace TheGodfather.EventListeners
         {
             bool renamed = false, failed = false;
 
-            using (TheGodfatherDbContext db = shard.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
                 if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
                     try {
                         await e.Member.ModifyAsync(m => {

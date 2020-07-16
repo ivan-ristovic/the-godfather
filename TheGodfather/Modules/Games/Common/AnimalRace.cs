@@ -1,14 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -26,7 +24,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
         private static readonly int _TrackSize = 50;
-        
+
         public bool Started { get; private set; }
         public IReadOnlyList<ulong> WinnerIds { get; private set; }
         public int ParticipantCount => this.participants.Count;

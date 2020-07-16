@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -28,14 +27,14 @@ namespace TheGodfather.Modules.Chickens
         [Group("upgrades"), UsesInteractivity]
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.")]
         [Aliases("perks", "upgrade", "u")]
-        
+
         public class UpgradeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public UpgradeModule(ChannelEventService service, DbContextBuilder db) 
+            public UpgradeModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -62,13 +61,13 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
                     throw new CommandFailedException("Your chicken already one of those upgrades!");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     foreach (int id in ids) {
                         ChickenUpgrade upgrade = await db.ChickenUpgrades.FindAsync(id);
                         if (upgrade is null)
                             throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                        if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost :n0}")} {gcfg.Currency}?"))
+                        if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost:n0}")} {gcfg.Currency}?"))
                             return;
 
                         if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
@@ -93,7 +92,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("ls", "view")]
             public async Task ListAsync(CommandContext ctx)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     await ctx.SendCollectionInPagesAsync(
                         "Available chicken upgrades",
                         db.ChickenUpgrades.OrderByDescending(u => u.Cost),

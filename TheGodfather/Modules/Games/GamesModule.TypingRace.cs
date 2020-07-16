@@ -1,15 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
-using System;
-using System.Threading.Tasks;
-
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -29,7 +25,7 @@ namespace TheGodfather.Modules.Games
             public TypingRaceModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -56,7 +52,7 @@ namespace TheGodfather.Modules.Games
                         await Task.Delay(TimeSpan.FromSeconds(10));
                         await race.RunAsync();
 
-                        if (!(race.Winner is null)) 
+                        if (!(race.Winner is null))
                             await this.InformAsync(ctx, Emojis.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");
                     } else {
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the typing race.");

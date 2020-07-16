@@ -1,21 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
-
-using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Services.Common;
 using TheGodfather.Database.Models;
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Services
@@ -98,7 +93,7 @@ namespace TheGodfather.Modules.Administration.Services
 
             await this.csem.WaitAsync();
             try {
-                using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
                     GuildConfig gcfg = await this.shard.Services.GetService<GuildConfigService>().GetConfigAsync(guild.Id);
                     muteRole = guild.GetRole(gcfg.MuteRoleId);
                     if (muteRole is null)

@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using Newtonsoft.Json.Linq;
-
 using System.Threading.Tasks;
-
+using Newtonsoft.Json.Linq;
 using TheGodfather.Services;
 #endregion;
 

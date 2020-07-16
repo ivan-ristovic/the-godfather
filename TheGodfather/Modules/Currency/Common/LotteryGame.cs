@@ -1,8 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +6,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion
@@ -28,11 +26,11 @@ namespace TheGodfather.Modules.Currency.Common
 
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
-        public IReadOnlyList<Participant> Winners 
+        public IReadOnlyList<Participant> Winners
             => this.participants.Where(p => p.WinAmount > 0).ToList().AsReadOnly();
 
         private readonly ConcurrentQueue<Participant> participants;
-       
+
 
         public LotteryGame(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
@@ -72,7 +70,7 @@ namespace TheGodfather.Modules.Currency.Common
             });
         }
 
-        public bool IsParticipating(DiscordUser user) 
+        public bool IsParticipating(DiscordUser user)
             => this.participants.Any(p => p.Id == user.Id);
 
         private Task PrintGameAsync(DiscordMessage msg, IEnumerable<int> numbers, int step)

@@ -57,7 +57,7 @@ namespace TheGodfatherTests.Services
             Assert.That(IsEventRunningIn(MockData.Ids[0]), Is.False);
             Assert.That(IsEventRunningIn(MockData.Ids[1]), Is.False);
             Assert.That(IsEventRunningIn(MockData.Ids[2]), Is.False);
-            
+
             IChannelEvent caro = new CaroGame(null, null, null, null);
             IChannelEvent holdem = new HoldemGame(null, null, 0);
 

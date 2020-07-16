@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -31,14 +30,14 @@ namespace TheGodfather.Modules.Chickens
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    
+
     public partial class ChickenModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
-        public ChickenModule(ChannelEventService service, DbContextBuilder db) 
+        public ChickenModule(ChannelEventService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -87,7 +86,7 @@ namespace TheGodfather.Modules.Chickens
                 winner.Stats.BareVitality++;
             loser.Stats.BareVitality -= 50;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.Chickens.Update(winner);
                 if (loser.Stats.TotalVitality > 0)
                     db.Chickens.Update(loser);
@@ -118,7 +117,7 @@ namespace TheGodfather.Modules.Chickens
             try {
                 await this.FightAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.UserId));
             } catch (NotFoundException) {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.Chickens.Remove(chicken);
                     await db.SaveChangesAsync();
                 }
@@ -142,7 +141,7 @@ namespace TheGodfather.Modules.Chickens
                 return;
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
                     throw new CommandFailedException($"You do not have enough {gcfg.Currency} to pay for the disease creation!");
                 db.Chickens.RemoveRange(db.Chickens.Where(c => c.Vitality < threshold));
@@ -163,7 +162,7 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 Chicken? chicken = await ChickenOperations.FindAsync(ctx.Client, this.Database, ctx.Guild.Id, ctx.User.Id, findOwner: false);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
@@ -180,7 +179,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("info")]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
-        
+
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordMember member = null)
         {
@@ -200,7 +199,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("rename")]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
-        
+
         public async Task RenameAsync(CommandContext ctx,
                                      [RemainingText, Description("New chicken name.")] string newname)
         {
@@ -216,7 +215,7 @@ namespace TheGodfather.Modules.Chickens
             if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 Chicken chicken = db.Chickens.FirstOrDefault(c => c.GuildIdDb == (long)ctx.Guild.Id && c.UserIdDb == (long)ctx.User.Id);
                 if (chicken is null)
                     throw new CommandFailedException("You do not own a chicken in this guild!");
@@ -248,7 +247,7 @@ namespace TheGodfather.Modules.Chickens
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} {gcfg.Currency}?"))
                 return;
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + price);
                 db.Chickens.Remove(chicken);
                 await db.SaveChangesAsync();
@@ -265,7 +264,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task TopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 chickens = await db.Chickens
                     .Where(c => c.GuildIdDb == (long)ctx.Guild.Id)
                     .Include(c => c.Upgrades)
@@ -288,7 +287,7 @@ namespace TheGodfather.Modules.Chickens
             );
         }
         #endregion
-        
+
         #region COMMAND_CHICKEN_TOPGLOBAL
         [Command("topglobal")]
         [Description("View the list of strongest chickens globally.")]
@@ -296,7 +295,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task GlobalTopAsync(CommandContext ctx)
         {
             List<Chicken> chickens;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 chickens = await db.Chickens
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)

@@ -10,11 +10,9 @@ using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services.Common;
@@ -29,14 +27,14 @@ namespace TheGodfather.Modules.Administration
             [Group("logging")]
             [Description("Action logging configuration.")]
             [Aliases("log", "modlog")]
-            
+
             public class LoggingModule : TheGodfatherModule
             {
 
                 public LoggingModule(DbContextBuilder db)
                     : base(db)
                 {
-                    
+
                 }
 
 
@@ -78,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                         sb.Append(Formatter.Bold("Exempts:"));
 
                         List<ExemptedLoggingEntity> exempted;
-                        using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                             exempted = await db.ExemptsLogging
                                 .Where(ee => ee.GuildId == ctx.Guild.Id)
                                 .OrderBy(ee => ee.Type)
@@ -103,14 +101,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("exempt"), Priority(2)]
                 [Description("Disable the logs for some entities (users, channels, etc).")]
                 [Aliases("ex", "exc")]
-                
+
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Members to exempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
                         await db.SaveChangesAsync();
                     }
@@ -125,7 +123,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
                         await db.SaveChangesAsync();
                     }
@@ -140,7 +138,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
                         await db.SaveChangesAsync();
                     }
@@ -153,14 +151,14 @@ namespace TheGodfather.Modules.Administration
                 [Command("unexempt"), Priority(2)]
                 [Description("Remove an exempted entity and allow logging for actions regarding that entity.")]
                 [Aliases("unex", "uex")]
-                
+
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Members to unexempt.")] params DiscordMember[] members)
                 {
                     if (members is null || !members.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.RemoveRange(
                             db.ExemptsLogging.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Member && members.Any(m => m.Id == ex.Id))
                         );
@@ -177,7 +175,7 @@ namespace TheGodfather.Modules.Administration
                     if (roles is null || !roles.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.RemoveRange(
                             db.ExemptsLogging.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Role && roles.Any(r => r.Id == ex.Id))
                         );
@@ -194,7 +192,7 @@ namespace TheGodfather.Modules.Administration
                     if (channels is null || !channels.Any())
                         throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
 
-                    using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.ExemptsLogging.RemoveRange(
                             db.ExemptsLogging.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Channel && channels.Any(c => c.Id == ex.Id))
                         );

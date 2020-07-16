@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Misc
     [Group("birthdays"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.")]
     [Aliases("birthday", "bday", "bd", "bdays")]
-    
+
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class BirthdayModule : TheGodfatherModule
@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Misc
         public BirthdayModule(DbContextBuilder db)
             : base(db)
         {
-            
+
         }
 
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Priority(0)]
         [Description("Schedule a birthday notification. If the date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("new", "+", "a", "+=", "<", "<<")]
-        
+
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Birthday boy/girl.")] DiscordUser user,
                                   [Description("Birth date.")] string date_str = null,
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Misc
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("I can only send birthday notifications in a text channel.");
 
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.Birthdays.Add(new Birthday {
                     ChannelId = channel.Id,
                     Date = date,
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Misc
 
                 await db.SaveChangesAsync();
             }
-            
+
             await this.InformAsync(ctx, $"Added a new birthday in channel {Formatter.Bold(channel.Name)} for {Formatter.Bold(user.Username)}", important: false);
         }
 
@@ -104,12 +104,12 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Priority(1), UsesInteractivity]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        
+
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("User whose birthday to remove.")] DiscordUser user)
         {
-            
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.GuildId == ctx.Guild.Id && b.UserId == user.Id));
                 await db.SaveChangesAsync();
             }
@@ -123,8 +123,8 @@ namespace TheGodfather.Modules.Misc
         {
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all birthdays in this channel?"))
                 return;
-            
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.GuildId == ctx.Guild.Id && b.ChannelId == channel.Id));
                 await db.SaveChangesAsync();
             }
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Misc
                                    [Description("Whose birthday to search for.")] DiscordUser user)
         {
             List<Birthday> birthdays;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 birthdays = await db.Birthdays
                     .Where(b => b.GuildId == ctx.Guild.Id && b.UserId == user.Id)
                     .ToListAsync();
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Birthday notifications are only posted in text channels");
 
             List<Birthday> birthdays;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 birthdays = await db.Birthdays
                     .Where(b => b.GuildId == ctx.Guild.Id && b.ChannelId == channel.Id)
                     .ToListAsync();
@@ -181,8 +181,8 @@ namespace TheGodfather.Modules.Misc
                     DiscordUser user = await ctx.Client.GetUserAsync(birthday.UserId);
                     lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
                 } catch {
-                    
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
                         await db.SaveChangesAsync();
                     }
@@ -207,7 +207,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ListAllAsync(CommandContext ctx)
         {
             List<Birthday> birthdays;
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 birthdays = await db.Birthdays
                     .Where(b => b.GuildId == ctx.Guild.Id)
                     .ToListAsync();
@@ -223,8 +223,8 @@ namespace TheGodfather.Modules.Misc
                     DiscordUser user = await ctx.Client.GetUserAsync(birthday.UserId);
                     lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
                 } catch {
-                    
-            using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+
+                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                         db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
                         await db.SaveChangesAsync();
                     }

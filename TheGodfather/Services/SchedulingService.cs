@@ -21,7 +21,7 @@ namespace TheGodfather.Services
             var @this = _ as SchedulingService ?? throw new InvalidOperationException("");
 
             try {
-                using (TheGodfatherDbContext db = @this.shard.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = @this.shard.Database.CreateContext()) {
                     DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
                     var guildTasks = db.GuildTasks
                         .Where(t => t.ExecutionTime <= threshold)
@@ -106,13 +106,13 @@ namespace TheGodfather.Services
         {
             ScheduledTaskExecutor? texec = null;
             try {
-                using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
                     int id;
                     if (task is Reminder rem) {
                         db.Reminders.Add(rem);
                         await db.SaveChangesAsync();
                         id = task.Id;
-                    } else if(task is GuildTask gt) {
+                    } else if (task is GuildTask gt) {
                         db.GuildTasks.Add(gt);
                         await db.SaveChangesAsync();
                         id = gt.Id;
@@ -136,7 +136,7 @@ namespace TheGodfather.Services
                         taskExec.Dispose();
                     else
                         throw new KeyNotFoundException("Cannot find any guild task that matches the given ID.");
-                    using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
                         db.GuildTasks.Remove(new GuildTask { Id = id });
                         await db.SaveChangesAsync();
                     }
@@ -150,7 +150,7 @@ namespace TheGodfather.Services
                         if (!userReminders.Any())
                             this.reminders.TryRemove(rem.UserId, out _);
                     }
-                    using (TheGodfatherDbContext db = this.shard.Database.CreateDbContext()) {
+                    using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
                         db.Reminders.Remove(new Reminder { Id = id });
                         await db.SaveChangesAsync();
                     }

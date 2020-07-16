@@ -1,19 +1,18 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-using TheGodfather.Database.Models;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -27,10 +26,10 @@ namespace TheGodfather.Modules.Owner
         public class StatusModule : TheGodfatherModule
         {
 
-            public StatusModule(DbContextBuilder db) 
+            public StatusModule(DbContextBuilder db)
                 : base(db)
             {
-                
+
             }
 
 
@@ -49,7 +48,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add")]
             [Description("Add a status to running status queue.")]
             [Aliases("+", "a", "<", "<<", "+=")]
-            
+
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                       [RemainingText, Description("Status.")] string status)
@@ -60,7 +59,7 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.BotStatuses.Add(new BotStatus { Activity = activity, Status = status });
                     await db.SaveChangesAsync();
                 }
@@ -73,11 +72,11 @@ namespace TheGodfather.Modules.Owner
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
-            
+
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext()) {
+                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                     db.BotStatuses.Remove(new BotStatus { Id = id });
                     await db.SaveChangesAsync();
                 }
@@ -93,7 +92,7 @@ namespace TheGodfather.Modules.Owner
             public async Task ListAsync(CommandContext ctx)
             {
                 List<BotStatus> statuses;
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext())
+                using (TheGodfatherDbContext db = this.Database.CreateContext())
                     statuses = await db.BotStatuses.ToListAsync();
 
                 await ctx.SendCollectionInPagesAsync(
@@ -110,7 +109,7 @@ namespace TheGodfather.Modules.Owner
             [Command("setrotation")]
             [Description("Set automatic rotation of bot statuses.")]
             [Aliases("sr", "setr")]
-            
+
             public Task SetRotationAsync(CommandContext ctx,
                                         [Description("Enabled?")] bool enable = true)
             {
@@ -124,7 +123,7 @@ namespace TheGodfather.Modules.Owner
             [Command("set"), Priority(1)]
             [Description("Set status to given string or status with given index in database. This sets rotation to false.")]
             [Aliases("s")]
-            
+
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType type,
                                       [RemainingText, Description("Status.")] string status)
@@ -148,7 +147,7 @@ namespace TheGodfather.Modules.Owner
                                       [Description("Status ID.")] int id)
             {
                 BotStatus status;
-                using (TheGodfatherDbContext db = this.Database.CreateDbContext())
+                using (TheGodfatherDbContext db = this.Database.CreateContext())
                     status = await db.BotStatuses.FindAsync(id);
 
                 if (status is null)

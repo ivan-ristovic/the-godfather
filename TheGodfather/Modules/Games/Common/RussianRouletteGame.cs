@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 #endregion
@@ -49,7 +47,7 @@ namespace TheGodfather.Modules.Games.Common
                     } else {
                         eb.AppendLine($"{participant.Mention} {Emojis.Relieved} {Emojis.Gun}");
                     }
-                    
+
                     msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder {
                         Title = $"ROUND #{round}",
                         Description = eb.ToString(),

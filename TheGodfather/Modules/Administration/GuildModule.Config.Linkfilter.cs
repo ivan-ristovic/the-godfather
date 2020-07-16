@@ -6,7 +6,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
@@ -23,14 +22,14 @@ namespace TheGodfather.Modules.Administration
             [Group("linkfilter")]
             [Description("Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
-            
+
             public class LinkfilterModule : TheGodfatherModule
             {
 
                 public LinkfilterModule(DbContextBuilder db)
                     : base(db)
                 {
-                    
+
                 }
 
 
@@ -71,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("booters"), Priority(1)]
                 [Description("Enable or disable DDoS/Booter website filtering.")]
                 [Aliases("ddos", "boot", "dos")]
-                
+
                 public async Task BootersAsync(CommandContext ctx,
                                               [Description("Enable?")] bool enable)
                 {
@@ -94,7 +93,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("invites"), Priority(1)]
                 [Description("Enable or disable Discord invite filters.")]
                 [Aliases("invite", "inv", "i")]
-                
+
                 public async Task InvitesAsync(CommandContext ctx,
                                               [Description("Enable?")] bool enable)
                 {
@@ -117,7 +116,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disturbingsites"), Priority(1)]
                 [Description("Enable or disable shock website filtering.")]
                 [Aliases("disturbing", "shock", "shocksites")]
-                
+
                 public async Task DisturbingSitesAsync(CommandContext ctx,
                                                       [Description("Enable?")] bool enable)
                 {
@@ -140,7 +139,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("iploggers"), Priority(1)]
                 [Description("Enable or disable filtering of IP logger websites.")]
                 [Aliases("ip", "loggers", "ipleech")]
-                
+
                 public async Task IpLoggersAsync(CommandContext ctx,
                                                 [Description("Enable?")] bool enable)
                 {
@@ -163,7 +162,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("shorteners"), Priority(1)]
                 [Description("Enable or disable filtering of URL shortener websites.")]
                 [Aliases("urlshort", "shortenurl", "urlshorteners")]
-                
+
                 public async Task ShortenersAsync(CommandContext ctx,
                                                  [Description("Enable?")] bool enable)
                 {

@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System.Linq;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -17,15 +15,15 @@ namespace TheGodfather.Modules.Search
     [Group("gif"), Module(ModuleType.Searches), NotBlocked]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
-    
+
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
 
-        public GiphyModule(GiphyService service, DbContextBuilder db) 
+        public GiphyModule(GiphyService service, DbContextBuilder db)
             : base(service, db)
         {
-            
+
         }
 
 
@@ -69,7 +67,7 @@ namespace TheGodfather.Modules.Search
         [Command("trending")]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
-        
+
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {

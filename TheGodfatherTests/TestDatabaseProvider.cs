@@ -39,13 +39,13 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     alter(context);
                     if (ensureSave)
                         context.SaveChanges();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext())
+                using (TheGodfatherDbContext context = Database.CreateContext())
                     verify(context);
             } finally {
                 DatabaseConnection.Close();
@@ -59,13 +59,13 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     await alter(context);
                     if (ensureSave)
                         await context.SaveChangesAsync();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext())
+                using (TheGodfatherDbContext context = Database.CreateContext())
                     await verify(context);
             } finally {
                 DatabaseConnection.Close();
@@ -82,18 +82,18 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     setup(context);
                     context.SaveChanges();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     alter(context);
                     if (ensureSave)
                         context.SaveChanges();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext())
+                using (TheGodfatherDbContext context = Database.CreateContext())
                     verify(context);
             } finally {
                 DatabaseConnection.Close();
@@ -110,18 +110,18 @@ namespace TheGodfatherTests
                 CreateDatabase();
                 SeedGuildData();
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     await setup(context);
                     await context.SaveChangesAsync();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+                using (TheGodfatherDbContext context = Database.CreateContext()) {
                     await alter(context);
                     if (ensureSave)
                         await context.SaveChangesAsync();
                 }
 
-                using (TheGodfatherDbContext context = Database.CreateDbContext())
+                using (TheGodfatherDbContext context = Database.CreateContext())
                     await verify(context);
             } finally {
                 DatabaseConnection.Close();
@@ -131,13 +131,13 @@ namespace TheGodfatherTests
 
         private static void CreateDatabase()
         {
-            using (TheGodfatherDbContext context = Database.CreateDbContext())
+            using (TheGodfatherDbContext context = Database.CreateContext())
                 context.Database.EnsureCreated();
         }
 
         private static void SeedGuildData()
         {
-            using (TheGodfatherDbContext context = Database.CreateDbContext()) {
+            using (TheGodfatherDbContext context = Database.CreateContext()) {
                 context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
                 context.SaveChanges();
             }

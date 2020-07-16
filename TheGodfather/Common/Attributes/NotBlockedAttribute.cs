@@ -35,7 +35,7 @@ namespace TheGodfather.Common.Attributes
             {
                 // TODO when moved to service create a cached set of guilds which have command rules and query it before accessing the database
                 DbContextBuilder dbb = ctx.Services.GetService<DbContextBuilder>();
-                using (TheGodfatherDbContext db = dbb.CreateDbContext()) {
+                using (TheGodfatherDbContext db = dbb.CreateContext()) {
                     IEnumerable<CommandRule> dbrules = db.CommandRules
                         .Where(cr => cr.GuildIdDb == (long)ctx.Guild.Id && cr.ChannelIdDb == (long)ctx.Channel.Id)
                         .AsEnumerable()

@@ -1,20 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
-using TheGodfather.Database.Entities;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -30,14 +26,14 @@ namespace TheGodfather.Modules.Games
         [Group("quiz")]
         [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
-        
+
         public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
             public QuizModule(ChannelEventService service, DbContextBuilder db)
                 : base(service, db)
             {
-                
+
             }
 
 
@@ -127,7 +123,7 @@ namespace TheGodfather.Modules.Games
             [Command("capitals")]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            
+
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
@@ -136,7 +132,7 @@ namespace TheGodfather.Modules.Games
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
-                
+
                 var quiz = new CapitalsQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
@@ -160,7 +156,7 @@ namespace TheGodfather.Modules.Games
             [Command("countries")]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            
+
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {

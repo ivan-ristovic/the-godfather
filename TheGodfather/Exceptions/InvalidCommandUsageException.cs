@@ -6,19 +6,19 @@ namespace TheGodfather.Exceptions
 {
     public class InvalidCommandUsageException : ArgumentException
     {
-        public InvalidCommandUsageException() 
+        public InvalidCommandUsageException()
             : base()
         {
 
         }
 
-        public InvalidCommandUsageException(string message) 
+        public InvalidCommandUsageException(string message)
             : base(message)
         {
 
         }
 
-        public InvalidCommandUsageException(string message, Exception inner) 
+        public InvalidCommandUsageException(string message, Exception inner)
             : base(message, inner)
         {
 
