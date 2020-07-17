@@ -218,7 +218,7 @@ namespace TheGodfather
                         status = db.BotStatuses.Shuffle().FirstOrDefault();
 
                     if (status is null)
-                        Log.Error("Failed to retrieve random bot status");
+                        Log.Warning("No extra bot statuses present in the database.");
 
                     DiscordActivity activity = status is { }
                         ? new DiscordActivity(status.Status, status.Activity)

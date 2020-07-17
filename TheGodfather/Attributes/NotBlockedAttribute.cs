@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Text;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,9 +38,9 @@ namespace TheGodfather.Attributes
                 DbContextBuilder dbb = ctx.Services.GetService<DbContextBuilder>();
                 using (TheGodfatherDbContext db = dbb.CreateContext()) {
                     IEnumerable<CommandRule> dbrules = db.CommandRules
-                        .Where(cr => cr.GuildIdDb == (long)ctx.Guild.Id && cr.ChannelIdDb == (long)ctx.Channel.Id)
+                        .Where(cr => cr.GuildIdDb == (long)ctx.Guild.Id && (cr.ChannelIdDb == 0 || cr.ChannelIdDb == (long)ctx.Channel.Id))
                         .AsEnumerable()
-                        .Where(cr => cr.IsMatchFor(ctx.Guild.Id, ctx.Channel.Id) && ctx.Command.QualifiedName.StartsWith(cr.Command));
+                        .Where(cr => ctx.Command.QualifiedName.StartsWith(cr.Command));
                     if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelId == ctx.Channel.Id && cr.Allowed))
                         return false;
                 }

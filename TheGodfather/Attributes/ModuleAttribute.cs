@@ -27,34 +27,23 @@ namespace TheGodfather.Attributes
     {
         public static DiscordColor ToDiscordColor(this ModuleType type)
         {
-            switch (type) {
-                case ModuleType.Administration:
-                    return DiscordColor.Azure;
-                case ModuleType.Chickens:
-                    return DiscordColor.Azure;
-                case ModuleType.Currency:
-                    return DiscordColor.Azure;
-                case ModuleType.Games:
-                    return DiscordColor.Azure;
-                case ModuleType.Miscellaneous:
-                    return DiscordColor.Azure;
-                case ModuleType.Music:
-                    return DiscordColor.Azure;
-                case ModuleType.Owner:
-                    return DiscordColor.Azure;
-                case ModuleType.Polls:
-                    return DiscordColor.Azure;
-                case ModuleType.Reactions:
-                    return DiscordColor.Azure;
-                case ModuleType.Reminders:
-                    return DiscordColor.Azure;
-                case ModuleType.SWAT:
-                    return DiscordColor.Azure;
-                case ModuleType.Uncategorized:
-                    return DiscordColor.Azure;
-                default:
-                    return DiscordColor.Green;
-            }
+            return type switch
+            {
+                ModuleType.Administration => DiscordColor.Azure,
+                ModuleType.Chickens => DiscordColor.Azure,
+                ModuleType.Currency => DiscordColor.Azure,
+                ModuleType.Games => DiscordColor.Azure,
+                ModuleType.Miscellaneous => DiscordColor.Azure,
+                ModuleType.Music => DiscordColor.Azure,
+                ModuleType.Owner => DiscordColor.Azure,
+                ModuleType.Polls => DiscordColor.Azure,
+                ModuleType.Reactions => DiscordColor.Azure,
+                ModuleType.Reminders => DiscordColor.Azure,
+                ModuleType.SWAT => DiscordColor.Azure,
+                ModuleType.Uncategorized => DiscordColor.Azure,
+                ModuleType.Searches => DiscordColor.Green,
+                _ => DiscordColor.Green,
+            };
         }
     }
 
