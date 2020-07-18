@@ -128,7 +128,7 @@ namespace TheGodfather.Database.Models
 
         public bool TrainStrength()
         {
-            if (GFRandom.Generator.NextBool()) {
+            if (new SecureRandom().NextBool()) {
                 this.Stats.BareStrength += 5;
                 return true;
             } else {
@@ -139,7 +139,7 @@ namespace TheGodfather.Database.Models
 
         public bool TrainVitality()
         {
-            if (GFRandom.Generator.NextBool()) {
+            if (new SecureRandom().NextBool()) {
                 this.Stats.BareMaxVitality += 4;
                 return true;
             } else {
@@ -160,7 +160,7 @@ namespace TheGodfather.Database.Models
                     chance = 1;
             }
 
-            return GFRandom.Generator.Next(100) < chance ? this : other;
+            return new SecureRandom().Next(100) < chance ? this : other;
         }
 
         public int DetermineStrengthGain(Chicken loser)

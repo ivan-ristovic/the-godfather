@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Flip a coin.")]
         [Aliases("coin", "flip")]
         public Task CoinflipAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
+            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(new SecureRandom().NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
         #endregion
 
         #region COMMAND_DICE
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Roll a dice.")]
         [Aliases("die", "roll")]
         public Task DiceAsync(CommandContext ctx)
-            => this.InformAsync(ctx, Emojis.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
+            => this.InformAsync(ctx, Emojis.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(new SecureRandom().Next(1, 7).ToString())}");
         #endregion
 
         #region COMMAND_INVITE
@@ -147,10 +147,11 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
 
+            var rng = new SecureRandom();
             var sb = new StringBuilder();
             foreach (char c in text) {
                 char add;
-                bool r = GFRandom.Generator.NextBool();
+                bool r = rng.NextBool();
                 switch (c) {
                     case 'i': add = r ? 'i' : '1'; break;
                     case 'l': add = r ? 'l' : '1'; break;
@@ -161,7 +162,7 @@ namespace TheGodfather.Modules.Misc
                     case 's': add = r ? 's' : '5'; break;
                     default: add = c; break;
                 }
-                sb.Append(GFRandom.Generator.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
+                sb.Append(rng.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
             }
 
             return this.InformAsync(ctx, Emojis.Information, sb.ToString());
@@ -392,13 +393,16 @@ namespace TheGodfather.Modules.Misc
         public async Task SimulateAsync(CommandContext ctx,
                                        [Description("Member to simulate.")] DiscordMember member)
         {
+            var wbRegex = new Regex(@"\b");
+            var rng = new SecureRandom();
+
             IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
             string[] parts = messages
                 .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id)))
                 .Select(m => SplitMessage(m.Content))
                 .Distinct()
                 .Shuffle()
-                .Take(1 + GFRandom.Generator.Next(10))
+                .Take(1 + rng.Next(10))
                 .ToArray();
 
             if (!parts.Any())
@@ -409,13 +413,14 @@ namespace TheGodfather.Modules.Misc
                 Color = this.ModuleColor,
             }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
 
+
             string SplitMessage(string data)
             {
-                string[] words = new Regex("\\b").Split(data);
+                string[] words = wbRegex.Split(data);
                 if (words.Length == 1)
                     return words[0];
-                int start = GFRandom.Generator.Next(words.Length);
-                int count = GFRandom.Generator.Next(0, words.Length - start);
+                int start = rng.Next(words.Length);
+                int count = rng.Next(0, words.Length - start);
                 return string.Join(" ", words.Skip(start).Take(count));
             }
         }

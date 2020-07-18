@@ -147,7 +147,7 @@ namespace TheGodfather.Common
             }.ToImmutableList();
 
             public static DiscordEmoji GetRandomDuelWeapon()
-                => All[GFRandom.Generator.Next(All.Count)];
+                => All[new SecureRandom().Next(All.Count)];
         }
         #endregion
 

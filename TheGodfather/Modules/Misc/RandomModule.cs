@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Misc
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Distinct();
 
-            return this.InformAsync(ctx, options.ElementAt(GFRandom.Generator.Next(options.Count())), ":arrow_right:");
+            return this.InformAsync(ctx, options.ElementAt(new SecureRandom().Next(options.Count())), ":arrow_right:");
         }
         #endregion
 
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Misc
             if (online.Count() == 0)
                 throw new CommandFailedException("There are no members that meet the given criteria.");
 
-            DiscordMember raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
+            DiscordMember raffled = online.ElementAt(new SecureRandom().Next(online.Count()));
             return this.InformAsync(ctx, Emojis.Dice, $"Raffled: {raffled.Mention}");
         }
         #endregion

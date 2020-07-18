@@ -131,18 +131,12 @@ namespace TheGodfather.Modules.Games
             else
                 throw new CommandFailedException("Invalid pick. Must be rock, paper or scissors.");
 
-            DiscordEmoji gfPick;
-            switch (GFRandom.Generator.Next(3)) {
-                case 0:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
-                    break;
-                case 1:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":newspaper:");
-                    break;
-                default:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":scissors:");
-                    break;
-            }
+            DiscordEmoji gfPick = (new SecureRandom().Next(3)) switch
+            {
+                0 => DiscordEmoji.FromName(ctx.Client, ":new_moon:"),
+                1 => DiscordEmoji.FromName(ctx.Client, ":newspaper:"),
+                _ => DiscordEmoji.FromName(ctx.Client, ":scissors:"),
+            };
             await this.InformAsync(ctx, Emojis.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
         }
         #endregion

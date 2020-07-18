@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            bool rnd = GFRandom.Generator.NextBool();
+            bool rnd = new SecureRandom().NextBool();
 
             var sb = new StringBuilder();
             sb.Append(ctx.User.Mention);
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Currency
                 await db.SaveChangesAsync();
             }
 
-            int rnd = GFRandom.Generator.Next(1, 7);
+            int rnd = new SecureRandom().Next(1, 7);
 
             var sb = new StringBuilder();
             sb.Append(ctx.User.Mention);

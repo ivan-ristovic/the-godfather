@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             this.Started = true;
 
-            int num = GFRandom.Generator.Next(1000);
+            int num = new SecureRandom().Next(1000);
             await this.Channel.EmbedAsync(num.ToString(), Emojis.ArrowUp);
 
             while (this.participants.Any()) {

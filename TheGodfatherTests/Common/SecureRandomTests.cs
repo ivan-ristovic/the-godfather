@@ -7,9 +7,16 @@ using TheGodfather.Common;
 namespace TheGodfatherTests.Common
 {
     [TestFixture]
-    public class GFRandomTests
+    public class SecureRandomTests
     {
-        private readonly GFRandom rng = GFRandom.Generator;
+        private SecureRandom rng = new SecureRandom();
+
+
+        [SetUp]
+        public void SetUp()
+        {
+            this.rng = new SecureRandom();
+        }
 
 
         [Test]

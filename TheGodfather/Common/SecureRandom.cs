@@ -5,26 +5,17 @@ using System.Security.Cryptography;
 
 namespace TheGodfather.Common
 {
-    public sealed class GFRandom
+    public sealed class SecureRandom
     {
-        private static GFRandom? _instance;
-        public static GFRandom Generator {
-            get {
-                if (_instance is null)
-                    _instance = new GFRandom();
-                return _instance;
-            }
-        }
-
         private readonly RandomNumberGenerator rng;
 
 
-        private GFRandom()
+        public SecureRandom()
         {
             this.rng = RandomNumberGenerator.Create();
         }
 
-        ~GFRandom()
+        ~SecureRandom()
         {
             this.rng.Dispose();
         }

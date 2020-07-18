@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search.Services
         }
 
         public static Task<XkcdComic> GetRandomComicAsync()
-            => GetComicByIdAsync(GFRandom.Generator.Next(TotalComics));
+            => GetComicByIdAsync(new SecureRandom().Next(TotalComics));
 
 
         private static async Task<XkcdComic> GetComicByIdAsync(int id)

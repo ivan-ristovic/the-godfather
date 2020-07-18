@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Chickens
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {gcfg.Currency} to create a disease?"))
                 return;
 
-            short threshold = (short)GFRandom.Generator.Next(50, 100);
+            short threshold = (short)new SecureRandom().Next(50, 100);
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
                     throw new CommandFailedException($"You do not have enough {gcfg.Currency} to pay for the disease creation!");

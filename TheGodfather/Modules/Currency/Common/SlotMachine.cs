@@ -55,10 +55,11 @@ namespace TheGodfather.Modules.Currency.Common
 
         private static int[,] Roll()
         {
+            var rng = new SecureRandom();
             int[,] result = new int[3, 3];
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
-                    result[i, j] = GFRandom.Generator.Next(_emoji.Length);
+                    result[i, j] = rng.Next(_emoji.Length);
 
             return result;
         }

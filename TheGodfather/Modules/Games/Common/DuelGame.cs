@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games.Common
         private void DealDamage()
         {
             int damage = 1;
-            if (GFRandom.Generator.NextBool()) {
+            if (new SecureRandom().NextBool()) {
                 this.eb.AppendLine($"{this.player1.Mention} {Emojis.Weapons.GetRandomDuelWeapon()} {this.player2.Mention}");
                 this.hp2 -= damage;
             } else {

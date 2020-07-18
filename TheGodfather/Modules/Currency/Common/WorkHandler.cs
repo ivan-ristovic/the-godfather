@@ -37,14 +37,15 @@ namespace TheGodfather.Modules.Currency.Common
 
 
         public static string GetWorkString(int earned, string currency)
-            => $"worked {GFRandom.Generator.ChooseRandomElement(_workAnswers)} and earned {Formatter.Bold(earned.ToString())} {currency}!";
+            => $"worked {new SecureRandom().ChooseRandomElement(_workAnswers)} and earned {Formatter.Bold(earned.ToString())} {currency}!";
 
         public static string GetWorkStreetsString(int change, string currency)
         {
+            var rng = new SecureRandom();
             if (change > 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsPositiveAnswers)} and earned {Formatter.Bold(change.ToString())} {currency}!";
+                return $"{rng.ChooseRandomElement(_workStreetsPositiveAnswers)} and earned {Formatter.Bold(change.ToString())} {currency}!";
             else if (change < 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_workStreetsNegativeAnswers)} and lost {Formatter.Bold((-change).ToString())} {currency}!";
+                return $"{rng.ChooseRandomElement(_workStreetsNegativeAnswers)} and lost {Formatter.Bold((-change).ToString())} {currency}!";
             else
                 return "had no luck and got nothing this evening!";
         }
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Currency.Common
         public static string GetCrimeString(int change, string currency)
         {
             if (change > 0)
-                return $"{GFRandom.Generator.ChooseRandomElement(_crimePositiveAnswers)} and got away with {Formatter.Bold(change.ToString())} {currency}!";
+                return $"{new SecureRandom().ChooseRandomElement(_crimePositiveAnswers)} and got away with {Formatter.Bold(change.ToString())} {currency}!";
             else if (change < 0)
                 return $"got caught and got bailed out of jail for {Formatter.Bold((-change).ToString())} {currency}!";
             else

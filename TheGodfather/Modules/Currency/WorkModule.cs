@@ -31,7 +31,8 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 5, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
         {
-            int change = GFRandom.Generator.NextBool() ? GFRandom.Generator.Next(1000, 5000) : -GFRandom.Generator.Next(5, 2500);
+            var rng = new SecureRandom();
+            int change = rng.NextBool() ? rng.Next(1000, 5000) : -rng.Next(5, 2500);
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + change);
                 await db.SaveChangesAsync();
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task WorkAsync(CommandContext ctx)
         {
-            int earned = GFRandom.Generator.Next(1000) + 1;
+            int earned = new SecureRandom().Next(1000) + 1;
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + earned);
                 await db.SaveChangesAsync();
@@ -70,8 +71,9 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 600, CooldownBucketType.User)]
         public async Task CrimeAsync(CommandContext ctx)
         {
-            bool success = GFRandom.Generator.Next(10) == 0;
-            int earned = success ? GFRandom.Generator.Next(10000, 100000) : -10000;
+            var rng = new SecureRandom();
+            bool success = rng.Next(10) == 0;
+            int earned = success ? rng.Next(10000, 100000) : -10000;
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
                 await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, b => b + earned);
                 await db.SaveChangesAsync();

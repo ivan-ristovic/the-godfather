@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Currency.Common
             this.user = user;
             this.bid = bid;
             this.currency = currency;
-            this.index = GFRandom.Generator.Next(_multipliers.Length);
+            this.index = new SecureRandom().Next(_multipliers.Length);
             if (_wheel is null) {
                 try {
                     _wheel = new Bitmap("Resources/wof.png");

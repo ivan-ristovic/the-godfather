@@ -50,8 +50,9 @@ namespace TheGodfather.Modules.Games.Common
             while (this.participants.All(p => p.Progress < _TrackSize)) {
                 await this.PrintRaceAsync(msg);
 
+                var rng = new SecureRandom();
                 foreach (AnimalRaceParticipant participant in this.participants) {
-                    participant.Progress += GFRandom.Generator.Next(2, 7);
+                    participant.Progress += rng.Next(2, 7);
                     if (participant.Progress > _TrackSize)
                         participant.Progress = _TrackSize;
                 }

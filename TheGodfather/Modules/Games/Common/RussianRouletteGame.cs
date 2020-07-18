@@ -38,10 +38,11 @@ namespace TheGodfather.Modules.Games.Common
 
                 await Task.Delay(TimeSpan.FromSeconds(5));
 
+                var rng = new SecureRandom();
                 var participants = this.participants.ToList();
                 var eb = new StringBuilder();
                 foreach (DiscordUser participant in participants) {
-                    if (GFRandom.Generator.Next(6) < round) {
+                    if (rng.Next(6) < round) {
                         eb.AppendLine($"{participant.Mention} {Emojis.Dead} {Emojis.Blast} {Emojis.Gun}");
                         this.participants.TryRemove(participant);
                     } else {

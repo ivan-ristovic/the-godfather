@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -310,8 +311,13 @@ namespace TheGodfather
                     Log.Debug("Birthdays checked");
 
                     using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
-                        db.SaveChanges();
+                        var s = Stopwatch.StartNew();
+                        db.BankAccounts.BatchUpdate(acc => new BankAccount { Balance = Math.Max((long)Math.Ceiling(1.0015 * acc.Balance), 10) });
+                        //foreach (BankAccount acc in db.BankAccounts)                                  // 655
+                        //    acc.Balance = Math.Max((long)Math.Ceiling(1.0015 * acc.Balance), 10);
+                        //db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");    // 131
+                        //db.SaveChanges();
+                        Log.Debug("{Elapsed}", s.Elapsed);
                     }
                     Log.Debug("Currency updated for all users");
 
