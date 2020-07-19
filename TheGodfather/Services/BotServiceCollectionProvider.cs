@@ -14,6 +14,7 @@ namespace TheGodfather.Services
             return services
                 .AddSingleton<GuildConfigService>()
                 .AddSingleton<BlockingService>()
+                .AddSingleton<CommandRulesService>()
                 .AddSingleton<FilteringService>()
                 .AddSingleton<ChannelEventService>()
                 .AddSingleton<GiphyService>()
