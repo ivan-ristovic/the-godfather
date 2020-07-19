@@ -7,8 +7,9 @@ namespace TheGodfather.Database
 {
     public class DbContextBuilder
     {
+        public DbProvider Provider { get; }
+
         private string ConnectionString { get; }
-        private DbProvider Provider { get; }
         private DbContextOptions<TheGodfatherDbContext>? Options { get; }
 
 

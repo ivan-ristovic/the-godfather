@@ -311,13 +311,18 @@ namespace TheGodfather
                     Log.Debug("Birthdays checked");
 
                     using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        var s = Stopwatch.StartNew();
-                        db.BankAccounts.BatchUpdate(acc => new BankAccount { Balance = Math.Max((long)Math.Ceiling(1.0015 * acc.Balance), 10) });
-                        //foreach (BankAccount acc in db.BankAccounts)                                  // 655
-                        //    acc.Balance = Math.Max((long)Math.Ceiling(1.0015 * acc.Balance), 10);
-                        //db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");    // 131
-                        //db.SaveChanges();
-                        Log.Debug("{Elapsed}", s.Elapsed);
+                        switch (shard.Database.Provider) {
+                            case DbProvider.PostgreSql:
+                                db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                                break;
+                            case DbProvider.Sqlite:
+                            case DbProvider.SqliteInMemory:
+                                db.Database.ExecuteSqlRaw("UPDATE bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                                break;
+                            case DbProvider.SqlServer:
+                                db.Database.ExecuteSqlRaw("UPDATE dbo.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                                break;
+                        }
                     }
                     Log.Debug("Currency updated for all users");
 
