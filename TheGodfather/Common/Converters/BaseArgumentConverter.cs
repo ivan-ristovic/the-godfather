@@ -11,6 +11,6 @@ namespace TheGodfather.Common.Converters
 
 
         public Task<Optional<T>> ConvertAsync(string value, CommandContext ctx)
-            => this.TryConvert(value, out T result) ? Task.FromResult(new Optional<T>(result)) : Task.FromResult(new Optional<T>(result));
+            => this.TryConvert(value, out T result) ? Task.FromResult(new Optional<T>(result)) : Task.FromResult(new Optional<T>());
     }
 }

@@ -13,6 +13,7 @@ using TexasHoldem.Logic.Cards;
 using TexasHoldem.Logic.Helpers;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common

@@ -21,7 +21,6 @@ namespace TheGodfather.Common.Converters
         }
 
 
-
         public override bool TryConvert(string value, out bool result)
         {
             bool parses = true;
@@ -31,7 +30,7 @@ namespace TheGodfather.Common.Converters
             else if (_fRegex.IsMatch(value))
                 result = false;
             else
-                parses = bool.TryParse(value, out result);
+                return bool.TryParse(value, out result);
 
             return parses;
         }

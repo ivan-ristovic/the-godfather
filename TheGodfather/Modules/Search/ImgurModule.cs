@@ -27,6 +27,14 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
+        /*
+         *  FIXME! 
+         *  
+         *  Remove TimeWindow from the command handlers below and replace them with TimeSpan
+         * 
+         */
+
+
         public ImgurModule(ImgurService service, DbContextBuilder db)
             : base(service, db)
         {

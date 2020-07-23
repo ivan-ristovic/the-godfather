@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Common;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Modules.Games.Common
 {
     public abstract class BaseChannelGame : IChannelEvent
     {

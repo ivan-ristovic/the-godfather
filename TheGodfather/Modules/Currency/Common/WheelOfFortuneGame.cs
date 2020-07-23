@@ -9,6 +9,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using Humanizer;
 using TheGodfather.Common;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common

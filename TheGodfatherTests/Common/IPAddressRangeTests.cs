@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
 using TheGodfather.Common;
+using WebSocket4Net.Command;
 
 namespace TheGodfatherTests.Common
 {
@@ -60,6 +62,11 @@ namespace TheGodfatherTests.Common
             AssertParseSuccess("123.2");
             AssertParseSuccess("2.123");
             AssertParseSuccess("123.0");
+
+            foreach (string ip in File.ReadAllLines(Path.Join("Common", "ips.txt"))) {
+                AssertParseSuccess(ip);
+                AssertParseSuccess(ip + ":12345", 12345);
+            }
 
 
             static void AssertParseSuccess(string text, ushort port = 0)

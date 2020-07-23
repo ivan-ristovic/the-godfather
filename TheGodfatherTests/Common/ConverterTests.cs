@@ -309,9 +309,7 @@ namespace TheGodfatherTests.Common
             Assert.That(parsed, Is.EqualTo(expected));
         }
 
-        private void AssertConvertFail<TConverter, TValue>(TConverter converter, string text) where TConverter : BaseArgumentConverter<TValue>
-        {
-            Assert.That(converter.TryConvert(text, out TValue parsed), Is.False);
-        }
+        private void AssertConvertFail<TConverter, TValue>(TConverter converter, string text) where TConverter : BaseArgumentConverter<TValue> 
+            => Assert.That(converter.TryConvert(text, out _), Is.False);
     }
 }

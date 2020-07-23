@@ -129,7 +129,6 @@ namespace TheGodfather
 
             this.CNext.RegisterConverter(new ActivityTypeConverter());
             this.CNext.RegisterConverter(new BoolConverter());
-            this.CNext.RegisterConverter(new ImgurTimeWindowConverter());
             this.CNext.RegisterConverter(new IPAddressConverter());
             this.CNext.RegisterConverter(new IPAddressRangeConverter());
             this.CNext.RegisterConverter(new PunishmentActionConverter());

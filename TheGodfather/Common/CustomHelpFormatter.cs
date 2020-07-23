@@ -14,17 +14,18 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Common
 {
+    // TODO localize and improve
+
     public sealed class CustomHelpFormatter : BaseHelpFormatter
     {
-        private string name;
-        private string desc;
+        private string? name;
+        private string? desc;
         private readonly DiscordEmbedBuilder emb;
 
 
-        public CustomHelpFormatter(CommandContext ctx) : base(ctx)
+        public CustomHelpFormatter(CommandContext ctx) 
+            : base(ctx)
         {
-            this.name = "";
-            this.desc = "";
             this.emb = new DiscordEmbedBuilder();
             this.emb.WithFooter("Detailed documentation @ https://github.com/ivan-ristovic/the-godfather", ctx.Client.CurrentUser.AvatarUrl);
         }

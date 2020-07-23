@@ -11,6 +11,7 @@ using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common

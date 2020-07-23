@@ -6,7 +6,11 @@ namespace TheGodfather.Common
 {
     public sealed class IPAddressRange
     {
-        private static readonly Regex _formatRegex = new Regex(@"^(?<range>(\d{1,3}\.){1,3}\d{1,3})(:(?<port>[1-9]\d{0,4}))?$", RegexOptions.Compiled);
+        private static readonly Regex _formatRegex 
+            = new Regex(
+                @"^(?<range>\d{1,3}\.(\*\.\*\.\*|\d{1,3}\.\*\.\*|\d{1,3}\.\d{1,3}\.\*|\d{1,3}\.\d{1,3}\.\d{1,3}|(\d{1,3}\.){0,2}\d{1,3}))(:(?<port>[1-9]\d{0,4}))?$", 
+                RegexOptions.Compiled
+            );
 
         public static bool TryParse(string str, out IPAddressRange? res)
         {
@@ -17,10 +21,10 @@ namespace TheGodfather.Common
                 return false;
 
             string[] quartets = rangeGroup.Value.Split(".", StringSplitOptions.RemoveEmptyEntries);
-            if (quartets.First().All(c => c == '0'))
+            if (quartets.First().All(c => c == '0' || c == '*'))
                 return false;
             foreach (string quartet in quartets) {
-                if (!byte.TryParse(quartet, out byte v))
+                if (quartet != "*" && !byte.TryParse(quartet, out byte v))
                     return false;
             }
 
