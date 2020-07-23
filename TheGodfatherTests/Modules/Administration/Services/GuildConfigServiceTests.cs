@@ -9,7 +9,7 @@ using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
-namespace TheGodfatherTests.Modules.Administration.Services
+namespace TheGodfather.Tests.Modules.Administration.Services
 {
     public sealed class GuildConfigServiceTests : ITheGodfatherServiceTest<GuildConfigService>
     {

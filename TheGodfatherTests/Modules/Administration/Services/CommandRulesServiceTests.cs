@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Modules.Administration.Services;
 
-namespace TheGodfatherTests.Modules.Administration.Services
+namespace TheGodfather.Tests.Modules.Administration.Services
 {
     public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandRulesService>
     {

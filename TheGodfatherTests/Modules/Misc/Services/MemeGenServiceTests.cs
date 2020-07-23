@@ -2,7 +2,7 @@
 
 using TheGodfather.Modules.Misc.Services;
 
-namespace TheGodfatherTests.Modules.Misc.Services
+namespace TheGodfather.Tests.Modules.Misc.Services
 {
     [TestFixture]
     public sealed class MemeGenServiceTests

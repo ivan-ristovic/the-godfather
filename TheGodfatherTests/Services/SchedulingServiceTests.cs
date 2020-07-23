@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace TheGodfatherTests.Services
+namespace TheGodfather.Tests.Services
 {
     [TestFixture]
     public sealed class SchedulingServiceTests

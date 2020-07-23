@@ -6,7 +6,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Services;
 
-namespace TheGodfatherTests.Modules.Administration.Services
+namespace TheGodfather.Tests.Modules.Administration.Services
 {
     public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringService>
     {

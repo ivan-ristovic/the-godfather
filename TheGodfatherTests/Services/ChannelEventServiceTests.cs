@@ -5,7 +5,7 @@ using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 
-namespace TheGodfatherTests.Services
+namespace TheGodfather.Tests.Services
 {
     [TestFixture]
     public sealed class ChannelEventServiceTests : ITheGodfatherServiceTest<ChannelEventService>

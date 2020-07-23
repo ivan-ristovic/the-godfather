@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Services;
 
-namespace TheGodfatherTests.Services
+namespace TheGodfather.Tests.Services
 {
     [TestFixture]
     public sealed class InteractivityServiceTests : ITheGodfatherServiceTest<InteractivityService>

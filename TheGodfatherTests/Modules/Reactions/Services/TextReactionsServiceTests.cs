@@ -5,7 +5,7 @@ using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 
-namespace TheGodfatherTests.Modules.Reactions.Services
+namespace TheGodfather.Tests.Modules.Reactions.Services
 {
     public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
     {

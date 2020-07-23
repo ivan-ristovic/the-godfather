@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 
-namespace TheGodfatherTests
+namespace TheGodfather.Tests
 {
     public static class TestDatabaseProvider
     {

@@ -6,7 +6,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Owner.Services;
 
-namespace TheGodfatherTests.Modules.Owner.Services
+namespace TheGodfather.Tests.Modules.Owner.Services
 {
     [TestFixture]
     public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingService>

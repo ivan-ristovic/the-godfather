@@ -3,7 +3,7 @@ using NUnit.Framework;
 using TheGodfather.Common.Converters;
 using TheGodfather.Modules.Administration.Common;
 
-namespace TheGodfatherTests.Common
+namespace TheGodfather.Tests.Common.Converters
 {
     [TestFixture]
     public sealed class ConverterTests

@@ -1,6 +1,6 @@
 ﻿using TheGodfather.Services;
 
-namespace TheGodfatherTests
+namespace TheGodfather.Tests
 {
     public interface ITheGodfatherServiceTest<T> where T : ITheGodfatherService
     {

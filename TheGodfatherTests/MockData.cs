@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace TheGodfatherTests
+namespace TheGodfather.Tests
 {
     public static class MockData
     {

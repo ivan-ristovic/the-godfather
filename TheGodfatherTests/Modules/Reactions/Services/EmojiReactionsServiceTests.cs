@@ -7,7 +7,7 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 
-namespace TheGodfatherTests.Modules.Reactions.Services
+namespace TheGodfather.Tests.Modules.Reactions.Services
 {
     public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
     {

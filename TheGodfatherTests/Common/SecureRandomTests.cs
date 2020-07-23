@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using TheGodfather.Common;
 
-namespace TheGodfatherTests.Common
+namespace TheGodfather.Tests.Common
 {
     [TestFixture]
     public class SecureRandomTests

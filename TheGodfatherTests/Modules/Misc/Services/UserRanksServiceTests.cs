@@ -2,7 +2,7 @@
 using TheGodfather.Database.Models;
 using TheGodfather.Misc.Services;
 
-namespace TheGodfatherTests.Modules.Misc.Services
+namespace TheGodfather.Tests.Modules.Misc.Services
 {
     [TestFixture]
     public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksService>
