@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Serilog;
+using TheGodfather.Extensions;
 
 namespace TheGodfather.Attributes
 {
@@ -21,14 +22,13 @@ namespace TheGodfather.Attributes
 
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.Client.CurrentApplication?.Owners.Any(o => o.Id == ctx.User.Id) ?? false)
+            if (ctx.Client.OwnersContain(ctx.User.Id) || ctx.User.IsCurrent)
                 return Task.FromResult(true);
 
-            if (ctx.User.Id == ctx.Client.CurrentUser.Id)
-                return Task.FromResult(true);
-
-            if (ctx.Member is null)
+            if (ctx.Member is null) {
+                Log.Warning("Null member detected while executing owner or perms command check. Most likely the command should not be allowed in DM?");
                 return Task.FromResult(false);
+            }
 
             Permissions perms = ctx.Channel.PermissionsFor(ctx.Member);
             return Task.FromResult((perms & this.Permissions) == this.Permissions);

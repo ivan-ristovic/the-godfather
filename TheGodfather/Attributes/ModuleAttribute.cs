@@ -29,19 +29,19 @@ namespace TheGodfather.Attributes
         {
             return type switch
             {
-                ModuleType.Administration => DiscordColor.Azure,
-                ModuleType.Chickens => DiscordColor.Azure,
-                ModuleType.Currency => DiscordColor.Azure,
-                ModuleType.Games => DiscordColor.Azure,
-                ModuleType.Miscellaneous => DiscordColor.Azure,
-                ModuleType.Music => DiscordColor.Azure,
-                ModuleType.Owner => DiscordColor.Azure,
-                ModuleType.Polls => DiscordColor.Azure,
-                ModuleType.Reactions => DiscordColor.Azure,
-                ModuleType.Reminders => DiscordColor.Azure,
-                ModuleType.SWAT => DiscordColor.Azure,
-                ModuleType.Uncategorized => DiscordColor.Azure,
-                ModuleType.Searches => DiscordColor.Green,
+                ModuleType.Administration => DiscordColor.SapGreen,
+                ModuleType.Chickens => DiscordColor.Orange,
+                ModuleType.Currency => DiscordColor.DarkGreen,
+                ModuleType.Games => DiscordColor.CornflowerBlue,
+                ModuleType.Miscellaneous => DiscordColor.White,
+                ModuleType.Music => DiscordColor.Aquamarine,
+                ModuleType.Owner => DiscordColor.DarkButNotBlack,
+                ModuleType.Polls => DiscordColor.Orange,
+                ModuleType.Reactions => DiscordColor.Yellow,
+                ModuleType.Reminders => DiscordColor.DarkRed,
+                ModuleType.SWAT => DiscordColor.Black,
+                ModuleType.Uncategorized => DiscordColor.Gray,
+                ModuleType.Searches => DiscordColor.Turquoise,
                 _ => DiscordColor.Green,
             };
         }

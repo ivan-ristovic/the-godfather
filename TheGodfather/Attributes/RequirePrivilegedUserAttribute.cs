@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
+using TheGodfather.Extensions;
 
 namespace TheGodfather.Attributes
 {
@@ -13,7 +13,7 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.Client.CurrentApplication?.Owners.Any(o => o.Id == ctx.User.Id) ?? false)
+            if (ctx.Client.OwnersContain(ctx.User.Id))
                 return Task.FromResult(true);
 
             using (TheGodfatherDbContext db = ctx.Services.GetService<DbContextBuilder>().CreateContext())

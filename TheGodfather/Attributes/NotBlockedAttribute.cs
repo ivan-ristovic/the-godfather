@@ -15,6 +15,8 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
+            object? x = null;
+            x.ToString();
             if (!ctx.Services.GetService<BotActivityService>().IsBotListening)
                 return Task.FromResult(false);
             if (ctx.Services.GetService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))

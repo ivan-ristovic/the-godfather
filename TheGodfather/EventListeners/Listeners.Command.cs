@@ -13,6 +13,7 @@ using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Serilog;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.EventListeners.Attributes;
@@ -167,13 +168,8 @@ namespace TheGodfather.EventListeners
                     sb.Append(ex.Message);
                     break;
                 default:
-                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
-                    sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
-                    sb.AppendLine($"Details: {Formatter.Italic(ex.Message)}");
-                    if (!(ex.InnerException is null)) {
-                        sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
-                        sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
-                    }
+                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored! Please report this.");
+                    Log.Error(e.Exception, "Command {Command} errored!", e.Command.QualifiedName);
                     break;
             }
 
