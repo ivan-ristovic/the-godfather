@@ -6,6 +6,7 @@ namespace TheGodfather.Database.Models
     [Table("cmd_rules")]
     public class CommandRule
     {
+        [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long GuildIdDb { get; set; }
@@ -28,7 +29,10 @@ namespace TheGodfather.Database.Models
         public virtual GuildConfig GuildConfig { get; set; } = null!;
 
 
-        public bool IsMatchFor(ulong gid, ulong cid)
-            => this.GuildId == gid && (this.ChannelId == cid || this.ChannelId == 0);
+        public bool AppliesTo(string cmd)
+        {
+            return (cmd.Length <= this.Command.Length || cmd[this.Command.Length] == ' ')
+                && cmd.StartsWith(this.Command, System.StringComparison.InvariantCultureIgnoreCase);
+        }
     }
 }

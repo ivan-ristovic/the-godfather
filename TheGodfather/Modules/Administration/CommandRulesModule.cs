@@ -67,14 +67,14 @@ namespace TheGodfather.Modules.Administration
         [Command("list")]
         [Description("Show all command rules for this guild.")]
         [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx) 
+        public Task ListAsync(CommandContext ctx) 
         {
             // TODO also allow second argument to be passed to cmd
-            IReadOnlyList<CommandRule>? crs = await this.Service.GetRulesAsync(ctx.Guild.Id);
+            IReadOnlyList<CommandRule>? crs = this.Service.GetRulesAsync(ctx.Guild.Id);
             if (!crs.Any())
                 throw new CommandFailedException("No command rules are present.");
 
-            await ctx.SendCollectionInPagesAsync(
+            return ctx.SendCollectionInPagesAsync(
                 $"Command rules for {ctx.Guild.Name}",
                 crs.OrderBy(cr => cr.ChannelId),
                 cr => $"{(cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X)} {(cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : "global")} | {Formatter.InlineCode(cr.Command)}",

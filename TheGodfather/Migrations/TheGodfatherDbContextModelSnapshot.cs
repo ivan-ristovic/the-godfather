@@ -244,12 +244,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("allow")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("GuildConfigGuildIdDb")
-                        .HasColumnType("bigint");
-
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
-
-                    b.HasIndex("GuildConfigGuildIdDb");
 
                     b.ToTable("cmd_rules");
                 });
@@ -1173,7 +1168,7 @@ namespace TheGodfather.Migrations
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
                         .WithMany("CommandRules")
-                        .HasForeignKey("GuildConfigGuildIdDb")
+                        .HasForeignKey("GuildIdDb")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

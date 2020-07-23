@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20200716192018_InitialCreate")]
+    [Migration("20200720100901_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,12 +246,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("allow")
                         .HasColumnType("boolean");
 
-                    b.Property<long>("GuildConfigGuildIdDb")
-                        .HasColumnType("bigint");
-
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
-
-                    b.HasIndex("GuildConfigGuildIdDb");
 
                     b.ToTable("cmd_rules");
                 });
@@ -1175,7 +1170,7 @@ namespace TheGodfather.Migrations
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
                         .WithMany("CommandRules")
-                        .HasForeignKey("GuildConfigGuildIdDb")
+                        .HasForeignKey("GuildIdDb")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

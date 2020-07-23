@@ -1,9 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Services;
@@ -14,65 +11,75 @@ namespace TheGodfather.Modules.Administration.Services
     {
         public bool IsDisabled => false;
 
-        private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<CommandRule>> cache; 
         private readonly DbContextBuilder dbb;
 
 
         public CommandRulesService(DbContextBuilder dbb)
         {
             this.dbb = dbb;
-            this.cache = new ConcurrentDictionary<ulong, ConcurrentHashSet<CommandRule>>();
         }
 
 
         public bool IsBlocked(ulong gid, ulong cid, string qualifiedCommandName)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> dbrules = db.CommandRules
-                    .Where(cr => cr.GuildIdDb == (long)gid && (cr.ChannelIdDb == 0 || cr.ChannelIdDb == (long)cid))
+                IReadOnlyList<CommandRule> crs = db.CommandRules
+                    .Where(cr => cr.GuildIdDb == (long)gid)
                     .AsEnumerable()
-                    .Where(cr => qualifiedCommandName.StartsWith(cr.Command));
-                if (!dbrules.Any() || dbrules.Any(cr => cr.ChannelIdDb == (long)cid && cr.Allowed))
+                    .Where(cr => cr.AppliesTo(qualifiedCommandName))
+                    .ToList().AsReadOnly();
+                
+                if (!crs.Any())
                     return false;
+
+                if (crs.Any(cr => cr.ChannelId == 0))
+                    return true;
+
+                CommandRule? special = crs.SingleOrDefault(cr => cr.ChannelId == cid);
+                if (special is { })
+                    return !special.Allowed;
+
+                CommandRule? other = crs.FirstOrDefault(cr => cr.ChannelId != 0 && cr.ChannelId != cid && cr.Allowed);
+                return other is { };
             }
-            return true;
         }
 
-        public async Task<IReadOnlyList<CommandRule>> GetRulesAsync(ulong gid, string? cmd = null)
+        public IReadOnlyList<CommandRule> GetRulesAsync(ulong gid, string? cmd = null)
         {
-            IReadOnlyList<CommandRule> rules;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                rules = await db.CommandRules
+                IEnumerable<CommandRule> rules = db.CommandRules
                     .Where(cr => cr.GuildIdDb == (long)gid)
-                    .ToListAsync();
+                    .AsEnumerable();
+                return cmd is { }
+                    ? rules.Where(cr => cr.AppliesTo(cmd)).ToList().AsReadOnly()
+                    : rules.ToList().AsReadOnly();
             }
-            return cmd is { } 
-                ? rules.Where(cr => cr.Command.StartsWith(cmd)).ToList() 
-                : rules;
         }
+
+        public Task AddRuleAsync(ulong gid, string cmd, bool allow, params ulong[] cids)
+            => this.AddRuleAsync(gid, cmd, allow, cids.AsEnumerable());
 
         public async Task AddRuleAsync(ulong gid, string cmd, bool allow, IEnumerable<ulong> cids)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> crs = await this.GetRulesAsync(gid, cmd);
+                IEnumerable<CommandRule> crs = this.GetRulesAsync(gid, cmd);
 
-                db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(id => (long)id == cr.ChannelIdDb)));
-
-                if (cids is null || !cids.Any()) {
+                if (!cids.Any()) {
                     db.CommandRules.RemoveRange(crs);
                 } else {
+                    db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(cid => cr.ChannelIdDb == (long)cid)));
                     db.CommandRules.AddRange(
                         cids.Distinct()
-                            .Select(id => new CommandRule {
+                            .Select(cid => new CommandRule {
                                 Allowed = allow,
-                                ChannelId = id,
+                                ChannelId = cid,
                                 Command = cmd,
                                 GuildId = gid,
                             })
                     );
                 }
 
-                if (!allow || cids.Any()) {
+                if (!allow && !cids.Any()) {
                     var cr = new CommandRule {
                         Allowed = false,
                         ChannelId = 0,
