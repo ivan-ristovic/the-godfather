@@ -62,7 +62,7 @@ namespace TheGodfather
             this.SetupInteractivity();
             this.SetupVoice();
 
-            Listeners.FindAndRegister(this.Client!, this);
+            Listeners.FindAndRegister(this);
         }
 
 

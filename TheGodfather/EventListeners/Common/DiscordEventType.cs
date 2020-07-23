@@ -4,6 +4,7 @@ namespace TheGodfather.EventListeners.Common
 {
     public enum DiscordEventType
     {
+        #region Event types
         ChannelCreated,
         ChannelDeleted,
         ChannelPinsUpdated,
@@ -52,6 +53,7 @@ namespace TheGodfather.EventListeners.Common
         VoiceServerUpdated,
         VoiceStateUpdated,
         WebhooksUpdated
+        #endregion
     }
 
 
@@ -60,39 +62,44 @@ namespace TheGodfather.EventListeners.Common
         public static DiscordColor ToDiscordColor(this DiscordEventType type)
         {
             switch (type) {
-                // Channels
+                #region Channels
                 case DiscordEventType.ChannelCreated:
                 case DiscordEventType.ChannelDeleted:
                 case DiscordEventType.ChannelPinsUpdated:
                 case DiscordEventType.ChannelUpdated:
                     return DiscordColor.Aquamarine;
+                #endregion
 
-                // Errors and serious events
+                #region Errors and serious events
                 case DiscordEventType.ClientErrored:
                 case DiscordEventType.CommandErrored:
                 case DiscordEventType.GuildBanAdded:
                 case DiscordEventType.GuildDeleted:
                 case DiscordEventType.GuildUnavailable:
                     return DiscordColor.Red;
+                #endregion
 
-                // Availability
+                #region Availability
                 case DiscordEventType.DmChannelCreated:
                 case DiscordEventType.DmChannelDeleted:
                 case DiscordEventType.GuildAvailable:
                 case DiscordEventType.GuildCreated:
                 case DiscordEventType.GuildBanRemoved:
                     return DiscordColor.Green;
+                #endregion
 
-                // Successful execution
+                #region Successful execution
                 case DiscordEventType.CommandExecuted:
                 case DiscordEventType.GuildDownloadCompleted:
                     return DiscordColor.SpringGreen;
+                #endregion
 
-                // Emojis
+                #region Emojis
                 case DiscordEventType.GuildEmojisUpdated:
                     return DiscordColor.Yellow;
+                #endregion
 
-                // Members and Users
+                #region Members and Users
                 case DiscordEventType.GuildMemberUpdated:
                 case DiscordEventType.PresenceUpdated:
                 case DiscordEventType.TypingStarted:
@@ -104,22 +111,25 @@ namespace TheGodfather.EventListeners.Common
                     return DiscordColor.Turquoise;
                 case DiscordEventType.GuildMemberRemoved:
                     return DiscordColor.DarkRed;
+                #endregion
 
-                // Roles
+                #region Roles
                 case DiscordEventType.GuildRoleCreated:
                 case DiscordEventType.GuildRoleDeleted:
                 case DiscordEventType.GuildRoleUpdated:
                     return DiscordColor.Orange;
+                #endregion
 
-                // Guild 
+                #region Guild
                 case DiscordEventType.GuildIntegrationsUpdated:
                 case DiscordEventType.GuildUpdated:
                 case DiscordEventType.VoiceServerUpdated:
                 case DiscordEventType.VoiceStateUpdated:
                 case DiscordEventType.WebhooksUpdated:
                     return DiscordColor.SapGreen;
+                #endregion
 
-                // Messages
+                #region Messages
                 case DiscordEventType.MessageAcknowledged:
                 case DiscordEventType.MessageCreated:
                 case DiscordEventType.MessageDeleted:
@@ -129,8 +139,9 @@ namespace TheGodfather.EventListeners.Common
                 case DiscordEventType.MessageUpdated:
                 case DiscordEventType.MessagesBulkDeleted:
                     return DiscordColor.CornflowerBlue;
+                #endregion
 
-                // Application
+                #region Application
                 case DiscordEventType.Heartbeated:
                 case DiscordEventType.Ready:
                 case DiscordEventType.Resumed:
@@ -138,10 +149,13 @@ namespace TheGodfather.EventListeners.Common
                 case DiscordEventType.SocketErrored:
                 case DiscordEventType.SocketOpened:
                     return DiscordColor.White;
+                #endregion
 
+                #region Unknown and default
                 case DiscordEventType.UnknownEvent:
                 default:
                     return DiscordColor.Black;
+                    #endregion
             }
         }
     }
