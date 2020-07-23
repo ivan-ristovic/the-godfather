@@ -69,6 +69,19 @@ namespace TheGodfatherTests.Modules.Administration.Services
                         Assert.That(this.Service.IsBlocked(MockData.Ids[2], cid, "bbb a"));
                     }
 
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc"), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc ddd"), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc dd"));
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc dd ee"));
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc"), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc ddd"), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc dd"));
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc dd ee"));
+                    foreach (ulong cid in MockData.Ids.Skip(2)) {
+                        Assert.That(this.Service.IsBlocked(MockData.Ids[3], cid, "ccc"), Is.False);
+                        Assert.That(this.Service.IsBlocked(MockData.Ids[3], cid, "ccc dd"), Is.False);
+                    }
+
                     return Task.CompletedTask;
                 }
             );
@@ -80,6 +93,7 @@ namespace TheGodfatherTests.Modules.Administration.Services
             await this.Service.AddRuleAsync(MockData.Ids[0], "a", false);
             await this.Service.AddRuleAsync(MockData.Ids[1], "aa", false, MockData.Ids[0]);
             await this.Service.AddRuleAsync(MockData.Ids[2], "bbb", true, MockData.Ids[0], MockData.Ids[1]);
+            await this.Service.AddRuleAsync(MockData.Ids[3], "ccc dd", false, MockData.Ids[0], MockData.Ids[1]);
         }
     }
 }
