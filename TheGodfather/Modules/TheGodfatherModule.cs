@@ -1,6 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
-using System.Net.Http;
+﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
@@ -11,42 +9,32 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherModule : BaseCommandModule
     {
-        protected static readonly HttpClient _http;
-        private static readonly HttpClientHandler _handler;
-
+        // TODO remove dbb once all services are made
         public DbContextBuilder Database { get; }
+
         public DiscordColor ModuleColor { get; }
 
 
-        static TheGodfatherModule()
-        {
-            _handler = new HttpClientHandler {
-                AllowAutoRedirect = false
-            };
-            _http = new HttpClient(_handler, true);
-        }
-
-
+        // TODO remove dbb once all services are made
         protected TheGodfatherModule(DbContextBuilder dbb)
         {
             this.Database = dbb;
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
-            this.ModuleColor = moduleAttr is null ? DiscordColor.Green : moduleAttr.Module.ToDiscordColor();
+            this.ModuleColor = moduleAttr?.Module.ToDiscordColor() ?? DiscordColor.Green;
         }
 
 
-        protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = true)
+        protected Task InformAsync(CommandContext ctx, string? message = null, string? emoji = null, bool important = true)
             => this.InformAsync(ctx, (emoji is null ? Emojis.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
-        protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
+        protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string? message = null, bool important = true)
         {
-            if (!important && ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).ReactionResponse) {
+            if (!important && (ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id)?.ReactionResponse ?? false)) {
                 try {
                     await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {

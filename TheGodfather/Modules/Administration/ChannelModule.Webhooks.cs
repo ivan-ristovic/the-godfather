@@ -14,6 +14,7 @@ using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -56,12 +57,8 @@ namespace TheGodfather.Modules.Administration
                     wh = await channel.CreateWebhookAsync(name, reason: ctx.BuildInvocationDetailsString(reason));
                 else {
                     try {
-                        using (Stream stream = await _http.GetStreamAsync(avatarUrl))
-                        using (var ms = new MemoryStream()) {
-                            await stream.CopyToAsync(ms);
-                            ms.Seek(0, SeekOrigin.Begin);
+                        using (MemoryStream ms = await HttpService.GetMemoryStreamAsync(avatarUrl))
                             wh = await channel.CreateWebhookAsync(name, ms, reason: ctx.BuildInvocationDetailsString(reason));
-                        }
                     } catch (WebException e) {
                         throw new CommandFailedException("Failed to fetch the image!", e);
                     }

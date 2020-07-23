@@ -1,7 +1,5 @@
-﻿#region USING_DIRECTIVES
-using TheGodfather.Database;
+﻿using TheGodfather.Database;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules
 {

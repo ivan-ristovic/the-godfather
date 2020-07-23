@@ -71,7 +71,9 @@ namespace TheGodfather.EventListeners
 
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
-                    IEnumerable<KeyValuePair<string, Command>> ordered = TheGodfatherShard.Commands
+
+                    // FIXME
+                    IEnumerable<KeyValuePair<string, Command>> ordered = /* LocalizationService.GetCommands() --> */ new Dictionary<string, Command>()
                         .OrderBy(kvp => cne.CommandName.LevenshteinDistance(kvp.Key))
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)

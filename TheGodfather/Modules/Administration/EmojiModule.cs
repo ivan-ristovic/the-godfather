@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -64,8 +66,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (System.Net.Http.HttpResponseMessage response = await _http.GetAsync(url))
-                using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync()) {
+                using (Stream stream = await HttpService.GetStreamAsync(url)) { 
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
                     DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());

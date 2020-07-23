@@ -12,18 +12,18 @@ using TheGodfather.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Modules.Misc
 {
-    // TODO localize and improve
-
-    public sealed class CustomHelpFormatter : BaseHelpFormatter
+    class HelpModule : BaseHelpFormatter
     {
+        // TODO
+
         private string? name;
         private string? desc;
         private readonly DiscordEmbedBuilder emb;
 
 
-        public CustomHelpFormatter(CommandContext ctx) 
+        public HelpModule(CommandContext ctx)
             : base(ctx)
         {
             this.emb = new DiscordEmbedBuilder();

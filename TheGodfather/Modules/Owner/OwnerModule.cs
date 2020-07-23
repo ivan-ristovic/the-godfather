@@ -99,12 +99,8 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                using (Stream stream = await _http.GetStreamAsync(url))
-                using (var ms = new MemoryStream()) {
-                    await stream.CopyToAsync(ms);
-                    ms.Seek(0, SeekOrigin.Begin);
+                using (MemoryStream ms = await HttpService.GetMemoryStreamAsync(url))
                     await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
-                }
             } catch (WebException e) {
                 throw new CommandFailedException("Web exception thrown while fetching the image.", e);
             }
@@ -194,7 +190,7 @@ namespace TheGodfather.Modules.Owner
 
             string query;
             try {
-                query = await _http.GetStringAsync(attachment.Url).ConfigureAwait(false);
+                query = await HttpService.GetStringAsync(attachment.Url).ConfigureAwait(false);
             } catch (Exception e) {
                 LogExt.Debug(ctx, e, "Failed to upload attachment");
                 throw new CommandFailedException("An error occured while getting the file.", e);

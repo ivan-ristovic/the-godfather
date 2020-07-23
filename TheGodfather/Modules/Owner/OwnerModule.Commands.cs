@@ -100,7 +100,8 @@ public sealed class DynamicCommands : TheGodfatherModule
                     moduleType = outerType.GetNestedTypes().FirstOrDefault(x => x.BaseType == typeof(BaseCommandModule));
 
                     ctx.CommandsNext.RegisterCommands(moduleType);
-                    TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
+                    
+                    // FIXME implement and call LocalizationService.AddCommand()
 
                     return this.InformAsync(ctx, Emojis.Information, "Compilation successful! Command(s) successfully added!", important: false);
                 } catch (Exception ex) {
@@ -121,7 +122,9 @@ public sealed class DynamicCommands : TheGodfatherModule
                 if (cmd is null)
                     throw new CommandFailedException("Cannot find that command.");
                 ctx.CommandsNext.UnregisterCommands(cmd);
-                TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
+                
+                // FIXME implement and call LocalizationService.RemoveCommand()
+
                 return this.InformAsync(ctx, $"Removed command {Formatter.Bold(cmd.QualifiedName)}.", important: false);
             }
             #endregion

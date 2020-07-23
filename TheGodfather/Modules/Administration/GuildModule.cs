@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -13,6 +14,7 @@ using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -191,8 +193,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (System.Net.Http.HttpResponseMessage response = await _http.GetAsync(url).ConfigureAwait(false))
-                using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (Stream stream = await HttpService.GetStreamAsync(url))
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
                 throw new CommandFailedException("An error occured.", e);

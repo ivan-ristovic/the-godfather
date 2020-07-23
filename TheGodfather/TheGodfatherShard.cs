@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -12,7 +9,6 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.Database;
 using TheGodfather.EventListeners;
@@ -25,21 +21,6 @@ namespace TheGodfather
 {
     public sealed class TheGodfatherShard
     {
-        public static IReadOnlyDictionary<string, Command> Commands => _commands;
-
-        private static ConcurrentDictionary<string, Command> _commands = new ConcurrentDictionary<string, Command>();
-
-        public static void UpdateCommandList(CommandsNextExtension cnext)
-        {
-            _commands = new ConcurrentDictionary<string, Command>(
-                cnext.GetAllRegisteredCommands()
-                    .Where(cmd => cmd.Parent is null)
-                    .SelectMany(cmd => cmd.Aliases.Select(alias => (Name: alias, Command: cmd)).Concat(new[] { (cmd.Name, Command: cmd) }))
-                    .ToDictionary(tup => tup.Name, tup => tup.Command)
-            );
-        }
-
-
         public int Id { get; }
         public ServiceProvider Services { get; private set; }
         public BotConfig Config { get; private set; }
@@ -74,9 +55,9 @@ namespace TheGodfather
             await this.Client.ConnectAsync();
         }
 
-        public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
+        public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadComplete)
         {
-            this.SetupClient(onGuildDownloadCompleted);
+            this.SetupClient(onGuildDownloadComplete);
             this.SetupCommands();
             this.SetupInteractivity();
             this.SetupVoice();
@@ -85,7 +66,7 @@ namespace TheGodfather
         }
 
 
-        private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
+        private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadComplete)
         {
             var cfg = new DiscordConfiguration {
                 Token = this.Config.Token,
@@ -105,15 +86,17 @@ namespace TheGodfather
                 Log.Information("Client ready!");
                 return Task.CompletedTask;
             };
-            this.Client.GuildDownloadCompleted += onGuildDownloadCompleted;
+            this.Client.GuildDownloadCompleted += onGuildDownloadComplete;
         }
 
         private void SetupCommands()
         {
             this.CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
-                EnableDms = true,
                 CaseSensitive = false,
+                EnableDefaultHelp = false,
+                EnableDms = true,
                 EnableMentionPrefix = true,
+                IgnoreExtraArguments = false,
                 PrefixResolver = m => {
                     string p = m.Channel.Guild is null
                         ? this.Config.Prefix
@@ -123,8 +106,6 @@ namespace TheGodfather
                 Services = this.Services
             });
 
-            this.CNext.SetHelpFormatter<CustomHelpFormatter>();
-
             this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());
 
             this.CNext.RegisterConverter(new ActivityTypeConverter());
@@ -132,8 +113,6 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new IPAddressConverter());
             this.CNext.RegisterConverter(new IPAddressRangeConverter());
             this.CNext.RegisterConverter(new PunishmentActionConverter());
-
-            UpdateCommandList(this.CNext);
         }
 
         private void SetupInteractivity()
