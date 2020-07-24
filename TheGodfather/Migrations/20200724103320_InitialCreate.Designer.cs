@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20200720100901_InitialCreate")]
+    [Migration("20200724103320_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -669,6 +669,11 @@ namespace TheGodfather.Migrations
                         .HasColumnName("suggestions_enabled")
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("TimezoneId")
+                        .HasColumnName("timezone_id")
+                        .HasColumnType("character varying(8)")
+                        .HasMaxLength(8);
 
                     b.Property<long?>("WelcomeChannelIdDb")
                         .ValueGeneratedOnAdd()

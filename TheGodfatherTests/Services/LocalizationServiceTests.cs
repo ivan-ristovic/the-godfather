@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database.Models;
@@ -18,7 +21,7 @@ namespace TheGodfather.Tests.Services
         public string EnLocale => "en-US";
         public string SrLocale => "Lt-sr-SP";
 
-        private readonly string testDataPath = "Services/TranslationsTestData";
+        private readonly string testDataPath = Path.Combine("Services", "TranslationsTestData");
 
 
         [SetUp]
@@ -36,9 +39,11 @@ namespace TheGodfather.Tests.Services
         public void LoadDataTests()
         {
             Assert.That(() => this.Service.GetCommandDescription(0, "not loaded"), Throws.InvalidOperationException);
-            Assert.That(() => this.Service.GetGuildLocale(0), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.GetGuildLocale(0), Throws.Nothing);
+            Assert.That(() => this.Service.GetGuildCulture(0), Throws.Nothing);
             Assert.That(() => this.Service.GetString(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.SetGuildLocaleAsync(0, "not loaded"), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.SetGuildTimezoneIdAsync(0, "UTC"), Throws.Nothing);
 
             this.Service.LoadData(this.ValidTestDataPath);
             Assert.That(this.Service.AvailableLocales, Is.EquivalentTo(new[] { this.EnLocale, this.SrLocale }));
@@ -68,6 +73,38 @@ namespace TheGodfather.Tests.Services
         }
 
         [Test]
+        public void GetGuildTimezoneIdTests()
+        {
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => {
+                    GuildConfig gcfg;
+
+                    gcfg = db.Configs.Find((long)MockData.Ids[0]);
+                    gcfg.TimezoneId = null;
+                    gcfg.Locale = "Lt-sr-SP";
+                    db.Configs.Update(gcfg);
+                
+                    gcfg = db.Configs.Find((long)MockData.Ids[1]);
+                    gcfg.TimezoneId = "UTC";
+                    gcfg.Locale = "en-US";
+                    db.Configs.Update(gcfg);
+                },
+                alter: db => {
+                    this.Configs.LoadData();
+                    this.Service.LoadData(this.ValidTestDataPath);
+                },
+                verify: db => {
+                    var dt = new DateTime(2020, 1, 1, 12, 0, 0);
+                    var dto = new DateTimeOffset(2020, 1, 1, 12, 0, 0, TimeSpan.FromHours(1));
+                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dt, "G"), Is.EqualTo("2020-01-01 12:00:00"));
+                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dt), Is.EqualTo("01-Jan-20 11:00"));
+                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dto), Is.EqualTo("2020-01-01 12:00"));
+                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dto, "G"), Is.EqualTo("01-Jan-20 11:00:00"));
+                }
+            );
+        }
+
+        [Test]
         public void GetStringTests()
         {
             TestDatabaseProvider.SetupAlterAndVerify(
@@ -89,6 +126,8 @@ namespace TheGodfather.Tests.Services
                     Assert.That(() => this.Service.GetString(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
                 }
             );
+
+            // TODO test with args
         }
 
         [Test]
@@ -198,6 +237,14 @@ namespace TheGodfather.Tests.Services
                     return Task.CompletedTask;
                 }
             );
+        }
+
+        [Test]
+        public Task SetGuildTimezoneIdAsyncTests()
+        {
+            // TODO
+            Assert.Inconclusive();
+            return Task.CompletedTask;
         }
     }
 }

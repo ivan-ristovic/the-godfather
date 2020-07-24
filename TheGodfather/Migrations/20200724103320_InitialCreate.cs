@@ -103,6 +103,7 @@ namespace TheGodfather.Migrations
                     gid = table.Column<long>(nullable: false),
                     prefix = table.Column<string>(maxLength: 8, nullable: true),
                     locale = table.Column<string>(maxLength: 8, nullable: true),
+                    timezone_id = table.Column<string>(maxLength: 8, nullable: true),
                     currency = table.Column<string>(maxLength: 32, nullable: true),
                     suggestions_enabled = table.Column<bool>(nullable: false, defaultValue: false),
                     log_cid = table.Column<long>(nullable: true),

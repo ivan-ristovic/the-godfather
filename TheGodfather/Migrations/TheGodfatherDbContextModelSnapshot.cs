@@ -668,6 +668,11 @@ namespace TheGodfather.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("TimezoneId")
+                        .HasColumnName("timezone_id")
+                        .HasColumnType("character varying(8)")
+                        .HasMaxLength(8);
+
                     b.Property<long?>("WelcomeChannelIdDb")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("welcome_cid")

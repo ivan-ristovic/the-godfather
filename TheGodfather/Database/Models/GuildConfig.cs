@@ -69,6 +69,9 @@ namespace TheGodfather.Database.Models
         [Column("locale"), MaxLength(8)]
         public string? Locale { get; set; }
 
+        [Column("timezone_id"), MaxLength(8)]
+        public string? TimezoneId { get; set; }
+
         [Column("currency"), MaxLength(32)]
         public string? Currency { get; set; }
 
@@ -254,7 +257,8 @@ namespace TheGodfather.Database.Models
                 Prefix = this.Prefix ?? "!",
                 RatelimitSettings = this.RatelimitSettings,
                 ReactionResponse = this.ReactionResponse,
-                SuggestionsEnabled = this.SuggestionsEnabled
+                SuggestionsEnabled = this.SuggestionsEnabled,
+                TimezoneId = this.TimezoneId ?? "Central Europe Standard Time",
             };
             set {
                 this.AntispamSettings = value.AntispamSettings;
@@ -266,6 +270,7 @@ namespace TheGodfather.Database.Models
                 this.RatelimitSettings = value.RatelimitSettings;
                 this.ReactionResponse = value.ReactionResponse;
                 this.SuggestionsEnabled = value.SuggestionsEnabled;
+                this.TimezoneId = value.TimezoneId;
             }
         }
     }

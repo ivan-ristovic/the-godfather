@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,11 +9,14 @@ using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Services
 {
     public sealed class LocalizationService : ITheGodfatherService
     {
+        private static readonly HashSet<string> _tzIds = new HashSet<string>(TimeZoneInfo.GetSystemTimeZones().Select(tz => tz.Id));
+
         public bool IsDisabled => false;
         public IReadOnlyList<string> AvailableLocales => this.strings.Keys.ToList().AsReadOnly();
 
@@ -123,7 +127,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetString(ulong? gid, string key)
+        public string GetString(ulong? gid, string key, params object[] args)
         {
             this.AssertIsDataLoaded();
 
@@ -136,13 +140,18 @@ namespace TheGodfather.Services
                 }
             }
 
-            return response;
+            return string.Format(response, args);
         }
 
         public string GetGuildLocale(ulong? gid)
         {
-            this.AssertIsDataLoaded();
             return gid is null ? this.defLocale : this.gcs.GetCachedConfig(gid.Value)?.Locale ?? this.defLocale;
+        }
+
+        public CultureInfo GetGuildCulture(ulong? gid)
+        {
+            var defCulture = new CultureInfo(this.defLocale);
+            return gid is null ? defCulture : this.gcs.GetCachedConfig(gid.Value)?.Culture ?? defCulture;
         }
 
         public string GetCommandDescription(ulong gid, string command)
@@ -154,6 +163,14 @@ namespace TheGodfather.Services
                 throw new LocalizationException("No translations found in either guild or default locale for given command.");
 
             return desc;
+        }
+
+        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g")
+        {
+            CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
+            DateTimeOffset time = dt ?? DateTimeOffset.Now;
+            time = TimeZoneInfo.ConvertTime(time, TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId));
+            return time.ToString(format, gcfg.Culture);
         }
 
         public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
@@ -182,6 +199,14 @@ namespace TheGodfather.Services
             if (!this.strings.ContainsKey(locale))
                 return false;
             await this.gcs.ModifyConfigAsync(gid, cfg => cfg.Locale = locale);
+            return true;
+        }
+
+        public async Task<bool> SetGuildTimezoneIdAsync(ulong gid, string tzid)
+        {
+            if (!_tzIds.Contains(tzid))
+                return false;
+            await this.gcs.ModifyConfigAsync(gid, cfg => cfg.TimezoneId = tzid);
             return true;
         }
 
