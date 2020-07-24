@@ -670,8 +670,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("TimezoneId")
                         .HasColumnName("timezone_id")
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
 
                     b.Property<long?>("WelcomeChannelIdDb")
                         .ValueGeneratedOnAdd()

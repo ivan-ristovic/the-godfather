@@ -69,7 +69,7 @@ namespace TheGodfather.Database.Models
         [Column("locale"), MaxLength(8)]
         public string? Locale { get; set; }
 
-        [Column("timezone_id"), MaxLength(8)]
+        [Column("timezone_id"), MaxLength(32)]
         public string? TimezoneId { get; set; }
 
         [Column("currency"), MaxLength(32)]

@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20200724103320_InitialCreate")]
+    [Migration("20200724155543_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -672,8 +672,8 @@ namespace TheGodfather.Migrations
 
                     b.Property<string>("TimezoneId")
                         .HasColumnName("timezone_id")
-                        .HasColumnType("character varying(8)")
-                        .HasMaxLength(8);
+                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(32);
 
                     b.Property<long?>("WelcomeChannelIdDb")
                         .ValueGeneratedOnAdd()
