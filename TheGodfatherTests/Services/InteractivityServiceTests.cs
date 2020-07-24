@@ -8,7 +8,7 @@ namespace TheGodfather.Tests.Services
     [TestFixture]
     public sealed class InteractivityServiceTests : ITheGodfatherServiceTest<InteractivityService>
     {
-        public InteractivityService Service { get; private set; }
+        public InteractivityService Service { get; private set; } = null!;
 
 
         [SetUp]

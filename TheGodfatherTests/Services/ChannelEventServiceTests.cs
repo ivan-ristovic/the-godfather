@@ -10,7 +10,7 @@ namespace TheGodfather.Tests.Services
     [TestFixture]
     public sealed class ChannelEventServiceTests : ITheGodfatherServiceTest<ChannelEventService>
     {
-        public ChannelEventService Service { get; private set; }
+        public ChannelEventService Service { get; private set; } = null!;
 
 
         [SetUp]
@@ -27,8 +27,8 @@ namespace TheGodfather.Tests.Services
             Assert.That(EventIn(MockData.Ids[1]), Is.Null);
             Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
-            IChannelEvent caro = new CaroGame(null, null, null, null);
-            IChannelEvent holdem = new HoldemGame(null, null, 0);
+            IChannelEvent caro = new CaroGame(null!, null!, null!, null!);
+            IChannelEvent holdem = new HoldemGame(null!, null!, 0);
 
             this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
@@ -58,8 +58,8 @@ namespace TheGodfather.Tests.Services
             Assert.That(IsEventRunningIn(MockData.Ids[1]), Is.False);
             Assert.That(IsEventRunningIn(MockData.Ids[2]), Is.False);
 
-            IChannelEvent caro = new CaroGame(null, null, null, null);
-            IChannelEvent holdem = new HoldemGame(null, null, 0);
+            IChannelEvent caro = new CaroGame(null!, null!, null!, null!);
+            IChannelEvent holdem = new HoldemGame(null!, null!, 0);
 
             this.Service.RegisterEventInChannel(caro, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(holdem, MockData.Ids[1]);
@@ -102,8 +102,8 @@ namespace TheGodfather.Tests.Services
             Assert.That(EventIn(MockData.Ids[1]), Is.Null);
             Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
-            IChannelEvent war = new ChickenWar(null, null, null, null);
-            IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
+            IChannelEvent war = new ChickenWar(null!, null!, null!, null!);
+            IChannelEvent ttt = new TicTacToeGame(null!, null!, null!, null!);
 
             Assert.That(() => this.Service.RegisterEventInChannel(war, MockData.Ids[0]), Throws.Nothing);
             Assert.That(() => this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]), Throws.Nothing);
@@ -129,8 +129,8 @@ namespace TheGodfather.Tests.Services
             Assert.That(EventIn(MockData.Ids[1]), Is.Null);
             Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
-            IChannelEvent war = new ChickenWar(null, null, null, null);
-            IChannelEvent ttt = new TicTacToeGame(null, null, null, null);
+            IChannelEvent war = new ChickenWar(null!, null!, null!, null!);
+            IChannelEvent ttt = new TicTacToeGame(null!, null!, null!, null!);
 
             this.Service.RegisterEventInChannel(war, MockData.Ids[0]);
             this.Service.RegisterEventInChannel(ttt, MockData.Ids[1]);

@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId)
+        public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId = null)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 return db.ExemptsLogging
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public bool IsMemberExempted(ulong gid, ulong uid, IReadOnlyList<ulong> rids)
+        public bool IsMemberExempted(ulong gid, ulong uid, IReadOnlyList<ulong>? rids = null)
         {
             bool exempted = false;
 

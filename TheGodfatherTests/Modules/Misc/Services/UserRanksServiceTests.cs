@@ -7,7 +7,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
     [TestFixture]
     public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksService>
     {
-        public UserRanksService Service { get; private set; }
+        public UserRanksService Service { get; private set; } = null!;
 
 
         [SetUp]

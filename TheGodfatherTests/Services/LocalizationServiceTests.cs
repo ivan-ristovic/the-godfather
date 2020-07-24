@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database.Models;
@@ -14,8 +12,8 @@ namespace TheGodfather.Tests.Services
     [TestFixture]
     public sealed class LocalizationServiceTests : ITheGodfatherServiceTest<LocalizationService>
     {
-        public LocalizationService Service { get; private set; }
-        public GuildConfigService Configs { get; private set; }
+        public LocalizationService Service { get; private set; } = null!;
+        public GuildConfigService Configs { get; private set; } = null!;
         public string ValidTestDataPath => Path.Combine(this.testDataPath, "Valid");
         public string ThrowsIOTestDataPath => Path.Combine(this.testDataPath, "ThrowsIO");
         public string EnLocale => "en-US";

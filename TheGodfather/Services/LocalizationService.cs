@@ -159,7 +159,7 @@ namespace TheGodfather.Services
             CommandInfo cmdInfo = this.GetInfoForCommand(command);
             string locale = this.GetGuildLocale(gid);
 
-            if (!cmdInfo.Descriptions.TryGetValue(locale, out string desc) && !cmdInfo.Descriptions.TryGetValue(this.defLocale, out desc))
+            if (!cmdInfo.Descriptions.TryGetValue(locale, out string? desc) && !cmdInfo.Descriptions.TryGetValue(this.defLocale, out desc))
                 throw new LocalizationException("No translations found in either guild or default locale for given command.");
 
             return desc;

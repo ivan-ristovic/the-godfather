@@ -286,7 +286,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         public async Task RemoveFiltersAsyncTests()
         {
             {
-                int[] removed = null;
+                int[]? removed = null;
 
                 await TestDatabaseProvider.SetupAlterAndVerifyAsync(
                    setup: db => {
@@ -353,7 +353,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             }
 
             {
-                string[] removed = null;
+                string[]? removed = null;
 
                 await TestDatabaseProvider.SetupAlterAndVerifyAsync(
                    setup: db => {
@@ -370,7 +370,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                    verify: db => {
                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - 2).Items);
                        this.AssertGuildFilterCount(db, 0, this.filterCount[0] - 2);
-                       AssertFiltersRemoved(db, 0, removed.Length);
+                       AssertFiltersRemoved(db, 0, removed?.Length ?? 0);
                        return Task.CompletedTask;
                    }
                 );
@@ -454,7 +454,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 );
             }
 
-            void AssertFiltersRemoved(TheGodfatherDbContext db, ulong gid, params int[] ids)
+            void AssertFiltersRemoved(TheGodfatherDbContext db, ulong gid, params int[]? ids)
             {
                 if (ids?.Any() ?? false) {
                     Assert.That(db.Filters.Where(f => f.GuildIdDb == (long)gid).Select(f => f.Id), Has.No.AnyOf(ids));
@@ -464,7 +464,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             }
 
-            void AssertFilterRegexesRemoved(TheGodfatherDbContext db, ulong gid, params string[] regexStrings)
+            void AssertFilterRegexesRemoved(TheGodfatherDbContext db, ulong gid, params string[]? regexStrings)
             {
                 if (regexStrings?.Any() ?? false) {
                     Assert.That(db.Filters

@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Misc.Services
         public override bool IsDisabled => false;
 
 
-        public static string GenerateMeme(string template, string topText, string bottomText)
+        public static string GenerateMeme(string template, string? topText, string? bottomText)
             => $"{_url}/{Sanitize(template)}/{Sanitize(topText)}/{Sanitize(bottomText)}.jpg?font=impact";
 
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()

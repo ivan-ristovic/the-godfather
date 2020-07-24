@@ -6,7 +6,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
     [TestFixture]
     public class ReactionsServiceTestsBase : ITheGodfatherServiceTest<ReactionsService>
     {
-        public ReactionsService Service { get; private set; }
+        public ReactionsService Service { get; private set; } = null!;
 
 
         [SetUp]

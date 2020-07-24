@@ -11,7 +11,7 @@ namespace TheGodfather.Tests.Modules.Owner.Services
     [TestFixture]
     public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingService>
     {
-        public BlockingService Service { get; private set; }
+        public BlockingService Service { get; private set; } = null!;
 
 
         [SetUp]
@@ -284,7 +284,7 @@ namespace TheGodfather.Tests.Modules.Owner.Services
         }
 
 
-        private async Task AssertBlockedAsync(TheGodfatherDbContext db, ulong[] bcExpected, ulong[] buExpected, string[] bcReasons, string[] buReasons)
+        private async Task AssertBlockedAsync(TheGodfatherDbContext db, ulong[] bcExpected, ulong[] buExpected, string?[] bcReasons, string?[] buReasons)
         {
             Assert.That(this.Service.BlockedChannels, Is.EquivalentTo(bcExpected));
             Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
