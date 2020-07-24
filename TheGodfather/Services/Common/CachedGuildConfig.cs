@@ -11,7 +11,7 @@ namespace TheGodfather.Services.Common
             get => this.locale;
             set {
                 this.locale = value;
-                this.culture = new CultureInfo(value);
+                this.culture = new CultureInfo(value, false);
             }
         }
         public string TimezoneId { get; set; } = "Central Europe Standard Time";
@@ -26,7 +26,7 @@ namespace TheGodfather.Services.Common
         public CultureInfo Culture {
             get {
                 if (this.culture is null)
-                    this.culture = new CultureInfo(this.Locale);
+                    this.culture = new CultureInfo(this.Locale, false);
                 return this.culture;
             }
         }

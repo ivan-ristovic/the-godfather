@@ -165,12 +165,12 @@ namespace TheGodfather.Services
             return desc;
         }
 
-        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g")
+        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "r")
         {
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
             DateTimeOffset time = dt ?? DateTimeOffset.Now;
             time = TimeZoneInfo.ConvertTime(time, TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId));
-            return time.ToString(format, gcfg.Culture);
+            return time.ToString(format, gcfg.Culture   );
         }
 
         public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
