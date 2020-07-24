@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2047
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfather", "TheGodfather\TheGodfather.csproj", "{29C00B12-DB71-4EC9-84E8-F24989066C67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfatherTests", "TheGodfatherTests\TheGodfatherTests.csproj", "{88C2C600-5DCB-4CC5-8C6A-01C291B9D41E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfather.Tests", "TheGodfatherTests\TheGodfather.Tests.csproj", "{88C2C600-5DCB-4CC5-8C6A-01C291B9D41E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
