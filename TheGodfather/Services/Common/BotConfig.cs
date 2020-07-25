@@ -32,7 +32,7 @@ namespace TheGodfather.Services.Common
         public string ImgurKey { get; set; } = "<insert Imgur API key>";
 
         [JsonProperty("locale")]
-        public string Locale { get; set; } = "en-US";
+        public string Locale { get; set; } = "en-GB";
 
         [JsonProperty("log-level")]
         public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;

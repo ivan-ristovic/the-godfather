@@ -252,7 +252,7 @@ namespace TheGodfather.Database.Models
                 AntispamSettings = this.AntispamSettings,
                 Currency = this.Currency ?? "credits",
                 LinkfilterSettings = this.LinkfilterSettings,
-                Locale = this.Locale ?? "en-US",
+                Locale = this.Locale ?? "en-GB",
                 LogChannelId = this.LogChannelId,
                 Prefix = this.Prefix ?? "!",
                 RatelimitSettings = this.RatelimitSettings,

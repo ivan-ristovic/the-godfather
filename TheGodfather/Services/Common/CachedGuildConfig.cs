@@ -33,6 +33,6 @@ namespace TheGodfather.Services.Common
 
 
         private CultureInfo? culture;
-        private string locale = "en-US";
+        private string locale = "en-GB";
     }
 }

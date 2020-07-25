@@ -1,0 +1,18 @@
+{
+  "arg-usr": "@User",
+  "arg-rsn": "Reason",
+  "chn-type": "Channel type",
+  "evt-chn-create-title": "Channel created",
+  "evt-chn-delete-title": "Channel deleted",
+  "evt-chn-pins-update-title": "Channel pins updated",
+  "evt-invoke-loc": "Invoked in",
+  "evt-usr-responsible": "User responsible",
+  "msg-404": "Unknown",
+  "msg-audit-log-no-perms": "Failed to read audit log information. Please check my permissions",
+  "msg-chn": "Channel",
+  "msg-err": "Error!",
+  "msg-jump-to-top-pin": "Jump to top pin",
+  "msg-last-pin-timestamp": "Last pin timestamp",
+  "msg-top-pin-content": "Top pin content",
+  "msg-suc": "Success!"
+}

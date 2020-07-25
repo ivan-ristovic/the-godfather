@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -44,8 +45,13 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageCreateEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate)
+            if (e.Author.IsBot)
                 return;
+
+            if (e.Channel.IsPrivate) {
+                LogExt.Debug(shard.Id, new[] { "DM message received from {User}:", "{Message}" }, e.Author, e.Message);
+                return;
+            }
 
             if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;

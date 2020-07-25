@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -16,68 +17,89 @@ namespace TheGodfather.EventListeners
 {
     internal static partial class Listeners
     {
+        [AsyncEventListener(DiscordEventType.DmChannelCreated)]
+        public static Task DmChannelCreateEventHandlerAsync(TheGodfatherShard shard, DmChannelCreateEventArgs e)
+        {
+            LogExt.Debug(
+                shard.Id, 
+                new[] { "Created DM {Channel}, recipients:", "{Recipients}" }, 
+                e.Channel, 
+                string.Join(Environment.NewLine, e.Channel.Recipients)
+            );
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.DmChannelDeleted)]
+        public static Task DmChannelDeleteEventHandlerAsync(TheGodfatherShard shard, DmChannelDeleteEventArgs e)
+        {
+            LogExt.Debug(
+                shard.Id,
+                new[] { "Deleted DM {Channel}, recipients:", "{Recipients}" },
+                e.Channel,
+                string.Join(Environment.NewLine, e.Channel.Recipients)
+            );
+            return Task.CompletedTask;
+        }
+
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
+            LogExt.Verbose(shard.Id, "Create: {Channel}", e.Channel);
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Channel created", e.Channel.ToString(), DiscordEventType.ChannelCreated);
-            emb.AddField("Channel type", e.Channel?.Type.ToString(), inline: true);
-
-            DiscordAuditLogChannelEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelCreate);
-            if (entry is null) {
-                emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-            } else {
-                emb.AddInvocationFields(entry.UserResponsible);
-                emb.AddField("Reason", entry.Reason, null);
-                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible?.AvatarUrl);
-            }
-
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create-title", e.Channel);
+            emb.AddLocalizedTitleField("chn-type", e.Channel?.Type, inline: true);
+            
+            DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelCreate);
+            emb.AddFieldsFromAuditLogEntry(entry);
+            
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
+            LogExt.Verbose(shard.Id, "Delete: {Channel}", e.Channel);
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Channel deleted", e.Channel.ToString(), DiscordEventType.ChannelDeleted);
-            emb.AddField("Channel type", e.Channel?.Type.ToString(), inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete-title", e.Channel);
+            emb.AddLocalizedTitleField("chn-type", e.Channel?.Type, inline: true);
 
-            DiscordAuditLogChannelEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelDelete);
-            if (entry is null) {
-                emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-            } else {
-                emb.AddInvocationFields(entry.UserResponsible);
-                emb.AddField("Reason", entry.Reason, null);
-                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible?.AvatarUrl);
-            }
+            DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelDelete);
+            emb.AddFieldsFromAuditLogEntry(entry);
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
-            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
+            LogExt.Verbose(shard.Id, "Pins update: {Channel}", e.Channel);
+
+            if (e.Channel.IsPrivate)
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Channel pins updated", null, DiscordEventType.ChannelPinsUpdated);
-            emb.AddField("Channel", e.Channel.Mention, inline: true);
+            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
+            if (gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
+                return;
+            
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
+                return;
+
+            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update-title");
+            emb.AddLocalizedTitleField("msg-chn", e.Channel.Mention);
 
             IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
-                emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
-                string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Top pin content", Formatter.BlockCode(FormatterExtensions.StripMarkdown(content.Truncate(900))));
+                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned.First().JumpLink));
+                string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embed>" : pinned.First().Content;
+                emb.AddLocalizedTitleField("msg-top-pin-content", Formatter.BlockCode(FormatterExtensions.StripMarkdown(content.Truncate(900))));
             }
-            if (!(e.LastPinTimestamp is null))
-                emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp(), inline: true);
+            emb.AddLocalizedTimestampField("msg-last-pin-timestamp", e.LastPinTimestamp);
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelUpdated)]

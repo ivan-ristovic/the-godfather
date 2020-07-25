@@ -62,10 +62,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\TranslationsTestData\Valid\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Common\IPTestData\ips.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -75,7 +71,7 @@
     <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_test2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\ThrowsIO\en-US.json">
+    <None Update="Services\TranslationsTestData\ThrowsIO\en-GB.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\TranslationsTestData\ThrowsIO\Lt-sr-SP.json">
@@ -87,13 +83,13 @@
     <None Update="Services\TranslationsTestData\Valid\Commands\cmds_test2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\Valid\Commands\desc_en-US.json">
+    <None Update="Services\TranslationsTestData\Valid\Commands\desc_en-GB.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\TranslationsTestData\Valid\Commands\desc_Lt-sr-SP.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\Valid\en-US.json">
+    <None Update="Services\TranslationsTestData\Valid\en-GB.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\TranslationsTestData\Valid\Lt-sr-SP.json">

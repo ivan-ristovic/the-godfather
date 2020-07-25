@@ -127,7 +127,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetString(ulong? gid, string key, params object[] args)
+        public string GetString(ulong? gid, string key, params object[]? args)
         {
             this.AssertIsDataLoaded();
 
@@ -142,7 +142,7 @@ namespace TheGodfather.Services
 
             return string.Format(response, args);
         }
-
+        
         public string GetGuildLocale(ulong? gid)
         {
             return gid is null ? this.defLocale : this.gcs.GetCachedConfig(gid.Value)?.Locale ?? this.defLocale;
@@ -165,12 +165,12 @@ namespace TheGodfather.Services
             return desc;
         }
 
-        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "r")
+        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g")
         {
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
             DateTimeOffset time = dt ?? DateTimeOffset.Now;
             time = TimeZoneInfo.ConvertTime(time, TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId));
-            return time.ToString(format, gcfg.Culture   );
+            return time.ToString(format, gcfg.Culture);
         }
 
         public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
@@ -209,6 +209,7 @@ namespace TheGodfather.Services
             await this.gcs.ModifyConfigAsync(gid, cfg => cfg.TimezoneId = tzid);
             return true;
         }
+
 
 
         private void AssertIsDataLoaded()

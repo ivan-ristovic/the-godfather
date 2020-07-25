@@ -62,6 +62,24 @@ namespace TheGodfather.Extensions
 #pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
 
+        public static void Verbose(int shardId, string template, params object[] propertyValues)
+            => InternalLog(LogEventLevel.Verbose, shardId, template, null, propertyValues);
+
+        public static void Verbose(int shardId, Exception ex, string template, params object[] propertyValues)
+            => InternalLog(LogEventLevel.Verbose, shardId, template, ex, propertyValues);
+
+        public static void Verbose(int shardId, Exception ex, string[] templates, params object[] propertyValues)
+            => InternalLogMany(LogEventLevel.Verbose, shardId, templates, ex, propertyValues);
+
+        public static void Verbose(int shardId, string[] templates, params object[] propertyValues)
+            => InternalLogMany(LogEventLevel.Verbose, shardId, templates, propertyValues: propertyValues);
+
+        public static void Verbose(CommandContext ctx, string template, params object[] propertyValues)
+            => InternalLogContext(LogEventLevel.Verbose, ctx, null, template, propertyValues);
+
+        public static void Verbose(CommandContext ctx, Exception ex, string template, params object[] propertyValues)
+            => InternalLogContext(LogEventLevel.Verbose, ctx, ex, template, propertyValues);
+
         public static void Debug(int shardId, string template, params object[] propertyValues)
             => InternalLog(LogEventLevel.Debug, shardId, template, null, propertyValues);
 
@@ -155,7 +173,9 @@ namespace TheGodfather.Extensions
 
         private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception ex, string template, params object[] propertyValues)
         {
-            object[] allPropertyValues = new object[] { ctx.User, ctx.Guild?.ToString() ?? "DM", ctx.Channel };
+            object[] allPropertyValues = ctx.Guild is { }
+                ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
+                : new object[] { ctx.User, ctx.Channel };
             if (propertyValues?.Any() ?? false)
                 allPropertyValues = propertyValues.Concat(allPropertyValues).ToArray();
             InternalLogMany(level, ctx.Client.ShardId, new[] { template, "{User}", "{Guild}", "{Channel}" }, ex, allPropertyValues);
@@ -173,7 +193,7 @@ namespace TheGodfather.Extensions
         {
 #pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
-                Log.Write(level, ex, string.Join($"{Environment.NewLine}| ", templates), propertyValues);
+                Log.Write(level, ex, string.Join(Environment.NewLine, templates), propertyValues);
 #pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
     }

@@ -37,7 +37,7 @@ namespace TheGodfather.EventListeners.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e })!;
                     } catch (Exception ex) {
-                        Log.Error(ex, "Async listener");
+                        Log.Error(ex, "Listener threw an exception");
                     }
                 });
                 
@@ -53,7 +53,7 @@ namespace TheGodfather.EventListeners.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard })!;
                     } catch (Exception ex) {
-                        Log.Error(ex, "Async listener");
+                        Log.Error(ex, "Listener threw an exception");
                     }
                 });
 
@@ -104,6 +104,9 @@ namespace TheGodfather.EventListeners.Attributes
                     break;
                 case DiscordEventType.GuildDeleted:
                     shard.Client.GuildDeleted += OnEventWithArgs;
+                    break;
+                case DiscordEventType.GuildDownloadCompleted:
+                    shard.Client.GuildDownloadCompleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildEmojisUpdated:
                     shard.Client.GuildEmojisUpdated += OnEventWithArgs;
