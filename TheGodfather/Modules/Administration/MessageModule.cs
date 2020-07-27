@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Administration
             IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { Emojis.ArrowUp, Emojis.ArrowDown }, PollBehaviour.DeleteEmojis, timeout: timespan ?? TimeSpan.FromMinutes(1));
             var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Voted.Count);
             if (votes.GetValueOrDefault(Emojis.ArrowDown) > 2 * votes.GetValueOrDefault(Emojis.ArrowUp)) {
-                string sanitized = FormatterExtensions.Spoiler(FormatterExtensions.StripMarkdown(msg.Content));
+                string sanitized = FormatterExt.Spoiler(FormatterExt.StripMarkdown(msg.Content));
                 await msg.DeleteAsync();
                 await ctx.RespondAsync($"{msg.Author.Mention} said: {sanitized}");
             } else {

@@ -40,11 +40,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00691" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00691" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00691" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00691" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00691" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00709" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00709" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00709" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00709" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00709" />
     <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00653" />
     <PackageReference Include="EFCore.BulkExtensions" Version="3.1.5" />
     <PackageReference Include="GiphyDotNet" Version="2.0.0" />

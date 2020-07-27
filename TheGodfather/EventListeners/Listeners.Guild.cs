@@ -90,7 +90,7 @@ namespace TheGodfather.EventListeners
                 switch (action) {
                     case AuditLogActionType.EmojiCreate:
                         emb.AddField("Created", entry.Target.Name);
-                        emb.WithThumbnailUrl(entry.Target.Url);
+                        emb.WithThumbnail(entry.Target.Url);
                         break;
                     case AuditLogActionType.EmojiDelete:
                         emb.AddField("Deleted", entry.NameChange.Before);

@@ -76,10 +76,10 @@ namespace TheGodfather.Services
                                 if (cmds.ContainsKey(cmd))
                                     throw new LocalizationException($"Duplicate command info: {cmd}");
                                 foreach ((string locale, Dictionary<string, string> localeDesc) in desc) {
-                                    if (localeDesc.TryGetValue(cmd, out string cmdDesc))
+                                    if (localeDesc.TryGetValue(cmd, out string? cmdDesc))
                                         info.Descriptions.Add(locale, cmdDesc);
                                     else
-                                        Log.Warning("Cannot find description in locale {Locale} for command {CommandName}", locale, cmd);
+                                        Log.Error("Cannot find description in locale {Locale} for command {CommandName}", locale, cmd);
                                 }
                                 cmds.Add(cmd, info);
                             }
@@ -131,16 +131,20 @@ namespace TheGodfather.Services
         {
             this.AssertIsDataLoaded();
 
-            string response = null;
-            if (!string.IsNullOrWhiteSpace(key)) {
-                string locale = this.GetGuildLocale(gid);
-                if (!this.strings[locale].TryGetValue(key, out response)) {
-                    Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                    throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
+            string? response = null;
+            try {
+                if (!string.IsNullOrWhiteSpace(key)) {
+                    string locale = this.GetGuildLocale(gid);
+                    if (!this.strings[locale].TryGetValue(key, out response)) {
+                        Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
+                        throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
+                    }
                 }
+            } catch (KeyNotFoundException e) {
+                Log.Error(e, "Locale not found for guild {Guild}", gid);
             }
 
-            return string.Format(response, args);
+            return string.Format(response ?? "Error. Please report this", args ?? new object[] { });
         }
         
         public string GetGuildLocale(ulong? gid)
@@ -232,7 +236,7 @@ namespace TheGodfather.Services
         private sealed class CommandInfo
         {
             [JsonProperty("usage")]
-            public List<List<string>> UsageExamples { get; set; }
+            public List<List<string>> UsageExamples { get; set; } = new List<List<string>>();
 
             [JsonIgnore]
             public Dictionary<string, string> Descriptions { get; set; } = new Dictionary<string, string>();

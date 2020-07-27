@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Extensions
 {
-    public static class FormatterExtensions
+    public static class FormatterExt
     {
         private static readonly Regex MdStripRegex = new Regex(@"([`\*_~\[\]\(\)""])", RegexOptions.ECMAScript);
 

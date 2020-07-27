@@ -62,7 +62,9 @@ namespace TheGodfather.Modules.Currency
             var emb = new DiscordEmbedBuilder {
                 Title = $"{Emojis.MoneyBag} Bank account for {user.Username}",
                 Color = this.ModuleColor,
-                ThumbnailUrl = user.AvatarUrl
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = user.AvatarUrl
+                }
             };
 
             if (balance.HasValue) {

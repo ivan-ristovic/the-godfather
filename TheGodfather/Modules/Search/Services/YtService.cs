@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Search.Services
                 };
 
                 if (!(res.Snippet.Thumbnails is null))
-                    emb.WithThumbnailUrl(res.Snippet.Thumbnails.Default__.Url);
+                    emb.WithThumbnail(res.Snippet.Thumbnails.Default__.Url);
 
                 emb.AddField("Channel", res.Snippet.ChannelTitle, inline: true);
                 emb.AddField("Published at", res.Snippet.PublishedAt, inline: true);

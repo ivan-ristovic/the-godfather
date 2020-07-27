@@ -223,7 +223,7 @@ namespace TheGodfather
 
                     DiscordActivity activity = status is { }
                         ? new DiscordActivity(status.Status, status.Activity)
-                        : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.Custom);
+                        : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.ListeningTo);
 
                     AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
                     async.Execute(shard.Client!.UpdateStatusAsync(activity));

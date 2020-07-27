@@ -160,7 +160,9 @@ namespace TheGodfather.Modules.Administration
 
             var emb = new DiscordEmbedBuilder {
                 Title = $"Member: {member.DisplayName} ({member.Username})",
-                ThumbnailUrl = member.AvatarUrl,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = member.AvatarUrl
+                },
                 Color = this.ModuleColor
             };
 
@@ -200,7 +202,9 @@ namespace TheGodfather.Modules.Administration
 
             var emb = new DiscordEmbedBuilder {
                 Title = $"User: {user.Username}",
-                ThumbnailUrl = user.AvatarUrl,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = user.AvatarUrl
+                },
                 Color = this.ModuleColor
             };
 

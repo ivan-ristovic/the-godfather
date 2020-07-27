@@ -96,7 +96,9 @@ namespace TheGodfather.Modules.Administration
             var emb = new DiscordEmbedBuilder {
                 Title = ctx.Guild.ToString(),
                 Color = this.ModuleColor,
-                ThumbnailUrl = ctx.Guild.IconUrl
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = ctx.Guild.IconUrl
+                }
             };
 
             emb.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
@@ -149,7 +151,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?"))
                 return;
 
-            await ctx.Guild.PruneAsync(days, ctx.BuildInvocationDetailsString(reason));
+            await ctx.Guild.PruneAsync(days, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days", important: false);
         }
         #endregion

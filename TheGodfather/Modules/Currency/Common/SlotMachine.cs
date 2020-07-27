@@ -39,7 +39,9 @@ namespace TheGodfather.Modules.Currency.Common
                 Title = $"{Emojis.LargeOrangeDiamond} SLUT MACHINE {Emojis.LargeOrangeDiamond}",
                 Description = MakeStringFromResult(res),
                 Color = DiscordColor.DarkGreen,
-                ThumbnailUrl = user.AvatarUrl
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = user.AvatarUrl
+                }
             };
 
             var sb = new StringBuilder();

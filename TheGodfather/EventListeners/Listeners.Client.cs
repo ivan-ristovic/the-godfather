@@ -38,7 +38,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
         public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs _)
         {
-            LogExt.Information(shard.Id, "All guilds are now available");
+            LogExt.Information(shard.Id, "All guilds for this shard are now downloaded");
             return Task.CompletedTask;
         }
 

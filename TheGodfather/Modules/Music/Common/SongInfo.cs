@@ -22,7 +22,9 @@ namespace TheGodfather.Modules.Music.Common
         {
             var emb = new DiscordEmbedBuilder {
                 Title = $"{Emojis.Headphones} {this.Title}",
-                ThumbnailUrl = this.Thumbnail,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                    Url = this.Thumbnail
+                },
                 Url = Query
             };
 

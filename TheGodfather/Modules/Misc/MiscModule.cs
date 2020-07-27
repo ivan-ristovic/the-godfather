@@ -182,11 +182,11 @@ namespace TheGodfather.Modules.Misc
 
             var emb = new DiscordEmbedBuilder {
                 Title = $"{Emojis.NoEntry} NSFW link from {ctx.Member.DisplayName} {Emojis.NoEntry}",
-                Description = FormatterExtensions.Spoiler(url.ToString()),
+                Description = FormatterExt.Spoiler(url.ToString()),
                 Color = DiscordColor.Red
             };
             if (!string.IsNullOrWhiteSpace(info))
-                emb.AddField("Additional info", Formatter.BlockCode(FormatterExtensions.StripMarkdown(info)));
+                emb.AddField("Additional info", Formatter.BlockCode(FormatterExt.StripMarkdown(info)));
 
             await ctx.RespondAsync(embed: emb.Build());
         }

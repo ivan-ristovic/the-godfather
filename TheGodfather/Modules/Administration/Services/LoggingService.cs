@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using Humanizer;
 using TheGodfather.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
@@ -112,9 +113,9 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public DiscordLogEmbedBuilder WithThumbnailUrl(string url)
+        public DiscordLogEmbedBuilder WithThumbnail(string url, int height = 0, int width = 0)
         {
-            this.Builder = this.Builder.WithThumbnailUrl(url);
+            this.Builder = this.Builder.WithThumbnail(url, height, width);
             return this;
         }
 
@@ -235,30 +236,30 @@ namespace TheGodfather.Modules.Administration.Services
 
         public NewDiscordLogEmbedBuilder WithThumbnailUrl(string url)
         {
-            this.emb.WithThumbnailUrl(url);
+            this.emb.WithThumbnail(url);
             return this;
         }
 
         public NewDiscordLogEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, params object[]? titleArgs)
         {
-            string localizedTitle = this.lcs.GetString(this.gid, title, titleArgs);
-            string localized404 = this.lcs.GetString(this.gid, "msg-404");
+            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
+            string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, "msg-404"));
             this.emb.AddField(localizedTitle, obj?.ToString() ?? localized404, inline);
             return this;
         }
 
         public NewDiscordLogEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object[]? contentArgs)
         {
-            string localizedTitle = this.lcs.GetString(this.gid, title);
-            string localizedContent = this.lcs.GetString(this.gid, content, contentArgs);
+            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
+            string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
             this.emb.AddField(localizedTitle, localizedContent, inline);
             return this;
         }
 
         public NewDiscordLogEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object[]? titleArgs = null, object[]? contentArgs = null)
         {
-            string localizedTitle = this.lcs.GetString(this.gid, title, titleArgs);
-            string localizedContent = this.lcs.GetString(this.gid, content, contentArgs);
+            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
+            string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
             this.emb.AddField(localizedTitle, localizedContent, inline);
             return this;
         }
@@ -286,13 +287,13 @@ namespace TheGodfather.Modules.Administration.Services
         public NewDiscordLogEmbedBuilder AddReason(string? reason)
             => reason is null ? this : this.AddLocalizedTitleField("arg-rsn", reason);
 
-        public NewDiscordLogEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Func<T, NewDiscordLogEmbedBuilder>? action = null) where T : DiscordAuditLogEntry
+        public NewDiscordLogEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<NewDiscordLogEmbedBuilder, T?>? action = null) where T : DiscordAuditLogEntry
         {
+            if (action is { })
+                action(this, entry);
             if (entry is null) {
                 this.AddInsufficientAuditLogPermissionsField();
             } else {
-                if (action is { })
-                    action(entry);
                 this.AddInvocationFields(entry.UserResponsible);
                 this.AddReason(entry.Reason);
                 this.WithLocalizedTimestamp(entry.CreationTimestamp, entry.UserResponsible?.AvatarUrl);
@@ -300,7 +301,53 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
+        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object[]? args)
+        {
+            if (propertyChange is { }) {
+                string localized404 = this.lcs.GetString(this.gid, "msg-404");
+                string beforeStr = this.TruncateToFitHalfFieldValue(propertyChange.Before?.ToString() ?? localized404);
+                string afterStr = this.TruncateToFitHalfFieldValue(propertyChange.After?.ToString() ?? localized404);
+                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
+                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+            }
+            return this;
+        }
+
+        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : struct
+        {
+            if (!Equals(before, after)) {
+                string localized404 = this.lcs.GetString(this.gid, "msg-404");
+                string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
+                string afterStr = this.TruncateToFitHalfFieldValue(after?.ToString() ?? localized404);
+                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
+                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+            }
+            return this;
+        }
+
+        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : class
+        {
+            if (!Equals(before, after)) {
+                string localized404 = this.lcs.GetString(this.gid, "msg-404");
+                string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
+                string afterStr = this.TruncateToFitFieldValue(after?.ToString() ?? localized404);
+                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
+                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+            }
+            return this;
+        }
+
         public DiscordEmbed Build()
             => this.emb.Build();
+
+
+        private string TruncateToFitFieldName(string s)
+            => s.Truncate(250, "...");
+
+        private string TruncateToFitFieldValue(string s)
+            => s.Truncate(1020, "...");
+
+        private string TruncateToFitHalfFieldValue(string s)
+            => s.Truncate(500, "...");
     }
 }

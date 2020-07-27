@@ -62,7 +62,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             var emb = new DiscordLogEmbedBuilder("Member joined", e.Member.ToString(), DiscordEventType.GuildMemberAdded);
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("Email", e.Member.Email);
 
@@ -134,7 +134,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Reason", entry.Reason, null);
             }
 
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             emb.AddField("Email", e.Member.Email);
 
@@ -166,7 +166,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             var emb = new DiscordLogEmbedBuilder("Member updated", e.Member.ToString(), DiscordEventType.GuildMemberUpdated);
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
 
             DiscordAuditLogMemberUpdateEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMemberUpdateEntry>(AuditLogActionType.MemberUpdate);
             if (entry is null) {
@@ -205,7 +205,7 @@ namespace TheGodfather.EventListeners
             emb.AddPropertyChangeField("Discriminator change", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
             if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
                 emb.AddField("Changed avatar", Formatter.MaskedUrl("Old Avatar (note: might 404 later)", new Uri(e.UserBefore.AvatarUrl)));
-            emb.WithThumbnailUrl(e.UserAfter.AvatarUrl);
+            emb.WithThumbnail(e.UserAfter.AvatarUrl);
 
             if (!emb.Builder.Fields.Any())
                 return;
