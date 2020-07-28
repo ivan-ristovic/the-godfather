@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -9,13 +10,32 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    class HelpModule : BaseHelpFormatter
+    public class HelpModuleImpl : TheGodfatherModule
     {
+        public HelpModuleImpl(DbContextBuilder dbb) : base(dbb)
+        {
+        }
+
+
+        [Command("help")]
+        [RequirePrefixes("a", "b")]
+        [RequireBotPermissions(Permissions.Administrator | Permissions.KickMembers)]
+        public async Task HelpAsync(CommandContext ctx)
+        {
+            throw new InvalidCommandUsageException(ctx, "msg-err", new System.Exception());
+        }
+    }
+
+    public class HelpModule : BaseHelpFormatter
+    {
+
         // TODO
 
         private string? name;

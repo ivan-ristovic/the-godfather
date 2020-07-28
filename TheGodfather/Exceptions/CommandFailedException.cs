@@ -1,25 +1,38 @@
-﻿#region USING_DIRECTIVES
-using System;
-#endregion
+﻿using System;
+using DSharpPlus.CommandsNext;
 
 namespace TheGodfather.Exceptions
 {
-    public class CommandFailedException : Exception
+    public class CommandFailedException : LocalizedException
     {
-        public CommandFailedException()
-            : base()
-        {
-
-        }
-
+        // TODO remove
         public CommandFailedException(string message)
-            : base(message)
+            : base(null)
+        {
+            throw new InvalidOperationException();
+        }
+        public CommandFailedException(string message, Exception inner)
+            : base(null)
+        {
+            throw new InvalidOperationException();
+        }
+        // END remove
+
+
+        public CommandFailedException(CommandContext ctx, params object[]? args) 
+            : base(ctx, "cmd-fail", args)
         {
 
         }
 
-        public CommandFailedException(string message, Exception inner)
-            : base(message, inner)
+        public CommandFailedException(CommandContext ctx, string key, params object[]? args)
+            : base(ctx, key, args)
+        {
+
+        }
+
+        public CommandFailedException(CommandContext ctx, string key, Exception inner, params object[]? args)
+            : base(ctx, key, inner, args)
         {
 
         }

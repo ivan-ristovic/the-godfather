@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -165,17 +166,20 @@ namespace TheGodfather.Modules.Administration.Services
 
         public bool IsLogEnabledFor(ulong gid, out NewDiscordLogEmbedBuilder embed)
         {
-            embed = new NewDiscordLogEmbedBuilder(this.lcs, gid);
+            embed = this.CreateEmbedBuilder(gid);
             return this.gcs.GetCachedConfig(gid)?.LoggingEnabled ?? false;
         }
+
+        public NewDiscordLogEmbedBuilder CreateEmbedBuilder(ulong gid)
+            => new NewDiscordLogEmbedBuilder(this.lcs, gid);
     }
 
 
     public sealed class NewDiscordLogEmbedBuilder
     {
+        private readonly DiscordEmbedBuilder emb;
         private readonly LocalizationService lcs;
         private readonly ulong gid;
-        private DiscordEmbedBuilder emb;
 
 
         public NewDiscordLogEmbedBuilder(LocalizationService lcs, ulong gid)
@@ -197,9 +201,11 @@ namespace TheGodfather.Modules.Administration.Services
         public NewDiscordLogEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object[]? titleArgs)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
-            this.WithDescription(desc);
+            if (desc is { })
+                this.WithDescription(desc);
             return this;
         }
+        
         public NewDiscordLogEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object[]? titleArgs = null, object[]? descArgs = null)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
@@ -240,6 +246,19 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
+        public NewDiscordLogEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object[]? args)
+        {
+            string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, text, args));
+            this.emb.WithFooter(localizedText, iconUrl);
+            return this;
+        }
+
+        public NewDiscordLogEmbedBuilder AddField(string title, string content, bool inline = false)
+        {
+            this.emb.AddField(this.TruncateToFitFieldName(title), this.TruncateToFitFieldValue(content), inline);
+            return this;
+        }
+
         public NewDiscordLogEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, params object[]? titleArgs)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
@@ -277,6 +296,7 @@ namespace TheGodfather.Modules.Administration.Services
                 this.AddLocalizedTitleField("evt-invoke-loc", channel.Mention, inline: true);
             return this;
         }
+
         public NewDiscordLogEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object[]? args)
         {
             if (timestamp is { })
@@ -349,5 +369,8 @@ namespace TheGodfather.Modules.Administration.Services
 
         private string TruncateToFitHalfFieldValue(string s)
             => s.Truncate(500, "...");
+
+        private string TruncateToFitFooterText(string s)
+            => s.Truncate(2040, "...");
     }
 }

@@ -17,5 +17,8 @@ namespace TheGodfather.Extensions
             }
             return false;
         }
+
+        public static string ToDiscriminatorString(this DiscordUser u)
+            => $"{u.Username}#{u.Discriminator}";
     }
 }

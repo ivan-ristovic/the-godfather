@@ -23,7 +23,7 @@ namespace TheGodfather.EventListeners
                 shard.Id,
                 new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
-                string.Join(Environment.NewLine, e.Channel.Recipients)
+                e.Channel.Recipients.Humanize(Environment.NewLine)
             );
             return Task.CompletedTask;
         }
@@ -35,7 +35,7 @@ namespace TheGodfather.EventListeners
                 shard.Id,
                 new[] { "Delete: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
-                string.Join(Environment.NewLine, e.Channel.Recipients)
+                e.Channel.Recipients.Humanize(Environment.NewLine)
             );
             return Task.CompletedTask;
         }

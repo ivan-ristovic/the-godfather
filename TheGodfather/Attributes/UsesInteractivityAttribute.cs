@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using TheGodfather.Services;
 
 namespace TheGodfather.Attributes
@@ -13,12 +12,7 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            InteractivityService? iService = ctx.Services.GetService<InteractivityService>();
-            if (iService is null) {
-                Log.Error("InteractivityService is null!");
-                return Task.FromResult(true);
-            }
-
+            InteractivityService iService = ctx.Services.GetRequiredService<InteractivityService>();
             return Task.FromResult(!iService.IsResponsePending(ctx.Channel.Id, ctx.User.Id));
         }
     }

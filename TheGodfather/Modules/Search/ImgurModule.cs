@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
                                            [RemainingText, Description("Subreddit.")] string sub)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(
                 sub,
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Search
                                      [RemainingText, Description("Subreddit.")] string sub)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
             await this.PrintImagesAsync(ctx.Channel, res, amount);
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Search
                                   [RemainingText, Description("Subreddit.")] string sub)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             IEnumerable<IGalleryItem> res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
             await this.PrintImagesAsync(ctx.Channel, res, amount);

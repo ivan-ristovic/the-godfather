@@ -31,13 +31,13 @@ namespace TheGodfather.EventListeners
 
         private static bool IsLogEnabledForGuild(TheGodfatherShard shard, ulong gid, out LoggingService logService, out NewDiscordLogEmbedBuilder emb)
         {
-            logService = shard.Services.GetService<LoggingService>() ?? throw new InvalidOperationException("Localization service is null");
+            logService = shard.Services.GetRequiredService<LoggingService>();
             return logService.IsLogEnabledFor(gid, out emb);
         }
 
         private static bool IsChannelExempted(TheGodfatherShard shard, DiscordGuild? guild, DiscordChannel channel, out GuildConfigService gcs)
         {
-            gcs = shard.Services.GetService<GuildConfigService>() ?? throw new InvalidOperationException("Guild config service is null");
+            gcs = shard.Services.GetRequiredService<GuildConfigService>();
             return guild is { } ? gcs.IsChannelExempted(guild.Id, channel.Id, channel.ParentId) : false;
         }
     }

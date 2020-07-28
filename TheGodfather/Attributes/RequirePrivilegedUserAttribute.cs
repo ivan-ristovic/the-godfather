@@ -16,7 +16,7 @@ namespace TheGodfather.Attributes
             if (ctx.Client.OwnersContain(ctx.User.Id))
                 return Task.FromResult(true);
 
-            using (TheGodfatherDbContext db = ctx.Services.GetService<DbContextBuilder>().CreateContext())
+            using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
                 return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is { });
         }
     }

@@ -1,25 +1,38 @@
-﻿#region USING_DIRECTIVES
-using System;
-#endregion
+﻿using System;
+using DSharpPlus.CommandsNext;
 
 namespace TheGodfather.Exceptions
 {
-    public class InvalidCommandUsageException : ArgumentException
+    public class InvalidCommandUsageException : LocalizedException
     {
-        public InvalidCommandUsageException()
-            : base()
+        // TODO remove
+        public InvalidCommandUsageException(string? message = null)
+            : base(null)
         {
-
+            throw new InvalidOperationException();
         }
-
-        public InvalidCommandUsageException(string message)
-            : base(message)
-        {
-
-        }
-
         public InvalidCommandUsageException(string message, Exception inner)
-            : base(message, inner)
+            : base(null)
+        {
+            throw new InvalidOperationException();
+        }
+        // END remove
+
+
+        public InvalidCommandUsageException(CommandContext ctx, params object[]? args)
+            : base(ctx, "cmd-inv-usage", args)
+        {
+
+        }
+
+        public InvalidCommandUsageException(CommandContext ctx, string key, params object[]? args)
+            : base(ctx, key, args)
+        {
+
+        }
+
+        public InvalidCommandUsageException(CommandContext ctx, string key, Exception inner, params object[]? args)
+            : base(ctx, key, inner, args)
         {
 
         }

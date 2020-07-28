@@ -19,6 +19,7 @@ namespace TheGodfather.Services
 
         public bool IsDisabled => false;
         public IReadOnlyList<string> AvailableLocales => this.strings.Keys.ToList().AsReadOnly();
+        public IReadOnlyList<string> AvailableCommands => this.commands.Keys.ToList().AsReadOnly();
 
         private ImmutableDictionary<string, ImmutableDictionary<string, string>> strings;
         private ImmutableDictionary<string, CommandInfo> commands;
@@ -133,13 +134,16 @@ namespace TheGodfather.Services
 
             string? response = null;
             try {
-                if (!string.IsNullOrWhiteSpace(key)) {
-                    string locale = this.GetGuildLocale(gid);
-                    if (!this.strings[locale].TryGetValue(key, out response)) {
-                        Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                        throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
-                    }
+                if (string.IsNullOrWhiteSpace(key))
+                    throw new ArgumentNullException(nameof(key));
+
+                string locale = this.GetGuildLocale(gid);
+                if (!this.strings[locale].TryGetValue(key, out response)) {
+                    Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
+                    throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
                 }
+
+                return string.Format(response ?? "Translation error. Please report this", args ?? new object[] { });
             } catch (KeyNotFoundException e) {
                 Log.Error(e, "Locale not found for guild {Guild}", gid);
             }

@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Search
         private async Task SearchAndSendResultsAsync(CommandContext ctx, int amount, string query, string type = null)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");

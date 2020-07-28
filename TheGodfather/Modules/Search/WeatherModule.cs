@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Search
                                            [RemainingText, Description("Query.")] string query)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
                                        [RemainingText, Description("Query.")] string query)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");

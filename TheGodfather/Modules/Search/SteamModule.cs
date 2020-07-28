@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
                                    [Description("ID.")] ulong id)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             DiscordEmbed em = await this.Service.GetEmbeddedInfoAsync(id);
             if (em is null) {

@@ -1,31 +1,38 @@
-﻿#region USING_DIRECTIVES
-using System;
-using Npgsql;
-#endregion
+﻿using System;
+using DSharpPlus.CommandsNext;
 
 namespace TheGodfather.Exceptions
 {
-    public class DatabaseOperationException : NpgsqlException
+    public class DatabaseOperationException : LocalizedException
     {
-        public DatabaseOperationException()
-        {
-
-        }
-
+        // TODO remove
         public DatabaseOperationException(string message)
-            : base(message)
+            : base(null)
         {
-
+            throw new InvalidOperationException();
         }
-
-        public DatabaseOperationException(Exception inner)
-            : base("Database operation failed!", inner)
-        {
-
-        }
-
         public DatabaseOperationException(string message, Exception inner)
-            : base(message, inner)
+            : base(null)
+        {
+            throw new InvalidOperationException();
+        }
+        // END remove
+
+
+        public DatabaseOperationException(CommandContext ctx, params object[]? args)
+            : base(ctx, "err-db", args)
+        {
+
+        }
+
+        public DatabaseOperationException(CommandContext ctx, string key, params object[]? args)
+            : base(ctx, key, args)
+        {
+
+        }
+
+        public DatabaseOperationException(CommandContext ctx, string key, Exception inner, params object[]? args)
+            : base(ctx, key, inner, args)
         {
 
         }

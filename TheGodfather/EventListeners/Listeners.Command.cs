@@ -10,6 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -21,6 +22,7 @@ using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.EventListeners
 {
@@ -29,154 +31,124 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
         public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
-            if (e.Command.Name == "help")
+            if (e.Command is null || e.Command.QualifiedName == "help")
                 return Task.CompletedTask;
 
             LogExt.Information(
                 shard.Id,
                 new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
-                e.Command?.QualifiedName ?? "<unknown command>", e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
+                e.Command.QualifiedName, e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.CommandErrored)]
-        public static async Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
+        public static Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
+            LogExt.Verbose(e.Context, e.Exception, "Command errored");
             if (e.Exception is null)
-                return;
+                return Task.CompletedTask;
 
             Exception ex = e.Exception;
             while (ex is AggregateException || ex is TargetInvocationException)
                 ex = ex.InnerException ?? ex;
 
-            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute)) {
-                await e.Context.Message.CreateReactionAsync(Emojis.X);
-                return;
-            }
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
+                return e.Context.Message.CreateReactionAsync(Emojis.X);
 
-            LogExt.Information(e.Context, ex, "Tried executing: {AttemptedCommand}", e.Command?.QualifiedName ?? "Unknown command");
+            LogExt.Information(e.Context, ex, "Tried executing {AttemptedCommand}", e.Command?.QualifiedName ?? "Unknown command");
 
-            var emb = new DiscordEmbedBuilder {
-                Color = DiscordColor.Red
-            };
-            StringBuilder sb = new StringBuilder(Emojis.NoEntry).Append(" ");
+            LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
+
+            var emb = new NewDiscordLogEmbedBuilder(lcs, e.Context.Guild.Id);
+            emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-err", desc: null, e.Command?.QualifiedName ?? "");
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Context.Guild.Id).SuggestionsEnabled) {
-                        await e.Context.Message.CreateReactionAsync(Emojis.Question);
-                        return;
-                    }
+                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Context.Guild.Id)?.SuggestionsEnabled ?? true)
+                        return e.Context.Message.CreateReactionAsync(Emojis.Question);
 
-                    sb.Clear();
-                    sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
+                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
 
-                    // FIXME
-                    IEnumerable<KeyValuePair<string, Command>> ordered = /* LocalizationService.GetCommands() --> */ new Dictionary<string, Command>()
-                        .OrderBy(kvp => cne.CommandName.LevenshteinDistance(kvp.Key))
+                    // TODO add aliases
+                    IEnumerable<string> ordered = lcs.AvailableCommands
+                        .OrderBy(c => cne.CommandName.LevenshteinDistance(c))
                         .Take(3);
-                    foreach ((string alias, Command cmd) in ordered)
-                        emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
+                    foreach (string cmd in ordered)
+                        emb.AddField(cmd, lcs.GetCommandDescription(e.Context.Guild.Id, cmd));
 
                     break;
-                case InvalidCommandUsageException _:
-                    sb.Append("Invalid command usage! ");
-                    sb.AppendLine(ex.Message);
-                    emb.WithFooter($"Type \"{shard.Services.GetService<GuildConfigService>().GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}\" for a command manual.");
+                case InvalidCommandUsageException icue:
+                    emb.WithDescription(icue.LocalizedMessage);
+                    emb.WithLocalizedFooter("msg-help-cmd", iconUrl: null, e.Command?.QualifiedName ?? "");
                     break;
                 case ArgumentException _:
-                    string fcmdStr = $"help {e.Command.QualifiedName}";
+                    if (shard.CNext is null)
+                        throw new InvalidOperationException("CNext is null");
+                    string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
                     Command command = shard.CNext.FindCommand(fcmdStr, out string args);
                     CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
-                    await shard.CNext.ExecuteCommandAsync(fctx);
-                    return;
+                    return shard.CNext.ExecuteCommandAsync(fctx);
                 case BadRequestException brex:
-                    sb.Append($"Bad request! Details: {brex.JsonMessage}");
+                    emb.WithLocalizedDescription("cmd-err-bad-req", brex.JsonMessage);
                     break;
                 case NotFoundException nfe:
-                    sb.Append($"404: Not found! Details: {nfe.JsonMessage}");
+                    emb.WithLocalizedDescription("cmd-err-404", nfe.JsonMessage);
                     break;
-                case CommandFailedException _:
-                    sb.Append($"{ex.Message} {ex.InnerException?.Message}");
-                    break;
-                case NpgsqlException dbex:
-                    sb.Append($"Database operation failed. Details: {dbex.Message}");
+                case LocalizedException lex:
+                    emb.WithDescription(lex.LocalizedMessage);
                     break;
                 case ChecksFailedException cfex:
+                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-chk", desc: null, e.Command?.QualifiedName ?? "?");
+                    var sb = new StringBuilder();
                     switch (cfex.FailedChecks.First()) {
                         case CooldownAttribute _:
-                            return;
+                            break;
                         case UsesInteractivityAttribute _:
-                            sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
+                            sb.AppendLine(lcs.GetString(e.Context.Guild.Id, "cmd-chk-inter"));
                             break;
                         default:
-                            sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
-                                switch (attr) {
-                                    case RequirePermissionsAttribute perms:
-                                        sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
-                                        break;
-                                    case RequireUserPermissionsAttribute uperms:
-                                        sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
-                                        break;
-                                    case RequireOwnerOrPermissionsAttribute operms:
-                                        sb.AppendLine($"- You do not have sufficient permissions ({operms.Permissions.ToPermissionString()})!");
-                                        break;
-                                    case RequireBotPermissionsAttribute bperms:
-                                        sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
-                                        break;
-                                    case RequirePrivilegedUserAttribute _:
-                                        sb.AppendLine($"- That command is reserved for my owner and privileged users!");
-                                        break;
-                                    case RequireOwnerAttribute _:
-                                        sb.AppendLine($"- That command is reserved only for my owner!");
-                                        break;
-                                    case RequireNsfwAttribute _:
-                                        sb.AppendLine($"- That command is allowed only in NSFW channels!");
-                                        break;
-                                    case RequirePrefixesAttribute pattr:
-                                        sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
-                                        break;
-                                    case RequireGuildAttribute rgattr:
-                                        sb.AppendLine($"- That command can only be invoked inside a guild!");
-                                        break;
-                                    case RequireDirectMessageAttribute rdmattr:
-                                        sb.AppendLine($"- That command can only be invoked in a direct message!");
-                                        break;
-                                    default:
-                                        sb.AppendLine($"{attr} was not met! (this should not happen, please report)");
-                                        break;
-                                }
+                                string line = attr switch
+                                {
+                                    RequirePermissionsAttribute p => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms", p.Permissions.ToPermissionString()),
+                                    RequireUserPermissionsAttribute up => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-usr", up.Permissions.ToPermissionString()),
+                                    RequireOwnerOrPermissionsAttribute op => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-usr", op.Permissions.ToPermissionString()),
+                                    RequireBotPermissionsAttribute bp => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-bot", bp.Permissions.ToPermissionString()),
+                                    RequirePrivilegedUserAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-priv"),
+                                    RequireOwnerAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-own"),
+                                    RequireNsfwAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-nsfw"),
+                                    RequirePrefixesAttribute pattr => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-pfix", pattr.Prefixes.Humanize(", ")),
+                                    RequireGuildAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-guild"),
+                                    RequireDirectMessageAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-dm"),
+                                    _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-attr", attr),
+                                };
+                                sb.Append("- ").AppendLine(line);
                             }
                             break;
                     }
-                    break;
-                case ConcurrentOperationException _:
-                    sb.Append($"A concurrency error occured - please report this. Details: {ex.Message}");
+                    emb.WithDescription(sb.ToString());
                     break;
                 case UnauthorizedException _:
-                    sb.Append("I am unauthorized to do that.");
-                    break;
-                case DbUpdateException _:
-                    sb.Append("A database update error has occured, possibly due to large amount of update requests. Please try again later.");
+                    emb.WithLocalizedDescription("cmd-err-403");
                     break;
                 case TargetInvocationException _:
-                    sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
-                    break;
-                case TaskCanceledException _:
-                    return;
-                case LocalizationException lex:
-                    sb.Append(ex.Message);
+                    // TODO
+                    // sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
+                    throw ex;
+                case TaskCanceledException tcex:
+                    LogExt.Warning(shard.Id, "Task cancelled");
+                    return Task.CompletedTask;
+                case NpgsqlException _:
+                case DbUpdateException _:
+                    emb.WithLocalizedDescription("err-db");
                     break;
                 default:
-                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored! Please report this.");
-                    Log.Error(e.Exception, "Command {Command} errored!", e.Command.QualifiedName);
+                    LogExt.Warning(shard.Id, "Unhandled error");
                     break;
             }
 
-            emb.Description = sb.ToString();
-            await e.Context.RespondAsync(embed: emb.Build());
+            return e.Context.RespondAsync(embed: emb.Build());
         }
     }
 }

@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search
                                          [RemainingText, Description("Query.")] string query)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             Common.GoodreadsSearchInfo res = await this.Service.SearchBooksAsync(query);
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.ToDiscordPages());

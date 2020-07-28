@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Search
                                      [RemainingText, Description("Search query.")] string query)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query);
             if (pages is null) {
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Search
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
             if (this.Service.IsDisabled)
-                throw new ServiceDisabledException();
+                throw new ServiceDisabledException(ctx);
 
             MovieInfo info = await this.Service.GetSingleResultAsync(type, query);
             if (info is null) {

@@ -15,9 +15,9 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (!ctx.Services.GetService<BotActivityService>().IsBotListening)
+            if (!ctx.Services.GetRequiredService<BotActivityService>().IsBotListening)
                 return Task.FromResult(false);
-            if (ctx.Services.GetService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
+            if (ctx.Services.GetRequiredService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);
             if (BlockingCommandRuleExists())
                 return Task.FromResult(false);
@@ -32,7 +32,7 @@ namespace TheGodfather.Attributes
             {
                 if (ctx.Guild is null || ctx.Command is null)
                     return false;
-                CommandRulesService? crs = ctx.Services.GetService<CommandRulesService>();
+                CommandRulesService? crs = ctx.Services.GetRequiredService<CommandRulesService>();
                 return crs?.IsBlocked(ctx.Guild.Id, ctx.Channel.Id, ctx.Command.QualifiedName) ?? false;
             }
         }
