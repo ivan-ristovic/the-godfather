@@ -7,12 +7,12 @@ namespace TheGodfather.Exceptions
     {
         // TODO remove
         public ConcurrentOperationException(string message)
-            : base(null)
+            : base("")
         {
             throw new InvalidOperationException();
         }
         public ConcurrentOperationException(string message, Exception inner)
-            : base(null)
+            : base("")
         {
             throw new InvalidOperationException();
         }

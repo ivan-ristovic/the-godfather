@@ -6,18 +6,18 @@ namespace TheGodfather.Exceptions
     public class LocalizationException : LocalizedException
     {
         // TODO remove
-        public LocalizationException(string message)
-            : base(null)
-        {
-            throw new InvalidOperationException();
-        }
         public LocalizationException(string message, Exception inner)
-            : base(null)
+            : base(null, message, inner)
         {
             throw new InvalidOperationException();
         }
         // END remove
 
+        public LocalizationException(string message)
+            : base(message)
+        {
+
+        }
 
         public LocalizationException(CommandContext ctx, params object[]? args)
             : base(ctx, "cmd-err-loc", args)

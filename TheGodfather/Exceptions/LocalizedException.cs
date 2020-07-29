@@ -9,6 +9,12 @@ namespace TheGodfather.Exceptions
     {
         public string LocalizedMessage { get; }
 
+        
+        public LocalizedException(string message)
+            : base(message)
+        {
+            this.LocalizedMessage = message;
+        }
 
         public LocalizedException(CommandContext ctx, params object[]? args)
             : base("err-loc")

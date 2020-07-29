@@ -7,12 +7,12 @@ namespace TheGodfather.Exceptions
     {
         // TODO remove
         public InvalidCommandUsageException(string? message = null)
-            : base(null)
+            : base("")
         {
             throw new InvalidOperationException();
         }
         public InvalidCommandUsageException(string message, Exception inner)
-            : base(null)
+            : base("")
         {
             throw new InvalidOperationException();
         }

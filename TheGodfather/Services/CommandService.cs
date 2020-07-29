@@ -6,7 +6,6 @@ using System.Linq;
 using Humanizer;
 using Newtonsoft.Json;
 using Serilog;
-using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services
@@ -27,46 +26,22 @@ namespace TheGodfather.Services
             this.lcs = lcs;
             this.gcs = gcs;
             if (loadData)
-                this.LoadData(Path.Combine("Translations", "Commands"));
+                this.LoadData("Translations");
         }
 
 
-        public void LoadData(string path)
+        public void LoadData(string root)
         {
             var cmds = new Dictionary<string, CommandInfo>();
 
-            Log.Debug("Loading command descriptions from {Folder}", path);
+            string path = Path.Combine(root, "Commands");
             try {
-                var desc = new Dictionary<string, Dictionary<string, string>>();
-                foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("desc_*.json", SearchOption.TopDirectoryOnly)) {
-                    try {
-                        string json = File.ReadAllText(fi.FullName);
-                        string locale = fi.Name[5..fi.Name.IndexOf('.')];
-                        Dictionary<string, string> localeDesc = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                        desc.Add(locale, localeDesc);
-                        Log.Debug("Loaded descriptions for locale: {Locale}", locale);
-                    } catch (JsonReaderException e) {
-                        Log.Error(e, "Failed to load descriptions from file: {FileName}", fi.Name);
-                    }
-                }
-
                 Log.Debug("Loading command info from {Folder}", path);
                 foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("cmds_*.json", SearchOption.TopDirectoryOnly)) {
                     try {
                         string json = File.ReadAllText(fi.FullName);
-                        Dictionary<string, CommandInfo> cmdsPart = JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json);
-
-                        foreach ((string cmd, CommandInfo info) in cmdsPart) {
-                            if (cmds.ContainsKey(cmd))
-                                throw new LocalizationException($"Duplicate command info: {cmd}");
-                            foreach ((string locale, Dictionary<string, string> localeDesc) in desc) {
-                                if (localeDesc.TryGetValue(cmd, out string? cmdDesc))
-                                    info.Descriptions.Add(locale, cmdDesc);
-                                else
-                                    Log.Error("Cannot find description in locale {Locale} for command {CommandName}", locale, cmd);
-                            }
+                        foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json))
                             cmds.Add(cmd, info);
-                        }
                         Log.Debug("Loaded command list from: {FileName}", fi.Name);
                     } catch (JsonReaderException e) {
                         Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);
@@ -77,21 +52,15 @@ namespace TheGodfather.Services
                 throw e;
             }
 
+            if (!cmds.Any())
+                throw new IOException("No valid JSON files found");
+
             this.commands = cmds.ToImmutableDictionary();
-            Log.Information("Loaded command translations");
             this.isDataLoaded = true;
         }
 
         public string GetCommandDescription(ulong gid, string command)
-        {
-            CommandInfo cmdInfo = this.GetInfoForCommand(command);
-            string locale = this.lcs.GetGuildLocale(gid);
-
-            if (!cmdInfo.Descriptions.TryGetValue(locale, out string? desc) && !cmdInfo.Descriptions.TryGetValue(this.lcs.DefaultLocale, out desc))
-                throw new LocalizationException("No translations found in either guild or default locale for given command.");
-
-            return desc;
-        }
+            => this.lcs.GetCommandDescription(gid, command);
 
         public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
         {
@@ -103,7 +72,7 @@ namespace TheGodfather.Services
                 foreach (List<string> args in cmdInfo.UsageExamples) {
                     string cmd = $"{this.gcs.GetGuildPrefix(gid)}{command}";
                     if (args.Any())
-                        examples.Add($"{cmd} {args.Select(arg => this.lcs.GetString(gid, arg)).Humanize(" ")}");
+                        examples.Add($"{cmd} {string.Join(" ", args.Select(arg => this.lcs.GetString(gid, arg)))}");
                     else
                         examples.Add(cmd);
                 }
@@ -124,7 +93,7 @@ namespace TheGodfather.Services
             this.AssertIsDataLoaded();
 
             if (!this.commands!.TryGetValue(command, out CommandInfo cmdInfo))
-                throw new LocalizationException("No translations for this command have been found.");
+                throw new KeyNotFoundException($"Failed to find info for {command}");
 
             return cmdInfo;
         }
@@ -135,8 +104,7 @@ namespace TheGodfather.Services
             [JsonProperty("usage")]
             public List<List<string>> UsageExamples { get; set; } = new List<List<string>>();
 
-            [JsonIgnore]
-            public Dictionary<string, string> Descriptions { get; set; } = new Dictionary<string, string>();
+            // TODO aliases?
         }
     }
 }
