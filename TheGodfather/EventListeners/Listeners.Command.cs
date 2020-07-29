@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
 
             LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
 
-            var emb = new NewDiscordLogEmbedBuilder(lcs, e.Context.Guild.Id);
+            var emb = new LocalizedEmbedBuilder(lcs, e.Context.Guild.Id);
             emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-err", desc: null, e.Command?.QualifiedName ?? "");
 
             switch (ex) {
@@ -70,12 +70,12 @@ namespace TheGodfather.EventListeners
 
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
 
-                    // TODO add aliases
-                    IEnumerable<string> ordered = lcs.AvailableCommands
+                    CommandService cs = shard.Services.GetRequiredService<CommandService>();
+                    IEnumerable<string> ordered = cs.AvailableCommands
                         .OrderBy(c => cne.CommandName.LevenshteinDistance(c))
                         .Take(3);
                     foreach (string cmd in ordered)
-                        emb.AddField(cmd, lcs.GetCommandDescription(e.Context.Guild.Id, cmd));
+                        emb.AddField(cmd, cs.GetCommandDescription(e.Context.Guild.Id, cmd));
 
                     break;
                 case InvalidCommandUsageException icue:
@@ -83,6 +83,7 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedFooter("msg-help-cmd", iconUrl: null, e.Command?.QualifiedName ?? "");
                     break;
                 case ArgumentException _:
+                case TargetInvocationException _:
                     if (shard.CNext is null)
                         throw new InvalidOperationException("CNext is null");
                     string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
@@ -132,10 +133,6 @@ namespace TheGodfather.EventListeners
                 case UnauthorizedException _:
                     emb.WithLocalizedDescription("cmd-err-403");
                     break;
-                case TargetInvocationException _:
-                    // TODO
-                    // sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
-                    throw ex;
                 case TaskCanceledException tcex:
                     LogExt.Warning(shard.Id, "Task cancelled");
                     return Task.CompletedTask;

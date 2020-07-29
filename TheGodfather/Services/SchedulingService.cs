@@ -78,6 +78,10 @@ namespace TheGodfather.Services
 
         public SchedulingService(TheGodfatherShard shard, AsyncExecutionService async, bool start = true)
         {
+            // TODO since this is shard specific service, maybe make it so that the reminders are static, otherwise there will be
+            // duplicates for each shard? Also, check how that is even handled in cases where the guild which posted reminder
+            // is not watched by current shard
+
             this.shard = shard;
             this.async = async;
             this.tasks = new TaskExecutorDictionary();

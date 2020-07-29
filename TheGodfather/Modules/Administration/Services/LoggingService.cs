@@ -157,32 +157,33 @@ namespace TheGodfather.Modules.Administration.Services
             DiscordChannel logchn = this.gcs.GetLogChannelForGuild(guild);
             return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed.Build());
         }
+        // END remove
 
-        public Task LogAsync(DiscordGuild guild, NewDiscordLogEmbedBuilder embed)
+        public Task LogAsync(DiscordGuild guild, LocalizedEmbedBuilder embed)
         {
             DiscordChannel logchn = this.gcs.GetLogChannelForGuild(guild);
             return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed.Build());
         }
 
-        public bool IsLogEnabledFor(ulong gid, out NewDiscordLogEmbedBuilder embed)
+        public bool IsLogEnabledFor(ulong gid, out LocalizedEmbedBuilder embed)
         {
             embed = this.CreateEmbedBuilder(gid);
             return this.gcs.GetCachedConfig(gid)?.LoggingEnabled ?? false;
         }
 
-        public NewDiscordLogEmbedBuilder CreateEmbedBuilder(ulong gid)
-            => new NewDiscordLogEmbedBuilder(this.lcs, gid);
+        public LocalizedEmbedBuilder CreateEmbedBuilder(ulong gid)
+            => new LocalizedEmbedBuilder(this.lcs, gid);
     }
 
 
-    public sealed class NewDiscordLogEmbedBuilder
+    public sealed class LocalizedEmbedBuilder
     {
         private readonly DiscordEmbedBuilder emb;
         private readonly LocalizationService lcs;
         private readonly ulong gid;
 
 
-        public NewDiscordLogEmbedBuilder(LocalizationService lcs, ulong gid)
+        public LocalizedEmbedBuilder(LocalizationService lcs, ulong gid)
         {
             this.lcs = lcs;
             this.gid = gid;
@@ -190,7 +191,7 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public NewDiscordLogEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object[]? args)
         {
             this.WithColor(type.ToDiscordColor());
             string localizedTitle = this.lcs.GetString(this.gid, title, args);
@@ -198,7 +199,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object[]? titleArgs)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object[]? titleArgs)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
             if (desc is { })
@@ -206,60 +207,60 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
         
-        public NewDiscordLogEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object[]? titleArgs = null, object[]? descArgs = null)
+        public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object[]? titleArgs = null, object[]? descArgs = null)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
             this.WithLocalizedDescription(desc, descArgs);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithLocalizedDescription(string desc, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedDescription(string desc, params object[]? args)
         {
             string localizedDesc = this.lcs.GetString(this.gid, desc, args);
             this.emb.WithDescription(localizedDesc);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithDescription(object? obj)
+        public LocalizedEmbedBuilder WithDescription(object? obj)
         {
             string localized404 = this.lcs.GetString(this.gid, "msg-404");
             this.emb.WithDescription(obj?.ToString() ?? localized404);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithColor(DiscordColor color)
+        public LocalizedEmbedBuilder WithColor(DiscordColor color)
         {
             this.emb.WithColor(color);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithLocalizedTimestamp(DateTimeOffset? timestamp = null, string? iconUrl = null)
+        public LocalizedEmbedBuilder WithLocalizedTimestamp(DateTimeOffset? timestamp = null, string? iconUrl = null)
         {
             string? localizedTime = this.lcs.GetLocalizedTime(this.gid, timestamp);
             this.emb.WithFooter(localizedTime, iconUrl);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithThumbnailUrl(string url)
+        public LocalizedEmbedBuilder WithThumbnailUrl(string url)
         {
             this.emb.WithThumbnail(url);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object[]? args)
         {
             string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, text, args));
             this.emb.WithFooter(localizedText, iconUrl);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddField(string title, string content, bool inline = false)
+        public LocalizedEmbedBuilder AddField(string title, string content, bool inline = false)
         {
             this.emb.AddField(this.TruncateToFitFieldName(title), this.TruncateToFitFieldValue(content), inline);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, params object[]? titleArgs)
+        public LocalizedEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, params object[]? titleArgs)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
             string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, "msg-404"));
@@ -267,7 +268,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object[]? contentArgs)
+        public LocalizedEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object[]? contentArgs)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
             string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
@@ -275,7 +276,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object[]? titleArgs = null, object[]? contentArgs = null)
+        public LocalizedEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object[]? titleArgs = null, object[]? contentArgs = null)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
             string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
@@ -283,13 +284,13 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddInsufficientAuditLogPermissionsField()
+        public LocalizedEmbedBuilder AddInsufficientAuditLogPermissionsField()
             => this.AddLocalizedField("msg-err", "msg-audit-log-no-perms");
 
-        public NewDiscordLogEmbedBuilder AddInvocationFields(CommandContext ctx)
+        public LocalizedEmbedBuilder AddInvocationFields(CommandContext ctx)
             => this.AddInvocationFields(ctx.User, ctx.Channel);
 
-        public NewDiscordLogEmbedBuilder AddInvocationFields(DiscordUser user, DiscordChannel? channel = null)
+        public LocalizedEmbedBuilder AddInvocationFields(DiscordUser user, DiscordChannel? channel = null)
         {
             this.AddLocalizedTitleField("evt-usr-responsible", user.Mention, inline: true);
             if (channel is { })
@@ -297,17 +298,17 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object[]? args)
+        public LocalizedEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object[]? args)
         {
             if (timestamp is { })
                 this.AddLocalizedTitleField(title, this.lcs.GetLocalizedTime(this.gid, timestamp), inline, args);
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddReason(string? reason)
+        public LocalizedEmbedBuilder AddReason(string? reason)
             => reason is null ? this : this.AddLocalizedTitleField("arg-rsn", reason);
 
-        public NewDiscordLogEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<NewDiscordLogEmbedBuilder, T?>? action = null) where T : DiscordAuditLogEntry
+        public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T?>? action = null) where T : DiscordAuditLogEntry
         {
             if (action is { })
                 action(this, entry);
@@ -321,7 +322,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object[]? args)
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object[]? args)
         {
             if (propertyChange is { }) {
                 string localized404 = this.lcs.GetString(this.gid, "msg-404");
@@ -333,7 +334,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : struct
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : struct
         {
             if (!Equals(before, after)) {
                 string localized404 = this.lcs.GetString(this.gid, "msg-404");
@@ -345,7 +346,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public NewDiscordLogEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : class
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : class
         {
             if (!Equals(before, after)) {
                 string localized404 = this.lcs.GetString(this.gid, "msg-404");

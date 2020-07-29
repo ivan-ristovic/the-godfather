@@ -29,6 +29,7 @@ namespace TheGodfather.Services
                 .AddSingleton<UserRanksService>()
                 .AddSingleton<WeatherService>()
                 .AddSingleton<YtService>()
+                .AddSingleton<CommandService>()
                 ;
         }
 

@@ -70,9 +70,9 @@ namespace TheGodfather.Modules.Misc
         public override BaseHelpFormatter WithCommand(Command cmd)
         {
             this.name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
-            LocalizationService localization = this.Context.Services.GetService<LocalizationService>();
+            CommandService cs = this.Context.Services.GetRequiredService<CommandService>();
             try {
-                this.desc = localization.GetCommandDescription(this.Context.Guild.Id, cmd.QualifiedName);
+                this.desc = cs.GetCommandDescription(this.Context.Guild.Id, cmd.QualifiedName);
             } catch (KeyNotFoundException e) {
                 LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
             }
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Misc
                 }
             }
 
-            this.emb.AddField("Examples of use", Formatter.BlockCode(string.Join("\n", localization.GetCommandUsageExamples(this.Context.Guild.Id, cmd.QualifiedName))));
+            this.emb.AddField("Examples of use", Formatter.BlockCode(string.Join("\n", cs.GetCommandUsageExamples(this.Context.Guild.Id, cmd.QualifiedName))));
 
             return this;
         }

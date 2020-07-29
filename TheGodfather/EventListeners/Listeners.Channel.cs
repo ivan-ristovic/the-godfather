@@ -44,7 +44,7 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
             LogExt.Verbose(shard.Id, "Create: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create-title", e.Channel);
@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
             LogExt.Verbose(shard.Id, "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete-title", e.Channel);
@@ -80,7 +80,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate || IsChannelExempted(shard, e.Guild, e.Channel, out _))
                 return;
 
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update-title");
@@ -108,7 +108,7 @@ namespace TheGodfather.EventListeners
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out NewDiscordLogEmbedBuilder emb))
+            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update-title");

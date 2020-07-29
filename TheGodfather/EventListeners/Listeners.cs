@@ -29,7 +29,7 @@ namespace TheGodfather.EventListeners
         }
 
 
-        private static bool IsLogEnabledForGuild(TheGodfatherShard shard, ulong gid, out LoggingService logService, out NewDiscordLogEmbedBuilder emb)
+        private static bool IsLogEnabledForGuild(TheGodfatherShard shard, ulong gid, out LoggingService logService, out LocalizedEmbedBuilder emb)
         {
             logService = shard.Services.GetRequiredService<LoggingService>();
             return logService.IsLogEnabledFor(gid, out emb);
