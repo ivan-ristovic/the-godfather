@@ -36,6 +36,13 @@ namespace TheGodfather.EventListeners
             return gcs.IsGuildRegistered(e.Guild.Id) ? Task.CompletedTask : gcs.RegisterGuildAsync(e.Guild.Id);
         }
 
+        [AsyncEventListener(DiscordEventType.GuildUnavailable)]
+        public static Task GuildUnvailableEventHandlerAsync(TheGodfatherShard shard, GuildDeleteEventArgs e)
+        {
+            LogExt.Warning(shard.Id, "Unvailable {UnvailableGuild}", e.Guild);
+            return Task.CompletedTask;
+        }
+
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
         public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs _)
         {

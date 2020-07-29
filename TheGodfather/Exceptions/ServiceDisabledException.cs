@@ -5,7 +5,7 @@ namespace TheGodfather.Exceptions
     public class ServiceDisabledException : LocalizedException
     {
         public ServiceDisabledException(CommandContext ctx)
-            : base(ctx, "cmd-err-service-disabled")
+            : base(ctx, "err-service-disabled")
         {
 
         }

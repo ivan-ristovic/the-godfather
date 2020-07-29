@@ -11,9 +11,9 @@ namespace TheGodfather.Exceptions
 
 
         public LocalizedException(CommandContext ctx, params object[]? args)
-            : base("msg-err")
+            : base("err-loc")
         {
-            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, "msg-err", args);
+            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, "err-loc", args);
         }
 
         public LocalizedException(CommandContext ctx, string key, params object[]? args)

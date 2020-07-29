@@ -223,7 +223,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public LocalizedEmbedBuilder WithDescription(object? obj)
         {
-            string localized404 = this.lcs.GetString(this.gid, "msg-404");
+            string localized404 = this.lcs.GetString(this.gid, "str-404");
             this.emb.WithDescription(obj?.ToString() ?? localized404);
             return this;
         }
@@ -241,7 +241,7 @@ namespace TheGodfather.Modules.Administration.Services
             return this;
         }
 
-        public LocalizedEmbedBuilder WithThumbnailUrl(string url)
+        public LocalizedEmbedBuilder WithThumbnail(string url)
         {
             this.emb.WithThumbnail(url);
             return this;
@@ -263,7 +263,7 @@ namespace TheGodfather.Modules.Administration.Services
         public LocalizedEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, params object[]? titleArgs)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
-            string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, "msg-404"));
+            string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, "str-404"));
             this.emb.AddField(localizedTitle, obj?.ToString() ?? localized404, inline);
             return this;
         }
@@ -285,7 +285,7 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
         public LocalizedEmbedBuilder AddInsufficientAuditLogPermissionsField()
-            => this.AddLocalizedField("msg-err", "msg-audit-log-no-perms");
+            => this.AddLocalizedField("str-err", "err-audit-log-no-perms");
 
         public LocalizedEmbedBuilder AddInvocationFields(CommandContext ctx)
             => this.AddInvocationFields(ctx.User, ctx.Channel);
@@ -306,15 +306,15 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
         public LocalizedEmbedBuilder AddReason(string? reason)
-            => reason is null ? this : this.AddLocalizedTitleField("arg-rsn", reason);
+            => reason is null ? this : this.AddLocalizedTitleField("str-rsn", reason);
 
-        public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T?>? action = null) where T : DiscordAuditLogEntry
+        public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T>? action = null) where T : DiscordAuditLogEntry
         {
-            if (action is { })
-                action(this, entry);
             if (entry is null) {
                 this.AddInsufficientAuditLogPermissionsField();
             } else {
+                if (action is { })
+                    action(this, entry);
                 this.AddInvocationFields(entry.UserResponsible);
                 this.AddReason(entry.Reason);
                 this.WithLocalizedTimestamp(entry.CreationTimestamp, entry.UserResponsible?.AvatarUrl);
@@ -325,35 +325,33 @@ namespace TheGodfather.Modules.Administration.Services
         public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object[]? args)
         {
             if (propertyChange is { }) {
-                string localized404 = this.lcs.GetString(this.gid, "msg-404");
-                string beforeStr = this.TruncateToFitHalfFieldValue(propertyChange.Before?.ToString() ?? localized404);
-                string afterStr = this.TruncateToFitHalfFieldValue(propertyChange.After?.ToString() ?? localized404);
-                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
-                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+                if (!Equals(propertyChange.Before, propertyChange.After)) {
+                    if (propertyChange.After is bool aft) {
+                        this.AddLocalizedField(title, aft ? "str-true" : "str-false", inline, titleArgs: args);
+                    } else {
+                        string localized404 = this.lcs.GetString(this.gid, "str-404");
+                        string beforeStr = this.TruncateToFitHalfFieldValue(propertyChange.Before?.ToString() ?? localized404);
+                        string afterStr = this.TruncateToFitHalfFieldValue(propertyChange.After?.ToString() ?? localized404);
+                        string localizedContent = this.lcs.GetString(this.gid, "fmt-from-to", beforeStr, afterStr);
+                        this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+                    }
+                }
             }
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : struct
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(string title, object? before, object? after, bool inline = true, params object[]? args)
         {
             if (!Equals(before, after)) {
-                string localized404 = this.lcs.GetString(this.gid, "msg-404");
-                string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
-                string afterStr = this.TruncateToFitHalfFieldValue(after?.ToString() ?? localized404);
-                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
-                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
-            }
-            return this;
-        }
-
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, T? before, T? after, bool inline = true, params object[]? args) where T : class
-        {
-            if (!Equals(before, after)) {
-                string localized404 = this.lcs.GetString(this.gid, "msg-404");
-                string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
-                string afterStr = this.TruncateToFitFieldValue(after?.ToString() ?? localized404);
-                string localizedContent = this.lcs.GetString(this.gid, "msg-from-to", beforeStr, afterStr);
-                this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+                if (after is bool aft) {
+                    this.AddLocalizedField(title, aft ? "str-true" : "str-false", inline, titleArgs: args);
+                } else {
+                    string localized404 = this.lcs.GetString(this.gid, "str-404");
+                    string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
+                    string afterStr = this.TruncateToFitHalfFieldValue(after?.ToString() ?? localized404);
+                    string localizedContent = this.lcs.GetString(this.gid, "fmt-from-to", beforeStr, afterStr);
+                    this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, args);
+                }
             }
             return this;
         }

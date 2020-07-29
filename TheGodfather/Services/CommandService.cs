@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Humanizer;
 using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Exceptions;
@@ -102,7 +103,7 @@ namespace TheGodfather.Services
                 foreach (List<string> args in cmdInfo.UsageExamples) {
                     string cmd = $"{this.gcs.GetGuildPrefix(gid)}{command}";
                     if (args.Any())
-                        examples.Add($"{cmd} {string.Join(" ", args.Select(arg => this.lcs.GetString(gid, arg)))}");
+                        examples.Add($"{cmd} {args.Select(arg => this.lcs.GetString(gid, arg)).Humanize(" ")}");
                     else
                         examples.Add(cmd);
                 }

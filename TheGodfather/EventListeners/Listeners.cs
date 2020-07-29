@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.EventListeners.Attributes;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.EventListeners
 {

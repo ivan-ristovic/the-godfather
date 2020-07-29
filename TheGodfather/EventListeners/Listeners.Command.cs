@@ -8,13 +8,11 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Serilog;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.EventListeners.Attributes;
@@ -80,7 +78,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case InvalidCommandUsageException icue:
                     emb.WithDescription(icue.LocalizedMessage);
-                    emb.WithLocalizedFooter("msg-help-cmd", iconUrl: null, e.Command?.QualifiedName ?? "");
+                    emb.WithLocalizedFooter("fmt-help-cmd", iconUrl: null, e.Command?.QualifiedName ?? "");
                     break;
                 case ArgumentException _:
                 case TargetInvocationException _:
