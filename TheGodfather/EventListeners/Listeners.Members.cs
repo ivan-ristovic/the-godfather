@@ -6,192 +6,270 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.EventListeners
 {
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
-        public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
+        public static async Task GuildMemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            if (e.Guild is null)
+                return;
+            
+            LogExt.Debug(shard.Id, "Member added: {Member} {Guild}", e.Member, e.Guild);
+
+            GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
+            GuildConfig gcfg = await gcs.GetConfigAsync(e.Guild.Id);
+
             await Task.Delay(TimeSpan.FromSeconds(gcfg.AntiInstantLeaveSettings.Cooldown + 1));
 
-            if (e.Member.Guild is null)
+            if (e.Member.Guild is null)     // User left in meantime
                 return;
 
-            DiscordChannel wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
-            if (!(wchn is null)) {
-                if (string.IsNullOrWhiteSpace(gcfg.WelcomeMessage))
-                    await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", Emojis.Wave);
-                else
-                    await wchn.EmbedAsync(gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention), Emojis.Wave);
+            // TODO move to service
+            DiscordChannel? wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
+            if (wchn is { }) {
+                string welcomeStr = string.IsNullOrWhiteSpace(gcfg.WelcomeMessage)
+                    ? shard.Services.GetRequiredService<LocalizationService>().GetString(e.Guild.Id, "fmt-welcome", e.Guild.Name, e.Member.Mention)
+                    : gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention);
+                await LoggingService.TryExecuteWithReportAsync(
+                    shard, e.Guild, wchn.EmbedAsync(welcomeStr, Emojis.Wave), "rep-wchn-403", "rep-wchn-404",
+                    code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => { cfg.WelcomeChannelId = 0; })
+                );
             }
 
+            // TODO move to service
             try {
                 using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                    IQueryable<ulong> rids = db.AutoAssignableRoles
+                    IQueryable<long> rids = db.AutoAssignableRoles
                         .Where(dbr => dbr.GuildIdDb == (long)e.Guild.Id)
-                        .Select(dbr => dbr.RoleId);
-                    foreach (ulong rid in rids.ToList()) {
-                        try {
-                            DiscordRole role = e.Guild.GetRole(rid);
-                            if (!(role is null))
-                                await e.Member.GrantRoleAsync(role);
-                            else
-                                db.AutoAssignableRoles.Remove(db.AutoAssignableRoles.Single(r => r.GuildId == e.Guild.Id && r.RoleId == rid));
-                        } catch (Exception exc) {
-                            LogExt.Debug(e.Client.ShardId, exc, new[] { "Failed to assign auto role", "{RoleId}", "{Guild}", "{Member}" }, rid, e.Guild, e.Member);
+                        .Select(dbr => dbr.RoleIdDb)
+                        ;
+                    foreach (long lrid in rids) {
+                        ulong rid = (ulong)lrid;
+                        DiscordRole role = e.Guild.GetRole(rid);
+                        if (role is { }) {
+                            await LoggingService.TryExecuteWithReportAsync(
+                                shard, e.Guild, e.Member.GrantRoleAsync(role), "rep-role-403", "rep-role-404",
+                                code404action: () => {
+                                    RemoveRoleFromDb(rid);
+                                    return Task.CompletedTask;
+                                }
+                            );
+                        } else {
+                            RemoveRoleFromDb(rid);
                         }
                     }
+
+
+                    void RemoveRoleFromDb(ulong rid)
+                        => db.AutoAssignableRoles.Remove(new AutoRole { GuildId = e.Guild.Id, RoleId = rid });
                 }
             } catch (Exception exc) {
                 LogExt.Warning(e.Client.ShardId, exc, new[] { "Failed to assign auto role(s)", "{Guild}", "{Member}" }, e.Guild, e.Member);
             }
 
-            if (gcfg.LeaveChannelId == 0)
+
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
 
-            var emb = new DiscordLogEmbedBuilder("Member joined", e.Member.ToString(), DiscordEventType.GuildMemberAdded);
+            emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
             emb.WithThumbnail(e.Member.AvatarUrl);
-            emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
-            emb.AddField("Email", e.Member.Email);
+            emb.AddLocalizedTitleField("str-regtime", ls.GetLocalizedTime(e.Guild.Id, e.Member.CreationTimestamp), inline: true);
+            emb.AddLocalizedTitleField("str-ahash", e.Member.AvatarHash, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-flags", e.Member.Flags.Humanize(), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags.Humanize(), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType.Humanize(), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-premium-since", ls.GetLocalizedTime(e.Guild.Id, e.Member.PremiumSince), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
 
+            // TODO move to service
             using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                if (db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.Member.DisplayName))) {
+                ForbiddenName? fname = db.ForbiddenNames
+                    .Where(n => n.GuildIdDb == (long)e.Guild.Id)
+                    .AsEnumerable()
+                    .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
+                    ;
+                if (fname is { }) {
                     try {
                         await e.Member.ModifyAsync(m => {
-                            m.Nickname = "Temporary name";
-                            m.AuditLogReason = "_gf: Forbidden name match";
+                            m.Nickname = e.Member.Id.ToString();
+                            m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
                         });
-                        emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                        emb.AddLocalizedTitleField("str-act-taken", "act-fname-match");
                         if (!e.Member.IsBot)
-                            await e.Member.SendMessageAsync($"Your nickname in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
+                            await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
                     } catch (UnauthorizedException) {
-                        emb.AddField("Error", "Matched forbidden name, but I failed to remove it. Check my permissions");
+                        emb.AddLocalizedField("str-err", "err-fname-match");
                     }
                 }
             }
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
-        public static async Task MemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
+        public static async Task GuildMemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            if (e.Member is null || e.Member.IsBot)
+            if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
-
+            
             GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
 
             if (gcfg.AntifloodEnabled)
-                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
+                await shard.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
 
             if (gcfg.AntiInstantLeaveEnabled)
-                await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
+                await shard.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
-        public static async Task MemberRemoveEventHandlerAsync(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
+        public static async Task GuildMemberRemoveEventHandlerAsync(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
-            if (e.Member.IsCurrent)
+            if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
+            
+            LogExt.Debug(shard.Id, "Member removed: {Member} {Guild}", e.Member, e.Guild);
 
-            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
+            GuildConfig gcfg = await gcs.GetConfigAsync(e.Guild.Id);
             bool punished = false;
 
             if (gcfg.AntiInstantLeaveEnabled)
-                punished = await shard.CNext.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, gcfg.AntiInstantLeaveSettings);
+                punished = await shard.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, gcfg.AntiInstantLeaveSettings);
 
             if (!punished) {
-                DiscordChannel lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
-                if (!(lchn is null)) {
-                    if (string.IsNullOrWhiteSpace(gcfg.LeaveMessage))
-                        await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "Member")} left the server! Bye!", Emojis.Wave);
-                    else
-                        await lchn.EmbedAsync(gcfg.LeaveMessage.Replace("%user%", e.Member?.Username ?? "Unknown"), Emojis.Wave);
+                // TODO move to service
+                DiscordChannel? lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
+                if (lchn is { }) {
+                    string leaveStr = string.IsNullOrWhiteSpace(gcfg.LeaveMessage)
+                        ? shard.Services.GetRequiredService<LocalizationService>().GetString(e.Guild.Id, "fmt-leave", e.Member.Mention)
+                        : gcfg.LeaveMessage.Replace("%user%", e.Member.Mention);
+                    await LoggingService.TryExecuteWithReportAsync(
+                        shard, e.Guild, lchn.EmbedAsync(leaveStr, Emojis.Wave), "rep-lchn-403", "rep-lchn-404",
+                        code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => { cfg.LeaveChannelId = 0; })
+                    );
                 }
             }
 
-            if (gcfg.LeaveChannelId == 0)
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
 
-            var emb = new DiscordLogEmbedBuilder("Member left", e.Member.ToString(), DiscordEventType.GuildMemberRemoved);
+            emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-mem-del", e.Member);
 
-            DiscordAuditLogKickEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogKickEntry>(AuditLogActionType.Kick);
-            if (!(entry is null) && entry.Target.Id == e.Member.Id) {
-                emb.WithTitle("Member kicked");
-                emb.AddInvocationFields(entry.UserResponsible);
-                emb.AddField("Reason", entry.Reason, null);
-            }
-
+            DiscordAuditLogKickEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogKickEntry>(AuditLogActionType.Kick);
+            if (entry?.Target?.Id == e.Member.Id)
+                emb.AddFieldsFromAuditLogEntry(entry, (emb, _) => emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-kick"));
             emb.WithThumbnail(e.Member.AvatarUrl);
-            emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
-            emb.AddField("Email", e.Member.Email);
+            emb.AddLocalizedTitleField("str-regtime", ls.GetLocalizedTime(e.Guild.Id, e.Member.CreationTimestamp), inline: true);
+            emb.AddLocalizedTitleField("str-email", e.Member.Email);
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberUpdated)]
-        public static async Task MemberUpdateEventHandlerAsync(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
+        public static async Task GuildMemberUpdateEventHandlerAsync(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
-            bool renamed = false, failed = false;
+            if (e.Guild is null || e.Member is null || e.Member.IsBot)
+                return;
+            
+            LogExt.Debug(shard.Id, "Member updated: {Member} {Guild}", e.Member, e.Guild);
 
-            using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && db.ForbiddenNames.Any(n => n.GuildId == e.Guild.Id && n.Regex.IsMatch(e.NicknameAfter))) {
-                    try {
-                        await e.Member.ModifyAsync(m => {
-                            m.Nickname = e.NicknameBefore;
-                            m.AuditLogReason = "_gf: Forbidden name match";
-                        });
-                        renamed = true;
-                        if (!e.Member.IsBot)
-                            await e.Member.SendMessageAsync($"The nickname you tried to set in the guild {e.Guild.Name} is forbidden by the guild administrator. Please set a different name.");
-                    } catch (UnauthorizedException) {
-                        failed = true;
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+
+            bool renamed = false, failed = false;
+            if (!string.IsNullOrWhiteSpace(e.NicknameAfter)) {
+                // TODO move to service
+                using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
+                    ForbiddenName? fname = db.ForbiddenNames
+                        .Where(n => n.GuildIdDb == (long)e.Guild.Id)
+                        .AsEnumerable()
+                        .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
+                        ;
+                    if (fname is { }) {
+                        try {
+                            await e.Member.ModifyAsync(m => {
+                                m.Nickname = e.Member.Id.ToString();
+                                m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
+                            });
+                            renamed = true;
+                            if (!e.Member.IsBot)
+                                await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
+                        } catch (UnauthorizedException) {
+                            failed = true;
+                        }
                     }
                 }
             }
 
-            if (shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Member updated", e.Member.ToString(), DiscordEventType.GuildMemberUpdated);
+            emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, "evt-gld-mem-upd", e.Member);
             emb.WithThumbnail(e.Member.AvatarUrl);
 
-            DiscordAuditLogMemberUpdateEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMemberUpdateEntry>(AuditLogActionType.MemberUpdate);
-            if (entry is null) {
-                emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-                emb.AddField("Name before", e.NicknameBefore, inline: true);
-                emb.AddField("Name after", e.NicknameAfter, inline: true);
-                emb.AddField("Roles before", e.RolesBefore?.Count.ToString(), inline: true);
-                emb.AddField("Roles after", e.RolesAfter?.Count.ToString(), inline: true);
-            } else {
-                emb.AddInvocationFields(entry.UserResponsible);
-                emb.AddPropertyChangeField("Nickname change", entry.NicknameChange);
-                if (!(entry.AddedRoles is null))
-                    emb.AddField("Added roles", entry.AddedRoles.Select(r => r.Name), inline: true);
-                if (!(entry.RemovedRoles is null))
-                    emb.AddField("Removed roles", entry.RemovedRoles.Select(r => r.Name), inline: true);
-                emb.AddField("Reason", entry.Reason, null);
-                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
+            DiscordAuditLogEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEntry>();
+            switch (entry) {
+                case null:
+                    emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
+                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {
+                        string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
+                        string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
+                        string noneStr = ls.GetString(e.Guild.Id, "str-none");
+                        emb.AddLocalizedTitleField("str-roles-bef", string.IsNullOrWhiteSpace(rolesBefore) ? noneStr : rolesBefore, inline: true);
+                        emb.AddLocalizedTitleField("str-roles-aft", string.IsNullOrWhiteSpace(rolesAfter) ? noneStr : rolesAfter, inline: true);
+                    }
+                    break;
+                case DiscordAuditLogMemberUpdateEntry uentry:
+                    emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
+                        emb.AddLocalizedPropertyChangeField("str-name", ent.NicknameChange);
+                        emb.AddLocalizedTitleField("str-roles-add", ent.AddedRoles?.Select(r => r.Mention).Humanize(", "), inline: true, unknown: false);
+                        emb.AddLocalizedTitleField("str-roles-add", ent.RemovedRoles?.Select(r => r.Mention).Humanize(", "), unknown: false);
+                    });
+                    break;
+                case DiscordAuditLogMemberMoveEntry mentry:
+                    // TODO
+                    emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, "evt-gld-mem-vc-mv", e.Member);
+                    Log.Debug("{@Member}", e.Member);
+                    emb.AddFieldsFromAuditLogEntry(mentry, (emb, ent) => {
+                        emb.WithDescription(ent.Channel);
+                        emb.AddLocalizedTitleField("str-move-count", ent.UserCount);
+                    });
+                    break;
+                default:
+                    break;
             }
 
             if (renamed)
-                emb.AddField("Additional actions taken", "Removed name due to a match with a forbidden name");
+                emb.AddLocalizedTitleField("str-act-taken", "act-fname-match");
             if (failed)
-                emb.AddField("Error", "Matched forbidden name, but I failed to remove it. Check my permissions");
+                emb.AddLocalizedField("str-err", "err-fname-match");
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.GuildMembersChunked)]
+        public static Task GuildMembersChunkedEventHandlerAsync(TheGodfatherShard shard, GuildMembersChunkEventArgs e)
+        {
+            LogExt.Debug(shard.Id, "Guild members chunked: [{Nonce}] {ChunkIndex}/{ChunkCount}", e.Nonce, e.ChunkIndex, e.ChunkCount);
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.PresenceUpdated)]
@@ -199,28 +277,40 @@ namespace TheGodfather.EventListeners
         {
             if (e.User.IsBot)
                 return;
+            
+            LogExt.Debug(shard.Id, "Presence updated: {User}", e.User);
 
-            var emb = new DiscordLogEmbedBuilder("Presence updated", e.User.ToString(), DiscordEventType.PresenceUpdated);
-            emb.AddPropertyChangeField("Username change", e.UserBefore, e.UserAfter);
-            emb.AddPropertyChangeField("Discriminator change", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
-            if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
-                emb.AddField("Changed avatar", Formatter.MaskedUrl("Old Avatar (note: might 404 later)", new Uri(e.UserBefore.AvatarUrl)));
-            emb.WithThumbnail(e.UserAfter.AvatarUrl);
-
-            if (!emb.Builder.Fields.Any())
-                return;
-
-            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
-            LoggingService ls = shard.Services.GetService<LoggingService>();
+            GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
             IEnumerable<DiscordGuild> guilds = TheGodfather.ActiveShards
                 .SelectMany(s => s.Client?.Guilds)
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
             foreach (DiscordGuild guild in guilds) {
-                if (gcs.GetLogChannelForGuild(guild) is null)
-                    continue;
-                if (await e.UserAfter.IsMemberOfGuildAsync(guild))
-                    await ls.LogAsync(guild, emb);
+                if (await e.UserAfter.IsMemberOfGuildAsync(guild)) {
+                    if (!LoggingService.IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                        return;
+
+                    emb.WithLocalizedTitle(DiscordEventType.PresenceUpdated, "evt-presence-upd", e.User);
+                    emb.WithThumbnail(e.UserAfter.AvatarUrl);
+
+                    emb.AddLocalizedTitleField("str-flags", e.UserAfter.Flags);
+                    emb.AddLocalizedPropertyChangeField("str-name", e.UserBefore.Username, e.UserAfter.Username);
+                    emb.AddLocalizedPropertyChangeField("str-discriminator", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
+                    if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
+                        emb.AddLocalizedTitleField("str-avatar", Formatter.MaskedUrl(ls.GetString(guild.Id, "str-avatar-old"), new Uri(e.UserBefore.AvatarUrl)));
+                    emb.AddLocalizedPropertyChangeField("str-email", e.UserBefore.Email, e.UserAfter.Email);
+                    emb.AddLocalizedPropertyChangeField("str-locale", e.UserBefore.Locale, e.UserAfter.Locale);
+                    emb.AddLocalizedPropertyChangeField("str-mfa", e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
+                    emb.AddLocalizedPropertyChangeField("str-flags-oauth", e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
+                    emb.AddLocalizedPropertyChangeField("str-premium-type", e.UserBefore.PremiumType, e.UserAfter.PremiumType);
+                    emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
+                    
+                    // TODO improve
+                    emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
+
+                    await logService.LogAsync(guild, emb);
+                }
             }
         }
     }

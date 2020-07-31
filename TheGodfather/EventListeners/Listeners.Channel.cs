@@ -10,6 +10,7 @@ using Serilog;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.EventListeners
@@ -24,7 +25,7 @@ namespace TheGodfather.EventListeners
                 new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
                 e.Channel.Recipients.Humanize(Environment.NewLine)
-            );
+            ); 
             return Task.CompletedTask;
         }
 
@@ -43,8 +44,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
         public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            LogExt.Verbose(shard.Id, "Create: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(shard.Id, "Create: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create", e.Channel);
@@ -59,8 +60,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            LogExt.Verbose(shard.Id, "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(shard.Id, "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete", e.Channel);
@@ -75,12 +76,12 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
         public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            LogExt.Verbose(shard.Id, "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
+            LogExt.Debug(shard.Id, "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
 
-            if (e.Channel.IsPrivate || IsChannelExempted(shard, e.Guild, e.Channel, out _))
+            if (e.Channel.IsPrivate || LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
                 return;
 
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update");
@@ -100,15 +101,15 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelUpdated)]
         public static async Task ChannelUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelUpdateEventArgs e)
         {
-            LogExt.Verbose(shard.Id, "Channel update: {Channel}, {Guild}", e.ChannelBefore, e.Guild);
+            LogExt.Debug(shard.Id, "Channel update: {Channel}, {Guild}", e.ChannelBefore, e.Guild);
 
-            if (e.ChannelBefore.IsPrivate || IsChannelExempted(shard, e.Guild, e.ChannelBefore, out _))
+            if (e.ChannelBefore.IsPrivate || LoggingService.IsChannelExempted(shard, e.Guild, e.ChannelBefore, out _))
                 return;
 
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            if (!IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
@@ -123,8 +124,7 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", ent.BitrateChange);
                     emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", ent.PerUserRateLimitChange);
                     emb.AddLocalizedPropertyChangeField("evt-upd-type", ent.TypeChange);
-                    if (ent.OverwriteChange is { })
-                        emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange.After.Count);
+                    emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange.After.Count, unknown: false);
                     if (ent.TopicChange is { }) {
                         string before = Formatter.BlockCode(
                             FormatterExt.StripMarkdown(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
@@ -158,6 +158,28 @@ namespace TheGodfather.EventListeners
             } else {
                 Log.Warning("Channel update event details could not be found");
             }
+
+            await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
+        public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
+        {
+            LogExt.Debug(shard.Id, "Webhooks update: {Channel}, {Guild}", e.Channel, e.Guild);
+
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
+
+            emb.WithLocalizedTitle(DiscordEventType.WebhooksUpdated, "evt-gld-wh-upd", e.Channel);
+
+            DiscordAuditLogWebhookEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogWebhookEntry>(AuditLogActionType.WebhookUpdate);
+            emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
+                emb.WithDescription(ent.Target);
+                emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
+                emb.AddLocalizedPropertyChangeField("str-ahash", ent.AvatarHashChange);
+                emb.AddLocalizedPropertyChangeField("str-chn", ent.ChannelChange);
+                emb.AddLocalizedPropertyChangeField("str-type", ent.TypeChange);
+            });
 
             await logService.LogAsync(e.Guild, emb);
         }

@@ -31,7 +31,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildAvailable)]
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            LogExt.Information(shard.Id, "Available {AvailableGuild}", e.Guild);
+            LogExt.Information(shard.Id, "Available: {AvailableGuild}", e.Guild);
             GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
             return gcs.IsGuildRegistered(e.Guild.Id) ? Task.CompletedTask : gcs.RegisterGuildAsync(e.Guild.Id);
         }
@@ -39,14 +39,14 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildUnavailable)]
         public static Task GuildUnvailableEventHandlerAsync(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
-            LogExt.Warning(shard.Id, "Unvailable {UnvailableGuild}", e.Guild);
+            LogExt.Warning(shard.Id, "Unvailable: {UnvailableGuild}", e.Guild);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
-        public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs _)
+        public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs e)
         {
-            LogExt.Information(shard.Id, "All guilds for this shard are now downloaded");
+            LogExt.Information(shard.Id, "All guilds for this shard are now downloaded ({Count} total)", e.Guilds.Count);
             return Task.CompletedTask;
         }
 
@@ -77,12 +77,47 @@ namespace TheGodfather.EventListeners
                 , Emojis.Wave
             );
         }
-        
+
         [AsyncEventListener(DiscordEventType.SocketOpened)]
         public static Task SocketOpenedEventHandlerAsync(TheGodfatherShard shard)
         {
             LogExt.Debug(shard.Id, "Socket opened");
             shard.Services.GetRequiredService<BotActivityService>().ShardUptimeInformation[shard.Id].SocketStartTime = DateTimeOffset.Now;
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.SocketClosed)]
+        public static Task SocketClosedEventHandlerAsync(TheGodfatherShard shard, SocketCloseEventArgs e)
+        {
+            LogExt.Debug(shard.Id, "Socket closed with code {Code}: {Message}", e.CloseCode, e.CloseMessage);
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.SocketErrored)]
+        public static Task SocketErroredEventHandlerAsync(TheGodfatherShard shard, SocketErrorEventArgs e)
+        {
+            LogExt.Debug(shard.Id, e.Exception, "Socket errored");
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.UnknownEvent)]
+        public static Task UnknownEventHandlerAsync(TheGodfatherShard shard, UnknownEventArgs e)
+        {
+            LogExt.Error(shard.Id, new[] { "Unknown event ({UnknownEvent}) occured:", "{@UnknownEventJson}" }, e.EventName, e.Json);
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.UserUpdated)]
+        public static Task UserUpdatedEventHandlerAsync(TheGodfatherShard shard, UserUpdateEventArgs e)
+        {
+            LogExt.Information(shard.Id, new[] { "Bot updated:", "{@BotUserBefore}", "{@BotUserAfter}" }, e.UserBefore, e.UserAfter);
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.UserSettingsUpdated)]
+        public static Task UserSettingsUpdatedEventHandlerAsync(TheGodfatherShard shard, UserSettingsUpdateEventArgs e)
+        {
+            LogExt.Information(shard.Id, "Bot settings updated: {@BotUser}", e.User);
             return Task.CompletedTask;
         }
     }

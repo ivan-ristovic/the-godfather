@@ -144,6 +144,12 @@ namespace TheGodfather.EventListeners.Attributes
                 case DiscordEventType.Heartbeated:
                     shard.Client.Heartbeated += OnEventWithArgs;
                     break;
+                case DiscordEventType.InviteCreated:
+                    shard.Client.InviteCreated += OnEventWithArgs;
+                    break;
+                case DiscordEventType.InviteDeleted:
+                    shard.Client.InviteDeleted += OnEventWithArgs;
+                    break;
                 case DiscordEventType.MessageAcknowledged:
                     shard.Client.MessageAcknowledged += OnEventWithArgs;
                     break;

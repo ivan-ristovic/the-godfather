@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.EventListeners.Attributes;
+using TheGodfather.EventListeners.Common;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.EventListeners
@@ -23,19 +29,6 @@ namespace TheGodfather.EventListeners
 
             foreach (ListenerMethod lm in ListenerMethods)
                 lm.Attribute.Register(shard, lm.Method);
-        }
-
-
-        private static bool IsLogEnabledForGuild(TheGodfatherShard shard, ulong gid, out LoggingService logService, out LocalizedEmbedBuilder emb)
-        {
-            logService = shard.Services.GetRequiredService<LoggingService>();
-            return logService.IsLogEnabledFor(gid, out emb);
-        }
-
-        private static bool IsChannelExempted(TheGodfatherShard shard, DiscordGuild? guild, DiscordChannel channel, out GuildConfigService gcs)
-        {
-            gcs = shard.Services.GetRequiredService<GuildConfigService>();
-            return guild is { } ? gcs.IsChannelExempted(guild.Id, channel.Id, channel.ParentId) : false;
         }
     }
 

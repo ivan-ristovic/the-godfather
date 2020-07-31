@@ -32,6 +32,8 @@ namespace TheGodfather.EventListeners.Common
         GuildUnavailable,
         GuildUpdated,
         Heartbeated,
+        InviteCreated,
+        InviteDeleted,
         MessageAcknowledged,
         MessageCreated,
         MessageDeleted,
@@ -123,6 +125,8 @@ namespace TheGodfather.EventListeners.Common
                 #region Guild
                 case DiscordEventType.GuildIntegrationsUpdated:
                 case DiscordEventType.GuildUpdated:
+                case DiscordEventType.InviteCreated:
+                case DiscordEventType.InviteDeleted:
                 case DiscordEventType.VoiceServerUpdated:
                 case DiscordEventType.VoiceStateUpdated:
                 case DiscordEventType.WebhooksUpdated:

@@ -19,6 +19,7 @@ using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 
@@ -31,7 +32,6 @@ namespace TheGodfather.EventListeners
         {
             if (e.Command is null || e.Command.QualifiedName == "help")
                 return Task.CompletedTask;
-
             LogExt.Information(
                 shard.Id,
                 new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
@@ -43,9 +43,15 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandErrored)]
         public static Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
-            LogExt.Verbose(e.Context, e.Exception, "Command errored");
+            LogExt.Debug(
+                shard.Id,
+                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
+                e.Exception?.GetType().Name ?? "Unknown", e.Command.QualifiedName, e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
+            );
+            
             if (e.Exception is null)
                 return Task.CompletedTask;
+
 
             Exception ex = e.Exception;
             while (ex is AggregateException || ex is TargetInvocationException)
@@ -58,12 +64,13 @@ namespace TheGodfather.EventListeners
 
             LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
 
-            var emb = new LocalizedEmbedBuilder(lcs, e.Context.Guild.Id);
+            ulong gid = e.Context.Guild?.Id ?? 0;
+            var emb = new LocalizedEmbedBuilder(lcs, gid);
             emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-err", desc: null, e.Command?.QualifiedName ?? "");
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Context.Guild.Id)?.SuggestionsEnabled ?? true)
+                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid)?.SuggestionsEnabled ?? true)
                         return e.Context.Message.CreateReactionAsync(Emojis.Question);
 
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
@@ -73,7 +80,7 @@ namespace TheGodfather.EventListeners
                         .OrderBy(c => cne.CommandName.LevenshteinDistance(c))
                         .Take(3);
                     foreach (string cmd in ordered)
-                        emb.AddField(cmd, cs.GetCommandDescription(e.Context.Guild.Id, cmd));
+                        emb.AddField(cmd, cs.GetCommandDescription(gid, cmd));
 
                     break;
                 case InvalidCommandUsageException icue:
@@ -104,23 +111,23 @@ namespace TheGodfather.EventListeners
                         case CooldownAttribute _:
                             break;
                         case UsesInteractivityAttribute _:
-                            sb.AppendLine(lcs.GetString(e.Context.Guild.Id, "cmd-chk-inter"));
+                            sb.AppendLine(lcs.GetString(gid, "cmd-chk-inter"));
                             break;
                         default:
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
                                 string line = attr switch
                                 {
-                                    RequirePermissionsAttribute p => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms", p.Permissions.ToPermissionString()),
-                                    RequireUserPermissionsAttribute up => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-usr", up.Permissions.ToPermissionString()),
-                                    RequireOwnerOrPermissionsAttribute op => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-usr", op.Permissions.ToPermissionString()),
-                                    RequireBotPermissionsAttribute bp => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-bot", bp.Permissions.ToPermissionString()),
-                                    RequirePrivilegedUserAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-priv"),
-                                    RequireOwnerAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-own"),
-                                    RequireNsfwAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-nsfw"),
-                                    RequirePrefixesAttribute pattr => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-pfix", pattr.Prefixes.Humanize(", ")),
-                                    RequireGuildAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-guild"),
-                                    RequireDirectMessageAttribute _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-dm"),
-                                    _ => lcs.GetString(e.Context.Guild.Id, "cmd-chk-perms-attr", attr),
+                                    RequirePermissionsAttribute p => lcs.GetString(gid, "cmd-chk-perms", p.Permissions.ToPermissionString()),
+                                    RequireUserPermissionsAttribute up => lcs.GetString(gid, "cmd-chk-perms-usr", up.Permissions.ToPermissionString()),
+                                    RequireOwnerOrPermissionsAttribute op => lcs.GetString(gid, "cmd-chk-perms-usr", op.Permissions.ToPermissionString()),
+                                    RequireBotPermissionsAttribute bp => lcs.GetString(gid, "cmd-chk-perms-bot", bp.Permissions.ToPermissionString()),
+                                    RequirePrivilegedUserAttribute _ => lcs.GetString(gid, "cmd-chk-perms-priv"),
+                                    RequireOwnerAttribute _ => lcs.GetString(gid, "cmd-chk-perms-own"),
+                                    RequireNsfwAttribute _ => lcs.GetString(gid, "cmd-chk-perms-nsfw"),
+                                    RequirePrefixesAttribute pattr => lcs.GetString(gid, "cmd-chk-perms-pfix", pattr.Prefixes.Humanize(", ")),
+                                    RequireGuildAttribute _ => lcs.GetString(gid, "cmd-chk-perms-guild"),
+                                    RequireDirectMessageAttribute _ => lcs.GetString(gid, "cmd-chk-perms-dm"),
+                                    _ => lcs.GetString(gid, "cmd-chk-perms-attr", attr),
                                 };
                                 sb.Append("- ").AppendLine(line);
                             }
