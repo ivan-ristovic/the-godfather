@@ -30,7 +30,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
         public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
-            if (e.Command is null || e.Command.QualifiedName == "help")
+            if (e.Command is null || e.Command.QualifiedName.StartsWith("help"))
                 return Task.CompletedTask;
             LogExt.Information(
                 shard.Id,
@@ -59,8 +59,6 @@ namespace TheGodfather.EventListeners
 
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
                 return e.Context.Message.CreateReactionAsync(Emojis.X);
-
-            LogExt.Information(e.Context, ex, "Tried executing {AttemptedCommand}", e.Command?.QualifiedName ?? "Unknown command");
 
             LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
 

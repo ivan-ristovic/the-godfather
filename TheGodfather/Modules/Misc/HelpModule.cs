@@ -25,11 +25,12 @@ namespace TheGodfather.Modules.Misc
 
 
         [Command("help")]
-        [RequirePrefixes("a", "b")]
-        [RequireBotPermissions(Permissions.Administrator | Permissions.KickMembers)]
+        //[RequirePrefixes("a", "b")]
+        //[RequireBotPermissions(Permissions.Administrator | Permissions.KickMembers)]
         public async Task HelpAsync(CommandContext ctx)
         {
-            throw new InvalidCommandUsageException(ctx, "msg-err", new System.Exception());
+            //throw new InvalidCommandUsageException(ctx, "msg-err", new System.Exception());
+            await this.InformAsync(ctx, "str-suc");
         }
     }
 

@@ -34,14 +34,15 @@ namespace TheGodfather.Modules
 
         protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string? message = null, bool important = true)
         {
-            if (!important && (ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id)?.ReactionResponse ?? false)) {
+            ulong gid = ctx.Guild?.Id ?? 0;
+            if (!important && (ctx.Services.GetService<GuildConfigService>().GetCachedConfig(gid)?.ReactionResponse ?? false)) {
                 try {
                     await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
-                    await this.InformAsync(ctx, ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, "Action completed"));
+                    await this.InformAsync(ctx, ctx.Services.GetService<LocalizationService>().GetString(gid, "Action completed"));
                 }
             } else {
-                string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild?.Id, message);
+                string response = message is null ? "Done!" : ctx.Services.GetService<LocalizationService>().GetString(gid, message);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{emoji ?? Emojis.CheckMarkSuccess} {response}",
                     Color = this.ModuleColor
@@ -52,16 +53,12 @@ namespace TheGodfather.Modules
         protected Task InformFailureAsync(CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild.Id, message)}",
+                Description = $"{Emojis.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, message)}",
                 Color = DiscordColor.IndianRed
             });
         }
 
-        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb)
-        {
-            return ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb
-                .WithColor(this.ModuleColor)
-            );
-        }
+        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb) 
+            => ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb.WithColor(this.ModuleColor));
     }
 }
