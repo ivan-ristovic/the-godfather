@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -106,13 +107,9 @@ namespace TheGodfather
                 Services = this.Services
             });
 
-            this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());
-
-            this.CNext.RegisterConverter(new ActivityTypeConverter());
-            this.CNext.RegisterConverter(new BoolConverter());
-            this.CNext.RegisterConverter(new IPAddressConverter());
-            this.CNext.RegisterConverter(new IPAddressRangeConverter());
-            this.CNext.RegisterConverter(new PunishmentActionConverter());
+            var assembly = Assembly.GetExecutingAssembly();
+            this.CNext.RegisterCommands(assembly);
+            this.CNext.RegisterConverters(assembly);
         }
 
         private void SetupInteractivity()
