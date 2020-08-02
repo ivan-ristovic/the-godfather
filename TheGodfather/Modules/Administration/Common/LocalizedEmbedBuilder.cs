@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration.Common
         }
 
 
-        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object?[]? args)
         {
             this.WithColor(type.ToDiscordColor());
             string localizedTitle = this.lcs.GetString(this.gid, title, args);
@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object[]? titleArgs)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object?[]? titleArgs)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
             if (desc is { })
@@ -40,14 +40,14 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
         
-        public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object[]? titleArgs = null, object[]? descArgs = null)
+        public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object?[]? titleArgs = null, object?[]? descArgs = null)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
             this.WithLocalizedDescription(desc, descArgs);
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedDescription(string desc, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedDescription(string desc, params object?[]? args)
         {
             string localizedDesc = this.lcs.GetString(this.gid, desc, args);
             this.emb.WithDescription(localizedDesc);
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object[]? args)
+        public LocalizedEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object?[]? args)
         {
             string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, text, args));
             this.emb.WithFooter(localizedText, iconUrl);
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, bool unknown = true, params object[]? titleArgs)
+        public LocalizedEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, bool unknown = true, params object?[]? titleArgs)
         {
             string? objStr = obj?.ToString();
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object[]? contentArgs)
+        public LocalizedEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object?[]? contentArgs)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
             string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object[]? titleArgs = null, object[]? contentArgs = null)
+        public LocalizedEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object?[]? titleArgs = null, object?[]? contentArgs = null)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
             string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object[]? args)
+        public LocalizedEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object?[]? args)
         {
             if (timestamp is { })
                 this.AddLocalizedTitleField(title, this.lcs.GetLocalizedTime(this.gid, timestamp), inline, true, args);
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object[]? args)
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object?[]? args)
         {
             if (propertyChange is { }) {
                 if (!Equals(propertyChange.Before, propertyChange.After)) {
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(string title, object? before, object? after, bool inline = true, params object[]? args)
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(string title, object? before, object? after, bool inline = true, params object?[]? args)
         {
             if (!Equals(before, after)) {
                 if (after is bool aft) {

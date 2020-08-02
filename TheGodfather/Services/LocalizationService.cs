@@ -91,18 +91,22 @@ namespace TheGodfather.Services
             if (string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
-            string? response = null;
             string locale = this.GetGuildLocale(gid);
             if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string> localeStrings)) {
-                if (!localeStrings.TryGetValue(key, out response)) {
+                if (!localeStrings.TryGetValue(key, out string response)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
                     throw new LocalizationException($"I do not have a translation ready for `{key}`. Please report this.");
                 }
+                if (!localeStrings.TryGetValue("str-404", out string str404)) {
+                    Log.Error("Failed to find string for {Key} in locale {Locale}", "str-404", locale);
+                    throw new LocalizationException($"I do not have a translation ready for `str-404`. Please report this.");
+                }
+                IEnumerable<object> margs = args?.Select(a => a is null ? str404 : a) ?? Enumerable.Empty<object>();
+                return string.Format(response, margs.ToArray());
             } else {
-                Log.Error("Locale not found for guild {Guild}", gid);
+                Log.Error("Guild {GuildId} has unknown locale {Locale}", gid, locale);
+                throw new LocalizationException($"Locale not found for guild {gid}");
             }
-
-            return string.Format(response ?? "Translation error. Please report this", args ?? new object[] { });
         }
 
         public string GetCommandDescription(ulong gid, string command)
@@ -132,8 +136,10 @@ namespace TheGodfather.Services
             return gid is null ? defCulture : this.gcs.GetCachedConfig(gid.Value)?.Culture ?? defCulture;
         }
 
-        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g")
+        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
         {
+            if (unknown && dt is null)
+                return this.GetString(gid, "str-404");
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
             DateTimeOffset time = dt ?? DateTimeOffset.Now;
             time = TimeZoneInfo.ConvertTime(time, TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId));

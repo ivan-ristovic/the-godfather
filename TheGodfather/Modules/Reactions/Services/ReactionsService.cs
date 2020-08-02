@@ -258,7 +258,7 @@ namespace TheGodfather.Modules.Reactions.Services
                 : (IReadOnlyCollection<TextReaction>)Array.Empty<TextReaction>();
         }
 
-        public TextReaction FindMatchingTextReaction(ulong gid, string trigger)
+        public TextReaction? FindMatchingTextReaction(ulong gid, string trigger)
             => this.GetGuildTextReactions(gid).FirstOrDefault(tr => tr.IsMatch(trigger));
 
         public bool GuildHasTextReaction(ulong gid, string trigger)

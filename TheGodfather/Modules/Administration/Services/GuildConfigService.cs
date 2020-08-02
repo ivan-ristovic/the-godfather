@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public bool IsMemberExempted(ulong gid, ulong uid, IReadOnlyList<ulong>? rids = null)
+        public bool IsMemberExempted(ulong gid, ulong uid, IEnumerable<ulong>? rids = null)
         {
             bool exempted = false;
 

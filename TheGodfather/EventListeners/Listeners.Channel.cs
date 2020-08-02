@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
         {
             LogExt.Debug(shard.Id, "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
 
-            if (e.Channel.IsPrivate || LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
+            if (e.Guild is null || LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
                 return;
 
             if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))

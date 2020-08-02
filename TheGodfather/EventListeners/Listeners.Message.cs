@@ -1,12 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Humanizer;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
+using Microsoft.VisualBasic;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -14,6 +16,7 @@ using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Owner.Services;
@@ -28,18 +31,29 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessagesBulkDeleted)]
         public static async Task BulkDeleteEventHandlerAsync(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
-            if (e.Channel.IsPrivate)
+            if (e.Guild is null)
                 return;
 
-            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
-            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Bulk message deletion occured", null, DiscordEventType.MessagesBulkDeleted);
-            emb.AddField("Channel", e.Channel.Mention, inline: true);
-            emb.AddField("Count", e.Messages.Count.ToString(), inline: true);
+            if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out GuildConfigService gcs))
+                return;
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
+            emb.WithLocalizedTitle(DiscordEventType.MessagesBulkDeleted, "evt-msg-del-bulk", e.Channel);
+            emb.AddLocalizedTitleField("str-count", e.Messages.Count, inline: true);
+            using (var ms = new MemoryStream())
+            using (var sw = new StreamWriter(ms)) {
+                foreach (DiscordMessage msg in e.Messages) {
+                    sw.WriteLine($"[{msg.Timestamp}] {msg.Author}");
+                    sw.WriteLine(string.IsNullOrWhiteSpace(msg.Content) ? "?" : msg.Content);
+                    sw.WriteLine(msg.Attachments.Select(a => $"{a.FileName} ({a.FileSize})").Humanize());
+                    sw.Flush();
+                }
+                ms.Seek(0, SeekOrigin.Begin);
+                DiscordChannel? chn = gcs.GetLogChannelForGuild(e.Guild);
+                await (chn?.SendFileAsync($"{e.Channel.Name}-deleted-messages.txt", ms, embed: emb.Build()) ?? Task.CompletedTask);
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -48,24 +62,26 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot)
                 return;
 
-            if (e.Channel.IsPrivate) {
+            if (e.Guild is null) {
                 LogExt.Debug(shard.Id, new[] { "DM message received from {User}:", "{Message}" }, e.Author, e.Message);
                 return;
             }
 
-            if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;
 
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                return;
-
-            if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.Services.GetService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
-                short rank = shard.Services.GetService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
-                if (rank != 0) {
-                    XpRank rankInfo;
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        rankInfo = db.XpRanks.SingleOrDefault(r => r.GuildId == e.Guild.Id && r.Rank == rank);
-                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(rankInfo is null ? "" : $": {Formatter.Italic(rankInfo.Name)}")} !", Emojis.Medal);
+            if (!string.IsNullOrWhiteSpace(e.Message?.Content)) { 
+                // TODO move to service
+                if (e.Message.Content.StartsWith(shard.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
+                    short rank = shard.Services.GetRequiredService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
+                    if (rank != 0) {
+                        LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+                        XpRank? rankInfo;
+                        using (TheGodfatherDbContext db = shard.Database.CreateContext())
+                            rankInfo = await db.XpRanks.FindAsync((long)e.Guild.Id, rank);
+                        string rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "");
+                        await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
+                    }
                 }
             }
         }
@@ -73,32 +89,33 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageCreateProtectionHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
+            if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
             if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
-            CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
-            if (gcfg.RatelimitSettings.Enabled)
-                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
-
-            if (gcfg.AntispamSettings.Enabled)
-                await shard.CNext.Services.GetService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
+            CachedGuildConfig? gcfg = shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
+            if (gcfg is { }) {
+                if (gcfg.RatelimitSettings.Enabled)
+                    await shard.Services.GetRequiredService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
+                if (gcfg.AntispamSettings.Enabled)
+                    await shard.Services.GetRequiredService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageFilterEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
+            if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
             if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
-            CachedGuildConfig gcfg = shard.Services.GetService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
-            if (gcfg.LinkfilterSettings.Enabled) {
-                if (await shard.CNext.Services.GetService<LinkfilterService>().HandleNewMessageAsync(e, gcfg.LinkfilterSettings))
+            CachedGuildConfig? gcfg = shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
+            if (gcfg?.LinkfilterSettings.Enabled ?? false) {
+                if (await shard.Services.GetRequiredService<LinkfilterService>().HandleNewMessageAsync(e, gcfg.LinkfilterSettings))
                     return;
             }
 
@@ -108,90 +125,111 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
                 return;
 
-            await e.Message.DeleteAsync("_gf: Filter hit");
-            await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)))}");
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+            
+            // TODO automatize, same below in message update handler
+            await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
+            string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)));
+            string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
+            await e.Channel.SendMessageAsync(localizedSpoiler);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageReactionEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
+            if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
             if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;
 
-            ReactionsService gdata = shard.Services.GetService<ReactionsService>();
+            ReactionsService rs = shard.Services.GetService<ReactionsService>();
 
-            EmojiReaction triggeredEmojiReaction = gdata.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
-                .Shuffle()
-                .FirstOrDefault();
-
-            if (!(triggeredEmojiReaction is null) && e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
-                try {
-                    var emoji = DiscordEmoji.FromName(shard.Client, triggeredEmojiReaction.Response);
-                    await e.Message.CreateReactionAsync(emoji);
-                } catch (ArgumentException) {
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == e.Guild.Id && er.HasSameResponseAs(triggeredEmojiReaction)));
-                        await db.SaveChangesAsync();
+            if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
+                EmojiReaction? er = rs.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
+                    .Shuffle()
+                    .FirstOrDefault();
+                
+                // TODO move to service
+                if (er is { }) {
+                    try {
+                        var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
+                        await e.Message.CreateReactionAsync(emoji);
+                    } catch (ArgumentException) {
+                        using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
+                            db.EmojiReactions.RemoveRange(
+                                db.EmojiReactions
+                                    .Where(r => r.GuildIdDb == (long)e.Guild.Id)
+                                    .AsEnumerable()
+                                    .Where(r => r.HasSameResponseAs(er))
+                            );
+                            await db.SaveChangesAsync();
+                        }
                     }
                 }
             }
 
-            TextReaction triggeredTextReaction = gdata.FindMatchingTextReaction(e.Guild.Id, e.Message.Content);
-            if (!(triggeredTextReaction is null) && triggeredTextReaction.CanSend())
-                await e.Channel.SendMessageAsync(triggeredTextReaction.Response.Replace("%user%", e.Author.Mention));
+            TextReaction? tr = rs.FindMatchingTextReaction(e.Guild.Id, e.Message.Content);
+            // TODO move to service
+            if (tr is { } && tr.CanSend())
+                await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
         }
 
         [AsyncEventListener(DiscordEventType.MessageDeleted)]
         public static async Task MessageDeleteEventHandlerAsync(TheGodfatherShard shard, MessageDeleteEventArgs e)
         {
-            if (e.Channel.IsPrivate || e.Message is null)
+            if (e.Guild is null || e.Message is null)
                 return;
 
-            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
-            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
+
+            if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out GuildConfigService gcs))
                 return;
 
             if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Message deleted", null, DiscordEventType.MessageDeleted);
-            emb.AddField("Channel", e.Channel.Mention, inline: true);
-            emb.AddField("Author", e.Message.Author?.Mention, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, "evt-msg-del");
+            emb.AddLocalizedTitleField("str-chn", e.Channel.Mention, inline: true);
+            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
 
-            DiscordAuditLogMessageEntry entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
-            if (!(entry is null)) {
-                DiscordMember member = await e.Guild.GetMemberAsync(entry.UserResponsible.Id);
-                if (!(member is null) && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id).ToList()))
+            DiscordAuditLogMessageEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
+            if (entry is { }) {
+                DiscordMember? member = await e.Guild.GetMemberAsync(entry.UserResponsible.Id);
+                if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id)))
                     return;
-                emb.AddInvocationFields(entry.UserResponsible);
-                emb.AddField("Reason", entry.Reason, null);
-                emb.WithTimestampFooter(entry.CreationTimestamp, entry.UserResponsible.AvatarUrl);
+                emb.AddFieldsFromAuditLogEntry(entry);
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
-                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : FormatterExt.StripMarkdown(e.Message.Content.Truncate(1000)))}");
-                if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content))
-                    emb.WithDescription(Formatter.Italic("Message contained a filter."));
+                string sanitizedContent = Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content.Truncate(1000)));
+                emb.AddLocalizedTitleField("str-content", sanitizedContent, inline: true);
+                if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
+                    LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+                    emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, "rsn-filter-match")));
+                }
             }
             if (e.Message.Embeds.Any())
-                emb.AddField("Embeds", e.Message.Embeds.Count.ToString(), inline: true);
+                emb.AddLocalizedTitleField("str-embeds", e.Message.Embeds.Count, inline: true);
             if (e.Message.Reactions.Any())
-                emb.AddField("Reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()), inline: true, sep: " ");
-            if (e.Message.Attachments.Any())
-                emb.AddField("Attachments", e.Message.Attachments.Select(a => a.FileName), inline: true);
-            if (e.Message.CreationTimestamp != null)
-                emb.AddField("Message creation time", e.Message.CreationTimestamp.ToUtcTimestamp(), inline: true);
+                emb.AddLocalizedTitleField("str-reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).Humanize(" "), inline: true);
+            if (e.Message.Attachments.Any()) {
+                emb.AddLocalizedTitleField("str-attachments", e.Message.Attachments.Select(a => ToMaskedUrl(a)).Humanize("\n"), inline: true);
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
+                static string ToMaskedUrl(DiscordAttachment a)
+                    => Formatter.MaskedUrl($"{a.FileName} ({a.FileSize.ToMetric(decimals: 0)}B)", new Uri(a.Url));
+            }
+            if (e.Message.CreationTimestamp is { })
+                emb.AddLocalizedTimestampField("str-created-at", e.Message.CreationTimestamp, inline: true);
+
+            await logService.LogAsync(e.Channel.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.MessageUpdated)]
         public static async Task MessageUpdateEventHandlerAsync(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
-            if (e.Author is null || e.Author.IsBot || e.Channel is null || e.Channel.IsPrivate || e.Message is null)
+            if (e.Guild is null || (e.Author?.IsBot ?? false) || e.Channel is null || e.Message is null || e.Author is null)
                 return;
 
             if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
@@ -200,37 +238,59 @@ namespace TheGodfather.EventListeners
             if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
-            if (!(e.Message.Content is null) && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+            if (e.Message.Content is { } && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
-                    await e.Message.DeleteAsync("_gf: Filter hit after update");
-                    await e.Channel.SendMessageAsync($"{e.Author.Mention} said: {FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)))}");
+                    await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
+                    string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)));
+                    string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
+                    await e.Channel.SendMessageAsync(localizedSpoiler);
                 } catch {
-
+                    // TODO
                 }
             }
 
-            GuildConfigService gcs = shard.Services.GetService<GuildConfigService>();
-            if (gcs.GetLogChannelForGuild(e.Channel.Guild) is null || gcs.IsChannelExempted(e.Channel.GuildId, e.Channel.Id, e.Channel.ParentId))
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
+
+            if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out GuildConfigService gcs))
                 return;
 
             DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
-            if (!(member is null) && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id).ToList()))
+            if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.Select(r => r.Id)))
                 return;
 
-            string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
-            string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);
-            string ctime = e.Message.CreationTimestamp == null ? "Unknown" : e.Message.CreationTimestamp.ToUtcTimestamp();
-            string etime = e.Message.EditedTimestamp is null ? "Unknown" : e.Message.EditedTimestamp.Value.ToUtcTimestamp();
-            string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
-            string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
+            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);
+            emb.WithLocalizedTitle(DiscordEventType.MessageUpdated, "evt-msg-upd", desc: jumplink);
+            emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
+            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
 
-            var emb = new DiscordLogEmbedBuilder("Message updated", Formatter.MaskedUrl("Jump to message", e.Message.JumpLink), DiscordEventType.MessageUpdated);
-            emb.AddField("Location", e.Channel.Mention, inline: true);
-            emb.AddField("Author", e.Message.Author?.Mention, inline: true);
-            emb.AddField("Before update", $"Created {ctime}\n{bextra}\nContent:{Formatter.BlockCode(FormatterExt.StripMarkdown(pcontent))}");
-            emb.AddField("After update", $"Edited {etime}\n{aextra}\nContent:{Formatter.BlockCode(FormatterExt.StripMarkdown(acontent))}");
+            emb.AddLocalizedContentField(
+                "str-upd-bef",
+                "fmt-msg-cre",
+                inline: false,
+                ls.GetLocalizedTime(e.Guild.Id, e.Message.CreationTimestamp, unknown: true),
+                e.MessageBefore?.Embeds?.Count ?? 0,
+                e.MessageBefore?.Reactions?.Count ?? 0,
+                e.MessageBefore?.Attachments?.Count ?? 0,
+                FormatContent(e.MessageBefore)
+            );
+            emb.AddLocalizedContentField(
+                "str-upd-aft",
+                "fmt-msg-upd",
+                inline: true,
+                ls.GetLocalizedTime(e.Guild.Id, e.Message.EditedTimestamp, unknown: true),
+                e.Message.Embeds?.Count ?? 0,
+                e.Message.Reactions?.Count ?? 0,
+                e.Message.Attachments?.Count ?? 0,
+                FormatContent(e.Message)
+            );
 
-            await shard.Services.GetService<LoggingService>().LogAsync(e.Channel.Guild, emb);
+            await logService.LogAsync(e.Channel.Guild, emb);
+
+
+            static string? FormatContent(DiscordMessage? msg) 
+                => string.IsNullOrWhiteSpace(msg?.Content) ? null : Formatter.BlockCode(msg.Content.Truncate(700));
         }
     }
 }

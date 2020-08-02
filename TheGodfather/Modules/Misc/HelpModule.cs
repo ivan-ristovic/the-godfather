@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Misc
 
 
         [Command("help")]
+        [Aliases("?", "??", "???")]
         //[RequirePrefixes("a", "b")]
         //[RequireBotPermissions(Permissions.Administrator | Permissions.KickMembers)]
         public async Task HelpAsync(CommandContext ctx)
