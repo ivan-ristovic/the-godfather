@@ -289,8 +289,35 @@ namespace TheGodfather.EventListeners
             await logService.LogAsync(e.Channel.Guild, emb);
 
 
-            static string? FormatContent(DiscordMessage? msg) 
+            static string? FormatContent(DiscordMessage? msg)
                 => string.IsNullOrWhiteSpace(msg?.Content) ? null : Formatter.BlockCode(msg.Content.Truncate(700));
+        }
+        
+        [AsyncEventListener(DiscordEventType.MessageReactionsCleared)]
+        public static Task MessageReactionsClearedEventHandlerAsync(TheGodfatherShard shard, MessageReactionsClearEventArgs e)
+        {
+            if (e.Guild is null || e.Channel is null || e.Message is null)
+                return Task.CompletedTask;
+
+            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
+                return Task.CompletedTask;
+
+            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+                return Task.CompletedTask;
+
+            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return Task.CompletedTask;
+
+            if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
+                return Task.CompletedTask;
+            
+            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+
+            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);
+            emb.WithLocalizedTitle(DiscordEventType.MessageReactionsCleared, "evt-msg-reactions-clear", desc: jumplink);
+            emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
+            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
+            return logService.LogAsync(e.Channel.Guild, emb);
         }
     }
 }

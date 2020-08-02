@@ -54,6 +54,7 @@
   "evt-invoke-target": "Target",
   "evt-msg-del": "Message deleted",
   "evt-msg-del-bulk": "Bulk message delete occured",
+  "evt-msg-reactions-clear": "Message reactions cleared",
   "evt-msg-upd": "Message updated",
   "evt-presence-upd": "Presence updated",
   "evt-usr-responsible": "User responsible",
