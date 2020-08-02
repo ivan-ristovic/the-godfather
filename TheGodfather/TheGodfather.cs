@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -160,13 +161,13 @@ namespace TheGodfather
             Log.Information("Creating {ShardCount} shard(s)", cfg.CurrentConfiguration.ShardCount);
             for (int i = 0; i < cfg.CurrentConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, sharedServices);
-                shard.Initialize(e => RegisterPeriodicTasks(cfg));
+                shard.Initialize();
                 _shards.Add(shard);
             }
 
             Log.Information("Booting the shards");
 
-            await Task.WhenAll(_shards.Select(s => s.StartAsync()));
+            await Task.WhenAll(_shards.Select(s => s.StartAsync())).ContinueWith(_ => RegisterPeriodicTasks(cfg));
         }
 
         private static Task RegisterPeriodicTasks(BotConfigService cfg)

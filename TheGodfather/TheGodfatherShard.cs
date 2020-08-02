@@ -56,9 +56,9 @@ namespace TheGodfather
             await this.Client.ConnectAsync();
         }
 
-        public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadComplete)
+        public void Initialize()
         {
-            this.SetupClient(onGuildDownloadComplete);
+            this.SetupClient();
             this.SetupCommands();
             this.SetupInteractivity();
             this.SetupVoice();
@@ -67,7 +67,7 @@ namespace TheGodfather
         }
 
 
-        private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadComplete)
+        private void SetupClient()
         {
             var cfg = new DiscordConfiguration {
                 Token = this.Config.Token,
@@ -87,7 +87,6 @@ namespace TheGodfather
                 Log.Information("Client ready!");
                 return Task.CompletedTask;
             };
-            this.Client.GuildDownloadCompleted += onGuildDownloadComplete;
         }
 
         private void SetupCommands()
