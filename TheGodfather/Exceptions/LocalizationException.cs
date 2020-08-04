@@ -6,6 +6,7 @@ namespace TheGodfather.Exceptions
     public class LocalizationException : LocalizedException
     {
         // TODO remove
+        [Obsolete]
         public LocalizationException(string message, Exception inner)
             : base(null, message, inner)
         {
@@ -20,7 +21,7 @@ namespace TheGodfather.Exceptions
         }
 
         public LocalizationException(CommandContext ctx, params object[]? args)
-            : base(ctx, "cmd-err-loc", args)
+            : base(ctx, args)
         {
 
         }

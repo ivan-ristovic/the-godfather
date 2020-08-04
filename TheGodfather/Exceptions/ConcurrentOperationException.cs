@@ -6,11 +6,13 @@ namespace TheGodfather.Exceptions
     public class ConcurrentOperationException : LocalizedException
     {
         // TODO remove
+        [Obsolete]
         public ConcurrentOperationException(string message)
             : base("")
         {
             throw new InvalidOperationException();
         }
+        [Obsolete]
         public ConcurrentOperationException(string message, Exception inner)
             : base("")
         {

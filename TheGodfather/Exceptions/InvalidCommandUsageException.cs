@@ -6,11 +6,13 @@ namespace TheGodfather.Exceptions
     public class InvalidCommandUsageException : LocalizedException
     {
         // TODO remove
+        [Obsolete]
         public InvalidCommandUsageException(string? message = null)
             : base("")
         {
             throw new InvalidOperationException();
         }
+        [Obsolete]
         public InvalidCommandUsageException(string message, Exception inner)
             : base("")
         {
