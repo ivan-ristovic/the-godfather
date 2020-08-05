@@ -46,20 +46,15 @@ namespace TheGodfather.Modules.Games
 
                 await dm.EmbedAsync("What is the secret word?", Emojis.Question, this.ModuleColor);
                 await this.InformAsync(ctx, Emojis.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
-                InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(
-                    dm,
-                    ctx.Channel.Id,
-                    ctx.User.Id,
-                    ctx.Services.GetService<InteractivityService>()
-                );
-                if (mctx.TimedOut) {
+                DiscordMessage? reply = await ctx.WaitForDmReplyAsync(dm, ctx.User);
+                if (reply is null) {
                     await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {
-                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Result.Content)}", Emojis.Information, this.ModuleColor);
+                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(reply.Content)}", Emojis.Information, this.ModuleColor);
                 }
 
-                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Result.Content, mctx.Result.Author);
+                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, reply.Content, reply.Author);
                 this.Service.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync();

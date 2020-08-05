@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
                     throw new InvalidCommandUsageException("Please specify a name and URL pointing to an emoji image or attach an image.");
             }
 
-            if (!await url.IsValidImageUriAsync())
+            if (!await url.ContentTypeHeaderIsImageAsync())
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {

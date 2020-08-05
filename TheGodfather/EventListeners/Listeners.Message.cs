@@ -129,7 +129,7 @@ namespace TheGodfather.EventListeners
             
             // TODO automatize, same below in message update handler
             await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-            string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)));
+            string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));
             string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
             await e.Channel.SendMessageAsync(localizedSpoiler);
         }
@@ -203,7 +203,7 @@ namespace TheGodfather.EventListeners
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
-                string sanitizedContent = Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content.Truncate(1000)));
+                string sanitizedContent = Formatter.BlockCode(Formatter.Strip(e.Message.Content.Truncate(1000)));
                 emb.AddLocalizedTitleField("str-content", sanitizedContent, inline: true);
                 if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
                     LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
@@ -242,7 +242,7 @@ namespace TheGodfather.EventListeners
             if (e.Message.Content is { } && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-                    string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(FormatterExt.StripMarkdown(e.Message.Content)));
+                    string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));
                     string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
                     await e.Channel.SendMessageAsync(localizedSpoiler);
                 } catch {

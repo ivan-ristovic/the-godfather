@@ -15,23 +15,39 @@ namespace TheGodfather.Modules
     public abstract class TheGodfatherModule : BaseCommandModule
     {
         // TODO remove dbb once all services are made
-        public DbContextBuilder Database { get; }
+        [Obsolete]
+        public DbContextBuilder Database { get; } = null!;
 
         public DiscordColor ModuleColor { get; }
 
 
-        // TODO remove dbb once all services are made
-        protected TheGodfatherModule(DbContextBuilder dbb)
+        protected TheGodfatherModule()
         {
-            this.Database = dbb;
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
             this.ModuleColor = moduleAttr?.Module.ToDiscordColor() ?? DiscordColor.Green;
         }
 
+        // TODO remove
+        [Obsolete]
+        protected TheGodfatherModule(DbContextBuilder dbb)
+            : this()
+        {
+            this.Database = dbb;
+        }
 
+
+        // TODO remove
+        [Obsolete]
+        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb)
+            => ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb.WithColor(this.ModuleColor));
+
+        // TODO remove
+        [Obsolete]
         protected Task InformAsync(CommandContext ctx, string? message = null, string? emoji = null, bool important = true)
             => this.InformAsync(ctx, (emoji is null ? Emojis.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
+        // TODO remove
+        [Obsolete]
         protected async Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string? message = null, bool important = true)
         {
             ulong gid = ctx.Guild?.Id ?? 0;
@@ -50,6 +66,8 @@ namespace TheGodfather.Modules
             }
         }
 
+        // TODO remove
+        [Obsolete]
         protected Task InformFailureAsync(CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
@@ -57,8 +75,5 @@ namespace TheGodfather.Modules
                 Color = DiscordColor.IndianRed
             });
         }
-
-        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb) 
-            => ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb.WithColor(this.ModuleColor));
     }
 }

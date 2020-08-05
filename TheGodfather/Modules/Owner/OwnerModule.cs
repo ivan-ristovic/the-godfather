@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Owner
         public async Task AnnounceAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(FormatterExt.StripMarkdown(message))}"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(Formatter.Strip(message))}"))
                 return;
 
             var emb = new DiscordEmbedBuilder {
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Owner
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] Uri url)
         {
-            if (!await url.IsValidImageUriAsync())
+            if (!await url.ContentTypeHeaderIsImageAsync())
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
@@ -343,7 +343,7 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            IReadOnlyList<Command> commands = ctx.CommandsNext.GetAllRegisteredCommands();
+            IReadOnlyList<Command> commands = ctx.CommandsNext.GetRegisteredCommands();
             var modules = commands
                 .GroupBy(c => ModuleAttribute.AttachedTo(c))
                 .OrderBy(g => g.Key.Module)

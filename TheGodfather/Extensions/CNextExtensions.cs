@@ -1,11 +1,10 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
-#endregion
+using Serilog;
 
 namespace TheGodfather.Extensions
 {
@@ -15,19 +14,25 @@ namespace TheGodfather.Extensions
         {
             assembly ??= Assembly.GetExecutingAssembly();
 
-            Type iargc = typeof(IArgumentConverter);
-            IEnumerable<Type> cs = assembly
+            Type argConvType = typeof(IArgumentConverter);
+            IEnumerable<Type> converterTypes = assembly
                 .GetTypes()
-                .Where(t => iargc.IsAssignableFrom(t) && !t.IsAbstract)
+                .Where(t => argConvType.IsAssignableFrom(t) && !t.IsAbstract)
                 ;
-            foreach (Type c in cs) {
-                object? instance = Activator.CreateInstance(c);
-                if (instance is { })
-                    cnext.RegisterConverter((dynamic)instance);
+            foreach (Type converterType in converterTypes) {
+                try {
+                    object? converterInstance = Activator.CreateInstance(converterType);
+                    if (converterInstance is { }) {
+                        cnext.RegisterConverter((dynamic)converterInstance);
+                        Log.Verbose("Registered converter: {Converter}", converterType.FullName);
+                    }
+                } catch {
+                    Log.Error("Failed to register converter: {Converter}", converterType.FullName);
+                }
             }
         }
 
-        public static IReadOnlyList<Command> GetAllRegisteredCommands(this CommandsNextExtension cnext)
+        public static IReadOnlyList<Command> GetRegisteredCommands(this CommandsNextExtension cnext)
         {
             return cnext.RegisteredCommands
                 .SelectMany(cnext.CommandSelector)
@@ -36,17 +41,16 @@ namespace TheGodfather.Extensions
                 .AsReadOnly();
         }
 
-        public static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, KeyValuePair<string, Command> c)
+
+        private static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, KeyValuePair<string, Command> c)
             => cnext.CommandSelector(c.Value);
 
-        public static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, Command c)
+        private static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, Command c)
         {
             Command[] arr = new[] { c };
-
-            if (c is CommandGroup group)
-                return arr.Concat(group.Children.SelectMany(cnext.CommandSelector));
-
-            return arr;
+            return c is CommandGroup group
+                ? arr.Concat(group.Children.SelectMany(cnext.CommandSelector))
+                : arr;
         }
     }
 }

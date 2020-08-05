@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task<bool> AddFilterAsync(ulong gid, string regexString)
         {
-            if (!regexString.IsValidRegexString())
+            if (!regexString.TryParseRegex(out _))
                 throw new ArgumentException("Invalid regex string.", nameof(regexString));
 
             ConcurrentHashSet<Filter> fs = this.filters.GetOrAdd(gid, new ConcurrentHashSet<Filter>());
@@ -73,9 +73,10 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
+        // TODO optimize, parsing regex twice
         public async Task<bool> AddFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
         {
-            if (regexStrings.Any(s => !s.IsValidRegexString()))
+            if (regexStrings.Any(s => !s.TryParseRegex(out _)))
                 throw new ArgumentException("Collection contains an invalid regex string.", nameof(regexStrings));
 
             bool[] res = await Task.WhenAll(regexStrings.Select(s => this.AddFilterAsync(gid, s)));

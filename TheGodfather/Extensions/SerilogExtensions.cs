@@ -11,7 +11,7 @@ using Serilog.Events;
 
 namespace TheGodfather.Extensions
 {
-    public sealed class Enrichers
+    internal sealed class Enrichers
     {
         public sealed class ThreadIdEnricher : ILogEventEnricher
         {
@@ -32,7 +32,7 @@ namespace TheGodfather.Extensions
         }
     }
 
-    public static class LogExt
+    internal static class LogExt
     {
         public static void Event(object? _, DebugLogMessageEventArgs e)
         {
@@ -171,7 +171,7 @@ namespace TheGodfather.Extensions
             => InternalLogContext(LogEventLevel.Fatal, ctx, ex, template, propertyValues);
 
 
-        private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception ex, string template, params object[] propertyValues)
+        private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception? ex, string template, params object[] propertyValues)
         {
             object[] allPropertyValues = ctx.Guild is { }
                 ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
@@ -181,7 +181,7 @@ namespace TheGodfather.Extensions
             InternalLogMany(level, ctx.Client.ShardId, new[] { template, "{User}", "{Guild}", "{Channel}" }, ex, allPropertyValues);
         }
 
-        private static void InternalLog(LogEventLevel level, int shardId, string template, Exception ex = null, object[] propertyValues = null)
+        private static void InternalLog(LogEventLevel level, int shardId, string template, Exception? ex = null, object[]? propertyValues = null)
         {
 #pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
@@ -189,7 +189,7 @@ namespace TheGodfather.Extensions
 #pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
 
-        private static void InternalLogMany(LogEventLevel level, int shardId, string[] templates, Exception ex = null, object[] propertyValues = null)
+        private static void InternalLogMany(LogEventLevel level, int shardId, string[] templates, Exception? ex = null, object[]? propertyValues = null)
         {
 #pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))

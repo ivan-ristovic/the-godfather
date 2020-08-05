@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Misc
                     throw new InvalidCommandUsageException("Please specify a name and a URL pointing to a meme image or attach it manually.");
             }
 
-            if (!await url.IsValidImageUriAsync())
+            if (!await url.ContentTypeHeaderIsImageAsync())
                 throw new InvalidCommandUsageException("URL must point to an image.");
 
             if (name.Length > 30 || url.OriginalString.Length > 120)

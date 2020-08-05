@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
             if (url is null)
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!await url.IsValidImageUriAsync())
+            if (!await url.ContentTypeHeaderIsImageAsync())
                 throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {

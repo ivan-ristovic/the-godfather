@@ -287,7 +287,7 @@ namespace TheGodfather.EventListeners
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
             foreach (DiscordGuild guild in guilds) {
-                if (await e.UserAfter.IsMemberOfGuildAsync(guild)) {
+                if (await e.UserAfter.IsMemberOfAsync(guild)) {
                     if (!LoggingService.IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                         return;
 

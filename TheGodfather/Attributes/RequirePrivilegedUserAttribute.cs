@@ -13,7 +13,7 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.Client.OwnersContain(ctx.User.Id))
+            if (ctx.Client.IsOwnedBy(ctx.User))
                 return Task.FromResult(true);
 
             using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())

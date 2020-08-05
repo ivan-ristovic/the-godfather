@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Games.Common
                 msg => {
                     if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
                         return false;
-                    int errors = quote.LevenshteinDistance(this.PrepareText(msg.Content));
+                    int errors = quote.LevenshteinDistanceTo(this.PrepareText(msg.Content));
                     if (errors > 50)
                         return false;
                     this.results.AddOrUpdate(msg.Author, errors, (k, v) => Math.Min(errors, v));

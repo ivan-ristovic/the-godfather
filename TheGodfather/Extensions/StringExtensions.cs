@@ -1,19 +1,19 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
-#endregion
 
 namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
-        public static bool IsValidRegexString(this string pattern)
+        public static bool TryParseRegex(this string pattern, out Regex? regex, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
         {
+            regex = null;
+
             if (string.IsNullOrEmpty(pattern))
                 return false;
 
             try {
-                Regex.Match("", pattern);
+                regex = new Regex(escape ? Regex.Escape(pattern) : pattern, options);
             } catch (ArgumentException) {
                 return false;
             }
@@ -22,7 +22,7 @@ namespace TheGodfather.Extensions
         }
 
         // http://www.dotnetperls.com/levenshtein
-        public static int LevenshteinDistance(this string s, string t)
+        public static int LevenshteinDistanceTo(this string s, string t)
         {
             int n = s.Length;
             int m = t.Length;
@@ -58,23 +58,7 @@ namespace TheGodfather.Extensions
             return d[n, m];
         }
 
-        public static bool TryParseRegex(this string pattern, out Regex result)
-        {
-            result = null;
-            if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegexString(pattern))
-                return false;
-
-            result = ToRegex(pattern, escape: false);
-            return true;
-        }
-
-        public static Regex ToRegex(this string pattern, bool escape = false)
-        {
-            if (string.IsNullOrEmpty(pattern))
-                throw new ArgumentException("Provided string was empty", nameof(pattern));
-
-            string rstr = pattern.ToLowerInvariant();
-            return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
-        }
+        public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false) 
+            => TryParseRegex(pattern, out Regex? regex, options, escape) && regex is { } ? regex : throw new ArgumentException("Not a valid regex string");
     }
 }

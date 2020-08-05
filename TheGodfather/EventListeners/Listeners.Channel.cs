@@ -91,7 +91,7 @@ namespace TheGodfather.EventListeners
             if (pinned.Any()) {
                 emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embed>" : pinned.First().Content;
-                emb.AddLocalizedTitleField("str-top-pin-content", Formatter.BlockCode(FormatterExt.StripMarkdown(content.Truncate(900))));
+                emb.AddLocalizedTitleField("str-top-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
             }
             emb.AddLocalizedTimestampField("str-last-pin-timestamp", e.LastPinTimestamp);
 
@@ -114,7 +114,7 @@ namespace TheGodfather.EventListeners
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
 
-            DiscordAuditLogEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync();
+            DiscordAuditLogEntry? entry = await e.Guild.GetRecentAuditLogEntryAsync();
             if (entry is DiscordAuditLogChannelEntry centry) {
                 Log.Verbose("Retrieved channel update information from audit log");
                 emb.WithDescription(centry?.Target?.ToString() ?? e.ChannelBefore.ToString());
@@ -127,10 +127,10 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange.After.Count, unknown: false);
                     if (ent.TopicChange is { }) {
                         string before = Formatter.BlockCode(
-                            FormatterExt.StripMarkdown(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
+                            Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
                         );
                         string after = Formatter.BlockCode(
-                            FormatterExt.StripMarkdown(string.IsNullOrWhiteSpace(ent.TopicChange.After) ? " " : ent.TopicChange.After).Truncate(450, "...")
+                            Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.After) ? " " : ent.TopicChange.After).Truncate(450, "...")
                         );
                         emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
                     }

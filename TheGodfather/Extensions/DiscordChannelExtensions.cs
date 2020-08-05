@@ -1,18 +1,16 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-#endregion
 
 namespace TheGodfather.Extensions
 {
     internal static class DiscordChannelExtensions
     {
-        public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji icon = null, DiscordColor? color = null)
+        public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji? icon = null, DiscordColor? color = null)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {message}",
@@ -26,22 +24,6 @@ namespace TheGodfather.Extensions
                 Description = $"{Emojis.X} {message}",
                 Color = DiscordColor.IndianRed
             });
-        }
-
-        public static async Task<bool> WaitForBoolResponseAsync(this DiscordChannel channel, CommandContext ctx, string question, bool reply = true)
-        {
-            await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.Question} {question} (y/n)",
-                Color = DiscordColor.Yellow
-            });
-
-            if (await ctx.Client.GetInteractivity().WaitForBoolReplyAsync(channel.Id, ctx.User.Id))
-                return true;
-
-            if (reply)
-                await channel.InformFailureAsync("Alright, aborting...");
-
-            return false;
         }
 
         public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)

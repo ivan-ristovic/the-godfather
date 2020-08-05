@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 
 namespace TheGodfather.Common
 {
-    public sealed class SecureRandom
+    public sealed class SecureRandom : IDisposable
     {
         private readonly RandomNumberGenerator rng;
 
@@ -19,7 +19,10 @@ namespace TheGodfather.Common
         {
             this.rng.Dispose();
         }
-
+        
+        
+        public void Dispose() 
+            => this.rng.Dispose();
 
         public bool NextBool(int trueRatio = 1)
         {

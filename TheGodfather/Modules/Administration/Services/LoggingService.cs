@@ -17,7 +17,8 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    // TODO remove and rename new builder
+    // TODO remove
+    [Obsolete]
     public sealed class DiscordLogEmbedBuilder
     {
         public DiscordEmbedBuilder Builder { get; private set; }
@@ -234,12 +235,12 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         // TODO remove
+        [Obsolete]
         public Task LogAsync(DiscordGuild guild, DiscordLogEmbedBuilder embed)
         {
             DiscordChannel logchn = this.gcs.GetLogChannelForGuild(guild);
             return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed.Build());
         }
-        // END remove
 
         public Task LogAsync(DiscordGuild guild, LocalizedEmbedBuilder embed)
         {

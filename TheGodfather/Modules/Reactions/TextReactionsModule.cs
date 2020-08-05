@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Reactions
                 if (validTriggers.Contains(trigger))
                     continue;
 
-                if (!trigger.IsValidRegexString()) {
+                if (!trigger.TryParseRegex(out _)) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Reactions
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (regex && !trigger.IsValidRegexString())
+            if (regex && !trigger.TryParseRegex(out _))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
             if (this.Service.GuildHasTextReaction(ctx.Guild.Id, trigger))

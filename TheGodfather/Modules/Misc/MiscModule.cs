@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Red
             };
             if (!string.IsNullOrWhiteSpace(info))
-                emb.AddField("Additional info", Formatter.BlockCode(FormatterExt.StripMarkdown(info)));
+                emb.AddField("Additional info", Formatter.BlockCode(Formatter.Strip(info)));
 
             await ctx.RespondAsync(embed: emb.Build());
         }

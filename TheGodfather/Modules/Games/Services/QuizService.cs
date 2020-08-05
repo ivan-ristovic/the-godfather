@@ -29,10 +29,10 @@ namespace TheGodfather.Modules.Games.Services
 
             IReadOnlyList<QuizCategory> categories = await GetCategoriesAsync().ConfigureAwait(false);
             QuizCategory result = categories
-                ?.OrderBy(c => category.LevenshteinDistance(c.Name.ToLowerInvariant()))
+                ?.OrderBy(c => category.LevenshteinDistanceTo(c.Name.ToLowerInvariant()))
                 .FirstOrDefault();
 
-            if (result is null || category.LevenshteinDistance(result.Name.ToLowerInvariant()) > 2)
+            if (result is null || category.LevenshteinDistanceTo(result.Name.ToLowerInvariant()) > 2)
                 return null;
 
             return result.Id;

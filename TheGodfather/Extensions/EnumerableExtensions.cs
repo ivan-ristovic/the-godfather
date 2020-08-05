@@ -1,35 +1,34 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-#endregion
+using TheGodfather.Common;
 
 namespace TheGodfather.Extensions
 {
     internal static class EnumerableExtensions
     {
-        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> items)
-        {
-            if (!items.Any())
-                return items;
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source) 
+            => source.Shuffle(new SecureRandom());
 
-            using (var provider = RandomNumberGenerator.Create()) {
-                var list = items.ToList();
-                int n = list.Count;
-                while (n > 1) {
-                    byte[] box = new byte[(n / byte.MaxValue) + 1];
-                    int boxSum;
-                    do {
-                        provider.GetBytes(box);
-                        boxSum = box.Sum(b => b);
-                    } while (!(boxSum < n * ((byte.MaxValue * box.Length) / n)));
-                    int k = (boxSum % n);
-                    n--;
-                    T value = list[k];
-                    list[k] = list[n];
-                    list[n] = value;
-                }
-                return list;
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source, SecureRandom rng)
+        {
+            if (source is null) 
+                throw new ArgumentNullException(nameof(source));
+            if (rng is null) 
+                throw new ArgumentNullException(nameof(rng));
+
+            return source.ShuffleIterator(rng);
+        }
+
+
+        private static IEnumerable<T> ShuffleIterator<T>(this IEnumerable<T> source, SecureRandom rng)
+        {
+            var buffer = source.ToList();
+            for (int i = 0; i < buffer.Count; i++) {
+                int j = rng.Next(i, buffer.Count);
+                yield return buffer[j];
+
+                buffer[j] = buffer[i];
             }
         }
     }

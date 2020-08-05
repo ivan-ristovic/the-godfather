@@ -22,7 +22,7 @@ namespace TheGodfather.Attributes
 
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (ctx.Client.OwnersContain(ctx.User.Id) || ctx.User.IsCurrent)
+            if (ctx.User.IsCurrent || ctx.Client.IsOwnedBy(ctx.User))
                 return Task.FromResult(true);
 
             if (ctx.Member is null) {

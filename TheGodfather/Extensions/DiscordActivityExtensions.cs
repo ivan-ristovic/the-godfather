@@ -4,7 +4,7 @@ using Humanizer;
 
 namespace TheGodfather.Extensions
 {
-    public static class DiscordActivityExtensions
+    internal static class DiscordActivityExtensions
     {
         public static string ToDetailedString(this DiscordActivity activity)
         {

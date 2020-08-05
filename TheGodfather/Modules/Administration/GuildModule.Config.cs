@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Administration
                 await this.SetupCurrencyAsync(gcfg, ctx, channel);
 
                 await this.PreviewSettingsAsync(gcfg, ctx, channel, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
-                if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
+                if (await ctx.WaitForBoolReplyAsync("We are almost done! Please review the settings above and say whether you want me to apply them.", channel: channel)) {
                     await this.ApplySettingsAsync(ctx.Services.GetService<GuildConfigService>(), ctx.Guild.Id, gcfg, muteRole, msgSettings, antifloodSettings, antiInstantLeaveSettings);
 
                     DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
@@ -400,7 +400,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordChannel channel = ctx.Guild.Channels.Select(kvp => kvp.Value).FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
 
                 if (channel is null) {
-                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", channel: channel, reply: false)) {
                         try {
                             channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.");
                             await channel.AddOverwriteAsync(await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id), allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
@@ -507,13 +507,13 @@ namespace TheGodfather.Modules.Administration
                 gcfg.ReactionResponse = true;
                 string query = "By default I am sending verbose messages whenever a command is executed, " +
                                "but I can also silently react. Should I continue with the verbose replies?";
-                if (!await channel.WaitForBoolResponseAsync(ctx, query, reply: false))
+                if (!await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false))
                     gcfg.ReactionResponse = false;
             }
 
             private async Task SetupPrefixAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix?", reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync("Do you wish to change the prefix?", channel: channel, reply: false)) {
                     await channel.EmbedAsync("What will the new prefix be (max 8 characters)?");
                     InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.Author == ctx.User && m.Content.Length <= 8);
                     gcfg.Prefix = mctx.TimedOut ? null : mctx.Result.Content;
@@ -524,7 +524,7 @@ namespace TheGodfather.Modules.Administration
             {
                 string query = "Do you wish to enable command suggestions for those nasty times when you " +
                                "just can't remember the command name?";
-                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, query, reply: false);
+                gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false);
             }
 
             private async Task SetupLoggingAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
@@ -536,7 +536,7 @@ namespace TheGodfather.Modules.Administration
                                   $"tell me where to send the log messages. Please reply with a channel " +
                                   $"mention, for example {Formatter.Bold("#logs")}";
 
-                if (await channel.WaitForBoolResponseAsync(ctx, logQuery, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(logQuery, channel: channel, reply: false)) {
                     await channel.EmbedAsync(chnQuery);
                     InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.ChannelId == channel.Id &&
@@ -560,7 +560,7 @@ namespace TheGodfather.Modules.Administration
                     string query = $"I can also send a {(welcome ? "welcome" : "leave")} message when someone " +
                                    $"{(welcome ? "joins" : "leaves")} the guild. Do you wish to enable this feature?";
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         query = $"I will need a channel where to send the {(welcome ? "welcome" : "leave")}" +
                                 " messages. Please reply with a channel mention, for example: " +
                                 $"{Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}";
@@ -580,7 +580,7 @@ namespace TheGodfather.Modules.Administration
                         string message = null;
                         query = $"You can also customize the {(welcome ? "welcome" : "leave")} message. " +
                                 "Do you want to do that now?";
-                        if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                        if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                             query = "Tell me what message you want me to send. Note that you can use the " +
                                     $"wildcard {Formatter.Bold("%user%")} and I will replace it with the " +
                                     "member mention.";
@@ -602,13 +602,13 @@ namespace TheGodfather.Modules.Administration
 
             private async Task SetupLinkfilterAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering?", reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync("Do you wish to enable link filtering?", channel: channel, reply: false)) {
                     gcfg.LinkfilterSettings.Enabled = true;
-                    gcfg.LinkfilterSettings.BlockDiscordInvites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false);
-                    gcfg.LinkfilterSettings.BlockBooterWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false);
-                    gcfg.LinkfilterSettings.BlockIpLoggingWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false);
-                    gcfg.LinkfilterSettings.BlockDisturbingWebsites = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false);
-                    gcfg.LinkfilterSettings.BlockUrlShorteners = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false);
+                    gcfg.LinkfilterSettings.BlockDiscordInvites = await ctx.WaitForBoolReplyAsync("Do you wish to enable Discord invite links filtering?", channel: channel, reply: false);
+                    gcfg.LinkfilterSettings.BlockBooterWebsites = await ctx.WaitForBoolReplyAsync("Do you wish to enable DDoS/Booter websites filtering?", channel: channel, reply: false);
+                    gcfg.LinkfilterSettings.BlockIpLoggingWebsites = await ctx.WaitForBoolReplyAsync("Do you wish to enable IP logging websites filtering?", channel: channel, reply: false);
+                    gcfg.LinkfilterSettings.BlockDisturbingWebsites = await ctx.WaitForBoolReplyAsync("Do you wish to enable disturbing/shock/gore websites filtering?", channel: channel, reply: false);
+                    gcfg.LinkfilterSettings.BlockUrlShorteners = await ctx.WaitForBoolReplyAsync("Do you wish to enable URL shorteners filtering?", channel: channel, reply: false);
                 }
             }
 
@@ -616,7 +616,7 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordRole muteRole = null;
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync("Do you wish to manually set the mute role for this guild?", channel: channel, reply: false)) {
                     await channel.EmbedAsync("Which role will it be?");
                     InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id &&
@@ -643,11 +643,11 @@ namespace TheGodfather.Modules.Administration
                 string query = "Ratelimit watch is a feature that automatically punishes users that post " +
                                "more than specified amount of messages in a 5s timespan. Do you wish to " +
                                "enable ratelimit watch?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                     gcfg.RatelimitSettings.Enabled = true;
 
                     query = $"Do you wish to change the default ratelimit action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && new PunishmentActionConverter().TryConvert(m.Content, out _)
@@ -660,7 +660,7 @@ namespace TheGodfather.Modules.Administration
 
                     query = "Do you wish to change the default ratelimit sensitivity aka number of messages " +
                             $"in 5s window before the action is triggered ({gcfg.RatelimitSettings.Sensitivity})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 4 && sens <= 10
@@ -675,11 +675,11 @@ namespace TheGodfather.Modules.Administration
             {
                 string query = "Antispam is a feature that automatically punishes users that post the same " +
                                "message more than specified amount of times. Do you wish to enable antispam?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                     gcfg.AntispamSettings.Enabled = true;
 
                     query = $"Do you wish to change the default antispam action ({gcfg.RatelimitSettings.Action.ToTypeString()})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && new PunishmentActionConverter().TryConvert(m.Content, out _)
@@ -692,7 +692,7 @@ namespace TheGodfather.Modules.Administration
 
                     query = "Do you wish to change the default antispam sensitivity aka number of same messages " +
                             $"allowed before the action is triggered ({gcfg.AntispamSettings.Sensitivity})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [3, 10]");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 3 && sens <= 10
@@ -709,12 +709,12 @@ namespace TheGodfather.Modules.Administration
 
                 string query = "Antiflood watch is a feature that automatically punishes users that flood " +
                                "(raid) the guild. Do you wish to enable antiflood watch?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                     antifloodSettings.Enabled = true;
 
                     query = $"Do you wish to change the default antiflood action " +
                             $"({antifloodSettings.Action.ToTypeString()})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         query = "Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan";
                         await channel.EmbedAsync(query);
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
@@ -728,7 +728,7 @@ namespace TheGodfather.Modules.Administration
 
                     query = $"Do you wish to change the default antiflood user quota after which the " +
                             $"action will be applied ({antifloodSettings.Sensitivity})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short sens) && sens >= 2 && sens <= 20
@@ -739,7 +739,7 @@ namespace TheGodfather.Modules.Administration
 
                     query = $"Do you wish to change the default cooldown time " +
                             $"({antifloodSettings.Cooldown})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short cooldown) && cooldown >= 5 && cooldown <= 60
@@ -759,12 +759,12 @@ namespace TheGodfather.Modules.Administration
                 string query = "Instant leave watch is a feature that automatically punishes users that enter " +
                                "and instantly leave the guild (no idea why they do this, I assume ads). " +
                                "Do you wish to enable instant leave watch?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                     antiInstantLeaveSettings.Enabled = true;
 
                     query = $"Do you wish to change the default time window after which the new user will" +
                             $"not be punished ({antiInstantLeaveSettings.Cooldown})?";
-                    if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                         await channel.EmbedAsync("Please specify the time window in seconds. Valid range: [2, 20]");
                         InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && short.TryParse(m.Content, out short cooldown) && cooldown >= 2 && cooldown <= 20
@@ -780,7 +780,7 @@ namespace TheGodfather.Modules.Administration
             private async Task SetupCurrencyAsync(CachedGuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
             {
                 string query = "Do you wish to change the currency for this guild (default: credit)?";
-                if (await channel.WaitForBoolResponseAsync(ctx, query, reply: false)) {
+                if (await ctx.WaitForBoolReplyAsync(query, channel: channel, reply: false)) {
                     query = "Please specify the new currency (can also be an emoji). Note: Currency name " +
                             "cannot be longer than 30 characters.";
                     await channel.EmbedAsync(query);

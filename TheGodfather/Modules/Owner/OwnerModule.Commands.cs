@@ -137,7 +137,7 @@ public sealed class DynamicCommands : TheGodfatherModule
             {
                 return ctx.SendCollectionInPagesAsync(
                     "Registered top level commands",
-                    ctx.CommandsNext.GetAllRegisteredCommands().OrderBy(cmd => cmd.QualifiedName),
+                    ctx.CommandsNext.GetRegisteredCommands().OrderBy(cmd => cmd.QualifiedName),
                     cmd => cmd.QualifiedName,
                     this.ModuleColor,
                     10

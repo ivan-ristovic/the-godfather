@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Currency.Common
 
                     await this.PrintGameAsync(msg, participant);
 
-                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id))
+                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel, participant.User))
                         participant.Hand.Add(this.deck.GetNextCard());
                     else
                         participant.Standing = true;

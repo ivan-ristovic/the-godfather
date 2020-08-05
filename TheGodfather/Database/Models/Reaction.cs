@@ -75,23 +75,11 @@ namespace TheGodfather.Database.Models
         public abstract void CacheDbTriggers();
 
 
-        public bool AddTrigger(string trigger, bool isRegex = false)
-        {
-            Regex regex;
+        public bool AddTrigger(string trigger, bool isRegex = false) 
+            => trigger.TryParseRegex(out Regex? regex, escape: !isRegex) && regex is { } && this.triggerRegexes.Add(regex);
 
-            if (isRegex)
-                trigger.TryParseRegex(out regex);
-            else
-                Regex.Escape(trigger).TryParseRegex(out regex);
-
-            return this.triggerRegexes.Add(regex);
-        }
-
-        public bool RemoveTrigger(string trigger)
-        {
-            trigger.TryParseRegex(out Regex regex);
-            return this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
-        }
+        public bool RemoveTrigger(string trigger) 
+            => trigger.TryParseRegex(out Regex? regex) && regex is { } && this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
 
         public bool IsMatch(string str)
             => !string.IsNullOrWhiteSpace(str) && this.triggerRegexes.Any(rgx => rgx.IsMatch(str));

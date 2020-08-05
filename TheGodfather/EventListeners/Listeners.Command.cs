@@ -75,7 +75,7 @@ namespace TheGodfather.EventListeners
 
                     CommandService cs = shard.Services.GetRequiredService<CommandService>();
                     IEnumerable<string> ordered = cs.AvailableCommands
-                        .OrderBy(c => cne.CommandName.LevenshteinDistance(c))
+                        .OrderBy(c => cne.CommandName.LevenshteinDistanceTo(c))
                         .Take(3);
                     foreach (string cmd in ordered)
                         emb.AddField(cmd, cs.GetCommandDescription(gid, cmd));

@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Reactions
                 if (validTriggers.Contains(trigger))
                     continue;
 
-                if (!trigger.IsValidRegexString()) {
+                if (!trigger.TryParseRegex(out _)) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -334,7 +334,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (regex && !trigger.IsValidRegexString()) {
+                if (regex && !trigger.TryParseRegex(out _)) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }

@@ -97,8 +97,8 @@ namespace TheGodfather.Modules.Swat
                         .Where(p => p.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase) ||
                                p.Aliases.Any(a => a.Contains(name, StringComparison.InvariantCultureIgnoreCase)))
                         .OrderBy(p => p.Aliases.Any() ?
-                            Math.Min(Math.Abs(p.Name.LevenshteinDistance(name)), p.Aliases.Min(a => Math.Abs(a.LevenshteinDistance(name)))) :
-                            Math.Abs(p.Name.LevenshteinDistance(name))
+                            Math.Min(Math.Abs(p.Name.LevenshteinDistanceTo(name)), p.Aliases.Min(a => Math.Abs(a.LevenshteinDistanceTo(name)))) :
+                            Math.Abs(p.Name.LevenshteinDistanceTo(name))
                         ).Take(amount)
                         .ToList();
                 }
