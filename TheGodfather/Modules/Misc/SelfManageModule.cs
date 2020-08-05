@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Misc
                                        [Description("Role to grant.")] DiscordRole role)
         {
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
+                if (!db.SelfRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }
 
@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Misc
                                          [Description("Role to revoke.")] DiscordRole role)
         {
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (!db.SelfAssignableRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
+                if (!db.SelfRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
                     throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
             }
 

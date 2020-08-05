@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
             // TODO move to service
             try {
                 using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                    IQueryable<long> rids = db.AutoAssignableRoles
+                    IQueryable<long> rids = db.AutoRoles
                         .Where(dbr => dbr.GuildIdDb == (long)e.Guild.Id)
                         .Select(dbr => dbr.RoleIdDb)
                         ;
@@ -76,7 +76,7 @@ namespace TheGodfather.EventListeners
 
 
                     void RemoveRoleFromDb(ulong rid)
-                        => db.AutoAssignableRoles.Remove(new AutoRole { GuildId = e.Guild.Id, RoleId = rid });
+                        => db.AutoRoles.Remove(new AutoRole { GuildId = e.Guild.Id, RoleId = rid });
                 }
             } catch (Exception exc) {
                 LogExt.Warning(e.Client.ShardId, exc, new[] { "Failed to assign auto role(s)", "{Guild}", "{Member}" }, e.Guild, e.Member);

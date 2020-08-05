@@ -3,5 +3,6 @@
   "arg-mem": "@Member",
   "arg-rsn": "Reason reason",
   "suc": "Success!",
-  "err": "Error!"
+  "err": "Error!",
+  "str-404": "Unknown"
 }

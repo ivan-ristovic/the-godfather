@@ -1,4 +1,5 @@
-﻿using TheGodfather.Database;
+﻿using System;
+using TheGodfather.Database;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules
@@ -8,6 +9,13 @@ namespace TheGodfather.Modules
         protected TService Service { get; }
 
 
+        protected TheGodfatherServiceModule(TService service)
+        {
+            this.Service = service;
+        }
+
+        // TODO remove
+        [Obsolete]
         protected TheGodfatherServiceModule(TService service, DbContextBuilder db)
             : base(db)
         {

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
@@ -14,7 +15,6 @@ namespace TheGodfather.Extensions
         public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx)
         {
             InteractivityService ins = ctx.Services.GetRequiredService<InteractivityService>();
-            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
 
             ins.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
@@ -28,11 +28,13 @@ namespace TheGodfather.Extensions
 
         public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
         {
+            var conv = new BoolConverter();
+
             bool response = false;
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
-                m => m.Channel == channel && m.Author == user && new BoolConverter().TryConvert(m.Content, out _)
+                m => m.Channel == channel && m.Author == user && conv.TryConvert(m.Content, out response)
             );
-            return response;
+            return !mctx.TimedOut && response;
         }
     }
 }

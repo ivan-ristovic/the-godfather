@@ -11,8 +11,11 @@ namespace TheGodfather.Services
     {
         public static IServiceCollection AddSharedServices(IServiceCollection services)
         {
+            // TODO automatize
+
             return services
                 .AddSingleton<GuildConfigService>()
+                .AddSingleton<AutoRoleService>()
                 .AddSingleton<BlockingService>()
                 .AddSingleton<CommandRulesService>()
                 .AddSingleton<FilteringService>()

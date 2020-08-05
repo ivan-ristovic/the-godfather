@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing roles to add.");
 
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.SafeAddRange(roles.Select(r => new SelfRole {
+                db.SelfRoles.SafeAddRange(roles.Select(r => new SelfRole {
                     RoleId = r.Id,
                     GuildId = ctx.Guild.Id
                 }));
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.RemoveRange(db.SelfAssignableRoles.Where(sar => sar.GuildId == ctx.Guild.Id && roles.Any(r => r.Id == sar.RoleId)));
+                db.SelfRoles.RemoveRange(db.SelfRoles.Where(sar => sar.GuildId == ctx.Guild.Id && roles.Any(r => r.Id == sar.RoleId)));
                 await db.SaveChangesAsync();
             }
 
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.SelfAssignableRoles.RemoveRange(db.SelfAssignableRoles.Where(r => r.GuildId == ctx.Guild.Id));
+                db.SelfRoles.RemoveRange(db.SelfRoles.Where(r => r.GuildId == ctx.Guild.Id));
                 await db.SaveChangesAsync();
             }
 
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Administration
         {
             var roles = new List<DiscordRole>();
             using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                IReadOnlyList<ulong> rids = db.SelfAssignableRoles
+                IReadOnlyList<ulong> rids = db.SelfRoles
                     .Where(r => r.GuildId == ctx.Guild.Id)
                     .Select(r => r.RoleId)
                     .ToList()
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Administration
                 foreach (ulong rid in rids) {
                     DiscordRole role = ctx.Guild.GetRole(rid);
                     if (role is null) {
-                        db.SelfAssignableRoles.Remove(new SelfRole {
+                        db.SelfRoles.Remove(new SelfRole {
                             GuildId = ctx.Guild.Id,
                             RoleId = rid
                         });

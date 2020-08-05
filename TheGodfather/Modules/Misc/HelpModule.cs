@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("?", "??", "???")]
         //[RequirePrefixes("a", "b")]
         //[RequireBotPermissions(Permissions.Administrator | Permissions.KickMembers)]
-        public async Task HelpAsync(CommandContext ctx)
+        public async Task HelpAsync(CommandContext ctx, [RemainingText] params string[] args)
         {
             //throw new InvalidCommandUsageException(ctx, "msg-err", new System.Exception());
             await this.InformAsync(ctx, "str-suc");

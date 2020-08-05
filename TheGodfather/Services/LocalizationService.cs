@@ -85,7 +85,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetString(ulong? gid, string key, params object[]? args)
+        public string GetString(ulong? gid, string key, params object?[]? args)
         {
             this.AssertIsDataLoaded();
 

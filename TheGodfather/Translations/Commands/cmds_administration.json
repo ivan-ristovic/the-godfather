@@ -1,8 +1,24 @@
 {
-  "test": {
+  "automaticroles": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
     ]
+  },
+  "automaticroles add": {
+    "usage": [
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+    ]
+  },
+  "automaticroles remove": {
+    "usage": [
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+    ]
+  },
+  "automaticroles list": {
+    "usage": [ [] ]
+  },
+  "automaticroles clear": {
+    "usage": [ [] ]
   }
 }

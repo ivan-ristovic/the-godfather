@@ -1,3 +1,7 @@
 {
-  "test": "An example localization test command."
+  "automaticroles": "Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.",
+  "automaticroles add": "Registers given role(s) as automatic.",
+  "automaticroles remove": "Unegisters given automatic role(s).",
+  "automaticroles list": "Lists all automatic roles.",
+  "automaticroles clear": "Removes all automatic roles."
 }

@@ -7,7 +7,7 @@ namespace TheGodfather.Database
 {
     public class TheGodfatherDbContext : DbContext
     {
-        public virtual DbSet<AutoRole> AutoAssignableRoles { get; protected set; }
+        public virtual DbSet<AutoRole> AutoRoles { get; protected set; }
         public virtual DbSet<BankAccount> BankAccounts { get; protected set; }
         public virtual DbSet<Birthday> Birthdays { get; protected set; }
         public virtual DbSet<BlockedChannel> BlockedChannels { get; protected set; }
@@ -34,7 +34,7 @@ namespace TheGodfather.Database
         public virtual DbSet<Reminder> Reminders { get; protected set; }
         public virtual DbSet<RssFeed> RssFeeds { get; protected set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; protected set; }
-        public virtual DbSet<SelfRole> SelfAssignableRoles { get; protected set; }
+        public virtual DbSet<SelfRole> SelfRoles { get; protected set; }
         public virtual DbSet<SwatPlayer> SwatPlayers { get; set; }
         public virtual DbSet<SwatServer> SwatServers { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; protected set; }

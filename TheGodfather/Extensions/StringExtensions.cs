@@ -11,6 +11,7 @@ namespace TheGodfather.Extensions
 
             if (string.IsNullOrEmpty(pattern))
                 return false;
+            pattern = pattern.ToLowerInvariant();
 
             try {
                 regex = new Regex(escape ? Regex.Escape(pattern) : pattern, options);

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Builders;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
@@ -105,7 +106,7 @@ namespace TheGodfather
                 },
                 Services = this.Services
             });
-
+            
             var assembly = Assembly.GetExecutingAssembly();
             this.CNext.RegisterCommands(assembly);
             this.CNext.RegisterConverters(assembly);

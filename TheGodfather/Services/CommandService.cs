@@ -103,8 +103,6 @@ namespace TheGodfather.Services
         {
             [JsonProperty("usage")]
             public List<List<string>> UsageExamples { get; set; } = new List<List<string>>();
-
-            // TODO aliases?
         }
     }
 }
