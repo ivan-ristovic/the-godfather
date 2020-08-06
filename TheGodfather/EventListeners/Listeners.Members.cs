@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -51,37 +52,7 @@ namespace TheGodfather.EventListeners
                 );
             }
 
-            // TODO move to service
-            try {
-                using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                    IQueryable<long> rids = db.AutoRoles
-                        .Where(dbr => dbr.GuildIdDb == (long)e.Guild.Id)
-                        .Select(dbr => dbr.RoleIdDb)
-                        ;
-                    foreach (long lrid in rids) {
-                        ulong rid = (ulong)lrid;
-                        DiscordRole role = e.Guild.GetRole(rid);
-                        if (role is { }) {
-                            await LoggingService.TryExecuteWithReportAsync(
-                                shard, e.Guild, e.Member.GrantRoleAsync(role), "rep-role-403", "rep-role-404",
-                                code404action: () => {
-                                    RemoveRoleFromDb(rid);
-                                    return Task.CompletedTask;
-                                }
-                            );
-                        } else {
-                            RemoveRoleFromDb(rid);
-                        }
-                    }
-
-
-                    void RemoveRoleFromDb(ulong rid)
-                        => db.AutoRoles.Remove(new AutoRole { GuildId = e.Guild.Id, RoleId = rid });
-                }
-            } catch (Exception exc) {
-                LogExt.Warning(e.Client.ShardId, exc, new[] { "Failed to assign auto role(s)", "{Guild}", "{Member}" }, e.Guild, e.Member);
-            }
-
+            await shard.Services.GetRequiredService<AutoRoleService>().GrantRolesAsync(shard, e.Guild, e.Member);
 
             if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;

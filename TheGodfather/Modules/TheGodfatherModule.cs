@@ -38,11 +38,6 @@ namespace TheGodfather.Modules
 
         // TODO remove
         [Obsolete]
-        protected Task LogAsync(CommandContext ctx, DiscordLogEmbedBuilder emb)
-            => ctx.Services.GetService<LoggingService>().LogAsync(ctx.Guild, emb.WithColor(this.ModuleColor));
-
-        // TODO remove
-        [Obsolete]
         protected Task InformAsync(CommandContext ctx, string? message = null, string? emoji = null, bool important = true)
             => this.InformAsync(ctx, (emoji is null ? Emojis.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
