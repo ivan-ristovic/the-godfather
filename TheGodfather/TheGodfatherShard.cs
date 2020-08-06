@@ -29,10 +29,11 @@ namespace TheGodfather
         public VoiceNextExtension? Voice { get; private set; }
 
 
+        // TODO change argument type to ServiceProvider and pass already built provider from main program
         public TheGodfatherShard(int shardId, IServiceCollection services)
         {
             this.Id = shardId;
-            this.Services = ServiceCollectionExtensions.AddShardServices(services, this).BuildServiceProvider();
+            this.Services = services.AddShardServices(this).BuildServiceProvider();
             this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
         }

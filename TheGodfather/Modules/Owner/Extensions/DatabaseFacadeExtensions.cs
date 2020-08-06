@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using TheGodfather.Database;
 #endregion
 
-namespace TheGodfather.Modules.Administration.Extensions
+namespace TheGodfather.Modules.Owner.Extensions
 {
     public static class DatabaseFacadeExtensions
     {

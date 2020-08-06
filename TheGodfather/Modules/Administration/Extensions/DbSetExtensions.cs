@@ -9,7 +9,7 @@ using TheGodfather.Database.Models;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {
-    public static class ExemptedEntityExtensions
+    public static class DbSetExtensions
     {
         public static void SafeAddRange<TEntity>(this DbSet<TEntity> set, IEnumerable<TEntity> entities)
             where TEntity : class, IEquatable<TEntity>

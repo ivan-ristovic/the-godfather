@@ -87,9 +87,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("print", "show", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<ulong> rids = await this.Service.GetRolesForGuildAsync(ctx.Guild.Id);
-            if (!rids.Any())
-                throw new CommandFailedException(ctx, "cmd-err-ar-none");
+            IReadOnlyList<ulong> rids = this.Service.Get(ctx.Guild.Id);
+            if (!rids.Any()) {
+                await ctx.InfoAsync(this.ModuleColor, "cmd-err-ar-none");
+                return;
+            }
 
             var roles = rids.Select(rid => (rid, ctx.Guild.GetRole(rid))).ToList();
             IEnumerable<ulong> missingRoles = roles.Where(kvp => kvp.Item2 is null).Select(kvp => kvp.rid);

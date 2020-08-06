@@ -28,8 +28,8 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Owner.Common;
+using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 #endregion
