@@ -107,9 +107,12 @@ namespace TheGodfather.Extensions
             for (int i = 1; i <= pageCount; i++) {
                 int to = from + pageSize > arr.Length ? arr.Length : from + pageSize;
                 pages.Add(new Page(embed: new DiscordEmbedBuilder {
-                    Title = ls.GetString(ctx.Guild?.Id, "fmt-page-title", title, i, pageCount),
-                    Description = arr[from..to].Select(selector).Humanize("\n"),
-                    Color = color ?? DiscordColor.Black
+                    Title = title,
+                    Description = arr[from..to].Select(selector).Separate(),
+                    Color = color ?? DiscordColor.Black,
+                    Footer = new DiscordEmbedBuilder.EmbedFooter { 
+                        Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from, to, arr.Length, i, pageCount),
+                    }
                 }));
                 from += pageSize;
             }

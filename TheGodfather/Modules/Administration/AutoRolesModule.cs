@@ -48,9 +48,9 @@ namespace TheGodfather.Modules.Administration
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "str-ar-change");
-                emb.AddLocalizedTitleField("str-roles-add", roles.Humanize("\n"));
+                emb.AddLocalizedTitleField("str-roles-add", roles.Separate());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roles.Humanize("\n"));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roles.Separate());
         }
 
         [Command("delete")]
@@ -66,9 +66,9 @@ namespace TheGodfather.Modules.Administration
             await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-change");
-                emb.AddLocalizedTitleField("str-roles-rem", roles.Humanize("\n"));
+                emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roles.Humanize("\n"));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roles.Separate());
         }
 
         [Command("deleteall"), UsesInteractivity]
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-change");
-                        emb.AddLocalizedTitleField("str-roles-rem", roles.Humanize("\n"));
+                        emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
                     },
                     invocationFields: false
                 );

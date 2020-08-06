@@ -82,7 +82,7 @@
   "fmt-leave": "{0} is no longer a member of this guild. Bye!",
   "fmt-msg-cre": "Created at {0}\nEmbeds: {1}, Reactions: {2}, Attachments: {3}\n{4}",
   "fmt-msg-upd": "Updated at {0}\nEmbeds: {1}, Reactions: {2}, Attachments: {3}\n{4}",
-  "fmt-page-title": "{0} (page {1}/{2})",
+  "fmt-page-footer": "Showing {0}-{1} out of {2} ; Page {3}/{4}",
   "fmt-rankup": "GG {0}! You have advanced to level {1} ({2})!",
   "fmt-welcome": "Welcome to {0}, {1}!",
   "q-ar-rem-all": "Are you sure you want to unregister all automatic roles for this guild?",

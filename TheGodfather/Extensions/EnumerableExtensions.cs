@@ -7,6 +7,9 @@ namespace TheGodfather.Extensions
 {
     internal static class EnumerableExtensions
     {
+        public static string Separate<T>(this IEnumerable<T> source, string separator = "\n")
+            => string.Join(separator, source.Select(e => e.ToString()));
+
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source) 
             => source.Shuffle(new SecureRandom());
 
