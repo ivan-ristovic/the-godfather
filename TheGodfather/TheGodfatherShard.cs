@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Builders;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TheGodfather.Common.Converters;
 using TheGodfather.Database;
 using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
@@ -36,7 +32,7 @@ namespace TheGodfather
         public TheGodfatherShard(int shardId, IServiceCollection services)
         {
             this.Id = shardId;
-            this.Services = BotServiceCollectionProvider.AddShardSpecificServices(services, this).BuildServiceProvider();
+            this.Services = ServiceCollectionExtensions.AddShardServices(services, this).BuildServiceProvider();
             this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
         }

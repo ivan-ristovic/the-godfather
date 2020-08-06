@@ -5,9 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.Entities;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -149,18 +147,18 @@ namespace TheGodfather
         private static async Task CreateAndBootShardsAsync(BotConfigService cfg, DbContextBuilder dbb)
         {
             Log.Information("Initializing services");
-            IServiceCollection sharedServices = new ServiceCollection()
+            IServiceCollection services = new ServiceCollection()
                 .AddSingleton(cfg)
                 .AddSingleton(dbb)
                 .AddSingleton(new BotActivityService(cfg.CurrentConfiguration.ShardCount))
                 .AddSingleton(new AsyncExecutionService())
+                .AddSharedServices()
                 ;
-            sharedServices = BotServiceCollectionProvider.AddSharedServices(sharedServices);
-            ServiceProvider = sharedServices.BuildServiceProvider();
+            ServiceProvider = services.BuildServiceProvider();
 
             Log.Information("Creating {ShardCount} shard(s)", cfg.CurrentConfiguration.ShardCount);
             for (int i = 0; i < cfg.CurrentConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, sharedServices);
+                var shard = new TheGodfatherShard(i, services);
                 shard.Initialize();
                 _shards.Add(shard);
             }
