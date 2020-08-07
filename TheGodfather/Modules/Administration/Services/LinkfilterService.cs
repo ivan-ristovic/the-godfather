@@ -116,10 +116,10 @@ namespace TheGodfather.Modules.Administration.Services
             if (this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
                 return;
 
-            var emb = new DiscordLogEmbedBuilder("Linkfilter action triggered", desc, DiscordEventType.MessageDeleted);
-            emb.AddInvocationFields(e.Author);
-
-            await this.shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
+            // TODO
+            //var emb = new DiscordLogEmbedBuilder("Linkfilter action triggered", desc, DiscordEventType.MessageDeleted);
+            //emb.AddInvocationFields(e.Author);
+            //await this.shard.Services.GetService<LoggingService>().LogAsync(e.Guild, emb);
         }
     }
 }

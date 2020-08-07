@@ -9,14 +9,8 @@ using TheGodfather.Database.Models;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {
-    public static class DbSetExtensions
+    public static class DbSetExemptExtensions
     {
-        public static void SafeAddRange<TEntity>(this DbSet<TEntity> set, IEnumerable<TEntity> entities)
-            where TEntity : class, IEquatable<TEntity>
-        {
-            set.AddRange(entities.Except(set));
-        }
-
         public static void AddExemptions<TEntity, TExempt>(this DbSet<TEntity> set, ulong gid, IEnumerable<TExempt> exempts, ExemptedEntityType type)
             where TEntity : ExemptedEntity, new()
             where TExempt : SnowflakeObject
