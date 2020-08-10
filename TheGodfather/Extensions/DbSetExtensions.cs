@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace TheGodfather.Extensions
 {
@@ -12,7 +14,7 @@ namespace TheGodfather.Extensions
             where TEntity : class, IEquatable<TEntity>
         {
             int added = 0;
-            foreach (TEntity entity in entities) {
+            foreach (TEntity entity in entities.Distinct()) {
                 TEntity? dbEntity = await set.FindAsync(idSelector(entity));
                 if (dbEntity is null) {
                     set.Add(entity);
@@ -26,7 +28,7 @@ namespace TheGodfather.Extensions
             where TEntity : class, IEquatable<TEntity>
         {
             int removed = 0;
-            foreach (TEntity entity in entities) {
+            foreach (TEntity entity in entities.Distinct()) {
                 TEntity? dbEntity = await set.FindAsync(idSelector(entity));
                 if (dbEntity is { }) {
                     set.Remove(dbEntity);

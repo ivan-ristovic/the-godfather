@@ -40,10 +40,8 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                   [Description("desc-roles-add")] params DiscordRole[] roles)
         {
-            if (roles is null || !roles.Any()) {
-                await this.RemoveAllAsync(ctx);
-                return;
-            }
+            if (roles is null || !roles.Any())
+                throw new CommandFailedException(ctx, "cmd-err-missing-roles");
 
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
