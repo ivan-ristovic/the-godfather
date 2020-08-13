@@ -3,5 +3,9 @@
   "automaticroles add": "Registers given role(s) as automatic.",
   "automaticroles remove": "Unegisters given automatic role(s).",
   "automaticroles list": "Lists all automatic roles.",
-  "automaticroles clear": "Removes all automatic roles."
+  "automaticroles clear": "Removes all automatic roles.",
+  "channel": "Channel administration commands. Group call prints channel information.",
+  "channel clone": "Clones an existing channel.",
+  "channel category": "Creates a new channel category.",
+  "channel text": "Creates a new text channel with option to specify parent, user limit and NSFW flag."
 }

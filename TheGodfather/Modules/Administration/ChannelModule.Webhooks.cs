@@ -19,7 +19,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ChannelModule : TheGodfatherModule
+    public sealed partial class ChannelModule : TheGodfatherModule
     {
         [Group("webhooks")]
         [Description("Manage webhooks for given channel. Group call lists all existing webhooks in channel.")]

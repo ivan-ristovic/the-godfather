@@ -20,5 +20,32 @@
   },
   "automaticroles clear": {
     "usage": [ [] ]
+  },
+  "channel": {
+    "usage": [
+      [],
+      [ "arg-chn" ]
+    ]
+  },
+  "channel clone": {
+    "usage": [
+      [ "arg-chn" ],
+      [ "arg-chn", "arg-chn-text-name" ],
+      [ "arg-chn", "arg-chn-voice-name" ]
+    ]
+  },
+  "channel category": {
+    "usage": [
+      [ "arg-chn-cat-name" ]
+    ]
+  },
+  "channel text": {
+    "usage": [
+      [ "arg-chn-name" ],
+      [ "arg-chn-name", "arg-chn-cat-name" ],
+      [ "arg-chn-cat-name", "arg-chn-name" ],
+      [ "arg-chn-name", "arg-chn-cat-name", "arg-bool" ],
+      [ "arg-chn-cat-name", "arg-chn-name", "arg-bool" ]
+    ]
   }
 }

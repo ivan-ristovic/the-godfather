@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public Task LogAsync(DiscordGuild guild, LocalizedEmbedBuilder embed)
         {
-            DiscordChannel logchn = this.gcs.GetLogChannelForGuild(guild);
+            DiscordChannel? logchn = this.gcs.GetLogChannelForGuild(guild);
             return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed.Build());
         }
 

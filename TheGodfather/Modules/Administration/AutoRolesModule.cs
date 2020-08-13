@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("autoassignroles", "autoassign", "autoroles", "autorole", "aroles", "arole", "arl", "ar", "aar")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class AutoRolesModule : TheGodfatherServiceModule<AutoRoleService>
+    public sealed class AutoRolesModule : TheGodfatherServiceModule<AutoRoleService>
     {
         public AutoRolesModule(AutoRoleService service) 
             : base(service) { }
@@ -35,6 +35,7 @@ namespace TheGodfather.Modules.Administration
             => this.AddAsync(ctx, roles);
 
 
+        #region add
         [Command("add")]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
@@ -50,7 +51,9 @@ namespace TheGodfather.Modules.Administration
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roles.Separate());
         }
+        #endregion
 
+        #region delete
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
@@ -68,7 +71,9 @@ namespace TheGodfather.Modules.Administration
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roles.Separate());
         }
+        #endregion
 
+        #region deleteall
         [Command("deleteall"), UsesInteractivity]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl")]
         public async Task RemoveAllAsync(CommandContext ctx)
@@ -80,7 +85,9 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-clear"));
             await ctx.InfoAsync(this.ModuleColor, "str-ar-clear");
         }
+        #endregion
 
+        #region list
         [Command("list")]
         [Aliases("print", "show", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
@@ -111,5 +118,6 @@ namespace TheGodfather.Modules.Administration
                 this.ModuleColor
             );
         }
+        #endregion
     }
 }

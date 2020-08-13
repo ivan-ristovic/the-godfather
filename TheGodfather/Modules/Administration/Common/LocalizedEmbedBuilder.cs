@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using Humanizer;
 using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Services;
 
@@ -206,15 +207,15 @@ namespace TheGodfather.Modules.Administration.Common
 
 
         private string TruncateToFitFieldName(string s)
-            => s.Truncate(250, "...");
+            => s.Truncate(DiscordLimits.EmbedFieldNameLimit - 3, "...");
 
         private string TruncateToFitFieldValue(string s)
-            => s.Truncate(1020, "...");
+            => s.Truncate(DiscordLimits.EmbedFieldValueLimit - 3, "...");
 
         private string TruncateToFitHalfFieldValue(string s)
-            => s.Truncate(500, "...");
+            => s.Truncate(DiscordLimits.EmbedFieldValueLimit / 2 - 3, "...");
 
         private string TruncateToFitFooterText(string s)
-            => s.Truncate(2040, "...");
+            => s.Truncate(DiscordLimits.EmbedFooterLimit - 3, "...");
     }
 }

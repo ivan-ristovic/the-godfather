@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace TheGodfather.Extensions
 {
-
     public static class DbSetExtensions
     {
         public static async Task<int> SafeAddRangeAsync<TEntity>(this DbSet<TEntity> set, IEnumerable<TEntity> entities, Func<TEntity, object[]> idSelector)
