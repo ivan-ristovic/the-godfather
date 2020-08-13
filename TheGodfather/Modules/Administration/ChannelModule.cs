@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,137 +8,86 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-#endregion
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("channel"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Channel administration. Group call prints channel information.")]
     [Aliases("channels", "chn", "ch", "c")]
-
+    [RequireGuild]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public partial class ChannelModule : TheGodfatherModule
+    public sealed partial class ChannelModule : TheGodfatherModule
     {
-        private static ImmutableArray<int> _ratelimitValues = new[] { 0, 5, 10, 15, 30, 45, 60, 75, 90, 120 }.ToImmutableArray();
-
-
-        public ChannelModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Channel to scan.")] DiscordChannel channel = null)
+                                     [Description("desc-chn-info")] DiscordChannel? channel = null)
             => this.InfoAsync(ctx, channel);
 
 
-        #region COMMAND_CHANNEL_CLONE
+        #region clone
         [Command("clone"), UsesInteractivity]
-        [Description("Clone a channel.")]
-        [Aliases("copy", "cp")]
-
+        [Aliases("copy", "cp", "cln")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateCategoryAsync(CommandContext ctx,
-                                             [Description("Channel to clone.")] DiscordChannel channel,
-                                             [RemainingText, Description("Name for the cloned channel.")] string name = null)
+        public async Task CloneAsync(CommandContext ctx,
+                                    [Description("desc-chn-clone")] DiscordChannel channel,
+                                    [RemainingText, Description("desc-chn-clone-name")] string? name = null)
         {
             DiscordChannel cloned = await channel.CloneAsync(ctx.BuildInvocationDetailsString());
 
-            if (!string.IsNullOrWhiteSpace(name)) {
-                if (name.Length > 100)
-                    throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
-
-                if (channel.Type == ChannelType.Text && name.Contains(' '))
-                    throw new CommandFailedException("Text channel name cannot contain spaces!");
-
-                if (ctx.Guild.Channels.Select(kvp => kvp.Value).Any(chn => chn.Name == name.ToLowerInvariant())) {
-                    if (!await ctx.WaitForBoolReplyAsync("Another channel with that name already exists. Continue?"))
-                        return;
-                }
-
+            await this.CheckPotentialChannelNameAsync(ctx, name, false, channel.Type == ChannelType.Text);
+            if (!string.IsNullOrWhiteSpace(name)) 
                 await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
-            }
 
-            await this.InformAsync(ctx, $"Successfully created clone of channel {Formatter.Bold(channel.Name)} with name {Formatter.Bold(cloned.Name)}.", important: false);
+            await ctx.InfoAsync(this.ModuleColor, "fmt-chn-clone", Formatter.Bold(channel.Name), Formatter.Bold(cloned.Name));
         }
         #endregion
 
-        #region COMMAND_CHANNEL_CREATECATEGORY
-        [Command("createcategory"), UsesInteractivity]
-        [Description("Create new channel category.")]
-        [Aliases("addcategory", "createcat", "createc", "ccat", "cc", "+category", "+cat", "+c", "<c", "<<c")]
-
-        [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateCategoryAsync(CommandContext ctx,
-                                             [RemainingText, Description("Name for the category.")] string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Missing category name.");
-
-            if (name.Length > 100)
-                throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
-
-            if (ctx.Guild.Channels.Select(kvp => kvp.Value).Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.WaitForBoolReplyAsync("A category with that name already exists. Continue?"))
-                    return;
-            }
-
-            DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildInvocationDetailsString());
-            await this.InformAsync(ctx, $"Successfully created category: {Formatter.Bold(c.Name)}", important: false);
-        }
-        #endregion
-
-        #region COMMAND_CHANNEL_CREATETEXT
-        [Command("createtext"), Priority(2), UsesInteractivity]
-        [Description("Create new text channel. You can also specify channel parent, user limit and bitrate.")]
-        [Aliases("addtext", "addtxt", "createtxt", "createt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
-
+        #region category
+        [Command("category"), UsesInteractivity]
+        [Aliases("addcategory", "cat", "c", "cc", "+category", "+cat", "+c", "<c", "<<c")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                [Description("Name for the channel.")] string name,
-                                                [Description("Parent category.")] DiscordChannel parent = null,
-                                                [Description("NSFW?")] bool nsfw = false)
+                                                [RemainingText, Description("desc-cat-name")] string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Missing channel name.");
+            await this.CheckPotentialChannelNameAsync(ctx, name);
+            DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildInvocationDetailsString());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-chn-category", Formatter.Bold(c.Name));
+        }
+        #endregion
 
-            if (name.Contains(' '))
-                throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
+        #region text
+        [Command("text"), Priority(0)]
+        [Aliases("addtext", "addtxt", "txt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public Task CreateTextChannelAsync(CommandContext ctx,
+                                          [Description("chn-parent")] DiscordChannel parent,
+                                          [Description("chn-name")] string name,
+                                          [Description("chn-nsfw")] bool nsfw = false)
+           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
 
-            if (name.Length > 100)
-                throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
+        [Command("text"), Priority(1)]
+        public Task CreateTextChannelAsync(CommandContext ctx,
+                                          [Description("chn-name")] string name,
+                                          [Description("chn-nsfw")] bool nsfw = false,
+                                          [Description("chn-parent")] DiscordChannel? parent = null)
+           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
 
-            if (!(parent is null) && parent.Type != ChannelType.Category)
-                throw new CommandFailedException("Channel parent must be a category!");
+        [Command("text"), Priority(2), UsesInteractivity]
+        public async Task CreateTextChannelAsync(CommandContext ctx,
+                                                [Description("chn-name")] string name,
+                                                [Description("chn-parent")] DiscordChannel? parent = null,
+                                                [Description("chn-nsfw")] bool nsfw = false)
+        {
+            await this.CheckPotentialChannelNameAsync(ctx, name, true, true);
 
-            if (ctx.Guild.Channels.Select(kvp => kvp.Value).Any(chn => string.Compare(name, chn.Name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
-                    return;
-            }
+            if (parent is { } && parent.Type != ChannelType.Category)
+                throw new CommandFailedException(ctx, "cmd-err-chn-parent");
 
             DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildInvocationDetailsString());
-            await this.InformAsync(ctx, $"Successfully created text channel: {Formatter.Bold(c.Name)}", important: false);
+            await ctx.InfoAsync(this.ModuleColor, "fmt-chn-text", c.Mention);
         }
-
-        [Command("createtext"), Priority(1)]
-        public Task CreateTextChannelAsync(CommandContext ctx,
-                                          [Description("Name for the channel.")] string name,
-                                          [Description("NSFW?")] bool nsfw = false,
-                                          [Description("Parent category.")] DiscordChannel parent = null)
-           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
-
-        [Command("createtext"), Priority(0)]
-        public Task CreateTextChannelAsync(CommandContext ctx,
-                                          [Description("Parent category.")] DiscordChannel parent,
-                                          [Description("Name for the channel.")] string name,
-                                          [Description("NSFW?")] bool nsfw = false)
-           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
         #endregion
 
         #region COMMAND_CHANNEL_CREATEVOICE
@@ -231,11 +179,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("i", "information")]
 
         public Task InfoAsync(CommandContext ctx,
-                             [Description("Channel.")] DiscordChannel channel = null)
+                             [Description("Channel.")] DiscordChannel? channel = null)
         {
-            channel = channel ?? ctx.Channel;
+            channel ??= ctx.Channel;
 
-            if (!ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+            if (ctx.Channel.IsPrivate || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
 
             var emb = new DiscordEmbedBuilder {
@@ -459,8 +407,8 @@ namespace TheGodfather.Modules.Administration
             if (ratelimit < 0)
                 throw new InvalidCommandUsageException("Ratelimit value cannot be negative.");
 
-            if (!_ratelimitValues.Contains(ratelimit))
-                throw new InvalidCommandUsageException($"Ratelimit value must be one of the following: {Formatter.InlineCode(string.Join(", ", _ratelimitValues))}");
+            //if (!_ratelimitValues.Contains(ratelimit))
+            //    throw new InvalidCommandUsageException($"Ratelimit value must be one of the following: {Formatter.InlineCode(string.Join(", ", _ratelimitValues))}");
 
             channel = channel ?? ctx.Channel;
 
@@ -596,5 +544,24 @@ namespace TheGodfather.Modules.Administration
                                    [Description("Role.")] DiscordRole role)
             => this.PrintPermsAsync(ctx, role, channel);
         #endregion
+
+
+        private async Task CheckPotentialChannelNameAsync(CommandContext ctx, string? name, bool throwIfNull = true, bool textChannel = false)
+        {
+            if (!string.IsNullOrWhiteSpace(name)) {
+                if (name.Length > DiscordLimits.ChannelNameLimit)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-name", DiscordLimits.ChannelNameLimit);
+
+                if (textChannel && name.Any(char.IsWhiteSpace))
+                    throw new CommandFailedException(ctx, "cmd-err-chn-name-space");
+
+                if (ctx.Guild.Channels.Select(kvp => kvp.Value.Name.ToLowerInvariant()).Contains(name.ToLowerInvariant())) {
+                    if (!await ctx.WaitForBoolReplyAsync("q-chn-exists"))
+                        return;
+                }
+            } else if (throwIfNull) {
+                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+            }
+        }
     }
 }
