@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 using Humanizer;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -38,8 +39,9 @@ namespace TheGodfather.Extensions
         public static string BuildInvocationDetailsString(this CommandContext ctx, string? reason = null)
         {
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-            string reason404 = ls.GetString(ctx.Guild?.Id, "rsn-none");
-            return ls.GetString(ctx.Guild?.Id, "fmt-invocation-details", ctx.User, reason ?? reason404, ctx.Channel);
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = ls.GetString(ctx.Guild?.Id, "rsn-none");
+            return ls.GetString(ctx.Guild?.Id, "fmt-invocation-details", ctx.User, reason, ctx.Channel);
         }
 
         public static Task InfoAsync(this CommandContext ctx, string? key = null, params object?[]? args)

@@ -13,12 +13,15 @@
         public static int EmbedFieldValueLimit { get; } = 1024;
         public static int EmbedFooterLimit { get; } = 2048;
         public static int EmbedTitleLimit { get; } = 256;
-        public static int EmbedTotalLimit { get; } = 6000;
+        public static int EmbedTotalCharLimit { get; } = 6000;
         public static int MessageContentLimit { get; } = 2000;
         public static int MessageReactionLimit { get; } = 20;
         public static int RoleLimit { get; } = 250;
         public static int TtsMessageContentLimit { get; } = 200;
         public static int UsernameLimit { get; } = 32;
+        public static int VoiceChannelUserLimit { get; } = 99;
+        public static int VoiceChannelMinBitrate { get; } = 8;
+        public static int VoiceChannelMaxBitrate { get; } = 128;
     }
 }
 

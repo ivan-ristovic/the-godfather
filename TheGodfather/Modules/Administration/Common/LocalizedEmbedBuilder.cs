@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
@@ -25,12 +26,23 @@ namespace TheGodfather.Modules.Administration.Common
         }
 
 
+        public LocalizedEmbedBuilder WithTitle(string title)
+        {
+            this.emb.WithTitle(this.TruncateToFitEmbedTitle(title));
+            return this;
+        }
+
+        public LocalizedEmbedBuilder WithLocalizedTitle(string title, params object?[]? args)
+        {
+            string localizedTitle = this.lcs.GetString(this.gid, title, args);
+            this.WithTitle(localizedTitle);
+            return this;
+        }
+
         public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object?[]? args)
         {
             this.WithColor(type.ToDiscordColor());
-            string localizedTitle = this.lcs.GetString(this.gid, title, args);
-            this.emb.WithTitle(localizedTitle);
-            return this;
+            return this.WithLocalizedTitle(title, args);
         }
 
         public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object?[]? titleArgs)
@@ -51,7 +63,7 @@ namespace TheGodfather.Modules.Administration.Common
         public LocalizedEmbedBuilder WithLocalizedDescription(string desc, params object?[]? args)
         {
             string localizedDesc = this.lcs.GetString(this.gid, desc, args);
-            this.emb.WithDescription(localizedDesc);
+            this.emb.WithDescription(this.TruncateToFitEmbedDescription(localizedDesc));
             return this;
         }
 
@@ -60,10 +72,11 @@ namespace TheGodfather.Modules.Administration.Common
             string? objStr = obj?.ToString();
             if (unknown) {
                 string localized404 = this.lcs.GetString(this.gid, "str-404");
-                this.emb.WithDescription(string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr);
+                string desc = string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr;
+                this.emb.WithDescription(this.TruncateToFitEmbedDescription(desc));
             } else {
                 if (!string.IsNullOrWhiteSpace(objStr))
-                    this.emb.WithDescription(objStr);
+                    this.emb.WithDescription(this.TruncateToFitEmbedDescription(objStr));
             }
             return this;
         }
@@ -203,8 +216,25 @@ namespace TheGodfather.Modules.Administration.Common
         }
 
         public DiscordEmbed Build()
-            => this.emb.Build();
+        {
+            if (this.emb.Fields.Count > DiscordLimits.EmbedFieldLimit)
+                throw new InvalidOperationException("Too many embed fields");
+            int sum = this.emb.Title?.Length ?? 0
+                    + this.emb.Description?.Length ?? 0
+                    + this.emb.Fields?.Sum(f => f.Name.Length + f.Value.Length) ?? 0
+                    + this.emb.Footer?.Text?.Length ?? 0
+                    ;
+            if (sum > DiscordLimits.EmbedTotalCharLimit)
+                throw new InvalidOperationException("Embed char limit exceeded");
+            return this.emb.Build();
+        }
 
+
+        private string TruncateToFitEmbedTitle(string s)
+            => s.Truncate(DiscordLimits.EmbedTitleLimit - 3, "...");
+
+        private string TruncateToFitEmbedDescription(string s)
+            => s.Truncate(DiscordLimits.EmbedDescriptionLimit - 3, "...");
 
         private string TruncateToFitFieldName(string s)
             => s.Truncate(DiscordLimits.EmbedFieldNameLimit - 3, "...");
