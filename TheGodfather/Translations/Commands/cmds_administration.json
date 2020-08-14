@@ -27,25 +27,43 @@
       [ "arg-chn" ]
     ]
   },
+  "channel add category": {
+    "usage": [
+      [ "arg-chn-cat" ]
+    ]
+  },
+  "channel add text": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-cat" ],
+      [ "arg-chn-cat", "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-cat", "arg-bool" ],
+      [ "arg-chn-cat", "arg-chn-text", "arg-bool" ],
+      [ "arg-chn-text", "arg-chn-cat", "arg-bool" ]
+    ]
+  },
+  "channel add voice": {
+    "usage": [
+      [ "arg-chn-voice" ],
+      [ "arg-chn-voice", "arg-chn-cat" ],
+      [ "arg-chn-cat", "arg-chn-voice" ],
+      [ "arg-chn-voice", "arg-chn-cat", "arg-ten" ],
+      [ "arg-chn-cat", "arg-chn-voice", "arg-ten" ],
+      [ "arg-chn-voice", "arg-chn-cat", "arg-ten", "arg-sbyte-max" ]
+    ]
+  },
   "channel clone": {
     "usage": [
       [ "arg-chn" ],
-      [ "arg-chn", "arg-chn-text-name" ],
-      [ "arg-chn", "arg-chn-voice-name" ]
+      [ "arg-chn-text" ],
+      [ "arg-chn", "arg-chn-text" ],
+      [ "arg-chn", "arg-chn-voice" ]
     ]
   },
-  "channel category": {
+  "channel delete": {
     "usage": [
-      [ "arg-chn-cat-name" ]
-    ]
-  },
-  "channel text": {
-    "usage": [
-      [ "arg-chn-name" ],
-      [ "arg-chn-name", "arg-chn-cat-name" ],
-      [ "arg-chn-cat-name", "arg-chn-name" ],
-      [ "arg-chn-name", "arg-chn-cat-name", "arg-bool" ],
-      [ "arg-chn-cat-name", "arg-chn-name", "arg-bool" ]
+      [ "arg-chn" ],
+      [ "arg-chn", "arg-rsn" ]
     ]
   }
 }

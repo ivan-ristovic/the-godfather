@@ -7,16 +7,19 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("channel"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("channels", "chn", "ch", "c")]
-    [RequireGuild]
+    [RequireGuild, RequirePermissions(Permissions.ManageChannels)]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed partial class ChannelModule : TheGodfatherModule
     {
@@ -26,183 +29,173 @@ namespace TheGodfather.Modules.Administration
             => this.InfoAsync(ctx, channel);
 
 
-        #region clone
-        [Command("clone"), UsesInteractivity]
+        #region channel add
+        [Group("add")]
+        [Aliases("create", "cr", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
+        public sealed class ChannelAddModule : TheGodfatherModule
+        {
+            #region category
+            [Command("category"), UsesInteractivity]
+            [Aliases("addcategory", "cat", "c", "cc", "+category", "+cat", "+c", "<c", "<<c")]
+            public async Task CreateTextChannelAsync(CommandContext ctx,
+                                                    [RemainingText, Description("desc-chn-cat-name")] string name)
+            {
+                await CheckPotentialChannelNameAsync(ctx, name);
+                DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildInvocationDetailsString());
+                await ctx.InfoAsync(this.ModuleColor, "fmt-chn-category", Formatter.Bold(c.Name));
+            }
+            #endregion
+
+            #region text
+            [Command("text"), Priority(0)]
+            [Aliases("addtext", "addtxt", "txt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
+            public Task CreateTextChannelAsync(CommandContext ctx,
+                                              [Description("desc-chn-parent")] DiscordChannel parent,
+                                              [Description("desc-chn-name")] string name,
+                                              [Description("desc-chn-nsfw")] bool nsfw = false)
+               => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
+
+            [Command("text"), Priority(1)]
+            public Task CreateTextChannelAsync(CommandContext ctx,
+                                              [Description("desc-chn-name")] string name,
+                                              [Description("desc-chn-nsfw")] bool nsfw = false,
+                                              [Description("desc-chn-parent")] DiscordChannel? parent = null)
+               => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
+
+            [Command("text"), Priority(2), UsesInteractivity]
+            public async Task CreateTextChannelAsync(CommandContext ctx,
+                                                    [Description("desc-chn-name")] string name,
+                                                    [Description("desc-chn-parent")] DiscordChannel? parent = null,
+                                                    [Description("desc-chn-nsfw")] bool nsfw = false)
+            {
+                await CheckPotentialChannelNameAsync(ctx, name, true, true);
+
+                if (parent is { } && parent.Type != ChannelType.Category)
+                    throw new CommandFailedException(ctx, "cmd-err-chn-parent");
+
+                DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildInvocationDetailsString());
+                await ctx.InfoAsync(this.ModuleColor, "fmt-chn-text", c.Mention);
+            }
+            #endregion
+
+            #region voice
+            [Command("voice"), Priority(2), UsesInteractivity]
+            [Aliases("addvoice", "addv", "cvoice", "cv", "+voice", "+v", "<v", "<<v")]
+            public async Task CreateVoiceChannelAsync(CommandContext ctx,
+                                                     [Description("desc-chn-voice-name")] string name,
+                                                     [Description("desc-chn-parent")] DiscordChannel? parent = null,
+                                                     [Description("desc-chn-userlimit")] int? userlimit = null,
+                                                     [Description("desc-chn-bitrate")] int? bitrate = null)
+            {
+                if (userlimit is { } && (userlimit < 1 || userlimit > DiscordLimits.VoiceChannelUserLimit))
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-userlimit", 1, DiscordLimits.VoiceChannelUserLimit);
+                if (bitrate is { } && (bitrate < DiscordLimits.VoiceChannelMinBitrate || bitrate > DiscordLimits.VoiceChannelMaxBitrate))
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-bitrate", DiscordLimits.VoiceChannelMinBitrate, DiscordLimits.VoiceChannelMinBitrate);
+                await CheckPotentialChannelNameAsync(ctx, name);
+                DiscordChannel c = await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildInvocationDetailsString());
+                await ctx.InfoAsync(this.ModuleColor, "fmt-chn-voice", Formatter.Bold(c.Name));
+            }
+
+            [Command("voice"), Priority(1)]
+            public Task CreateVoiceChannelAsync(CommandContext ctx,
+                                               [Description("desc-chn-voice-name")] string name,
+                                               [Description("desc-chn-userlimit")] int? userlimit = null,
+                                               [Description("desc-chn-bitrate")] int? bitrate = null,
+                                               [Description("desc-chn-parent")] DiscordChannel? parent = null)
+                => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
+
+            [Command("voice"), Priority(0)]
+            public Task CreateVoiceChannelAsync(CommandContext ctx,
+                                               [Description("desc-chn-parent")] DiscordChannel parent,
+                                               [Description("desc-chn-voice-name")] string name,
+                                               [Description("desc-chn-userlimit")] int? userlimit = null,
+                                               [Description("desc-chn-bitrate")] int? bitrate = null)
+                => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
+            #endregion
+        }
+        #endregion
+
+        #region channel clone
+        [Command("clone"), Priority(1), UsesInteractivity]
         [Aliases("copy", "cp", "cln")]
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task CloneAsync(CommandContext ctx,
                                     [Description("desc-chn-clone")] DiscordChannel channel,
                                     [RemainingText, Description("desc-chn-clone-name")] string? name = null)
         {
             DiscordChannel cloned = await channel.CloneAsync(ctx.BuildInvocationDetailsString());
 
-            await this.CheckPotentialChannelNameAsync(ctx, name, false, channel.Type == ChannelType.Text);
+            await CheckPotentialChannelNameAsync(ctx, name, false, channel.Type == ChannelType.Text);
             if (!string.IsNullOrWhiteSpace(name)) 
                 await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
 
             await ctx.InfoAsync(this.ModuleColor, "fmt-chn-clone", Formatter.Bold(channel.Name), Formatter.Bold(cloned.Name));
         }
+
+        [Command("clone")]
+        public Task CloneAsync(CommandContext ctx,
+                              [RemainingText, Description("desc-chn-clone-name")] string? name = null)
+            => this.CloneAsync(ctx, ctx.Channel, name);
         #endregion
 
-        #region category
-        [Command("category"), UsesInteractivity]
-        [Aliases("addcategory", "cat", "c", "cc", "+category", "+cat", "+c", "<c", "<<c")]
-        [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                [RemainingText, Description("desc-cat-name")] string name)
-        {
-            await this.CheckPotentialChannelNameAsync(ctx, name);
-            DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildInvocationDetailsString());
-            await ctx.InfoAsync(this.ModuleColor, "fmt-chn-category", Formatter.Bold(c.Name));
-        }
-        #endregion
-
-        #region text
-        [Command("text"), Priority(0)]
-        [Aliases("addtext", "addtxt", "txt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
-        [RequirePermissions(Permissions.ManageChannels)]
-        public Task CreateTextChannelAsync(CommandContext ctx,
-                                          [Description("chn-parent")] DiscordChannel parent,
-                                          [Description("chn-name")] string name,
-                                          [Description("chn-nsfw")] bool nsfw = false)
-           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
-
-        [Command("text"), Priority(1)]
-        public Task CreateTextChannelAsync(CommandContext ctx,
-                                          [Description("chn-name")] string name,
-                                          [Description("chn-nsfw")] bool nsfw = false,
-                                          [Description("chn-parent")] DiscordChannel? parent = null)
-           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
-
-        [Command("text"), Priority(2), UsesInteractivity]
-        public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                [Description("chn-name")] string name,
-                                                [Description("chn-parent")] DiscordChannel? parent = null,
-                                                [Description("chn-nsfw")] bool nsfw = false)
-        {
-            await this.CheckPotentialChannelNameAsync(ctx, name, true, true);
-
-            if (parent is { } && parent.Type != ChannelType.Category)
-                throw new CommandFailedException(ctx, "cmd-err-chn-parent");
-
-            DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildInvocationDetailsString());
-            await ctx.InfoAsync(this.ModuleColor, "fmt-chn-text", c.Mention);
-        }
-        #endregion
-
-        #region COMMAND_CHANNEL_CREATEVOICE
-        [Command("createvoice"), Priority(2), UsesInteractivity]
-        [Description("Create new voice channel. You can also specify channel parent, user limit and bitrate.")]
-        [Aliases("addvoice", "addv", "createv", "cvoice", "cv", "+voice", "+v", "<v", "<<v")]
-
-        [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateVoiceChannelAsync(CommandContext ctx,
-                                                 [Description("Name for the channel.")] string name,
-                                                 [Description("Parent category.")] DiscordChannel parent = null,
-                                                 [Description("User limit.")] int? userlimit = null,
-                                                 [Description("Bitrate.")] int? bitrate = null)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Missing channel name.");
-
-            if (name.Length > 100)
-                throw new InvalidCommandUsageException("Name must be shorter than 100 characters.");
-
-            if (!(parent is null) && parent.Type != ChannelType.Category)
-                throw new CommandFailedException("Channel parent must be a category!");
-
-            if (ctx.Guild.Channels.Select(kvp => kvp.Value).Any(chn => string.Compare(name, chn.Name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
-                    return;
-            }
-
-            DiscordChannel c = await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildInvocationDetailsString());
-            await this.InformAsync(ctx, $"Successfully created voice channel: {Formatter.Bold(c.Name)}", important: false);
-        }
-
-
-        [Command("createvoice"), Priority(1)]
-        public Task CreateVoiceChannelAsync(CommandContext ctx,
-                                           [Description("Name for the channel.")] string name,
-                                           [Description("User limit.")] int? userlimit = null,
-                                           [Description("Bitrate.")] int? bitrate = null,
-                                           [Description("Parent category.")] DiscordChannel parent = null)
-            => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
-
-        [Command("createvoice"), Priority(0)]
-        public Task CreateVoiceChannelAsync(CommandContext ctx,
-                                           [Description("Parent category.")] DiscordChannel parent,
-                                           [Description("Name for the channel.")] string name,
-                                           [Description("User limit.")] int? userlimit = null,
-                                           [Description("Bitrate.")] int? bitrate = null)
-            => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
-        #endregion
-
-        #region COMMAND_CHANNEL_DELETE
+        #region channel delete
         [Command("delete"), Priority(1), UsesInteractivity]
-        [Description("Delete a given channel or category. If the channel isn't given, deletes the current one. " +
-                     "You can also specify reason for deletion.")]
-        [Aliases("-", "del", "d", "remove", "rm")]
-
-        [RequirePermissions(Permissions.ManageChannels)]
+        [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Channel to delete.")] DiscordChannel channel = null,
-                                     [RemainingText, Description("Reason.")] string reason = null)
+                                     [Description("desc-chn-delete")] DiscordChannel channel,
+                                     [RemainingText, Description("desc-rsn")] string? reason = null)
         {
-            channel = channel ?? ctx.Channel;
+            channel ??= ctx.Channel;
+            reason = ctx.BuildInvocationDetailsString(reason);
 
             if (channel.Type == ChannelType.Category && channel.Children.Any()) {
-                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category and deleting it will delete child channels as well. Continue?")) {
-                    foreach (DiscordChannel child in channel.Children.ToList())
-                        await child.DeleteAsync(reason: ctx.BuildInvocationDetailsString(reason));
+                if (await ctx.WaitForBoolReplyAsync("q-chn-cat-del")) {
+                    foreach (DiscordChannel child in channel.Children) {
+                        await child.DeleteAsync(reason);
+                        await Task.Delay(250);
+                    }
                 }
             } else {
-                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {Formatter.Bold(channel.Name)} (ID: {Formatter.InlineCode(channel.Id.ToString())})? This cannot be undone!"))
+                if (!await ctx.WaitForBoolReplyAsync("q-chn-del", args: new object[] { Formatter.Bold(channel.Name), channel.Id }))
                     return;
             }
 
-            string name = Formatter.Bold(channel.Name);
-            await channel.DeleteAsync(reason: ctx.BuildInvocationDetailsString(reason));
-            if (channel.Id != ctx.Channel.Id)
-                await this.InformAsync(ctx, $"Successfully deleted channel: {name}", important: false);
+            await channel.DeleteAsync(reason);
+            if (channel != ctx.Channel)
+                await ctx.InfoAsync(this.ModuleColor, "fmt-chn-del", channel.Id);
         }
 
         [Command("delete"), Priority(0)]
         public Task DeleteAsync(CommandContext ctx,
-                               [RemainingText, Description("Reason.")] string reason)
-            => this.DeleteAsync(ctx, null, reason);
+                               [RemainingText, Description("desc-rsn")] string? reason)
+            => this.DeleteAsync(ctx, ctx.Channel, reason);
         #endregion
 
-        #region COMMAND_CHANNEL_INFO
+        #region channel info
         [Command("info")]
-        [Description("Print information about a given channel. If the channel is not given, uses the current one.")]
-        [Aliases("i", "information")]
-
+        [Aliases("information", "details", "about", "i")]
         public Task InfoAsync(CommandContext ctx,
-                             [Description("Channel.")] DiscordChannel? channel = null)
+                             [Description("desc-chn-info")] DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
 
             if (ctx.Channel.IsPrivate || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
-                throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
+                throw new CommandFailedException(ctx, "cmd-err-chn-perms");
 
-            var emb = new DiscordEmbedBuilder {
-                Title = channel.ToString(),
-                Description = $"Current channel topic: {Formatter.Italic(string.IsNullOrWhiteSpace(channel.Topic) ? "None" : channel.Topic)}",
-                Color = this.ModuleColor
-            };
-
-            emb.AddField("Type", channel.Type.ToString(), inline: true);
-            emb.AddField("NSFW", channel.IsNSFW.ToString(), inline: true);
-            emb.AddField("Private", channel.IsPrivate.ToString(), inline: true);
-            emb.AddField("Position", channel.Position.ToString(), inline: true);
-            if (channel.PerUserRateLimit.HasValue)
-                emb.AddField("Per-user rate limit", channel.PerUserRateLimit.ToString(), inline: true);
+            var emb = new LocalizedEmbedBuilder(ctx.Services.GetRequiredService<LocalizationService>(), ctx.Guild.Id);
+            emb.WithTitle(channel.ToString());
+            emb.WithColor(this.ModuleColor);
+            if (!string.IsNullOrWhiteSpace(channel.Topic))
+                emb.WithDescription(Formatter.Italic(Formatter.Strip(channel.Topic)));
+            emb.AddLocalizedTitleField("str-type", channel.Type, inline: true);
+            emb.AddLocalizedTitleField("str-nsfw", channel.IsNSFW, inline: true);
+            emb.AddLocalizedTitleField("str-pos", channel.Position, inline: true);
+            emb.AddLocalizedTitleField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
             if (channel.Type == ChannelType.Voice) {
-                emb.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
-                emb.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+                emb.AddLocalizedTitleField("str-bitrate", channel.Bitrate, inline: true);
+                if (channel.UserLimit > 0)
+                    emb.AddLocalizedTitleField("str-user-limit", channel.UserLimit, inline: true);
             }
-            emb.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
+            emb.AddLocalizedTimestampField("str-created-at", channel.CreationTimestamp, inline: true);
 
             return ctx.RespondAsync(embed: emb.Build());
         }
@@ -212,8 +205,6 @@ namespace TheGodfather.Modules.Administration
         [Command("modify"), Priority(1)]
         [Description("Modify a given voice channel. Give 0 as an argument if you wish to keep the value unchanged.")]
         [Aliases("edit", "mod", "m", "e")]
-
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("Voice channel to edit")] DiscordChannel channel,
                                      [Description("User limit.")] int limit = 0,
@@ -250,7 +241,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Rename given channel. If the channel is not given, renames the current one.")]
         [Aliases("r", "name", "setname", "rn")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameAsync(CommandContext ctx,
                                      [Description("Reason.")] string reason,
                                      [Description("Channel to rename.")] DiscordChannel channel,
@@ -293,7 +283,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Set whether this channel is NSFW or not. You can also provide a reason for the change.")]
         [Aliases("nsfw")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task ChangeNsfwAsync(CommandContext ctx,
                                          [Description("Set NSFW?")] bool nsfw,
                                          [Description("Channel.")] DiscordChannel channel = null,
@@ -332,7 +321,6 @@ namespace TheGodfather.Modules.Administration
                      "You can also provide a reason.")]
         [Aliases("setpar", "par", "parent")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task ChangeParentAsync(CommandContext ctx,
                                            [Description("Child channel.")] DiscordChannel channel,
                                            [Description("Parent category.")] DiscordChannel parent,
@@ -364,7 +352,6 @@ namespace TheGodfather.Modules.Administration
                      "is not given, repositions the current one. You can also provide reason.")]
         [Aliases("setpos", "pos", "position")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
                                              [Description("Channel to reposition.")] DiscordChannel channel,
                                              [Description("New position.")] int position,
@@ -398,7 +385,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Set the per-user ratelimit for given channel. Setting the value to 0 will disable ratelimit.")]
         [Aliases("setrl", "setrate", "setrlimit")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetRatelimitAsync(CommandContext ctx,
                                            [Description("Channel to affect.")] DiscordChannel channel,
                                            [Description("New ratelimit.")] int ratelimit,
@@ -439,7 +425,6 @@ namespace TheGodfather.Modules.Administration
         [Description("Set channel topic. If the channel is not given, uses the current one.")]
         [Aliases("t", "topic", "sett")]
 
-        [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("Reason.")] string reason,
                                               [Description("Channel.")] DiscordChannel channel,
@@ -546,7 +531,8 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        private async Task CheckPotentialChannelNameAsync(CommandContext ctx, string? name, bool throwIfNull = true, bool textChannel = false)
+
+        private static async Task CheckPotentialChannelNameAsync(CommandContext ctx, string? name, bool throwIfNull = true, bool textChannel = false)
         {
             if (!string.IsNullOrWhiteSpace(name)) {
                 if (name.Length > DiscordLimits.ChannelNameLimit)

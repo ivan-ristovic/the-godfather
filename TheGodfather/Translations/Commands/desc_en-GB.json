@@ -1,11 +1,15 @@
 {
-  "automaticroles": "Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.",
+  "automaticroles": "Automatic roles commands. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.",
   "automaticroles add": "Registers given role(s) as automatic.",
   "automaticroles remove": "Unegisters given automatic role(s).",
   "automaticroles list": "Lists all automatic roles.",
   "automaticroles clear": "Removes all automatic roles.",
   "channel": "Channel administration commands. Group call prints channel information.",
-  "channel clone": "Clones an existing channel.",
-  "channel category": "Creates a new channel category.",
-  "channel text": "Creates a new text channel with option to specify parent, user limit and NSFW flag."
+  "channel add": "Channel creation commands.",
+  "channel add category": "Creates a new channel category.",
+  "channel add text": "Creates a new text channel with option to specify parent, user limit and NSFW flag.",
+  "channel add voice": "Creates a new voice channel with option to specify channel parent, user limit and bitrate.",
+  "channel clone": "Clones an existing channel (current one if channel is not provided) with an optional new name.",
+  "channel delete": "Delete a channel/category with optional reason for the action. If a channel is not specified, deletes the current channel.",
+  "channel info": "View detailed channel information. If a channel is not specified, uses the current channel."
 }

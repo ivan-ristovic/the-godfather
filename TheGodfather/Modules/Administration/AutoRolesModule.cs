@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Administration
             => this.AddAsync(ctx, roles);
 
 
-        #region add
+        #region automaticroles add
         [Command("add")]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region delete
+        #region automaticroles delete
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region deleteall
+        #region automaticroles deleteall
         [Command("deleteall"), UsesInteractivity]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl")]
         public async Task RemoveAllAsync(CommandContext ctx)
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region list
+        #region automaticroles list
         [Command("list")]
         [Aliases("print", "show", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
