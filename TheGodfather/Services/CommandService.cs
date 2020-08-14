@@ -13,7 +13,6 @@ namespace TheGodfather.Services
     public sealed class CommandService : ITheGodfatherService
     {
         public bool IsDisabled => false;
-        public IReadOnlyList<string> AvailableCommands => this.commands?.Keys.ToList().AsReadOnly() ?? new List<string>().AsReadOnly();
 
         private readonly LocalizationService lcs;
         private readonly GuildConfigService gcs;

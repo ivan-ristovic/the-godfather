@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using DSharpPlus.CommandsNext;
@@ -52,5 +53,14 @@ namespace TheGodfather.Extensions
                 ? arr.Concat(group.Children.SelectMany(cnext.CommandSelector))
                 : arr;
         }
+    }
+
+    public sealed class CommandKeyValuePairComparer : IEqualityComparer<KeyValuePair<string, Command>>
+    {
+        public bool Equals([AllowNull] KeyValuePair<string, Command> x, [AllowNull] KeyValuePair<string, Command> y) 
+            => ReferenceEquals(x, y) || Equals(x.Value?.QualifiedName, y.Value?.QualifiedName);
+
+        public int GetHashCode([DisallowNull] KeyValuePair<string, Command> obj)
+            => obj.Value.QualifiedName.GetHashCode();
     }
 }

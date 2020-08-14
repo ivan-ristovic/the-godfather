@@ -46,12 +46,12 @@ namespace TheGodfather.EventListeners
             LogExt.Debug(
                 shard.Id,
                 new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
-                e.Exception?.GetType().Name ?? "Unknown", e.Command.QualifiedName, e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
+                e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown", 
+                e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
             
             if (e.Exception is null)
                 return Task.CompletedTask;
-
 
             Exception ex = e.Exception;
             while (ex is AggregateException || ex is TargetInvocationException)
@@ -74,11 +74,19 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
 
                     CommandService cs = shard.Services.GetRequiredService<CommandService>();
-                    IEnumerable<string> ordered = cs.AvailableCommands
-                        .OrderBy(c => cne.CommandName.LevenshteinDistanceTo(c))
+                    IEnumerable<KeyValuePair<string, Command>> similarCommands = shard.Commands
+                        .Select(kvp => (cne.CommandName.LevenshteinDistanceTo(kvp.Key), kvp))
+                        .Where(tup => tup.Item1 < 3)
+                        .OrderBy(tup => tup.Item1)
+                        .Select(tup => tup.kvp)
+                        .Distinct(new CommandKeyValuePairComparer())
                         .Take(3);
-                    foreach (string cmd in ordered)
-                        emb.AddField(cmd, cs.GetCommandDescription(gid, cmd));
+
+                    if (similarCommands.Any()) {
+                        emb.WithLocalizedDescription("q-did-you-mean");
+                        foreach ((string cname, Command cmd) in similarCommands)
+                            emb.AddField($"{cmd.QualifiedName} ({cname})", cs.GetCommandDescription(gid, cmd.QualifiedName));
+                    }
 
                     break;
                 case InvalidCommandUsageException icue:

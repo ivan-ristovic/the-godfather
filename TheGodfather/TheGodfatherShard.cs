@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -27,6 +29,7 @@ namespace TheGodfather
         public CommandsNextExtension? CNext { get; private set; }
         public InteractivityExtension? Interactivity { get; private set; }
         public VoiceNextExtension? Voice { get; private set; }
+        public IReadOnlyDictionary<string, Command> Commands { get; private set; } 
 
 
         // TODO change argument type to ServiceProvider and pass already built provider from main program
@@ -36,6 +39,7 @@ namespace TheGodfather
             this.Services = services.AddShardServices(this).BuildServiceProvider();
             this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
+            this.Commands = new Dictionary<string, Command>();
         }
 
         public async Task DisposeAsync()
@@ -107,6 +111,8 @@ namespace TheGodfather
             var assembly = Assembly.GetExecutingAssembly();
             this.CNext.RegisterCommands(assembly);
             this.CNext.RegisterConverters(assembly);
+
+            this.UpdateCommandList();
         }
 
         private void SetupInteractivity()
@@ -123,6 +129,16 @@ namespace TheGodfather
         private void SetupVoice()
         {
             this.Voice = this.Client.UseVoiceNext();
+        }
+
+        public void UpdateCommandList()
+        {
+            if (this.CNext is { }) {
+                this.Commands = this.CNext.GetRegisteredCommands()
+                    .Where(cmd => cmd.Parent is null)
+                    .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
+                    .ToDictionary(tup => tup.Item1, tup => tup.Item2);
+            }
         }
     }
 }
