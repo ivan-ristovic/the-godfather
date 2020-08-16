@@ -24,7 +24,7 @@
   "channel": {
     "usage": [
       [],
-      [ "arg-chn" ]
+      [ "arg-chn-text" ]
     ]
   },
   "channel add category": {
@@ -54,16 +54,125 @@
   },
   "channel clone": {
     "usage": [
-      [ "arg-chn" ],
       [ "arg-chn-text" ],
-      [ "arg-chn", "arg-chn-text" ],
-      [ "arg-chn", "arg-chn-voice" ]
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-voice" ]
     ]
   },
   "channel delete": {
     "usage": [
-      [ "arg-chn" ],
-      [ "arg-chn", "arg-rsn" ]
+      [ "arg-chn-text" ],
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify bitrate": {
+    "usage": [
+      [ "arg-chn-voice", "arg-sbyte-max" ],
+      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel modify name": {
+    "usage": [
+      [ "arg-name-small" ],
+      [ "arg-chn-text", "arg-name-small" ],
+      [ "arg-chn-voice", "arg-name" ],
+      [ "arg-name_small", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify nsfw": {
+    "usage": [
+      [ "arg-bool" ],
+      [ "arg-chn-text", "arg-bool" ],
+      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify parent": {
+    "usage": [
+      [ "arg-chn-text", "arg-chn-cat", "..." ]
+    ]
+  },
+  "channel modify position": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel modify slowmode": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify topic": {
+    "usage": [
+      [ "arg-topic" ],
+      [ "arg-chn-text", "arg-topic" ],
+      [ "arg-topic", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify userlimit": {
+    "usage": [
+      [ "arg-chn-voice", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setbitrate": {
+    "usage": [
+      [ "arg-chn-voice", "arg-sbyte-max" ],
+      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setname": {
+    "usage": [
+      [ "arg-name-small" ],
+      [ "arg-chn-text", "arg-name-small" ],
+      [ "arg-chn-voice", "arg-name" ],
+      [ "arg-name_small", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setnsfw": {
+    "usage": [
+      [ "arg-bool" ],
+      [ "arg-chn-text", "arg-bool" ],
+      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setparent": {
+    "usage": [
+      [ "arg-chn-text", "arg-chn-cat", "..." ]
+    ]
+  },
+  "channel setposition": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setslowmode": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel settopic": {
+    "usage": [
+      [ "arg-topic" ],
+      [ "arg-chn-text", "arg-topic" ],
+      [ "arg-topic", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setuserlimit": {
+    "usage": [
+      [ "arg-chn-voice", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel viewperms": {
+    "usage": [
+      [ "arg-chn-text", "arg-mem" ],
+      [ "arg-role", "arg-chn-text" ]
     ]
   }
 }

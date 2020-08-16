@@ -49,7 +49,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create", e.Channel);
-            emb.AddLocalizedTitleField("str-type", e.Channel?.Type, inline: true);
+            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
 
             DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelCreate);
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -65,7 +65,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete", e.Channel);
-            emb.AddLocalizedTitleField("str-type", e.Channel?.Type, inline: true);
+            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
 
             DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelDelete);
             emb.AddFieldsFromAuditLogEntry(entry);

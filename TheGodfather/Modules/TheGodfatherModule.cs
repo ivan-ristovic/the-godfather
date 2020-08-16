@@ -14,6 +14,9 @@ namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherModule : BaseCommandModule
     {
+        protected static DiscordColor EmbColor { get; private set; }
+
+
         // TODO remove dbb once all services are made
         [Obsolete]
         public DbContextBuilder Database { get; } = null!;
@@ -25,6 +28,7 @@ namespace TheGodfather.Modules
         {
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
             this.ModuleColor = moduleAttr?.Module.ToDiscordColor() ?? DiscordColor.Green;
+            EmbColor = this.ModuleColor;
         }
 
         // TODO remove

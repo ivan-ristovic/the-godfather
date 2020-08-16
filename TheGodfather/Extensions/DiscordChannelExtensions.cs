@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
@@ -32,15 +33,24 @@ namespace TheGodfather.Extensions
 
             for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
                 ulong? lastId = messages.FirstOrDefault()?.Id;
-                IReadOnlyList<DiscordMessage> requested;
-                if (lastId is null)
-                    requested = await channel.GetMessagesAsync(step);
-                else
-                    requested = await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
+                IReadOnlyList<DiscordMessage> requested = lastId is null
+                    ? await channel.GetMessagesAsync(step)
+                    : await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
                 messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
             }
 
             return messages.AsReadOnly();
+        }
+
+        public static async Task<DiscordOverwrite?> FindOverwriteForRoleAsync(this DiscordChannel channel, DiscordRole role)
+        {
+            IEnumerable<DiscordOverwrite> roleOverwrites = channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role);
+            foreach (DiscordOverwrite overwrite in roleOverwrites) {
+                DiscordRole? r = await overwrite.GetRoleAsync();
+                if (r is { } && r == role)
+                    return overwrite;
+            }
+            return null;
         }
     }
 }
