@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Administration
             emb.WithColor(this.ModuleColor);
             if (!string.IsNullOrWhiteSpace(channel.Topic))
                 emb.WithDescription(Formatter.Italic(Formatter.Strip(channel.Topic)));
-            emb.AddLocalizedTitleField("str-type", channel.Type, inline: true);
+            emb.AddLocalizedTitleField("str-chn-type", channel.Type, inline: true);
             emb.AddLocalizedTitleField("str-nsfw", channel.IsNSFW, inline: true);
             emb.AddLocalizedTitleField("str-pos", channel.Position, inline: true);
             emb.AddLocalizedTitleField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
@@ -355,7 +355,7 @@ namespace TheGodfather.Modules.Administration
 
             #region channel modify topic
             [Command("topic"), Priority(2)]
-            [Aliases("t", "topic", "desc", "description")]
+            [Aliases("t", "desc", "description")]
 
             public Task ModifyTopicAsync(CommandContext ctx,
                                         [Description("desc-rsn")] string reason,
@@ -502,7 +502,7 @@ namespace TheGodfather.Modules.Administration
 
         #region channel setslowmode
         [Command("setslowmode"), Priority(2)]
-        [Aliases("setratel", "setrl", "setratel", "setrate", "setratelimit", "setslow", "slowmode", "slow", "sm", "setsmode", "smode")]
+        [Aliases("setratel", "setrl", "setrate", "setratelimit", "setslow", "slowmode", "slow", "sm", "setsmode", "smode")]
         public Task SetSlowmodeAsync(CommandContext ctx,
                                     [Description("desc-chn-mod")] DiscordChannel channel,
                                     [Description("desc-chn-slowmode")] int slowmode,
