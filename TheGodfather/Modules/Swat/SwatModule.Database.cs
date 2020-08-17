@@ -239,7 +239,7 @@ namespace TheGodfather.Modules.Swat
                 if (!players.Any())
                     throw new CommandFailedException("Player database is empty.");
 
-                await ctx.SendCollectionInPagesAsync($"Player database", players, p => p.Stringify(), this.ModuleColor, 1);
+                await ctx.PaginateAsync($"Player database", players, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }

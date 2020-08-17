@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Misc
             if (!insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Available insults",
                 insults,
                 insult => $"{Formatter.InlineCode($"{insult.Id:D3}")} | {Formatter.Italic(insult.Content)}",

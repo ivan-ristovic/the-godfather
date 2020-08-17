@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Administration
                 await db.SaveChangesAsync();
             }
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Self-Assignable roles for this guild:",
                 roles.OrderByDescending(r => r.Position),
                 r => r.Mention,

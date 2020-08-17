@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Owner
                 .First()
                 .Length;
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Query results",
                 res.Take(25),
                 row => {

@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Misc
             if (!items.Any())
                 throw new CommandFailedException("No items purchased!");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Items owned by {user.Username}",
                 items,
                 i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",

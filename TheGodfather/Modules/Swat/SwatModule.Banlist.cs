@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Swat
                 if (!banned.Any())
                     throw new CommandFailedException("Banlist is empty.");
 
-                await ctx.SendCollectionInPagesAsync("Blacklist", banned, p => p.Stringify(), this.ModuleColor, 1);
+                await ctx.PaginateAsync("Blacklist", banned, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }

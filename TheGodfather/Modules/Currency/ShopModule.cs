@@ -233,7 +233,7 @@ namespace TheGodfather.Modules.Currency
             if (!items.Any())
                 throw new CommandFailedException("No items in shop!");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Items for guild {ctx.Guild.Name}",
                 items,
                 item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}",

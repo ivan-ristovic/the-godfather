@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Owner
                 if (!blockedUsers.Any())
                     throw new CommandFailedException("No blocked channels registered!");
 
-                await ctx.SendCollectionInPagesAsync(
+                await ctx.PaginateAsync(
                     "Blocked users:",
                     blockedUsers,
                     tup => $"{tup.User.ToString()} ({Formatter.Italic(tup.Reason ?? "No reason provided.")}",

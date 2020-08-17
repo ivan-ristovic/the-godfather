@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("print", "show", "l", "p", "ls")]
         public Task ListAsync(CommandContext ctx)
         {
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 $"Emoji available for guild {ctx.Guild.Name}:",
                 ctx.Guild.Emojis.Select(kvp => kvp.Value).OrderBy(e => e.Name),
                 emoji => $"{emoji} | {Formatter.InlineCode(emoji.Id.ToString())} | {Formatter.InlineCode(emoji.Name)}",

@@ -225,7 +225,7 @@ namespace TheGodfather.Modules.Administration
             if (!names.Any())
                 throw new CommandFailedException("No forbidden names registered in this guild!");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Forbidden names registered for {ctx.Guild.Name}",
                 names,
                 n => $"{Formatter.InlineCode($"{n.Id:D3}")} | {Formatter.InlineCode(n.RegexString)}",

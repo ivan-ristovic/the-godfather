@@ -244,7 +244,7 @@ namespace TheGodfather.Modules.Reactions
             if (!treactions.Any())
                 throw new CommandFailedException("No text reactions registered for this guild.");
 
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 "Text reactions for this guild",
                 treactions.OrderBy(tr => tr.OrderedTriggers.First()),
                 tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {string.Join(", ", tr.Triggers)}",

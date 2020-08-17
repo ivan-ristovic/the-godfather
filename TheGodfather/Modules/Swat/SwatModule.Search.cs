@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Swat
                 if (!matches.Any())
                     throw new CommandFailedException("No results.");
 
-                await ctx.SendCollectionInPagesAsync($"Search matches for {ip.Range}", matches, p => p.Stringify(), this.ModuleColor, 1);
+                await ctx.PaginateAsync($"Search matches for {ip.Range}", matches, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
 
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Swat
                 if (!matches.Any())
                     throw new CommandFailedException("No results.");
 
-                await ctx.SendCollectionInPagesAsync($"Search matches for {name}", matches, p => p.Stringify(), this.ModuleColor, 1);
+                await ctx.PaginateAsync($"Search matches for {name}", matches, p => p.Stringify(), this.ModuleColor, 1);
             }
             #endregion
         }

@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Owner
                 using (TheGodfatherDbContext db = this.Database.CreateContext())
                     statuses = await db.BotStatuses.ToListAsync();
 
-                await ctx.SendCollectionInPagesAsync(
+                await ctx.PaginateAsync(
                     "Statuses:",
                     statuses,
                     status => $"{Formatter.InlineCode($"{status.Id:D2}")}: {status.Activity} - {status.Status}",

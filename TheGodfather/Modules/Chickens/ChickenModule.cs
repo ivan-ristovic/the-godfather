@@ -279,7 +279,7 @@ namespace TheGodfather.Modules.Chickens
             if (!chickens.Any())
                 throw new CommandFailedException("No chickens bought in this guild.");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Strongest chickens in this guild:",
                 chickens.OrderByDescending(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown owner (removed)"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
@@ -309,7 +309,7 @@ namespace TheGodfather.Modules.Chickens
             if (!chickens.Any())
                 throw new CommandFailedException("No chickens bought.");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Strongest chickens globally:",
                 chickens.OrderByDescending(c => c.Stats.TotalStrength),
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner?.Mention ?? "unknown owner (removed)"} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",

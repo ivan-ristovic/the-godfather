@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Reminders
             if (!reminders.Any(r => r.TaskInfo.ChannelId == channel.Id))
                 throw new CommandFailedException("No reminders are scheduled for that channel.");
 
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 $"Your reminders for channel {channel.Name}:",
                 reminders
                     .Where(r => r.TaskInfo.ChannelId == channel.Id)
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Reminders
             if (!reminders.Any())
                 throw new CommandFailedException("No reminders are scheduled for that channel.");
 
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 "Your reminders:",
                 reminders.OrderBy(r => r.TaskInfo.ExecutionTime),
                 tup => {

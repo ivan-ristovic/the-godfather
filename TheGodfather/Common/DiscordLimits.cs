@@ -16,6 +16,7 @@
         public static int EmbedTotalCharLimit { get; } = 6000;
         public static int MessageContentLimit { get; } = 2000;
         public static int MessageReactionLimit { get; } = 20;
+        public static int NameLimit { get; } = 256;
         public static int RoleLimit { get; } = 250;
         public static int TtsMessageContentLimit { get; } = 200;
         public static int UsernameLimit { get; } = 32;

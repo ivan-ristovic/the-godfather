@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 
@@ -95,9 +96,9 @@ namespace TheGodfather.Extensions
                 .ToList();
         }
 
-        public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string key, IEnumerable<T> collection, 
-                                                         Func<T, string> selector, DiscordColor? color = null, int pageSize = 10,
-                                                         params object?[]? args)
+        public static Task PaginateAsync<T>(this CommandContext ctx, string key, IEnumerable<T> collection,
+                                            Func<T, string> selector, DiscordColor? color = null, int pageSize = 10,
+                                            params object?[]? args)
         {
             T[] arr = collection.ToArray();
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
@@ -112,7 +113,7 @@ namespace TheGodfather.Extensions
                     Title = title,
                     Description = arr[from..to].Select(selector).Separate(),
                     Color = color ?? DiscordColor.Black,
-                    Footer = new DiscordEmbedBuilder.EmbedFooter { 
+                    Footer = new DiscordEmbedBuilder.EmbedFooter {
                         Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from, to, arr.Length, i, pageCount),
                     }
                 }));
@@ -124,7 +125,27 @@ namespace TheGodfather.Extensions
                 : ctx.Channel.SendMessageAsync(content: pages.First().Content, embed: pages.First().Embed);
         }
 
-        public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string key, DiscordChannel? channel = null, 
+        public static Task PaginateAsync<T>(this CommandContext ctx, IEnumerable<T> collection,
+                                           Func<LocalizedEmbedBuilder, T, LocalizedEmbedBuilder> formatter, DiscordColor? color = null)
+        {
+            int count = collection.Count();
+            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
+
+            IEnumerable<Page> pages = collection
+                .Select((e, i) => {
+                    var emb = new LocalizedEmbedBuilder(ls, ctx.Guild.Id);
+                    emb.WithLocalizedFooter("fmt-page-footer-single", null, i + 1, count);
+                    emb.WithColor(color ?? DiscordColor.Black);
+                    emb = formatter(emb, e);
+                    return new Page { Embed = emb.Build() };
+                });
+
+            return count > 1
+                ? ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages)
+                : ctx.Channel.SendMessageAsync(content: pages.Single().Content, embed: pages.Single().Embed);
+        }
+
+        public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string key, DiscordChannel? channel = null,
                                                              bool reply = true, params object[]? args)
         {
             channel ??= ctx.Channel;
@@ -151,12 +172,12 @@ namespace TheGodfather.Extensions
         {
             InteractivityExtension interactivity = ctx.Client.GetInteractivity();
             InteractivityService interactivityService = ctx.Services.GetRequiredService<InteractivityService>();
-            
+
             interactivityService.AddPendingResponse(ctx.Channel.Id, user.Id);
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(m => m.Channel == dm && m.Author == user, waitInterval);
             if (interactivityService is { } && !interactivityService.RemovePendingResponse(ctx.Channel.Id, user.Id))
                 throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
-            
+
             return mctx.TimedOut ? null : mctx.Result;
         }
 

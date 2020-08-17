@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task ListAsync(CommandContext ctx)
             {
                 using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await ctx.SendCollectionInPagesAsync(
+                    await ctx.PaginateAsync(
                         "Available chicken upgrades",
                         db.ChickenUpgrades.OrderByDescending(u => u.Cost),
                         u => $"{Formatter.InlineCode($"{u.Id:D2}")} | {u.Name} | {Formatter.Bold($"{u.Cost:n0}")} | +{Formatter.Bold(u.Modifier.ToString())} {u.UpgradesStat.ToShortString()}",

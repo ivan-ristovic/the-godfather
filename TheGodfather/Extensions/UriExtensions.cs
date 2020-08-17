@@ -7,11 +7,17 @@ namespace TheGodfather.Extensions
 {
     internal static class UriExtensions
     {
+        public static bool ContentTypeHeaderStartsWith(this HttpContentHeaders headers, string contentType)
+            => headers.ContentType.MediaType.StartsWith(contentType, StringComparison.InvariantCultureIgnoreCase);
+
+        public static bool ContentTypeHeaderIsImage(this HttpContentHeaders headers)
+            => headers.ContentTypeHeaderStartsWith("image/");
+
         public static async Task<bool> ContentTypeHeaderStartsWith(this Uri uri, string contentType)
         {
             try {
                 (_, HttpContentHeaders headers)  = await HttpService.HeadAsync(uri).ConfigureAwait(false);
-                return headers.ContentType.MediaType.StartsWith(contentType, StringComparison.InvariantCultureIgnoreCase);
+                return headers.ContentTypeHeaderStartsWith(contentType);
             } catch {
 
             }
@@ -19,6 +25,6 @@ namespace TheGodfather.Extensions
         }
 
         public static Task<bool> ContentTypeHeaderIsImageAsync(this Uri uri)
-            => ContentTypeHeaderStartsWith(uri, "image/");
+            => uri.ContentTypeHeaderStartsWith("image/");
     }
 }

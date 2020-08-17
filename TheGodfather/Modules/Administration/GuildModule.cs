@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<DiscordBan> bans = await ctx.Guild.GetBansAsync();
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Guild bans",
                 bans,
                 b => $"{b.User.ToString()} | Reason: {b.Reason}",
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Members",
                 members.OrderBy(m => m.Username),
                 m => m.ToString(),

@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Misc
             if (!memes.Any())
                 throw new CommandFailedException("No memes registered in this guild!");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Memes registered in this guild",
                 memes,
                 meme => Formatter.MaskedUrl(meme.Name, new Uri(meme.Url)),
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Misc
             if (templates is null)
                 throw new CommandFailedException("Failed to retrieve meme templates.");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Meme templates",
                 templates,
                 s => s,

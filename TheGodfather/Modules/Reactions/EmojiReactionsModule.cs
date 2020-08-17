@@ -307,7 +307,7 @@ namespace TheGodfather.Modules.Reactions
             if (!validReactions.Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Emoji reactions for this guild",
                 validReactions.OrderBy(x => x.ReactionObject.Id),
                 x => $"{Formatter.InlineCode($"{x.ReactionObject.Id:D4}")} | {x.Emoji} | {string.Join(", ", x.ReactionObject.Triggers)}",

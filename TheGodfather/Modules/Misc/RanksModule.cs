@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Misc
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Custom ranks for this guild",
                 ranks,
                 rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} | XP needed: {Formatter.InlineCode($"{this.Service.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",

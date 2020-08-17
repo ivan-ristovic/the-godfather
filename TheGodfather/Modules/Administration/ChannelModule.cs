@@ -147,7 +147,6 @@ namespace TheGodfather.Modules.Administration
                                      [Description("desc-chn-delete")] DiscordChannel channel,
                                      [RemainingText, Description("desc-rsn")] string? reason = null)
         {
-            channel ??= ctx.Channel;
             reason = ctx.BuildInvocationDetailsString(reason);
 
             if (channel.Type == ChannelType.Category && channel.Children.Any()) {

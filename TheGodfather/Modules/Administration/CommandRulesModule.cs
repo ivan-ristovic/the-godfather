@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration
             if (!crs.Any())
                 throw new CommandFailedException("No command rules are present.");
 
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 $"Command rules for {ctx.Guild.Name}",
                 crs.OrderBy(cr => cr.ChannelId),
                 cr => $"{(cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X)} {(cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : "global")} | {Formatter.InlineCode(cr.Command)}",

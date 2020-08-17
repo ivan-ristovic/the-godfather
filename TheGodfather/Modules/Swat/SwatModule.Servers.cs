@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Swat
                 using (TheGodfatherDbContext db = this.Database.CreateContext())
                     servers = await db.SwatServers.ToListAsync();
 
-                await ctx.SendCollectionInPagesAsync(
+                await ctx.PaginateAsync(
                     "Available servers",
                     servers,
                     server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",

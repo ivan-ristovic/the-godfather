@@ -135,7 +135,7 @@ public sealed class DynamicCommands : TheGodfatherModule
             [Aliases("ls", "l", "print")]
             public Task ListAsync(CommandContext ctx)
             {
-                return ctx.SendCollectionInPagesAsync(
+                return ctx.PaginateAsync(
                     "Registered top level commands",
                     ctx.CommandsNext.GetRegisteredCommands().OrderBy(cmd => cmd.QualifiedName),
                     cmd => cmd.QualifiedName,

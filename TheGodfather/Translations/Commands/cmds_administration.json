@@ -174,5 +174,34 @@
       [ "arg-chn-text", "arg-mem" ],
       [ "arg-role", "arg-chn-text" ]
     ]
+  },
+  "webhook": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook delete": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-wh-name" ],
+      [ "arg-chn-text", "arg-wh-name" ],
+      [ "arg-chn-text", "arg-ulong" ]
+    ]
+  },
+  "webhook deleteall": {
+    "usage": [
+      [],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
+  "webhook list": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook listall": {
+    "usage": [ [] ]
   }
 }

@@ -5,7 +5,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Humanizer;
 using TheGodfather.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
@@ -75,7 +74,7 @@ namespace TheGodfather.Modules.Administration
 
         #region automaticroles deleteall
         [Command("deleteall"), UsesInteractivity]
-        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl")]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
             if (!await ctx.WaitForBoolReplyAsync("q-ar-rem-all"))
@@ -111,7 +110,7 @@ namespace TheGodfather.Modules.Administration
                     invocationFields: false
                 );
             }
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "str-ar",
                 roles.Where(kvp => !missingRoles.Contains(kvp.rid)).Select(kvp => kvp.Item2).OrderByDescending(r => r.Position),
                 r => r.ToString(),

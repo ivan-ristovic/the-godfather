@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Owner
                 if (!valid.Any())
                     throw new CommandFailedException("No privileged users registered!");
 
-                await ctx.SendCollectionInPagesAsync(
+                await ctx.PaginateAsync(
                     "Privileged users",
                     valid,
                     user => user.ToString(),

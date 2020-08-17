@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
                 public Task ListLocalesAsync(CommandContext ctx)
                 {
                     IReadOnlyList<string> locales = this.Service.AvailableLocales;
-                    return ctx.SendCollectionInPagesAsync("Available locales", locales, s => s, this.ModuleColor);
+                    return ctx.PaginateAsync("Available locales", locales, s => s, this.ModuleColor);
                 }
                 #endregion
             }

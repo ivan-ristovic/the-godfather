@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
                 return;
             }
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Urban Dictionary search results for \"{query}\"",
                 data.List,
                 res => res.ToInfoString(),

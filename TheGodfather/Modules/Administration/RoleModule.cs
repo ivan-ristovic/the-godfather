@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.Select(kvp => kvp.Value).OrderByDescending(r => r.Position),
                 r => $"{Formatter.InlineCode(r.Id.ToString())} | {(r.Mention)}",

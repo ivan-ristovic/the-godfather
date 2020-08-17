@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Search
                 if (!subs.Any())
                     throw new CommandFailedException("No subscriptions found in this channel");
 
-                await ctx.SendCollectionInPagesAsync(
+                await ctx.PaginateAsync(
                     "Subscriptions for this channel",
                     subs,
                     sub => {

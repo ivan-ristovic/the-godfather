@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Administration
             if (!fs.Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
-            return ctx.SendCollectionInPagesAsync(
+            return ctx.PaginateAsync(
                 $"Filters registered for {ctx.Guild.Name}",
                 fs.OrderBy(f => f.Id),
                 f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.TriggerString)}",

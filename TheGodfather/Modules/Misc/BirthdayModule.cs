@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Misc
                     .ToListAsync();
             }
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Birthdays registered for {user.Username}:",
                 birthdays,
                 b => $"{Formatter.InlineCode(b.Date.ToShortDateString())} | Channel: {b.ChannelId}",
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Misc
                 }
             }
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 $"Birthdays registered in channel {ctx.Channel.Name}:",
                 lines,
                 line => line,
@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Misc
                 }
             }
 
-            await ctx.SendCollectionInPagesAsync(
+            await ctx.PaginateAsync(
                 "Birthdays:",
                 lines,
                 line => line,
