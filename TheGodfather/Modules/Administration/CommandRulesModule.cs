@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -7,91 +6,146 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("commandrules"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Manage command rules. You can specify a rule to block a command in a certain channel, " +
-                 "or allow a command to be executed only in specific channel. Group call lists all command" +
-                 "rules for this guild.")]
     [Aliases("cmdrules", "crules", "cr")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [RequireUserPermissions(Permissions.Administrator)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class CommandRulesModule : TheGodfatherServiceModule<CommandRulesService>
     {
-
-        public CommandRulesModule(CommandRulesService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
+        public CommandRulesModule(CommandRulesService service)
+            : base(service) { }
 
 
-        [GroupCommand]
-        public Task ExecuteGroupAsync(CommandContext ctx)
-            => this.ListAsync(ctx);
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-cr-cmd")] string command)
+            => this.PrintRulesAsync(ctx, cmd: command);
+
+        [GroupCommand, Priority(0)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
+            => this.PrintRulesAsync(ctx, chn: channel);
 
 
-        #region COMMAND_COMMANDRULES_ALLOW
-        [Command("allow")]
-        [Description("Allow a command to be executed only in specified channel(s) (or globally if channel is not provided).")]
-        [Aliases("a", "only")]
-
+        #region commandrules allow
+        [Command("allow"), Priority(1)]
+        [Aliases("only", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("Command or group to allow.")] string command,
-                                    [Description("Channels where to allow the command.")] params DiscordChannel[] channels)
+                                    [Description("desc-cr-allow")] string command,
+                                    [Description("desc-cr-chn")] params DiscordChannel[] channels)
             => await this.AddRuleAsync(ctx, command, true, channels);
+
+        [Command("allow"), Priority(0)]
+        public async Task AllowAsync(CommandContext ctx,
+                                    [Description("desc-cr-chn")] DiscordChannel channel,
+                                    [Description("desc-cr-allow")] string command)
+            => await this.AddRuleAsync(ctx, command, true, channel);
         #endregion
 
-        #region COMMAND_COMMANDRULES_FORBID
+        #region commandrules forbid
         [Command("forbid")]
-        [Description("Forbid a command to be executed in specified channel(s) (or globally if no channel is not provided).")]
-        [Aliases("f", "deny")]
-
+        [Aliases("f", "deny", "unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task ForbidAsync(CommandContext ctx,
-                                     [Description("Command or group to forbid.")] string command,
-                                     [Description("Channels where to forbid the command.")] params DiscordChannel[] channels)
+                                     [Description("desc-cr-forbid")] string command,
+                                     [Description("desc-cr-chn")] params DiscordChannel[] channels)
             => await this.AddRuleAsync(ctx, command, false, channels);
+
+        [Command("forbid"), Priority(0)]
+        public async Task ForbidAsync(CommandContext ctx,
+                                     [Description("desc-cr-chn")] DiscordChannel channel,
+                                     [Description("desc-cr-forbid")] string command)
+            => await this.AddRuleAsync(ctx, command, false, channel);
         #endregion
 
-        #region COMMAND_COMMANDRULES_LIST
-        [Command("list")]
-        [Description("Show all command rules for this guild.")]
-        [Aliases("ls", "l")]
-        public Task ListAsync(CommandContext ctx) 
+        #region commandrules deleteall
+        [Command("deleteall"), UsesInteractivity]
+        [Aliases("reset", "removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+        public async Task RemoveAllAsync(CommandContext ctx)
         {
-            // TODO also allow second argument to be passed to cmd
-            IReadOnlyList<CommandRule>? crs = this.Service.GetRulesAsync(ctx.Guild.Id);
-            if (!crs.Any())
-                throw new CommandFailedException("No command rules are present.");
+            if (!await ctx.WaitForBoolReplyAsync("q-cr-rem-all"))
+                return;
 
-            return ctx.PaginateAsync(
-                $"Command rules for {ctx.Guild.Name}",
-                crs.OrderBy(cr => cr.ChannelId),
-                cr => $"{(cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X)} {(cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : "global")} | {Formatter.InlineCode(cr.Command)}",
-                this.ModuleColor
-            );
+            await this.Service.ClearAsync(ctx.Guild.Id);
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("str-cr-clear").WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, "str-cr-clear");
         }
         #endregion
 
+        #region commandrules list
+        [Command("list"), Priority(1)]
+        [Aliases("print", "show", "ls", "l", "p")]
+        public Task ListAsync(CommandContext ctx,
+                             [RemainingText, Description("desc-cr-cmd")] string command)
+            => this.PrintRulesAsync(ctx, cmd: command);
 
+        [Command("list"), Priority(0)]
+        public Task ListAsync(CommandContext ctx,
+                             [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
+            => this.PrintRulesAsync(ctx, chn: channel);
+        #endregion
+
+
+        #region internals
         private async Task AddRuleAsync(CommandContext ctx, string command, bool allow, params DiscordChannel[] channels)
         {
-            Command cmd = ctx.CommandsNext.FindCommand(command, out _);
+            Command? cmd = ctx.CommandsNext.FindCommand(command, out _);
             if (cmd is null)
-                throw new CommandFailedException($"Failed to find command {Formatter.InlineCode(command)}");
+                throw new CommandFailedException(ctx, "cmd-404", Formatter.InlineCode(Formatter.Strip(command)));
 
             await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, channels.Select(c => c.Id));
-            await this.InformAsync(ctx, $"Successfully {(allow ? "allowed" : "denied")} usage of command {cmd.QualifiedName} {(channels.Any() ? "in given channels" : "globally")}!", important: false);
+            if (channels.Any()) {
+                if (allow)
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), channels.Separate());
+                else
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), channels.Separate());
+            } else {
+                if (allow)
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow-global", Formatter.InlineCode(cmd.QualifiedName));
+                else
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid-global", Formatter.InlineCode(cmd.QualifiedName));
+            }
         }
+
+        private Task PrintRulesAsync(CommandContext ctx, DiscordChannel? chn = null, string? cmd = null, bool global = false)
+        {
+            IEnumerable<CommandRule> crs = this.Service.GetRules(ctx.Guild.Id, cmd);
+            if (chn is { })
+                crs = crs.Where(cr => cr.ChannelId == chn.Id);
+            else if (!global)
+                crs = crs.Where(cr => cr.ChannelId == 0);
+
+            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
+
+            return crs.Any()
+                ? ctx.PaginateAsync(
+                    ls.GetString(ctx.Guild.Id, "fmt-cr-list", ctx.Guild.Name),
+                    crs.OrderBy(cr => cr.ChannelId),
+                    cr => MakeListItem(cr),
+                    this.ModuleColor
+                )
+                : ctx.InfoAsync(this.ModuleColor, "cmd-err-cr-none");
+
+
+            string MakeListItem(CommandRule cr)
+            {
+                DiscordEmoji mark = cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X;
+                string location = cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : ls.GetString(ctx.Guild.Id, "str-global");
+                return ls.GetString(ctx.Guild.Id, "fmt-cr-list-item", mark, location, Formatter.InlineCode(cr.Command));
+            }
+        }
+        #endregion
     }
 }

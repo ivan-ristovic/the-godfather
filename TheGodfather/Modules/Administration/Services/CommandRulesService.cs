@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public IReadOnlyList<CommandRule> GetRulesAsync(ulong gid, string? cmd = null)
+        public IReadOnlyList<CommandRule> GetRules(ulong gid, string? cmd = null)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 IEnumerable<CommandRule> rules = db.CommandRules
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task AddRuleAsync(ulong gid, string cmd, bool allow, IEnumerable<ulong> cids)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> crs = this.GetRulesAsync(gid, cmd);
+                IEnumerable<CommandRule> crs = this.GetRules(gid, cmd);
 
                 if (!cids.Any()) {
                     db.CommandRules.RemoveRange(crs);
@@ -90,6 +90,14 @@ namespace TheGodfather.Modules.Administration.Services
                         db.CommandRules.Add(cr);
                 }
 
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public async Task ClearAsync(ulong gid)
+        {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
         }

@@ -30,7 +30,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 alter: db => { },
                 verify: db => {
                     foreach (ulong gid in MockData.Ids) {
-                        Assert.That(this.Service.GetRulesAsync(gid), Is.Empty);
+                        Assert.That(this.Service.GetRules(gid), Is.Empty);
                         foreach (ulong id in MockData.Ids)
                             Assert.That(this.Service.IsBlocked(gid, id, "a"), Is.False);
                     }
