@@ -10,7 +10,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -21,18 +20,9 @@ namespace TheGodfather.Modules.Administration
     [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.")]
     [Aliases("emojis", "e")]
-
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiModule : TheGodfatherModule
     {
-
-        public EmojiModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);

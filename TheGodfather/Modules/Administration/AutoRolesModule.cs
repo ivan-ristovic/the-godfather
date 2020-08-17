@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-clear"));
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("str-ar-clear").WithColor(this.ModuleColor));
             await ctx.InfoAsync(this.ModuleColor, "str-ar-clear");
         }
         #endregion
