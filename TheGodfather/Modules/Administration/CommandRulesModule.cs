@@ -105,12 +105,14 @@ namespace TheGodfather.Modules.Administration
             if (cmd is null)
                 throw new CommandFailedException(ctx, "cmd-404", Formatter.InlineCode(Formatter.Strip(command)));
 
-            await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, channels.Select(c => c.Id));
+            IEnumerable<DiscordChannel> validChannels = channels.Where(c => c.Type == ChannelType.Text);
+
+            await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, validChannels.Select(c => c.Id));
             if (channels.Any()) {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), channels.Separate());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), validChannels.Separate());
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), channels.Separate());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), validChannels.Separate());
             } else {
                 if (allow)
                     await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow-global", Formatter.InlineCode(cmd.QualifiedName));

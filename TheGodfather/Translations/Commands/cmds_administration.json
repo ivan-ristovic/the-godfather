@@ -175,6 +175,34 @@
       [ "arg-role", "arg-chn-text" ]
     ]
   },
+  "commandrules": {
+    "usage": [
+      [],
+      [ "arg-cmd" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "commandrules allow": {
+    "usage": [
+      [ "arg-cmd" ],
+      [ "arg-chn-text", "arg-cmd" ],
+      [ "arg-cmd", "arg-chn-text", "arg-chn-text2" ]
+    ]
+  },
+  "commandrules forbid": {
+    "usage": [
+      [ "arg-cmd" ],
+      [ "arg-chn-text", "arg-cmd" ],
+      [ "arg-cmd", "arg-chn-text", "arg-chn-text2" ]
+    ]
+  },
+  "commandrules list": {
+    "usage": [
+      [],
+      [ "arg-cmd" ],
+      [ "arg-chn-text" ]
+    ]
+  },
   "webhook": {
     "usage": [
       [],
