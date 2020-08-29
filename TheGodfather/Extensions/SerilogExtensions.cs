@@ -34,34 +34,6 @@ namespace TheGodfather.Extensions
 
     internal static class LogExt
     {
-        public static void Event(object? _, DebugLogMessageEventArgs e)
-        {
-#pragma warning disable Serilog004 // Constant MessageTemplate verifier
-            using (LogContext.PushProperty("Application", e.Application)) {
-                switch (e.Level) {
-                    case LogLevel.Debug:
-                        Log.Debug(e.Exception, e.Message);
-                        break;
-                    case LogLevel.Info:
-                        Log.Information(e.Exception, e.Message);
-                        break;
-                    case LogLevel.Warning:
-                        Log.Warning(e.Exception, e.Message);
-                        break;
-                    case LogLevel.Error:
-                        Log.Error(e.Exception, e.Message);
-                        break;
-                    case LogLevel.Critical:
-                        Log.Fatal(e.Exception, e.Message);
-                        break;
-                    default:
-                        Log.Verbose(e.Exception, e.Message);
-                        break;
-                }
-            }
-#pragma warning restore Serilog004 // Constant MessageTemplate verifier
-        }
-
         public static void Verbose(int shardId, string template, params object[] propertyValues)
             => InternalLog(LogEventLevel.Verbose, shardId, template, null, propertyValues);
 

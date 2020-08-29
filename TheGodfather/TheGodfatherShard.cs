@@ -10,6 +10,7 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Extensions.Logging;
 using TheGodfather.Database;
 using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
@@ -78,13 +79,11 @@ namespace TheGodfather
                 LargeThreshold = 250,
                 ShardCount = this.Config.ShardCount,
                 ShardId = this.Id,
-                UseInternalLogHandler = false,
-                LogLevel = LogLevel.Debug
+                LoggerFactory = new SerilogLoggerFactory(dispose: true),
             };
 
             this.Client = new DiscordClient(cfg);
 
-            this.Client.DebugLogger.LogMessageReceived += LogExt.Event;
             this.Client.Ready += e => {
                 Log.Information("Client ready!");
                 return Task.CompletedTask;
@@ -137,7 +136,7 @@ namespace TheGodfather
                 this.Commands = this.CNext.GetRegisteredCommands()
                     .Where(cmd => cmd.Parent is null)
                     .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
-                    .ToDictionary(tup => tup.Item1, tup => tup.Item2);
+                    .ToDictionary(tup => tup.Item1, tup => tup.cmd);
             }
         }
     }

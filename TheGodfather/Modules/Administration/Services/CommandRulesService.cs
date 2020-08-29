@@ -24,23 +24,22 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 IReadOnlyList<CommandRule> crs = db.CommandRules
-                    .Where(cr => cr.GuildIdDb == (long)gid)
+                    .Where(cr => cr.GuildIdDb == (long)gid && (cr.ChannelIdDb == 0 || cr.ChannelIdDb == (long)cid))
                     .AsEnumerable()
                     .Where(cr => cr.AppliesTo(qualifiedCommandName))
-                    .ToList().AsReadOnly();
-                
+                    .ToList()
+                    .AsReadOnly()
+                    ;
+
                 if (!crs.Any())
                     return false;
 
-                if (crs.Any(cr => cr.ChannelId == 0))
+                bool specialAllowed = crs.Any(cr => cr.ChannelId == cid && cr.Allowed);
+                if (specialAllowed)
                     return true;
 
-                CommandRule? special = crs.SingleOrDefault(cr => cr.ChannelId == cid);
-                if (special is { })
-                    return !special.Allowed;
-
-                CommandRule? other = crs.FirstOrDefault(cr => cr.ChannelId != 0 && cr.ChannelId != cid && cr.Allowed);
-                return other is { };
+                bool specialForbidden = crs.Any(cr => cr.ChannelId == cid && !cr.Allowed);
+                return specialForbidden || crs.Any(cr => cr.ChannelId == 0);
             }
         }
 
@@ -70,6 +69,7 @@ namespace TheGodfather.Modules.Administration.Services
                     db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(cid => cr.ChannelIdDb == (long)cid)));
                     db.CommandRules.AddRange(
                         cids.Distinct()
+                            .Where(cid => !crs.Any(cr => this.IsBlocked(gid, cid, cmd) != allow))
                             .Select(cid => new CommandRule {
                                 Allowed = allow,
                                 ChannelId = cid,
