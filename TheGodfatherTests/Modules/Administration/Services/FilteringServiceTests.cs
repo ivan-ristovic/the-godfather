@@ -38,8 +38,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             foreach (ulong id in MockData.Ids)
                 Assert.That(this.Service.GetGuildFilters(id), Is.Empty);
 
-            TestDatabaseProvider.SetupAlterAndVerify(
-                setup: db => { },
+            TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     for (int i = 0; i < MockData.Ids.Count; i++)
@@ -73,8 +72,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void TextContainsFilterTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
-                setup: db => { },
+            TestDatabaseProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat"), Is.False);
@@ -142,8 +140,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
@@ -179,8 +176,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
@@ -224,8 +220,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
@@ -265,8 +260,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                setup: db => Task.CompletedTask,
+            await TestDatabaseProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateFilterCount(db);
                     this.Service.LoadData();
@@ -439,8 +433,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                     }
                 );
 
-                await TestDatabaseProvider.SetupAlterAndVerifyAsync(
-                    setup: db => Task.CompletedTask,
+                await TestDatabaseProvider.AlterAndVerifyAsync(
                     alter: async db => {
                         this.Service.LoadData();
                         Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0]));

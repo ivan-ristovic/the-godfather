@@ -379,10 +379,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
             RatelimitSettings rs1 = first.RatelimitSettings;
             RatelimitSettings rs2 = second.RatelimitSettings;
-            if (rs1.Action != rs2.Action || rs1.Enabled != rs2.Enabled || rs1.Sensitivity != rs2.Sensitivity)
-                return false;
-
-            return true;
+            return rs1.Action == rs2.Action && rs1.Enabled == rs2.Enabled && rs1.Sensitivity == rs2.Sensitivity;
         }
     }
 }
