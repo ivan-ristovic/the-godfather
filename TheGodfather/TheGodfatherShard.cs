@@ -80,6 +80,9 @@ namespace TheGodfather
                 ShardCount = this.Config.ShardCount,
                 ShardId = this.Id,
                 LoggerFactory = new SerilogLoggerFactory(dispose: true),
+                Intents = DiscordIntents.All 
+                       & ~DiscordIntents.GuildMessageTyping 
+                       & ~DiscordIntents.DirectMessageTyping
             };
 
             this.Client = new DiscordClient(cfg);
