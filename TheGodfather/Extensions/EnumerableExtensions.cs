@@ -7,8 +7,11 @@ namespace TheGodfather.Extensions
 {
     internal static class EnumerableExtensions
     {
+        public static T MaxBy<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector) where TResult : IComparable<TResult> 
+            => source.Aggregate((e1, e2) => selector(e1).CompareTo(selector(e2)) > 0 ? e1 : e2);
+
         public static string Separate<T>(this IEnumerable<T> source, string separator = "\n")
-            => string.Join(separator, source.Select(e => e.ToString()));
+            => string.Join(separator, source.Select(e => e?.ToString() ?? ""));
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source) 
             => source.Shuffle(new SecureRandom());

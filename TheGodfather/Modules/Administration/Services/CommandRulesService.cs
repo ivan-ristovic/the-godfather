@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
@@ -46,8 +46,8 @@ namespace TheGodfather.Modules.Administration.Services
                     .Where(cr => cr.AppliesTo(qcmd))
                     ;
 
-                return crs.Any() 
-                    ? crs.Aggregate((cr1, cr2) => cr1.Command.Length > cr2.Command.Length ? cr1 : cr2)
+                return crs.Any()
+                    ? crs.MaxBy(cr => cr.Command)
                     : null;
             }
         }
