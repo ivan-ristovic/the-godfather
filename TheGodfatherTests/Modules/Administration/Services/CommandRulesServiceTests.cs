@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -123,17 +124,37 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         }
 
         [Test]
-        public async Task RemoveAsyncTests()
+        public void ClearAsyncTests()
         {
-            await Task.Yield();
-            Assert.Inconclusive();
-        }
+            TestDatabaseProvider.Verify(
+                verify: _ => {
+                    foreach (ulong gid in MockData.Ids) {
+                        Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
+                        Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
+                    }
+                }
+            );
 
-        [Test]
-        public async Task ClearAsyncTests()
-        {
-            await Task.Yield();
-            Assert.Inconclusive();
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => this.AddMockRules(db),
+                alter: db => Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(MockData.Ids[0])),
+                verify: db => {
+                    Assert.That(this.Service.GetRules(MockData.Ids[0]), Is.Empty);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1]), Is.Not.Empty);
+                    Assert.That(this.Service.GetRules(MockData.Ids[2]), Is.Not.Empty);
+                }
+            );
+
+            TestDatabaseProvider.SetupAlterAndVerify(
+                setup: db => this.AddMockRules(db),
+                alter: db => {
+                    foreach (ulong gid in MockData.Ids) {
+                        Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
+                        Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
+                    }
+                },
+                verify: db => Assert.That(db.CommandRules, Is.Empty)
+            );
         }
 
 
