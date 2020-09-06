@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TheGodfather.Database;
@@ -20,38 +21,44 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public bool IsBlocked(ulong gid, ulong cid, string qualifiedCommandName)
+        public bool IsBlocked(string qualifiedCommandName, ulong gid, ulong cid, ulong? parentId)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IReadOnlyList<CommandRule> crs = db.CommandRules
-                    .Where(cr => cr.GuildIdDb == (long)gid && (cr.ChannelIdDb == 0 || cr.ChannelIdDb == (long)cid))
+                CommandRule? specialRule = DbFetch(db, qualifiedCommandName, gid, cid);
+                if (specialRule is { })
+                    return !specialRule.Allowed;
+
+                if (parentId is { }) {
+                    CommandRule? specialParentRule = DbFetch(db, qualifiedCommandName, gid, parentId.Value);
+                    if (specialParentRule is { })
+                        return !specialParentRule.Allowed;
+                }
+
+                return !DbFetch(db, qualifiedCommandName, gid, 0)?.Allowed ?? false;
+            }
+
+            
+            static CommandRule? DbFetch(TheGodfatherDbContext db, string qcmd, ulong gid, ulong cid)
+            {
+                IEnumerable<CommandRule> crs = db.CommandRules
+                    .Where(cr => cr.GuildIdDb == (long)gid && cr.ChannelIdDb == (long)cid)
                     .AsEnumerable()
-                    .Where(cr => cr.AppliesTo(qualifiedCommandName))
-                    .ToList()
-                    .AsReadOnly()
+                    .Where(cr => cr.AppliesTo(qcmd))
                     ;
 
-                if (!crs.Any())
-                    return false;
-
-                bool specialAllowed = crs.Any(cr => cr.ChannelId == cid && cr.Allowed);
-                if (specialAllowed)
-                    return true;
-
-                bool specialForbidden = crs.Any(cr => cr.ChannelId == cid && !cr.Allowed);
-                return specialForbidden || crs.Any(cr => cr.ChannelId == 0);
+                return crs.Any() 
+                    ? crs.Aggregate((cr1, cr2) => cr1.Command.Length > cr2.Command.Length ? cr1 : cr2)
+                    : null;
             }
         }
 
         public IReadOnlyList<CommandRule> GetRules(ulong gid, string? cmd = null)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> rules = db.CommandRules
-                    .Where(cr => cr.GuildIdDb == (long)gid)
-                    .AsEnumerable();
-                return cmd is { }
-                    ? rules.Where(cr => cr.AppliesTo(cmd)).ToList().AsReadOnly()
-                    : rules.ToList().AsReadOnly();
+                IEnumerable<CommandRule> rules = db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid);
+                if (!string.IsNullOrWhiteSpace(cmd))
+                    rules = rules.Where(cr => cr.AppliesTo(cmd));
+                return rules.ToList().AsReadOnly();
             }
         }
 
@@ -69,7 +76,7 @@ namespace TheGodfather.Modules.Administration.Services
                     db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(cid => cr.ChannelIdDb == (long)cid)));
                     db.CommandRules.AddRange(
                         cids.Distinct()
-                            .Where(cid => !crs.Any(cr => this.IsBlocked(gid, cid, cmd) != allow))
+                            .Where(cid => !crs.Any(cr => this.IsBlocked(cmd, gid, cid, null) != allow))
                             .Select(cid => new CommandRule {
                                 Allowed = allow,
                                 ChannelId = cid,

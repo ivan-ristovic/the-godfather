@@ -33,7 +33,7 @@ namespace TheGodfather.Attributes
                 if (ctx.Guild is null || ctx.Command is null)
                     return false;
                 CommandRulesService? crs = ctx.Services.GetRequiredService<CommandRulesService>();
-                return crs?.IsBlocked(ctx.Guild.Id, ctx.Channel.Id, ctx.Command.QualifiedName) ?? false;
+                return crs?.IsBlocked(ctx.Command.QualifiedName, ctx.Guild.Id, ctx.Channel.Id, ctx.Channel.Parent?.Id) ?? false;
             }
         }
     }
