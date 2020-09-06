@@ -1,6 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Tests.Modules.Administration.Services
@@ -24,78 +29,187 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
 
         [Test]
-        public async Task IsBlockedTests()
+        public void IsBlockedTests()
         {
-            TestDatabaseProvider.AlterAndVerify(
-                alter: db => { },
+            TestDatabaseProvider.Verify(
                 verify: db => {
                     foreach (ulong gid in MockData.Ids) {
-                        Assert.That(this.Service.GetRules(gid), Is.Empty);
-                        foreach (ulong id in MockData.Ids)
-                            Assert.That(this.Service.IsBlocked(gid, id, "a"), Is.False);
+                        foreach (ulong id in MockData.Ids) {
+                            Assert.That(this.Service.IsBlocked("a", gid, id, null), Is.False);
+                            Assert.That(this.Service.IsBlocked("a", gid, id, MockData.Ids[0]), Is.False);
+                        }
                     }
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
-                alter: db => this.AddMockRules(),
+            TestDatabaseProvider.SetupAndVerify(
+                setup: db => this.AddMockRules(db),
                 verify: db => {
-                    foreach (ulong cid in MockData.Ids)
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[0], cid, "a"));
+                    this.AssertIsBlocked(MockData.Ids[0], "a", blocked: new[] { MockData.Ids[0], MockData.Ids[2] });
+                    this.AssertIsBlocked(MockData.Ids[0], "b", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[0], "c", allowed: new[] { MockData.Ids[0] });
+                    this.AssertIsBlocked(MockData.Ids[0], "d", blocked: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[0], "e", allowed: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[0], "f", allowed: new[] { MockData.Ids[3] }, blocked: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[0], "x", allowed: MockData.Ids);
 
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "a"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "aa"));
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "aaa"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "aaaa"), Is.False);
+                    this.AssertIsBlocked(MockData.Ids[1], "a", blocked: new[] { MockData.Ids[0], MockData.Ids[2] });
+                    this.AssertIsBlocked(MockData.Ids[1], "a b", blocked: new[] { MockData.Ids[0] });
+                    this.AssertIsBlocked(MockData.Ids[1], "b", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "b a", allowed: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "b a c", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "c", allowed: new[] { MockData.Ids[0] });
+                    this.AssertIsBlocked(MockData.Ids[1], "c d", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "d", blocked: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[1], "d e", allowed: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "e", allowed: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[1], "e f", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[1], "f", allowed: new[] { MockData.Ids[3] }, blocked: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[1], "f g", blocked: new[] { MockData.Ids[1], MockData.Ids[3] });
+                    this.AssertIsBlocked(MockData.Ids[1], "g", allowed: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[1], "g h", allowed: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[1], "g h j", allowed: new[] { MockData.Ids[1], MockData.Ids[3] });
+                    this.AssertIsBlocked(MockData.Ids[1], "x", allowed: MockData.Ids);
 
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "a b"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "a b c"), Is.False);
+                    this.AssertIsBlocked(MockData.Ids[2], "a", blocked: MockData.Ids);
+                    this.AssertIsBlocked(MockData.Ids[2], "aaa", blocked: new[] { MockData.Ids[1] });
+                    this.AssertIsBlocked(MockData.Ids[2], "x", allowed: MockData.Ids);
 
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "aa b"));
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[1], MockData.Ids[0], "aa b c"));
-
-                    foreach (ulong cid in MockData.Ids.Skip(1)) {
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[1], cid, "aa"), Is.False);
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[1], cid, "aa b"), Is.False);
-                    }
-
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[2], MockData.Ids[0], "bbb"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[2], MockData.Ids[0], "bbb a"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[2], MockData.Ids[1], "bbb"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[2], MockData.Ids[1], "bbb a"), Is.False);
-
-                    foreach (ulong cid in MockData.Ids.Skip(2)) {
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[2], cid, "bbb"));
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[2], cid, "bbb a"));
-                    }
-
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc ddd"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc dd"));
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[0], "ccc dd ee"));
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc ddd"), Is.False);
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc dd"));
-                    Assert.That(this.Service.IsBlocked(MockData.Ids[3], MockData.Ids[1], "ccc dd ee"));
-                    foreach (ulong cid in MockData.Ids.Skip(2)) {
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[3], cid, "ccc"), Is.False);
-                        Assert.That(this.Service.IsBlocked(MockData.Ids[3], cid, "ccc dd"), Is.False);
-                    }
-
-                    return Task.CompletedTask;
+                    this.AssertIsBlocked(MockData.Ids[3], "x", allowed: MockData.Ids);
                 }
             );
         }
 
-        // TODO add, forbid, clear
-
-
-        private async Task AddMockRules()
+        [Test]
+        public void GetRulesTests()
         {
-            await this.Service.AddRuleAsync(MockData.Ids[0], "a", false);
-            await this.Service.AddRuleAsync(MockData.Ids[1], "aa", false, MockData.Ids[0]);
-            await this.Service.AddRuleAsync(MockData.Ids[2], "bbb", true, MockData.Ids[0], MockData.Ids[1]);
-            await this.Service.AddRuleAsync(MockData.Ids[3], "ccc dd", false, MockData.Ids[0], MockData.Ids[1]);
+            TestDatabaseProvider.Verify(
+                verify: db => {
+                    foreach (ulong gid in MockData.Ids)
+                        Assert.That(this.Service.GetRules(gid), Is.Empty);
+                }
+            );
+
+            TestDatabaseProvider.SetupAndVerify(
+                setup: db => this.AddMockRules(db),
+                verify: db => {
+                    Assert.That(this.Service.GetRules(MockData.Ids[0]), Has.Exactly(11).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "a"), Has.Exactly(2).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "b"), Has.Exactly(1).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "f"), Has.Exactly(2).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "f g"), Has.Exactly(2).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "aaa"), Is.Empty);
+                    Assert.That(this.Service.GetRules(MockData.Ids[0], "x"), Is.Empty);
+
+                    Assert.That(this.Service.GetRules(MockData.Ids[1]), Has.Exactly(22).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "a"), Has.Exactly(2).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "a b"), Has.Exactly(3).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "aaa"), Is.Empty);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "g"), Has.Exactly(2).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "g h"), Has.Exactly(3).Items);
+                    Assert.That(this.Service.GetRules(MockData.Ids[1], "g h j"), Has.Exactly(4).Items);
+
+                    Assert.That(this.Service.GetRules(MockData.Ids[3]), Is.Empty);
+                    Assert.That(this.Service.GetRules(MockData.Ids[3], "x"), Is.Empty);
+                }
+            );
+        }
+
+        [Test]
+        public async Task AddAsyncTests()
+        {
+            await Task.Yield();
+            Assert.Inconclusive();
+        }
+
+        [Test]
+        public async Task RemoveAsyncTests()
+        {
+            await Task.Yield();
+            Assert.Inconclusive();
+        }
+
+        [Test]
+        public async Task ClearAsyncTests()
+        {
+            await Task.Yield();
+            Assert.Inconclusive();
+        }
+
+
+        private void AddMockRules(TheGodfatherDbContext db)
+        {
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "a", ChannelId = MockData.Ids[0], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "a", ChannelId = MockData.Ids[2], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "b", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "c", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "c", ChannelId = MockData.Ids[0], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "d", ChannelId = MockData.Ids[1], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "e", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "e", ChannelId = MockData.Ids[1], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "e", ChannelId = MockData.Ids[3], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "f", ChannelId = MockData.Ids[1], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[0], Command = "f", ChannelId = MockData.Ids[3], Allowed = true });
+
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "a", ChannelId = MockData.Ids[0], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "a", ChannelId = MockData.Ids[2], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "a b", ChannelId = MockData.Ids[2], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "b", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "b a", ChannelId = 0, Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "b a c", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "c", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "c", ChannelId = MockData.Ids[0], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "c d", ChannelId = MockData.Ids[0], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "d", ChannelId = MockData.Ids[1], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "d e", ChannelId = MockData.Ids[1], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "e", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "e", ChannelId = MockData.Ids[1], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "e", ChannelId = MockData.Ids[3], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "e f", ChannelId = MockData.Ids[1], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "f", ChannelId = MockData.Ids[1], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "f", ChannelId = MockData.Ids[3], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "f g", ChannelId = MockData.Ids[3], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "g", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "g", ChannelId = MockData.Ids[1], Allowed = true });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "g h", ChannelId = MockData.Ids[3], Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[1], Command = "g h j", ChannelId = MockData.Ids[3], Allowed = true });
+
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[2], Command = "a", ChannelId = 0, Allowed = false });
+            db.CommandRules.Add(new CommandRule { GuildId = MockData.Ids[2], Command = "aaa", ChannelId = MockData.Ids[1], Allowed = false });
+        }
+
+        private void AssertIsBlocked(ulong gid, string cmd, IEnumerable<ulong>? allowed = null, IEnumerable<ulong>? blocked = null)
+        {
+            allowed ??= MockData.Ids.Except(blocked ?? Enumerable.Empty<ulong>());
+            blocked ??= MockData.Ids.Except(allowed ?? Enumerable.Empty<ulong>());
+
+            if (allowed.Intersect(blocked).Any())
+                throw new InvalidOperationException("Channels cannot be blocked and allowed at the same time");
+
+            string subcmd = $"{cmd} subcommand";
+            string subsubcmd = $"{cmd} sub subcommand";
+
+            foreach (ulong cid in allowed!) {
+                Assert.That(this.Service.IsBlocked(cmd, gid, cid, null), Is.False);
+                Assert.That(this.Service.IsBlocked(subcmd, gid, cid, null), Is.False);
+                Assert.That(this.Service.IsBlocked(subsubcmd, gid, cid, null), Is.False);
+                foreach (ulong pcid in MockData.Ids.Except(blocked)) {
+                    Assert.That(this.Service.IsBlocked(cmd, gid, cid, pcid), Is.False);
+                    Assert.That(this.Service.IsBlocked(subcmd, gid, cid, pcid), Is.False);
+                    Assert.That(this.Service.IsBlocked(subsubcmd, gid, cid, pcid), Is.False);
+                }
+            }
+
+            foreach (ulong cid in blocked!) {
+                Assert.That(this.Service.IsBlocked(cmd, gid, cid, null));
+                Assert.That(this.Service.IsBlocked(subcmd, gid, cid, null));
+                Assert.That(this.Service.IsBlocked(subsubcmd, gid, cid, null));
+                foreach (ulong ccid in MockData.Ids.Except(allowed)) {
+                    Assert.That(this.Service.IsBlocked(cmd, gid, ccid, cid));
+                    Assert.That(this.Service.IsBlocked(subcmd, gid, ccid, cid));
+                    Assert.That(this.Service.IsBlocked(subsubcmd, gid, ccid, cid));
+                }
+            }
         }
     }
 }
