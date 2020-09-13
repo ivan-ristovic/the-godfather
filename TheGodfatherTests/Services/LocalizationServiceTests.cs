@@ -26,7 +26,7 @@ namespace TheGodfather.Tests.Services
         public void InitializeService()
         {
             var bcs = new BotConfigService();
-            this.Configs = new GuildConfigService(bcs, TestDatabaseProvider.Database, false);
+            this.Configs = new GuildConfigService(bcs, TestDbProvider.Database, false);
             this.Service = new LocalizationService(this.Configs, bcs, false);
             Assume.That(Directory.Exists(this.ValidTestDataPath), "Valid tests dir not present");
             Assume.That(Directory.Exists(this.ThrowsIOTestDataPath), "Invalid tests dir not present");
@@ -52,7 +52,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public void GetGuildLocaleTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
@@ -73,7 +73,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public void GetLocalizedTimeTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg;
 
@@ -109,7 +109,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public void GetStringTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
@@ -145,7 +145,7 @@ namespace TheGodfather.Tests.Services
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd2"), Is.EqualTo("two"));
             Assert.That(this.Service.GetCommandDescription(MockData.Ids[1], "cmd1 subcommand"), Is.EqualTo("one sub"));
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;
@@ -171,7 +171,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task SetGuildLocaleAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Configs.LoadData();
                     this.Service.LoadData(this.ValidTestDataPath);
@@ -183,7 +183,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[0]);
                     gcfg.Locale = this.EnLocale;

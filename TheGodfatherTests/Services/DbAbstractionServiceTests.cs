@@ -20,14 +20,14 @@ namespace TheGodfather.Tests.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new ConcreteService2(TestDatabaseProvider.Database);
+            this.Service = new ConcreteService2(TestDbProvider.Database);
         }
 
 
         [Test]
         public void GetTests()
         {
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: _ => { },
                 verify: db => {
                     IReadOnlyList<ulong> all = this.Service.Get();
@@ -35,7 +35,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockData(db),
                 alter: _ => { },
                 verify: db => {
@@ -48,7 +48,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task ClearAsyncTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -62,7 +62,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => Task.CompletedTask,
                 alter: db => this.Service.ClearAsync(),
                 verify: db => {
@@ -77,7 +77,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task ContainsAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: _ => Task.CompletedTask,
                 verify: async db => {
                     foreach (ulong id in MockData.Ids)
@@ -85,7 +85,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -103,7 +103,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task AddAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
                     Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(2)));
@@ -112,7 +112,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -125,7 +125,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -138,7 +138,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -156,7 +156,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => {
                     Assert.That(await this.Service.AddAsync(), Is.Zero);
                     Assert.That(await this.Service.AddAsync(null!), Is.Zero);
@@ -174,7 +174,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task RemoveAsyncTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -187,7 +187,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -200,7 +200,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -213,7 +213,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -226,7 +226,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -262,14 +262,14 @@ namespace TheGodfather.Tests.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new ConcreteService3(TestDatabaseProvider.Database);
+            this.Service = new ConcreteService3(TestDbProvider.Database);
         }
 
 
         [Test]
         public void GetTests()
         {
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: _ => { },
                 verify: db => {
                     foreach (ulong id in MockData.Ids) {
@@ -279,7 +279,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockData(db),
                 alter: _ => { },
                 verify: db => {
@@ -298,7 +298,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task ClearAsyncTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -316,7 +316,7 @@ namespace TheGodfather.Tests.Services
             );
 
             int bef = 0;
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -331,7 +331,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => Task.CompletedTask,
                 alter: db => this.Service.ClearAsync(MockData.Ids[0]),
                 verify: db => {
@@ -347,7 +347,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public async Task ContainsAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: _ => Task.CompletedTask,
                 verify: async db => {
                     foreach (ulong gid in MockData.Ids) {
@@ -357,7 +357,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -385,7 +385,7 @@ namespace TheGodfather.Tests.Services
         {
             int bef = 0;
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[0], MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
                     Assert.That(this.Service.Get(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
@@ -397,7 +397,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -415,7 +415,7 @@ namespace TheGodfather.Tests.Services
             );
 
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -437,7 +437,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => {
                     foreach (ulong gid in MockData.Ids) {
                         Assert.That(await this.Service.AddAsync(gid), Is.Zero);
@@ -460,7 +460,7 @@ namespace TheGodfather.Tests.Services
         {
             int bef = 0;
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -475,7 +475,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -488,7 +488,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -501,7 +501,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;
@@ -517,7 +517,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockData(db);
                     return Task.CompletedTask;

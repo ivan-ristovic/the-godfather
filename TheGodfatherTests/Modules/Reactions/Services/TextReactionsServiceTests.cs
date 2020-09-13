@@ -26,7 +26,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         {
             Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Is.Empty);
 
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     for (int i = 0; i < MockData.Ids.Count; i++)
@@ -34,7 +34,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockReactions(db),
                 alter: db => {
                     this.UpdateTextReactionCount(db);
@@ -64,7 +64,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public void FindMatchingTextReactionsTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockReactions(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -98,7 +98,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task GuildHasTextReactionTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockReactions(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -120,7 +120,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"), Is.False);
@@ -139,7 +139,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: db => this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "response", false),
                 verify: db => {
                     Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
@@ -153,7 +153,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task AddTextReactionTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -183,7 +183,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig", "h3h3", false), Is.True);
@@ -203,7 +203,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig+ered", "h3h3", true), Is.True);
@@ -225,7 +225,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response", true), Is.True);
@@ -239,7 +239,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -290,7 +290,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveTextReactionTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -309,7 +309,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -332,7 +332,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -368,7 +368,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveTextReactionTriggersTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -394,7 +394,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -421,7 +421,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -443,7 +443,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -470,7 +470,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveAllTextReactionsTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;

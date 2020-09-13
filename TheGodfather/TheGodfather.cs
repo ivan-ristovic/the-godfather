@@ -144,7 +144,7 @@ namespace TheGodfather
             return dbb;
         }
 
-        private static async Task CreateAndBootShardsAsync(BotConfigService cfg, DbContextBuilder dbb)
+        private static Task CreateAndBootShardsAsync(BotConfigService cfg, DbContextBuilder dbb)
         {
             Log.Information("Initializing services");
             IServiceCollection services = new ServiceCollection()
@@ -165,7 +165,7 @@ namespace TheGodfather
 
             Log.Information("Booting the shards");
 
-            await Task.WhenAll(_shards.Select(s => s.StartAsync())).ContinueWith(_ => RegisterPeriodicTasks(cfg));
+            return Task.WhenAll(_shards.Select(s => s.StartAsync())).ContinueWith(_ => RegisterPeriodicTasks(cfg));
         }
 
         private static Task RegisterPeriodicTasks(BotConfigService cfg)

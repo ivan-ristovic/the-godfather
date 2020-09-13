@@ -82,7 +82,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                 this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: db => this.Service.Sync(db),
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
@@ -106,7 +106,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
             this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     var msgcount = new XpCount[] {
                         new XpCount() {
@@ -143,7 +143,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
             this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
             this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     var msgcount = new XpCount[] {
                         new XpCount() {

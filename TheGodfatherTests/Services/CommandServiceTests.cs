@@ -26,7 +26,7 @@ namespace TheGodfather.Tests.Services
         public void InitializeService()
         {
             var bcs = new BotConfigService();
-            this.Configs = new GuildConfigService(bcs, TestDatabaseProvider.Database, false);
+            this.Configs = new GuildConfigService(bcs, TestDbProvider.Database, false);
             this.Localization = new LocalizationService(this.Configs, bcs, false);
             this.Service = new CommandService(this.Configs, this.Localization, false);
             Assume.That(Directory.Exists(this.ValidTestDataPath), "Valid tests dir not present");
@@ -36,7 +36,7 @@ namespace TheGodfather.Tests.Services
         [Test]
         public void GetCommandUsageExamplesTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[0]);
                     gcfg.Locale = this.EnLocale;
@@ -59,7 +59,7 @@ namespace TheGodfather.Tests.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.Locale = this.SrLocale;

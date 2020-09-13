@@ -12,7 +12,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new ReactionsService(TestDatabaseProvider.Database, loadData: false);
+            this.Service = new ReactionsService(TestDbProvider.Database, loadData: false);
         }
     }
 }

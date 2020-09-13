@@ -18,21 +18,21 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
         public CommandRulesServiceTests()
         {
-            this.Service = new CommandRulesService(TestDatabaseProvider.Database);
+            this.Service = new CommandRulesService(TestDbProvider.Database);
         }
 
 
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new CommandRulesService(TestDatabaseProvider.Database);
+            this.Service = new CommandRulesService(TestDbProvider.Database);
         }
 
 
         [Test]
         public void IsBlockedTests()
         {
-            TestDatabaseProvider.Verify(
+            TestDbProvider.Verify(
                 verify: db => {
                     foreach (ulong gid in MockData.Ids) {
                         foreach (ulong id in MockData.Ids) {
@@ -43,7 +43,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAndVerify(
+            TestDbProvider.SetupAndVerify(
                 setup: db => this.AddMockRules(db),
                 verify: db => {
                     this.AssertIsBlocked(MockData.Ids[0], "a", blocked: new[] { MockData.Ids[0], MockData.Ids[2] });
@@ -84,14 +84,14 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void GetRulesTests()
         {
-            TestDatabaseProvider.Verify(
+            TestDbProvider.Verify(
                 verify: db => {
                     foreach (ulong gid in MockData.Ids)
                         Assert.That(this.Service.GetRules(gid), Is.Empty);
                 }
             );
 
-            TestDatabaseProvider.SetupAndVerify(
+            TestDbProvider.SetupAndVerify(
                 setup: db => this.AddMockRules(db),
                 verify: db => {
                     Assert.That(this.Service.GetRules(MockData.Ids[0]), Has.Exactly(11).Items);
@@ -119,14 +119,30 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public async Task AddAsyncTests()
         {
-            await Task.Yield();
-            Assert.Inconclusive();
+            await TestDbProvider.AlterAndVerifyAsync(
+                alter: _ => this.Service.AddRuleAsync(MockData.Ids[0], "a", false, MockData.Ids[1]),
+                verify: _ => {
+                    this.AssertIsBlocked(MockData.Ids[0], "a", blocked: new[] { MockData.Ids[1] });
+                    return Task.CompletedTask;
+                }
+            );
+
+            await TestDbProvider.AlterAndVerifyAsync(
+                alter: _ => this.Service.AddRuleAsync(MockData.Ids[0], "a", true, MockData.Ids[1]),
+                verify: db => {
+                    var crs = db.CommandRules.ToList();
+                    this.AssertIsBlocked(MockData.Ids[0], "a", allowed: new[] { MockData.Ids[1] });
+                    return Task.CompletedTask;
+                }
+            );
+
+            // TODO
         }
 
         [Test]
         public void ClearAsyncTests()
         {
-            TestDatabaseProvider.Verify(
+            TestDbProvider.Verify(
                 verify: _ => {
                     foreach (ulong gid in MockData.Ids) {
                         Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
@@ -135,7 +151,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockRules(db),
                 alter: db => Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(MockData.Ids[0])),
                 verify: db => {
@@ -145,7 +161,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockRules(db),
                 alter: db => {
                     foreach (ulong gid in MockData.Ids) {

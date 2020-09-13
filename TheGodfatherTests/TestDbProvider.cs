@@ -9,14 +9,14 @@ using TheGodfather.Database.Models;
 
 namespace TheGodfather.Tests
 {
-    public static class TestDatabaseProvider
+    public static class TestDbProvider
     {
         public static DbContextBuilder Database { get; private set; }
         public static string ConnectionString { get; private set; }
         public static SqliteConnection DatabaseConnection { get; private set; }
 
 
-        static TestDatabaseProvider()
+        static TestDbProvider()
         {
             ConnectionString = "DataSource=:memory:;foreign keys=true;";
             DatabaseConnection = new SqliteConnection(ConnectionString);

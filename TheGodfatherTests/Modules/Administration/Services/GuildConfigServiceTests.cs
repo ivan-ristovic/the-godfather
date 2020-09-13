@@ -50,7 +50,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new GuildConfigService(new BotConfigService(), TestDatabaseProvider.Database, loadData: false);
+            this.Service = new GuildConfigService(new BotConfigService(), TestDbProvider.Database, loadData: false);
         }
 
 
@@ -63,7 +63,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] + 1), Is.False);
             Assert.That(this.Service.IsGuildRegistered(MockData.Ids[0] - 1), Is.False);
 
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     foreach (ulong id in MockData.Ids)
@@ -78,7 +78,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void GetCachedConfigTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -93,7 +93,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         public void GetGuildPrefixTests()
         {
             string defPrefix = new BotConfig().Prefix;
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -108,7 +108,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public async Task GetConfigAsyncTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.SetMockGuildConfig(db);
                     return Task.CompletedTask;
@@ -134,7 +134,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public async Task ModifyConfigAsyncTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.SetMockGuildConfig(db);
                     return Task.CompletedTask;
@@ -152,7 +152,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     await this.Service.ModifyConfigAsync(MockData.Ids[1], gcfg => gcfg.AntispamSettings = new AntispamSettings {
@@ -169,7 +169,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.ModifyConfigAsync(1, null!), Is.Null);
@@ -181,7 +181,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public async Task RegisterGuildAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await db.Configs.FindAsync(1L), Is.Null);
@@ -193,7 +193,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.SetMockGuildConfig(db);
                     return Task.CompletedTask;
@@ -212,7 +212,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public async Task UnregisterGuildAsyncTests()
         {
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     await this.Service.UnregisterGuildAsync(MockData.Ids[0]);
@@ -220,7 +220,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 verify: async db => Assert.That(await db.Configs.FindAsync((long)MockData.Ids[0]), Is.Null)
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     await this.Service.UnregisterGuildAsync(1);
@@ -228,7 +228,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 verify: db => Task.CompletedTask
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.SetMockGuildConfig(db);
                     return Task.CompletedTask;
@@ -248,7 +248,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void IsChannelExemptedTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
@@ -268,7 +268,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Channel });
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });
@@ -291,7 +291,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void IsMemberExemptedTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[1], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
@@ -313,7 +313,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Member });
                     db.ExemptsLogging.Add(new ExemptedLoggingEntity { GuildId = MockData.Ids[0], Id = MockData.Ids[0], Type = ExemptedEntityType.Role });

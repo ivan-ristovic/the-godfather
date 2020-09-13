@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Administration.Services
                     );
                 }
 
-                if (!allow && !cids.Any()) {
+                if (allow || (!allow && !cids.Any())) {
                     var cr = new CommandRule {
                         Allowed = false,
                         ChannelId = 0,

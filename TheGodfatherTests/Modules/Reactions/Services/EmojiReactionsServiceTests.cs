@@ -28,7 +28,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         {
             Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Is.Empty);
 
-            TestDatabaseProvider.AlterAndVerify(
+            TestDbProvider.AlterAndVerify(
                 alter: db => this.Service.LoadData(),
                 verify: db => {
                     for (int i = 0; i < MockData.Ids.Count; i++)
@@ -36,7 +36,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockReactions(db),
                 alter: db => {
                     this.UpdateEmojiReactionCount(db);
@@ -66,7 +66,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public void FindMatchingEmojiReactionsTests()
         {
-            TestDatabaseProvider.SetupAlterAndVerify(
+            TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockReactions(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
@@ -99,7 +99,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task AddEmojiReactionTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -128,7 +128,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -166,7 +166,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -198,7 +198,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
@@ -228,7 +228,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -263,7 +263,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -303,7 +303,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -339,7 +339,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
@@ -356,7 +356,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveEmojiReactionByEmojiTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -382,7 +382,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -416,7 +416,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.AlterAndVerifyAsync(
+            await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken), Is.Zero);
@@ -433,7 +433,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveEmojiReactionTriggersTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -460,7 +460,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -482,7 +482,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -504,7 +504,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             );
 
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
@@ -531,7 +531,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
         [Test]
         public async Task RemoveAllEmojiReactionsTests()
         {
-            await TestDatabaseProvider.SetupAlterAndVerifyAsync(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     this.AddMockReactions(db);
                     return Task.CompletedTask;
