@@ -33,7 +33,7 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public CommandFailedException(CommandContext ctx, string key, Exception inner, params object[]? args)
+        public CommandFailedException(CommandContext ctx, Exception inner, string key, params object[]? args)
             : base(ctx, key, inner, args)
         {
 

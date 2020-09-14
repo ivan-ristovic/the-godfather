@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Misc
         public async Task HelpAsync(CommandContext ctx, [RemainingText] params string[] args)
         {
             //throw new InvalidCommandUsageException(ctx, "msg-err", new System.Exception());
-            await this.InformAsync(ctx, "str-suc");
+            await this.InformAsync(ctx, "str-help");
         }
     }
 

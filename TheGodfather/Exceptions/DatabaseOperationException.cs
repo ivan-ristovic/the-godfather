@@ -33,7 +33,7 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public DatabaseOperationException(CommandContext ctx, string key, Exception inner, params object[]? args)
+        public DatabaseOperationException(CommandContext ctx, Exception inner, string key, params object[]? args)
             : base(ctx, key, inner, args)
         {
 

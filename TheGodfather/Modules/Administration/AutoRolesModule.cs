@@ -24,6 +24,7 @@ namespace TheGodfather.Modules.Administration
             : base(service) { }
 
 
+        #region automaticroles
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
@@ -32,7 +33,7 @@ namespace TheGodfather.Modules.Administration
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-roles-add")] params DiscordRole[] roles)
             => this.AddAsync(ctx, roles);
-
+        #endregion
 
         #region automaticroles add
         [Command("add")]

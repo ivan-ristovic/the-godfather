@@ -3,20 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Imgur.API.Authentication.Impl;
-using Imgur.API.Endpoints.Impl;
-using Imgur.API.Enums;
+using Imgur.API.Authentication;
 using Imgur.API.Models;
 using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search.Services
 {
+    /*
     public class ImgurService : ITheGodfatherService
     {
         public bool IsDisabled => this.imgur is null;
 
-        private readonly ImgurClient imgur;
+        private readonly ApiClient imgur;
         private readonly GalleryEndpoint gEndpoint;
         //private readonly ImageEndpoint iEndpoint;
 
@@ -49,4 +48,5 @@ namespace TheGodfather.Modules.Search.Services
             return images.Take(amount);
         }
     }
+    */
 }

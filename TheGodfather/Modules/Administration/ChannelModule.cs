@@ -24,11 +24,12 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed partial class ChannelModule : TheGodfatherModule
     {
+        #region channel
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-chn-info")] DiscordChannel? channel = null)
             => this.InfoAsync(ctx, channel);
-
+        #endregion
 
         #region channel add
         [Group("add")]

@@ -28,7 +28,7 @@ namespace TheGodfather.Exceptions
             this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, key, args);
         }
 
-        public LocalizedException(CommandContext ctx, string key, Exception inner, params object[]? args)
+        public LocalizedException(CommandContext ctx, Exception inner, string key, params object[]? args)
             : base(key, inner)
         {
             this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, key, args);

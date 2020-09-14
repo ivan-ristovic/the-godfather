@@ -203,6 +203,40 @@
       [ "arg-chn-text" ]
     ]
   },
+  "emoji": {
+    "usage": [
+      [],
+      [ "arg-emoji" ],
+      [ "arg-emoji-name" ]
+    ]
+  },
+  "emoji add": {
+    "usage": [
+      [ "arg-emoji-name" ],
+      [ "arg-emoji-name", "arg-emoji-url" ]
+    ]
+  },
+  "emoji del": {
+    "usage": [
+      [ "arg-emoji-name" ],
+      [ "arg-emoji-name", "arg-rsn" ]
+    ]
+  },
+  "emoji info": {
+    "usage": [
+      [],
+      [ "arg-emoji" ],
+      [ "arg-emoji-name" ]
+    ]
+  },
+  "emoji list": {
+    "usage": [ ]
+  },
+  "emoji modify": {
+    "usage": [
+      [ "arg-emoji", "arg-name-small" ]
+    ]
+  },
   "webhook": {
     "usage": [
       [],

@@ -14,6 +14,8 @@
         public static int EmbedFooterLimit { get; } = 2048;
         public static int EmbedTitleLimit { get; } = 256;
         public static int EmbedTotalCharLimit { get; } = 6000;
+        public static int EmojiNameLimit { get; } = 32;
+        public static int EmojiSizeLimit { get; } = 256000;
         public static int MessageContentLimit { get; } = 2000;
         public static int MessageReactionLimit { get; } = 20;
         public static int NameLimit { get; } = 256;

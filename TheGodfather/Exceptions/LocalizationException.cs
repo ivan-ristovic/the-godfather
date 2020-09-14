@@ -32,7 +32,7 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public LocalizationException(CommandContext ctx, string key, Exception inner, params object[]? args)
+        public LocalizationException(CommandContext ctx, Exception inner, string key, params object[]? args)
             : base(ctx, key, inner, args)
         {
 

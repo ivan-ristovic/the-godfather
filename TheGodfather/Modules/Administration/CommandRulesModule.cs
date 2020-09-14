@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
-using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
@@ -29,6 +28,7 @@ namespace TheGodfather.Modules.Administration
             : base(service) { }
 
 
+        #region commandrules
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("desc-cr-cmd")] string command)
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
             => this.PrintRulesAsync(ctx, chn: channel);
-
+        #endregion
 
         #region commandrules allow
         [Command("allow"), Priority(1)]

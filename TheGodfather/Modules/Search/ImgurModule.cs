@@ -7,9 +7,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Imgur.API;
-using Imgur.API.Enums;
 using Imgur.API.Models;
-using Imgur.API.Models.Impl;
 using TheGodfather.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -19,6 +17,7 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search
 {
+    /*
     [Group("imgur"), Module(ModuleType.Searches), NotBlocked]
     [Description("Search imgur. Group call retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
@@ -27,13 +26,11 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        /*
          *  FIXME! 
          *  
          *  Remove TimeWindow from the command handlers below and replace them with TimeSpan
          * 
-         */
-
+         
 
         public ImgurModule(ImgurService service, DbContextBuilder db)
             : base(service, db)
@@ -171,4 +168,5 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
     }
+    */
 }
