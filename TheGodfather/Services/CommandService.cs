@@ -6,6 +6,7 @@ using System.Linq;
 using Humanizer;
 using Newtonsoft.Json;
 using Serilog;
+using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services
@@ -39,8 +40,17 @@ namespace TheGodfather.Services
                 foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("cmds_*.json", SearchOption.TopDirectoryOnly)) {
                     try {
                         string json = File.ReadAllText(fi.FullName);
-                        foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json))
+                        foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)) {
+                            foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
+                                try {
+                                    string _ = this.lcs.GetString(null, arg);
+                                    Log.Verbose("Checked {Argument}", arg);
+                                } catch (LocalizationException) {
+                                    Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
+                                }
+                            }
                             cmds.Add(cmd, info);
+                        }
                         Log.Debug("Loaded command list from: {FileName}", fi.Name);
                     } catch (JsonReaderException e) {
                         Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);

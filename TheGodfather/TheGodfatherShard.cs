@@ -37,7 +37,7 @@ namespace TheGodfather
         public TheGodfatherShard(int shardId, IServiceCollection services)
         {
             this.Id = shardId;
-            this.Services = services.AddShardServices(this).BuildServiceProvider();
+            this.Services = services.AddShardServices(this).BuildServiceProvider().Initialize();
             this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
             this.Commands = new Dictionary<string, Command>();

@@ -79,7 +79,7 @@ namespace TheGodfather.Services
                     throw new IOException("No valid JSON files found");
 
                 if (!defLocaleLoaded)
-                    throw new IOException($"The default locale {this.DefaultLocale} is not loaded");
+                    throw new IOException($"Default locale {this.DefaultLocale} is not loaded");
 
                 return strs.ToImmutableDictionary();
             }

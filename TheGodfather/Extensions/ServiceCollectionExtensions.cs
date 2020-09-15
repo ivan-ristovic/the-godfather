@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
@@ -40,6 +43,15 @@ namespace TheGodfather.Extensions
                 .AddSingleton(new RatelimitService(shard))
                 .AddSingleton(s => new SchedulingService(shard, s.GetRequiredService<AsyncExecutionService>()))
                 ;
+        }
+
+        public static ServiceProvider Initialize(this ServiceProvider provider, Assembly? assembly = null)
+        {
+            provider.ConfigureAwait(false);
+            IEnumerable<Type> serviceTypes = GetServiceTypes(assembly);
+            foreach (Type serviceType in serviceTypes)
+                _ = provider.GetService(serviceType);
+            return provider;
         }
 
 

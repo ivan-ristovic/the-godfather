@@ -1,4 +1,5 @@
 {
+  "...": "...",
   "act-fname-match": "Renamed due to a forbidden name match",
   "arg-bool": "Yes/No",
   "arg-chn-cat": "My Category",
@@ -13,6 +14,7 @@
   "arg-emoji-steal": ":emoji_from_another_guild:",
   "arg-five": "5",
   "arg-id": "12345",
+  "arg-mem": "Member",
   "arg-name": "NewName",
   "arg-name-small": "new_name",
   "arg-regex": "regex?pattern+",

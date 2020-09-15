@@ -17,11 +17,10 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    public class HelpModuleImpl : TheGodfatherModule
+    public class HelpModuleImpl : TheGodfatherServiceModule<CommandService>
     {
-        public HelpModuleImpl(DbContextBuilder dbb) : base(dbb)
-        {
-        }
+        public HelpModuleImpl(CommandService cs)
+            : base(cs) { }
 
 
         [Command("help")]

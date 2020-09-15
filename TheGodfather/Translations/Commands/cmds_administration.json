@@ -78,7 +78,7 @@
       [ "arg-name-small" ],
       [ "arg-chn-text", "arg-name-small" ],
       [ "arg-chn-voice", "arg-name" ],
-      [ "arg-name_small", "arg-chn-text", "arg-rsn" ]
+      [ "arg-name-small", "arg-chn-text", "arg-rsn" ]
     ]
   },
   "channel modify nsfw": {
@@ -129,7 +129,7 @@
       [ "arg-name-small" ],
       [ "arg-chn-text", "arg-name-small" ],
       [ "arg-chn-voice", "arg-name" ],
-      [ "arg-name_small", "arg-chn-text", "arg-rsn" ]
+      [ "arg-name-small", "arg-chn-text", "arg-rsn" ]
     ]
   },
   "channel setnsfw": {
