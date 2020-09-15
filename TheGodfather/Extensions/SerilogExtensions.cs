@@ -11,7 +11,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Extensions
 {
-    internal static class LoggerSetup
+    internal static class LogExt
     {
         public static Logger CreateLogger(BotConfig cfg)
         {
@@ -42,12 +42,9 @@ namespace TheGodfather.Extensions
                 });
             }
 
-            Log.Logger = lcfg.CreateLogger();
+            return lcfg.CreateLogger();
         }
-    }
 
-    internal static class LogExt
-    {
         public static void Verbose(int shardId, string template, params object[] propertyValues)
             => InternalLog(LogEventLevel.Verbose, shardId, template, null, propertyValues);
 

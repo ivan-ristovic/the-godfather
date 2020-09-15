@@ -28,10 +28,7 @@ namespace TheGodfather
         public static IReadOnlyList<TheGodfatherShard> ActiveShards => _shards.AsReadOnly();
 
         private static ServiceProvider? ServiceProvider { get; set; }
-        private static Timer? BotStatusUpdateTimer { get; set; }
-        private static Timer? DatabaseSyncTimer { get; set; }
-        private static Timer? FeedCheckTimer { get; set; }
-        private static Timer? MiscActionsTimer { get; set; }
+        private static PeriodicTasksService? PeriodicService { get; set; }
 
         private static readonly List<TheGodfatherShard> _shards = new List<TheGodfatherShard>();
 
@@ -50,12 +47,14 @@ namespace TheGodfather
 
             try {
                 BotConfigService cfg = await LoadBotConfigAsync();
-                Log.Logger = LoggerSetup.CreateLogger(cfg.CurrentConfiguration);
+                Log.Logger = LogExt.CreateLogger(cfg.CurrentConfiguration);
                 Log.Information("Logger created.");
 
                 DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
                 await CreateAndBootShardsAsync(cfg, dbb);
                 Log.Information("Booting complete!");
+
+                PeriodicService = new PeriodicTasksService(_shards[0], cfg.CurrentConfiguration);
 
                 await Task.Delay(Timeout.Infinite, ServiceProvider.GetService<BotActivityService>().MainLoopCts.Token);
             } catch (TaskCanceledException) {
@@ -132,26 +131,14 @@ namespace TheGodfather
 
             Log.Information("Booting the shards");
 
-            return Task.WhenAll(_shards.Select(s => s.StartAsync())).ContinueWith(_ => RegisterPeriodicTasks(cfg));
-        }
-
-        private static Task RegisterPeriodicTasks(BotConfigService cfg)
-        {
-            BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, _shards[0], TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
-            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, _shards[0], TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.CurrentConfiguration.DatabaseSyncInterval));
-            FeedCheckTimer = new Timer(FeedCheckCallback, _shards[0], TimeSpan.FromSeconds(cfg.CurrentConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.CurrentConfiguration.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousActionsCallback, _shards[0], TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-            return Task.CompletedTask;
+            return Task.WhenAll(_shards.Select(s => s.StartAsync()));
         }
 
         private static async Task DisposeAsync()
         {
-            Log.Information("Cleaning up");
+            Log.Information("Cleaning up ...");
 
-            BotStatusUpdateTimer?.Dispose();
-            DatabaseSyncTimer?.Dispose();
-            FeedCheckTimer?.Dispose();
-            MiscActionsTimer?.Dispose();
+            PeriodicService?.Dispose();
 
             if (_shards is { }) {
                 foreach (TheGodfatherShard shard in _shards)
@@ -164,140 +151,6 @@ namespace TheGodfather
             }
 
             Log.Information("Cleanup complete! Powering off");
-        }
-        #endregion
-
-        #region Callbacks
-        private static void BotActivityChangeCallback(object? _)
-        {
-            if (_ is TheGodfatherShard shard) {
-                if (shard.Client is null) {
-                    Log.Error("BotActivityChangeCallback detected null client - this should not happen");
-                    return;
-                }
-
-                if (!shard.Services?.GetService<BotActivityService>().StatusRotationEnabled ?? false)
-                    return;
-
-                try {
-                    BotStatus? status = null;
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        status = db.BotStatuses.Shuffle().FirstOrDefault();
-
-                    if (status is null)
-                        Log.Warning("No extra bot statuses present in the database.");
-
-                    DiscordActivity activity = status is { }
-                        ? new DiscordActivity(status.Status, status.Activity)
-                        : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.Playing);
-
-                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
-                    async.Execute(shard.Client!.UpdateStatusAsync(activity));
-                    Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
-                } catch (Exception e) {
-                    Log.Error(e, "An error occured during activity change");
-                }
-            } else {
-                Log.Error("BotActivityChangeCallback failed to cast sender to TheGodfatherShard");
-            }
-        }
-
-        private static void DatabaseSyncCallback(object? _)
-        {
-            if (_ is TheGodfatherShard shard) {
-                if (shard.Client is null) {
-                    Log.Error("DatabaseSyncCallback detected null client - this should not happen");
-                    return;
-                }
-
-                try {
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        shard.Services.GetService<UserRanksService>().Sync(db);
-                    Log.Debug("Database sync successful");
-                } catch (Exception e) {
-                    Log.Error(e, "An error occured during database sync");
-                }
-            } else {
-                Log.Error("DatabaseSyncCallback failed to cast sender to TheGodfatherShard");
-            }
-        }
-
-        private static void FeedCheckCallback(object? _)
-        {
-            if (_ is TheGodfatherShard shard) {
-                if (shard.Client is null) {
-                    Log.Error("FeedCheckCallback detected null client - this should not happen");
-                    return;
-                }
-
-                Log.Debug("Feed check starting...");
-                try {
-                    AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
-                    async.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, shard.Database));
-                    Log.Debug("Feed check finished");
-                } catch (Exception e) {
-                    Log.Error(e, "An error occured during feed check");
-                }
-            } else {
-                Log.Error("FeedCheckCallback failed to cast sender to TheGodfatherShard");
-            }
-        }
-
-        private static void MiscellaneousActionsCallback(object? _)
-        {
-            if (_ is TheGodfatherShard shard) {
-                if (shard.Client is null) {
-                    Log.Error("MiscellaneousActionsCallback detected null client - this should not happen");
-                    return;
-                }
-
-                try {
-                    List<Birthday> todayBirthdays;
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        todayBirthdays = db.Birthdays
-                            .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
-                            .ToList();
-                    }
-
-                    foreach (Birthday birthday in todayBirthdays) {
-                        AsyncExecutionService async = ServiceProvider?.GetService<AsyncExecutionService>() ?? throw new Exception("Async service is null");
-                        DiscordChannel channel = async.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
-                        DiscordUser user = async.Execute(shard.Client.GetUserAsync(birthday.UserId));
-                        async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
-                            Description = $"{Emojis.Tada} Happy birthday, {user.Mention}! {Emojis.Cake}",
-                            Color = DiscordColor.Aquamarine
-                        }));
-
-                        using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                            birthday.LastUpdateYear = DateTime.Now.Year;
-                            db.Birthdays.Update(birthday);
-                            db.SaveChanges();
-                        }
-                    }
-                    Log.Debug("Birthdays checked");
-
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        switch (shard.Database.Provider) {
-                            case DbProvider.PostgreSql:
-                                db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
-                                break;
-                            case DbProvider.Sqlite:
-                            case DbProvider.SqliteInMemory:
-                                db.Database.ExecuteSqlRaw("UPDATE bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
-                                break;
-                            case DbProvider.SqlServer:
-                                db.Database.ExecuteSqlRaw("UPDATE dbo.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
-                                break;
-                        }
-                    }
-                    Log.Debug("Currency updated for all users");
-
-                } catch (Exception e) {
-                    Log.Error(e, "An error occured during misc timer callback");
-                }
-            } else {
-                Log.Error("MiscellaneousActionsCallback failed to cast sender to TheGodfatherShard");
-            }
         }
         #endregion
     }
