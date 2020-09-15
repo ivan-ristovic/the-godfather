@@ -50,11 +50,11 @@ namespace TheGodfather
 
             try {
                 BotConfigService cfg = await LoadBotConfigAsync();
-                SetupLogger(cfg);
+                Log.Logger = LoggerSetup.CreateLogger(cfg.CurrentConfiguration);
+                Log.Information("Logger created.");
 
                 DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
                 await CreateAndBootShardsAsync(cfg, dbb);
-
                 Log.Information("Booting complete!");
 
                 await Task.Delay(Timeout.Infinite, ServiceProvider.GetService<BotActivityService>().MainLoopCts.Token);
@@ -86,39 +86,6 @@ namespace TheGodfather
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
             Console.WriteLine($"{ApplicationName} {ApplicationVersion} ({fileVersionInfo.FileVersion})");
             Console.WriteLine();
-        }
-
-        private static void SetupLogger(BotConfigService cfg)
-        {
-            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
-
-            LoggerConfiguration lcfg = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .Enrich.With<Enrichers.ThreadIdEnricher>()
-                .Enrich.With<Enrichers.ShardIdEnricher>()
-                .Enrich.With<Enrichers.ApplicationNameEnricher>()
-                .MinimumLevel.Is(cfg.CurrentConfiguration.LogLevel)
-                .WriteTo.Console(outputTemplate: template)
-                ;
-
-            if (cfg.CurrentConfiguration.LogToFile) {
-                lcfg = lcfg.WriteTo.File(
-                    cfg.CurrentConfiguration.LogPath,
-                    cfg.CurrentConfiguration.LogLevel,
-                    outputTemplate: template,
-                    rollingInterval: RollingInterval.Day
-                );
-            }
-
-            foreach (BotConfig.SpecialLoggingRule rule in cfg.CurrentConfiguration.SpecialLoggerRules) {
-                lcfg.Filter.ByExcluding(e => {
-                    string app = (e.Properties.GetValueOrDefault("Application") as ScalarValue)?.Value as string ?? "UnknownApplication";
-                    return app == rule.Application && e.Level < rule.MinLevel;
-                });
-            }
-
-            Log.Logger = lcfg.CreateLogger();
-            Log.Information("Logger created.");
         }
 
         private static async Task<BotConfigService> LoadBotConfigAsync()

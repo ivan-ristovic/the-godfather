@@ -1,34 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.EventArgs;
 using Serilog;
 using Serilog.Context;
 using Serilog.Core;
 using Serilog.Events;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Extensions
 {
-    internal sealed class Enrichers
+    internal static class LoggerSetup
     {
-        public sealed class ThreadIdEnricher : ILogEventEnricher
+        public static Logger CreateLogger(BotConfig cfg)
         {
-            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ThreadId", Thread.CurrentThread.ManagedThreadId));
-        }
+            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
 
-        public sealed class ShardIdEnricher : ILogEventEnricher
-        {
-            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ShardId", "M"));
-        }
+            LoggerConfiguration lcfg = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.With<Enrichers.ThreadIdEnricher>()
+                .Enrich.With<Enrichers.ShardIdEnricher>()
+                .Enrich.With<Enrichers.ApplicationNameEnricher>()
+                .MinimumLevel.Is(cfg.LogLevel)
+                .WriteTo.Console(outputTemplate: template)
+                ;
 
-        public sealed class ApplicationNameEnricher : ILogEventEnricher
-        {
-            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
-                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Application", TheGodfather.ApplicationName));
+            if (cfg.LogToFile) {
+                lcfg = lcfg.WriteTo.File(
+                    cfg.LogPath,
+                    cfg.LogLevel,
+                    outputTemplate: template,
+                    rollingInterval: RollingInterval.Day
+                );
+            }
+
+            foreach (BotConfig.SpecialLoggingRule rule in cfg.SpecialLoggerRules) {
+                lcfg.Filter.ByExcluding(e => {
+                    string app = (e.Properties.GetValueOrDefault("Application") as ScalarValue)?.Value as string ?? "UnknownApplication";
+                    return app == rule.Application && e.Level < rule.MinLevel;
+                });
+            }
+
+            Log.Logger = lcfg.CreateLogger();
         }
     }
 
@@ -167,6 +181,27 @@ namespace TheGodfather.Extensions
             using (LogContext.PushProperty("ShardId", shardId))
                 Log.Write(level, ex, string.Join(Environment.NewLine, templates), propertyValues);
 #pragma warning restore Serilog004 // Constant MessageTemplate verifier
+        }
+    }
+
+    internal sealed class Enrichers
+    {
+        public sealed class ThreadIdEnricher : ILogEventEnricher
+        {
+            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ThreadId", Thread.CurrentThread.ManagedThreadId));
+        }
+
+        public sealed class ShardIdEnricher : ILogEventEnricher
+        {
+            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ShardId", "M"));
+        }
+
+        public sealed class ApplicationNameEnricher : ILogEventEnricher
+        {
+            public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+                => logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Application", TheGodfather.ApplicationName));
         }
     }
 }
