@@ -230,11 +230,53 @@
     ]
   },
   "emoji list": {
-    "usage": [ ]
+    "usage": []
   },
   "emoji modify": {
     "usage": [
       [ "arg-emoji", "arg-name-small" ]
+    ]
+  },
+  "filter": {
+    "usage": [
+      [],
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "filter add": {
+    "usage": [
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "filter delete": {
+    "usage": [
+      [ "arg-id", "..." ],
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "filter delete id": {
+    "usage": [
+      [ "arg-id", "..." ]
+    ]
+  },
+  "filter delete matching": {
+    "usage": [
+      [ "arg-string-match" ]
+    ]
+  },
+  "filter delete pattern": {
+    "usage": [
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "filter deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "filter list": {
+    "usage": [
+      []
     ]
   },
   "webhook": {

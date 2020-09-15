@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 using TheGodfather.Common.Collections;
@@ -127,6 +128,26 @@ namespace TheGodfather.Modules.Administration.Services
                           .Where(f => f.GuildIdDb == (long)gid)
                           .AsEnumerable()
                           .Where(f => regexStrings.Any(rstr => string.Compare(rstr, f.TriggerString, true) == 0))
+                    );
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            return removed;
+        }
+
+        public async Task<int> RemoveFiltersMatchingAsync(ulong gid, string match)
+        {
+            int removed = 0;
+
+            if (this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs)) {
+                removed = fs.RemoveWhere(f => f.Trigger.IsMatch(match));
+                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                    db.Filters.RemoveRange(
+                        db.Filters
+                          .Where(f => f.GuildIdDb == (long)gid)
+                          .AsEnumerable()
+                          .Where(f => f.Trigger.IsMatch(match))
                     );
                     await db.SaveChangesAsync();
                 }
