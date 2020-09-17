@@ -23,10 +23,13 @@ namespace TheGodfather.Database.Models
         public string TriggerString { get; set; } = "";
 
         [NotMapped]
-        public Regex Trigger => this.triggerLazy ??= this.TriggerString.ToRegex();
+        public Regex Trigger => this.TriggerLazy ??= this.TriggerString.ToRegex(this.Options);
 
         [NotMapped]
-        private Regex? triggerLazy = null;
+        public Regex? TriggerLazy { get; set; }
+
+        [NotMapped]
+        public RegexOptions Options { get; set; } = RegexOptions.IgnoreCase;
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;

@@ -54,10 +54,19 @@ namespace TheGodfather.Modules.Administration.Services
         public IReadOnlyCollection<Filter> GetGuildFilters(ulong gid)
             => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) ? fs.ToList() : (IReadOnlyCollection<Filter>)Array.Empty<Filter>();
 
-        public async Task<bool> AddFilterAsync(ulong gid, string regexString)
+        public Task<bool> AddFilterAsync(ulong gid, string regexString)
         {
-            if (!regexString.TryParseRegex(out _))
-                throw new ArgumentException("Invalid regex string.", nameof(regexString));
+            return regexString.TryParseRegex(out Regex? regex)
+                ? this.AddFilterAsync(gid, regex)
+                : throw new ArgumentException($"Invalid regex string: {regexString}", nameof(regexString));
+        }
+
+        public async Task<bool> AddFilterAsync(ulong gid, Regex? regex)
+        {
+            if (regex is null)
+                return false;
+
+            string regexString = regex.ToString();
 
             ConcurrentHashSet<Filter> fs = this.filters.GetOrAdd(gid, new ConcurrentHashSet<Filter>());
             if (fs.Any(f => string.Compare(f.TriggerString, regexString, true) == 0))
@@ -66,7 +75,8 @@ namespace TheGodfather.Modules.Administration.Services
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var filter = new Filter {
                     GuildId = gid,
-                    TriggerString = regexString
+                    TriggerString = regexString,
+                    TriggerLazy = regex,
                 };
                 db.Filters.Add(filter);
                 await db.SaveChangesAsync();
@@ -74,13 +84,9 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        // TODO optimize, parsing regex twice
         public async Task<bool> AddFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
         {
-            if (regexStrings.Any(s => !s.TryParseRegex(out _)))
-                throw new ArgumentException("Collection contains an invalid regex string.", nameof(regexStrings));
-
-            bool[] res = await Task.WhenAll(regexStrings.Select(s => this.AddFilterAsync(gid, s)));
+            bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddFilterAsync(gid, r)));
             return res.All(r => r);
         }
 

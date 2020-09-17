@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regexString))
+                if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex))
                     eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
             }
 
