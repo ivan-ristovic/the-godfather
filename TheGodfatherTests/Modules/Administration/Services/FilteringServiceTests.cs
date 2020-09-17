@@ -436,7 +436,64 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 await TestDbProvider.AlterAndVerifyAsync(
                     alter: async db => {
                         this.Service.LoadData();
-                        Assert.AreEqual(0, await this.Service.RemoveFiltersAsync(MockData.Ids[0]));
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0]), Is.Zero);
+                    },
+                    verify: db => {
+                        Assert.That(db.Filters, Is.Empty);
+                        for (int i = 0; i < MockData.Ids.Count; i++)
+                            this.AssertGuildFilterCount(db, i, 0);
+                        return Task.CompletedTask;
+                    }
+                );
+            }
+
+            {
+                int removedNum = 0;
+
+                await TestDbProvider.SetupAlterAndVerifyAsync(
+                    setup: db => {
+                        this.AddMockFilters(db);
+                        return Task.CompletedTask;
+                    },
+                    alter: async db => {
+                        this.UpdateFilterCount(db);
+                        this.Service.LoadData();
+                        removedNum = await this.Service.RemoveFiltersMatchingAsync(MockData.Ids[0], "doggy fish");
+                        Assert.That(removedNum, Is.EqualTo(2));
+                    },
+                    verify: db => {
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - removedNum).Items);
+                        this.AssertGuildFilterCount(db, 0, this.filterCount[0] - removedNum);
+                        for (int i = 1; i < MockData.Ids.Count; i++)
+                            this.AssertGuildFilterCount(db, i, this.filterCount[i]);
+                        return Task.CompletedTask;
+                    }
+                );
+
+                await TestDbProvider.SetupAlterAndVerifyAsync(
+                    setup: db => {
+                        this.AddMockFilters(db);
+                        return Task.CompletedTask;
+                    },
+                    alter: async db => {
+                        this.UpdateFilterCount(db);
+                        this.Service.LoadData();
+                        removedNum = await this.Service.RemoveFiltersMatchingAsync(MockData.Ids[0], "i can haz spaces and doge");
+                        Assert.That(removedNum, Is.EqualTo(2));
+                    },
+                    verify: db => {
+                        Assert.That(db.Filters, Has.Exactly(this.filterCount.Sum(kvp => kvp.Value) - removedNum).Items);
+                        this.AssertGuildFilterCount(db, 0, this.filterCount[0] - removedNum);
+                        for (int i = 1; i < MockData.Ids.Count; i++)
+                            this.AssertGuildFilterCount(db, i, this.filterCount[i]);
+                        return Task.CompletedTask;
+                    }
+                );
+
+                await TestDbProvider.AlterAndVerifyAsync(
+                    alter: async db => {
+                        this.Service.LoadData();
+                        Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0]), Is.Zero);
                     },
                     verify: db => {
                         Assert.That(db.Filters, Is.Empty);
@@ -479,52 +536,19 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
         private void AddMockFilters(TheGodfatherDbContext db)
         {
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[0],
-                TriggerString = "fish"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[0],
-                TriggerString = "cat"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[0],
-                TriggerString = "dog(e|gy)?"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[0],
-                TriggerString = "(fap)+"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[0],
-                TriggerString = @"i\ can\ haz\ spaces"
-            });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "fish" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "cat" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "dog(e|gy)?" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "(fap)+" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = @"i\ can\ haz\ spaces" });
 
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[1],
-                TriggerString = "cat"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[1],
-                TriggerString = "doge"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[1],
-                TriggerString = "why+"
-            });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "cat" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "doge" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "why+" });
 
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[2],
-                TriggerString = "no-way"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[2],
-                TriggerString = @"dot\.com"
-            });
-            db.Filters.Add(new Filter {
-                GuildId = MockData.Ids[2],
-                TriggerString = "@every1"
-            });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = "no-way" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = @"dot\.com" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = "@every1" });
         }
 
         private void AssertGuildFilterCount(TheGodfatherDbContext db, int index, int count)
