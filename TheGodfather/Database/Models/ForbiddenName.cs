@@ -24,7 +24,13 @@ namespace TheGodfather.Database.Models
         public string RegexString { get; set; } = null!;
 
         [NotMapped]
-        public Regex Regex => this.RegexString.ToRegex();
+        public Regex Regex => this.RegexLazy ??= this.RegexString.ToRegex(this.Options);
+
+        [NotMapped]
+        public Regex? RegexLazy { get; set; }
+
+        [NotMapped]
+        public RegexOptions Options { get; set; } = RegexOptions.IgnoreCase;
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;

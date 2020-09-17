@@ -99,8 +99,8 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                using (MemoryStream ms = await HttpService.GetMemoryStreamAsync(url))
-                    await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
+                using MemoryStream ms = await HttpService.GetMemoryStreamAsync(url);
+                await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
             } catch (WebException e) {
                 throw new CommandFailedException("Web exception thrown while fetching the image.", e);
             }
@@ -525,8 +525,8 @@ namespace TheGodfather.Modules.Owner
             var fi = new FileInfo(cfg.LogPath);
             if (fi.Exists && fi.Length > 8 * 1024 * 1024)
                 throw new CommandFailedException("The file is too big to upload!");
-            using (var fs = new FileStream(cfg.LogPath, FileMode.Open))
-                await ctx.RespondWithFileAsync(fs);
+            using var fs = new FileStream(cfg.LogPath, FileMode.Open);
+            await ctx.RespondWithFileAsync(fs);
         }
 
         [Command("log"), NotBlocked, Priority(0)]

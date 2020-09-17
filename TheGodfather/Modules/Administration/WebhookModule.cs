@@ -216,8 +216,8 @@ namespace TheGodfather.Modules.Administration
                 if (!headers.ContentTypeHeaderIsImage() || headers.ContentLength.GetValueOrDefault() > 8 * 1024 * 1024)
                     throw new CommandFailedException(ctx, "err-url-image-8mb");
                 try {
-                    using (MemoryStream ms = await HttpService.GetMemoryStreamAsync(avatarUrl))
-                        wh = await channel.CreateWebhookAsync(name, ms, reason: ctx.BuildInvocationDetailsString(reason));
+                    using MemoryStream ms = await HttpService.GetMemoryStreamAsync(avatarUrl);
+                    wh = await channel.CreateWebhookAsync(name, ms, reason: ctx.BuildInvocationDetailsString(reason));
                 } catch (WebException e) {
                     throw new CommandFailedException(ctx, "err-url-image-fail", e);
                 }

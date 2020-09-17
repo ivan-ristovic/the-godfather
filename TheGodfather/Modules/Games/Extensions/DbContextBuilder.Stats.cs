@@ -14,18 +14,17 @@ namespace TheGodfather.Modules.Games.Extensions
     {
         public static async Task UpdateStatsAsync(this DbContextBuilder dbb, ulong uid, Action<GameStats> action)
         {
-            using (TheGodfatherDbContext db = dbb.CreateContext()) {
-                GameStats stats = await db.GameStats.FindAsync((long)uid);
-                if (stats is null) {
-                    stats = new GameStats { UserId = uid };
-                    action(stats);
-                    db.GameStats.Add(stats);
-                } else {
-                    action(stats);
-                    db.GameStats.Update(stats);
-                }
-                await db.SaveChangesAsync();
+            using TheGodfatherDbContext db = dbb.CreateContext();
+            GameStats stats = await db.GameStats.FindAsync((long)uid);
+            if (stats is null) {
+                stats = new GameStats { UserId = uid };
+                action(stats);
+                db.GameStats.Add(stats);
+            } else {
+                action(stats);
+                db.GameStats.Update(stats);
             }
+            await db.SaveChangesAsync();
         }
 
         public static Task<IReadOnlyList<GameStats>> GetTopAnimalRaceStatsAsync(this DbContextBuilder dbb, int amount = 10)

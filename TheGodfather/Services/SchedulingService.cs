@@ -21,20 +21,19 @@ namespace TheGodfather.Services
             var @this = _ as SchedulingService ?? throw new InvalidOperationException("");
 
             try {
-                using (TheGodfatherDbContext db = @this.shard.Database.CreateContext()) {
-                    DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
-                    var guildTasks = db.GuildTasks
-                        .Where(t => t.ExecutionTime <= threshold)
-                        .AsEnumerable()
-                        .ToDictionary(t => t.Id, t => t);
-                    RegisterTasks(guildTasks);
+                using TheGodfatherDbContext db = @this.shard.Database.CreateContext();
+                DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
+                var guildTasks = db.GuildTasks
+                    .Where(t => t.ExecutionTime <= threshold)
+                    .AsEnumerable()
+                    .ToDictionary(t => t.Id, t => t);
+                RegisterTasks(guildTasks);
 
-                    var reminders = db.Reminders
-                        .Where(r => r.ExecutionTime <= threshold)
-                        .AsEnumerable()
-                        .ToDictionary(r => r.Id, t => t);
-                    RegisterReminders(reminders);
-                }
+                var reminders = db.Reminders
+                    .Where(r => r.ExecutionTime <= threshold)
+                    .AsEnumerable()
+                    .ToDictionary(r => r.Id, t => t);
+                RegisterReminders(reminders);
             } catch (Exception e) {
                 Log.Error(e, "Loading scheduled tasks failed");
             }
@@ -110,21 +109,20 @@ namespace TheGodfather.Services
         {
             ScheduledTaskExecutor? texec = null;
             try {
-                using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
-                    int id;
-                    if (task is Reminder rem) {
-                        db.Reminders.Add(rem);
-                        await db.SaveChangesAsync();
-                        id = task.Id;
-                    } else if (task is GuildTask gt) {
-                        db.GuildTasks.Add(gt);
-                        await db.SaveChangesAsync();
-                        id = gt.Id;
-                    } else {
-                        throw new ArgumentException("Unknown scheduled task type");
-                    }
-                    texec = this.CreateTaskExecutor(id, task);
+                using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+                int id;
+                if (task is Reminder rem) {
+                    db.Reminders.Add(rem);
+                    await db.SaveChangesAsync();
+                    id = task.Id;
+                } else if (task is GuildTask gt) {
+                    db.GuildTasks.Add(gt);
+                    await db.SaveChangesAsync();
+                    id = gt.Id;
+                } else {
+                    throw new ArgumentException("Unknown scheduled task type");
                 }
+                texec = this.CreateTaskExecutor(id, task);
             } catch (Exception e) {
                 texec?.Dispose();
                 Log.Warning(e, "Scheduling tasks failed");

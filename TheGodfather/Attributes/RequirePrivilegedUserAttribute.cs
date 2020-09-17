@@ -16,8 +16,8 @@ namespace TheGodfather.Attributes
             if (ctx.Client.IsOwnedBy(ctx.User))
                 return Task.FromResult(true);
 
-            using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
-                return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is { });
+            using TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext();
+            return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is { });
         }
     }
 }

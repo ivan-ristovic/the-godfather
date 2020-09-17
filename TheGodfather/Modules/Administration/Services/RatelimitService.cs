@@ -57,13 +57,12 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
-                this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                    db.ExemptsRatelimit
-                        .Where(ee => ee.GuildId == gid)
-                        .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
-                );
-            }
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
+                db.ExemptsRatelimit
+                    .Where(ee => ee.GuildId == gid)
+                    .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+            );
         }
 
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, RatelimitSettings settings)

@@ -74,10 +74,9 @@ namespace TheGodfather.Modules.Currency
             await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency, out long won));
 
             if (won > 0) {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + won);
-                    await db.SaveChangesAsync();
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + won);
+                await db.SaveChangesAsync();
             }
         }
 
@@ -118,10 +117,9 @@ namespace TheGodfather.Modules.Currency
             await wof.RunAsync();
 
             if (wof.WonAmount > 0) {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + wof.WonAmount);
-                    await db.SaveChangesAsync();
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + wof.WonAmount);
+                await db.SaveChangesAsync();
             }
         }
 

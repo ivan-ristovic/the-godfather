@@ -34,13 +34,12 @@ namespace TheGodfather.Modules.Administration.Services
         {
             Log.Debug("Loading guild config");
             try {
-                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                    this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
-                        db.Configs
-                          .AsEnumerable()
-                          .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
-                    ));
-                }
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
+                this.gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>(
+                    db.Configs
+                      .AsEnumerable()
+                      .Select(gcfg => new KeyValuePair<ulong, CachedGuildConfig>(gcfg.GuildId, gcfg.CachedConfig)
+                ));
             } catch (Exception e) {
                 Log.Error(e, "Loading guild configs failed");
             }
@@ -102,24 +101,22 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task UnregisterGuildAsync(ulong gid)
         {
             this.gcfg.TryRemove(gid, out _);
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                GuildConfig gcfg = await db.Configs.FindAsync((long)gid);
-                if (gcfg is { }) {
-                    db.Configs.Remove(gcfg);
-                    await db.SaveChangesAsync();
-                    Log.Debug("Unregistered guild: {GuildId}", gid);
-                }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            GuildConfig gcfg = await db.Configs.FindAsync((long)gid);
+            if (gcfg is { }) {
+                db.Configs.Remove(gcfg);
+                await db.SaveChangesAsync();
+                Log.Debug("Unregistered guild: {GuildId}", gid);
             }
         }
 
         public bool IsChannelExempted(ulong gid, ulong cid, ulong? parentId = null)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                return db.ExemptsLogging
-                    .Where(e => e.GuildIdDb == (long)gid)
-                    .AsEnumerable()
-                    .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            return db.ExemptsLogging
+                .Where(e => e.GuildIdDb == (long)gid)
+                .AsEnumerable()
+                .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
         }
 
         public bool IsMemberExempted(ulong gid, ulong uid, IEnumerable<ulong>? rids = null)

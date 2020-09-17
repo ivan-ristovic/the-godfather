@@ -301,37 +301,36 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("You must provide atleast 1 and at most 8 users to rate.");
 
             try {
-                using (var chart = new Bitmap("Resources/graph.png"))
-                using (var g = Graphics.FromImage(chart)) {
-                    Brush[] colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
+                using var chart = new Bitmap("Resources/graph.png");
+                using var g = Graphics.FromImage(chart);
+                Brush[] colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
 
-                    int position = 0;
-                    foreach (DiscordUser user in users)
-                        DrawUserRating(g, user, position++);
+                int position = 0;
+                foreach (DiscordUser user in users)
+                    DrawUserRating(g, user, position++);
 
-                    using (var ms = new MemoryStream()) {
-                        chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        ms.Position = 0;
-                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                            Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
-                            Color = this.ModuleColor
-                        });
+                using (var ms = new MemoryStream()) {
+                    chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    ms.Position = 0;
+                    await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
+                        Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
+                        Color = this.ModuleColor
+                    });
+                }
+
+                void DrawUserRating(Graphics graphics, DiscordUser user, int pos)
+                {
+                    int start_x, start_y;
+                    if (user.Id == ctx.Client.CurrentUser.Id) {
+                        start_x = chart.Width - 10;
+                        start_y = 0;
+                    } else {
+                        start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
+                        start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
                     }
-
-                    void DrawUserRating(Graphics graphics, DiscordUser user, int pos)
-                    {
-                        int start_x, start_y;
-                        if (user.Id == ctx.Client.CurrentUser.Id) {
-                            start_x = chart.Width - 10;
-                            start_y = 0;
-                        } else {
-                            start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
-                            start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
-                        }
-                        graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
-                        graphics.DrawString(user.Username, new Font("Arial", 13), colors[pos], 750, pos * 30 + 20);
-                        graphics.Flush();
-                    }
+                    graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
+                    graphics.DrawString(user.Username, new Font("Arial", 13), colors[pos], 750, pos * 30 + 20);
+                    graphics.Flush();
                 }
             } catch (FileNotFoundException e) {
                 Log.Error(e, "graph.png load failed!");
@@ -379,7 +378,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
@@ -438,7 +437,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text))
+            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);

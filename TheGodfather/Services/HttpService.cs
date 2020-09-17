@@ -21,10 +21,9 @@ namespace TheGodfather.Services
 
         public static async Task<(HttpResponseHeaders, HttpContentHeaders)> HeadAsync(Uri requestUri)
         {
-            using (var m = new HttpRequestMessage(HttpMethod.Head, requestUri)) {
-                HttpResponseMessage resp = await _client.SendAsync(m);
-                return (resp.Headers, resp.Content.Headers);
-            }
+            using var m = new HttpRequestMessage(HttpMethod.Head, requestUri);
+            HttpResponseMessage resp = await _client.SendAsync(m);
+            return (resp.Headers, resp.Content.Headers);
         }
 
         public static Task<HttpResponseMessage> GetAsync(Uri requestUri)
@@ -50,12 +49,11 @@ namespace TheGodfather.Services
      
         public static async Task<MemoryStream> GetMemoryStreamAsync(string requestUri)
         {
-            using (Stream stream = await GetStreamAsync(requestUri)) {
-                var ms = new MemoryStream();
-                await stream.CopyToAsync(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ms;
-            }
+            using Stream stream = await GetStreamAsync(requestUri);
+            var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
     }
 }

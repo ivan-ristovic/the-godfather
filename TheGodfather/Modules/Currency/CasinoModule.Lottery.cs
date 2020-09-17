@@ -59,20 +59,18 @@ namespace TheGodfather.Modules.Currency
                         if (game.Winners.Any()) {
                             await this.InformAsync(ctx, Emojis.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
-                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                foreach (LotteryGame.Participant winner in game.Winners)
-                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
-                                await db.SaveChangesAsync();
-                            }
+                            using TheGodfatherDbContext db = this.Database.CreateContext();
+                            foreach (LotteryGame.Participant winner in game.Winners)
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.WinAmount);
+                            await db.SaveChangesAsync();
                         } else {
                             await this.InformAsync(ctx, Emojis.MoneyBag, "Better luck next time!");
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + LotteryGame.TicketPrice);
-                                await db.SaveChangesAsync();
-                            }
+                            using TheGodfatherDbContext db = this.Database.CreateContext();
+                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + LotteryGame.TicketPrice);
+                            await db.SaveChangesAsync();
                         }
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Blackjack game.");
                     }

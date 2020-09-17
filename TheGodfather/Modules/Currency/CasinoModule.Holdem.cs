@@ -63,17 +63,15 @@ namespace TheGodfather.Modules.Currency
                         if (!(game.Winner is null))
                             await this.InformAsync(ctx, Emojis.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                            foreach (HoldemGame.Participant participant in game.Participants)
-                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
-                            await db.SaveChangesAsync();
-                        }
+                        using TheGodfatherDbContext db = this.Database.CreateContext();
+                        foreach (HoldemGame.Participant participant in game.Participants)
+                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
+                        await db.SaveChangesAsync();
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
-                                await db.SaveChangesAsync();
-                            }
+                            using TheGodfatherDbContext db = this.Database.CreateContext();
+                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
+                            await db.SaveChangesAsync();
                         }
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }

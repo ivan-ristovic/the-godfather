@@ -60,16 +60,15 @@ namespace TheGodfather.Modules.Swat.Common
 
             for (int i = 0; receivedData is null && i < RetryAttempts; i++) {
                 try {
-                    using (var client = new UdpClient()) {
-                        var ep = new IPEndPoint(IPAddress.Parse(ip), port);
-                        client.Connect(ep);
-                        client.Client.SendTimeout = CheckTimeout;
-                        client.Client.ReceiveTimeout = CheckTimeout;
-                        await client.SendAsync(Encoding.ASCII.GetBytes(_queryString), _queryString.Length);
+                    using var client = new UdpClient();
+                    var ep = new IPEndPoint(IPAddress.Parse(ip), port);
+                    client.Connect(ep);
+                    client.Client.SendTimeout = CheckTimeout;
+                    client.Client.ReceiveTimeout = CheckTimeout;
+                    await client.SendAsync(Encoding.ASCII.GetBytes(_queryString), _queryString.Length);
 
-                        // TODO async variant
-                        receivedData = client.Receive(ref ep);
-                    }
+                    // TODO async variant
+                    receivedData = client.Receive(ref ep);
                 } catch (FormatException) {
                     throw new ArgumentException("Invalid IP format.");
                 } catch {
@@ -96,40 +95,39 @@ namespace TheGodfather.Modules.Swat.Common
             int queryid = 1;
 
             try {
-                using (var client = new UdpClient()) {
-                    var ep = new IPEndPoint(IPAddress.Parse(ip), port);
-                    client.Connect(ep);
-                    client.Client.SendTimeout = CheckTimeout;
-                    client.Client.ReceiveTimeout = CheckTimeout;
-                    await client.SendAsync(Encoding.ASCII.GetBytes(_queryString), _queryString.Length);
+                using var client = new UdpClient();
+                var ep = new IPEndPoint(IPAddress.Parse(ip), port);
+                client.Connect(ep);
+                client.Client.SendTimeout = CheckTimeout;
+                client.Client.ReceiveTimeout = CheckTimeout;
+                await client.SendAsync(Encoding.ASCII.GetBytes(_queryString), _queryString.Length);
 
-                    bool complete = false;
-                    while (!complete) {
-                        try {
-                            byte[] receivedData = client.Receive(ref ep);
-                            if (receivedData is null)
+                bool complete = false;
+                while (!complete) {
+                    try {
+                        byte[] receivedData = client.Receive(ref ep);
+                        if (receivedData is null)
+                            continue;
+
+                        string data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);
+                        data = _bbCodeRegex.Replace(data, "");
+
+                        string[] split = data.Split('\\');
+
+
+                        if (Array.IndexOf(split, "final") != -1) {
+                            complete = true;
+                        } else {
+                            if (!int.TryParse(split[Array.IndexOf(split, "queryid") + 1], out int id) || id != queryid)
                                 continue;
-
-                            string data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);
-                            data = _bbCodeRegex.Replace(data, "");
-
-                            string[] split = data.Split('\\');
-
-
-                            if (Array.IndexOf(split, "final") != -1) {
-                                complete = true;
-                            } else {
-                                if (!int.TryParse(split[Array.IndexOf(split, "queryid") + 1], out int id) || id != queryid)
-                                    continue;
-                                queryid++;
-                            }
-
-                            partialData.AddRange(split);
-                        } catch (FormatException) {
-                            throw new ArgumentException("Invalid IP format.");
-                        } catch {
-                            break;
+                            queryid++;
                         }
+
+                        partialData.AddRange(split);
+                    } catch (FormatException) {
+                        throw new ArgumentException("Invalid IP format.");
+                    } catch {
+                        break;
                     }
                 }
             } catch {

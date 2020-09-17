@@ -61,28 +61,27 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
                     throw new CommandFailedException("Your chicken already one of those upgrades!");
 
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    foreach (int id in ids) {
-                        ChickenUpgrade upgrade = await db.ChickenUpgrades.FindAsync(id);
-                        if (upgrade is null)
-                            throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                foreach (int id in ids) {
+                    ChickenUpgrade upgrade = await db.ChickenUpgrades.FindAsync(id);
+                    if (upgrade is null)
+                        throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                        if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost:n0}")} {gcfg.Currency}?"))
-                            return;
+                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost:n0}")} {gcfg.Currency}?"))
+                        return;
 
-                        if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
-                            throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy that upgrade!");
+                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
+                        throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy that upgrade!");
 
-                        db.ChickensBoughtUpgrades.Add(new ChickenBoughtUpgrade {
-                            Id = upgrade.Id,
-                            GuildId = chicken.GuildId,
-                            UserId = chicken.UserId
-                        });
-                        await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
-                    }
-
-                    await db.SaveChangesAsync();
+                    db.ChickensBoughtUpgrades.Add(new ChickenBoughtUpgrade {
+                        Id = upgrade.Id,
+                        GuildId = chicken.GuildId,
+                        UserId = chicken.UserId
+                    });
+                    await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
                 }
+
+                await db.SaveChangesAsync();
             }
 
 
@@ -92,14 +91,13 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("ls", "view")]
             public async Task ListAsync(CommandContext ctx)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await ctx.PaginateAsync(
-                        "Available chicken upgrades",
-                        db.ChickenUpgrades.OrderByDescending(u => u.Cost),
-                        u => $"{Formatter.InlineCode($"{u.Id:D2}")} | {u.Name} | {Formatter.Bold($"{u.Cost:n0}")} | +{Formatter.Bold(u.Modifier.ToString())} {u.UpgradesStat.ToShortString()}",
-                        this.ModuleColor
-                    );
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                await ctx.PaginateAsync(
+                    "Available chicken upgrades",
+                    db.ChickenUpgrades.OrderByDescending(u => u.Cost),
+                    u => $"{Formatter.InlineCode($"{u.Id:D2}")} | {u.Name} | {Formatter.Bold($"{u.Cost:n0}")} | +{Formatter.Bold(u.Modifier.ToString())} {u.UpgradesStat.ToShortString()}",
+                    this.ModuleColor
+                );
             }
             #endregion
         }

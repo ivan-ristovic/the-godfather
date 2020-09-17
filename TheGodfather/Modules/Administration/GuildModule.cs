@@ -195,8 +195,8 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (Stream stream = await HttpService.GetStreamAsync(url))
-                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
+                using Stream stream = await HttpService.GetStreamAsync(url);
+                await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
                 throw new CommandFailedException("An error occured.", e);
             }

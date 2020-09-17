@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (this.Service.GetGuildFilters(ctx.Guild.Id).Any(f => f.TriggerString == regex.ToString())) {
+                if (this.Service.GetGuildFilters(ctx.Guild.Id).Any(f => f.RegexString == regex.ToString())) {
                     eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
                     continue;
                 }
@@ -242,7 +242,7 @@ namespace TheGodfather.Modules.Administration
                 ? ctx.PaginateAsync(
                     "str-f",
                     fs.OrderBy(f => f.Id),
-                    f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.TriggerString)}",
+                    f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
                     this.ModuleColor
                 )
                 : throw new CommandFailedException(ctx, "cmd-err-f-none");

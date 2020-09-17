@@ -42,10 +42,9 @@ namespace TheGodfather.Modules.Search.Services
 
             await _requestSemaphore.WaitAsync();
             try {
-                using (Stream stream = await _http.GetStreamAsync($"{_url}?key={this.key}&q={WebUtility.UrlEncode(query)}").ConfigureAwait(false)) {
-                    var response = (GoodreadsResponse)_serializer.Deserialize(stream);
-                    return response.SearchInfo;
-                }
+                using Stream stream = await _http.GetStreamAsync($"{_url}?key={this.key}&q={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
+                var response = (GoodreadsResponse)_serializer.Deserialize(stream);
+                return response.SearchInfo;
             } catch {
                 return null;
             } finally {

@@ -37,10 +37,9 @@ namespace TheGodfather.Modules.Owner.Services
         {
             Log.Debug("Loading blocked entities");
             try {
-                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                    this.bChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
-                    this.bUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
-                }
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
+                this.bChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.ChannelId));
+                this.bUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.UserId));
             } catch (Exception e) {
                 Log.Error(e, "Loading blocked entities failed");
             }

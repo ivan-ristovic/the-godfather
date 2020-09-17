@@ -60,27 +60,24 @@ namespace TheGodfather.Modules.Currency
                             if (game.Winner is null) {
                                 await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
-                                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                    foreach (BlackjackGame.Participant winner in game.Winners)
-                                        await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
-                                    await db.SaveChangesAsync();
-                                }
+                                using TheGodfatherDbContext db = this.Database.CreateContext();
+                                foreach (BlackjackGame.Participant winner in game.Winners)
+                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
+                                await db.SaveChangesAsync();
                             } else {
                                 await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{game.Winner.Mention} got the BlackJack!");
-                                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
-                                    await db.SaveChangesAsync();
-                                }
+                                using TheGodfatherDbContext db = this.Database.CreateContext();
+                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
+                                await db.SaveChangesAsync();
                             }
                         } else {
                             await this.InformAsync(ctx, Emojis.Cards.Suits[0], "The House always wins!");
                         }
                     } else {
                         if (game.IsParticipating(ctx.User)) {
-                            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
-                                await db.SaveChangesAsync();
-                            }
+                            using TheGodfatherDbContext db = this.Database.CreateContext();
+                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
+                            await db.SaveChangesAsync();
                         }
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Blackjack game.");
                     }

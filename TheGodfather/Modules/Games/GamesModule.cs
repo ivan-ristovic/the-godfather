@@ -151,21 +151,20 @@ namespace TheGodfather.Modules.Games
         {
             user = user ?? ctx.User;
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                GameStats stats = await db.GameStats.FindAsync((long)user.Id);
-                if (stats is null) {
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                        Title = $"Stats for {user.Username}",
-                        Description = "No games played yet!",
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
-                            Url = user.AvatarUrl
-                        },
-                        Color = this.ModuleColor
-                    }.Build());
-                    return;
-                } else {
-                    await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user));
-                }
+            using TheGodfatherDbContext db = this.Database.CreateContext();
+            GameStats stats = await db.GameStats.FindAsync((long)user.Id);
+            if (stats is null) {
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Title = $"Stats for {user.Username}",
+                    Description = "No games played yet!",
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
+                        Url = user.AvatarUrl
+                    },
+                    Color = this.ModuleColor
+                }.Build());
+                return;
+            } else {
+                await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user));
             }
         }
         #endregion

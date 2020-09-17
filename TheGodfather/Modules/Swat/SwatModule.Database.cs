@@ -126,16 +126,15 @@ namespace TheGodfather.Modules.Swat
                 if (alias.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                     throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
 
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                    if (player is null)
-                        throw new CommandFailedException($"Name {Formatter.Bold(name)} is not present in the database!");
-                    if (!player.Aliases.Contains(name))
-                        player.DbAliases.Add(new SwatPlayerAlias { Alias = alias, PlayerId = player.Id });
-                    db.SwatPlayers.Update(player);
-                    await db.SaveChangesAsync();
-                    await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (player is null)
+                    throw new CommandFailedException($"Name {Formatter.Bold(name)} is not present in the database!");
+                if (!player.Aliases.Contains(name))
+                    player.DbAliases.Add(new SwatPlayerAlias { Alias = alias, PlayerId = player.Id });
+                db.SwatPlayers.Update(player);
+                await db.SaveChangesAsync();
+                await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
             }
 
             [Command("alias"), Priority(1)]
@@ -143,24 +142,23 @@ namespace TheGodfather.Modules.Swat
                                         [Description("Player alias.")] string alias,
                                         [Description("Player IP.")] IPAddressRange ip)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    SwatPlayer player = db.SwatPlayers
-                        .Include(p => p.DbAliases)
-                        .Include(p => p.DbIPs)
-                        .AsEnumerable()
-                        .FirstOrDefault(p => p.IPs.Contains(ip.Range));
-                    if (player is null)
-                        throw new CommandFailedException($"A player with IP {Formatter.Bold(ip.Range)} is not present in the database!");
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                SwatPlayer player = db.SwatPlayers
+                    .Include(p => p.DbAliases)
+                    .Include(p => p.DbIPs)
+                    .AsEnumerable()
+                    .FirstOrDefault(p => p.IPs.Contains(ip.Range));
+                if (player is null)
+                    throw new CommandFailedException($"A player with IP {Formatter.Bold(ip.Range)} is not present in the database!");
 
-                    if (alias.Equals(player.Name, StringComparison.InvariantCultureIgnoreCase))
-                        throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
+                if (alias.Equals(player.Name, StringComparison.InvariantCultureIgnoreCase))
+                    throw new InvalidCommandUsageException("Alias cannot be same as player's main name.");
 
-                    if (!player.Aliases.Contains(alias))
-                        player.DbAliases.Add(new SwatPlayerAlias { Alias = alias, PlayerId = player.Id });
-                    db.SwatPlayers.Update(player);
-                    await db.SaveChangesAsync();
-                    await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
-                }
+                if (!player.Aliases.Contains(alias))
+                    player.DbAliases.Add(new SwatPlayerAlias { Alias = alias, PlayerId = player.Id });
+                db.SwatPlayers.Update(player);
+                await db.SaveChangesAsync();
+                await this.InformAsync(ctx, $"Added an alias {Formatter.Bold(alias)} for player {Formatter.Bold(player.Name)}.", important: false);
             }
 
             [Command("alias"), Priority(0)]

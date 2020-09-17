@@ -63,15 +63,14 @@ namespace TheGodfather.Modules.Currency.Common
         public override async Task RunAsync()
         {
             try {
-                using (Bitmap wof = RotateWheel(_wheel, this.index * -45))
-                using (var ms = new MemoryStream()) {
-                    wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    ms.Position = 0;
-                    await this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder {
-                        Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) {this.currency}!",
-                        Color = DiscordColor.DarkGreen
-                    });
-                }
+                using Bitmap wof = RotateWheel(_wheel, this.index * -45);
+                using var ms = new MemoryStream();
+                wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+                await this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder {
+                    Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) {this.currency}!",
+                    Color = DiscordColor.DarkGreen
+                });
             } catch (Exception e) {
                 throw new Exception("Failed to read WOF image!", e);
             }

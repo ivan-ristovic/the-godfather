@@ -81,10 +81,9 @@ namespace TheGodfather.Modules.Currency
             sb.Append(ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
 
             if (rnd == guess) {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 2);
-                    await db.SaveChangesAsync();
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 2);
+                await db.SaveChangesAsync();
             }
 
             await this.InformAsync(ctx, Emojis.Dice, sb.ToString());
@@ -144,10 +143,9 @@ namespace TheGodfather.Modules.Currency
             await this.InformAsync(ctx, Emojis.Dice, sb.ToString());
 
             if (rnd == guess_int) {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 6);
-                    await db.SaveChangesAsync();
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid * 6);
+                await db.SaveChangesAsync();
             }
         }
 

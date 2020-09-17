@@ -257,13 +257,12 @@ namespace TheGodfather.Modules.Search
                 string chid = await ctx.Services.GetService<YtService>().ExtractChannelIdAsync(name_url);
                 if (!(chid is null)) {
                     string feedurl = YtService.GetRssUrlForChannel(chid);
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        RssSubscription sub = db.RssSubscriptions
-                            .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.Feed.Url == feedurl);
-                        if (!(sub is null)) {
-                            db.RssSubscriptions.Remove(sub);
-                            await db.SaveChangesAsync();
-                        }
+                    using TheGodfatherDbContext db = this.Database.CreateContext();
+                    RssSubscription sub = db.RssSubscriptions
+                        .SingleOrDefault(s => s.ChannelId == ctx.Channel.Id && s.Feed.Url == feedurl);
+                    if (!(sub is null)) {
+                        db.RssSubscriptions.Remove(sub);
+                        await db.SaveChangesAsync();
                     }
                 }
 

@@ -168,24 +168,23 @@ namespace TheGodfather.EventListeners
             bool renamed = false, failed = false;
             if (!string.IsNullOrWhiteSpace(e.NicknameAfter)) {
                 // TODO move to service
-                using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                    ForbiddenName? fname = db.ForbiddenNames
-                        .Where(n => n.GuildIdDb == (long)e.Guild.Id)
-                        .AsEnumerable()
-                        .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
-                        ;
-                    if (fname is { }) {
-                        try {
-                            await e.Member.ModifyAsync(m => {
-                                m.Nickname = e.Member.Id.ToString();
-                                m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
-                            });
-                            renamed = true;
-                            if (!e.Member.IsBot)
-                                await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
-                        } catch (UnauthorizedException) {
-                            failed = true;
-                        }
+                using TheGodfatherDbContext db = shard.Database.CreateContext();
+                ForbiddenName? fname = db.ForbiddenNames
+                    .Where(n => n.GuildIdDb == (long)e.Guild.Id)
+                    .AsEnumerable()
+                    .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
+                    ;
+                if (fname is { }) {
+                    try {
+                        await e.Member.ModifyAsync(m => {
+                            m.Nickname = e.Member.Id.ToString();
+                            m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
+                        });
+                        renamed = true;
+                        if (!e.Member.IsBot)
+                            await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
+                    } catch (UnauthorizedException) {
+                        failed = true;
                     }
                 }
             }

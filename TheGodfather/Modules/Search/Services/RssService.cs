@@ -27,10 +27,9 @@ namespace TheGodfather.Modules.Search.Services
             foreach (RssFeed feed in feeds) {
                 try {
                     if (!feed.Subscriptions.Any()) {
-                        using (TheGodfatherDbContext db = dbb.CreateContext()) {
-                            db.RssFeeds.Remove(feed);
-                            await db.SaveChangesAsync();
-                        }
+                        using TheGodfatherDbContext db = dbb.CreateContext();
+                        db.RssFeeds.Remove(feed);
+                        await db.SaveChangesAsync();
                         continue;
                     }
 
@@ -54,10 +53,9 @@ namespace TheGodfather.Modules.Search.Services
                             try {
                                 chn = await client.GetChannelAsync(sub.ChannelId);
                             } catch (NotFoundException) {
-                                using (TheGodfatherDbContext db = dbb.CreateContext()) {
-                                    db.RssSubscriptions.Remove(sub);
-                                    await db.SaveChangesAsync();
-                                }
+                                using TheGodfatherDbContext db = dbb.CreateContext();
+                                db.RssSubscriptions.Remove(sub);
+                                await db.SaveChangesAsync();
                                 continue;
                             } catch {
                                 continue;
@@ -97,10 +95,9 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
 
             try {
-                using (var reader = XmlReader.Create(url)) {
-                    var feed = SyndicationFeed.Load(reader);
-                    return feed.Items?.Take(amount).ToList().AsReadOnly();
-                }
+                using var reader = XmlReader.Create(url);
+                var feed = SyndicationFeed.Load(reader);
+                return feed.Items?.Take(amount).ToList().AsReadOnly();
             } catch {
                 return null;
             }

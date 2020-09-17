@@ -272,7 +272,7 @@ namespace TheGodfather.Modules.Reactions
             if (this.Service.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, trigger))
+            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, trigger, out _))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
 
             if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))

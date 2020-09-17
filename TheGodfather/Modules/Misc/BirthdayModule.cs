@@ -182,10 +182,9 @@ namespace TheGodfather.Modules.Misc
                     lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
                 } catch {
 
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
-                        await db.SaveChangesAsync();
-                    }
+                    using TheGodfatherDbContext db = this.Database.CreateContext();
+                    db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
+                    await db.SaveChangesAsync();
                 }
             }
 
@@ -224,10 +223,9 @@ namespace TheGodfather.Modules.Misc
                     lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
                 } catch {
 
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
-                        await db.SaveChangesAsync();
-                    }
+                    using TheGodfatherDbContext db = this.Database.CreateContext();
+                    db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
+                    await db.SaveChangesAsync();
                 }
             }
 

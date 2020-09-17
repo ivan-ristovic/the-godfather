@@ -54,12 +54,11 @@ namespace TheGodfather.Modules.Administration.Services
 
         public IReadOnlyList<CommandRule> GetRules(ulong gid, string? cmd = null)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> rules = db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid);
-                if (!string.IsNullOrWhiteSpace(cmd))
-                    rules = rules.Where(cr => cr.AppliesTo(cmd));
-                return rules.ToList().AsReadOnly();
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            IEnumerable<CommandRule> rules = db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid);
+            if (!string.IsNullOrWhiteSpace(cmd))
+                rules = rules.Where(cr => cr.AppliesTo(cmd));
+            return rules.ToList().AsReadOnly();
         }
 
         public Task AddRuleAsync(ulong gid, string cmd, bool allow, params ulong[] cids)
@@ -67,46 +66,44 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task AddRuleAsync(ulong gid, string cmd, bool allow, IEnumerable<ulong> cids)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IEnumerable<CommandRule> crs = this.GetRules(gid, cmd);
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            IEnumerable<CommandRule> crs = this.GetRules(gid, cmd);
 
-                if (!cids.Any()) {
-                    db.CommandRules.RemoveRange(crs);
-                } else {
-                    db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(cid => cr.ChannelIdDb == (long)cid)));
-                    db.CommandRules.AddRange(
-                        cids.Distinct()
-                            .Where(cid => !crs.Any(cr => this.IsBlocked(cmd, gid, cid, null) != allow))
-                            .Select(cid => new CommandRule {
-                                Allowed = allow,
-                                ChannelId = cid,
-                                Command = cmd,
-                                GuildId = gid,
-                            })
-                    );
-                }
-
-                if (allow || (!allow && !cids.Any())) {
-                    var cr = new CommandRule {
-                        Allowed = false,
-                        ChannelId = 0,
-                        Command = cmd,
-                        GuildId = gid,
-                    };
-                    if (await db.CommandRules.FindAsync(cr.GuildIdDb, cr.ChannelIdDb, cr.Command) is null)
-                        db.CommandRules.Add(cr);
-                }
-
-                await db.SaveChangesAsync();
+            if (!cids.Any()) {
+                db.CommandRules.RemoveRange(crs);
+            } else {
+                db.CommandRules.RemoveRange(crs.Where(cr => cids.Any(cid => cr.ChannelIdDb == (long)cid)));
+                db.CommandRules.AddRange(
+                    cids.Distinct()
+                        .Where(cid => !crs.Any(cr => this.IsBlocked(cmd, gid, cid, null) != allow))
+                        .Select(cid => new CommandRule {
+                            Allowed = allow,
+                            ChannelId = cid,
+                            Command = cmd,
+                            GuildId = gid,
+                        })
+                );
             }
+
+            if (allow || (!allow && !cids.Any())) {
+                var cr = new CommandRule {
+                    Allowed = false,
+                    ChannelId = 0,
+                    Command = cmd,
+                    GuildId = gid,
+                };
+                if (await db.CommandRules.FindAsync(cr.GuildIdDb, cr.ChannelIdDb, cr.Command) is null)
+                    db.CommandRules.Add(cr);
+            }
+
+            await db.SaveChangesAsync();
         }
 
         public async Task ClearAsync(ulong gid)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid));
-                await db.SaveChangesAsync();
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid));
+            await db.SaveChangesAsync();
         }
     }
 }

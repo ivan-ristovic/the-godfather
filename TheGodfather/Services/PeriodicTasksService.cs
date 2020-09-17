@@ -119,11 +119,10 @@ namespace TheGodfather.Services
                             Color = DiscordColor.Aquamarine
                         }));
 
-                        using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                            birthday.LastUpdateYear = DateTime.Now.Year;
-                            db.Birthdays.Update(birthday);
-                            db.SaveChanges();
-                        }
+                        using TheGodfatherDbContext db = shard.Database.CreateContext();
+                        birthday.LastUpdateYear = DateTime.Now.Year;
+                        db.Birthdays.Update(birthday);
+                        db.SaveChanges();
                     }
                     Log.Debug("Birthdays checked");
 

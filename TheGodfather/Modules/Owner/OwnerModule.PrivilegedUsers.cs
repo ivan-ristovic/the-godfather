@@ -103,10 +103,9 @@ namespace TheGodfather.Modules.Owner
                         valid.Add(user);
                     } catch (NotFoundException) {
                         LogExt.Debug(ctx, "Removing 404 privileged user {UserId}", usr.UserId);
-                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                            db.PrivilegedUsers.Remove(new PrivilegedUser { UserIdDb = usr.UserIdDb });
-                            await db.SaveChangesAsync();
-                        }
+                        using TheGodfatherDbContext db = this.Database.CreateContext();
+                        db.PrivilegedUsers.Remove(new PrivilegedUser { UserIdDb = usr.UserIdDb });
+                        await db.SaveChangesAsync();
                     }
                 }
 

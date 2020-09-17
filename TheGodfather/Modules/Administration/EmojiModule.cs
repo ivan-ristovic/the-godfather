@@ -55,12 +55,11 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-url-fail");
 
             try {
-                using (Stream stream = await HttpService.GetStreamAsync(url)) {
-                    if (stream.Length >= DiscordLimits.EmojiSizeLimit)
-                        throw new CommandFailedException(ctx, "cmd-err-emoji-url-size", DiscordLimits.EmojiSizeLimit.ToMetric());
-                    DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-add", emoji.GetDiscordName());
-                }
+                using Stream stream = await HttpService.GetStreamAsync(url);
+                if (stream.Length >= DiscordLimits.EmojiSizeLimit)
+                    throw new CommandFailedException(ctx, "cmd-err-emoji-url-size", DiscordLimits.EmojiSizeLimit.ToMetric());
+                DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
+                await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-add", emoji.GetDiscordName());
             } catch (WebException e) {
                 throw new CommandFailedException(ctx, e, "err-url-image-fail");
             } catch (BadRequestException e) {

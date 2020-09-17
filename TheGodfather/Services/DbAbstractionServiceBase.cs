@@ -67,11 +67,10 @@ namespace TheGodfather.Services
 
         public async Task ClearAsync()
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                DbSet<TEntity> set = this.DbSetSelector(db);
-                set.RemoveRange(set);
-                await db.SaveChangesAsync();
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            DbSet<TEntity> set = this.DbSetSelector(db);
+            set.RemoveRange(set);
+            await db.SaveChangesAsync();
         }
 
         public async Task<bool> ContainsAsync(TEntityId id)
@@ -155,11 +154,10 @@ namespace TheGodfather.Services
 
         public async Task ClearAsync(TGroupId gid)
         {
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                DbSet<TEntity> set = this.DbSetSelector(db);
-                set.RemoveRange(this.GroupSelector(set, gid));
-                await db.SaveChangesAsync();
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            DbSet<TEntity> set = this.DbSetSelector(db);
+            set.RemoveRange(this.GroupSelector(set, gid));
+            await db.SaveChangesAsync();
         }
 
         public async Task<bool> ContainsAsync(TGroupId gid, TEntityId id)

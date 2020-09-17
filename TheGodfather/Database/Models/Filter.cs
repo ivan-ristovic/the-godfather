@@ -20,13 +20,13 @@ namespace TheGodfather.Database.Models
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("trigger"), Required, MaxLength(128)]
-        public string TriggerString { get; set; } = "";
+        public string RegexString { get; set; } = "";
 
         [NotMapped]
-        public Regex Trigger => this.TriggerLazy ??= this.TriggerString.ToRegex(this.Options);
+        public Regex Regex => this.RegexLazy ??= this.RegexString.ToRegex(this.Options);
 
         [NotMapped]
-        public Regex? TriggerLazy { get; set; }
+        public Regex? RegexLazy { get; set; }
 
         [NotMapped]
         public RegexOptions Options { get; set; } = RegexOptions.IgnoreCase;

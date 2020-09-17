@@ -42,18 +42,17 @@ namespace TheGodfather.EventListeners
 
             emb.WithLocalizedTitle(DiscordEventType.MessagesBulkDeleted, "evt-msg-del-bulk", e.Channel);
             emb.AddLocalizedTitleField("str-count", e.Messages.Count, inline: true);
-            using (var ms = new MemoryStream())
-            using (var sw = new StreamWriter(ms)) {
-                foreach (DiscordMessage msg in e.Messages) {
-                    sw.WriteLine($"[{msg.Timestamp}] {msg.Author}");
-                    sw.WriteLine(string.IsNullOrWhiteSpace(msg.Content) ? "?" : msg.Content);
-                    sw.WriteLine(msg.Attachments.Select(a => $"{a.FileName} ({a.FileSize})").Separate(", "));
-                    sw.Flush();
-                }
-                ms.Seek(0, SeekOrigin.Begin);
-                DiscordChannel? chn = gcs.GetLogChannelForGuild(e.Guild);
-                await (chn?.SendFileAsync($"{e.Channel.Name}-deleted-messages.txt", ms, embed: emb.Build()) ?? Task.CompletedTask);
+            using var ms = new MemoryStream();
+            using var sw = new StreamWriter(ms);
+            foreach (DiscordMessage msg in e.Messages) {
+                sw.WriteLine($"[{msg.Timestamp}] {msg.Author}");
+                sw.WriteLine(string.IsNullOrWhiteSpace(msg.Content) ? "?" : msg.Content);
+                sw.WriteLine(msg.Attachments.Select(a => $"{a.FileName} ({a.FileSize})").Separate(", "));
+                sw.Flush();
             }
+            ms.Seek(0, SeekOrigin.Begin);
+            DiscordChannel? chn = gcs.GetLogChannelForGuild(e.Guild);
+            await (chn?.SendFileAsync($"{e.Channel.Name}-deleted-messages.txt", ms, embed: emb.Build()) ?? Task.CompletedTask);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -119,7 +118,7 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content))
+            if (!shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
@@ -156,15 +155,14 @@ namespace TheGodfather.EventListeners
                         var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
                         await e.Message.CreateReactionAsync(emoji);
                     } catch (ArgumentException) {
-                        using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                            db.EmojiReactions.RemoveRange(
-                                db.EmojiReactions
-                                    .Where(r => r.GuildIdDb == (long)e.Guild.Id)
-                                    .AsEnumerable()
-                                    .Where(r => r.HasSameResponseAs(er))
-                            );
-                            await db.SaveChangesAsync();
-                        }
+                        using TheGodfatherDbContext db = shard.Database.CreateContext();
+                        db.EmojiReactions.RemoveRange(
+                            db.EmojiReactions
+                                .Where(r => r.GuildIdDb == (long)e.Guild.Id)
+                                .AsEnumerable()
+                                .Where(r => r.HasSameResponseAs(er))
+                        );
+                        await db.SaveChangesAsync();
                     }
                 }
             }
@@ -205,7 +203,7 @@ namespace TheGodfather.EventListeners
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
                 string sanitizedContent = Formatter.BlockCode(Formatter.Strip(e.Message.Content.Truncate(1000)));
                 emb.AddLocalizedTitleField("str-content", sanitizedContent, inline: true);
-                if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
+                if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                     LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
                     emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, "rsn-filter-match")));
                 }
@@ -239,7 +237,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
-            if (e.Message.Content is { } && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content is { } && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                 try {
                     await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
                     string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));

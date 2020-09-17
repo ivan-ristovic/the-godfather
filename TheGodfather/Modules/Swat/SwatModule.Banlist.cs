@@ -79,16 +79,15 @@ namespace TheGodfather.Modules.Swat
                                       [Description("Player name.")] string name,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                    if (player is null)
-                        throw new CommandFailedException($"Player with name {Formatter.Bold(name)} is not present in the database!");
-                    player.IsBlacklisted = true;
-                    player.Info = reason;
-                    db.SwatPlayers.Update(player);
-                    await db.SaveChangesAsync();
-                    await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(player.Name)}.", important: false);
-                }
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (player is null)
+                    throw new CommandFailedException($"Player with name {Formatter.Bold(name)} is not present in the database!");
+                player.IsBlacklisted = true;
+                player.Info = reason;
+                db.SwatPlayers.Update(player);
+                await db.SaveChangesAsync();
+                await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(player.Name)}.", important: false);
             }
             #endregion
 
@@ -118,15 +117,14 @@ namespace TheGodfather.Modules.Swat
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Player name.")] string name)
             {
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                    if (!(player is null) && player.IsBlacklisted) {
-                        player.IsBlacklisted = false;
-                        db.SwatPlayers.Update(player);
-                    }
-                    await db.SaveChangesAsync();
-                    await this.InformAsync(ctx, $"Removed a ban entry for {Formatter.Bold(player.Name)}.", important: false);
+                using TheGodfatherDbContext db = this.Database.CreateContext();
+                SwatPlayer player = db.SwatPlayers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                if (!(player is null) && player.IsBlacklisted) {
+                    player.IsBlacklisted = false;
+                    db.SwatPlayers.Update(player);
                 }
+                await db.SaveChangesAsync();
+                await this.InformAsync(ctx, $"Removed a ban entry for {Formatter.Bold(player.Name)}.", important: false);
             }
             #endregion
 

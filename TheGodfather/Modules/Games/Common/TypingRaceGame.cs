@@ -75,11 +75,10 @@ namespace TheGodfather.Modules.Games.Common
                     g.Flush();
                 }
 
-                using (var ms = new MemoryStream()) {
-                    image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    ms.Position = 0;
-                    await this.Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)");
-                }
+                using var ms = new MemoryStream();
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                ms.Position = 0;
+                await this.Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)");
             }
 
             quote = this.PrepareText(quote);
