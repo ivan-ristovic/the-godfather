@@ -66,16 +66,15 @@ namespace TheGodfather.Tests
 
         private static void CreateDatabase()
         {
-            using (TheGodfatherDbContext context = Database.CreateContext())
-                context.Database.EnsureCreated();
+            using TheGodfatherDbContext context = Database.CreateContext();
+            context.Database.EnsureCreated();
         }
 
         private static void SeedGuildData()
         {
-            using (TheGodfatherDbContext context = Database.CreateContext()) {
-                context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
-                context.SaveChanges();
-            }
+            using TheGodfatherDbContext context = Database.CreateContext();
+            context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
+            context.SaveChanges();
         }
 
         private static void InternalSetupAlterAndVerify(Action<TheGodfatherDbContext>? setup,

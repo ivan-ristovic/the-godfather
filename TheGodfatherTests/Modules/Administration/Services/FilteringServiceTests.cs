@@ -72,47 +72,54 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [Test]
         public void TextContainsFilterTests()
         {
-            TestDbProvider.AlterAndVerify(
-                alter: db => this.Service.LoadData(),
-                verify: db => {
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat"), Is.False);
-                }
-            );
+            TestDbProvider.Verify(db => Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat", out _), Is.False));
 
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => this.AddMockFilters(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "cat"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "doG."), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "what a nice Cat, indeed."), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "a fiSh?? and a cAt???"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i can haz spaces :)"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "what a cute doge!"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "doggy dooby doo"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "fapfapfapfap"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "cat"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "cat@catmail.com"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "a nice Doge"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "whyyyYyyyyyyyy"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "catmail@something.dot.com!"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot.com?abc"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "no-way i will do that!"), Is.True);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "spam @every1"), Is.True);
+                    ContainsFilter(db, MockData.Ids[0], "cat", true);
+                    ContainsFilter(db, MockData.Ids[0], "doG.", true);
+                    ContainsFilter(db, MockData.Ids[0], "what a nice Cat, indeed.", true);
+                    ContainsFilter(db, MockData.Ids[0], "a fiSh?? and a cAt???", true);
+                    ContainsFilter(db, MockData.Ids[0], "i can haz spaces :)", true);
+                    ContainsFilter(db, MockData.Ids[0], "what a cute doge!", true);
+                    ContainsFilter(db, MockData.Ids[0], "doggy dooby doo", true);
+                    ContainsFilter(db, MockData.Ids[0], "fapfapfapfap", true);
+                    ContainsFilter(db, MockData.Ids[1], "cat", true);
+                    ContainsFilter(db, MockData.Ids[1], "cat@catmail.com", true);
+                    ContainsFilter(db, MockData.Ids[1], "a nice Doge", true);
+                    ContainsFilter(db, MockData.Ids[1], "whyyyYyyyyyyyy", true);
+                    ContainsFilter(db, MockData.Ids[2], "catmail@something.dot.com!", true);
+                    ContainsFilter(db, MockData.Ids[2], "help.me.pls.dot.com?abc", true);
+                    ContainsFilter(db, MockData.Ids[2], "no-way i will do that!", true);
+                    ContainsFilter(db, MockData.Ids[2], "spam @every1", true);
 
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "caat"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "c4tz"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i like c@t."), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "i like d0ges."), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "so fisshy..."), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[0], "dooggggy"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[1], "whhy"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "mail@something.dot=com!"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "help.me.pls.dot&com?abc"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "no--way i will do that!"), Is.False);
-                    Assert.That(this.Service.TextContainsFilter(MockData.Ids[2], "spam every1"), Is.False);
+                    ContainsFilter(db, MockData.Ids[0], "caat", false);
+                    ContainsFilter(db, MockData.Ids[0], "c4tz", false);
+                    ContainsFilter(db, MockData.Ids[0], "i like c@t.", false);
+                    ContainsFilter(db, MockData.Ids[0], "i like d0ges.", false);
+                    ContainsFilter(db, MockData.Ids[0], "so fisshy...", false);
+                    ContainsFilter(db, MockData.Ids[0], "dooggggy", false);
+                    ContainsFilter(db, MockData.Ids[1], "whhy", false);
+                    ContainsFilter(db, MockData.Ids[2], "mail@something.dot=com!", false);
+                    ContainsFilter(db, MockData.Ids[2], "help.me.pls.dot&com?abc", false);
+                    ContainsFilter(db, MockData.Ids[2], "no--way i will do that!", false);
+                    ContainsFilter(db, MockData.Ids[2], "spam every1", false);
                 }
             );
+
+
+            void ContainsFilter(TheGodfatherDbContext db, ulong gid, string text, bool filtered)
+            {
+                Assert.That(this.Service.TextContainsFilter(gid, text, out Filter? filter), Is.EqualTo(filtered));
+                if (filtered) {
+                    Assert.That(filter, Is.Not.Null);
+                    Assert.That(filter!.Regex.IsMatch(text));
+                } else {
+                    Assert.That(filter, Is.Null);
+                }
+            }
         }
 
         [Test]
@@ -520,11 +527,11 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                     Assert.That(db.Filters
                                   .Where(f => f.GuildIdDb == (long)gid)
                                   .AsEnumerable()
-                                  .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)),
+                                  .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, true) == 0)),
                                 Is.False
                     );
                     Assert.That(this.Service.GetGuildFilters(gid)
-                                            .Any(f => regexStrings.Any(s => string.Compare(s, f.TriggerString, true) == 0)),
+                                            .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, true) == 0)),
                                 Is.False
                     );
                 } else {
@@ -536,19 +543,19 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
         private void AddMockFilters(TheGodfatherDbContext db)
         {
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "fish" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "cat" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "dog(e|gy)?" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = "(fap)+" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], TriggerString = @"i\ can\ haz\ spaces" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], RegexString = "fish" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], RegexString = "cat" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], RegexString = "dog(e|gy)?" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], RegexString = "(fap)+" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[0], RegexString = @"i\ can\ haz\ spaces" });
 
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "cat" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "doge" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], TriggerString = "why+" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], RegexString = "cat" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], RegexString = "doge" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[1], RegexString = "why+" });
 
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = "no-way" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = @"dot\.com" });
-            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], TriggerString = "@every1" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], RegexString = "no-way" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], RegexString = @"dot\.com" });
+            db.Filters.Add(new Filter { GuildId = MockData.Ids[2], RegexString = "@every1" });
         }
 
         private void AssertGuildFilterCount(TheGodfatherDbContext db, int index, int count)
@@ -557,7 +564,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[index]);
             Assert.AreEqual(count, fs.Count);
             CollectionAssert.AllItemsAreUnique(fs.Select(f => f.Id));
-            Assert.AreEqual(count, fs.Select(f => f.Trigger.ToString()).Distinct().Count());
+            Assert.AreEqual(count, fs.Select(f => f.Regex.ToString()).Distinct().Count());
         }
 
         private void AssertSingleAndTest(TheGodfatherDbContext db, int index, string regex, bool match, params string[] tests)
@@ -567,20 +574,20 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 return;
             }
 
-            Filter filter = this.Service.GetGuildFilters(MockData.Ids[index]).Single(f => string.Compare(f.TriggerString, regex, true) == 0);
+            Filter filter = this.Service.GetGuildFilters(MockData.Ids[index]).Single(f => string.Compare(f.RegexString, regex, true) == 0);
             Assert.IsNotNull(filter);
 
             Filter dbf = db.Filters
                 .Where(f => f.GuildIdDb == (long)MockData.Ids[index])
                 .AsEnumerable()
-                .Single(f => string.Compare(f.TriggerString, regex, true) == 0);
+                .Single(f => string.Compare(f.RegexString, regex, true) == 0);
             Assert.IsNotNull(dbf);
 
             foreach (string test in tests) {
                 if (match)
-                    Assert.IsTrue(filter.Trigger.IsMatch(test));
+                    Assert.IsTrue(filter.Regex.IsMatch(test));
                 else
-                    Assert.IsFalse(filter.Trigger.IsMatch(test));
+                    Assert.IsFalse(filter.Regex.IsMatch(test));
             }
         }
 
