@@ -119,6 +119,14 @@ namespace TheGodfather.Modules.Administration
                 else
                     await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid-global", Formatter.InlineCode(cmd.QualifiedName));
             }
+            
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cr-change");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-cmd", command);
+                emb.AddLocalizedTitleField("str-allowed", allow);
+                emb.AddLocalizedTitleField("str-chns", channels);
+            });
         }
 
         private Task PrintRulesAsync(CommandContext ctx, DiscordChannel? chn = null, string? cmd = null, bool global = false)

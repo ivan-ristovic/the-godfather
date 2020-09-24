@@ -58,8 +58,8 @@ namespace TheGodfather.Modules.Administration.Services
             return match is { };
         }
 
-        public IReadOnlyCollection<Filter> GetGuildFilters(ulong gid)
-            => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) ? fs.ToList() : (IReadOnlyCollection<Filter>)Array.Empty<Filter>();
+        public IReadOnlyList<Filter> GetGuildFilters(ulong gid)
+            => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) ? fs.ToList() : (IReadOnlyList<Filter>)Array.Empty<Filter>();
 
         public Task<bool> AddFilterAsync(ulong gid, string regexString)
         {

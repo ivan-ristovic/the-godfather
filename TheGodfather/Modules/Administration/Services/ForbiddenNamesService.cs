@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Serilog;
-using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
@@ -15,6 +13,15 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public sealed class ForbiddenNamesService : ITheGodfatherService
     {
+        private static ImmutableArray<ulong> _ids = new ulong[] {
+                125649888611401728,
+                201315884709576705,
+                379378609942560770,
+                479378612343120770,
+                515098985770385419,
+                621356153163285419,
+            }.ToImmutableArray();
+
         public bool IsDisabled => false;
 
         private readonly DbContextBuilder dbb;
@@ -25,6 +32,9 @@ namespace TheGodfather.Modules.Administration.Services
             this.dbb = dbb;
         }
 
+
+        public bool IsSafePattern(Regex regex) 
+            => _ids.All(u => !regex.IsMatch(u.ToString()));
 
         public bool IsNameForbidden(ulong gid, string name, out ForbiddenName? match)
         {
@@ -38,7 +48,7 @@ namespace TheGodfather.Modules.Administration.Services
             return match is { };
         }
 
-        public IReadOnlyCollection<ForbiddenName> GetGuildForbiddenNames(ulong gid)
+        public IReadOnlyList<ForbiddenName> GetGuildForbiddenNames(ulong gid)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             return this.InternalGetForbiddenNamesForGuild(db, gid).ToList().AsReadOnly();
@@ -76,6 +86,12 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings)
         {
             bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r)));
+            return res.All(r => r);
+        }
+
+        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes)
+        {
+            bool[] res = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r)));
             return res.All(r => r);
         }
 

@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,228 +8,233 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("forbiddennames"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Manage forbidden names for this guild. Group call shows all the forbidden nicknames for this guild.")]
-    [Aliases("forbiddenname", "forbiddennicknames", "fn", "disallowednames")]
-
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    [RequirePermissions(Permissions.ManageNicknames)]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class ForbiddenNamesModule : TheGodfatherModule
+    [Aliases("forbiddenname", "forbiddennicknames", "disallowednames", "fnames", "fname", "fn")]
+    [RequireUserPermissions(Permissions.ManageGuild), RequirePermissions(Permissions.ManageNicknames)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
+    public class ForbiddenNamesModule : TheGodfatherServiceModule<ForbiddenNamesService>
     {
-
-        public ForbiddenNamesModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
+        public ForbiddenNamesModule(ForbiddenNamesService service)
+            : base(service) { }
 
 
+        #region forbiddennames
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Forbidden name list (can be regexes)")] params string[] names)
+                                     [RemainingText, Description("desc-fnames")] params string[] names)
             => this.AddAsync(ctx, names);
+        #endregion
 
-
-        #region COMMAND_FORBIDDENNAMES_ADD
+        #region forbiddennames add
         [Command("add")]
-        [Description("Add nicknames to the forbidden list (can be a regex).")]
-        [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
-
+        [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Name list.")] params string[] names)
+                                  [RemainingText, Description("desc-fnames")] params string[] names)
         {
             if (names is null || !names.Any())
-                throw new InvalidCommandUsageException("Names missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-fn-pat-none");
+
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
 
             var eb = new StringBuilder();
-
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                var dbNames = new List<ForbiddenName>();
-                foreach (string regexString in names) {
-                    if (regexString.Length < 3 || regexString.Length > 60) {
-                        eb.AppendLine($"Error: Name or regex {Formatter.InlineCode(regexString)} doesn't fit the size requirement (3-60).");
-                        continue;
-                    }
-
-                    if (!regexString.TryParseRegex(out Regex regex))
-                        regex = regexString.ToRegex(escape: true);
-
-                    if (!db.ForbiddenNames.Any(n => n.RegexString == regexString))
-                        dbNames.Add(new ForbiddenName { GuildId = ctx.Guild.Id, RegexString = regexString });
+            var addedPatterns = new List<Regex>();
+            foreach (string regexString in names) {
+                if (regexString.Length < 3 || regexString.Length > 60) {
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-size", Formatter.InlineCode(regexString)));
+                    continue;
                 }
-                db.ForbiddenNames.AddRange(dbNames);
-                await db.SaveChangesAsync();
 
-                DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-                foreach (DiscordMember member in ctx.Guild.Members.Select(kvp => kvp.Value).Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
-                    if (dbNames.Any(name => name.Regex.IsMatch(member.DisplayName))) {
-                        try {
-                            await member.ModifyAsync(m => {
-                                m.Nickname = "Temporary nickname";
-                                m.AuditLogReason = "_gf: Forbidden name match";
-                            });
-                            await member.SendMessageAsync($"The nickname you have in the guild {ctx.Guild.Name} is now forbidden by the guild administrator and I have set a temporary nickname for you. Please set a different name.");
-                        } catch (UnauthorizedException) {
+                if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-invalid", Formatter.InlineCode(regexString)));
+                    continue;
+                }
 
-                        }
+                if (this.Service.IsSafePattern(regex)) {
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-unsafe", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (!await this.Service.AddForbiddenNameAsync(ctx.Guild.Id, regex)) {
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-dup", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                addedPatterns.Add(regex);
+            }
+
+            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+            bool failed = false;
+            foreach (DiscordMember member in ctx.Guild.Members.Select(kvp => kvp.Value).Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
+                Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
+                if (match is { }) {
+                    try {
+                        await member.ModifyAsync(m => {
+                            m.Nickname = member.Id.ToString();
+                            m.AuditLogReason = lcs.GetString(ctx.Guild.Id, "rsn-fname-match", match);
+                        });
+                        if (!member.IsBot)
+                            await member.SendMessageAsync(lcs.GetString(null, "dm-fname-match", Formatter.Italic(ctx.Guild.Name)));
+                    } catch (UnauthorizedException) {
+                        if (!failed) {
+                            failed = true;
+                            eb.Append(lcs.GetString(ctx.Guild.Id, "err-fname-match"));
+                        } 
                     }
                 }
             }
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Forbidden name addition occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried adding forbidden names", string.Join("\n", names.Select(rgx => Formatter.InlineCode(rgx))));
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-add");
+                emb.AddLocalizedTitleField("str-fname-add", Formatter.BlockCode(addedPatterns.Select(p => p.ToString()).Separate()));
                 if (eb.Length > 0)
-                    emb.AddField("Errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+                    emb.AddLocalizedTitleField("str-err", eb);
+            });
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                await ctx.FailAsync("evt-action-err", eb.ToString());
             else
-                await this.InformAsync(ctx, "Successfully registered all given forbidden names!", important: false);
+                await ctx.InfoAsync(this.ModuleColor, "str-fn-add");
         }
         #endregion
 
-        #region COMMAND_FORBIDDENNAMES_DELETE
-        [Command("delete"), Priority(1)]
-        [Description("Removes forbidden name either by ID or plain text match.")]
+        #region forbiddennames delete
+        [Group("delete")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-
-        public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Forbidden name IDs to remove.")] params int[] ids)
+        public class ForbiddenNamesDeleteModule : TheGodfatherServiceModule<ForbiddenNamesService>
         {
-            if (ids is null || !ids.Any())
-                throw new CommandFailedException("No IDs given.");
+            public ForbiddenNamesDeleteModule(ForbiddenNamesService service)
+                : base(service) { }
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(fn => fn.GuildId == ctx.Guild.Id && ids.Any(id => id == fn.Id)));
-                await db.SaveChangesAsync();
+
+            #region forbiddennames delete
+            [GroupCommand, Priority(1)]
+            public Task DeleteAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-fnames-del-ids")] params int[] ids)
+                => this.DeleteIdAsync(ctx, ids);
+
+            [GroupCommand, Priority(0)]
+            public Task DeleteAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-fnames-del")] params string[] regexStrings)
+                => this.DeletePatternAsync(ctx, regexStrings);
+            #endregion
+
+            #region forbiddennames delete id
+            public async Task DeleteIdAsync(CommandContext ctx,
+                                           [RemainingText, Description("desc-fnames-del-ids")] params int[] ids)
+            {
+                if (ids is null || !ids.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-f-ids-none");
+
+                IReadOnlyCollection<ForbiddenName> fns = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
+                if (!fns.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-fn-none");
+
+                int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id, ids);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-del");
+                    emb.WithDescription(ids.Separate());
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-fn-del", removed);
             }
+            #endregion
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Forbidden name deletion occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried deleting forbidden names with IDs", string.Join("\n", ids.Select(id => id.ToString())));
-                await logchn.SendMessageAsync(embed: emb.Build());
+            #region forbiddennames delete matching
+            public async Task DeleteMatchingAsync(CommandContext ctx,
+                                                 [Description("desc-fnames-del")] string match)
+            {
+                if (string.IsNullOrWhiteSpace(match))
+                    throw new CommandFailedException(ctx, "cmd-err-fn-pat-none");
+
+                IReadOnlyCollection<ForbiddenName> fns = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
+                if (!fns.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-fn-none");
+
+                int removed = await this.Service.RemoveForbiddenNamesMatchingAsync(ctx.Guild.Id, match);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-del-match");
+                    emb.WithDescription(match);
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-fn-del", removed);
             }
+            #endregion
 
-            await this.InformAsync(ctx, "Done!", important: false);
-        }
+            #region forbiddennames delete pattern
+            public async Task DeletePatternAsync(CommandContext ctx,
+                                                [RemainingText, Description("desc-fnames-del")] params string[] regexStrings)
+            {
+                if (regexStrings is null || !regexStrings.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-fn-pat-none");
 
-        [Command("delete"), Priority(0)]
-        public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Forbidden name IDs to remove.")] string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Missing name.");
+                IReadOnlyCollection<ForbiddenName> fs = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
+                if (!fs.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-fn-none");
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                ForbiddenName fn = db.ForbiddenNames.SingleOrDefault(n => n.GuildId == ctx.Guild.Id && n.RegexString == name);
-                if (fn is null)
-                    throw new CommandFailedException("Such name is not forbidden.");
-                db.ForbiddenNames.Remove(fn);
-                await db.SaveChangesAsync();
+                int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id, regexStrings);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-del");
+                    emb.WithDescription(regexStrings.Separate());
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-fn-del", removed);
             }
-
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Forbidden name deletion occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried deleting forbidden name", name);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            await this.InformAsync(ctx, "Done!", important: false);
+            #endregion
         }
         #endregion
 
-        #region COMMAND_FORBIDDENNAMES_DELETEALL
+        #region forbiddennames deleteall
         [Command("deleteall"), UsesInteractivity]
-        [Description("Delete all forbidden names for the current guild.")]
-        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all forbidden names for this guild?"))
+            if (!await ctx.WaitForBoolReplyAsync("q-fn-rem-all"))
                 return;
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.ForbiddenNames.RemoveRange(db.ForbiddenNames.Where(n => n.GuildId == ctx.Guild.Id));
-                await db.SaveChangesAsync();
-            }
+            int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id);
 
-            DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "All forbidden names have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-del-all");
+                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+            });
 
-            await this.InformAsync(ctx, "Successfully deleted all guild forbidden names!", important: false);
+            await ctx.InfoAsync(this.ModuleColor, "str-fn-del-all", removed);
         }
         #endregion
 
-        #region COMMAND_FORBIDDENNAMES_LIST
+        #region forbiddennames list
         [Command("list")]
-        [Description("Show all forbidden names for this guild.")]
-        [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx)
+        [Aliases("print", "show", "ls", "l", "p")]
+        public Task ListAsync(CommandContext ctx)
         {
-            List<ForbiddenName> names;
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                names = await db.ForbiddenNames
-                    .Where(n => n.GuildId == ctx.Guild.Id)
-                    .OrderBy(n => n.Id)
-                    .ToListAsync();
-            }
-
-            if (!names.Any())
-                throw new CommandFailedException("No forbidden names registered in this guild!");
-
-            await ctx.PaginateAsync(
-                $"Forbidden names registered for {ctx.Guild.Name}",
-                names,
-                n => $"{Formatter.InlineCode($"{n.Id:D3}")} | {Formatter.InlineCode(n.RegexString)}",
-                this.ModuleColor
-            );
+            IReadOnlyCollection<ForbiddenName> fs = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
+            return fs.Any()
+                ? ctx.PaginateAsync(
+                    "str-fn",
+                    fs.OrderBy(f => f.Id),
+                    f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
+                    this.ModuleColor
+                )
+                : throw new CommandFailedException(ctx, "cmd-err-fn-none");
         }
         #endregion
     }

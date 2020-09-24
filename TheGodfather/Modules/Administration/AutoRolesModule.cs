@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "str-ar-change");
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ar-change");
                 emb.AddLocalizedTitleField("str-roles-add", roles.Separate());
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roles.Separate());
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-change");
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
                 emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roles.Separate());
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("str-ar-clear").WithColor(this.ModuleColor));
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-ar-clear").WithColor(this.ModuleColor));
             await ctx.InfoAsync(this.ModuleColor, "str-ar-clear");
         }
         #endregion
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 await this.Service.RemoveAsync(ctx.Guild.Id, missingRoles);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "str-ar-change");
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
                         emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
                     },
                     invocationFields: false

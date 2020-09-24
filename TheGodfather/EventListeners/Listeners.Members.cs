@@ -166,15 +166,9 @@ namespace TheGodfather.EventListeners
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
 
             bool renamed = false, failed = false;
-            if (!string.IsNullOrWhiteSpace(e.NicknameAfter)) {
-                // TODO move to service
-                using TheGodfatherDbContext db = shard.Database.CreateContext();
-                ForbiddenName? fname = db.ForbiddenNames
-                    .Where(n => n.GuildIdDb == (long)e.Guild.Id)
-                    .AsEnumerable()
-                    .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
-                    ;
-                if (fname is { }) {
+            if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && e.NicknameAfter != e.Member.Id.ToString()) {
+                ForbiddenNamesService fns = shard.Services.GetRequiredService<ForbiddenNamesService>();
+                if (fns.IsNameForbidden(e.Guild.Id, e.NicknameAfter, out ForbiddenName? fname) && fname is { }) {
                     try {
                         await e.Member.ModifyAsync(m => {
                             m.Nickname = e.Member.Id.ToString();

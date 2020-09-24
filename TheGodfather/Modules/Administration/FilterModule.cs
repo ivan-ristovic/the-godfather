@@ -9,9 +9,11 @@ using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
@@ -21,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Group("filter"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("f", "filters", "autodel")]
     [RequireUserPermissions(Permissions.ManageGuild)]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
         public FilterModule(FilteringService service)
@@ -49,6 +51,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-f-missing");
 
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            
             var eb = new StringBuilder();
             foreach (string regexString in filters) {
                 if (regexString.Contains('%')) {
@@ -76,29 +79,19 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (this.Service.GetGuildFilters(ctx.Guild.Id).Any(f => f.RegexString == regex.ToString())) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
-                    continue;
-                }
-
                 if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex))
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
             }
 
-            LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-            if (ls.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb)) {
-                emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedTitle("evt-f-add");
-                emb.AddLocalizedTitleField("evt-usr-responsible", ctx.User.Mention, inline: true);
-                emb.AddLocalizedTitleField("evt-invoke-loc", ctx.Channel.Mention, inline: true);
-                emb.AddLocalizedTitleField("fmt-f-add", filters.Select(rgx => Formatter.InlineCode(rgx)).Separate());
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
+                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).Separate());
                 if (eb.Length > 0)
                     emb.AddLocalizedTitleField("str-errs", eb.ToString());
-                await ls.LogAsync(ctx.Guild, emb);
-            }
+            });
 
             if (eb.Length > 0)
-                await ctx.InfoAsync(this.ModuleColor, "evt-action-err", eb.ToString());
+                await ctx.FailAsync("evt-action-err", eb.ToString());
             else
                 await ctx.InfoAsync(this.ModuleColor, "str-f-add");
         }
@@ -138,15 +131,10 @@ namespace TheGodfather.Modules.Administration
 
                 int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id, ids);
 
-                LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-                if (ls.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb)) {
-                    emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("evt-f-del");
-                    emb.AddLocalizedTitleField("evt-usr-responsible", ctx.User.Mention, inline: true);
-                    emb.AddLocalizedTitleField("evt-invoke-loc", ctx.Channel.Mention, inline: true);
-                    emb.AddLocalizedTitleField("fmt-f-del", ids.Separate());
-                    await ls.LogAsync(ctx.Guild, emb);
-                }
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
+                    emb.WithDescription(ids.Separate());
+                });
 
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
             }
@@ -165,15 +153,10 @@ namespace TheGodfather.Modules.Administration
 
                 int removed = await this.Service.RemoveFiltersMatchingAsync(ctx.Guild.Id, match);
 
-                LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-                if (ls.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb)) {
-                    emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("evt-f-del");
-                    emb.AddLocalizedTitleField("evt-usr-responsible", ctx.User.Mention, inline: true);
-                    emb.AddLocalizedTitleField("evt-invoke-loc", ctx.Channel.Mention, inline: true);
-                    emb.AddLocalizedTitleField("fmt-f-del-matching", match);
-                    await ls.LogAsync(ctx.Guild, emb);
-                }
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del-match");
+                    emb.WithDescription(match);
+                });
 
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
             }
@@ -192,15 +175,10 @@ namespace TheGodfather.Modules.Administration
 
                 int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id, regexStrings);
 
-                LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-                if (ls.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb)) {
-                    emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("evt-f-del");
-                    emb.AddLocalizedTitleField("evt-usr-responsible", ctx.User.Mention, inline: true);
-                    emb.AddLocalizedTitleField("evt-invoke-loc", ctx.Channel.Mention, inline: true);
-                    emb.AddLocalizedTitleField("fmt-f-del", regexStrings.Separate());
-                    await ls.LogAsync(ctx.Guild, emb);
-                }
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
+                    emb.WithDescription(regexStrings.Separate());
+                });
                 
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
             }
@@ -218,16 +196,11 @@ namespace TheGodfather.Modules.Administration
 
             int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id);
 
-            LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-            if (ls.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb)) {
-                emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedTitle("evt-f-del-all");
-                emb.AddLocalizedTitleField("evt-usr-responsible", ctx.User.Mention, inline: true);
-                emb.AddLocalizedTitleField("evt-invoke-loc", ctx.Channel.Mention, inline: true);
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del-all");
                 emb.AddLocalizedTitleField("str-count", removed, inline: true);
-                await ls.LogAsync(ctx.Guild, emb);
-            }
-            
+            });
+
             await ctx.InfoAsync(this.ModuleColor, "str-f-del-all", removed);
         }
         #endregion
