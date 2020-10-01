@@ -95,8 +95,6 @@ namespace TheGodfather.EventListeners
                     break;
                 case ArgumentException _:
                 case TargetInvocationException _:
-                    if (shard.CNext is null)
-                        throw new InvalidOperationException("CNext is null");
                     string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
                     Command command = shard.CNext.FindCommand(fcmdStr, out string args);
                     CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);

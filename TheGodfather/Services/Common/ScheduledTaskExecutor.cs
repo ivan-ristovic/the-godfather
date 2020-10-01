@@ -59,9 +59,6 @@ namespace TheGodfather.Services.Common
 
         public async Task HandleMissedExecutionAsync()
         {
-            if (this.shard.Client is null)
-                throw new InvalidOperationException("Cannot handle missed tasks when DiscordClient is not initialized");
-
             try {
                 switch (this.Job) {
                     case GuildTask gt:
@@ -101,15 +98,14 @@ namespace TheGodfather.Services.Common
         #region Callbacks
         private void SendMessageCallback(object? _)
         {
-            if (this.shard.Client is null)
-                throw new InvalidOperationException("Cannot issue reminders when DiscordClient is not initialized");
-
             Reminder? rem = _ as Reminder ?? throw new InvalidCastException("Failed to cast scheduled task to Reminder");
 
             try {
-                DiscordChannel channel = rem.ChannelId != 0
+                DiscordChannel? channel = rem.ChannelId != 0
                     ? this.async.Execute(this.shard.Client.GetChannelAsync(rem.ChannelId))
                     : this.async.Execute(this.shard.Client.CreateDmChannelAsync(rem.UserId));
+                if (channel is null)
+                    return;
                 DiscordUser user = this.async.Execute(this.shard.Client.GetUserAsync(rem.UserId));
                 this.async.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
                     Description = $"{Emojis.AlarmClock} {rem.Message}",
@@ -132,9 +128,6 @@ namespace TheGodfather.Services.Common
 
         private void UnbanUserCallback(object? _)
         {
-            if (this.shard.Client is null)
-                throw new InvalidOperationException("Cannot handle missed tasks when DiscordClient is not initialized");
-
             GuildTask? gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
             try {
@@ -155,9 +148,6 @@ namespace TheGodfather.Services.Common
 
         private void UnmuteUserCallback(object? _)
         {
-            if (this.shard.Client is null)
-                throw new InvalidOperationException("Cannot handle missed tasks when DiscordClient is not initialized");
-
             GuildTask? gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
             try {

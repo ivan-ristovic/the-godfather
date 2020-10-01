@@ -22,13 +22,10 @@ namespace TheGodfather.EventListeners.Attributes
 
         public void Register(TheGodfatherShard shard, MethodInfo mi)
         {
-            if (shard.Client is null || shard.CNext is null)
-                throw new ArgumentException("Shard not initialized");
-            
             BotActivityService bas = shard.Services.GetService<BotActivityService>();
 
 
-            Task OnEventWithArgs(object e)
+            Task OnEventWithArgs(object _, object e)
             {
                 if (!bas.IsBotListening)
                     return Task.CompletedTask;
@@ -41,22 +38,6 @@ namespace TheGodfather.EventListeners.Attributes
                     }
                 });
                 
-                return Task.CompletedTask;
-            }
-
-            Task OnEventVoid()
-            {
-                if (!bas.IsBotListening)
-                    return Task.CompletedTask;
-
-                _ = Task.Run(async () => {
-                    try {
-                        await (Task)mi.Invoke(null, new object[] { shard })!;
-                    } catch (Exception ex) {
-                        Log.Error(ex, "Listener threw an exception");
-                    }
-                });
-
                 return Task.CompletedTask;
             }
 
@@ -190,7 +171,7 @@ namespace TheGodfather.EventListeners.Attributes
                     shard.Client.SocketErrored += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketOpened:
-                    shard.Client.SocketOpened += OnEventVoid;
+                    shard.Client.SocketOpened += OnEventWithArgs;
                     break;
                 case DiscordEventType.TypingStarted:
                     shard.Client.TypingStarted += OnEventWithArgs;

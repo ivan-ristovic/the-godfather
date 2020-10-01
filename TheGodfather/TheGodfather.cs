@@ -5,19 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Events;
-using TheGodfather.Common;
 using TheGodfather.Database;
-using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
-using TheGodfather.Misc.Services;
-using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfather
 {
@@ -125,7 +118,6 @@ namespace TheGodfather
             Log.Information("Creating {ShardCount} shard(s)", cfg.CurrentConfiguration.ShardCount);
             for (int i = 0; i < cfg.CurrentConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, services);
-                shard.Initialize();
                 _shards.Add(shard);
             }
 

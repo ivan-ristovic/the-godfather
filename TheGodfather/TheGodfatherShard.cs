@@ -26,11 +26,11 @@ namespace TheGodfather
         public ServiceProvider Services { get; private set; }
         public BotConfig Config { get; private set; }
         public DbContextBuilder Database { get; private set; }
-        public DiscordClient? Client { get; private set; }
-        public CommandsNextExtension? CNext { get; private set; }
-        public InteractivityExtension? Interactivity { get; private set; }
-        public VoiceNextExtension? Voice { get; private set; }
-        public IReadOnlyDictionary<string, Command> Commands { get; private set; } 
+        public DiscordClient Client { get; private set; }
+        public CommandsNextExtension CNext { get; private set; }
+        public InteractivityExtension Interactivity { get; private set; }
+        public VoiceNextExtension Voice { get; private set; }
+        public IReadOnlyDictionary<string, Command> Commands { get; private set; }
 
 
         // TODO change argument type to ServiceProvider and pass already built provider from main program
@@ -40,7 +40,15 @@ namespace TheGodfather
             this.Services = services.AddShardServices(this).BuildServiceProvider().Initialize();
             this.Database = this.Services.GetService<DbContextBuilder>();
             this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
+
             this.Commands = new Dictionary<string, Command>();
+            this.Client = this.SetupClient();
+            this.CNext = this.SetupCommands();
+            this.Interactivity = this.SetupInteractivity();
+            this.Voice = this.SetupVoice();
+
+            this.UpdateCommandList();
+            Listeners.FindAndRegister(this);
         }
 
         public async Task DisposeAsync()
@@ -59,18 +67,16 @@ namespace TheGodfather
             await this.Client.ConnectAsync();
         }
 
-        public void Initialize()
+        public void UpdateCommandList()
         {
-            this.SetupClient();
-            this.SetupCommands();
-            this.SetupInteractivity();
-            this.SetupVoice();
-
-            Listeners.FindAndRegister(this);
+            this.Commands = this.CNext.GetRegisteredCommands()
+                .Where(cmd => cmd.Parent is null)
+                .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
+                .ToDictionary(tup => tup.Item1, tup => tup.cmd);
         }
 
 
-        private void SetupClient()
+        private DiscordClient SetupClient()
         {
             var cfg = new DiscordConfiguration {
                 Token = this.Config.Token,
@@ -80,22 +86,23 @@ namespace TheGodfather
                 ShardCount = this.Config.ShardCount,
                 ShardId = this.Id,
                 LoggerFactory = new SerilogLoggerFactory(dispose: true),
-                Intents = DiscordIntents.All 
-                       & ~DiscordIntents.GuildMessageTyping 
+                Intents = DiscordIntents.All
+                       & ~DiscordIntents.GuildMessageTyping
                        & ~DiscordIntents.DirectMessageTyping
             };
 
-            this.Client = new DiscordClient(cfg);
-
-            this.Client.Ready += e => {
+            var client = new DiscordClient(cfg);
+            client.Ready += (s, e) => {
                 Log.Information("Client ready!");
                 return Task.CompletedTask;
             };
+
+            return client;
         }
 
-        private void SetupCommands()
+        private CommandsNextExtension SetupCommands()
         {
-            this.CNext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
+            CommandsNextExtension cnext = this.Client.UseCommandsNext(new CommandsNextConfiguration {
                 CaseSensitive = false,
                 EnableDefaultHelp = false,
                 EnableDms = true,
@@ -109,17 +116,17 @@ namespace TheGodfather
                 },
                 Services = this.Services
             });
-            
-            var assembly = Assembly.GetExecutingAssembly();
-            this.CNext.RegisterCommands(assembly);
-            this.CNext.RegisterConverters(assembly);
 
-            this.UpdateCommandList();
+            var assembly = Assembly.GetExecutingAssembly();
+            cnext.RegisterCommands(assembly);
+            cnext.RegisterConverters(assembly);
+
+            return cnext;
         }
 
-        private void SetupInteractivity()
+        private InteractivityExtension SetupInteractivity()
         {
-            this.Interactivity = this.Client.UseInteractivity(new InteractivityConfiguration {
+            return this.Client.UseInteractivity(new InteractivityConfiguration {
                 PaginationBehaviour = PaginationBehaviour.WrapAround,
                 PaginationDeletion = PaginationDeletion.DeleteEmojis,
                 PaginationEmojis = new PaginationEmojis(),
@@ -128,19 +135,10 @@ namespace TheGodfather
             });
         }
 
-        private void SetupVoice()
+        [Obsolete]
+        private VoiceNextExtension SetupVoice()
         {
-            this.Voice = this.Client.UseVoiceNext();
-        }
-
-        public void UpdateCommandList()
-        {
-            if (this.CNext is { }) {
-                this.Commands = this.CNext.GetRegisteredCommands()
-                    .Where(cmd => cmd.Parent is null)
-                    .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
-                    .ToDictionary(tup => tup.Item1, tup => tup.cmd);
-            }
+            return this.Client.UseVoiceNext();
         }
     }
 }

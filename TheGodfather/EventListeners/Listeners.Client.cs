@@ -62,7 +62,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             string prefix = shard.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix;
-            string owners = e.Client.CurrentApplication.Owners.Select(o => o.ToDiscriminatorString()).Humanize(", ");
+            string owners = shard.Client.CurrentApplication.Owners.Select(o => o.ToDiscriminatorString()).Humanize(", ");
             await defChannel.EmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{Emojis.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(prefix)}, but it can be changed " +
@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.SocketOpened)]
-        public static Task SocketOpenedEventHandlerAsync(TheGodfatherShard shard)
+        public static Task SocketOpenedEventHandlerAsync(TheGodfatherShard shard, SocketEventArgs _)
         {
             LogExt.Debug(shard.Id, "Socket opened");
             shard.Services.GetRequiredService<BotActivityService>().ShardUptimeInformation[shard.Id].SocketStartTime = DateTimeOffset.Now;

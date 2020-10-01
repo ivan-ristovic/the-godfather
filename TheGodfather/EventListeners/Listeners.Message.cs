@@ -185,7 +185,7 @@ namespace TheGodfather.EventListeners
             if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out GuildConfigService gcs))
                 return;
 
-            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, "evt-msg-del");
@@ -233,7 +233,7 @@ namespace TheGodfather.EventListeners
             if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
-            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
@@ -300,7 +300,7 @@ namespace TheGodfather.EventListeners
             if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return Task.CompletedTask;
 
-            if (e.Message.Author == e.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return Task.CompletedTask;
 
             if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
