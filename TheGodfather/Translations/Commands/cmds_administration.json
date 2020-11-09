@@ -10,16 +10,16 @@
       [ "arg-role", "arg-role-raw", "arg-variadic" ]
     ]
   },
-  "automaticroles remove": {
-    "usage": [
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
-    ]
+  "automaticroles clear": {
+    "usage": [ [] ]
   },
   "automaticroles list": {
     "usage": [ [] ]
   },
-  "automaticroles clear": {
-    "usage": [ [] ]
+  "automaticroles remove": {
+    "usage": [
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+    ]
   },
   "channel": {
     "usage": [
@@ -275,6 +275,48 @@
     ]
   },
   "filter list": {
+    "usage": [
+      []
+    ]
+  },
+  "forbiddennames": {
+    "usage": [
+      [],
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "forbiddennames add": {
+    "usage": [
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "forbiddennames delete": {
+    "usage": [
+      [ "arg-id", "..." ],
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "forbiddennames delete id": {
+    "usage": [
+      [ "arg-id", "..." ]
+    ]
+  },
+  "forbiddennames delete matching": {
+    "usage": [
+      [ "arg-string-match" ]
+    ]
+  },
+  "forbiddennames delete pattern": {
+    "usage": [
+      [ "arg-regex", "..." ]
+    ]
+  },
+  "forbiddennames deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "forbiddennames list": {
     "usage": [
       []
     ]

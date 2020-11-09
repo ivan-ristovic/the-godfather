@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Music.Common
             }
         }
 
-        private async Task ReactionHandler(MessageReactionAddEventArgs e)
+        private async Task ReactionHandler(DiscordClient _, MessageReactionAddEventArgs e)
         {
             if (e.User.IsBot || e.Message.Id != this.msgHandle.Id)
                 return;

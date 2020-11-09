@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("filter"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("f", "filters", "autodel")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class FilterModule : TheGodfatherServiceModule<FilteringService>
     {

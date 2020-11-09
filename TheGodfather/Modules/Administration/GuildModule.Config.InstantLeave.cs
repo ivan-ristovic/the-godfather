@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class GuildConfigModule
+        public partial class ConfigModule
         {
             [Group("instantleave")]
             [Description("Automatically bans users which leave in certain timespan after joining.")]

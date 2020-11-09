@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("commandrules"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("cmdrules", "crules", "cr")]
-    [RequireUserPermissions(Permissions.Administrator)]
+    [RequireGuild, RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class CommandRulesModule : TheGodfatherServiceModule<CommandRulesService>
     {

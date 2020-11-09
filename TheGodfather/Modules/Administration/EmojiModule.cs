@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("emojis", "e")]
-    [RequirePermissions(Permissions.ManageEmojis)]
+    [RequireGuild, RequirePermissions(Permissions.ManageEmojis)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiModule : TheGodfatherModule
     {

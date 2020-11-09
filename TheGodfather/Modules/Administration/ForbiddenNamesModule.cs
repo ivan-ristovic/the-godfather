@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("forbiddennames"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("forbiddenname", "forbiddennicknames", "disallowednames", "fnames", "fname", "fn")]
-    [RequireUserPermissions(Permissions.ManageGuild), RequirePermissions(Permissions.ManageNicknames)]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild), RequirePermissions(Permissions.ManageNicknames)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class ForbiddenNamesModule : TheGodfatherServiceModule<ForbiddenNamesService>
     {

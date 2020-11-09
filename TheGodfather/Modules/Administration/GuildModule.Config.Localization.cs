@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class GuildConfigModule
+        public partial class ConfigModule
         {
             [Group("localization")]
             [Description("Change the bot locale (language and date formats) for this guild. Group call shows current guild locale.")]

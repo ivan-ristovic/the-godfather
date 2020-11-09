@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class GuildConfigModule
+        public partial class ConfigModule
         {
             [Group("antispam")]
             [Description("Prevents users from posting more than specified amount of same messages.")]

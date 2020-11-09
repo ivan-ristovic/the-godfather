@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class GuildConfigModule
+        public partial class ConfigModule
         {
             [Group("linkfilter")]
             [Description("Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.")]

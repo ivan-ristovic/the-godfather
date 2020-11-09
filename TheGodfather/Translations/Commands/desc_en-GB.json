@@ -35,6 +35,7 @@
   "commandrules forbid": "Forbids command execution in specified channel(s), or globally if they are not specified.",
   "commandrules list": "Lists active command rules in specified channel or globally if the channel is not specified.",
   "commandrules deleteall": "Remove all command rules.",
+  "config": "Manage bot configuration for this guild. Group call lists current guild configuration.",
   "emoji": "Guild emoji administration. Group call lists all guild emoji or prints information about a given emoji.",
   "emoji add": "Add emoji specified via URL/attachment, or from another guild.",
   "emoji delete": "Remove guild emoji. Note: Bots can only delete emojis they created!",

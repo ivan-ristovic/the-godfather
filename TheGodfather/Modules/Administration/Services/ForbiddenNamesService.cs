@@ -14,13 +14,13 @@ namespace TheGodfather.Modules.Administration.Services
     public sealed class ForbiddenNamesService : ITheGodfatherService
     {
         private static ImmutableArray<ulong> _ids = new ulong[] {
-                125649888611401728,
-                201315884709576705,
-                379378609942560770,
-                479378612343120770,
-                515098985770385419,
-                621356153163285419,
-            }.ToImmutableArray();
+            125649888611401728,
+            201315884709576705,
+            379378609942560770,
+            479378612343120770,
+            515098985770385419,
+            621356153163285419,
+        }.ToImmutableArray();
 
         public bool IsDisabled => false;
 

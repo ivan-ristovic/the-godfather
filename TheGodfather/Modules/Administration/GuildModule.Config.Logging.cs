@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class GuildConfigModule
+        public partial class ConfigModule
         {
             [Group("logging")]
             [Description("Action logging configuration.")]
