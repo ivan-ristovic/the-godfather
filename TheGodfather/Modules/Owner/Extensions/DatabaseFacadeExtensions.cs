@@ -28,6 +28,7 @@ namespace TheGodfather.Modules.Owner.Extensions
                         new RelationalCommandParameterObject(
                             databaseFacade.GetService<IRelationalConnection>(),
                             parameterValues: rawSqlCommand.ParameterValues,
+                            null,
                             context,
                             null
                         )
