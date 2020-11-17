@@ -168,14 +168,6 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                     Assert.That(gcfg.AntispamSensitivity, Is.EqualTo(10));
                 }
             );
-
-            await TestDbProvider.AlterAndVerifyAsync(
-                alter: async db => {
-                    this.Service.LoadData();
-                    Assert.That(await this.Service.ModifyConfigAsync(1, null!), Is.Null);
-                },
-                verify: db => Task.CompletedTask
-            );
         }
 
         [Test]

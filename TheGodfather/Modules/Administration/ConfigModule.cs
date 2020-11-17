@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Administration
             if (await ctx.WaitForBoolReplyAsync("q-setup-log", channel: channel, reply: false)) {
                 await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-log-chn");
                 DiscordChannel? logchn = await ctx.Client.GetInteractivity().WaitForChannelMentionAsync(channel, ctx.User);
-                gcfg.LogChannelId = logchn?.Id ?? 0;
+                gcfg.LogChannelId = logchn?.Id ?? default;
             }
         }
 
@@ -227,9 +227,9 @@ namespace TheGodfather.Modules.Administration
                     DiscordChannel? chn = await interactivity.WaitForChannelMentionAsync(channel, ctx.User);
                     if (chn is { } && chn.Type == ChannelType.Text) {
                         if (welcome)
-                            gcfg.WelcomeChannelId = chn?.Id ?? 0;
+                            gcfg.WelcomeChannelId = chn?.Id ?? default;
                         else
-                            gcfg.LeaveChannelId = chn?.Id ?? 0;
+                            gcfg.LeaveChannelId = chn?.Id ?? default;
                     }
 
                     if (await ctx.WaitForBoolReplyAsync("q-setup-memupd-msg", channel: channel, reply: false)) {

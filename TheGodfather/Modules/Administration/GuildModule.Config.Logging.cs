@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException("Action logging channel must be a text channel.");
 
                 GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                    cfg.LogChannelIdDb = enable ? (long?)channel.Id : null;
+                    cfg.LogChannelIdDb = enable ? (long)channel.Id : 0;
                 });
 
                 DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);

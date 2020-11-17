@@ -79,16 +79,16 @@ namespace TheGodfather.Database.Models
         public bool SuggestionsEnabled { get; set; }
 
         [Column("log_cid")]
-        public long? LogChannelIdDb { get; set; }
+        public long LogChannelIdDb { get; set; }
         [NotMapped]
-        public ulong LogChannelId { get => (ulong)this.LogChannelIdDb.GetValueOrDefault(); set => this.LogChannelIdDb = (long)value; }
+        public ulong LogChannelId { get => (ulong)this.LogChannelIdDb; set => this.LogChannelIdDb = (long)value; }
         [NotMapped]
         public bool LoggingEnabled => this.LogChannelId != default;
 
         [Column("mute_rid")]
-        public long? MuteRoleIdDb { get; set; }
+        public long MuteRoleIdDb { get; set; }
         [NotMapped]
-        public ulong MuteRoleId { get => (ulong)this.MuteRoleIdDb.GetValueOrDefault(); set => this.MuteRoleIdDb = (long)value; }
+        public ulong MuteRoleId { get => (ulong)this.MuteRoleIdDb; set => this.MuteRoleIdDb = (long)value; }
 
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
@@ -96,14 +96,14 @@ namespace TheGodfather.Database.Models
 
         #region Welcome/Leave Settings
         [Column("welcome_cid")]
-        public long? WelcomeChannelIdDb { get; set; }
+        public long WelcomeChannelIdDb { get; set; }
         [NotMapped]
-        public ulong WelcomeChannelId { get => (ulong)this.WelcomeChannelIdDb.GetValueOrDefault(); set => this.WelcomeChannelIdDb = (long)value; }
+        public ulong WelcomeChannelId { get => (ulong)this.WelcomeChannelIdDb; set => this.WelcomeChannelIdDb = (long)value; }
 
         [Column("leave_cid")]
-        public long? LeaveChannelIdDb { get; set; }
+        public long LeaveChannelIdDb { get; set; }
         [NotMapped]
-        public ulong LeaveChannelId { get => (ulong)this.LeaveChannelIdDb.GetValueOrDefault(); set => this.LeaveChannelIdDb = (long)value; }
+        public ulong LeaveChannelId { get => (ulong)this.LeaveChannelIdDb; set => this.LeaveChannelIdDb = (long)value; }
 
         [Column("welcome_msg"), MaxLength(128)]
         public string? WelcomeMessage { get; set; }

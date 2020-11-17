@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException(ctx, "cmd-err-chn-none");
                     await this.WelcomeChannelAsync(ctx, chn);
                 } else {
-                    await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeChannelId = 0);
+                    await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeChannelId = default);
 
                     await ctx.GuildLogAsync(emb => {
                         emb.WithLocalizedTitle("evt-cfg-upd");
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-                DiscordChannel? wchn = gcfg.WelcomeChannelId != 0 ? ctx.Guild.GetChannel(gcfg.WelcomeChannelId) : null;
+                DiscordChannel? wchn = gcfg.WelcomeChannelId != default ? ctx.Guild.GetChannel(gcfg.WelcomeChannelId) : null;
                 if (wchn is null) {
                     await ctx.InfoAsync(this.ModuleColor, "str-cfg-welcome-get-off");
                 } else {
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Administration
                         throw new CommandFailedException(ctx, "cmd-err-chn-none");
                     await this.LeaveChanneAsync(ctx, chn);
                 } else {
-                    await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.LeaveChannelId = 0);
+                    await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.LeaveChannelId = default);
 
                     await ctx.GuildLogAsync(emb => {
                         emb.WithLocalizedTitle("evt-cfg-upd");
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Administration
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-                DiscordChannel? lchn = gcfg.LeaveChannelId != 0 ? ctx.Guild.GetChannel(gcfg.LeaveChannelId) : null;
+                DiscordChannel? lchn = gcfg.LeaveChannelId != default ? ctx.Guild.GetChannel(gcfg.LeaveChannelId) : null;
                 if (lchn is null) {
                     await ctx.InfoAsync(this.ModuleColor, "str-cfg-leave-get-off");
                 } else {

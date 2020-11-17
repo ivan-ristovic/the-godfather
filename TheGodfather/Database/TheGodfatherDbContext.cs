@@ -127,9 +127,9 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamSensitivity).HasDefaultValue(5);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.Currency).HasDefaultValue(null);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.LogChannelIdDb).HasDefaultValue();
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.MuteRoleIdDb).HasDefaultValue(null);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.LeaveChannelIdDb).HasDefaultValue(null);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.LogChannelIdDb).HasDefaultValue(0);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.MuteRoleIdDb).HasDefaultValue(0);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.LeaveChannelIdDb).HasDefaultValue(0);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.LeaveMessage).HasDefaultValue(null);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.LinkfilterBootersEnabled).HasDefaultValue(true);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.LinkfilterDiscordInvitesEnabled).HasDefaultValue(false);
@@ -143,7 +143,7 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.RatelimitSensitivity).HasDefaultValue(5);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.ReactionResponse).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.SuggestionsEnabled).HasDefaultValue(false);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(null);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(0);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
             mb.Entity<Meme>().HasKey(m => new { m.GuildIdDb, m.Name });
             mb.Entity<PurchasedItem>().HasKey(i => new { i.ItemId, i.UserIdDb });

@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 emb.AddLocalizedField("str-logging", "str-off", inline: true);
             }
 
-            if (gcfg.WelcomeChannelId != 0) {
+            if (gcfg.WelcomeChannelId != default) {
                 DiscordChannel? wchn = guild.GetChannel(gcfg.WelcomeChannelId);
                 if (wchn is null) {
                     emb.AddLocalizedField("str-memupd-w", "err-memupd-w-404", inline: true);
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 emb.AddLocalizedField("str-memupd-w", "str-off", inline: true);
             }
 
-            if (gcfg.LeaveChannelId != 0) {
+            if (gcfg.LeaveChannelId != default) {
                     DiscordChannel? lchn = guild.GetChannel(gcfg.LeaveChannelId);
                 if (lchn is null) {
                     emb.AddLocalizedField("str-memupd-l", "err-memupd-l-404", inline: true);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             emb.AddLocalizedTitleField("str-antiflood", gcfg.AntifloodSettings.ToEmbedFieldString(guild.Id, lcs), inline: true);
             emb.AddLocalizedTitleField("str-instantleave", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(guild.Id, lcs), inline: true);
 
-            if (gcfg.MuteRoleId != 0) {
+            if (gcfg.MuteRoleId != default) {
                 DiscordRole? muteRole = guild.GetRole(gcfg.MuteRoleId);
                 if (muteRole is null)
                     emb.AddLocalizedField("str-muterole", "err-muterole-404", inline: true);

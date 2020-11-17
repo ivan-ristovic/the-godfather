@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -41,7 +42,7 @@ namespace TheGodfather.Tests.Services
             Assert.That(() => this.Service.GetGuildCulture(0), Throws.Nothing);
             Assert.That(() => this.Service.GetString(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.SetGuildLocaleAsync(0, "not loaded"), Throws.InvalidOperationException);
-            Assert.That(() => this.Service.SetGuildTimezoneIdAsync(0, "UTC"), Throws.Nothing);
+            Assert.That(() => this.Service.SetGuildTimezoneIdAsync(0, "UTC"), Throws.InstanceOf<KeyNotFoundException>());
 
             this.Service.LoadData(this.ValidTestDataPath);
             Assert.That(this.Service.AvailableLocales, Is.EquivalentTo(new[] { this.EnLocale, this.SrLocale }));

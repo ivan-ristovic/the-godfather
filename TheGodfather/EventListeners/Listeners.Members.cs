@@ -48,7 +48,7 @@ namespace TheGodfather.EventListeners
                     : gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention);
                 await LoggingService.TryExecuteWithReportAsync(
                     shard, e.Guild, wchn.EmbedAsync(welcomeStr, Emojis.Wave), "rep-wchn-403", "rep-wchn-404",
-                    code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => { cfg.WelcomeChannelId = 0; })
+                    code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => cfg.WelcomeChannelId = default)
                 );
             }
 
@@ -134,7 +134,7 @@ namespace TheGodfather.EventListeners
                         : gcfg.LeaveMessage.Replace("%user%", e.Member.Mention);
                     await LoggingService.TryExecuteWithReportAsync(
                         shard, e.Guild, lchn.EmbedAsync(leaveStr, Emojis.Wave), "rep-lchn-403", "rep-lchn-404",
-                        code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => { cfg.LeaveChannelId = 0; })
+                        code404action: () => gcs.ModifyConfigAsync(e.Guild.Id, cfg => cfg.LeaveChannelId = default)
                     );
                 }
             }
