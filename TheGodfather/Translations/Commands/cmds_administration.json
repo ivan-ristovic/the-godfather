@@ -208,19 +208,18 @@
       []
     ]
   },
-  "config setup": {
+  "config leave": {
     "usage": [
       [],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config leave channel": {
+    "usage": [
       [ "arg-chn-text" ]
     ]
   },
-  "config welcome": {
-    "usage": [
-      [],
-      [ "arg-chn-text" ]
-    ]
-  },
-  "config welcome channe;": {
+  "config leave message": {
     "usage": [
       [ "arg-chn-text" ]
     ]
@@ -229,6 +228,17 @@
     "usage": [
       [],
       [ "arg-role" ]
+    ]
+  },
+  "config reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config setup": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
     ]
   },
   "config silent": {
@@ -247,6 +257,22 @@
     "usage": [
       [],
       [ "arg-bool" ]
+    ]
+  },
+  "config welcome": {
+    "usage": [
+      [],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config welcome channel": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config welcome message": {
+    "usage": [
+      [ "arg-chn-text" ]
     ]
   },
   "emoji": {
