@@ -5,7 +5,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;

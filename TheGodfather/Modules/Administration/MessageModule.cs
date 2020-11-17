@@ -11,6 +11,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.EventHandling;
+using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Database;
@@ -77,7 +78,7 @@ namespace TheGodfather.Modules.Administration
             if (timespan?.TotalSeconds < 5 || timespan?.TotalMinutes > 5)
                 throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes or lower than 5 seconds.");
 
-            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { Emojis.ArrowUp, Emojis.ArrowDown }, PollBehaviour.DeleteEmojis, timeout: timespan ?? TimeSpan.FromMinutes(1));
+            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { Emojis.ArrowUp, Emojis.ArrowDown }, PollBehaviour.DeleteEmojis, timeoutOverride: timespan ?? TimeSpan.FromMinutes(1));
             var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Voted.Count);
             if (votes.GetValueOrDefault(Emojis.ArrowDown) > 2 * votes.GetValueOrDefault(Emojis.ArrowUp)) {
                 string sanitized = FormatterExt.Spoiler(Formatter.Strip(msg.Content));

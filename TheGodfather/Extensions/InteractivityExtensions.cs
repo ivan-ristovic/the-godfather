@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;

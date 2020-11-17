@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Database;

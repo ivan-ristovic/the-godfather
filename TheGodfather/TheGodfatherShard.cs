@@ -7,6 +7,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -38,8 +39,8 @@ namespace TheGodfather
         {
             this.Id = shardId;
             this.Services = services.AddShardServices(this).BuildServiceProvider().Initialize();
-            this.Database = this.Services.GetService<DbContextBuilder>();
-            this.Config = this.Services.GetService<BotConfigService>().CurrentConfiguration;
+            this.Database = this.Services.GetRequiredService<DbContextBuilder>();
+            this.Config = this.Services.GetRequiredService<BotConfigService>().CurrentConfiguration;
 
             this.Commands = new Dictionary<string, Command>();
             this.Client = this.SetupClient();
@@ -111,7 +112,7 @@ namespace TheGodfather
                 PrefixResolver = m => {
                     string p = m.Channel.Guild is null
                         ? this.Config.Prefix
-                        : this.Services.GetService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
+                        : this.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));
                 },
                 Services = this.Services

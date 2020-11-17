@@ -9,6 +9,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Attributes;
 using TheGodfather.Common;

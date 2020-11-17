@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -69,14 +70,14 @@ namespace TheGodfather.Extensions
         public static Task FailAsync(this CommandContext ctx, string key, params object[]? args)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.X} {ctx.Services.GetService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key, args)}",
+                Description = $"{Emojis.X} {ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key, args)}",
                 Color = DiscordColor.IndianRed
             });
         }
 
         public static async Task<List<string>?> WaitAndParsePollOptionsAsync(this CommandContext ctx, string separator = ";")
         {
-            InteractivityService interactivity = ctx.Services.GetService<InteractivityService>();
+            InteractivityService interactivity = ctx.Services.GetRequiredService<InteractivityService>();
             interactivity.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
@@ -183,14 +184,14 @@ namespace TheGodfather.Extensions
                                                       bool important = true, DiscordColor? color = null, params object?[]? args)
         {
             ulong gid = ctx.Guild?.Id ?? 0;
-            if (!important && (ctx.Services.GetService<GuildConfigService>().GetCachedConfig(gid)?.ReactionResponse ?? false)) {
+            if (!important && (ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid)?.ReactionResponse ?? false)) {
                 try {
                     await ctx.Message.CreateReactionAsync(emoji ?? Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
                     await InfoAsync(ctx, "str-done");
                 }
             } else {
-                LocalizationService ls = ctx.Services.GetService<LocalizationService>();
+                LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
                 string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done!" : key, args);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = response,
