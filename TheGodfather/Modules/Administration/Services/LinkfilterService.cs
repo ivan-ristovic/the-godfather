@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task<bool> ScanForBootersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Check(e.Message);
+            LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Match(e.Message);
             if (!match.Success)
                 return false;
 
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task<bool> ScanForIpLoggersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Check(e.Message);
+            LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Match(e.Message);
             if (!match.Success)
                 return false;
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task<bool> ScanForDisturbingSitesAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.DisturbingWebsiteMatcher.Check(e.Message);
+            LinkfilterMatch match = LinkfilterMatcherCollection.DisturbingWebsiteMatcher.Match(e.Message);
             if (!match.Success)
                 return false;
 
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task<bool> ScanForUrlShortenersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.UrlShortenerRegex.Check(e.Message);
+            LinkfilterMatch match = LinkfilterMatcherCollection.UrlShortenerRegex.Match(e.Message);
             if (!match.Success)
                 return false;
 

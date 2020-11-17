@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private static Task ReportAsync(TheGodfatherShard shard, DiscordGuild guild, string key, string[]? args)
         {
-            return !IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb)
+            return !IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out _)
                 ? Task.CompletedTask
                 : logService.ReportAsync(guild, key, args);
         }
@@ -114,6 +114,12 @@ namespace TheGodfather.Modules.Administration.Services
         {
             DiscordChannel? logchn = this.gcs.GetLogChannelForGuild(guild);
             return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed.Build());
+        }
+
+        public Task LogAsync(DiscordGuild guild, DiscordEmbed embed)
+        {
+            DiscordChannel? logchn = this.gcs.GetLogChannelForGuild(guild);
+            return logchn is null ? Task.CompletedTask : logchn.SendMessageAsync(embed: embed);
         }
 
         public bool IsLogEnabledFor(ulong gid, out LocalizedEmbedBuilder embed)

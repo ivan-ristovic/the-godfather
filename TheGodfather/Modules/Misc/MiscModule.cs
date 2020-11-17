@@ -396,33 +396,33 @@ namespace TheGodfather.Modules.Misc
             var wbRegex = new Regex(@"\b");
             var rng = new SecureRandom();
 
-            IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
-            string[] parts = messages
-                .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id)))
-                .Select(m => SplitMessage(m.Content))
-                .Distinct()
-                .Shuffle()
-                .Take(1 + rng.Next(10))
-                .ToArray();
+            // IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
+            //string[] parts = messages
+            //    .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id)))
+            //    .Select(m => SplitMessage(m.Content))
+            //    .Distinct()
+            //    .Shuffle()
+            //    .Take(1 + rng.Next(10))
+            //    .ToArray();
 
-            if (!parts.Any())
-                throw new CommandFailedException("Not enough messages were sent from that user recently!");
+            //if (!parts.Any())
+            //    throw new CommandFailedException("Not enough messages were sent from that user recently!");
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.Information} {string.Join(" ", parts)}",
-                Color = this.ModuleColor,
-            }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
+            //await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+            //    Description = $"{Emojis.Information} {string.Join(" ", parts)}",
+            //    Color = this.ModuleColor,
+            //}.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
 
 
-            string SplitMessage(string data)
-            {
-                string[] words = wbRegex.Split(data);
-                if (words.Length == 1)
-                    return words[0];
-                int start = rng.Next(words.Length);
-                int count = rng.Next(0, words.Length - start);
-                return string.Join(" ", words.Skip(start).Take(count));
-            }
+            //string SplitMessage(string data)
+            //{
+            //    string[] words = wbRegex.Split(data);
+            //    if (words.Length == 1)
+            //        return words[0];
+            //    int start = rng.Next(words.Length);
+            //    int count = rng.Next(0, words.Length - start);
+            //    return string.Join(" ", words.Skip(start).Take(count));
+            //}
         }
         #endregion
 

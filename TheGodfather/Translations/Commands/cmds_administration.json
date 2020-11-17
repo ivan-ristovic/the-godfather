@@ -203,6 +203,16 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config": {
+    "usage": [
+      []
+    ]
+  },
+  "config setup": {
+    "usage": [
+      []
+    ]
+  },
   "emoji": {
     "usage": [
       [],

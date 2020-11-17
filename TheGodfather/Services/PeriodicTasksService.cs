@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +64,7 @@ namespace TheGodfather.Services
 
                 try {
                     using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        shard.Services.GetService<UserRanksService>().Sync(db);
+                        shard.Services.GetRequiredService<UserRanksService>().Sync(db);
                     Log.Debug("Database sync successful");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during database sync");
@@ -157,6 +156,7 @@ namespace TheGodfather.Services
         private Timer FeedCheckTimer { get; set; }
         private Timer MiscActionsTimer { get; set; }
         #endregion
+
 
         public PeriodicTasksService(TheGodfatherShard shard, BotConfig cfg)
         {

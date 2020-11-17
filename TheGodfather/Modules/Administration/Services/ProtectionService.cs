@@ -94,15 +94,17 @@ namespace TheGodfather.Modules.Administration.Services
             await this.csem.WaitAsync();
             try {
                 using TheGodfatherDbContext db = this.shard.Database.CreateContext();
-                GuildConfig gcfg = await this.shard.Services.GetService<GuildConfigService>().GetConfigAsync(guild.Id);
+                GuildConfig gcfg = await this.shard.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(guild.Id);
                 muteRole = guild.GetRole(gcfg.MuteRoleId);
                 if (muteRole is null)
                     muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
                 if (muteRole is null) {
                     muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
+
+                    // TODO do this for categories, and for channels which do not have category parent
                     foreach (DiscordChannel channel in guild.Channels.Select(kvp => kvp.Value).Where(c => c.Type == ChannelType.Text)) {
                         await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
-                        await Task.Delay(100);
+                        await Task.Delay(10);
                     }
                     gcfg.MuteRoleId = muteRole.Id;
                     db.Configs.Update(gcfg);

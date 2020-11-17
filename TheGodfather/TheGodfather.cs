@@ -49,7 +49,10 @@ namespace TheGodfather
 
                 PeriodicService = new PeriodicTasksService(_shards[0], cfg.CurrentConfiguration);
 
-                await Task.Delay(Timeout.Infinite, ServiceProvider.GetService<BotActivityService>().MainLoopCts.Token);
+                if (ServiceProvider is null)
+                    throw new ArgumentNullException(nameof(ServiceProvider), "Service provider is not initialized.");
+
+                await Task.Delay(Timeout.Infinite, ServiceProvider.GetRequiredService<BotActivityService>().MainLoopCts.Token);
             } catch (TaskCanceledException) {
                 Log.Information("Shutdown signal received!");
             } catch (Exception e) {
@@ -66,7 +69,7 @@ namespace TheGodfather
         public static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
             Environment.ExitCode = exitCode;
-            ServiceProvider?.GetService<BotActivityService>().MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
+            ServiceProvider?.GetRequiredService<BotActivityService>().MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
             Log.CloseAndFlush();
             return Task.CompletedTask;
         }

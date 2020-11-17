@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Extensions
 {
@@ -15,6 +14,16 @@ namespace TheGodfather.Extensions
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {message}",
+                Color = color ?? DiscordColor.Green
+            });
+        }
+
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, 
+                                                               DiscordEmoji? icon = null, DiscordColor? color = null,
+                                                               params object?[]? args)
+        {
+            return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{icon ?? ""} {lcs.GetString(channel.Guild.Id, key, args)}",
                 Color = color ?? DiscordColor.Green
             });
         }
@@ -31,13 +40,14 @@ namespace TheGodfather.Extensions
         {
             var messages = new List<DiscordMessage>();
 
-            for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
-                ulong? lastId = messages.FirstOrDefault()?.Id;
-                IReadOnlyList<DiscordMessage> requested = lastId is null
-                    ? await channel.GetMessagesAsync(step)
-                    : await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
-                messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
-            }
+            // TODO fix
+            //for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
+            //    ulong? lastId = messages.FirstOrDefault()?.Id;
+            //    IReadOnlyList<DiscordMessage> requested = lastId is null
+            //        ? await channel.GetMessagesAsync(step)
+            //        : await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
+            //    messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
+            //}
 
             return messages.AsReadOnly();
         }

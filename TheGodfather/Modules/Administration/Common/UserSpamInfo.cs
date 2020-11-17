@@ -1,10 +1,6 @@
-﻿#region USING_DIRECTIVES
-
-using System;
+﻿using System;
 using System.Threading;
-
 using TheGodfather.Extensions;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Common
 {

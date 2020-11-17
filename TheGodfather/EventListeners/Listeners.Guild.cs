@@ -250,6 +250,5 @@ namespace TheGodfather.EventListeners
             emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTime(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
             await logService.LogAsync(e.Guild, emb);
         }
-
     }
 }

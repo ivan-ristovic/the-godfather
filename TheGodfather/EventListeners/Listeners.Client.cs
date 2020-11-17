@@ -61,14 +61,14 @@ namespace TheGodfather.EventListeners
             if (!defChannel.PermissionsFor(e.Guild.CurrentMember).HasPermission(Permissions.SendMessages))
                 return;
 
-            string prefix = shard.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix;
+            string prefix = shard.Services.GetRequiredService<BotConfigService>().CurrentConfiguration.Prefix;
             string owners = shard.Client.CurrentApplication.Owners.Select(o => o.ToDiscriminatorString()).Humanize(", ");
             await defChannel.EmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{Emojis.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(prefix)}, but it can be changed " +
                 $"via {Formatter.Bold("prefix")} command.\n" +
                 $"{Emojis.SmallBlueDiamond} I advise you to run the configuration wizard for this guild in order to quickly configure " +
-                $"functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
+                $"functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("config setup")} command.\n" +
                 $"{Emojis.SmallBlueDiamond} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to " +
                 $"read the documentation @ https://github.com/ivan-ristovic/the-godfather \n" +
                 $"{Emojis.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} " +
