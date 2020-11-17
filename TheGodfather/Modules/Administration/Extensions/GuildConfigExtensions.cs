@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Administration.Extensions
         {
             var emb = new LocalizedEmbedBuilder(lcs, guild.Id);
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, update ? "str-guild-cfg-update" : "str-guild-cfg");
+            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, update ? "evt-cfg-update" : "str-guild-cfg");
             emb.WithThumbnail(guild.IconUrl);
 
             emb.AddLocalizedTitleField("str-prefix", gcfg.Prefix ?? lcs.GetString(guild.Id, "str-default"), inline: true);

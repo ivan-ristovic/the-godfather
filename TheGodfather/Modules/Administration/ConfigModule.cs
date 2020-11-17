@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration
             });
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("str-guild-cfg-upd");
+                emb.WithLocalizedTitle("evt-cfg-upd");
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedField("str-silent", enable ? "str-on" : "str-off", inline: true);
             });
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
             GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.SuggestionsEnabled = enable);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("str-guild-cfg-upd");
+                emb.WithLocalizedTitle("evt-cfg-upd");
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedField("str-suggestions", enable ? "str-on" : "str-off", inline: true);
             });
@@ -171,6 +171,26 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor, "fmt-muterole", muteRole.Name);
         }
         #endregion
+
+        #region config reset
+        [Command("reset"), UsesInteractivity]
+        [Aliases("default", "def", "s", "rr")]
+        public async Task ResetAsync(CommandContext ctx)
+        {
+            if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+                return;
+
+            await this.ApplySettingsAsync(ctx, new GuildConfig());
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cfg-reset");
+                emb.WithColor(this.ModuleColor);
+            });
+
+            await ctx.InfoAsync(this.ModuleColor, "str-cfg-reset");
+        }
+        #endregion
+
 
         #region COMMAND_CONFIG_WELCOME
         [Command("welcome"), Priority(3)]
@@ -298,8 +318,6 @@ namespace TheGodfather.Modules.Administration
                               [RemainingText, Description("Leave message.")] string message)
             => this.LeaveAsync(ctx, true, ctx.Channel, message);
         #endregion
-
-        // TODO cfg reset command
 
 
         #region Helpers
