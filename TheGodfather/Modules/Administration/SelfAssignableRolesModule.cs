@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException("This guild doesn't have any automatic roles set.");
 
                 foreach (ulong rid in rids) {
-                    DiscordRole role = ctx.Guild.GetRole(rid);
+                    DiscordRole? role = ctx.Guild.GetRole(rid);
                     if (role is null) {
                         db.SelfRoles.Remove(new SelfRole {
                             GuildId = ctx.Guild.Id,

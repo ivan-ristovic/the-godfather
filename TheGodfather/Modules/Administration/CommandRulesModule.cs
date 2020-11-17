@@ -152,7 +152,14 @@ namespace TheGodfather.Modules.Administration
             string MakeListItem(CommandRule cr)
             {
                 DiscordEmoji mark = cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X;
-                string location = cr.ChannelId != 0 ? ctx.Guild.GetChannel(cr.ChannelId).Mention : ls.GetString(ctx.Guild.Id, "str-global");
+
+                string location = ls.GetString(ctx.Guild.Id, "str-global");
+                if (cr.ChannelId != 0) {
+                    DiscordChannel? chn = ctx.Guild.GetChannel(cr.ChannelId);
+                    if (chn is { })
+                        location = chn.Mention;
+                }
+
                 return ls.GetString(ctx.Guild.Id, "fmt-cr-list-item", mark, location, Formatter.InlineCode(cr.Command));
             }
         }

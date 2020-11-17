@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -11,7 +10,6 @@ using DSharpPlus.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Converters;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -158,9 +156,8 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                try {
-                    muteRole = ctx.Guild.GetRole(cfg.MuteRoleId);
-                } catch (NotFoundException) {
+                muteRole = ctx.Guild.GetRole(cfg.MuteRoleId);
+                if (muteRole is null) { 
                     await ctx.FailAsync("err-muterole-404");
                     return;
                 }
@@ -189,134 +186,6 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.InfoAsync(this.ModuleColor, "str-cfg-reset");
         }
-        #endregion
-
-
-        #region COMMAND_CONFIG_WELCOME
-        [Command("welcome"), Priority(3)]
-        [Description("Allows user welcoming configuration.")]
-        [Aliases("enter", "join", "wlc", "wm", "w")]
-
-        public async Task WelcomeAsync(CommandContext ctx)
-        {
-            GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            DiscordChannel wchn = ctx.Guild.GetChannel(gcfg.WelcomeChannelId);
-            await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn is null ? "disabled" : $"enabled @ {wchn.Mention}")}!");
-        }
-
-        [Command("welcome"), Priority(2)]
-        public async Task WelcomeAsync(CommandContext ctx,
-                                      [Description("Enable welcoming?")] bool enable,
-                                      [Description("Channel.")] DiscordChannel wchn = null,
-                                      [RemainingText, Description("Welcome message.")] string message = null)
-        {
-            wchn = wchn ?? ctx.Channel;
-
-            if (wchn.Type != ChannelType.Text)
-                throw new CommandFailedException("Welcome channel must be a text channel.");
-
-            if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
-                throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.WelcomeChannelIdDb = enable ? (long)wchn.Id : (long?)null;
-                if (!string.IsNullOrWhiteSpace(message))
-                    cfg.WelcomeMessage = message;
-            });
-
-            DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Guild config changed",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("User welcoming", enable ? $"on @ {wchn.Mention}" : "off", inline: true);
-                emb.AddField("Welcome message", message ?? Formatter.Italic("not changed"));
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            if (enable)
-                await this.InformAsync(ctx, $"Welcome message channel set to {wchn.Mention} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
-            else
-                await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
-        }
-
-        [Command("welcome"), Priority(1)]
-        public Task WelcomeAsync(CommandContext ctx,
-                                [Description("Channel.")] DiscordChannel channel,
-                                [RemainingText, Description("Welcome message.")] string message = null)
-            => this.WelcomeAsync(ctx, true, channel, message);
-
-        [Command("welcome"), Priority(0)]
-        public Task WelcomeAsync(CommandContext ctx,
-                                [RemainingText, Description("Welcome message.")] string message)
-            => this.WelcomeAsync(ctx, true, ctx.Channel, message);
-
-        #endregion
-
-        #region COMMAND_CONFIG_LEAVE
-        [Command("leave"), Priority(3)]
-        [Description("Allows user leaving message configuration.")]
-        [Aliases("exit", "drop", "lvm", "lm", "l")]
-
-        public async Task LeaveAsync(CommandContext ctx)
-        {
-            GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            DiscordChannel lchn = ctx.Guild.GetChannel(gcfg.LeaveChannelId);
-            await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn is null ? "disabled" : $"enabled @ {lchn.Mention}")}!");
-        }
-
-        [Command("leave"), Priority(2)]
-        public async Task LeaveAsync(CommandContext ctx,
-                                    [Description("Enable leave messages?")] bool enable,
-                                    [Description("Channel.")] DiscordChannel lchn = null,
-                                    [RemainingText, Description("Leave message.")] string message = null)
-        {
-            lchn = lchn ?? ctx.Channel;
-
-            if (lchn.Type != ChannelType.Text)
-                throw new CommandFailedException("Leave channel must be a text channel.");
-
-            if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
-                throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.LeaveChannelIdDb = enable ? (long)lchn.Id : (long?)null;
-                if (!string.IsNullOrWhiteSpace(message))
-                    cfg.LeaveMessage = message;
-            });
-
-            DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Guild config changed",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("User leave messages", enable ? $"on @ {lchn.Mention}" : "off", inline: true);
-                emb.AddField("Leave message", message ?? Formatter.Italic("not changed"));
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            if (enable)
-                await this.InformAsync(ctx, $"Welcome message channel set to {lchn.Mention} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
-            else
-                await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
-        }
-
-        [Command("leave"), Priority(1)]
-        public Task LeaveAsync(CommandContext ctx,
-                              [Description("Channel.")] DiscordChannel channel,
-                              [RemainingText, Description("Leave message.")] string message)
-            => this.LeaveAsync(ctx, true, channel, message);
-
-        [Command("leave"), Priority(0)]
-        public Task LeaveAsync(CommandContext ctx,
-                              [RemainingText, Description("Leave message.")] string message)
-            => this.LeaveAsync(ctx, true, ctx.Channel, message);
         #endregion
 
 

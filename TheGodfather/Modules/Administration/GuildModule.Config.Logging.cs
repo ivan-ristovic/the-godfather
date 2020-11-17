@@ -90,6 +90,8 @@ namespace TheGodfather.Modules.Administration
                         } else {
                             sb.Append(" None");
                         }
+
+                        // TODO NRE if GetChannel returns null
                         await this.InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("enabled")} at {ctx.Guild.GetChannel(gcfg.LogChannelId)?.Mention ?? "(unknown)"}!\n\n{sb.ToString()}");
                     } else {
                         await this.InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("disabled")}!");

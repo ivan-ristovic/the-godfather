@@ -152,7 +152,7 @@ namespace TheGodfather.Services.Common
 
             try {
                 DiscordGuild guild = this.async.Execute(this.shard.Client.GetGuildAsync(gt.GuildId));
-                DiscordRole role = guild.GetRole(gt.RoleId);
+                DiscordRole? role = guild.GetRole(gt.RoleId);
                 DiscordMember member = this.async.Execute(guild.GetMemberAsync(gt.UserId));
                 if (role is null)
                     return;

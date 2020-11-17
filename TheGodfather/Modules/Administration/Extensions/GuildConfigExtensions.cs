@@ -22,33 +22,38 @@ namespace TheGodfather.Modules.Administration.Extensions
             emb.AddLocalizedTitleField("str-cmd-suggestions", gcfg.SuggestionsEnabled, inline: true);
 
             if (gcfg.LoggingEnabled) {
-                try {
-                    DiscordChannel logchn = guild.GetChannel(gcfg.LogChannelId);
-                    emb.AddLocalizedField("str-logging", "fmt-logs", inline: true, contentArgs: new[] { logchn.Mention });
-                } catch (NotFoundException) {
+                DiscordChannel? logchn = guild.GetChannel(gcfg.LogChannelId);
+                if (logchn is null)
                     emb.AddLocalizedField("str-logging", "err-log-404", inline: true);
-                }
+                else
+                    emb.AddLocalizedField("str-logging", "fmt-logs", inline: true, contentArgs: new[] { logchn.Mention });
             } else {
                 emb.AddLocalizedField("str-logging", "str-off", inline: true);
             }
 
             if (gcfg.WelcomeChannelId != 0) {
-                try {
-                    DiscordChannel wchn = guild.GetChannel(gcfg.WelcomeChannelId);
-                    emb.AddLocalizedField("str-memupd-w", "fmt-memupd", inline: true, contentArgs: new[] { wchn.Mention, Formatter.Strip(gcfg.WelcomeMessage) });
-                } catch (NotFoundException) {
+                DiscordChannel? wchn = guild.GetChannel(gcfg.WelcomeChannelId);
+                if (wchn is null) {
                     emb.AddLocalizedField("str-memupd-w", "err-memupd-w-404", inline: true);
+                } else {
+                    emb.AddLocalizedField("str-memupd-w", "fmt-memupd", inline: true, contentArgs: new[] {
+                        wchn.Mention,
+                        Formatter.Strip(gcfg.WelcomeMessage ?? lcs.GetString(guild.Id, "str-default"))
+                    });
                 }
             } else {
                 emb.AddLocalizedField("str-memupd-w", "str-off", inline: true);
             }
 
             if (gcfg.LeaveChannelId != 0) {
-                try {
-                    DiscordChannel wchn = guild.GetChannel(gcfg.WelcomeChannelId);
-                    emb.AddLocalizedField("str-memupd-l", "fmt-memupd", inline: true, contentArgs: new[] { wchn.Mention, Formatter.Strip(gcfg.WelcomeMessage) });
-                } catch (NotFoundException) {
+                    DiscordChannel? lchn = guild.GetChannel(gcfg.LeaveChannelId);
+                if (lchn is null) {
                     emb.AddLocalizedField("str-memupd-l", "err-memupd-l-404", inline: true);
+                } else {
+                    emb.AddLocalizedField("str-memupd-l", "fmt-memupd", inline: true, contentArgs: new[] {
+                        lchn.Mention,
+                        Formatter.Strip(gcfg.LeaveMessage ?? lcs.GetString(guild.Id, "str-default"))
+                    });
                 }
             } else {
                 emb.AddLocalizedField("str-memupd-l", "str-off", inline: true);
@@ -60,12 +65,11 @@ namespace TheGodfather.Modules.Administration.Extensions
             emb.AddLocalizedTitleField("str-instantleave", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(guild.Id, lcs), inline: true);
 
             if (gcfg.MuteRoleId != 0) {
-                try {
-                    DiscordRole muteRole = guild.GetRole(gcfg.MuteRoleId);
-                    emb.AddLocalizedTitleField("str-muterole", muteRole.Name, inline: true);
-                } catch (NotFoundException) {
+                DiscordRole? muteRole = guild.GetRole(gcfg.MuteRoleId);
+                if (muteRole is null)
                     emb.AddLocalizedField("str-muterole", "err-muterole-404", inline: true);
-                }
+                else
+                    emb.AddLocalizedTitleField("str-muterole", muteRole.Name, inline: true);
             } else {
                 emb.AddLocalizedField("str-muterole", "str-none", inline: true);
             }

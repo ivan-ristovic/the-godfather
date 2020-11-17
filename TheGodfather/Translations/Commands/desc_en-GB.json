@@ -41,6 +41,7 @@
   "config silent": "Views or toggles silent reaction replies to command execution.",
   "config suggestions": "Views or toggles command suggestions when command name is not found.",
   "config verbose": "Views or toggles verbose replies to command execution.",
+  "config welcome": "Configures welcoming messages.",
   "emoji": "Guild emoji administration. Group call lists all guild emoji or prints information about a given emoji.",
   "emoji add": "Add emoji specified via URL/attachment, or from another guild.",
   "emoji delete": "Remove guild emoji. Note: Bots can only delete emojis they created!",
