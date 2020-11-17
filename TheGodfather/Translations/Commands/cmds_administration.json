@@ -211,7 +211,13 @@
   "config setup": {
     "usage": [
       [],
-      [ "arg-chn" ]
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config muterole": {
+    "usage": [
+      [],
+      [ "arg-role" ]
     ]
   },
   "config silent": {

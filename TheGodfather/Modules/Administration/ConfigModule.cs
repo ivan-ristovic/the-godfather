@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor, enable ?  "str-cfg-silent-on" : "str-cfg-silent-off");
         }
 
-        [Command("verbose"), Priority(0)]
+        [Command("silent"), Priority(0)]
         public Task SilentResponseAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
@@ -126,9 +126,7 @@ namespace TheGodfather.Modules.Administration
         public async Task SuggestionsAsync(CommandContext ctx,
                                           [Description("desc-suggestions")] bool enable)
         {
-            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.SuggestionsEnabled = enable;
-            });
+            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.SuggestionsEnabled = enable);
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("str-guild-cfg-upd");
@@ -144,6 +142,33 @@ namespace TheGodfather.Modules.Administration
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
             return ctx.InfoAsync(this.ModuleColor, gcfg.SuggestionsEnabled ? "str-cfg-suggest-get-on" : "str-cfg-suggest-get-off");
+        }
+        #endregion
+
+        #region config muterole
+        [Command("muterole")]
+        [Aliases("mr", "muterl", "mrl")]
+        public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
+                                               [Description("desc-muterole")] DiscordRole? muteRole = null)
+        {
+            if (muteRole is null) {
+                GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
+                if (cfg.MuteRoleId == 0) {
+                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-muterole-none");
+                    return;
+                }
+
+                try {
+                    muteRole = ctx.Guild.GetRole(cfg.MuteRoleId);
+                } catch (NotFoundException) {
+                    await ctx.FailAsync("err-muterole-404");
+                    return;
+                }
+            } else {
+                await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.MuteRoleId = muteRole.Id);
+            }
+    
+            await ctx.InfoAsync(this.ModuleColor, "fmt-muterole", muteRole.Name);
         }
         #endregion
 
@@ -272,27 +297,6 @@ namespace TheGodfather.Modules.Administration
         public Task LeaveAsync(CommandContext ctx,
                               [RemainingText, Description("Leave message.")] string message)
             => this.LeaveAsync(ctx, true, ctx.Channel, message);
-        #endregion
-
-        #region COMMAND_CONFIG_MUTEROLE
-        [Command("setmuterole")]
-        [Description("Gets or sets mute role for this guild.")]
-        [Aliases("muterole", "mr", "muterl", "mrl")]
-
-        public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
-                                               [Description("New mute role.")] DiscordRole muteRole = null)
-        {
-            DiscordRole mr = null;
-            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                if (muteRole is null)
-                    mr = ctx.Guild.GetRole(cfg.MuteRoleId);
-                else
-                    cfg.MuteRoleId = muteRole.Id;
-            });
-
-            if (!(mr is null))
-                await this.InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
-        }
         #endregion
 
         // TODO cfg reset command

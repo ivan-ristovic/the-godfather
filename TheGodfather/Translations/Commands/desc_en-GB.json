@@ -36,6 +36,7 @@
   "commandrules list": "Lists active command rules in specified channel or globally if the channel is not specified.",
   "commandrules deleteall": "Remove all command rules.",
   "config": "Manage bot configuration for this guild. Group call lists current guild configuration.",
+  "config muterole": "Views or changes the mute role for the guild.",
   "config setup": "Starts an interactive wizard for configuring the guild settings.",
   "config silent": "Views or toggles silent reaction replies to command execution.",
   "config suggestions": "Views or toggles command suggestions when command name is not found.",

@@ -15,6 +15,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             var emb = new LocalizedEmbedBuilder(lcs, guild.Id);
 
             emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, update ? "str-guild-cfg-update" : "str-guild-cfg");
+            emb.WithThumbnail(guild.IconUrl);
 
             emb.AddLocalizedTitleField("str-prefix", gcfg.Prefix ?? lcs.GetString(guild.Id, "str-default"), inline: true);
             emb.AddLocalizedTitleField("str-silent", gcfg.ReactionResponse, inline: true);
@@ -61,7 +62,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             if (gcfg.MuteRoleId != 0) {
                 try {
                     DiscordRole muteRole = guild.GetRole(gcfg.MuteRoleId);
-                    emb.AddLocalizedField("str-muterole", "str-none", inline: true);
+                    emb.AddLocalizedTitleField("str-muterole", muteRole.Name, inline: true);
                 } catch (NotFoundException) {
                     emb.AddLocalizedField("str-muterole", "err-muterole-404", inline: true);
                 }
