@@ -24,6 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Group("config")]
     [Aliases("configuration", "configure", "settings", "cfg")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     public partial class ConfigModule : TheGodfatherServiceModule<GuildConfigService>
     {
         public ConfigModule(GuildConfigService service)

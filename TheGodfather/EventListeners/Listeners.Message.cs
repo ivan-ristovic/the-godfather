@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
                         XpRank? rankInfo;
                         using (TheGodfatherDbContext db = shard.Database.CreateContext())
                             rankInfo = await db.XpRanks.FindAsync((long)e.Guild.Id, rank);
-                        string rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "");
+                        string rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? " / ");
                         await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                     }
                 }

@@ -214,6 +214,17 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config welcome": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config welcome channe;": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
   "config muterole": {
     "usage": [
       [],
