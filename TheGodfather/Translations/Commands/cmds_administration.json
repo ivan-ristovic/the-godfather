@@ -210,7 +210,26 @@
   },
   "config setup": {
     "usage": [
-      []
+      [],
+      [ "arg-chn" ]
+    ]
+  },
+  "config silent": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config suggestions": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config verbose": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
     ]
   },
   "emoji": {

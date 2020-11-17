@@ -81,73 +81,69 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region COMMAND_CONFIG_VERBOSE
-        [Command("verbose"), Priority(1)]
-        [Description("Configuration of bot's responding options.")]
-        [Aliases("fullresponse", "verbosereact", "verboseresponse", "v", "vr")]
-
+        #region config silent
+        [Command("silent"), Priority(1)]
+        [Aliases("reactionresponse", "silentresponse", "s", "rr")]
         public async Task SilentResponseAsync(CommandContext ctx,
-                                             [Description("Enable silent response?")] bool enable)
+                                             [Description("desc-replies-s")] bool enable)
         {
             GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.ReactionResponse = !enable;
+                cfg.ReactionResponse = enable;
             });
 
-            DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Guild config changed",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Verbose response", gcfg.ReactionResponse ? "off" : "on", inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("str-guild-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-silent", enable ? "str-on" : "str-off", inline: true);
+            });
 
-            await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Disabled" : "Enabled")} verbose responses.", important: false);
+            await ctx.InfoAsync(this.ModuleColor, enable ?  "str-cfg-silent-on" : "str-cfg-silent-off");
         }
 
         [Command("verbose"), Priority(0)]
         public Task SilentResponseAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
-            return this.InformAsync(ctx, $"Verbose responses for this guild are {Formatter.Bold(gcfg.ReactionResponse ? "disabled" : "enabled")}!");
+            return ctx.InfoAsync(this.ModuleColor, gcfg.ReactionResponse ? "str-cfg-silent-get-on" : "str-cfg-silent-get-off");
         }
         #endregion
 
-        #region COMMAND_CONFIG_SUGGESTIONS
-        [Command("suggestions"), Priority(1)]
-        [Description("Command suggestions configuration.")]
-        [Aliases("suggestion", "cmdsug", "sugg", "sug", "cs", "s")]
+        #region config verbose
+        [Command("verbose"), Priority(1)]
+        [Aliases("fullresponse", "verboseresponse", "v", "vr")]
+        public Task VerboseResponseAsync(CommandContext ctx,
+                                        [Description("desc-replies-v")] bool enable)
+            => this.SilentResponseAsync(ctx, !enable);
 
+        [Command("verbose"), Priority(0)]
+        public Task VerboseResponseAsync(CommandContext ctx)
+            => this.SilentResponseAsync(ctx);
+        #endregion
+
+        #region config suggestions
+        [Command("suggestions"), Priority(1)]
+        [Aliases("suggestion", "cmdsug", "sugg", "sug", "help")]
         public async Task SuggestionsAsync(CommandContext ctx,
-                                          [Description("Enable suggestions?")] bool enable)
+                                          [Description("desc-suggestions")] bool enable)
         {
             GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.SuggestionsEnabled = enable;
             });
 
-            DiscordChannel logchn = this.Service.GetLogChannelForGuild(ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Guild config changed",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("str-guild-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-suggestions", enable ? "str-on" : "str-off", inline: true);
+            });
 
-            await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.SuggestionsEnabled ? "Enabled" : "Disabled")} command suggestions.", important: false);
+            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-suggest-on" : "str-cfg-suggest-off");
         }
 
         [Command("suggestions"), Priority(0)]
-        public async Task SuggestionsAsync(CommandContext ctx)
+        public Task SuggestionsAsync(CommandContext ctx)
         {
-            GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            await this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
+            CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
+            return ctx.InfoAsync(this.ModuleColor, gcfg.SuggestionsEnabled ? "str-cfg-suggest-get-on" : "str-cfg-suggest-get-off");
         }
         #endregion
 

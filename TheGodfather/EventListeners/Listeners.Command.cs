@@ -68,7 +68,7 @@ namespace TheGodfather.EventListeners
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid)?.SuggestionsEnabled ?? true)
+                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid).SuggestionsEnabled)
                         return e.Context.Message.CreateReactionAsync(Emojis.Question);
 
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);

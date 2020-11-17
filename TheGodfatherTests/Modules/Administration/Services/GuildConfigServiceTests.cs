@@ -82,7 +82,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 setup: db => this.SetMockGuildConfig(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    Assert.That(this.Service.GetCachedConfig(1), Is.Null);
+                    Assert.That(HaveSamePropertyValues(this.Service.GetCachedConfig(1), new CachedGuildConfig()));
                     Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[0]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[0])));
                     Assert.That(HaveSamePropertyValues(this.gcfg[MockData.Ids[1]].CachedConfig, this.Service.GetCachedConfig(MockData.Ids[1])));
                 }
@@ -147,7 +147,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                     GuildConfig gcfg = await db.Configs.FindAsync((long)MockData.Ids[0]);
                     Assert.That(gcfg.Prefix, Is.EqualTo("!!"));
                     Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]), Is.Not.Null);
-                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0])!.Prefix, Is.EqualTo("!!"));
+                    Assert.That(this.Service.GetCachedConfig(MockData.Ids[0]).Prefix, Is.EqualTo("!!"));
                     Assert.That((await this.Service.GetConfigAsync(MockData.Ids[0])).Prefix, Is.EqualTo("!!"));
                 }
             );

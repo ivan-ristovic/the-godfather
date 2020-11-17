@@ -49,8 +49,8 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsGuildRegistered(ulong gid)
             => this.gcfg.TryGetValue(gid, out _);
 
-        public CachedGuildConfig? GetCachedConfig(ulong gid)
-            => this.gcfg.GetValueOrDefault(gid);
+        public CachedGuildConfig GetCachedConfig(ulong gid)
+            => this.gcfg.GetValueOrDefault(gid, new CachedGuildConfig());
 
         public string GetGuildPrefix(ulong gid)
         {
@@ -67,10 +67,10 @@ namespace TheGodfather.Modules.Administration.Services
             return gcfg ?? new GuildConfig();
         }
 
-        public async Task<GuildConfig?> ModifyConfigAsync(ulong gid, Action<GuildConfig> modifyAction)
+        public async Task<GuildConfig> ModifyConfigAsync(ulong gid, Action<GuildConfig> modifyAction)
         {
-            if (modifyAction is null || !this.gcfg.ContainsKey(gid))
-                return null;
+            if (!this.gcfg.ContainsKey(gid))
+                throw new KeyNotFoundException($"Failed to find the guild in internal list: {gid}");
 
             GuildConfig? gcfg = null;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
