@@ -231,13 +231,12 @@ namespace TheGodfather
                 var shard = new TheGodfatherShard(i, GlobalDatabaseContextBuilder, SharedData);
                 shard.Initialize();
                 Shards.Add(shard);
+                await shard.StartAsync();
             }
-            Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            await Task.WhenAll(Shards.Select(s => s.StartAsync()));
-
             await Task.Delay(10);
+            Console.WriteLine("\r[5/5] Registering tasks...                   ");
             await RegisterPeriodicTasksAsync();
         }
 

@@ -95,9 +95,6 @@ namespace TheGodfather
                        & ~DiscordIntents.DirectMessageTyping
             };
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
-                throw new NotSupportedException("Windows 7 WS");
-
             this.Client = new DiscordClient(cfg);
 
             this.Client.Ready += (c, e) => {
