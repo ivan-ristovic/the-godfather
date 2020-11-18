@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Administration
                 Title = "Emoji details:",
                 Description = gemoji,
                 Color = this.ModuleColor,
-                ThumbnailUrl = gemoji.Url
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = gemoji.Url }
             };
 
             emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);

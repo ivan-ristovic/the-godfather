@@ -69,7 +69,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member joined", e.Member.ToString());
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
@@ -143,7 +143,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Reason", ke.Reason ?? "No reason provided.");
             }
 
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
@@ -159,7 +159,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member updated", e.Member.ToString());
-            emb.WithThumbnailUrl(e.Member.AvatarUrl);
+            emb.WithThumbnail(e.Member.AvatarUrl);
 
             DiscordAuditLogEntry entry = null;
             if (e.RolesBefore.Count == e.RolesAfter.Count)
@@ -219,7 +219,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Changed discriminator", $"{e.UserBefore.Discriminator} to {e.UserAfter.Discriminator}");
             if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
                 emb.AddField("Changed avatar", Formatter.MaskedUrl("Old Avatar (note: might 404 later)", new Uri(e.UserBefore.AvatarUrl)));
-            emb.WithThumbnailUrl(e.UserAfter.AvatarUrl);
+            emb.WithThumbnail(e.UserAfter.AvatarUrl);
 
             if (!emb.Fields.Any())
                 return;

@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Misc
             var emb = new DiscordEmbedBuilder {
                 Title = user.Username,
                 Color = this.ModuleColor,
-                ThumbnailUrl = user.AvatarUrl
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl }
             };
             emb.AddField("Rank", $"{Formatter.Bold($"#{rank}")} : {Formatter.Italic(rankInfo?.Name ?? "No custom rank name set for this rank in this guild")}");
             emb.AddField("XP", $"{msgcount}", inline: true);

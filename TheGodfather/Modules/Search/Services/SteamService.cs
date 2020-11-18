@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Search.Services
             var em = new DiscordEmbedBuilder {
                 Title = summary.Nickname,
                 Description = Regex.Replace(model.Summary, "<[^>]*>", string.Empty),
-                ThumbnailUrl = model.AvatarFull.ToString(),
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = model.AvatarFull.ToString() },
                 Color = DiscordColor.Black,
                 Url = GetProfileUrlForId(model.SteamID)
             };

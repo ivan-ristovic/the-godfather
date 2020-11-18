@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Games.Extensions
         {
             DiscordEmbedBuilder emb = stats.ToPartialDiscordEmbed();
             emb.WithTitle($"Stats for {user.Username}");
-            emb.WithThumbnailUrl(user.AvatarUrl);
+            emb.WithThumbnail(user.AvatarUrl);
             return emb.Build();
         }
 

@@ -102,7 +102,7 @@ namespace TheGodfather.EventListeners
                 switch (action) {
                     case AuditLogActionType.EmojiCreate:
                         emb.WithDescription(eentry.Target.Name ?? _unknown);
-                        emb.WithThumbnailUrl(eentry.Target.Url);
+                        emb.WithThumbnail(eentry.Target.Url);
                         break;
                     case AuditLogActionType.EmojiDelete:
                         emb.WithDescription(eentry.NameChange.Before ?? _unknown);

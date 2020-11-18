@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search.Extensions
             foreach (GoodreadsWork work in info.Results) {
                 var emb = new DiscordEmbedBuilder {
                     Title = work.Book.Title,
-                    ThumbnailUrl = work.Book.ImageUrl,
+                    Thumbnail= new DiscordEmbedBuilder.EmbedThumbnail { Url = work.Book.ImageUrl },
                     Color = DiscordColor.DarkGray
                 };
 
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Search.Extensions
             if (!string.IsNullOrWhiteSpace(info.Director))
                 emb.AddField("Director", info.Director, inline: true);
             if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
-                emb.WithThumbnailUrl(info.Poster);
+                emb.WithThumbnail(info.Poster);
 
             emb.WithFooter("Powered by OMDb.");
 
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Search.Extensions
                 Title = string.IsNullOrWhiteSpace(altTitle) ? "Quote" : altTitle,
                 Description = Formatter.Italic($"\"{quote.Content}\""),
                 Color = DiscordColor.SpringGreen,
-                ThumbnailUrl = quote.BackgroundImageUrl,
+                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = quote.BackgroundImageUrl },
                 Url = quote.Permalink
             };
             emb.AddField("Author", quote.Author);
@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Search.Extensions
             emb.AddField($"{StaticDiscordEmoji.Thermometer} Min/Max Temp", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true);
             emb.AddField($"{StaticDiscordEmoji.Wind} Wind speed", data.Wind.Speed + " m/s", inline: true);
 
-            emb.WithThumbnailUrl(WeatherService.GetWeatherIconUrl(data.Weather.FirstOrDefault()));
+            emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather.FirstOrDefault()));
 
             emb.WithFooter("Powered by openweathermap.org");
 
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Search.Extensions
             emb.AddField($"{StaticDiscordEmoji.Thermometer} Temperature", $"{data.Main.Temp:F1}°C", inline: true);
             emb.AddField($"{StaticDiscordEmoji.Thermometer} Min/Max Temp", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true);
             emb.AddField($"{StaticDiscordEmoji.Wind} Wind speed", data.Wind.Speed + " m/s", inline: true);
-            emb.WithThumbnailUrl(WeatherService.GetWeatherIconUrl(data.Weather.FirstOrDefault()));
+            emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather.FirstOrDefault()));
             emb.WithFooter("Powered by openweathermap.org");
             return emb;
         }

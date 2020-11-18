@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Games
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                         Title = $"Stats for {user.Username}",
                         Description = "No games played yet!",
-                        ThumbnailUrl = user.AvatarUrl,
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
                         Color = this.ModuleColor
                     }.Build());
                     return;

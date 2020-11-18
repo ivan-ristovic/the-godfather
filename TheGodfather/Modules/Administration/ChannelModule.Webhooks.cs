@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Administration
                         Title = $"Webhook: {wh.Name}",
                         Description = $"{(displayToken ? $"Token: {Formatter.InlineCode(wh.Token)}\n" : "")}Created by {wh.User.ToString()}",
                         Color = this.ModuleColor,
-                        ThumbnailUrl = wh.AvatarUrl,
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = wh.AvatarUrl },
                         Timestamp = wh.CreationTimestamp,
                     }.AddField("URL", displayToken ? wh.BuildUrlString() : "Hidden")))
                 );
