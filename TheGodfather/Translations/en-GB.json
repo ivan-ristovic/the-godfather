@@ -160,6 +160,7 @@
   "err-memupd-l-404": "Leave channel set but I can't find it. Maybe deleted?",
   "err-memupd-w-404": "Welcome channel set but I can't find it. Maybe deleted?",
   "err-muterole-404": "Mute role set but I can't find it. Maybe deleted?",
+  "err-punish-failed": "User punish attempt failed! Please check my permissions",
   "err-service-disabled": "This service has been disabled by the bot owner.",
   "err-url-image": "URL has to point to an image!",
   "err-url-image-8mb": "URL has to point to an image smaller than 8MB in size!",

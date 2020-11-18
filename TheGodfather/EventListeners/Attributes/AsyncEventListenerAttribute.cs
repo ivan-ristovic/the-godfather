@@ -22,7 +22,7 @@ namespace TheGodfather.EventListeners.Attributes
 
         public void Register(TheGodfatherShard shard, MethodInfo mi)
         {
-            BotActivityService bas = shard.Services.GetService<BotActivityService>();
+            BotActivityService bas = shard.Services.GetRequiredService<BotActivityService>();
 
 
             Task OnEventWithArgs(object _, object e)

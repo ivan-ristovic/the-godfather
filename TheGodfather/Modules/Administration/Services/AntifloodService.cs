@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -7,7 +6,6 @@ using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -17,10 +15,9 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         public AntifloodService(TheGodfatherShard shard)
-            : base(shard)
+            : base(shard, "_gf: Flooding")
         {
             this.guildFloodUsers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
-            this.reason = "_gf: Flooding";
         }
 
 
@@ -52,6 +49,11 @@ namespace TheGodfather.Modules.Administration.Services
 
             if (this.guildFloodUsers.ContainsKey(e.Guild.Id) && !this.guildFloodUsers[e.Guild.Id].TryRemove(e.Member))
                 throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
+        }
+
+        public override void Dispose()
+        {
+
         }
     }
 }

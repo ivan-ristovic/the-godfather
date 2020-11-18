@@ -9,7 +9,7 @@ namespace TheGodfather.Modules.Administration.Extensions
 {
     internal static class CommandContextExtensions
     {
-        public static Task GuildLogAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> modifyLogEmbed, bool invocationFields = true)
+        public static Task GuildLogAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> modifyLogEmbed, bool addInvocationFields = true)
         {
             LoggingService logService = ctx.Services.GetRequiredService<LoggingService>();
             if (!logService.IsLogEnabledFor(ctx.Guild.Id, out LocalizedEmbedBuilder emb))
@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Extensions
 
             modifyLogEmbed(emb);
     
-            if (invocationFields) {
+            if (addInvocationFields) {
                 emb.AddInvocationFields(ctx);
                 emb.WithLocalizedTimestamp(iconUrl: ctx.User.AvatarUrl);
             }

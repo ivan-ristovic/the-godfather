@@ -48,7 +48,7 @@ namespace TheGodfather.EventListeners
         {
             LogExt.Information(shard.Id, "Guild deleted {Guild}", e.Guild);
             LogExt.Debug(shard.Id, "Guild deleted event args: {@GuildDeleteEventArgs}", e);
-            return shard.Services.GetService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
+            return shard.Services.GetRequiredService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]

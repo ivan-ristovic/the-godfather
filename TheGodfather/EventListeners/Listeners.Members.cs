@@ -101,13 +101,13 @@ namespace TheGodfather.EventListeners
             if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
             
-            GuildConfig gcfg = await shard.Services.GetService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+            GuildConfig gcfg = await shard.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
 
             if (gcfg.AntifloodEnabled)
-                await shard.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
+                await shard.Services.GetRequiredService<AntifloodService>().HandleMemberJoinAsync(e, gcfg.AntifloodSettings);
 
             if (gcfg.AntiInstantLeaveEnabled)
-                await shard.Services.GetService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
+                await shard.Services.GetRequiredService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
@@ -123,7 +123,7 @@ namespace TheGodfather.EventListeners
             bool punished = false;
 
             if (gcfg.AntiInstantLeaveEnabled)
-                punished = await shard.Services.GetService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e, gcfg.AntiInstantLeaveSettings);
+                punished = await shard.Services.GetRequiredService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e);
 
             if (!punished) {
                 // TODO move to service
@@ -247,7 +247,7 @@ namespace TheGodfather.EventListeners
             GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
             IEnumerable<DiscordGuild> guilds = TheGodfather.ActiveShards
-                .SelectMany(s => s.Client?.Guilds)
+                .SelectMany(s => s.Client.Guilds)
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
             foreach (DiscordGuild guild in guilds) {

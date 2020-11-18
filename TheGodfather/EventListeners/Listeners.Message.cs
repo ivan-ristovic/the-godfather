@@ -91,7 +91,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
             CachedGuildConfig? gcfg = shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
@@ -109,7 +109,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
             CachedGuildConfig? gcfg = shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
@@ -118,7 +118,7 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _))
+            if (!shard.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
@@ -139,10 +139,10 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.Services.GetService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
                 return;
 
-            ReactionsService rs = shard.Services.GetService<ReactionsService>();
+            ReactionsService rs = shard.Services.GetRequiredService<ReactionsService>();
 
             if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
                 EmojiReaction? er = rs.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
@@ -185,7 +185,7 @@ namespace TheGodfather.EventListeners
             if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out GuildConfigService gcs))
                 return;
 
-            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, "evt-msg-del");
@@ -203,7 +203,7 @@ namespace TheGodfather.EventListeners
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
                 string sanitizedContent = Formatter.BlockCode(Formatter.Strip(e.Message.Content.Truncate(1000)));
                 emb.AddLocalizedTitleField("str-content", sanitizedContent, inline: true);
-                if (shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
+                if (shard.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                     LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
                     emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, "rsn-filter-match")));
                 }
@@ -230,14 +230,14 @@ namespace TheGodfather.EventListeners
             if (e.Guild is null || (e.Author?.IsBot ?? false) || e.Channel is null || e.Message is null || e.Author is null)
                 return;
 
-            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return;
 
-            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
-            if (e.Message.Content is { } && shard.Services.GetService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
+            if (e.Message.Content is { } && shard.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                 try {
                     await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
                     string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));
@@ -297,10 +297,10 @@ namespace TheGodfather.EventListeners
             if (e.Guild is null || e.Channel is null || e.Message is null)
                 return Task.CompletedTask;
 
-            if (shard.Services.GetService<BlockingService>().IsChannelBlocked(e.Channel.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return Task.CompletedTask;
 
-            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (e.Message.Author == shard.Client.CurrentUser && shard.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return Task.CompletedTask;
 
             if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))

@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,6 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -23,9 +21,9 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly Timer refreshTimer;
 
 
-        private static void RefreshCallback(object _)
+        private static void RefreshCallback(object? _)
         {
-            var service = _ as AntispamService;
+            AntispamService service = _ as AntispamService ?? throw new ArgumentException("Failed to cast provided argument in timer callback");
 
             foreach (ulong gid in service.guildSpamInfo.Keys) {
                 IEnumerable<ulong> toRemove = service.guildSpamInfo[gid]
@@ -39,12 +37,11 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         public AntispamService(TheGodfatherShard shard)
-            : base(shard)
+            : base(shard, "_gf: Antispam")
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildSpamInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserSpamInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(3));
-            this.reason = "_gf: Antispam";
         }
 
 
@@ -78,8 +75,8 @@ namespace TheGodfather.Modules.Administration.Services
                 this.UpdateExemptsForGuildAsync(e.Guild.Id);
             }
 
-            var member = e.Author as DiscordMember;
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity> exempts)) {
+            DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
@@ -95,10 +92,15 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
             }
 
-            if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
+            if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo? spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 spamInfo.Reset();
             }
+        }
+
+        public override void Dispose() 
+        {
+            this.refreshTimer.Dispose();
         }
     }
 }

@@ -1,25 +1,16 @@
 ﻿using System;
 using DSharpPlus.CommandsNext;
+using TheGodfather.Services;
 
 namespace TheGodfather.Exceptions
 {
     public class DatabaseOperationException : LocalizedException
     {
-        // TODO remove
-        [Obsolete]
-        public DatabaseOperationException(string message)
-            : base("")
+        public DatabaseOperationException(string rawMessage)
+            : base(rawMessage)
         {
-            throw new InvalidOperationException();
-        }
-        [Obsolete]
-        public DatabaseOperationException(string message, Exception inner)
-            : base("")
-        {
-            throw new InvalidOperationException();
-        }
-        // END remove
 
+        }
 
         public DatabaseOperationException(CommandContext ctx, params object[]? args)
             : base(ctx, "err-db", args)
@@ -35,6 +26,24 @@ namespace TheGodfather.Exceptions
 
         public DatabaseOperationException(CommandContext ctx, Exception inner, string key, params object[]? args)
             : base(ctx, key, inner, args)
+        {
+
+        }
+
+        public DatabaseOperationException(LocalizationService lcs, ulong gid, params object?[]? args)
+            : base(lcs, gid, args)
+        {
+
+        }
+
+        public DatabaseOperationException(LocalizationService lcs, ulong gid, string key, params object?[]? args)
+            : base(lcs, gid, key, args)
+        {
+
+        }
+
+        public DatabaseOperationException(LocalizationService lcs, ulong gid, Exception inner, string key, params object?[]? args)
+            : base(lcs, gid, key, inner, args)
         {
 
         }

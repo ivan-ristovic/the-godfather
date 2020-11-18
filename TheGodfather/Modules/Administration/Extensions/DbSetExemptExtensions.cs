@@ -1,11 +1,8 @@
-﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database.Models;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Extensions
 {

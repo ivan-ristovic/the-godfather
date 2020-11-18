@@ -150,7 +150,7 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedDescription("err-db");
                     break;
                 default:
-                    LogExt.Warning(shard.Id, "Unhandled error");
+                    LogExt.Error(shard.Id, "Unhandled error");
                     break;
             }
 

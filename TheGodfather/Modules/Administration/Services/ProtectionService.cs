@@ -1,5 +1,5 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,13 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public abstract class ProtectionService : ITheGodfatherService
+    public abstract class ProtectionService : ITheGodfatherService, IDisposable
     {
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
         protected string reason;
@@ -24,13 +22,14 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsDisabled => false;
 
 
-        protected ProtectionService(TheGodfatherShard shard)
+        protected ProtectionService(TheGodfatherShard shard, string reason)
         {
             this.shard = shard;
+            this.reason = reason;
         }
 
 
-        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string reason = null)
+        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string? reason = null)
         {
             try {
                 DiscordRole muteRole;
@@ -56,7 +55,7 @@ namespace TheGodfather.Modules.Administration.Services
                             UserId = member.Id,
                             Type = ScheduledTaskType.Unban,
                         };
-                        await this.shard.Services.GetService<SchedulingService>().ScheduleAsync(gt);
+                        await this.shard.Services.GetRequiredService<SchedulingService>().ScheduleAsync(gt);
                         break;
                     case PunishmentAction.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
@@ -70,26 +69,23 @@ namespace TheGodfather.Modules.Administration.Services
                             UserId = member.Id,
                             Type = ScheduledTaskType.Unmute,
                         };
-                        await this.shard.Services.GetService<SchedulingService>().ScheduleAsync(gt);
+                        await this.shard.Services.GetRequiredService<SchedulingService>().ScheduleAsync(gt);
                         break;
                 }
             } catch {
-                DiscordChannel logchn = this.shard.Services.GetService<GuildConfigService>().GetLogChannelForGuild(guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder {
-                        Title = "User punish attempt failed! Check my permissions",
-                        Color = DiscordColor.Red
-                    };
-                    emb.AddField("User", member?.ToString() ?? "unknown", inline: true);
-                    emb.AddField("Reason", reason ?? this.reason, inline: false);
-                    await logchn.SendMessageAsync(embed: emb.Build());
+                if (LoggingService.IsLogEnabledForGuild(this.shard, guild.Id, out LoggingService log, out LocalizedEmbedBuilder emb)) {
+                    emb.WithLocalizedTitle("err-punish-failed");
+                    emb.WithColor(DiscordColor.Red);
+                    emb.AddLocalizedTitleField("str-user", member);
+                    emb.AddLocalizedTitleField("str-rsn", reason ?? this.reason);
+                    await log.LogAsync(guild, emb.Build());
                 }
             }
         }
 
         public async Task<DiscordRole> GetOrCreateMuteRoleAsync(DiscordGuild guild)
         {
-            DiscordRole muteRole = null;
+            DiscordRole? muteRole = null;
 
             await this.csem.WaitAsync();
             try {
@@ -101,11 +97,14 @@ namespace TheGodfather.Modules.Administration.Services
                 if (muteRole is null) {
                     muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
 
-                    // TODO do this for categories, and for channels which do not have category parent
-                    foreach (DiscordChannel channel in guild.Channels.Select(kvp => kvp.Value).Where(c => c.Type == ChannelType.Text)) {
-                        await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
-                        await Task.Delay(10);
-                    }
+                    IEnumerable<DiscordChannel> overwriteTargets = guild.Channels
+                        .Select(kvp => kvp.Value)
+                        .Where(c => c.Type == ChannelType.Category 
+                                 || ((c.Type == ChannelType.Text || c.Type == ChannelType.Voice) && c.Parent is null)
+                        );
+
+                    await Task.WhenAll(overwriteTargets.Select(c => AddOverwrite(c, muteRole)));
+
                     gcfg.MuteRoleId = muteRole.Id;
                     db.Configs.Update(gcfg);
                     await db.SaveChangesAsync();
@@ -115,10 +114,24 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             return muteRole;
+
+
+            static async Task AddOverwrite(DiscordChannel channel, DiscordRole muteRole)
+            {
+                await channel.AddOverwriteAsync(
+                    muteRole,
+                    deny: Permissions.SendMessages
+                        | Permissions.SendTtsMessages
+                        | Permissions.AddReactions
+                        | Permissions.Speak
+                );
+                await Task.Delay(10);
+            }
         }
 
 
         public abstract bool TryAddGuildToWatch(ulong gid);
         public abstract bool TryRemoveGuildFromWatch(ulong gid);
+        public abstract void Dispose();
     }
 }
