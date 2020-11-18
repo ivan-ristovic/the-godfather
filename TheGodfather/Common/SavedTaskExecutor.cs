@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace TheGodfather.Common
                 texec.Schedule();
             } catch (Exception e) {
                 await texec?.UnscheduleAsync();
-                shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Warning(e, "Warning");
                 throw;
             }
         }
@@ -125,15 +126,15 @@ namespace TheGodfather.Common
                         this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
-                this.shared.LogProvider.Log(LogLevel.Debug, $"Executed missed task: {this.TaskInfo.GetType().ToString()}");
+                Log.Debug($"Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Debug, e);
+                Log.Debug(e, "Error");
             } finally {
                 try {
                     if (unschedule)
                         await this.UnscheduleAsync();
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Debug, e);
+                    Log.Debug(e, "Error");
                 }
             }
         }
@@ -205,13 +206,13 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Warning(e, "Warning");
             } finally {
                 if (!info.IsRepeating) {
                     try {
                         this.Execute(this.UnscheduleAsync());
                     } catch (Exception e) {
-                        this.shared.LogProvider.Log(LogLevel.Error, e);
+                        Log.Error(e, "Error");
                     }
                 }
             }
@@ -227,12 +228,12 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unban removed in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Warning(e, "Warning");
             } finally {
                 try {
                     this.Execute(this.UnscheduleAsync());
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                    Log.Error(e, "Error");
                 }
             }
         }
@@ -251,12 +252,12 @@ namespace TheGodfather.Common
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unmute removed in meantime
             } catch (Exception e) {
-                this.shared.LogProvider.Log(LogLevel.Warning, e);
+                Log.Warning(e, "Warning");
             } finally {
                 try {
                     this.Execute(this.UnscheduleAsync());
                 } catch (Exception e) {
-                    this.shared.LogProvider.Log(LogLevel.Error, e);
+                    Log.Error(e, "Error");
                 }
             }
         }

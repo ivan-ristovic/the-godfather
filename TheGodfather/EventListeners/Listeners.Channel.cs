@@ -152,7 +152,7 @@ namespace TheGodfather.EventListeners
                     try {
                         bool isMemberUpdated = owentry.Target.Type.HasFlag(OverwriteType.Member);
                         if (isMemberUpdated)
-                            member = await e.Client.GetUserAsync(owentry.Target.Id);
+                            member = await shard.Client.GetUserAsync(owentry.Target.Id);
                         else
                             role = e.Guild.GetRole(owentry.Target.Id);
                         emb.AddField("Target", isMemberUpdated ? member.ToString() : role.ToString(), inline: true);

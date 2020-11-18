@@ -6,7 +6,7 @@ using DSharpPlus.Entities;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -333,7 +333,7 @@ namespace TheGodfather.Modules.Misc
                     }
                 }
             } catch (FileNotFoundException e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"graph.png load failed! Details: {e.ToString()}", DateTime.Now);
+                Log.Error($"graph.png load failed! Details: {e.ToString()}", DateTime.Now);
                 throw new CommandFailedException("I can't find the graph image on server machine, please contact owner and tell him.");
             }
         }
@@ -350,7 +350,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Text missing.");
 
             if (await ctx.WaitForBoolReplyAsync("Are you okay with your user and guild info being sent for further inspection?")) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
+                Log.Information($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
                 DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owners.First().Id);
                 if (dm is null)
                     throw new CommandFailedException("Owner has disabled DMs.");

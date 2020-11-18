@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
-
+using Serilog;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace TheGodfather.Common.Attributes
 
         public void Register(TheGodfatherShard shard, DiscordClient client, MethodInfo mi)
         {
-            Task OnEventWithArgs(object e)
+            Task OnEventWithArgs(object ignored, object e)
             {
                 if (!shard.IsListening)
                     return Task.CompletedTask;
@@ -31,22 +31,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
-                    }
-                });
-                return Task.CompletedTask;
-            }
-
-            Task OnEventVoid()
-            {
-                if (!shard.IsListening)
-                    return Task.CompletedTask;
-
-                _ = Task.Run(async () => {
-                    try {
-                        await (Task)mi.Invoke(null, new object[] { shard });
-                    } catch (Exception ex) {
-                        shard.SharedData.LogProvider.Log(LogLevel.Error, ex);
+                        Log.Error(ex, "Error");
                     }
                 });
                 return Task.CompletedTask;
@@ -60,7 +45,7 @@ namespace TheGodfather.Common.Attributes
                     client.SocketErrored += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketOpened:
-                    client.SocketOpened += OnEventVoid;
+                    client.SocketOpened += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketClosed:
                     client.SocketClosed += OnEventWithArgs;

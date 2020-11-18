@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task StartAsync()
         {
-            this.client.MessageReactionAdded += this.ReactionHandler;
+            // this.client.MessageReactionAdded += this.ReactionHandler;
             try {
                 while (!this.songs.IsEmpty && !this.stopped) {
                     if (!this.songs.TryDequeue(out SongInfo si))

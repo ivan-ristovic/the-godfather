@@ -66,7 +66,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildDeleted)]
         public static async Task GuildDeleteEventHandlerAsync(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"| Left guild: {e.Guild.ToString()}");
+            LogExt.Information(shard.Id, $"| Left guild: {e.Guild.ToString()}");
 
             shard.SharedData.GuildConfigurations.TryRemove(e.Guild.Id, out _);
             using (DatabaseContext db = shard.Database.CreateContext()) {

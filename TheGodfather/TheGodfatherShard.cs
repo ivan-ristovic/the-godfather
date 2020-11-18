@@ -3,13 +3,14 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
 
 using Microsoft.Extensions.DependencyInjection;
-
+using Serilog.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,17 +69,10 @@ namespace TheGodfather
             this.Client.Dispose();
         }
 
-        public void Log(LogLevel level, string message)
-            => this.SharedData.LogProvider.Log(level, message, this.Id, DateTime.Now);
-
-        public void LogMany(LogLevel level, params string[] messages)
-            => this.SharedData.LogProvider.LogMany(level, this.Id, DateTime.Now, this.SharedData.LogProvider.LogToFile, messages);
-
-
         #region SETUP_FUNCTIONS
-        public void Initialize(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
+        public void Initialize()
         {
-            this.SetupClient(onGuildDownloadCompleted);
+            this.SetupClient();
             this.SetupCommands();
             this.SetupInteractivity();
             this.SetupVoice();
@@ -86,7 +80,7 @@ namespace TheGodfather
             AsyncExecutionManager.RegisterEventListeners(this.Client, this);
         }
 
-        private void SetupClient(AsyncEventHandler<GuildDownloadCompletedEventArgs> onGuildDownloadCompleted)
+        private void SetupClient()
         {
             var cfg = new DiscordConfiguration {
                 Token = this.SharedData.BotConfiguration.Token,
@@ -95,8 +89,10 @@ namespace TheGodfather
                 LargeThreshold = 250,
                 ShardCount = this.SharedData.BotConfiguration.ShardCount,
                 ShardId = this.Id,
-                UseInternalLogHandler = false,
-                LogLevel = this.SharedData.BotConfiguration.LogLevel
+                LoggerFactory = new SerilogLoggerFactory(dispose: true),
+                Intents = DiscordIntents.All
+                       & ~DiscordIntents.GuildMessageTyping
+                       & ~DiscordIntents.DirectMessageTyping
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -104,14 +100,10 @@ namespace TheGodfather
 
             this.Client = new DiscordClient(cfg);
 
-            this.Client.DebugLogger.LogMessageReceived += (s, e) => {
-                this.SharedData.LogProvider.Log(this.Id, e);
-            };
-            this.Client.Ready += e => {
-                this.SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", this.Id);
+            this.Client.Ready += (c, e) => {
+                Serilog.Log.Information("Ready!", this.Id);
                 return Task.CompletedTask;
             };
-            this.Client.GuildDownloadCompleted += onGuildDownloadCompleted;
         }
 
         private void SetupCommands()

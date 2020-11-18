@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Net.Models;
 
 using System;
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
                 using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
-                this.Shared.LogProvider.Log(LogLevel.Debug, e);
+                Serilog.Log.Debug(e, "Error");
                 throw new CommandFailedException("An error occured.", e);
             }
 

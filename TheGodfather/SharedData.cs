@@ -26,7 +26,6 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
-        public Logger LogProvider { get; internal set; }
         public bool ListeningStatus { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, int> MessageCount { get; internal set; }

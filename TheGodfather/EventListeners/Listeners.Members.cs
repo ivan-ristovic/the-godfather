@@ -4,7 +4,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
-
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +51,7 @@ namespace TheGodfather.EventListeners
                             else
                                 db.AutoAssignableRoles.Remove(db.AutoAssignableRoles.Single(r => r.GuildId == e.Guild.Id && r.RoleId == rid));
                         } catch (Exception exc) {
-                            shard.Log(LogLevel.Debug,
+                            Log.Debug(
                                 $"| Failed to assign an automatic role to a new member!\n" +
                                 $"| {e.Guild.ToString()}\n" +
                                 $"| Exception: {exc.GetType()}\n" +
@@ -61,7 +61,7 @@ namespace TheGodfather.EventListeners
                     }
                 }
             } catch (Exception exc) {
-                shard.SharedData.LogProvider.Log(LogLevel.Debug, exc);
+                Log.Debug(exc, "Failed to assign ar");
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);

@@ -6,7 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
 using Microsoft.EntityFrameworkCore;
-
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Owner
                         DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
                         valid.Add(user);
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 privileged user with ID {usr.UserId}");
+                        Log.Debug($"Removed 404 privileged user with ID {usr.UserId}");
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             db.PrivilegedUsers.Remove(new DatabasePrivilegedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();

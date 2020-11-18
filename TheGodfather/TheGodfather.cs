@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-
+using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -55,15 +55,18 @@ namespace TheGodfather
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
+
+                Log.Logger = LogExt.CreateLogger(BotConfiguration);
+
                 await InitializeDatabaseAsync();
                 LoadSharedDataFromDatabase();
                 await CreateAndBootShardsAsync();
-                SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
+                Log.Information("Booting complete! Registering timers and saved tasks...");
 
                 try {
                     await Task.Delay(Timeout.Infinite, SharedData.MainLoopCts.Token);
                 } catch (TaskCanceledException) {
-                    SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
+                    Log.Information("Shutdown signal received!");
                 }
 
                 await DisposeAsync();
@@ -205,10 +208,6 @@ namespace TheGodfather
                 );
             }
 
-            var logger = new Logger(BotConfiguration);
-            foreach (Logger.SpecialLoggingRule rule in BotConfiguration.SpecialLoggerRules)
-                logger.ApplySpecialLoggingRule(rule);
-
             SharedData = new SharedData {
                 BlockedChannels = blockedChannels,
                 BlockedUsers = blockedUsers,
@@ -217,28 +216,29 @@ namespace TheGodfather
                 EmojiReactions = ereactions,
                 Filters = filters,
                 GuildConfigurations = guildConfigurations,
-                LogProvider = logger,
                 MessageCount = msgcount,
                 TextReactions = treactions,
                 UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime)
             };
         }
 
-        private static Task CreateAndBootShardsAsync()
+        private static async Task CreateAndBootShardsAsync()
         {
             Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...                  ");
 
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, GlobalDatabaseContextBuilder, SharedData);
-                shard.Initialize(async e => await RegisterPeriodicTasksAsync());
+                shard.Initialize();
                 Shards.Add(shard);
             }
-
             Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            return Task.WhenAll(Shards.Select(s => s.StartAsync()));
+            await Task.WhenAll(Shards.Select(s => s.StartAsync()));
+
+            await Task.Delay(10);
+            await RegisterPeriodicTasksAsync();
         }
 
         private static async Task RegisterPeriodicTasksAsync()
@@ -278,7 +278,7 @@ namespace TheGodfather
                     else
                         missed++;
                 }
-                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Saved tasks: {scheduled} scheduled; {missed} missed.");
+                Log.Information($"Saved tasks: {scheduled} scheduled; {missed} missed.");
             }
 
             async Task RegisterRemindersAsync(IReadOnlyDictionary<int, SendMessageTaskInfo> reminders)
@@ -290,7 +290,7 @@ namespace TheGodfather
                     else
                         missed++;
                 }
-                SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Reminders: {scheduled} scheduled; {missed} missed.");
+                Log.Information($"Reminders: {scheduled} scheduled; {missed} missed.");
             }
 
             async Task<bool> RegisterTaskAsync(int id, SavedTaskInfo tinfo)
@@ -308,7 +308,7 @@ namespace TheGodfather
 
         private static async Task DisposeAsync()
         {
-            SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
+            Log.Information("Cleaning up...");
 
             BotStatusUpdateTimer.Dispose();
             DatabaseSyncTimer.Dispose();
@@ -319,7 +319,7 @@ namespace TheGodfather
                 await shard.DisposeAsync();
             SharedData.Dispose();
 
-            SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
+            Log.Information("Cleanup complete! Powering off...");
         }
         #endregion
 
@@ -340,7 +340,7 @@ namespace TheGodfather
 
                 SharedData.AsyncExecutor.Execute(client.UpdateStatusAsync(activity));
             } catch (Exception e) {
-                SharedData.LogProvider.Log(LogLevel.Error, e);
+                Log.Error(e, "Callback error");
             }
         }
 
@@ -365,7 +365,7 @@ namespace TheGodfather
                     db.SaveChanges();
                 }
             } catch (Exception e) {
-                SharedData.LogProvider.Log(LogLevel.Error, e);
+                Log.Error(e, "Callback error");
             }
         }
 
@@ -376,7 +376,7 @@ namespace TheGodfather
             try {
                 SharedData.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, GlobalDatabaseContextBuilder));
             } catch (Exception e) {
-                SharedData.LogProvider.Log(LogLevel.Error, e);
+                Log.Error(e, "Callback error");
             }
         }
 
@@ -411,7 +411,7 @@ namespace TheGodfather
                     db.SaveChanges();
                 }
             } catch (Exception e) {
-                SharedData.LogProvider.Log(LogLevel.Error, e);
+                Log.Error(e, "Callback error");
             }
         }
         #endregion

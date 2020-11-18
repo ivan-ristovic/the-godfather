@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
 
 using System;
 using System.Text;

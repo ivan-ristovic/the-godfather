@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -165,7 +166,7 @@ namespace TheGodfather.Modules.Owner
                         DiscordUser user = await ctx.Client.GetUserAsync(usr.UserId);
                         lines.Add($"{user.ToString()} ({Formatter.Italic(usr.Reason ?? "No reason provided.")})");
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.Log(LogLevel.Debug, $"Removed 404 blocked user with ID {usr.UserId}");
+                        Log.Debug($"Removed 404 blocked user with ID {usr.UserId}");
                         using (DatabaseContext db = this.Database.CreateContext()) {
                             db.BlockedUsers.Remove(new DatabaseBlockedUser { UserIdDb = usr.UserIdDb });
                             await db.SaveChangesAsync();

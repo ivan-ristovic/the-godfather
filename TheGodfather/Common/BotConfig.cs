@@ -2,7 +2,7 @@
 using DSharpPlus;
 
 using Newtonsoft.Json;
-
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +38,7 @@ namespace TheGodfather.Common
         public string ImgurKey { get; private set; }
 
         [JsonProperty("log-level")]
-        public LogLevel LogLevel { get; private set; }
+        public LogEventLevel LogLevel { get; private set; }
 
         [JsonProperty("log-path")]
         public string LogPath { get; private set; }
@@ -65,7 +65,7 @@ namespace TheGodfather.Common
         public string Token { get; private set; }
 
         [JsonProperty("logger-special-rules")]
-        public List<Logger.SpecialLoggingRule> SpecialLoggerRules { get; private set; }
+        public List<SpecialLoggingRule> SpecialLoggerRules { get; private set; }
 
 
         [JsonIgnore]
@@ -77,9 +77,9 @@ namespace TheGodfather.Common
             FeedCheckStartDelay = 30,
             GiphyKey = "<insert GIPHY API key>",
             GoodreadsKey = "<insert Goodreads API key>",
-            SpecialLoggerRules = new List<Logger.SpecialLoggingRule>(),
+            SpecialLoggerRules = new List<SpecialLoggingRule>(),
             ImgurKey = "<insert Imgur API key>",
-            LogLevel = LogLevel.Info,
+            LogLevel = LogEventLevel.Information,
             LogPath = "log.txt",
             LogToFile = false,
             OMDbKey = "<insert OMDb API key>",
@@ -89,5 +89,15 @@ namespace TheGodfather.Common
             WeatherKey = "<insert OpenWeatherMaps API key>",
             YouTubeKey = "<insert YouTube API key>"
         };
+
+        public sealed class SpecialLoggingRule
+        {
+            [JsonProperty("app")]
+            public string Application { get; set; } = "";
+
+            [JsonProperty("level")]
+            public LogEventLevel MinLevel { get; set; }
+        }
     }
+
 }

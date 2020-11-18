@@ -3,8 +3,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.Interactivity.Extensions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

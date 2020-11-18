@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 

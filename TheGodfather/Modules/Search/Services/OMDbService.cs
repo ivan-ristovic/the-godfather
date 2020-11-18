@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
 
 using Newtonsoft.Json;
 

@@ -2,7 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,14 +26,14 @@ namespace TheGodfather.EventListeners
                 ex = ex.InnerException;
 
             if (ex.InnerException is null) {
-                shard.LogMany(LogLevel.Critical, $"Client errored with exception: {ex.GetType()}", $"Message: {ex.Message}");
+                LogExt.Fatal(shard.Id, new[] { $"Client errored with exception: {ex.GetType()}", $"Message: {ex.Message}" });
             } else {
-                shard.LogMany(LogLevel.Critical,
+                LogExt.Fatal(shard.Id, new[] {
                     $"Client errored with exception: {ex.GetType()}",
                     $"Message: {ex.Message}",
                     $"Inner exception: {ex.InnerException.GetType()}",
                     $"Inner exception message: {ex.InnerException.Message}"
-                );
+                });
             }
 
             return Task.CompletedTask;
@@ -42,7 +42,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildAvailable)]
         public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Debug, $"Guild available: {e.Guild.ToString()}");
+            LogExt.Debug(shard.Id, $"Guild available: {e.Guild.ToString()}");
 
             if (shard.SharedData.GuildConfigurations.ContainsKey(e.Guild.Id))
                 return Task.CompletedTask;
@@ -53,14 +53,14 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
         public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"All guilds are now available.");
+            LogExt.Information(shard.Id, $"All guilds are now available.");
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]
         public static async Task GuildCreateEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
+            LogExt.Information(shard.Id, $"Joined guild: {e.Guild.ToString()}");
 
             await RegisterGuildAsync(shard.SharedData, shard.Database, e.Guild.Id);
 
@@ -74,7 +74,7 @@ namespace TheGodfather.EventListeners
                 $"{StaticDiscordEmoji.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(shard.SharedData.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather \n" +
-                $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order to send a message to the bot owners ({string.Join(", ", e.Client.CurrentApplication.Owners.Select(o => $"{o.Username}#{o.Discriminator}"))}). Alternatively, you can create an issue on GitHub or join WorldMafia Discord server for quick support (https://discord.me/worldmafia)."
+                $"{StaticDiscordEmoji.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order to send a message to the bot owners ({string.Join(", ", shard.Client.CurrentApplication.Owners.Select(o => $"{o.Username}#{o.Discriminator}"))}). Alternatively, you can create an issue on GitHub or join WorldMafia Discord server for quick support (https://discord.me/worldmafia)."
                 , StaticDiscordEmoji.Wave
             );
         }

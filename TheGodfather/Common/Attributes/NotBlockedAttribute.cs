@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using Microsoft.Extensions.DependencyInjection;
-
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace TheGodfather.Common.Attributes
                     return Task.FromResult(false);
 
                 if (!help) {
-                    ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, TheGodfather.ApplicationName,
+                    Log.Debug(
                         $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}\n" + 
                         $"{ctx.User.ToString()}\n" +
                         $"{ctx.Guild.ToString()} ; {ctx.Channel.ToString()}\n" +
