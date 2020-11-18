@@ -156,7 +156,7 @@ namespace TheGodfather.Extensions
 
         private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception? ex, string template, params object[] propertyValues)
         {
-            object[] allPropertyValues = ctx.Guild is { }
+            object[] allPropertyValues = !(ctx.Guild is null)
                 ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
                 : new object[] { ctx.User, ctx.Channel };
             if (propertyValues?.Any() ?? false)
