@@ -4,7 +4,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Extensions;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -45,7 +44,7 @@ namespace TheGodfather.Modules.Administration.Services
         private Task<bool> ScanForDiscordInvitesAsync(MessageCreateEventArgs e)
         {
             return LinkfilterMatcherCollection.InviteRegex.IsMatch(e.Message.Content)
-                ? this.DeleteAsync(e, "Discord invite")
+                ? this.DeleteAsync(e, "Discord invite", null)
                 : Task.FromResult(false);
         }
 
@@ -53,7 +52,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Match(e.Message);
             return match.Success 
-                ? this.DeleteAsync(e, "DDoS/Booter website", Formatter.InlineCode(match.Matched)) 
+                ? this.DeleteAsync(e, "DDoS/Booter website", match) 
                 : Task.FromResult(false);
         }
 
@@ -61,7 +60,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Match(e.Message);
             return match.Success 
-                ? this.DeleteAsync(e, "IP logging website", Formatter.InlineCode(match.Matched)) 
+                ? this.DeleteAsync(e, "IP logging website", match) 
                 : Task.FromResult(false);
         }
 
@@ -69,7 +68,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.DisturbingWebsiteMatcher.Match(e.Message);
             return match.Success
-                ? this.DeleteAsync(e, "Disturbing content website", Formatter.InlineCode(match.Matched))
+                ? this.DeleteAsync(e, "Disturbing content website", match)
                 : Task.FromResult(false);
         }
 
@@ -77,43 +76,37 @@ namespace TheGodfather.Modules.Administration.Services
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.UrlShortenerRegex.Match(e.Message);
             return match.Success
-                ? this.DeleteAsync(e,
-                   "URL shortener website",
-                    $"{Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]}).\n\n" +
-                    $"If you think this is a false detection, please report."
-                )
+                ? this.DeleteAsync(e, "URL shortener website", match)
                 : Task.FromResult(false);
         }
 
-
-
-        // TODO
-
-
-        private async Task<bool> DeleteAsync(MessageCreateEventArgs e, string cause, string? additionalText = null)
+        private async Task<bool> DeleteAsync(MessageCreateEventArgs e, string cause, LinkfilterMatch? match)
         {
             try {
                 await e.Message.DeleteAsync($"_gf: {cause} linkfilter");
-                await this.LogLinkfilterMatchAsync(e, $"{cause} matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a {cause}{(string.IsNullOrWhiteSpace(additionalText) ? "." : $": {additionalText}")}"
-                );
+                await this.LogLinkfilterMatchAsync(e, cause, match);
+                if (e.Author is not DiscordMember member)
+                    return true;
+                await member.SendMessageAsync($"Your message:{Formatter.BlockCode(e.Message.Content)}was automatically filtered from {Formatter.Bold(e.Guild.Name)}.");
             } catch {
 
             }
             return true;
         }
 
-        private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
+        private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc, LinkfilterMatch? match)
         {
-            if (this.shard.Services.GetRequiredService<GuildConfigService>().GetLogChannelForGuild(e.Guild) is null)
+            LoggingService ls = this.shard.Services.GetRequiredService<LoggingService>();
+            if (!ls.IsLogEnabledFor(e.Guild.Id, out LocalizedEmbedBuilder emb))
                 return;
 
-            // TODO
-            //var emb = new DiscordLogEmbedBuilder("Linkfilter action triggered", desc, DiscordEventType.MessageDeleted);
-            //emb.AddInvocationFields(e.Author);
-            //await this.shard.Services.GetRequiredService<LoggingService>().LogAsync(e.Guild, emb);
+            emb.WithLocalizedTitle("evt-lf-triggered");
+            emb.WithDescription(desc);
+            if (match is { } && match.Matched is { })
+                emb.AddLocalizedTitleField("str-matched", match.Matched);
+            emb.WithColor(DiscordColor.Red);
+            emb.AddInvocationFields(e.Author, e.Channel);
+            await ls.LogAsync(e.Guild, emb);
         }
 
         public override void Dispose() 
