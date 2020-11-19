@@ -236,7 +236,7 @@ namespace TheGodfather
             Console.WriteLine();
 
             await Task.Delay(10);
-            Console.WriteLine("\r[5/5] Registering tasks...                   ");
+            Console.WriteLine("[5/5] Registering tasks...");
             await RegisterPeriodicTasksAsync();
         }
 
