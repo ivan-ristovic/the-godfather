@@ -208,9 +208,36 @@
       []
     ]
   },
-  "config": {
+  "config antiflood": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action", "arg-timespan" ],
+      [ "arg-bool", "arg-punish-action", "arg-five", "arg-timespan" ],
+      [ "arg-bool", "arg-timespan", "arg-five", "arg-punish-action" ]
+    ]
+  },
+  "config antiflood action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antiflood cooldown": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "config antiflood reset": {
     "usage": [
       []
+    ]
+  },
+  "config antiflood sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
     ]
   },
   "config leave": {

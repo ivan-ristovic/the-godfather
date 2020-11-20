@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             return logService.LogAsync(ctx.Guild, emb);
         }
 
-        public static async Task WithGuildSettingsAsync(this CommandContext ctx, Func<GuildConfig, Task> action)
+        public static async Task WithGuildConfigAsync(this CommandContext ctx, Func<GuildConfig, Task> action)
         {
             GuildConfig gcfg = await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id);
             await action(gcfg);
