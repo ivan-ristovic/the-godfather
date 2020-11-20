@@ -11,6 +11,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -57,6 +58,26 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
+        public async Task ExemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
+            where TExempt : SnowflakeObject
+        {
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            db.ExemptsAntispam.AddExemptions(gid, exempts, type);
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
+
+        public async Task UnexemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
+            where TExempt : SnowflakeObject
+        {
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            db.ExemptsAntispam.RemoveRange(
+                db.ExemptsAntispam.Where(ex => ex.GuildId == gid && ex.Type == type && exempts.Any(m => m.Id == ex.Id))
+            );
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
+
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
             using TheGodfatherDbContext db = this.shard.Database.CreateContext();
@@ -77,7 +98,7 @@ namespace TheGodfather.Modules.Administration.Services
 
             DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
             if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
+                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && (ee.Id == e.Channel.Id || ee.Id == e.Channel.ParentId)))
                     return;
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
                     return;

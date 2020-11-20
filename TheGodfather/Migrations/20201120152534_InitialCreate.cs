@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TheGodfather.Migrations
 {
@@ -15,8 +16,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    cid = table.Column<long>(type: "INTEGER", nullable: false),
-                    reason = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true)
+                    cid = table.Column<long>(type: "bigint", nullable: false),
+                    reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -28,8 +29,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    reason = table.Column<string>(type: "TEXT", maxLength: 64, nullable: true)
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,10 +42,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    status = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    activity_type = table.Column<int>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    status = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    activity_type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -56,12 +57,12 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    cost = table.Column<long>(type: "INTEGER", nullable: false),
-                    stat = table.Column<int>(type: "INTEGER", nullable: false),
-                    mod = table.Column<int>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    cost = table.Column<long>(type: "bigint", nullable: false),
+                    stat = table.Column<int>(type: "integer", nullable: false),
+                    mod = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,21 +74,21 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    duel_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    duel_lost = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    hangman_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    quiz_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    ar_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    nr_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    ttt_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    ttt_lost = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    c4_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    c4_lost = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    caro_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    caro_lost = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    othello_won = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0),
-                    othello_lost = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 0)
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    duel_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    duel_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    hangman_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    quiz_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    ar_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    nr_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    ttt_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    ttt_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    c4_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    c4_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    caro_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    caro_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    othello_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    othello_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -99,37 +100,37 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    prefix = table.Column<string>(type: "TEXT", maxLength: 8, nullable: true),
-                    locale = table.Column<string>(type: "TEXT", maxLength: 8, nullable: true),
-                    timezone_id = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
-                    currency = table.Column<string>(type: "TEXT", maxLength: 32, nullable: true),
-                    suggestions_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    log_cid = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 0L),
-                    mute_rid = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 0L),
-                    silent_response_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    welcome_cid = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 0L),
-                    leave_cid = table.Column<long>(type: "INTEGER", nullable: false, defaultValue: 0L),
-                    welcome_msg = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
-                    leave_msg = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
-                    linkfilter_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    linkfilter_booters = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    linkfilter_disturbing = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    linkfilter_invites = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    linkfilter_loggers = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    linkfilter_shorteners = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: true),
-                    antiflood_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    antiflood_action = table.Column<byte>(type: "INTEGER", nullable: false, defaultValue: (byte)4),
-                    antiflood_sensitivity = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: (short)5),
-                    antiflood_cooldown = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: (short)10),
-                    antiinstantleave_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    antiinstantleave_cooldown = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: (short)3),
-                    antispam_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    antispam_action = table.Column<byte>(type: "INTEGER", nullable: false, defaultValue: (byte)0),
-                    antispam_sensitivity = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: (short)5),
-                    ratelimit_enabled = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
-                    ratelimit_action = table.Column<byte>(type: "INTEGER", nullable: false, defaultValue: (byte)1),
-                    ratelimit_sensitivity = table.Column<short>(type: "INTEGER", nullable: false, defaultValue: (short)5)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    prefix = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: true),
+                    locale = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: true),
+                    timezone_id = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    currency = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    suggestions_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    log_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    mute_rid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    silent_response_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    welcome_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    leave_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    welcome_msg = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    leave_msg = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    linkfilter_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    linkfilter_booters = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    linkfilter_disturbing = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    linkfilter_invites = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    linkfilter_loggers = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    linkfilter_shorteners = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    antiflood_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    antiflood_action = table.Column<byte>(type: "smallint", nullable: false, defaultValue: (byte)4),
+                    antiflood_sensitivity = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)5),
+                    antiflood_cooldown = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)10),
+                    antiinstantleave_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    antiinstantleave_cooldown = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)3),
+                    antispam_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    antispam_action = table.Column<byte>(type: "smallint", nullable: false, defaultValue: (byte)0),
+                    antispam_sensitivity = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)5),
+                    ratelimit_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    ratelimit_action = table.Column<byte>(type: "smallint", nullable: false, defaultValue: (byte)1),
+                    ratelimit_sensitivity = table.Column<short>(type: "smallint", nullable: false, defaultValue: (short)5)
                 },
                 constraints: table =>
                 {
@@ -141,7 +142,7 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false)
+                    uid = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -153,13 +154,13 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    cid = table.Column<long>(type: "INTEGER", nullable: true),
-                    message = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    is_repeating = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    cid = table.Column<long>(type: "bigint", nullable: true),
+                    message = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    is_repeating = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     repeat_interval = table.Column<TimeSpan>(type: "interval", nullable: true, defaultValue: new TimeSpan(0, 0, 0, 0, -1)),
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
+                    uid = table.Column<long>(type: "bigint", nullable: false),
                     execution_time = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false)
                 },
                 constraints: table =>
@@ -172,10 +173,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    url = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
-                    last_post_url = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    url = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    last_post_url = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -187,11 +188,11 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    additional_info = table.Column<string>(type: "TEXT", nullable: false),
-                    is_blacklisted = table.Column<bool>(type: "INTEGER", nullable: false, defaultValue: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    additional_info = table.Column<string>(type: "text", nullable: false),
+                    is_blacklisted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -203,10 +204,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    ip = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false),
-                    join_port = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 10480),
-                    query_port = table.Column<int>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false)
+                    ip = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false),
+                    join_port = table.Column<int>(type: "integer", nullable: false, defaultValue: 10480),
+                    query_port = table.Column<int>(type: "integer", nullable: false),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -218,8 +219,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    xp = table.Column<int>(type: "INTEGER", nullable: false, defaultValue: 1)
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    xp = table.Column<int>(type: "integer", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -231,8 +232,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    rid = table.Column<long>(type: "INTEGER", nullable: false)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    rid = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -251,9 +252,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    balance = table.Column<long>(type: "INTEGER", nullable: false)
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    balance = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -272,11 +273,11 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    cid = table.Column<long>(type: "INTEGER", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    cid = table.Column<long>(type: "bigint", nullable: false),
                     date = table.Column<DateTime>(type: "date", nullable: false),
-                    last_update_year = table.Column<int>(type: "INTEGER", nullable: false)
+                    last_update_year = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -295,12 +296,12 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    str = table.Column<int>(type: "INTEGER", nullable: false),
-                    vit = table.Column<int>(type: "INTEGER", nullable: false),
-                    max_vit = table.Column<int>(type: "INTEGER", nullable: false)
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    str = table.Column<int>(type: "integer", nullable: false),
+                    vit = table.Column<int>(type: "integer", nullable: false),
+                    max_vit = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -319,10 +320,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    cid = table.Column<long>(type: "INTEGER", nullable: false),
-                    command = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    allow = table.Column<bool>(type: "INTEGER", nullable: false)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    cid = table.Column<long>(type: "bigint", nullable: false),
+                    command = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    allow = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -341,9 +342,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    xid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    type = table.Column<byte>(type: "INTEGER", nullable: false)
+                    xid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    type = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -362,9 +363,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    xid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    type = table.Column<byte>(type: "INTEGER", nullable: false)
+                    xid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    type = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -383,9 +384,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    xid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    type = table.Column<byte>(type: "INTEGER", nullable: false)
+                    xid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    type = table.Column<byte>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -404,10 +405,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    trigger = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    trigger = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -426,10 +427,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    name_regex = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    name_regex = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -448,9 +449,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    rank = table.Column<short>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    rank = table.Column<short>(type: "smallint", nullable: false),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -469,10 +470,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    content = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    content = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -491,9 +492,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false),
-                    url = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    name = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    url = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -512,11 +513,11 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    price = table.Column<long>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    price = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -535,10 +536,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    reaction = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    reaction = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -557,10 +558,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    reaction = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    reaction = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -579,12 +580,12 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    rid = table.Column<long>(type: "INTEGER", nullable: true),
-                    type = table.Column<byte>(type: "INTEGER", nullable: false),
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    rid = table.Column<long>(type: "bigint", nullable: true),
+                    type = table.Column<byte>(type: "smallint", nullable: false),
+                    uid = table.Column<long>(type: "bigint", nullable: false),
                     execution_time = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false)
                 },
                 constraints: table =>
@@ -604,8 +605,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    rid = table.Column<long>(type: "INTEGER", nullable: false)
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    rid = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -624,10 +625,10 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false),
-                    cid = table.Column<long>(type: "INTEGER", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    cid = table.Column<long>(type: "bigint", nullable: false),
+                    name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -653,8 +654,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false),
-                    alias = table.Column<string>(type: "TEXT", maxLength: 32, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false),
+                    alias = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -673,8 +674,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false),
-                    ip = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false),
+                    ip = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -693,9 +694,9 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false),
-                    uid = table.Column<long>(type: "INTEGER", nullable: false),
-                    gid = table.Column<long>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false),
+                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -728,8 +729,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "INTEGER", nullable: false),
-                    uid = table.Column<long>(type: "INTEGER", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false),
+                    uid = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -748,8 +749,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    trigger = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                    trigger = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -768,8 +769,8 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    trigger = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                    trigger = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

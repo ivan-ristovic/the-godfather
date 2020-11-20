@@ -240,6 +240,45 @@
       [ "arg-five" ]
     ]
   },
+  "config antispam": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config antispam action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antispam reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config antispam sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config antispam exempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
+  "config antispam unexempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
   "config leave": {
     "usage": [
       [],

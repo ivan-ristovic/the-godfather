@@ -1,294 +1,229 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Database;
+using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services.Common;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class GuildModule
+
+    public partial class ConfigModule
     {
-        public partial class ConfigModule
+        [Group("antispam")]
+        [Aliases("as")]
+        public class AntispamModule : TheGodfatherServiceModule<AntispamService>
         {
-            [Group("antispam")]
-            [Description("Prevents users from posting more than specified amount of same messages.")]
-            [Aliases("as")]
+            public AntispamModule(AntispamService service)
+                : base(service) { }
 
-            public class AntispamModule : TheGodfatherServiceModule<AntispamService>
+
+            #region config antispam
+            [GroupCommand, Priority(3)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("desc-enable")] bool enable,
+                                               [Description("desc-sens")] short sens,
+                                               [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.TemporaryMute)
             {
+                if (sens < AntispamSettings.MinSensitivity || sens > AntispamSettings.MaxSensitivity)
+                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
 
-                public AntispamModule(AntispamService service, DbContextBuilder db)
-                    : base(service, db)
-                {
+                var settings = new AntispamSettings {
+                    Action = action,
+                    Enabled = enable,
+                    Sensitivity = sens
+                };
 
-                }
+                await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntispamSettings = settings);
 
-
-                [GroupCommand, Priority(3)]
-                public async Task ExecuteGroupAsync(CommandContext ctx,
-                                                   [Description("Enable?")] bool enable,
-                                                   [Description("Sensitivity (max repeated messages).")] short sensitivity,
-                                                   [Description("Action type.")] PunishmentAction action = PunishmentAction.TemporaryMute)
-                {
-                    if (sensitivity < 3 || sensitivity > 10)
-                        throw new CommandFailedException("The sensitivity is not in the valid range ([3, 10]).");
-
-                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                        cfg.AntispamEnabled = enable;
-                        cfg.AntispamAction = action;
-                        cfg.AntispamSensitivity = sensitivity;
-                    });
-
-                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-                    if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder {
-                            Title = "Guild config changed",
-                            Description = $"Antispam {(enable ? "enabled" : "disabled")}",
-                            Color = this.ModuleColor
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        if (enable) {
-                            emb.AddField("Antispam sensitivity", gcfg.AntispamSettings.Sensitivity.ToString(), inline: true);
-                            emb.AddField("Antispam action", gcfg.AntispamSettings.Action.ToTypeString(), inline: true);
-                        }
-                        await logchn.SendMessageAsync(embed: emb.Build());
-                    }
-
-                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.AntispamSettings.Enabled ? "Enabled" : "Disabled")} antispam actions.", important: false);
-                }
-
-                [GroupCommand, Priority(2)]
-                public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Enable?")] bool enable,
-                                             [Description("Action type.")] PunishmentAction action,
-                                             [Description("Sensitivity (max repeated messages).")] short sensitivity = 5)
-                    => this.ExecuteGroupAsync(ctx, enable, sensitivity, action);
-
-                [GroupCommand, Priority(1)]
-                public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Enable?")] bool enable)
-                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.TemporaryMute);
-
-                [GroupCommand, Priority(0)]
-                public async Task ExecuteGroupAsync(CommandContext ctx)
-                {
-                    CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-
-                    if (gcfg.AntispamSettings.Enabled) {
-                        var sb = new StringBuilder();
-                        sb.Append(Formatter.Bold("Sensitivity: ")).AppendLine(gcfg.AntispamSettings.Sensitivity.ToString());
-                        sb.Append(Formatter.Bold("Action: ")).AppendLine(gcfg.AntispamSettings.Action.ToString());
-
-                        sb.AppendLine().Append(Formatter.Bold("Exempts:"));
-
-                        List<ExemptedAntispamEntity> exempted;
-                        using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                            exempted = await db.ExemptsAntispam
-                                .Where(ee => ee.GuildId == ctx.Guild.Id)
-                                .OrderBy(ee => ee.Type)
-                                .ToListAsync();
-                        }
-
-                        if (exempted.Any()) {
-                            sb.AppendLine();
-                            foreach (ExemptedAntispamEntity ee in exempted)
-                                sb.AppendLine($"{ee.Type.ToUserFriendlyString()}: {ee.Id}");
-                        } else {
-                            sb.Append(" None");
-                        }
-
-                        await this.InformAsync(ctx, $"Antispam watch for this guild is {Formatter.Bold("enabled")}\n\n{sb.ToString()}");
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithColor(this.ModuleColor);
+                    if (enable) {
+                        emb.WithLocalizedDescription("evt-as-enabled");
+                        emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
+                        emb.AddLocalizedTitleField("str-punish-action", settings.Action.ToTypeString(), inline: true);
                     } else {
-                        await this.InformAsync(ctx, $"Antispam watch for this guild is {Formatter.Bold("disabled")}");
+                        emb.WithLocalizedDescription("evt-as-disabled");
                     }
-                }
+                });
 
-
-                #region COMMAND_ANTISPAM_ACTION
-                [Command("action")]
-                [Description("Set the action to execute when the antispam quota is hit.")]
-                [Aliases("setaction", "a")]
-
-                public async Task SetActionAsync(CommandContext ctx,
-                                                [Description("Action type.")] PunishmentAction action)
-                {
-                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                        cfg.AntispamSettings.Action = action;
-                    });
-
-                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-                    if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder {
-                            Title = "Guild config changed",
-                            Color = this.ModuleColor
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Antispam action changed to", gcfg.AntispamSettings.Action.ToTypeString());
-                        await logchn.SendMessageAsync(embed: emb.Build());
-                    }
-
-                    await this.InformAsync(ctx, $"Antispam action for this guild has been changed to {Formatter.Bold(gcfg.AntispamSettings.Action.ToTypeString())}", important: false);
-                }
-                #endregion
-
-                #region COMMAND_ANTISPAM_SENSITIVITY
-                [Command("sensitivity")]
-                [Description("Set the antispam sensitivity - max amount of repeated messages before an action is taken.")]
-                [Aliases("setsensitivity", "setsens", "sens", "s")]
-
-                public async Task SetSensitivityAsync(CommandContext ctx,
-                                                     [Description("Sensitivity (max repeated messages).")] short sensitivity)
-                {
-                    if (sensitivity < 3 || sensitivity > 10)
-                        throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
-
-                    GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                        cfg.AntispamSettings.Sensitivity = sensitivity;
-                    });
-
-                    DiscordChannel logchn = ctx.Services.GetService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-                    if (!(logchn is null)) {
-                        var emb = new DiscordEmbedBuilder {
-                            Title = "Guild config changed",
-                            Color = this.ModuleColor
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Antispam sensitivity changed to", $"Max {gcfg.AntispamSettings.Sensitivity} msgs per 5s");
-                        await logchn.SendMessageAsync(embed: emb.Build());
-                    }
-
-                    await this.InformAsync(ctx, $"Antispam sensitivity for this guild has been changed to {Formatter.Bold(gcfg.AntispamSettings.Sensitivity.ToString())} maximum repeated messages.", important: false);
-                }
-                #endregion
-
-                #region COMMAND_ANTISPAM_EXEMPT
-                [Command("exempt"), Priority(2)]
-                [Description("Disable the antispam watch for some entities (users, channels, etc).")]
-                [Aliases("ex", "exc")]
-
-                public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Members to exempt.")] params DiscordMember[] members)
-                {
-                    if (members is null || !members.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, members, ExemptedEntityType.Member);
-                        await db.SaveChangesAsync();
-                    }
-
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, "Successfully exempted given users.", important: false);
-                }
-
-                [Command("exempt"), Priority(1)]
-                public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Roles to exempt.")] params DiscordRole[] roles)
-                {
-                    if (roles is null || !roles.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, roles, ExemptedEntityType.Role);
-                        await db.SaveChangesAsync();
-                    }
-
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, "Successfully exempted given roles.", important: false);
-                }
-
-                [Command("exempt"), Priority(0)]
-                public async Task ExemptAsync(CommandContext ctx,
-                                             [Description("Channels to exempt.")] params DiscordChannel[] channels)
-                {
-                    if (channels is null || !channels.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.AddExemptions(ctx.Guild.Id, channels, ExemptedEntityType.Channel);
-                        await db.SaveChangesAsync();
-                    }
-
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, "Successfully exempted given channels.", important: false);
-                }
-                #endregion
-
-                #region COMMAND_ANTISPAM_UNEXEMPT
-                [Command("unexempt"), Priority(2)]
-                [Description("Remove an exempted entity and allow antispam watch for that entity.")]
-                [Aliases("unex", "uex")]
-
-                public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Members to unexempt.")] params DiscordMember[] members)
-                {
-                    if (members is null || !members.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.RemoveRange(
-                            db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Member && members.Any(m => m.Id == ex.Id))
-                        );
-                        await db.SaveChangesAsync();
-                    }
-
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, $"Successfully unexempted given users.", important: false);
-                }
-
-                [Command("unexempt"), Priority(1)]
-                public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Roles to unexempt.")] params DiscordRole[] roles)
-                {
-                    if (roles is null || !roles.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.RemoveRange(
-                            db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Role && roles.Any(r => r.Id == ex.Id))
-                        );
-                        await db.SaveChangesAsync();
-                    }
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, $"Successfully unexempted given roles.", important: false);
-                }
-
-                [Command("unexempt"), Priority(0)]
-                public async Task UnxemptAsync(CommandContext ctx,
-                                              [Description("Channels to unexempt.")] params DiscordChannel[] channels)
-                {
-                    if (channels is null || !channels.Any())
-                        throw new CommandFailedException("You need to provide users or channels or roles to exempt.");
-
-                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                        db.ExemptsAntispam.RemoveRange(
-                            db.ExemptsAntispam.Where(ex => ex.GuildId == ctx.Guild.Id && ex.Type == ExemptedEntityType.Channel && channels.Any(c => c.Id == ex.Id))
-                        );
-                        await db.SaveChangesAsync();
-                    }
-
-                    this.Service.UpdateExemptsForGuildAsync(ctx.Guild.Id);
-                    await this.InformAsync(ctx, $"Successfully unexempted given channel.", important: false);
-                }
-                #endregion
+                await ctx.InfoAsync(enable ? "evt-as-enabled" : "evt-as-disabled");
             }
+
+            [GroupCommand, Priority(2)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("desc-enable")] bool enable,
+                                         [Description("desc-punish-action")] PunishmentAction action,
+                                         [Description("desc-sens")] short sens = 5)
+                => this.ExecuteGroupAsync(ctx, enable, sens, action);
+
+            [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("desc-enable")] bool enable)
+                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick);
+
+            [GroupCommand, Priority(0)]
+#pragma warning disable CA1822 // Mark members as static
+            public Task ExecuteGroupAsync(CommandContext ctx)
+#pragma warning restore CA1822 // Mark members as static
+            {
+                return ctx.WithGuildConfigAsync(gcfg => {
+                    LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+                    return ctx.InfoAsync("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                });
+            }
+            #endregion
+
+            #region config antispam action
+            [Command("action")]
+            [Aliases("setaction", "setact", "act", "a")]
+            public async Task SetActionAsync(CommandContext ctx,
+                                            [Description("desc-punish-action")] PunishmentAction? action = null)
+            {
+                if (action is null) {
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-as-action", gcfg.AntispamAction.ToTypeString()));
+                    return;
+                }
+
+                await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.AntispamAction = action.Value;
+                });
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithLocalizedDescription("evt-as-action", action.Value.ToTypeString());
+                });
+
+                await ctx.InfoAsync("evt-as-action", action.Value.ToTypeString());
+            }
+            #endregion
+
+            #region config antispam sensitivity
+            [Command("sensitivity")]
+            [Aliases("setsensitivity", "setsens", "sens", "s")]
+            public async Task SetSensitivityAsync(CommandContext ctx,
+                                                 [Description("desc-sens")] short? sens = null)
+            {
+                if (sens is null) {
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-as-sens", gcfg.AntispamSensitivity));
+                    return;
+                }
+
+                if (sens < AntispamSettings.MinSensitivity || sens > AntispamSettings.MaxSensitivity)
+                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+
+                await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                    cfg.AntispamSensitivity = sens.Value;
+                });
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithLocalizedDescription("evt-as-sens", sens.Value);
+                });
+
+                await ctx.InfoAsync("evt-as-sens", sens.Value);
+            }
+            #endregion
+
+            #region config antispam reset
+            [Command("reset"), UsesInteractivity]
+            [Aliases("default", "def", "s", "rr")]
+            public async Task ResetAsync(CommandContext ctx)
+            {
+                await ctx.WithGuildConfigAsync(gcfg => {
+                    return !gcfg.AntispamEnabled ? throw new CommandFailedException(ctx, "cmd-err-reset-as-off") : Task.CompletedTask;
+                });
+
+                if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+                    return;
+
+                var settings = new AntispamSettings();
+                await this.ExecuteGroupAsync(ctx, true, settings.Action, settings.Sensitivity);
+            }
+            #endregion
+
+            #region config antispam exempt
+            [Command("exempt"), Priority(2)]
+            [Aliases("ex", "exc")]
+            public async Task ExemptAsync(CommandContext ctx,
+                                         [Description("desc-exempt-user")] params DiscordMember[] members)
+            {
+                if (members is null || !members.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members);
+                await ctx.InfoAsync();
+            }
+
+            [Command("exempt"), Priority(1)]
+            public async Task ExemptAsync(CommandContext ctx,
+                                         [Description("desc-exempt-role")] params DiscordRole[] roles)
+            {
+                if (roles is null || !roles.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles);
+                await ctx.InfoAsync();
+            }
+
+            [Command("exempt"), Priority(0)]
+            public async Task ExemptAsync(CommandContext ctx,
+                                         [Description("desc-exempt-chn")] params DiscordChannel[] channels)
+            {
+                if (channels is null || !channels.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels);
+                await ctx.InfoAsync();
+            }
+            #endregion
+
+            #region config antispam unexempt
+            [Command("unexempt"), Priority(2)]
+            [Aliases("unex", "uex")]
+            public async Task UnxemptAsync(CommandContext ctx,  
+                                          [Description("desc-unexempt-user")] params DiscordMember[] members)
+            {
+                if (members is null || !members.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members);
+                await ctx.InfoAsync();
+            }
+
+            [Command("unexempt"), Priority(1)]
+            public async Task UnxemptAsync(CommandContext ctx,
+                                          [Description("desc-unexempt-role")] params DiscordRole[] roles)
+            {
+                if (roles is null || !roles.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles);
+                await ctx.InfoAsync();
+            }
+
+            [Command("unexempt"), Priority(0)]
+            public async Task UnxemptAsync(CommandContext ctx,
+                                          [Description("desc-unexempt-chn")] params DiscordChannel[] channels)
+            {
+                if (channels is null || !channels.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels);
+                await ctx.InfoAsync();
+            }
+            #endregion
         }
     }
 }

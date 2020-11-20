@@ -99,9 +99,14 @@ namespace TheGodfather
             Log.Information("Establishing database connection");
             var dbb = new DbContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
 
-            Log.Information("Migrating the database");
-            using (TheGodfatherDbContext db = dbb.CreateContext())
-                await db.Database.MigrateAsync();
+            Log.Information("Testing database context creation");
+            using (TheGodfatherDbContext db = dbb.CreateContext()) {
+                IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+                if (pendingMigrations.Any()) {
+                    Log.Information("Applying pending database migrations: {PendingDbMigrations}", pendingMigrations);
+                    await db.Database.MigrateAsync();
+                }
+            }
 
             return dbb;
         }

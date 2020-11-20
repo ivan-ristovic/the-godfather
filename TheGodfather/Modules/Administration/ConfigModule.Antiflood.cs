@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
             {
                 return ctx.WithGuildConfigAsync(gcfg => {
                     LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync("fmt-antiflood", gcfg.AntifloodSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                    return ctx.InfoAsync("fmt-settings-af", gcfg.AntifloodSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
                 });
             }
             #endregion
