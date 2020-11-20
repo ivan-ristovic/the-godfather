@@ -34,6 +34,15 @@ namespace TheGodfather.Extensions
             return mctx.TimedOut ? null : mctx.Result.Author;
         }
 
+        
+        public static Task RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
+        {
+            channel ??= ctx.Channel;
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+            action(emb);
+            return channel.SendMessageAsync(embed: emb.Build());
+        }
 
         public static string BuildInvocationDetailsString(this CommandContext ctx, string? reason = null)
         {

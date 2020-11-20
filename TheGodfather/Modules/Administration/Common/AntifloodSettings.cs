@@ -4,6 +4,11 @@ namespace TheGodfather.Modules.Administration.Common
 {
     public sealed class AntifloodSettings
     {
+        public const int MinCooldown = 5;
+        public const int MaxCooldown = 60;
+        public const int MinSensitivity = 2;
+        public const int MaxSensitivity = 20;
+
         public PunishmentAction Action { get; set; } = PunishmentAction.PermanentBan;
         public short Cooldown { get; set; } = 10;
         public bool Enabled { get; set; } = false;

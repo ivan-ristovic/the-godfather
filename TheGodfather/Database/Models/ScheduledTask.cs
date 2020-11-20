@@ -70,12 +70,14 @@ namespace TheGodfather.Database.Models
     [Table("reminders")]
     public class Reminder : ScheduledTask
     {
+        public const int MessageLimit = 256;
+
         [Column("cid")]
         public long? ChannelIdDb { get; set; }
         [NotMapped]
         public ulong ChannelId { get => (ulong)this.ChannelIdDb.GetValueOrDefault(); set => this.ChannelIdDb = (long)value; }
 
-        [Column("message"), Required, MaxLength(256)]
+        [Column("message"), Required, MaxLength(MessageLimit)]
         public string Message { get; set; } = null!;
 
         [Column("is_repeating")]

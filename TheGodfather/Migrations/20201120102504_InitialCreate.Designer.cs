@@ -4,13 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TheGodfather.Database;
 
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20201117200744_InitialCreate")]
+    [Migration("20201120102504_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,18 +17,16 @@ namespace TheGodfather.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("gf")
-                .UseIdentityByDefaultColumns()
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("TheGodfather.Database.Models.AutoRole", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("RoleIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("rid");
 
                     b.HasKey("GuildIdDb", "RoleIdDb");
@@ -40,15 +37,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.BankAccount", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<long>("Balance")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("balance");
 
                     b.HasKey("GuildIdDb", "UserIdDb");
@@ -59,15 +56,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.Birthday", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("ChannelIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cid");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<DateTime>("Date")
@@ -75,7 +72,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("date");
 
                     b.Property<int>("LastUpdateYear")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("last_update_year");
 
                     b.HasKey("GuildIdDb", "ChannelIdDb", "UserIdDb");
@@ -86,12 +83,12 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.BlockedChannel", b =>
                 {
                     b.Property<long>("ChannelIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cid");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("reason");
 
                     b.HasKey("ChannelIdDb");
@@ -102,12 +99,12 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.BlockedUser", b =>
                 {
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("reason");
 
                     b.HasKey("UserIdDb");
@@ -119,18 +116,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<int>("Activity")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("activity_type");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("status");
 
                     b.HasKey("Id");
@@ -141,29 +137,29 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.Chicken", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<int>("BareMaxVitality")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("max_vit");
 
                     b.Property<int>("BareStrength")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("str");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.Property<int>("Vitality")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("vit");
 
                     b.HasKey("GuildIdDb", "UserIdDb");
@@ -174,15 +170,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.ChickenBoughtUpgrade", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.HasKey("Id", "GuildIdDb", "UserIdDb");
@@ -196,26 +192,25 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("Cost")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cost");
 
                     b.Property<int>("Modifier")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("mod");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.Property<int>("UpgradesStat")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("stat");
 
                     b.HasKey("Id");
@@ -226,20 +221,20 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.CommandRule", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("ChannelIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cid");
 
                     b.Property<string>("Command")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
                         .HasColumnName("command");
 
                     b.Property<bool>("Allowed")
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("allow");
 
                     b.HasKey("GuildIdDb", "ChannelIdDb", "Command");
@@ -251,18 +246,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("Response")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("reaction");
 
                     b.HasKey("Id");
@@ -275,12 +269,12 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.EmojiReactionTrigger", b =>
                 {
                     b.Property<int>("ReactionId")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<string>("Trigger")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("trigger");
 
                     b.HasKey("ReactionId", "Trigger");
@@ -291,15 +285,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.ExemptedAntispamEntity", b =>
                 {
                     b.Property<long>("IdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("xid");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<byte>("Type")
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("type");
 
                     b.HasKey("IdDb", "GuildIdDb", "Type");
@@ -312,15 +306,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.ExemptedLoggingEntity", b =>
                 {
                     b.Property<long>("IdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("xid");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<byte>("Type")
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("type");
 
                     b.HasKey("IdDb", "GuildIdDb", "Type");
@@ -333,15 +327,15 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.ExemptedRatelimitEntity", b =>
                 {
                     b.Property<long>("IdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("xid");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<byte>("Type")
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("type");
 
                     b.HasKey("IdDb", "GuildIdDb", "Type");
@@ -355,18 +349,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("RegexString")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("trigger");
 
                     b.HasKey("Id");
@@ -380,18 +373,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("RegexString")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
                         .HasColumnName("name_regex");
 
                     b.HasKey("Id");
@@ -404,90 +396,90 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.GameStats", b =>
                 {
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<int>("AnimalRacesWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("ar_won");
 
                     b.Property<int>("CaroLost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("caro_lost");
 
                     b.Property<int>("CaroWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("caro_won");
 
                     b.Property<int>("Chain4Lost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("c4_lost");
 
                     b.Property<int>("Chain4Won")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("c4_won");
 
                     b.Property<int>("DuelLost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("duel_lost");
 
                     b.Property<int>("DuelWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("duel_won");
 
                     b.Property<int>("HangmanWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("hangman_won");
 
                     b.Property<int>("NumberRacesWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("nr_won");
 
                     b.Property<int>("OthelloLost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("othello_lost");
 
                     b.Property<int>("OthelloWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("othello_won");
 
                     b.Property<int>("QuizWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("quiz_won");
 
                     b.Property<int>("TicTacToeLost")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("ttt_lost");
 
                     b.Property<int>("TicTacToeWon")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0)
                         .HasColumnName("ttt_won");
 
@@ -499,181 +491,181 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.GuildConfig", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<short>("AntiInstantLeaveCooldown")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((short)3)
                         .HasColumnName("antiinstantleave_cooldown");
 
                     b.Property<bool>("AntiInstantLeaveEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("antiinstantleave_enabled");
 
                     b.Property<byte>("AntifloodAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((byte)4)
                         .HasColumnName("antiflood_action");
 
                     b.Property<short>("AntifloodCooldown")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((short)10)
                         .HasColumnName("antiflood_cooldown");
 
                     b.Property<bool>("AntifloodEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("antiflood_enabled");
 
                     b.Property<short>("AntifloodSensitivity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((short)5)
                         .HasColumnName("antiflood_sensitivity");
 
                     b.Property<byte>("AntispamAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("antispam_action");
 
                     b.Property<bool>("AntispamEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("antispam_enabled");
 
                     b.Property<short>("AntispamSensitivity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((short)5)
                         .HasColumnName("antispam_sensitivity");
 
                     b.Property<string>("Currency")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("currency");
 
                     b.Property<long>("LeaveChannelIdDb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0L)
                         .HasColumnName("leave_cid");
 
                     b.Property<string>("LeaveMessage")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("leave_msg");
 
                     b.Property<bool>("LinkfilterBootersEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true)
                         .HasColumnName("linkfilter_booters");
 
                     b.Property<bool>("LinkfilterDiscordInvitesEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("linkfilter_invites");
 
                     b.Property<bool>("LinkfilterDisturbingWebsitesEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true)
                         .HasColumnName("linkfilter_disturbing");
 
                     b.Property<bool>("LinkfilterEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("linkfilter_enabled");
 
                     b.Property<bool>("LinkfilterIpLoggersEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true)
                         .HasColumnName("linkfilter_loggers");
 
                     b.Property<bool>("LinkfilterUrlShortenersEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(true)
                         .HasColumnName("linkfilter_shorteners");
 
                     b.Property<string>("Locale")
                         .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("locale");
 
                     b.Property<long>("LogChannelIdDb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0L)
                         .HasColumnName("log_cid");
 
                     b.Property<long>("MuteRoleIdDb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0L)
                         .HasColumnName("mute_rid");
 
                     b.Property<string>("Prefix")
                         .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("prefix");
 
                     b.Property<byte>("RatelimitAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((byte)1)
                         .HasColumnName("ratelimit_action");
 
                     b.Property<bool>("RatelimitEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("ratelimit_enabled");
 
                     b.Property<short>("RatelimitSensitivity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue((short)5)
                         .HasColumnName("ratelimit_sensitivity");
 
                     b.Property<bool>("ReactionResponse")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("silent_response_enabled");
 
                     b.Property<bool>("SuggestionsEnabled")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("suggestions_enabled");
 
                     b.Property<string>("TimezoneId")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("timezone_id");
 
                     b.Property<long>("WelcomeChannelIdDb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(0L)
                         .HasColumnName("welcome_cid");
 
                     b.Property<string>("WelcomeMessage")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("welcome_msg");
 
                     b.HasKey("GuildIdDb");
@@ -685,28 +677,27 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("ExecutionTime")
                         .HasColumnType("timestamptz")
                         .HasColumnName("execution_time");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long?>("RoleIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("rid");
 
                     b.Property<byte>("Type")
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("type");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.HasKey("Id");
@@ -720,18 +711,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("content");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.HasKey("Id");
@@ -744,18 +734,18 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.Meme", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("Name")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("url");
 
                     b.HasKey("GuildIdDb", "Name");
@@ -766,7 +756,7 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.PrivilegedUser", b =>
                 {
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.HasKey("UserIdDb");
@@ -778,22 +768,21 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.Property<long>("Price")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("price");
 
                     b.HasKey("Id");
@@ -806,11 +795,11 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.PurchasedItem", b =>
                 {
                     b.Property<int>("ItemId")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.HasKey("ItemId", "UserIdDb");
@@ -822,12 +811,11 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long?>("ChannelIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cid");
 
                     b.Property<DateTimeOffset>("ExecutionTime")
@@ -836,14 +824,14 @@ namespace TheGodfather.Migrations
 
                     b.Property<bool>("IsRepeating")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("is_repeating");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("message");
 
                     b.Property<TimeSpan?>("RepeatIntervalDb")
@@ -853,7 +841,7 @@ namespace TheGodfather.Migrations
                         .HasColumnName("repeat_interval");
 
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.HasKey("Id");
@@ -865,18 +853,19 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<string>("LastPostUrl")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
                         .HasColumnName("last_post_url");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT")
                         .HasColumnName("url");
 
                     b.HasKey("Id");
@@ -887,21 +876,21 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.RssSubscription", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("ChannelIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("cid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("Id", "GuildIdDb", "ChannelIdDb");
@@ -914,11 +903,11 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.SelfRole", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<long>("RoleIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("rid");
 
                     b.HasKey("GuildIdDb", "RoleIdDb");
@@ -930,25 +919,24 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<string>("Info")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("TEXT")
                         .HasColumnName("additional_info");
 
                     b.Property<bool>("IsBlacklisted")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(false)
                         .HasColumnName("is_blacklisted");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("Id");
@@ -963,11 +951,11 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<string>("Alias")
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("alias");
 
                     b.Property<int>("PlayerId")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.HasKey("Alias", "PlayerId");
@@ -981,11 +969,11 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<string>("IP")
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("ip");
 
                     b.Property<int>("PlayerId")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.HasKey("IP", "PlayerId");
@@ -999,23 +987,23 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<string>("IP")
                         .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("ip");
 
                     b.Property<int>("JoinPort")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(10480)
                         .HasColumnName("join_port");
 
                     b.Property<int>("QueryPort")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("query_port");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("IP", "JoinPort", "QueryPort");
@@ -1027,18 +1015,17 @@ namespace TheGodfather.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("id");
 
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<string>("Response")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("reaction");
 
                     b.HasKey("Id");
@@ -1051,12 +1038,12 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.TextReactionTrigger", b =>
                 {
                     b.Property<int>("ReactionId")
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("id");
 
                     b.Property<string>("Trigger")
                         .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("trigger");
 
                     b.HasKey("ReactionId", "Trigger");
@@ -1067,12 +1054,12 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.XpCount", b =>
                 {
                     b.Property<long>("UserIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("uid");
 
                     b.Property<int>("XpDb")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("INTEGER")
                         .HasDefaultValue(1)
                         .HasColumnName("xp");
 
@@ -1084,17 +1071,17 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.XpRank", b =>
                 {
                     b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("gid");
 
                     b.Property<short>("Rank")
-                        .HasColumnType("smallint")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("rank");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("name");
 
                     b.HasKey("GuildIdDb", "Rank");

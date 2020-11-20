@@ -59,12 +59,12 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (regexString.Length < 3 || regexString.Length > 120) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString)));
+                if (regexString.Length < 3 || regexString.Length > Filter.FilterLimit) {
+                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
                     continue;
                 }
 
-                if (ctx.Services.GetService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
+                if (ctx.Services.GetRequiredService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
                     eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
                     continue;
                 }

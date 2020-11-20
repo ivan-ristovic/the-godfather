@@ -36,6 +36,7 @@
   "commandrules forbid": "Forbids command execution in specified channel(s), or globally if they are not specified.",
   "commandrules list": "Lists active command rules in specified channel or globally if the channel is not specified.",
   "config": "Manage bot configuration for this guild. Group call lists current guild configuration.",
+  "config antiflood": "Prevents guild raids (groups of users purposely flooding the guild). You can specify the action, sensitivity (number of users allowed to join before the action is performed) as well as the cooldown (timespan after which the user is removed from the watch). For example, an active watch with sensitivity 5 and cooldown of 10s will execute action if 5 or more users join the guild in period of 10s. The action is applied to all of the users that are currently under watch.",
   "config leave": "Configures member leave messages.",
   "config leave channel": "Enables leave messages in specified channel.",
   "config leave message": "Customizes leave message.",

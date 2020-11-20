@@ -4,6 +4,9 @@ namespace TheGodfather.Modules.Administration.Common
 {
     public sealed class AntispamSettings
     {
+        public const int MinSensitivity = 3;
+        public const int MaxSensitivity = 10;
+
         public PunishmentAction Action { get; set; } = PunishmentAction.TemporaryMute;
         public bool Enabled { get; set; } = false;
         public short Sensitivity { get; set; } = 5;

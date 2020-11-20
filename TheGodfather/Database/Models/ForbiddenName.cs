@@ -8,6 +8,8 @@ namespace TheGodfather.Database.Models
     [Table("forbidden_names")]
     public class ForbiddenName
     {
+        public const int NameLimit = 128;
+
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,7 +22,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("name_regex"), Required, MaxLength(64)]
+        [Column("name_regex"), Required, MaxLength(NameLimit)]
         public string RegexString { get; set; } = null!;
 
         [NotMapped]

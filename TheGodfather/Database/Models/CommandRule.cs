@@ -6,6 +6,8 @@ namespace TheGodfather.Database.Models
     [Table("cmd_rules")]
     public class CommandRule
     {
+        public const int CommandNameLimit = 64;
+
         [ForeignKey("GuildConfig")]
         [Column("gid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -19,7 +21,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
 
-        [Column("command"), Required, MaxLength(32)]
+        [Column("command"), Required, MaxLength(CommandNameLimit)]
         public string Command { get; set; } = null!;
 
         [Column("allow"), Required]

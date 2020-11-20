@@ -8,6 +8,8 @@ namespace TheGodfather.Database.Models
     [Table("swat_players")]
     public class SwatPlayer
     {
+        public const int NameLimit = 32;
+
         public SwatPlayer()
         {
             this.DbAliases = new HashSet<SwatPlayerAlias>();
@@ -20,7 +22,7 @@ namespace TheGodfather.Database.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Column("name"), Required, MaxLength(32)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
         [Column("additional_info")]
@@ -44,11 +46,13 @@ namespace TheGodfather.Database.Models
     [Table("swat_aliases")]
     public class SwatPlayerAlias
     {
+        public const int NameLimit = 32;
+
         [ForeignKey("Player")]
         [Column("id")]
         public int PlayerId { get; set; }
 
-        [Column("alias"), Required, MaxLength(32)]
+        [Column("alias"), Required, MaxLength(NameLimit)]
         public string Alias { get; set; } = null!;
 
 
@@ -59,11 +63,13 @@ namespace TheGodfather.Database.Models
     [Table("swat_ips")]
     public class SwatPlayerIP
     {
+        public const int IpLimit = 16;
+
         [ForeignKey("Player")]
         [Column("id")]
         public int PlayerId { get; set; }
 
-        [Column("ip"), Required, MaxLength(16)]
+        [Column("ip"), Required, MaxLength(IpLimit)]
         public string IP { get; set; } = null!;
 
 

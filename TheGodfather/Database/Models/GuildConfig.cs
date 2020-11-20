@@ -9,6 +9,12 @@ namespace TheGodfather.Database.Models
     [Table("guild_cfg")]
     public class GuildConfig
     {
+        public const int LocaleLimit = 8;
+        public const int PrefixLimit = 8;
+        public const int TimezoneIdLimit = 32;
+        public const int CurrencyLimit = 32;
+        public const int MemberUpdateMessageLimit = 128;
+
         public virtual ICollection<BankAccount> Accounts { get; set; }
         public virtual ICollection<AutoRole> AutoRoles { get; set; }
         public virtual ICollection<Birthday> Birthdays { get; set; }
@@ -63,16 +69,16 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("prefix"), MaxLength(8)]
+        [Column("prefix"), MaxLength(PrefixLimit)]
         public string? Prefix { get; set; }
 
-        [Column("locale"), MaxLength(8)]
+        [Column("locale"), MaxLength(LocaleLimit)]
         public string? Locale { get; set; }
 
-        [Column("timezone_id"), MaxLength(32)]
+        [Column("timezone_id"), MaxLength(TimezoneIdLimit)]
         public string? TimezoneId { get; set; }
 
-        [Column("currency"), MaxLength(32)]
+        [Column("currency"), MaxLength(CurrencyLimit)]
         public string? Currency { get; set; }
 
         [Column("suggestions_enabled")]
@@ -105,10 +111,10 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong LeaveChannelId { get => (ulong)this.LeaveChannelIdDb; set => this.LeaveChannelIdDb = (long)value; }
 
-        [Column("welcome_msg"), MaxLength(128)]
+        [Column("welcome_msg"), MaxLength(MemberUpdateMessageLimit)]
         public string? WelcomeMessage { get; set; }
 
-        [Column("leave_msg"), MaxLength(128)]
+        [Column("leave_msg"), MaxLength(MemberUpdateMessageLimit)]
         public string? LeaveMessage { get; set; }
         #endregion
 

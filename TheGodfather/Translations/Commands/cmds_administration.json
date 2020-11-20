@@ -208,6 +208,11 @@
       []
     ]
   },
+  "config": {
+    "usage": [
+      []
+    ]
+  },
   "config leave": {
     "usage": [
       [],

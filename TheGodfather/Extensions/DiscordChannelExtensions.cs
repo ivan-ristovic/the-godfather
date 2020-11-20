@@ -18,9 +18,12 @@ namespace TheGodfather.Extensions
             });
         }
 
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, params object?[]? args)
+            => LocalizedEmbedAsync(channel, lcs, key, null, null, args);
+
         public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, 
-                                                               DiscordEmoji? icon = null, DiscordColor? color = null,
-                                                               params object?[]? args)
+                                                               DiscordEmoji? icon, DiscordColor? color,
+                                                               object?[]? args)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {lcs.GetString(channel.Guild.Id, key, args)}",

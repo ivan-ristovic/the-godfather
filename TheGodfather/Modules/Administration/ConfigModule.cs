@@ -195,7 +195,7 @@ namespace TheGodfather.Modules.Administration
         private static async Task SetupPrefixAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-prefix", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-prefix-new");
+                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-prefix-new", GuildConfig.PrefixLimit);
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= 8);
                 gcfg.Prefix = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
             }
@@ -286,16 +286,16 @@ namespace TheGodfather.Modules.Administration
                 gcfg.RatelimitEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.ToTypeString())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-rl-action-new", args: Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.RatelimitAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-rl-sens", channel: channel, reply: false, args: gcfg.RatelimitSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-rl-sens-new");
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short sens) && sens >= 4 && sens <= 10
+                        m => short.TryParse(m.Content, out short sens) && sens >= RatelimitSettings.MinSensitivity && sens <= RatelimitSettings.MaxSensitivity
                     );
                     gcfg.RatelimitSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
@@ -309,16 +309,16 @@ namespace TheGodfather.Modules.Administration
                 gcfg.AntispamEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.ToTypeString())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-as-action-new", args: Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntispamAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-sens", channel: channel, reply: false, args: gcfg.AntispamSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-as-sens-new");
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short sens) && sens >= 3 && sens <= 10
+                        m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
                     );
                     gcfg.AntispamSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
@@ -332,24 +332,24 @@ namespace TheGodfather.Modules.Administration
                 gcfg.AntifloodEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.ToTypeString())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-af-action-new", args: Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntifloodAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-sens", channel: channel, reply: false, args: gcfg.AntifloodSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-af-sens-new");
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short sens) && sens >= 2 && sens <= 20
+                        m => short.TryParse(m.Content, out short sens) && sens >= AntifloodSettings.MinSensitivity && sens <= AntifloodSettings.MaxSensitivity
                     );
                     gcfg.AntifloodSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-af-cd-new");
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short sens) && sens >= 5 && sens <= 60
+                        m => short.TryParse(m.Content, out short cd) && cd >= AntifloodSettings.MinCooldown && cd <= AntifloodSettings.MaxCooldown
                     );
                     gcfg.AntifloodCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
@@ -363,9 +363,10 @@ namespace TheGodfather.Modules.Administration
                 gcfg.AntiInstantLeaveEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-il-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-il-cd-new");
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short sens) && sens >= 2 && sens <= 20
+                        m => short.TryParse(m.Content, out short cd) 
+                          && cd >= AntiInstantLeaveSettings.MinCooldown && cd <= AntiInstantLeaveSettings.MaxCooldown
                     );
                     gcfg.AntiInstantLeaveCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
@@ -375,8 +376,9 @@ namespace TheGodfather.Modules.Administration
         private static async Task SetupCurrencyAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-currency", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-currency-new");
-                InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= 30);
+                LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+                await channel.LocalizedEmbedAsync(lcs, "q-setup-currency-new", GuildConfig.CurrencyLimit);
+                InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.CurrencyLimit);
                 gcfg.Currency = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
             }
         }

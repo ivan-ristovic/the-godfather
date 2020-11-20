@@ -6,6 +6,8 @@ namespace TheGodfather.Database.Models
     [Table("rss_subscriptions")]
     public class RssSubscription
     {
+        public const int NameLimit = 64;
+
         [ForeignKey("Feed")]
         [Column("id")]
         public int Id { get; set; }
@@ -23,7 +25,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
 
-        [Column("name"), Required, MaxLength(64)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
 

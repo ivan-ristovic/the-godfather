@@ -6,6 +6,8 @@ namespace TheGodfather.Database.Models
     [Table("insults")]
     public class Insult
     {
+        public const int InsultLimit = 128;
+
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -18,7 +20,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("content"), Required, MaxLength(128)]
+        [Column("content"), Required, MaxLength(InsultLimit)]
         public string Content { get; set; } = null!;
 
 

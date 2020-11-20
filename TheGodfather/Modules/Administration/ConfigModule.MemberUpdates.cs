@@ -87,8 +87,8 @@ namespace TheGodfather.Modules.Administration
             public async Task WelcomeMessageAsync(CommandContext ctx,
                                                  [RemainingText, Description("desc-welcome-msg")] string message)
             {
-                if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
-                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg");
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
+                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg", GuildConfig.MemberUpdateMessageLimit);
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
 
@@ -179,8 +179,8 @@ namespace TheGodfather.Modules.Administration
             public async Task WelcomeMessageAsync(CommandContext ctx,
                                                  [RemainingText, Description("desc-leave-msg")] string message)
             {
-                if (!string.IsNullOrWhiteSpace(message) && (message.Length < 3 || message.Length > 120))
-                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg");
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > GuildConfig.MemberUpdateMessageLimit)
+                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg", GuildConfig.MemberUpdateMessageLimit);
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
 

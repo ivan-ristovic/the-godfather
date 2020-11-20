@@ -7,6 +7,8 @@ namespace TheGodfather.Database.Models
     [Table("purchasable_items")]
     public class PurchasableItem
     {
+        public const int NameLimit = 128;
+     
         public PurchasableItem()
         {
             this.Purchases = new HashSet<PurchasedItem>();
@@ -24,7 +26,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("name"), Required, MaxLength(64)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
         [Column("price"), Required]

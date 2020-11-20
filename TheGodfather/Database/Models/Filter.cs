@@ -8,6 +8,8 @@ namespace TheGodfather.Database.Models
     [Table("filters")]
     public class Filter
     {
+        public const int FilterLimit = 128;
+
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +21,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("trigger"), Required, MaxLength(128)]
+        [Column("trigger"), Required, MaxLength(FilterLimit)]
         public string RegexString { get; set; } = "";
 
         [NotMapped]

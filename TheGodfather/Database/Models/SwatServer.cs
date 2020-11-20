@@ -28,8 +28,11 @@ namespace TheGodfather.Database.Models
             };
         }
 
+        public const int IpLimit = 16;
+        public const int NameLimit = 32;
 
-        [Column("ip"), Required, MaxLength(16)]
+
+        [Column("ip"), Required, MaxLength(IpLimit)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string IP { get; set; } = null!;
 
@@ -39,7 +42,7 @@ namespace TheGodfather.Database.Models
         [Column("query_port")]
         public int QueryPort { get; set; }
 
-        [Column("name"), Required, MaxLength(32)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
     }
 

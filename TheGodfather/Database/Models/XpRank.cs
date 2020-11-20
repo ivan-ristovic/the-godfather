@@ -6,6 +6,8 @@ namespace TheGodfather.Database.Models
     [Table("guild_ranks")]
     public class XpRank
     {
+        public const int NameLimit = 32;
+
         [ForeignKey("GuildConfig")]
         [Column("gid")]
         public long GuildIdDb { get; set; }
@@ -15,7 +17,7 @@ namespace TheGodfather.Database.Models
         [Column("rank")]
         public short Rank { get; set; }
 
-        [Column("name"), Required, MaxLength(32)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
 

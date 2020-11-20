@@ -7,6 +7,9 @@ namespace TheGodfather.Database.Models
     [Table("chicken_upgrades")]
     public class ChickenUpgrade
     {
+        public const int NameLimit = 32;
+
+
         public ChickenUpgrade()
         {
             this.BoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
@@ -17,7 +20,7 @@ namespace TheGodfather.Database.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Column("name"), Required, MaxLength(32)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
         [Column("cost")]

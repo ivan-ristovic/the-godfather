@@ -11,13 +11,17 @@ namespace TheGodfather.Database.Models
 {
     public abstract class ReactionTrigger
     {
-        [Column("trigger"), Required, MaxLength(128)]
+        public const int TriggerLimit = 128;
+
+        [Column("trigger"), Required, MaxLength(TriggerLimit)]
         public string Trigger { get; set; } = null!;
     }
 
 
     public abstract class Reaction : IEquatable<Reaction>
     {
+        public const int ResponseLimit = 128;
+     
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,7 +33,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("reaction"), Required, MaxLength(128)]
+        [Column("reaction"), Required, MaxLength(ResponseLimit)]
         public string Response { get; set; } = null!;
 
 

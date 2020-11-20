@@ -58,6 +58,9 @@ namespace TheGodfather.Database.Models
             => (long)Math.Pow(10, 2 + attr / (double)50);
 
 
+        public const int NameLimit = 32;
+
+
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long UserIdDb { get; set; }
@@ -70,7 +73,7 @@ namespace TheGodfather.Database.Models
         [NotMapped]
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
-        [Column("name"), Required, MaxLength(32)]
+        [Column("name"), Required, MaxLength(NameLimit)]
         public string Name { get; set; } = null!;
 
         [Column("str")]
