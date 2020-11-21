@@ -166,18 +166,14 @@ namespace TheGodfather.Extensions
 
         private static void InternalLog(LogEventLevel level, int shardId, string template, Exception? ex = null, object[]? propertyValues = null)
         {
-#pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
                 Log.Write(level, ex, template, propertyValues);
-#pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
 
         private static void InternalLogMany(LogEventLevel level, int shardId, string[] templates, Exception? ex = null, object[]? propertyValues = null)
         {
-#pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
                 Log.Write(level, ex, string.Join(Environment.NewLine, templates), propertyValues);
-#pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
     }
 

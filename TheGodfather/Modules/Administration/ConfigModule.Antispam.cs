@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-as-action", gcfg.AntispamAction.ToTypeString()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-as-action", gcfg.AntispamAction.ToTypeString()));
                     return;
                 }
 
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-as-action", action.Value.ToTypeString());
                 });
 
-                await ctx.InfoAsync("evt-as-action", action.Value.ToTypeString());
+                await ctx.InfoAsync(this.ModuleColor, "evt-as-action", action.Value.ToTypeString());
             }
             #endregion
 
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("desc-sens")] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-as-sens", gcfg.AntispamSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-as-sens", gcfg.AntispamSensitivity));
                     return;
                 }
 
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-as-sens", sens.Value);
                 });
 
-                await ctx.InfoAsync("evt-as-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-as-sens", sens.Value);
             }
             #endregion
 

@@ -1,69 +1,60 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class GuildModule
+    public partial class ConfigModule
     {
-        public partial class ConfigModule
+        [Group("localization")]
+        [Aliases("locale", "language", "lang", "region")]
+        public class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
         {
-            [Group("localization")]
-            [Description("Change the bot locale (language and date formats) for this guild. Group call shows current guild locale.")]
-            [Aliases("locale", "language", "lang", "region")]
+            public LocalizationModule(LocalizationService service)
+                : base(service) { }
 
-            public class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
+
+            [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("desc-locale")] string locale)
+                => this.SetLocaleAsync(ctx, locale);
+
+            [GroupCommand, Priority(0)]
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => ctx.InfoAsync(this.ModuleColor, "fmt-locale", this.Service.GetGuildLocale(ctx.Guild.Id));
+
+
+            #region config localization set
+            [Command("set")]
+            [Aliases("change")]
+            public async Task SetLocaleAsync(CommandContext ctx,
+                                            [Description("Members to exempt.")] string locale)
             {
+                if (!await this.Service.SetGuildLocaleAsync(ctx.Guild.Id, locale))
+                    throw new CommandFailedException(ctx, "cmd-err-locale");
 
-                public LocalizationModule(LocalizationService service, DbContextBuilder db)
-                    : base(service, db)
-                {
-
-                }
-
-
-                [GroupCommand, Priority(1)]
-                public Task ExecuteGroupAsync(CommandContext ctx,
-                                                   [Description("Locale")] string locale)
-                    => this.SetLocaleAsync(ctx, locale);
-
-                [GroupCommand, Priority(0)]
-                public Task ExecuteGroupAsync(CommandContext ctx)
-                    => this.InformAsync(ctx, $"This guild locale: {this.Service.GetGuildLocale(ctx.Guild.Id)}");
-
-
-                #region COMMAND_LOCALE_SET
-                [Command("set")]
-                [Description("Change the locale for the guild.")]
-
-                public async Task SetLocaleAsync(CommandContext ctx,
-                                                [Description("Members to exempt.")] string locale)
-                {
-                    if (!await this.Service.SetGuildLocaleAsync(ctx.Guild.Id, locale))
-                        throw new CommandFailedException("Given locale does not exist");
-
-                    await this.InformAsync(ctx, "Successfully changed guild locale.", important: false);
-                }
-                #endregion
-
-                #region COMMAND_LOCALE_LIST
-                [Command("list")]
-                [Description("List all available locales.")]
-                [Aliases("l", "ls")]
-                public Task ListLocalesAsync(CommandContext ctx)
-                {
-                    IReadOnlyList<string> locales = this.Service.AvailableLocales;
-                    return ctx.PaginateAsync("Available locales", locales, s => s, this.ModuleColor);
-                }
-                #endregion
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-locale-change", locale);
+                    emb.WithColor(this.ModuleColor);
+                });
+                await ctx.InfoAsync(this.ModuleColor, "evt-locale-change", locale);
             }
+            #endregion
+
+            #region config locale list
+            [Command("list")]
+            [Aliases("print", "show", "ls", "l", "p")]
+            public Task ListLocalesAsync(CommandContext ctx)
+            {
+                IReadOnlyList<string> locales = this.Service.AvailableLocales;
+                return ctx.PaginateAsync("str-locales-all", locales, s => s, this.ModuleColor);
+            }
+            #endregion
         }
     }
 }

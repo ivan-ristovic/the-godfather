@@ -66,12 +66,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("booters"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task BootersAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync("fmt-lf-ddos", gcfg.LinkfilterSettings.BlockBooterWebsites);
+                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-ddos", gcfg.LinkfilterSettings.BlockBooterWebsites);
             }
             #endregion
 
@@ -89,12 +87,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("invites"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task InvitesAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync("fmt-lf-invite", gcfg.LinkfilterSettings.BlockDiscordInvites);
+                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-invite", gcfg.LinkfilterSettings.BlockDiscordInvites);
             }
             #endregion
 
@@ -112,12 +108,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("disturbingsites"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task DisturbingSitesAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync("fmt-lf-gore", gcfg.LinkfilterSettings.BlockDisturbingWebsites);
+                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-gore", gcfg.LinkfilterSettings.BlockDisturbingWebsites);
             }
             #endregion
 
@@ -135,12 +129,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("iploggers"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task IpLoggersAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync("fmt-lf-ip", gcfg.LinkfilterSettings.BlockIpLoggingWebsites);
+                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-ip", gcfg.LinkfilterSettings.BlockIpLoggingWebsites);
             }
             #endregion
 
@@ -158,12 +150,10 @@ namespace TheGodfather.Modules.Administration
             }
 
             [Command("shorteners"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task ShortenersAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync("fmt-lf-urlshort", gcfg.LinkfilterSettings.BlockUrlShorteners);
+                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-urlshort", gcfg.LinkfilterSettings.BlockUrlShorteners);
             }
             #endregion
 

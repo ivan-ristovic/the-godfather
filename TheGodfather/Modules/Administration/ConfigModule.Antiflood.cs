@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-af-enabled" : "evt-af-disabled");
+                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-af-enabled" : "evt-af-disabled");
             }
 
             [GroupCommand, Priority(4)]
@@ -94,13 +94,11 @@ namespace TheGodfather.Modules.Administration
                 => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick, null);
 
             [GroupCommand, Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task ExecuteGroupAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 return ctx.WithGuildConfigAsync(gcfg => {
                     LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync("fmt-settings-af", gcfg.AntifloodSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                    return ctx.InfoAsync(this.ModuleColor, "fmt-settings-af", gcfg.AntifloodSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
                 });
             }
             #endregion
@@ -112,7 +110,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-af-action", gcfg.AntifloodAction.ToTypeString()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-action", gcfg.AntifloodAction.ToTypeString()));
                     return;
                 }
 
@@ -126,7 +124,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-af-action", action.Value.ToTypeString());
                 });
 
-                await ctx.InfoAsync("evt-af-action", action.Value.ToTypeString());
+                await ctx.InfoAsync(this.ModuleColor, "evt-af-action", action.Value.ToTypeString());
             }
             #endregion
 
@@ -137,7 +135,7 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("desc-sens")] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-af-sens", gcfg.AntifloodSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-sens", gcfg.AntifloodSensitivity));
                     return;
                 }
                 
@@ -154,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-af-sens", sens.Value);
                 });
 
-                await ctx.InfoAsync("evt-af-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-af-sens", sens.Value);
             }
             #endregion
 
@@ -165,7 +163,7 @@ namespace TheGodfather.Modules.Administration
                                               [Description("desc-cooldown")] TimeSpan? cooldown = null)
             {
                 if (cooldown is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-af-cd", gcfg.AntifloodCooldown));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-cd", gcfg.AntifloodCooldown));
                     return;
                 }
 
@@ -182,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-af-cd", cooldown.Value.TotalSeconds);
                 });
 
-                await ctx.InfoAsync("evt-af-cd", cooldown.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-af-cd", cooldown.Value);
             }
             #endregion
 

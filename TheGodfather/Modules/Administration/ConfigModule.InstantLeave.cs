@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-il-enabled" : "evt-il-disabled");
+                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-il-enabled" : "evt-il-disabled");
             }
 
             [GroupCommand, Priority(1)]
@@ -58,13 +58,11 @@ namespace TheGodfather.Modules.Administration
                 => this.ExecuteGroupAsync(ctx, enable, 5);
 
             [GroupCommand, Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task ExecuteGroupAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 return ctx.WithGuildConfigAsync(gcfg => {
                     LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync("fmt-settings-rl", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                    return ctx.InfoAsync(this.ModuleColor, "fmt-settings-rl", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
                 });
             }
             #endregion
@@ -76,7 +74,7 @@ namespace TheGodfather.Modules.Administration
                                               [Description("desc-sens")] short? cooldown = null)
             {
                 if (cooldown is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-il-cd", gcfg.AntiInstantLeaveCooldown ));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-il-cd", gcfg.AntiInstantLeaveCooldown ));
                     return;
                 }
 
@@ -93,7 +91,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-il-cd", cooldown.Value);
                 });
 
-                await ctx.InfoAsync("evt-il-cd", cooldown.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-il-cd", cooldown.Value);
             }
             #endregion
 

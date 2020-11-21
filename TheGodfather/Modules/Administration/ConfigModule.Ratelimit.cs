@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-rl-enabled" : "evt-rl-disabled");
+                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-rl-enabled" : "evt-rl-disabled");
             }
 
             [GroupCommand, Priority(2)]
@@ -71,13 +71,11 @@ namespace TheGodfather.Modules.Administration
                 => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick);
 
             [GroupCommand, Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
             public Task ExecuteGroupAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             {
                 return ctx.WithGuildConfigAsync(gcfg => {
                     LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync("fmt-settings-rl", gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                    return ctx.InfoAsync(this.ModuleColor, "fmt-settings-rl", gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
                 });
             }
             #endregion
@@ -89,7 +87,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-rl-action", gcfg.RatelimitAction.ToTypeString()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-rl-action", gcfg.RatelimitAction.ToTypeString()));
                     return;
                 }
 
@@ -103,7 +101,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-rl-action", action.Value.ToTypeString());
                 });
 
-                await ctx.InfoAsync("evt-rl-action", action.Value.ToTypeString());
+                await ctx.InfoAsync(this.ModuleColor, "evt-rl-action", action.Value.ToTypeString());
             }
             #endregion
 
@@ -114,7 +112,7 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("desc-sens")] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync("evt-rl-sens", gcfg.RatelimitSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-rl-sens", gcfg.RatelimitSensitivity));
                     return;
                 }
 
@@ -131,7 +129,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-rl-sens", sens.Value);
                 });
 
-                await ctx.InfoAsync("evt-rl-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-rl-sens", sens.Value);
             }
             #endregion
 

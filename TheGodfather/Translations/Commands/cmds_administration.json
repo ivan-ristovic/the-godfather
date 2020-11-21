@@ -244,7 +244,7 @@
     "usage": [
       [],
       [ "arg-bool" ],
-      [ "arg-bool", "arg-five" ],
+      [ "arg-bool", "arg-five" ]
     ]
   },
   "config instantleave cooldown": {
