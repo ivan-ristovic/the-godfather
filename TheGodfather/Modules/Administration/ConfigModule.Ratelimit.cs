@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Administration
     public partial class ConfigModule
     {
         [Group("ratelimit")]
-        [Aliases("as")]
+        [Aliases("rl")]
         public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
         {
             public RatelimitModule(RatelimitService service)

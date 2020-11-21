@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Administration
 
             #region config antiflood cooldown
             [Command("cooldown")]
-            [Aliases("setcooldown", "setcool", "cool", "c")]
+            [Aliases("setcooldown", "setcool", "cd", "c")]
             public async Task SetCooldownAsync(CommandContext ctx,
                                               [Description("desc-cooldown")] TimeSpan? cooldown = null)
             {
