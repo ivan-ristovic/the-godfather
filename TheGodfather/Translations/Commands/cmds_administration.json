@@ -240,6 +240,24 @@
       [ "arg-five" ]
     ]
   },
+  "config instantleave": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five" ],
+    ]
+  },
+  "config instantleave cooldown": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "config instantleave reset": {
+    "usage": [
+      []
+    ]
+  },
   "config antispam": {
     "usage": [
       [],
@@ -299,6 +317,45 @@
     "usage": [
       [],
       [ "arg-role" ]
+    ]
+  },
+  "config ratelimit": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config ratelimit action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config ratelimit reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config ratelimit sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config ratelimit exempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
+  "config ratelimit unexempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
     ]
   },
   "config reset": {
