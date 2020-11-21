@@ -11,6 +11,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -51,6 +52,25 @@ namespace TheGodfather.Modules.Administration.Services
         public override bool TryRemoveGuildFromWatch(ulong gid)
             => this.guildRatelimitInfo.TryRemove(gid, out _);
 
+        public async Task ExemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
+            where TExempt : SnowflakeObject
+        {
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            db.ExemptsRatelimit.AddExemptions(gid, exempts, type);
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
+
+        public async Task UnexemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
+            where TExempt : SnowflakeObject
+        {
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            db.ExemptsRatelimit.RemoveRange(
+                db.ExemptsRatelimit.Where(ex => ex.GuildId == gid && ex.Type == type && exempts.Any(m => m.Id == ex.Id))
+            );
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {

@@ -15,7 +15,6 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-
     public partial class ConfigModule
     {
         [Group("antispam")]
