@@ -201,13 +201,12 @@ namespace TheGodfather.Extensions
                 }
             } else {
                 LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-                string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done!" : key, args);
+                string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done" : key, args);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = response,
                     Color = color ?? DiscordColor.Green
                 });
             }
         }
-
     }
 }

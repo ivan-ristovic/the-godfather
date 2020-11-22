@@ -11,11 +11,11 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("linkfilter")]
         [Aliases("lf")]
-        public class LinkfilterModule : TheGodfatherServiceModule<LinkfilterService>
+        public sealed class LinkfilterModule : TheGodfatherServiceModule<LinkfilterService>
         {
             public LinkfilterModule(LinkfilterService service)
                 : base(service) { }

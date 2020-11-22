@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("f", "filters", "autodel")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class FilterModule : TheGodfatherServiceModule<FilteringService>
+    public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
         public FilterModule(FilteringService service)
             : base(service) { }

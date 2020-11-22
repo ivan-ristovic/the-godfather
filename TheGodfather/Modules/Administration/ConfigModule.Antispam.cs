@@ -16,11 +16,11 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("antispam")]
         [Aliases("as")]
-        public class AntispamModule : TheGodfatherServiceModule<AntispamService>
+        public sealed class AntispamModule : TheGodfatherServiceModule<AntispamService>
         {
             public AntispamModule(AntispamService service)
                 : base(service) { }

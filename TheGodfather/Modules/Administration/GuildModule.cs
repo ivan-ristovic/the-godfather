@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous guild control commands. Group call prints guild information.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public partial class GuildModule : TheGodfatherModule
+    public sealed class GuildModule : TheGodfatherModule
     {
 
         public GuildModule(DbContextBuilder db)

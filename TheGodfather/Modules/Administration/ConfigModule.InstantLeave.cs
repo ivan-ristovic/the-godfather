@@ -12,11 +12,11 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("instantleave")]
         [Aliases("il")]
-        public class AntiInstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
+        public sealed class AntiInstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
         {
             public AntiInstantLeaveModule(AntiInstantLeaveService service)
                 : base(service) { }

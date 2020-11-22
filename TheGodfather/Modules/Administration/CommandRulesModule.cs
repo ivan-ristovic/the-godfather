@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("cmdrules", "crules", "cr")]
     [RequireGuild, RequireUserPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class CommandRulesModule : TheGodfatherServiceModule<CommandRulesService>
+    public sealed class CommandRulesModule : TheGodfatherServiceModule<CommandRulesService>
     {
         public CommandRulesModule(CommandRulesService service)
             : base(service) { }

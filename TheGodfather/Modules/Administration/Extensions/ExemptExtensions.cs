@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             where TEntity : ExemptedEntity, new()
         {
             set.AddRange(ids
-                .Where(id => !set.Where(dbe => dbe.GuildId == gid).Any(dbe => dbe.Type == type && dbe.Id == id))
+                .Where(id => !set.Where(dbe => dbe.GuildIdDb == (long)gid).Any(dbe => dbe.Type == type && dbe.IdDb == (long)id))
                 .Select(id => new TEntity {
                     GuildId = gid,
                     Id = id,

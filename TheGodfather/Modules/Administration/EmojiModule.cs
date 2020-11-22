@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("emojis", "e")]
     [RequireGuild, RequirePermissions(Permissions.ManageEmojis)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class EmojiModule : TheGodfatherModule
+    public sealed class EmojiModule : TheGodfatherModule
     {
         #region emoji
         [GroupCommand, Priority(1)]

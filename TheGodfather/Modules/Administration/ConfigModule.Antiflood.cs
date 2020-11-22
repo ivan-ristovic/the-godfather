@@ -14,11 +14,11 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("antiflood")]
         [Aliases("antiraid", "ar", "af")]
-        public class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
+        public sealed class AntifloodModule : TheGodfatherServiceModule<AntifloodService>
         {
             public AntifloodModule(AntifloodService service)
                 : base(service) { }

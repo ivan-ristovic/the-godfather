@@ -9,11 +9,11 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("localization")]
         [Aliases("locale", "language", "lang", "region")]
-        public class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
+        public sealed class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
         {
             public LocalizationModule(LocalizationService service)
                 : base(service) { }

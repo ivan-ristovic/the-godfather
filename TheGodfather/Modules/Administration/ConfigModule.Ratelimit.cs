@@ -16,11 +16,11 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule
+    public sealed partial class ConfigModule
     {
         [Group("ratelimit")]
         [Aliases("rl")]
-        public class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
+        public sealed class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
         {
             public RatelimitModule(RatelimitService service)
                 : base(service) { }

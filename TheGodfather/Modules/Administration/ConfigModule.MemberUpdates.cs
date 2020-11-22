@@ -11,12 +11,12 @@ using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    public partial class ConfigModule : TheGodfatherServiceModule<GuildConfigService>
+    public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfigService>
     {
         #region config welcome
         [Group("welcome")]
         [Aliases("enter", "join", "wlc", "wm", "w")]
-        public class ConfigModuleWelcome : TheGodfatherServiceModule<GuildConfigService>
+        public sealed class ConfigModuleWelcome : TheGodfatherServiceModule<GuildConfigService>
         {
             public ConfigModuleWelcome(GuildConfigService service)
                 : base(service) { }
