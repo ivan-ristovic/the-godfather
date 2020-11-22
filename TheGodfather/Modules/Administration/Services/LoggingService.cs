@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using TheGodfather.Attributes;
+using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
@@ -99,12 +98,14 @@ namespace TheGodfather.Modules.Administration.Services
 
         public bool IsDisabled => false;
 
+        private readonly DbContextBuilder dbb;
         private readonly GuildConfigService gcs;
         private readonly LocalizationService lcs;
 
 
-        public LoggingService(GuildConfigService gcs, LocalizationService lcs)
+        public LoggingService(DbContextBuilder dbb, GuildConfigService gcs, LocalizationService lcs)
         {
+            this.dbb = dbb;
             this.gcs = gcs;
             this.lcs = lcs;
         }
@@ -164,6 +165,30 @@ namespace TheGodfather.Modules.Administration.Services
             }
             
             return default;
+        }
+
+        public async Task<IReadOnlyList<ExemptedLoggingEntity>> GetExemptsAsync(ulong gid)
+        {
+            List<ExemptedLoggingEntity> exempts;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            exempts = await db.ExemptsLogging.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            return exempts.AsReadOnly();
+        }
+
+        public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsLogging.AddExemptions(gid, type, ids);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsLogging.RemoveRange(
+                db.ExemptsLogging.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+            );
+            await db.SaveChangesAsync();
         }
 
 

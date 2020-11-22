@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -52,21 +53,27 @@ namespace TheGodfather.Modules.Administration.Services
         public override bool TryRemoveGuildFromWatch(ulong gid)
             => this.guildRatelimitInfo.TryRemove(gid, out _);
 
-        public async Task ExemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
-            where TExempt : SnowflakeObject
+        public async Task<IReadOnlyList<ExemptedRatelimitEntity>> GetExemptsAsync(ulong gid)
+        {
+            List<ExemptedRatelimitEntity> exempts;
+            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            exempts = await db.ExemptsRatelimit.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            return exempts.AsReadOnly();
+        }
+
+        public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
             using TheGodfatherDbContext db = this.shard.Database.CreateContext();
-            db.ExemptsRatelimit.AddExemptions(gid, exempts, type);
+            db.ExemptsRatelimit.AddExemptions(gid, type, ids);
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);
         }
 
-        public async Task UnexemptAsync<TExempt>(ulong gid, ExemptedEntityType type, IEnumerable<TExempt> exempts)
-            where TExempt : SnowflakeObject
+        public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
             using TheGodfatherDbContext db = this.shard.Database.CreateContext();
             db.ExemptsRatelimit.RemoveRange(
-                db.ExemptsRatelimit.Where(ex => ex.GuildId == gid && ex.Type == type && exempts.Any(m => m.Id == ex.Id))
+                db.ExemptsRatelimit.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
             );
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);

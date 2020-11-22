@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
             [Command("set")]
             [Aliases("change")]
             public async Task SetLocaleAsync(CommandContext ctx,
-                                            [Description("Members to exempt.")] string locale)
+                                            [Description("desc-locale")] string locale)
             {
                 if (!await this.Service.SetGuildLocaleAsync(ctx.Guild.Id, locale))
                     throw new CommandFailedException(ctx, "cmd-err-locale");

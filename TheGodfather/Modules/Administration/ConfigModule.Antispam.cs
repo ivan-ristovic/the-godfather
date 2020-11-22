@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -71,13 +72,19 @@ namespace TheGodfather.Modules.Administration
                 => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick);
 
             [GroupCommand, Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
-            public Task ExecuteGroupAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
+            public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                return ctx.WithGuildConfigAsync(gcfg => {
+                IReadOnlyList<ExemptedAntispamEntity> exempts = await this.Service.GetExemptsAsync(ctx.Guild.Id);
+                string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
+                await ctx.WithGuildConfigAsync(gcfg => {
                     LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                    return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                        emb.WithLocalizedTitle("str-antispam");
+                        emb.WithLocalizedDescription("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                        emb.WithColor(this.ModuleColor);
+                        if (exemptString is { })
+                            emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
+                    });
                 });
             }
             #endregion
@@ -161,7 +168,7 @@ namespace TheGodfather.Modules.Administration
                 if (members is null || !members.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members);
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync();
             }
 
@@ -172,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                 if (roles is null || !roles.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles);
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync();
             }
 
@@ -183,7 +190,7 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels);
+                await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync();
             }
             #endregion
@@ -191,13 +198,13 @@ namespace TheGodfather.Modules.Administration
             #region config antispam unexempt
             [Command("unexempt"), Priority(2)]
             [Aliases("unex", "uex")]
-            public async Task UnxemptAsync(CommandContext ctx,  
+            public async Task UnxemptAsync(CommandContext ctx,
                                           [Description("desc-unexempt-user")] params DiscordMember[] members)
             {
                 if (members is null || !members.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members);
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync();
             }
 
@@ -208,7 +215,7 @@ namespace TheGodfather.Modules.Administration
                 if (roles is null || !roles.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles);
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync();
             }
 
@@ -219,7 +226,7 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels);
+                await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync();
             }
             #endregion
