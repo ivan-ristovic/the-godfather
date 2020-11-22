@@ -313,6 +313,43 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config localization": {
+    "usage": [
+      [],
+      [ "arg-locale" ]
+    ]
+  },
+  "config localization list": {
+    "usage": [
+      []
+    ]
+  },
+  "config localization set": {
+    "usage": [
+      [ "arg-locale" ]
+    ]
+  },
+  "config logging": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config logging exempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
+  "config logging unexempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
   "config muterole": {
     "usage": [
       [],
