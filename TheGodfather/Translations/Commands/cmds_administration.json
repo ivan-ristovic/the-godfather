@@ -240,6 +240,45 @@
       [ "arg-five" ]
     ]
   },
+  "config antispam": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config antispam action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antispam exempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
+  "config antispam reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config antispam sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config antispam unexempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
   "config instantleave": {
     "usage": [
       [],
@@ -256,45 +295,6 @@
   "config instantleave reset": {
     "usage": [
       []
-    ]
-  },
-  "config antispam": {
-    "usage": [
-      [],
-      [ "arg-bool" ],
-      [ "arg-bool", "arg-five", "arg-punish-action" ],
-      [ "arg-bool", "arg-punish-action", "arg-five" ]
-    ]
-  },
-  "config antispam action": {
-    "usage": [
-      [],
-      [ "arg-punish-action" ]
-    ]
-  },
-  "config antispam reset": {
-    "usage": [
-      []
-    ]
-  },
-  "config antispam sensitivity": {
-    "usage": [
-      [],
-      [ "arg-five" ]
-    ]
-  },
-  "config antispam exempt": {
-    "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
-    ]
-  },
-  "config antispam unexempt": {
-    "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
     ]
   },
   "config leave": {
@@ -370,6 +370,13 @@
       [ "arg-punish-action" ]
     ]
   },
+  "config ratelimit exempt": {
+    "usage": [
+      [ "arg-usr", "..." ],
+      [ "arg-role", "..." ],
+      [ "arg-chn-text", "..." ]
+    ]
+  },
   "config ratelimit reset": {
     "usage": [
       []
@@ -379,13 +386,6 @@
     "usage": [
       [],
       [ "arg-five" ]
-    ]
-  },
-  "config ratelimit exempt": {
-    "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
     ]
   },
   "config ratelimit unexempt": {
@@ -556,6 +556,50 @@
   "forbiddennames list": {
     "usage": [
       []
+    ]
+  },
+  "guild": {
+    "usage": [
+      []
+    ]
+  },
+  "guild getbans": {
+    "usage": [
+      []
+    ]
+  },
+  "guild getlogs": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "guild icon": {
+    "usage": [
+      [],
+      [ "arg-url-image" ]
+    ]
+  },
+  "guild info": {
+    "usage": [
+      []
+    ]
+  },
+  "guild memberlist": {
+    "usage": [
+      []
+    ]
+  },
+  "guild prune": {
+    "usage": [
+      [],
+      [ "arg-five", "arg-rsn" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "guild rename": {
+    "usage": [
+      [ "arg-name" ]
     ]
   },
   "webhook": {

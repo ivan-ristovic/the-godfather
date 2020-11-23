@@ -16,6 +16,8 @@
         public static int EmbedTotalCharLimit { get; } = 6000;
         public static int EmojiNameLimit { get; } = 32;
         public static int EmojiSizeLimit { get; } = 256000;
+        public static int GuildIconLimit { get; } = 256000;
+        public static int GuildNameLimit { get; } = 100;
         public static int MessageContentLimit { get; } = 2000;
         public static int MessageReactionLimit { get; } = 20;
         public static int NameLimit { get; } = 256;

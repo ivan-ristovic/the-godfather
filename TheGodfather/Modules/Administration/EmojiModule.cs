@@ -47,12 +47,12 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-name", 2, DiscordLimits.EmojiNameLimit);
 
             if (url is null) {
-                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-url");
+                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments[0].Url, UriKind.Absolute, out url))
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-image-url");
             }
 
             if (!await url.ContentTypeHeaderIsImageAsync())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-url-fail");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail");
 
             try {
                 using Stream stream = await HttpService.GetStreamAsync(url);
@@ -62,8 +62,6 @@ namespace TheGodfather.Modules.Administration
                 await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-add", emoji.GetDiscordName());
             } catch (WebException e) {
                 throw new CommandFailedException(ctx, e, "err-url-image-fail");
-            } catch (BadRequestException e) {
-                throw new CommandFailedException(ctx, e, "cmd-err-emoji-add");
             }
         }
 

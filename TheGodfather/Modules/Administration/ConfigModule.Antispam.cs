@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
 
             [Command("exempt"), Priority(1)]
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
 
             [Command("exempt"), Priority(0)]
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
             #endregion
 
@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
 
             [Command("unexempt"), Priority(1)]
@@ -216,7 +216,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
 
             [Command("unexempt"), Priority(0)]
@@ -227,7 +227,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
             }
             #endregion
         }

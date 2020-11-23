@@ -52,6 +52,9 @@ namespace TheGodfather.Extensions
             return ls.GetString(ctx.Guild?.Id, "fmt-invocation-details", ctx.User, reason, ctx.Channel);
         }
 
+        public static Task InfoAsync(this CommandContext ctx, DiscordColor color)
+            => InternalInformAsync(ctx, null, null, false, color, null);
+
         public static Task InfoAsync(this CommandContext ctx, string? key = null, params object?[]? args)
             => InternalInformAsync(ctx, null, key, false, null, args);
 

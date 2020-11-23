@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf", enable);
             }
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterBootersEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf-ddos", enable);
             }
 
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterDiscordInvitesEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf-invite", enable);
             }
 
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterDisturbingWebsitesEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf-gore", enable);
             }
 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterIpLoggersEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf-ip", enable);
             }
 
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterUrlShortenersEnabled = enable;
                 });
-                await ctx.InfoAsync();
+                await ctx.InfoAsync(this.ModuleColor);
                 await this.LogConfigChangeAsync(ctx, "str-lf-urlshort", enable);
             }
 
