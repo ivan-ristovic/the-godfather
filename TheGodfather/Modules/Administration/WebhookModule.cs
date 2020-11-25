@@ -198,7 +198,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        #region internals
+        #region Helpers
         private async Task CreateWebhookAsync(CommandContext ctx, DiscordChannel channel, string name, Uri? avatarUrl, string? reason)
         {
             // TODO what about other channel types? news, store etc?

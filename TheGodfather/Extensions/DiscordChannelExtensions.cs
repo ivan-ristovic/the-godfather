@@ -39,6 +39,12 @@ namespace TheGodfather.Extensions
             });
         }
 
+        public static async Task<DiscordMessage?> GetLastMessageAsync(this DiscordChannel channel)
+        {
+            IReadOnlyList<DiscordMessage> m = await channel.GetMessagesBeforeAsync(channel.LastMessageId, 1);
+            return m.FirstOrDefault();
+        }
+
         public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
         {
             var messages = new List<DiscordMessage>();

@@ -602,6 +602,42 @@
       [ "arg-name" ]
     ]
   },
+  "message attachments": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message flag": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message listpinned": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "message pin": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message unpin": {
+    "usage": [
+      [ "arg-ulong" ]
+      [ "arg-five" ],
+    ]
+  },
+  "message unpinall": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
   "webhook": {
     "usage": [
       [],

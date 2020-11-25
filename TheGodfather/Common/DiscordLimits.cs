@@ -2,31 +2,31 @@
 {
     public static class DiscordLimits
     {
-        public static int CategoryChannelLimit { get; } = 50;
-        public static int ChannelLimit { get; } = 500;
-        public static int ChannelNameLimit { get; } = 100;
-        public static int ChannelTopicLimit { get; } = 1024;
-        public static int EmbedAuthorLimit { get; } = 256;
-        public static int EmbedDescriptionLimit { get; } = 2048;
-        public static int EmbedFieldLimit { get; } = 25;
-        public static int EmbedFieldNameLimit { get; } = 256;
-        public static int EmbedFieldValueLimit { get; } = 1024;
-        public static int EmbedFooterLimit { get; } = 2048;
-        public static int EmbedTitleLimit { get; } = 256;
-        public static int EmbedTotalCharLimit { get; } = 6000;
-        public static int EmojiNameLimit { get; } = 32;
-        public static int EmojiSizeLimit { get; } = 256000;
-        public static int GuildIconLimit { get; } = 256000;
-        public static int GuildNameLimit { get; } = 100;
-        public static int MessageContentLimit { get; } = 2000;
-        public static int MessageReactionLimit { get; } = 20;
-        public static int NameLimit { get; } = 256;
-        public static int RoleLimit { get; } = 250;
-        public static int TtsMessageContentLimit { get; } = 200;
-        public static int UsernameLimit { get; } = 32;
-        public static int VoiceChannelUserLimit { get; } = 99;
-        public static int VoiceChannelMinBitrate { get; } = 8;
-        public static int VoiceChannelMaxBitrate { get; } = 128;
+        public const int CategoryChannelLimit = 50;
+        public const int ChannelLimit = 500;
+        public const int ChannelNameLimit = 100;
+        public const int ChannelTopicLimit = 1024;
+        public const int EmbedAuthorLimit = 256;
+        public const int EmbedDescriptionLimit = 2048;
+        public const int EmbedFieldLimit = 25;
+        public const int EmbedFieldNameLimit = 256;
+        public const int EmbedFieldValueLimit = 1024;
+        public const int EmbedFooterLimit = 2048;
+        public const int EmbedTitleLimit = 256;
+        public const int EmbedTotalCharLimit = 6000;
+        public const int EmojiNameLimit = 32;
+        public const int EmojiSizeLimit = 256000;
+        public const int GuildIconLimit = 256000;
+        public const int GuildNameLimit = 100;
+        public const int MessageContentLimit = 2000;
+        public const int MessageReactionLimit = 20;
+        public const int NameLimit = 256;
+        public const int RoleLimit = 250;
+        public const int TtsMessageContentLimit = 200;
+        public const int UsernameLimit = 32;
+        public const int VoiceChannelUserLimit = 99;
+        public const int VoiceChannelMinBitrate = 8;
+        public const int VoiceChannelMaxBitrate = 128;
     }
 }
 

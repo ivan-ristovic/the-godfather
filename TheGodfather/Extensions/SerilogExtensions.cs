@@ -173,7 +173,7 @@ namespace TheGodfather.Extensions
         private static void InternalLogMany(LogEventLevel level, int shardId, string[] templates, Exception? ex = null, object[]? propertyValues = null)
         {
             using (LogContext.PushProperty("ShardId", shardId))
-                Log.Write(level, ex, string.Join(Environment.NewLine, templates), propertyValues);
+                Log.Write(level, ex, string.Join($"{Environment.NewLine}| ", templates), propertyValues);
         }
     }
 

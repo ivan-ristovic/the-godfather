@@ -128,7 +128,7 @@ namespace TheGodfather.EventListeners
             
             // TODO automatize, same below in message update handler
             await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-            string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));
+            string sanitizedContent = Formatter.Strip(e.Message.Content);
             string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
             await e.Channel.SendMessageAsync(localizedSpoiler);
         }
@@ -240,7 +240,7 @@ namespace TheGodfather.EventListeners
             if (e.Message.Content is { } && shard.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                 try {
                     await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-                    string sanitizedContent = FormatterExt.Spoiler(Formatter.BlockCode(Formatter.Strip(e.Message.Content)));
+                    string sanitizedContent = Formatter.Strip(e.Message.Content);
                     string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
                     await e.Channel.SendMessageAsync(localizedSpoiler);
                 } catch {

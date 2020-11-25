@@ -95,6 +95,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case ArgumentException _:
                 case TargetInvocationException _:
+                case InvalidOperationException _:
                     string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
                     Command command = shard.CNext.FindCommand(fcmdStr, out string args);
                     CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
@@ -111,9 +112,9 @@ namespace TheGodfather.EventListeners
                 case ChecksFailedException cfex:
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-chk", desc: null, e.Command?.QualifiedName ?? "?");
                     var sb = new StringBuilder();
-                    switch (cfex.FailedChecks.First()) {
+                    switch (cfex.FailedChecks[0]) {
                         case CooldownAttribute _:
-                            break;
+                            return Task.CompletedTask;
                         case UsesInteractivityAttribute _:
                             sb.AppendLine(lcs.GetString(gid, "cmd-chk-inter"));
                             break;
@@ -150,7 +151,7 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedDescription("err-db");
                     break;
                 default:
-                    LogExt.Error(shard.Id, "Unhandled error");
+                    LogExt.Error(shard.Id, ex, "Unhandled error");
                     break;
             }
 

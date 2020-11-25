@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,204 +11,176 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.EventHandling;
 using DSharpPlus.Interactivity.Extensions;
+using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("message"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class MessageModule : TheGodfatherModule
     {
-
-        public MessageModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
+        public MessageModule()
+            : base() { }
 
 
-        #region COMMAND_MESSAGES_ATTACHMENTS
+        #region message attachments
         [Command("attachments")]
-        [Description("View all message attachments. If the message is not provided, scans the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
-
+        [RequirePermissions(Permissions.ReadMessageHistory)]
         public async Task ListAttachmentsAsync(CommandContext ctx,
-                                              [Description("Message.")] DiscordMessage message = null)
+                                              [Description("desc-message")] DiscordMessage? msg = null)
         {
-            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+            msg ??= await ctx.Channel.GetLastMessageAsync();
+            if (msg is null || msg.Attachments.Count > DiscordLimits.EmbedFieldLimit)
+                throw new CommandFailedException(ctx, "cmd-err-msg-404");
 
-            if (message is null)
-                throw new CommandFailedException("Cannot retrieve the message!");
-
-            var emb = new DiscordEmbedBuilder {
-                Title = "Attachments:",
-                Color = this.ModuleColor
-            };
-            foreach (DiscordAttachment attachment in message.Attachments)
-                emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
-
-            await ctx.RespondAsync(embed: emb.Build());
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-attachments");
+                emb.WithColor(this.ModuleColor);
+                foreach (DiscordAttachment attachment in msg.Attachments)
+                    emb.AddField($"{Formatter.Strip(attachment.FileName)} ({attachment.FileSize.ToMetric()})", attachment.Url);
+            });
         }
         #endregion
 
-        #region COMMAND_MESSAGES_FLAG
+        #region message flag
         [Command("flag")]
-        [Description("Flags the message given by ID for deletion vote. If the message is not provided, flags the last sent message before command invocation.")]
         [Aliases("f")]
-
-        [RequireBotPermissions(Permissions.ManageMessages)]
+        [RequirePermissions(Permissions.ReadMessageHistory), RequireBotPermissions(Permissions.ManageMessages)]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task FlagMessageAsync(CommandContext ctx,
-                                          [Description("Message.")] DiscordMessage msg = null,
-                                          [Description("Voting timespan.")] TimeSpan? timespan = null)
+                                          [Description("desc-msg")] DiscordMessage? msg = null,
+                                          [Description("desc-voting-timespan")] TimeSpan? timespan = null)
         {
-            msg = msg ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
-
+            msg ??= await ctx.Channel.GetLastMessageAsync();
             if (msg is null)
-                throw new CommandFailedException("Cannot retrieve the message!");
+                throw new CommandFailedException(ctx, "cmd-err-msg-404");
 
-            if (timespan?.TotalSeconds < 5 || timespan?.TotalMinutes > 5)
-                throw new InvalidCommandUsageException("Timespan cannot be greater than 5 minutes or lower than 5 seconds.");
+            if (timespan?.TotalSeconds < 5 || timespan?.TotalSeconds > 300)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-timespan", 5, 300);
 
-            IEnumerable<PollEmoji> res = await msg.DoPollAsync(new[] { Emojis.ArrowUp, Emojis.ArrowDown }, PollBehaviour.DeleteEmojis, timeoutOverride: timespan ?? TimeSpan.FromMinutes(1));
-            var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Voted.Count);
+            IEnumerable<PollEmoji> res = await msg.DoPollAsync(
+                new[] { Emojis.ArrowUp, Emojis.ArrowDown },
+                PollBehaviour.DeleteEmojis,
+                timeoutOverride: timespan ?? TimeSpan.FromMinutes(1)
+            );
+            var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Total);
             if (votes.GetValueOrDefault(Emojis.ArrowDown) > 2 * votes.GetValueOrDefault(Emojis.ArrowUp)) {
-                string sanitized = FormatterExt.Spoiler(Formatter.Strip(msg.Content));
-                await msg.DeleteAsync();
-                await ctx.RespondAsync($"{msg.Author.Mention} said: {sanitized}");
+                string sanitized = Formatter.Strip(msg.Content);
+                await msg.DeleteAsync("_gf: Flagged for deletion");
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithLocalizedDescription("fmt-filter", msg.Author.Mention, sanitized);
+                });
             } else {
-                await this.InformFailureAsync(ctx, "Not enough downvotes required for deletion.");
+                await ctx.FailAsync("cmd-err-flag");
             }
         }
         #endregion
 
-        #region COMMAND_MESSAGES_LISTPINNED
+        #region message listpinned
         [Command("listpinned")]
-        [Description("List pinned messages in this channel.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
-        public async Task ListPinnedMessagesAsync(CommandContext ctx)
+        public async Task ListPinnedMessagesAsync(CommandContext ctx,
+                                                 [Description("desc-chn-pins")] DiscordChannel? chn = null)
         {
+            chn ??= ctx.Channel;
+            if (!chn.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
+                throw new CommandFailedException(ctx, "cmd-chk-perms-usr", Permissions.AccessChannels);
+
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            if (!pinned.Any())
+                throw new CommandFailedException(ctx, "cmd-err-pinned-none");
 
-            if (!pinned.Any()) {
-                await this.InformFailureAsync(ctx, "No pinned messages in this channel");
-                return;
-            }
-
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             IEnumerable<Page> pages = pinned.Select(m => new Page(
-                $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
-                GetFirstEmbedOrDefaultAsBuilder(m)
+                $"{Formatter.Bold(m.Author.Username)} @ {lcs.GetLocalizedTime(ctx.Guild.Id, m.CreationTimestamp)}",
+                // TODO 
+                GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(lcs.GetString(ctx.Guild.Id, "str-jumplink"), m.JumpLink))
             ));
 
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
 
-
             DiscordEmbedBuilder GetFirstEmbedOrDefaultAsBuilder(DiscordMessage m)
             {
-                DiscordEmbed em = m.Embeds.FirstOrDefault();
-                if (!(em is null))
-                    return new DiscordEmbedBuilder(m.Embeds.First());
-                return new DiscordEmbedBuilder {
-                    Title = "Jump to",
-                    Description = m.Content ?? Formatter.Italic("Empty message."),
-                    Url = m.JumpLink.ToString()
-                };
+                DiscordEmbed? em = m.Embeds.FirstOrDefault();
+                if (em is { })
+                    return new DiscordEmbedBuilder(em);
+
+                var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+                if (!string.IsNullOrWhiteSpace(m.Content))
+                    emb.WithDescription(m.Content);
+                return emb.GetBuilder();
             }
         }
         #endregion
 
-        #region COMMAND_MESSAGES_MODIFY
-        [Command("modify")]
-        [Description("Modify the given message.")]
-        [Aliases("edit", "mod", "e", "m")]
-
-        [RequirePermissions(Permissions.ManageMessages)]
-        public async Task ModifyMessageAsync(CommandContext ctx,
-                                            [Description("Message.")] DiscordMessage message,
-                                            [RemainingText, Description("New content.")] string content)
-        {
-            if (string.IsNullOrWhiteSpace(content))
-                throw new CommandFailedException("Missing new message content!");
-
-            await message.ModifyAsync(content);
-            await this.InformAsync(ctx, important: false);
-        }
-        #endregion
-
-        #region COMMAND_MESSAGES_PIN
+        #region message pin
         [Command("pin")]
-        [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
-
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
-                                         [Description("Message.")] DiscordMessage message = null)
+                                         [Description("desc-msg")] DiscordMessage? msg = null)
         {
-            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
-
-            if (message is null)
-                throw new CommandFailedException("Cannot retrieve the message!");
-
-            await message.PinAsync();
+            msg ??= await ctx.Channel.GetLastMessageAsync();
+            if (msg is null)
+                throw new CommandFailedException(ctx, "cmd-err-msg-404");
+            await msg.PinAsync();
         }
         #endregion
 
-        #region COMMAND_MESSAGES_UNPIN
+        #region message unpin
         [Command("unpin"), Priority(1)]
-        [Description("Unpins the message at given index (starting from 1) or message ID. If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
-
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinMessageAsync(CommandContext ctx,
-                                           [Description("Message.")] DiscordMessage message)
+                                           [Description("desc-msg")] DiscordMessage message)
         {
             await message.UnpinAsync();
-            await this.InformAsync(ctx, "Removed the specified pin.", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
 
         [Command("unpin"), Priority(0)]
         public async Task UnpinMessageAsync(CommandContext ctx,
-                                           [Description("Index (starting from 1).")] int index = 1)
+                                           [Description("desc-index-1")] int index = 1)
         {
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
-
             if (index < 1 || index > pinned.Count)
-                throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
+                throw new CommandFailedException(ctx, "cmd-err-index", 1, pinned.Count);
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await this.InformAsync(ctx, "Removed the specified pin.", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_MESSAGES_UNPINALL
+        #region message unpinall
         [Command("unpinall")]
-        [Description("Unpins all pinned messages in this channel.")]
         [Aliases("upa")]
         [RequirePermissions(Permissions.ManageMessages)]
-        public async Task UnpinAllMessagesAsync(CommandContext ctx)
+        public async Task UnpinAllMessagesAsync(CommandContext ctx,
+                                               [Description("desc-chn-pins-del")] DiscordChannel? chn = null)
         {
+            chn ??= ctx.Channel;
+            if (!chn.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
+                throw new CommandFailedException(ctx, "cmd-chk-perms-usr", Permissions.AccessChannels);
+
+            if (!await ctx.WaitForBoolReplyAsync("q-unpin-all", args: chn))
+                return;
+
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            if (!pinned.Any())
+                throw new CommandFailedException(ctx, "cmd-err-pinned-none");
 
-            int failed = 0;
-            foreach (DiscordMessage m in pinned) {
-                try {
-                    await m.UnpinAsync();
-                } catch {
-                    failed++;
-                }
-            }
-
-            if (failed > 0)
-                await this.InformFailureAsync(ctx, $"Failed to unpin {failed} messages!");
-            else
-                await this.InformAsync(ctx, "Successfully unpinned all messages in this channel", important: false);
+            await Task.WhenAll(pinned.Select(m => m.UnpinAsync()));
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
     }

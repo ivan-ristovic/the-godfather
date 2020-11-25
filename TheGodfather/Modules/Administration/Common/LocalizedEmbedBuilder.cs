@@ -107,6 +107,18 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
+        public LocalizedEmbedBuilder WithUrl(string url)
+        {
+            this.emb.WithUrl(url);
+            return this;
+        }
+
+        public LocalizedEmbedBuilder WithUrl(Uri url)
+        {
+            this.emb.WithUrl(url);
+            return this;
+        }
+
         public LocalizedEmbedBuilder AddField(string title, string content, bool inline = false)
         {
             this.emb.AddField(this.TruncateToFitFieldName(title), this.TruncateToFitFieldValue(content), inline);
@@ -228,6 +240,9 @@ namespace TheGodfather.Modules.Administration.Common
                 throw new InvalidOperationException("Embed char limit exceeded");
             return this.emb.Build();
         }
+
+        public DiscordEmbedBuilder GetBuilder()
+            => this.emb;
 
 
         private string TruncateToFitEmbedTitle(string s)
