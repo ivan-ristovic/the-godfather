@@ -25,12 +25,8 @@ namespace TheGodfather.Modules.Administration
     [Group("message"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public partial class MessageModule : TheGodfatherModule
+    public sealed partial class MessageModule : TheGodfatherModule
     {
-        public MessageModule()
-            : base() { }
-
-
         #region message attachments
         [Command("attachments")]
         [Aliases("a", "files", "la")]

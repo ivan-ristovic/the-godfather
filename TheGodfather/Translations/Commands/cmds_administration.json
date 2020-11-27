@@ -608,6 +608,40 @@
       [ "arg-ulong" ]
     ]
   },
+  "message delete": {
+    "usage": [
+      [],
+      [ "arg-ten" ],
+      [ "arg-ten", "arg-rsn" ]
+    ]
+  },
+  "message delete after": {
+    "usage": [
+      [ "arg-ulong", "arg-ten" ]
+    ]
+  },
+  "message delete before": {
+    "usage": [
+      [ "arg-ulong", "arg-ten" ]
+    ]
+  },
+  "message delete from": {
+    "usage": [
+      [ "arg-usr", "arg-ten" ],
+      [ "arg-ten", "arg-usr" ]
+    ]
+  },
+  "message delete reactions": {
+    "usage": [
+      [ "arg-ulong" ]
+    ]
+  },
+  "message delete regex": {
+    "usage": [
+      [ "arg-regex" ],
+      [ "arg-regex", "arg-ten" ]
+    ]
+  },
   "message flag": {
     "usage": [
       [],
@@ -628,8 +662,8 @@
   },
   "message unpin": {
     "usage": [
-      [ "arg-ulong" ]
-      [ "arg-five" ],
+      [ "arg-ulong" ],
+      [ "arg-five" ]
     ]
   },
   "message unpinall": {
