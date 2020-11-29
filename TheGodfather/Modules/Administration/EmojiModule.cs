@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Administration
 
         #region emoji modify
         [Command("modify"), Priority(1)]
-        [Aliases("edit", "mod", "e", "m", "rename")]
+        [Aliases("edit", "mod", "e", "m", "rename", "mv", "setname")]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("desc-emoji-edit")] DiscordEmoji emoji,
                                      [Description("str-name")] string newname,

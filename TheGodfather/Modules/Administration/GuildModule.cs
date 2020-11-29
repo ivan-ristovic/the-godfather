@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
 
         #region guild rename
         [Command("rename")]
-        [Aliases("r", "name", "setname")]
+        [Aliases("r", "name", "setname", "mv")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
                                           [RemainingText, Description("desc-name")] string name)

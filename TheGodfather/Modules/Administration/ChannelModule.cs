@@ -413,7 +413,7 @@ namespace TheGodfather.Modules.Administration
 
         #region channel setname
         [Command("setname"), Priority(3)]
-        [Aliases("settitle", "rename", "changename", "rn", "rnm", "name")]
+        [Aliases("settitle", "rename", "changename", "rn", "rnm", "name", "mv")]
         public Task RenameAsync(CommandContext ctx,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [Description("str-name")] string name,

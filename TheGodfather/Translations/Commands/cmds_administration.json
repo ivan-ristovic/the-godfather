@@ -672,6 +672,59 @@
       [ "arg-chn-text" ]
     ]
   },
+  "role": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
+  "create": {
+    "usage": [
+      [ "arg-role-raw" ],
+      [ "arg-role-raw", "arg-color" ],
+      [ "arg-role-raw", "arg-color", "arg-bool" ]
+    ]
+  },
+  "role delete": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role list": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
+  "role mention": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role setcolor": {
+    "usage": [
+      [ "arg-role", "arg-color" ],
+      [ "arg-color", "arg-role" ]
+    ]
+  },
+  "role setname": {
+    "usage": [
+      [ "arg-role", "arg-name" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "role setmentionable": {
+    "usage": [
+      [ "arg-role" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "role setvisibility": {
+    "usage": [
+      [ "arg-role" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
   "webhook": {
     "usage": [
       [],
