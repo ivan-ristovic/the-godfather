@@ -14,17 +14,17 @@ using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("automaticroles"), Module(ModuleType.Administration), NotBlocked]
-    [Aliases("autoassignroles", "autoassign", "autoroles", "autorole", "aroles", "arole", "arl", "ar", "aar")]
+    [Group("selfassignableroles"), Module(ModuleType.Administration), NotBlocked]
+    [Aliases("sar", "selfassignablerole", "selfroles", "selfrole", "sr", "srl", "srole")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public sealed class AutoRolesModule : TheGodfatherServiceModule<AutoRoleService>
+    public sealed class SelfRolesModule : TheGodfatherServiceModule<SelfRoleService>
     {
-        public AutoRolesModule(AutoRoleService service) 
+        public SelfRolesModule(SelfRoleService service)
             : base(service) { }
 
 
-        #region automaticroles
+        #region selfassignableroles
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Administration
             => this.AddAsync(ctx, roles);
         #endregion
 
-        #region automaticroles add
+        #region selfassignableroles add
         [Command("add")]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
@@ -46,14 +46,14 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ar-change");
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-sr-change");
                 emb.AddLocalizedTitleField("str-roles-add", roles.Separate());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roles.Separate());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-add", roles.Separate());
         }
         #endregion
 
-        #region automaticroles delete
+        #region selfassignableroles delete
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
@@ -66,35 +66,35 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-sr-change");
                 emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roles.Separate());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-rem", roles.Separate());
         }
         #endregion
 
-        #region automaticroles deleteall
+        #region selfassignableroles deleteall
         [Command("deleteall"), UsesInteractivity]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-ar-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync("q-sr-rem-all"))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-ar-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "str-ar-clear");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-sr-clear").WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, "str-sr-clear");
         }
         #endregion
 
-        #region automaticroles list
+        #region selfassignableroles list
         [Command("list")]
         [Aliases("print", "show", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<ulong> rids = this.Service.Get(ctx.Guild.Id);
             if (!rids.Any()) {
-                await ctx.InfoAsync(this.ModuleColor, "cmd-err-ar-none");
+                await ctx.InfoAsync(this.ModuleColor, "cmd-err-sr-none");
                 return;
             }
 
@@ -105,14 +105,14 @@ namespace TheGodfather.Modules.Administration
                 await this.Service.RemoveAsync(ctx.Guild.Id, missingRoles);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-sr-change");
                         emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
                     },
                     addInvocationFields: false
                 );
             }
             await ctx.PaginateAsync(
-                "str-ar",
+                "str-sr",
                 roles.Where(kvp => !missingRoles.Contains(kvp.rid)).Select(kvp => kvp.Item2).OrderByDescending(r => r.Position),
                 r => r.ToString(),
                 this.ModuleColor

@@ -440,6 +440,13 @@
       [ "arg-chn-text" ]
     ]
   },
+  "create": {
+    "usage": [
+      [ "arg-role-raw" ],
+      [ "arg-role-raw", "arg-color" ],
+      [ "arg-role-raw", "arg-color", "arg-bool" ]
+    ]
+  },
   "emoji": {
     "usage": [
       [],
@@ -678,13 +685,6 @@
       [ "arg-role" ]
     ]
   },
-  "create": {
-    "usage": [
-      [ "arg-role-raw" ],
-      [ "arg-role-raw", "arg-color" ],
-      [ "arg-role-raw", "arg-color", "arg-bool" ]
-    ]
-  },
   "role delete": {
     "usage": [
       [ "arg-role" ]
@@ -707,15 +707,15 @@
       [ "arg-color", "arg-role" ]
     ]
   },
-  "role setname": {
-    "usage": [
-      [ "arg-role", "arg-name" ],
-      [ "arg-name", "arg-role" ]
-    ]
-  },
   "role setmentionable": {
     "usage": [
       [ "arg-role" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "role setname": {
+    "usage": [
+      [ "arg-role", "arg-name" ],
       [ "arg-name", "arg-role" ]
     ]
   },
@@ -723,6 +723,28 @@
     "usage": [
       [ "arg-role" ],
       [ "arg-name", "arg-role" ]
+    ]
+  },
+  "selfassignableroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+    ]
+  },
+  "selfassignableroles add": {
+    "usage": [
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+    ]
+  },
+  "selfassignableroles clear": {
+    "usage": [ [] ]
+  },
+  "selfassignableroles list": {
+    "usage": [ [] ]
+  },
+  "selfassignableroles remove": {
+    "usage": [
+      [ "arg-role", "arg-role-raw", "arg-variadic" ]
     ]
   },
   "webhook": {
