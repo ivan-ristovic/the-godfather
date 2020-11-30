@@ -753,6 +753,119 @@
       [ "arg-chn-text" ]
     ]
   },
+  "user": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user grantrole": {
+    "usage": [
+      [ "arg-usr", "arg-role" ],
+      [ "arg-role", "arg-usr" ]
+    ]
+  },
+  "user avatar": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user ban": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ],
+      [ "arg-usr", "arg-five", "arg-rsn" ]
+    ]
+  },
+  "user deafen": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user info": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user kick": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user kickvoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user mute": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user mutevoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user revokerole": {
+    "usage": [
+      [ "arg-usr", "arg-role" ],
+      [ "arg-role", "arg-usr" ]
+    ]
+  },
+  "user revokeallroles": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user setname": {
+    "usage": [
+      [ "arg-usr", "arg-name" ]
+    ]
+  },
+  "user softban": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ]
+    ]
+  },
+  "user tempban": {
+    "usage": [
+      [ "arg-usr", "arg-timespan-day" ],
+      [ "arg-timespan-day", "arg-usr" ]
+    ]
+  },
+  "user tempmute": {
+    "usage": [
+      [ "arg-usr", "arg-timespan-day" ],
+      [ "arg-timespan-day", "arg-usr" ]
+    ]
+  },
+  "user unban": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user undeafen": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user unmute": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user warn": {
+    "usage": [
+      [ "arg-usr" ]
+      [ "arg-usr", "arg-warn" ]
+    ]
+  },
+  "user unmutevoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
   "webhook delete": {
     "usage": [
       [ "arg-ulong" ],

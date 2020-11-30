@@ -14,6 +14,7 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using TheGodfather.Database;
 using TheGodfather.EventListeners;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;

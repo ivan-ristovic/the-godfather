@@ -58,7 +58,7 @@ namespace TheGodfather.Services
                 }
             } catch (Exception e) {
                 Log.Fatal(e, "Failed to load command translations");
-                throw e;
+                throw;
             }
 
             if (!cmds.Any())
@@ -101,7 +101,7 @@ namespace TheGodfather.Services
         {
             this.AssertIsDataLoaded();
 
-            if (!this.commands!.TryGetValue(command, out CommandInfo cmdInfo))
+            if (!this.commands!.TryGetValue(command, out CommandInfo? cmdInfo))
                 throw new KeyNotFoundException($"Failed to find info for {command}");
 
             return cmdInfo;

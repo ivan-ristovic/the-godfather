@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
@@ -285,7 +286,7 @@ namespace TheGodfather.Modules.Administration
             if (await ctx.WaitForBoolReplyAsync("q-setup-rl", channel: channel, reply: false)) {
                 gcfg.RatelimitEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.ToTypeString())) {
+                if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.Humanize())) {
                     await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
@@ -308,7 +309,7 @@ namespace TheGodfather.Modules.Administration
             if (await ctx.WaitForBoolReplyAsync("q-setup-as", channel: channel, reply: false)) {
                 gcfg.AntispamEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.ToTypeString())) {
+                if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.Humanize())) {
                     await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
@@ -331,7 +332,7 @@ namespace TheGodfather.Modules.Administration
             if (await ctx.WaitForBoolReplyAsync("q-setup-af", channel: channel, reply: false)) {
                 gcfg.AntifloodEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.ToTypeString())) {
+                if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.Humanize())) {
                     await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })

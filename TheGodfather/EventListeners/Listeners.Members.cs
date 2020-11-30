@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -17,6 +16,7 @@ using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 
@@ -60,14 +60,15 @@ namespace TheGodfather.EventListeners
 
             emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
             emb.WithThumbnail(e.Member.AvatarUrl);
-            emb.AddLocalizedTitleField("str-regtime", ls.GetLocalizedTime(e.Guild.Id, e.Member.CreationTimestamp), inline: true);
+            emb.AddLocalizedTimestampField("str-regtime", e.Member.CreationTimestamp, inline: true);
             emb.AddLocalizedTitleField("str-ahash", e.Member.AvatarHash, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-flags", e.Member.Flags.Humanize(), inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags.Humanize(), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-verified", e.Member.Verified, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType.Humanize(), inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-premium-since", ls.GetLocalizedTime(e.Guild.Id, e.Member.PremiumSince), inline: true, unknown: false);
+            emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
             emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
 
             // TODO move to service

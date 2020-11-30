@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Administration
                         emb.WithLocalizedDescription("evt-af-enabled");
                         emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
                         emb.AddLocalizedTitleField("str-cooldown", settings.Cooldown, inline: true);
-                        emb.AddLocalizedTitleField("str-punish-action", settings.Action.ToTypeString(), inline: true);
+                        emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
                         emb.WithLocalizedDescription("evt-af-disabled");
                     }
@@ -110,7 +111,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-action", gcfg.AntifloodAction.ToTypeString()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-action", gcfg.AntifloodAction.Humanize()));
                     return;
                 }
 
@@ -121,10 +122,10 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-af-action", action.Value.ToTypeString());
+                    emb.WithLocalizedDescription("evt-af-action", action.Value.Humanize());
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-af-action", action.Value.ToTypeString());
+                await ctx.InfoAsync(this.ModuleColor, "evt-af-action", action.Value.Humanize());
             }
             #endregion
 

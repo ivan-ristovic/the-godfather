@@ -5,10 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Database;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
@@ -129,9 +131,27 @@ namespace TheGodfather
                 _shards.Add(shard);
             }
 
+            // CheckCommandLocalization(_shards[0]);
+
             Log.Information("Booting the shards");
 
             return Task.WhenAll(_shards.Select(s => s.StartAsync()));
+
+
+            void CheckCommandLocalization(TheGodfatherShard shard)
+            {
+                LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
+                foreach ((string cmdName, Command cmd) in shard.CNext.RegisteredCommands) {
+                    try {
+                        _ = lcs.GetCommandDescription(0, cmdName);
+                        IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
+                        foreach (CommandArgument arg in args)
+                            _ = lcs.GetString(null, arg.Description);
+                    } catch (LocalizationException e) {
+                        Log.Warning(e, "Translation not found");
+                    }
+                }
+            }
         }
 
         private static async Task DisposeAsync()

@@ -1,4 +1,5 @@
-﻿using TheGodfather.Services;
+﻿using Humanizer;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Common
 {
@@ -13,6 +14,6 @@ namespace TheGodfather.Modules.Administration.Common
 
 
         public string ToEmbedFieldString(ulong gid, LocalizationService lcs)
-            => this.Enabled ? lcs.GetString(gid, "fmt-settings-rl", this.Sensitivity, this.Action.ToTypeString()) : lcs.GetString(gid, "str-off");
+            => this.Enabled ? lcs.GetString(gid, "fmt-settings-rl", this.Sensitivity, this.Action.Humanize()) : lcs.GetString(gid, "str-off");
     }
 }
