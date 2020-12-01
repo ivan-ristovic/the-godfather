@@ -18,14 +18,17 @@ namespace TheGodfather.Modules.Administration.Services
         public override DbSet<SelfRole> DbSetSelector(TheGodfatherDbContext db) 
             => db.SelfRoles;
         
-        public override IQueryable<SelfRole> GroupSelector(IQueryable<SelfRole> ars, ulong gid) 
-            => ars.Where(ar => ar.GuildIdDb == (long)gid);
+        public override IQueryable<SelfRole> GroupSelector(IQueryable<SelfRole> srs, ulong gid) 
+            => srs.Where(ar => ar.GuildIdDb == (long)gid);
         
         public override SelfRole EntityFactory(ulong gid, ulong rid) 
             => new SelfRole { GuildId = gid, RoleId = rid };
 
-        public override ulong EntityIdSelector(SelfRole ar)
-            => ar.RoleId;
+        public override ulong EntityIdSelector(SelfRole sr)
+            => sr.RoleId;
+
+        public override ulong EntityGroupSelector(SelfRole sr)
+            => sr.GuildId;
 
         public override object[] EntityPrimaryKeySelector(ulong gid, ulong rid) 
             => new object[] { (long)gid, (long)rid };

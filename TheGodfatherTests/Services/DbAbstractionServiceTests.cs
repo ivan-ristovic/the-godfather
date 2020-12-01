@@ -158,9 +158,7 @@ namespace TheGodfather.Tests.Services
 
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => {
-                    Assert.That(await this.Service.AddAsync(), Is.Zero);
-                    Assert.That(await this.Service.AddAsync(null!), Is.Zero);
-                    Assert.That(await this.Service.AddAsync(new ulong[] { }), Is.Zero);
+                    Assert.That(await this.Service.AddAsync(Array.Empty<ulong>()), Is.Zero);
                     Assert.That(await this.Service.AddAsync(Enumerable.Empty<ulong>()), Is.Zero);
                 },
                 verify: db => {
@@ -232,9 +230,7 @@ namespace TheGodfather.Tests.Services
                     return Task.CompletedTask;
                 },
                 alter: async _ => {
-                    Assert.That(await this.Service.RemoveAsync(), Is.Zero);
-                    Assert.That(await this.Service.RemoveAsync(null!), Is.Zero);
-                    Assert.That(await this.Service.RemoveAsync(new ulong[] { }), Is.Zero);
+                    Assert.That(await this.Service.RemoveAsync(Array.Empty<ulong>()), Is.Zero);
                     Assert.That(await this.Service.RemoveAsync(Enumerable.Empty<ulong>()), Is.Zero);
                 },
                 verify: db => {
@@ -442,7 +438,7 @@ namespace TheGodfather.Tests.Services
                     foreach (ulong gid in MockData.Ids) {
                         Assert.That(await this.Service.AddAsync(gid), Is.Zero);
                         Assert.That(await this.Service.AddAsync(gid, null!), Is.Zero);
-                        Assert.That(await this.Service.AddAsync(gid, new ulong[] { }), Is.Zero);
+                        Assert.That(await this.Service.AddAsync(gid, Array.Empty<ulong>()), Is.Zero);
                         Assert.That(await this.Service.AddAsync(gid, Enumerable.Empty<ulong>()), Is.Zero);
                     }
                 },
@@ -527,7 +523,7 @@ namespace TheGodfather.Tests.Services
                     foreach (ulong gid in MockData.Ids) {
                         Assert.That(await this.Service.RemoveAsync(gid), Is.Zero);
                         Assert.That(await this.Service.RemoveAsync(gid, null!), Is.Zero);
-                        Assert.That(await this.Service.RemoveAsync(gid, new ulong[] { }), Is.Zero);
+                        Assert.That(await this.Service.RemoveAsync(gid, Array.Empty<ulong>()), Is.Zero);
                         Assert.That(await this.Service.RemoveAsync(gid, Enumerable.Empty<ulong>()), Is.Zero);
                     }
                 },
@@ -572,6 +568,7 @@ namespace TheGodfather.Tests.Services
         public override DbSet<AutoRole> DbSetSelector(TheGodfatherDbContext db) => db.AutoRoles;
         public override AutoRole EntityFactory(ulong gid, ulong id) => new AutoRole { GuildId = gid, RoleId = id };
         public override ulong EntityIdSelector(AutoRole entity) => entity.RoleId;
+        public override ulong EntityGroupSelector(AutoRole entity) => entity.GuildId;
         public override object[] EntityPrimaryKeySelector(ulong gid, ulong id) => new object[] { (long)gid, (long)id };
         public override IQueryable<AutoRole> GroupSelector(IQueryable<AutoRole> entities, ulong gid) 
             => entities.Where(e => e.GuildIdDb == (long)gid);

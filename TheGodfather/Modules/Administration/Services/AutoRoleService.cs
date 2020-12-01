@@ -27,6 +27,9 @@ namespace TheGodfather.Modules.Administration.Services
         public override ulong EntityIdSelector(AutoRole ar)
             => ar.RoleId;
 
+        public override ulong EntityGroupSelector(AutoRole ar) 
+            => ar.GuildId;
+
         public override object[] EntityPrimaryKeySelector(ulong gid, ulong rid) 
             => new object[] { (long)gid, (long)rid };
     }
