@@ -30,7 +30,7 @@ namespace TheGodfather.Tests.Services
             TestDbProvider.AlterAndVerify(
                 alter: _ => { },
                 verify: db => {
-                    IReadOnlyList<ulong> all = this.Service.Get();
+                    IReadOnlyList<ulong> all = this.Service.GetIds();
                     Assert.That(all, Is.Empty);
                 }
             );
@@ -39,7 +39,7 @@ namespace TheGodfather.Tests.Services
                 setup: db => this.AddMockData(db),
                 alter: _ => { },
                 verify: db => {
-                    IReadOnlyList<ulong> all = this.Service.Get();
+                    IReadOnlyList<ulong> all = this.Service.GetIds();
                     Assert.That(all, Is.EqualTo(new[] { MockData.Ids[0], MockData.Ids[1] }));
                 }
             );
@@ -55,7 +55,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: db => this.Service.ClearAsync(),
                 verify: db => {
-                    IReadOnlyList<ulong> all = this.Service.Get();
+                    IReadOnlyList<ulong> all = this.Service.GetIds();
                     Assert.That(all, Is.Empty);
                     Assert.That(db.PrivilegedUsers, Is.Empty);
                     return Task.CompletedTask;
@@ -66,7 +66,7 @@ namespace TheGodfather.Tests.Services
                 setup: db => Task.CompletedTask,
                 alter: db => this.Service.ClearAsync(),
                 verify: db => {
-                    IReadOnlyList<ulong> all = this.Service.Get();
+                    IReadOnlyList<ulong> all = this.Service.GetIds();
                     Assert.That(all, Is.Empty);
                     Assert.That(db.PrivilegedUsers, Is.Empty);
                     return Task.CompletedTask;
@@ -106,7 +106,7 @@ namespace TheGodfather.Tests.Services
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(2)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(2).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -119,7 +119,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[2]), Is.EqualTo(1)),
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(3)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(3).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -132,7 +132,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[2]), Is.EqualTo(1)), 
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(3)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(3).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -150,7 +150,7 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.AddAsync(MockData.Ids[0], MockData.Ids[1], MockData.Ids[2]), Is.EqualTo(0));
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(3)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(3).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -162,7 +162,7 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.AddAsync(Enumerable.Empty<ulong>()), Is.Zero);
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.Empty);
+                    Assert.That(this.Service.GetIds(), Is.Empty);
                     Assert.That(db.PrivilegedUsers, Is.Empty);
                     return Task.CompletedTask;
                 }
@@ -179,7 +179,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.Empty);
+                    Assert.That(this.Service.GetIds(), Is.Empty);
                     Assert.That(db.PrivilegedUsers, Is.Empty);
                     return Task.CompletedTask;
                 }
@@ -192,7 +192,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[1]), Is.EqualTo(1)),
                 verify: db => {
-                    Assert.That(this.Service.Get().Single(), Is.EqualTo(MockData.Ids[0]));
+                    Assert.That(this.Service.GetIds().Single(), Is.EqualTo(MockData.Ids[0]));
                     Assert.That(db.PrivilegedUsers.Single().UserId, Is.EqualTo(MockData.Ids[0]));
                     return Task.CompletedTask;
                 }
@@ -205,7 +205,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[1], MockData.Ids[1], MockData.Ids[1]), Is.EqualTo(1)),
                 verify: db => {
-                    Assert.That(this.Service.Get().Single(), Is.EqualTo(MockData.Ids[0]));
+                    Assert.That(this.Service.GetIds().Single(), Is.EqualTo(MockData.Ids[0]));
                     Assert.That(db.PrivilegedUsers.Single().UserId, Is.EqualTo(MockData.Ids[0]));
                     return Task.CompletedTask;
                 }
@@ -218,7 +218,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[3], MockData.Ids[4]), Is.Zero),
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(2)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(2).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -234,7 +234,7 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.RemoveAsync(Enumerable.Empty<ulong>()), Is.Zero);
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(2)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(2).Select(id => new PrivilegedUser { UserId = id })));
                     return Task.CompletedTask;
                 }
@@ -269,7 +269,7 @@ namespace TheGodfather.Tests.Services
                 alter: _ => { },
                 verify: db => {
                     foreach (ulong id in MockData.Ids) {
-                        IReadOnlyList<ulong> all = this.Service.Get(id);
+                        IReadOnlyList<ulong> all = this.Service.GetIds(id);
                         Assert.That(all, Is.Empty);
                     }
                 }
@@ -279,12 +279,12 @@ namespace TheGodfather.Tests.Services
                 setup: db => this.AddMockData(db),
                 alter: _ => { },
                 verify: db => {
-                    IReadOnlyList<ulong> gid0 = this.Service.Get(MockData.Ids[0]);
+                    IReadOnlyList<ulong> gid0 = this.Service.GetIds(MockData.Ids[0]);
                     Assert.That(gid0, Is.EquivalentTo(new[] { MockData.Ids[0], MockData.Ids[1] }));
-                    IReadOnlyList<ulong> gid1 = this.Service.Get(MockData.Ids[1]);
+                    IReadOnlyList<ulong> gid1 = this.Service.GetIds(MockData.Ids[1]);
                     Assert.That(gid1, Is.EquivalentTo(new[] { MockData.Ids[2] }));
                     foreach (ulong id in MockData.Ids.Skip(2)) {
-                        IReadOnlyList<ulong> gidx = this.Service.Get(id);
+                        IReadOnlyList<ulong> gidx = this.Service.GetIds(id);
                         Assert.That(gidx, Is.Empty);
                     }
                 }
@@ -301,10 +301,10 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: db => this.Service.ClearAsync(MockData.Ids[0]),
                 verify: db => {
-                    IReadOnlyList<ulong> all = this.Service.Get(MockData.Ids[0]);
+                    IReadOnlyList<ulong> all = this.Service.GetIds(MockData.Ids[0]);
                     Assert.That(all, Is.Empty);
                     Assert.That(this.Service.GroupSelector(db.AutoRoles, MockData.Ids[0]), Is.Empty);
-                    IReadOnlyList<ulong> gid1 = this.Service.Get(MockData.Ids[1]);
+                    IReadOnlyList<ulong> gid1 = this.Service.GetIds(MockData.Ids[1]);
                     Assert.That(gid1, Is.EqualTo(new[] { MockData.Ids[2] }));
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[1]), Is.EquivalentTo(new[] { MockData.Ids[2] }));
                     return Task.CompletedTask;
@@ -332,7 +332,7 @@ namespace TheGodfather.Tests.Services
                 alter: db => this.Service.ClearAsync(MockData.Ids[0]),
                 verify: db => {
                     foreach (ulong id in MockData.Ids) {
-                        IReadOnlyList<ulong> all = this.Service.Get(id);
+                        IReadOnlyList<ulong> all = this.Service.GetIds(id);
                         Assert.That(all, Is.Empty);
                     }
                     return Task.CompletedTask;
@@ -384,11 +384,11 @@ namespace TheGodfather.Tests.Services
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[0], MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
                     Assert.That(db.AutoRoles, Has.Exactly(2).Items);
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
                     foreach (ulong gid in MockData.Ids.Skip(1))
-                        Assert.That(this.Service.Get(gid), Is.Empty);
+                        Assert.That(this.Service.GetIds(gid), Is.Empty);
                     return Task.CompletedTask;
                 }
             );
@@ -403,7 +403,7 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.AddAsync(MockData.Ids[0], MockData.Ids[2]), Is.EqualTo(1));
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(3)));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(db.AutoRoles, Has.Exactly(bef + 1).Items);
                     return Task.CompletedTask;
@@ -424,10 +424,10 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.AddAsync(MockData.Ids[0], MockData.Ids[0]), Is.EqualTo(0));
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
-                    Assert.That(this.Service.Get(MockData.Ids[1]).Single(), Is.EqualTo(MockData.Ids[2]));
-                    Assert.That(this.Service.Get(MockData.Ids[2]).Single(), Is.EqualTo(MockData.Ids[1]));
-                    Assert.That(this.Service.Get(MockData.Ids[3]).Single(), Is.EqualTo(MockData.Ids[1]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(MockData.Ids[1]).Single(), Is.EqualTo(MockData.Ids[2]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[2]).Single(), Is.EqualTo(MockData.Ids[1]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[3]).Single(), Is.EqualTo(MockData.Ids[1]));
                     Assert.That(db.AutoRoles, Has.Exactly(bef + 2).Items);
                     return Task.CompletedTask;
                 }
@@ -445,7 +445,7 @@ namespace TheGodfather.Tests.Services
                 verify: db => {
                     Assert.That(db.AutoRoles, Is.Empty);
                     foreach (ulong gid in MockData.Ids) 
-                        Assert.That(this.Service.Get(gid), Is.Empty);
+                        Assert.That(this.Service.GetIds(gid), Is.Empty);
                     return Task.CompletedTask;
                 }
             );
@@ -463,8 +463,8 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[0], MockData.Ids.Take(2)), Is.EqualTo(2)),
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]), Is.Empty);
-                    Assert.That(this.Service.Get(MockData.Ids[1]).Single(), Is.EqualTo(MockData.Ids[2]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]), Is.Empty);
+                    Assert.That(this.Service.GetIds(MockData.Ids[1]).Single(), Is.EqualTo(MockData.Ids[2]));
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[0]), Is.Empty);
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[1]), Is.Not.Empty);
                     return Task.CompletedTask;
@@ -478,7 +478,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[0], MockData.Ids[1]), Is.EqualTo(1)),
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
                     return Task.CompletedTask;
                 }
@@ -491,7 +491,7 @@ namespace TheGodfather.Tests.Services
                 },
                 alter: async _ => Assert.That(await this.Service.RemoveAsync(MockData.Ids[0], MockData.Ids[1], MockData.Ids[1], MockData.Ids[1]), Is.EqualTo(1)),
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
                     Assert.That(this.GetGuildRoles(db, MockData.Ids[0]).Single(), Is.EqualTo(MockData.Ids[0]));
                     return Task.CompletedTask;
                 }
@@ -528,7 +528,7 @@ namespace TheGodfather.Tests.Services
                     }
                 },
                 verify: db => {
-                    Assert.That(this.Service.Get(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
+                    Assert.That(this.Service.GetIds(MockData.Ids[0]), Is.EquivalentTo(MockData.Ids.Take(2)));
                     Assert.That(db.AutoRoles, Has.Exactly(bef).Items);
                     return Task.CompletedTask;
                 }

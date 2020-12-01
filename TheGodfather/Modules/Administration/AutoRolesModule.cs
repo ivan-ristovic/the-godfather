@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("print", "show", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<ulong> rids = this.Service.Get(ctx.Guild.Id);
+            IReadOnlyList<ulong> rids = this.Service.GetIds(ctx.Guild.Id);
             if (!rids.Any()) {
                 await ctx.InfoAsync(this.ModuleColor, "cmd-err-ar-none");
                 return;

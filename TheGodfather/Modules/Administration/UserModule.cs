@@ -261,12 +261,12 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
-
+        
         #region user revokerole
         [Command("revokerole"), Priority(1)]
         [Description("Revoke a role from member.")]
         [Aliases("-role", "-r", ">r", ">>r", "rr", "remover", "remr", "-roles", "removeroles", "removerole", 
-                 "revokeroles", "revokerole", "takeroles", "revrole", "revroles", "tr")]
+                 "revokeroles", "takeroles", "revrole", "revroles", "tr")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task RevokeRolesAsync(CommandContext ctx,
                                           [Description("desc-member")] DiscordMember member,

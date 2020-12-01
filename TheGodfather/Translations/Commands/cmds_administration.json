@@ -857,7 +857,7 @@
   },
   "user warn": {
     "usage": [
-      [ "arg-usr" ]
+      [ "arg-usr" ],
       [ "arg-usr", "arg-warn" ]
     ]
   },

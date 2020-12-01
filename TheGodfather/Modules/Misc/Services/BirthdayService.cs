@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -26,10 +28,29 @@ namespace TheGodfather.Modules.Misc.Services
 
         public override ulong EntityIdSelector(Birthday bd)
             => bd.UserId;
+
         public override (ulong, ulong) EntityGroupSelector(Birthday bd)
             => (bd.GuildId, bd.ChannelId);
 
         public override object[] EntityPrimaryKeySelector((ulong gid, ulong cid) id, ulong uid)
             => new object[] { (long)id.gid, (long)id.cid, (long)uid };
+
+        public async Task<IReadOnlyList<Birthday>> GetUserBirthdaysAsync(ulong gid, ulong uid)
+        {
+            List<Birthday> bds;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                bds = await db.Birthdays.Where(b => b.GuildIdDb == (long)gid && b.UserIdDb == (long)uid).ToListAsync();
+            }
+            return bds.AsReadOnly();
+        }
+
+        public async Task<IReadOnlyList<Birthday>> GetAllBirthdaysAsync(ulong gid)
+        {
+            List<Birthday> bds;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                bds = await db.Birthdays.Where(b => b.GuildIdDb == (long)gid).ToListAsync();
+            }
+            return bds.AsReadOnly();
+        }
     }
 }

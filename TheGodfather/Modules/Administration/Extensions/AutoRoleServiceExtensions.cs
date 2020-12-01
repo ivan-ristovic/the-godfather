@@ -8,7 +8,7 @@ namespace TheGodfather.Modules.Administration.Extensions
     {
         public static async Task GrantRolesAsync(this AutoRoleService service, TheGodfatherShard shard, DiscordGuild guild, DiscordMember member)
         {
-            foreach (ulong rid in service.Get(guild.Id)) {
+            foreach (ulong rid in service.GetIds(guild.Id)) {
                 DiscordRole? role = guild.GetRole(rid);
                 if (role is { }) {
                     await LoggingService.TryExecuteWithReportAsync(

@@ -92,17 +92,25 @@ namespace TheGodfather.Services
             return entity is { };
         }
 
-        public IReadOnlyList<TEntityId> Get()
+        public IReadOnlyList<TEntityId> GetIds()
         {
-            List<TEntityId> rids;
+            List<TEntityId> res;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                DbSet<TEntity> set = this.DbSetSelector(db);
-                rids = set
+                res = this.DbSetSelector(db)
                     .AsEnumerable()
                     .Select(this.EntityIdSelector)
                     .ToList();
             }
-            return rids.AsReadOnly();
+            return res.AsReadOnly();
+        }
+
+        public async Task<IReadOnlyList<TEntity>> GetAsync()
+        {
+            List<TEntity> res;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                res = await this.DbSetSelector(db).ToListAsync();
+            }
+            return res.AsReadOnly();
         }
     }
 
@@ -192,17 +200,27 @@ namespace TheGodfather.Services
             return entity is { };
         }
 
-        public IReadOnlyList<TEntityId> Get(TGroupId grid)
+        public IReadOnlyList<TEntityId> GetIds(TGroupId grid)
         {
-            List<TEntityId> rids;
+            List<TEntityId> res;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 DbSet<TEntity> set = this.DbSetSelector(db);
-                rids = this.GroupSelector(set, grid)
+                res = this.GroupSelector(set, grid)
                     .AsEnumerable()
                     .Select(this.EntityIdSelector)
                     .ToList();
             }
-            return rids.AsReadOnly();
+            return res.AsReadOnly();
+        }
+
+        public async Task<IReadOnlyList<TEntity>> GetAsync(TGroupId grid)
+        {
+            List<TEntity> res;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                DbSet<TEntity> set = this.DbSetSelector(db);
+                res = await this.GroupSelector(set, grid).ToListAsync();
+            }
+            return res.AsReadOnly();
         }
     }
 }

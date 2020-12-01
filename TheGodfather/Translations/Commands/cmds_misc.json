@@ -1,0 +1,38 @@
+{
+  "birthday": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-chn-text" ],
+      [ "arg-usr", "arg-chn-text", "arg-date" ]
+    ]
+  },
+  "birthday add": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-chn-text" ],
+      [ "arg-usr", "arg-chn-text", "arg-date" ]
+    ]
+  },
+  "birthday remove": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "birthday removeall": {
+    "usage": [
+      []
+    ]
+  },
+  "birthday list": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "birthday listall": {
+    "usage": [
+      []
+    ]
+  }
+}
