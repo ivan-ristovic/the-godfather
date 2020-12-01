@@ -14,9 +14,9 @@ using Serilog;
 using Serilog.Extensions.Logging;
 using TheGodfather.Database;
 using TheGodfather.EventListeners;
-using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -122,6 +122,7 @@ namespace TheGodfather
             var assembly = Assembly.GetExecutingAssembly();
             cnext.RegisterCommands(assembly);
             cnext.RegisterConverters(assembly);
+            cnext.SetHelpFormatter<LocalizedHelpFormatter>();
 
             return cnext;
         }

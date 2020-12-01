@@ -2,12 +2,12 @@
   "automaticroles": {
     "usage": [
       [],
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "automaticroles add": {
     "usage": [
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "automaticroles clear": {
@@ -18,7 +18,7 @@
   },
   "automaticroles remove": {
     "usage": [
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "channel": {
@@ -90,7 +90,7 @@
   },
   "channel modify parent": {
     "usage": [
-      [ "arg-chn-text", "arg-chn-cat", "..." ]
+      [ "arg-chn-text", "arg-chn-cat" ]
     ]
   },
   "channel modify position": {
@@ -141,7 +141,7 @@
   },
   "channel setparent": {
     "usage": [
-      [ "arg-chn-text", "arg-chn-cat", "..." ]
+      [ "arg-chn-text", "arg-chn-cat" ]
     ]
   },
   "channel setposition": {
@@ -256,9 +256,9 @@
   },
   "config antispam exempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config antispam reset": {
@@ -274,9 +274,9 @@
   },
   "config antispam unexempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config instantleave": {
@@ -313,6 +313,11 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config linkfilter": {
+    "usage": [
+      []
+    ]
+  },
   "config localization": {
     "usage": [
       [],
@@ -338,16 +343,16 @@
   },
   "config logging exempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config logging unexempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config muterole": {
@@ -372,9 +377,9 @@
   },
   "config ratelimit exempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config ratelimit reset": {
@@ -390,9 +395,9 @@
   },
   "config ratelimit unexempt": {
     "usage": [
-      [ "arg-usr", "..." ],
-      [ "arg-role", "..." ],
-      [ "arg-chn-text", "..." ]
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
     ]
   },
   "config reset": {
@@ -484,23 +489,23 @@
   "filter": {
     "usage": [
       [],
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "filter add": {
     "usage": [
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "filter delete": {
     "usage": [
-      [ "arg-id", "..." ],
-      [ "arg-regex", "..." ]
+      [ "arg-id" ],
+      [ "arg-regex" ]
     ]
   },
   "filter delete id": {
     "usage": [
-      [ "arg-id", "..." ]
+      [ "arg-id" ]
     ]
   },
   "filter delete matching": {
@@ -510,7 +515,7 @@
   },
   "filter delete pattern": {
     "usage": [
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "filter deleteall": {
@@ -526,23 +531,23 @@
   "forbiddennames": {
     "usage": [
       [],
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "forbiddennames add": {
     "usage": [
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "forbiddennames delete": {
     "usage": [
-      [ "arg-id", "..." ],
-      [ "arg-regex", "..." ]
+      [ "arg-id" ],
+      [ "arg-regex" ]
     ]
   },
   "forbiddennames delete id": {
     "usage": [
-      [ "arg-id", "..." ]
+      [ "arg-id" ]
     ]
   },
   "forbiddennames delete matching": {
@@ -552,7 +557,7 @@
   },
   "forbiddennames delete pattern": {
     "usage": [
-      [ "arg-regex", "..." ]
+      [ "arg-regex" ]
     ]
   },
   "forbiddennames deleteall": {
@@ -728,12 +733,12 @@
   "selfassignableroles": {
     "usage": [
       [],
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "selfassignableroles add": {
     "usage": [
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "selfassignableroles clear": {
@@ -744,7 +749,7 @@
   },
   "selfassignableroles remove": {
     "usage": [
-      [ "arg-role", "arg-role-raw", "arg-variadic" ]
+      [ "arg-role", "arg-role-raw" ]
     ]
   },
   "webhook": {
@@ -877,7 +882,7 @@
   "webhook deleteall": {
     "usage": [
       [],
-      [ "arg-chn-text", "..." ]
+      [ "arg-chn-text" ]
     ]
   },
   "webhook list": {

@@ -23,7 +23,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("config")]
+    [Group("config"), Module(ModuleType.Administration)]
     [Aliases("configuration", "configure", "settings", "cfg")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
