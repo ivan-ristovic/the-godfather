@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheGodfather.Database.Models
 {
     [Table("birthdays")]
-    public class Birthday
+    public class Birthday : IEquatable<Birthday>
     {
         [ForeignKey("GuildConfig")]
         [Column("gid")]
@@ -33,5 +33,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(Birthday? other)
+            => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as Birthday);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.ChannelId, this.UserId).GetHashCode();
     }
 }
