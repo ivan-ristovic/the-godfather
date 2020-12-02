@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using Humanizer;
 using Newtonsoft.Json;
 using Serilog;
+using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 
@@ -17,7 +17,8 @@ namespace TheGodfather.Services
 
         private readonly LocalizationService lcs;
         private readonly GuildConfigService gcs;
-        private ImmutableDictionary<string, CommandInfo>? commands;
+        private Dictionary<string, CommandInfo> commands;
+        private Dictionary<ModuleType, HashSet<string>> modules;
         private bool isDataLoaded;
 
 
@@ -25,6 +26,8 @@ namespace TheGodfather.Services
         {
             this.lcs = lcs;
             this.gcs = gcs;
+            this.commands = new Dictionary<string, CommandInfo>();
+            this.modules = new Dictionary<ModuleType, HashSet<string>>();
             if (loadData)
                 this.LoadData("Translations");
         }
@@ -32,40 +35,66 @@ namespace TheGodfather.Services
 
         public void LoadData(string root)
         {
-            var cmds = new Dictionary<string, CommandInfo>();
+            this.commands = new Dictionary<string, CommandInfo>();
+            this.modules = new Dictionary<ModuleType, HashSet<string>>();
 
             string path = Path.Combine(root, "Commands");
             try {
                 Log.Debug("Loading command info from {Folder}", path);
                 foreach (FileInfo fi in new DirectoryInfo(path).EnumerateFiles("cmds_*.json", SearchOption.TopDirectoryOnly)) {
-                    try {
-                        string json = File.ReadAllText(fi.FullName);
-                        foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)) {
-                            foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
-                                try {
-                                    string _ = this.lcs.GetString(null, arg);
-                                    Log.Verbose("Checked {Argument}", arg);
-                                } catch (LocalizationException) {
-                                    Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
-                                }
-                            }
-                            cmds.Add(cmd, info);
-                        }
-                        Log.Debug("Loaded command list from: {FileName}", fi.Name);
-                    } catch (JsonReaderException e) {
-                        Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);
-                    }
+                    ModuleType module = ParseModuleType(fi);
+                    ReadCommands(fi, module);
                 }
             } catch (Exception e) {
                 Log.Fatal(e, "Failed to load command translations");
                 throw;
             }
 
-            if (!cmds.Any())
+            if (!this.commands.Any())
                 throw new IOException("No valid JSON files found");
 
-            this.commands = cmds.ToImmutableDictionary();
             this.isDataLoaded = true;
+
+
+            ModuleType ParseModuleType(FileInfo fi)
+            {
+                string moduleRaw = fi.Name.Substring(0, fi.Name.IndexOf('.')).Substring(fi.Name.IndexOf('_') + 1);
+                if (!Enum.TryParse(moduleRaw, out ModuleType module)) {
+                    module = ModuleType.Uncategorized;
+                    Log.Error("Failed to parse module name from file {FileName}", fi.Name);
+                }
+                if (!this.modules.ContainsKey(module))
+                    this.modules.Add(module, new HashSet<string>());
+                return module;
+            }
+
+            void ReadCommands(FileInfo fi, ModuleType module)
+            {
+                try {
+                    string json = File.ReadAllText(fi.FullName);
+                    foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)) {
+                        
+                        info.Module = module;
+                        foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
+                            try {
+                                string _ = this.lcs.GetString(null, arg);
+                                Log.Verbose("Checked {Argument}", arg);
+                            } catch (LocalizationException) {
+                                Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
+                            }
+                        }
+                        this.commands.Add(cmd, info);
+
+                        if (!info.Hidden) {
+                            string group = cmd.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+                            this.modules[module].Add(group);
+                        }
+                    }
+                    Log.Debug("Loaded command list from: {FileName}", fi.Name);
+                } catch (JsonReaderException e) {
+                    Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);
+                }
+            }
         }
 
         public string GetCommandDescription(ulong gid, string command)
@@ -90,21 +119,25 @@ namespace TheGodfather.Services
             return examples.AsReadOnly();
         }
 
+        public IReadOnlyList<string> GetCommandsInModule(ModuleType module)
+        {
+            this.AssertIsDataLoaded();
+            return this.modules.GetValueOrDefault(module)?.ToList().AsReadOnly() ?? new List<string>().AsReadOnly();
+        }
 
         private void AssertIsDataLoaded()
         {
-            if (!this.isDataLoaded || this.commands is null)
-                throw new InvalidOperationException("The translation data has not been loaded.");
+            if (!this.isDataLoaded)
+                throw new InvalidOperationException("The command data has not been loaded.");
         }
 
         private CommandInfo GetInfoForCommand(string command)
         {
             this.AssertIsDataLoaded();
 
-            if (!this.commands!.TryGetValue(command, out CommandInfo? cmdInfo))
-                throw new KeyNotFoundException($"Failed to find info for {command}");
-
-            return cmdInfo;
+            return this.commands.TryGetValue(command, out CommandInfo? cmdInfo)
+                ? cmdInfo
+                : throw new KeyNotFoundException($"Failed to find info for {command}");
         }
 
 
@@ -112,6 +145,12 @@ namespace TheGodfather.Services
         {
             [JsonProperty("usage")]
             public List<List<string>> UsageExamples { get; set; } = new List<List<string>>();
+
+            [JsonProperty("hidden")]
+            public bool Hidden { get; set; } = false;
+
+            [JsonIgnore]
+            public ModuleType Module { get; set; } = ModuleType.Uncategorized;
         }
     }
 }

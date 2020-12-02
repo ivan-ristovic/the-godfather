@@ -17,7 +17,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("insult"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("insult"), Module(ModuleType.Misc), NotBlocked]
     [Description("Insults manipulation. Group call insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
 

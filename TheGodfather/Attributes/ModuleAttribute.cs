@@ -11,7 +11,7 @@ namespace TheGodfather.Attributes
         Chickens,
         Currency,
         Games,
-        Miscellaneous,
+        Misc,
         Music,
         Owner,
         Polls,
@@ -27,13 +27,12 @@ namespace TheGodfather.Attributes
     {
         public static DiscordColor ToDiscordColor(this ModuleType type)
         {
-            return type switch
-            {
+            return type switch {
                 ModuleType.Administration => DiscordColor.SapGreen,
                 ModuleType.Chickens => DiscordColor.Orange,
                 ModuleType.Currency => DiscordColor.DarkGreen,
                 ModuleType.Games => DiscordColor.CornflowerBlue,
-                ModuleType.Miscellaneous => DiscordColor.White,
+                ModuleType.Misc => DiscordColor.White,
                 ModuleType.Music => DiscordColor.Aquamarine,
                 ModuleType.Owner => DiscordColor.DarkButNotBlack,
                 ModuleType.Polls => DiscordColor.Orange,
@@ -43,6 +42,26 @@ namespace TheGodfather.Attributes
                 ModuleType.Uncategorized => DiscordColor.Gray,
                 ModuleType.Searches => DiscordColor.Turquoise,
                 _ => DiscordColor.Green,
+            };
+        }
+
+        public static string ToLocalizedDescriptionKey(this ModuleType type)
+        {
+            return type switch {
+                ModuleType.Administration => "m-admin",
+                ModuleType.Chickens => "m-chicken",
+                ModuleType.Currency => "m-currency",
+                ModuleType.Games => "m-games",
+                ModuleType.Misc => "m-misc",
+                ModuleType.Music => "m-music",
+                ModuleType.Owner => "m-owner",
+                ModuleType.Polls => "m-polls",
+                ModuleType.Reactions => "m-reactions",
+                ModuleType.Reminders => "m-reminders",
+                ModuleType.SWAT => "m-swat",
+                ModuleType.Uncategorized => "m-uncat",
+                ModuleType.Searches => "m-search",
+                _ => "h-desc-none",
             };
         }
     }

@@ -15,7 +15,7 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("grant"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("grant"), Module(ModuleType.Misc), NotBlocked]
     [Description("Requests to grant the sender a certain object (role for example).")]
     [Aliases("give")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
     }
 
-    [Group("revoke"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("revoke"), Module(ModuleType.Misc), NotBlocked]
     [Description("Requests to revoke a certain object from the sender (role for example).")]
     [Aliases("take")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]

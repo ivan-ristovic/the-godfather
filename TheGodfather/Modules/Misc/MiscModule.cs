@@ -28,7 +28,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Module(ModuleType.Miscellaneous)]
+    [Module(ModuleType.Misc)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public class MiscModule : TheGodfatherModule
     {

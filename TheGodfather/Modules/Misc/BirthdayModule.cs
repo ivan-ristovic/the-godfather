@@ -18,7 +18,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("birthday"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("birthday"), Module(ModuleType.Misc), NotBlocked]
     [Aliases("birthdays", "bday", "bd", "bdays")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]

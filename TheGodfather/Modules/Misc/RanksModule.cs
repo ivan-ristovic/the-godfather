@@ -18,7 +18,7 @@ using TheGodfather.Misc.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("rank"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("rank"), Module(ModuleType.Misc), NotBlocked]
     [Description("User ranking commands. Group command prints given user's rank.")]
     [Aliases("ranks", "ranking", "level")]
 

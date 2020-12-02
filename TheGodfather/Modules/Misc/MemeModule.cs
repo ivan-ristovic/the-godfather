@@ -18,7 +18,7 @@ using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("meme"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("meme"), Module(ModuleType.Misc), NotBlocked]
     [Description("Manipulate guild memes. Group call returns a meme from this guild's meme list given by name " +
                  "or a random one if name isn't provided.")]
     [Aliases("memes", "mm")]

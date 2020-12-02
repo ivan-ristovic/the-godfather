@@ -13,7 +13,7 @@ using TheGodfather.Exceptions;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("random"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("random"), Module(ModuleType.Misc), NotBlocked]
     [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]

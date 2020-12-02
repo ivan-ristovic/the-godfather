@@ -67,10 +67,10 @@
     <None Update="Common\IPTestData\ips.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_test.json">
+    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_Misc.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_test2.json">
+    <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_Music.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\TranslationsTestData\ThrowsIO\en-GB.json">
@@ -79,10 +79,10 @@
     <None Update="Services\TranslationsTestData\ThrowsIO\Lt-sr-SP.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_test.json">
+    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_Misc.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_test2.json">
+    <None Update="Services\TranslationsTestData\Valid\Commands\cmds_Music.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Services\TranslationsTestData\Valid\Commands\desc_en-GB.json">

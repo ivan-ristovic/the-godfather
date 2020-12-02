@@ -96,11 +96,11 @@ namespace TheGodfather.Services
             if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string> localeStrings)) {
                 if (!localeStrings.TryGetValue(key, out string response)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.BlockCode(key)} Please report this.");
+                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key)} Please report this.");
                 }
                 if (!localeStrings.TryGetValue("str-404", out string str404)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", "str-404", locale);
-                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.BlockCode("str-404")} Please report this.");
+                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode("str-404")} Please report this.");
                 }
                 IEnumerable<object> margs = args?.Select(a => a is null ? str404 : a) ?? Enumerable.Empty<object>();
                 return string.Format(response, margs.ToArray());

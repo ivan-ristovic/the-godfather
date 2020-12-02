@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.CommandsNext.Converters;
-using DSharpPlus.CommandsNext.Entities;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
@@ -23,9 +17,36 @@ namespace TheGodfather.Modules.Misc
             : base(cs) { }
 
 
-        [Command("help")]
-        [Aliases("?", "??", "???")]
-        public Task HelpAsync(CommandContext ctx, [RemainingText] params string[] command)
-            => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, command);
+        #region help
+        [Command("help"), Priority(2)]
+        [Aliases("h", "?", "??", "???")]
+        public Task HelpAsync(CommandContext ctx)
+        {
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedTitle("h-title");
+                emb.WithLocalizedDescription("fmt-modules", Enum.GetNames<ModuleType>().Select(s => $"• {s}").Separate());
+                emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
+            });
+        }
+
+        [Command("help"), Priority(1)]
+        public Task HelpAsync(CommandContext ctx,
+                             [Description("desc-module")] ModuleType module)
+        {
+            IReadOnlyList<string> cmds = this.Service.GetCommandsInModule(module);
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(module.ToDiscordColor());
+                emb.WithLocalizedTitle("h-title-m", module);
+                emb.WithLocalizedDescription(module.ToLocalizedDescriptionKey(), cmds.Select(s => Formatter.InlineCode(s)).Separate(", "));
+                emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
+            });
+        }
+
+        [Command("help"), Priority(0)]
+        public Task HelpAsync(CommandContext ctx, 
+                             [RemainingText, Description("desc-cmd")] params string[] cmd)
+            => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, cmd);
+        #endregion
     }
 }
