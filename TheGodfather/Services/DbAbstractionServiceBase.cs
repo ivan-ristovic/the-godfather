@@ -213,7 +213,7 @@ namespace TheGodfather.Services
             return res.AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<TEntity>> GetAsync(TGroupId grid)
+        public async Task<IReadOnlyList<TEntity>> GetAllAsync(TGroupId grid)
         {
             List<TEntity> res;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
@@ -221,6 +221,16 @@ namespace TheGodfather.Services
                 res = await this.GroupSelector(set, grid).ToListAsync();
             }
             return res.AsReadOnly();
+        }
+
+        public async Task<TEntity?> GetAsync(TGroupId grid, TEntityId entity)
+        {
+            TEntity? res = null;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                DbSet<TEntity> set = this.DbSetSelector(db);
+                res = await set.FindAsync(this.EntityPrimaryKeySelector(grid, entity));
+            }
+            return res;
         }
     }
 }

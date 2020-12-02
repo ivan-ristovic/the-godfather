@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("memes")]
-    public class Meme
+    public class Meme : IEquatable<Meme>
     {
         public const int NameLimit = 32;
         public const int UrlLimit = 128;
@@ -22,7 +23,20 @@ namespace TheGodfather.Database.Models
         [Column("url"), Required, MaxLength(UrlLimit)]
         public string Url { get; set; } = null!;
 
+        [NotMapped]
+        public Uri Uri => new Uri(this.Url);
+
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(Meme? other)
+            => other is { } && this.GuildId == other.GuildId && this.Name == other.Name;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as Meme);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.Name).GetHashCode();
     }
 }

@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration.Services
             => db.SelfRoles;
         
         public override IQueryable<SelfRole> GroupSelector(IQueryable<SelfRole> srs, ulong gid) 
-            => srs.Where(ar => ar.GuildIdDb == (long)gid);
+            => srs.Where(sr => sr.GuildIdDb == (long)gid);
         
         public override SelfRole EntityFactory(ulong gid, ulong rid) 
             => new SelfRole { GuildId = gid, RoleId = rid };

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("birthdays", "bday", "bd", "bdays")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
+    public sealed class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
     {
         public BirthdayModule(BirthdayService service)
             : base(service) { }
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Misc
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            IReadOnlyList<Birthday> bds = await this.Service.GetAsync((ctx.Guild.Id, channel.Id));
+            IReadOnlyList<Birthday> bds = await this.Service.GetAllAsync((ctx.Guild.Id, channel.Id));
             await this.InternalListAsync(ctx, bds);
         }
         #endregion

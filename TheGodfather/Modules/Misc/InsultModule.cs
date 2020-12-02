@@ -10,14 +10,13 @@ using TheGodfather.Modules.Misc.Services;
 namespace TheGodfather.Modules.Misc
 {
     [Group("insult"), Module(ModuleType.Misc), NotBlocked]
-    [Description("Insults manipulation. Group call insults a given user.")]
-    [Aliases("burn", "insults", "ins", "roast")]
+    [Aliases("burn", "ins", "roast")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class InsultModule : TheGodfatherServiceModule<InsultService>
     {
-
         public InsultModule(InsultService service)
             : base(service) { }
+
 
         #region insult
         [GroupCommand, Priority(1)]
@@ -32,7 +31,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Italic(insult));
-                emb.WithLocalizedFooter("fmt-powered-by", user.AvatarUrl, "insult.mattbas.org");
+                emb.WithLocalizedFooter("fmt-powered-by", user.AvatarUrl, InsultService.Provider);
             });
         }
 
@@ -44,7 +43,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Italic(insult));
-                emb.WithLocalizedFooter("fmt-powered-by", null, "insult.mattbas.org");
+                emb.WithLocalizedFooter("fmt-powered-by", null, InsultService.Provider);
             });
         }
         #endregion

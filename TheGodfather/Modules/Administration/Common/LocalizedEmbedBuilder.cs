@@ -119,6 +119,18 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
+        public LocalizedEmbedBuilder WithImageUrl(string url)
+        {
+            this.emb.WithImageUrl(url);
+            return this;
+        }
+
+        public LocalizedEmbedBuilder WithImageUrl(Uri url)
+        {
+            this.emb.WithImageUrl(url);
+            return this;
+        }
+
         public LocalizedEmbedBuilder AddField(string title, string content, bool inline = false)
         {
             this.emb.AddField(this.TruncateToFitFieldName(title), this.TruncateToFitFieldValue(content), inline);

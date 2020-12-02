@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc.Services
             => db.Birthdays;
 
         public override IQueryable<Birthday> GroupSelector(IQueryable<Birthday> bds, (ulong gid, ulong cid) id)
-            => bds.Where(ar => ar.GuildIdDb == (long)id.gid && ar.ChannelIdDb == (long)id.cid);
+            => bds.Where(bd => bd.GuildIdDb == (long)id.gid && bd.ChannelIdDb == (long)id.cid);
 
         public override Birthday EntityFactory((ulong gid, ulong cid) id, ulong uid)
             => new Birthday { GuildId = id.gid, ChannelId = id.cid, UserId = uid };

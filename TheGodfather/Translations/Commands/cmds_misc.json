@@ -13,17 +13,6 @@
       [ "arg-usr", "arg-chn-text", "arg-date" ]
     ]
   },
-  "birthday remove": {
-    "usage": [
-      [ "arg-usr" ],
-      [ "arg-chn-text" ]
-    ]
-  },
-  "birthday removeall": {
-    "usage": [
-      []
-    ]
-  },
   "birthday list": {
     "usage": [
       [ "arg-usr" ],
@@ -31,6 +20,17 @@
     ]
   },
   "birthday listall": {
+    "usage": [
+      []
+    ]
+  },
+  "birthday remove": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "birthday removeall": {
     "usage": [
       []
     ]
@@ -46,6 +46,44 @@
     "usage": [
       [ "arg-usr" ],
       [ "arg-string" ]
+    ]
+  },
+  "meme": {
+    "usage": [
+      [],
+      [ "arg-string" ]
+    ]
+  },
+  "meme add": {
+    "usage": [
+      [ "arg-string" ],
+      [ "arg-string", "arg-url-image" ]
+    ]
+  },
+  "meme create": {
+    "usage": [
+      [ "arg-meme-template", "arg-string", "arg-string" ]
+    ]
+  },
+  "meme delete": {
+    "usage": [
+      [ "arg-string" ]
+    ]
+  },
+  "meme deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "meme list": {
+    "usage": [
+      []
+    ]
+  },
+  "meme templates": {
+    "usage": [
+      [],
+      [ "arg-meme-template" ]
     ]
   }
 }

@@ -11,16 +11,18 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    public class HelpModuleImpl : TheGodfatherServiceModule<CommandService>
+    [Group("help"), Module(ModuleType.Misc), NotBlocked]
+    [Aliases("h", "?", "??", "???")]
+    [Cooldown(3, 5, CooldownBucketType.User)]
+    public sealed class HelpModule : TheGodfatherServiceModule<CommandService>
     {
-        public HelpModuleImpl(CommandService cs)
+        public HelpModule(CommandService cs)
             : base(cs) { }
 
 
         #region help
-        [Command("help"), Priority(2)]
-        [Aliases("h", "?", "??", "???")]
-        public Task HelpAsync(CommandContext ctx)
+        [GroupCommand, Priority(2)]
+        public Task ExecuteGroupAsync(CommandContext ctx)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
@@ -30,9 +32,9 @@ namespace TheGodfather.Modules.Misc
             });
         }
 
-        [Command("help"), Priority(1)]
-        public Task HelpAsync(CommandContext ctx,
-                             [Description("desc-module")] ModuleType module)
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-module")] ModuleType module)
         {
             IReadOnlyList<string> cmds = this.Service.GetCommandsInModule(module);
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
@@ -43,9 +45,9 @@ namespace TheGodfather.Modules.Misc
             });
         }
 
-        [Command("help"), Priority(0)]
-        public Task HelpAsync(CommandContext ctx, 
-                             [RemainingText, Description("desc-cmd")] params string[] cmd)
+        [GroupCommand, Priority(0)]
+        public Task ExecuteGroupAsync(CommandContext ctx, 
+                                     [RemainingText, Description("desc-cmd")] params string[] cmd)
             => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, cmd);
         #endregion
     }
