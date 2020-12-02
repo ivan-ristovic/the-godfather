@@ -466,28 +466,6 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "insults",
-                schema: "gf",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    gid = table.Column<long>(type: "bigint", nullable: false),
-                    content = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_insults", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_insults_guild_cfg_gid",
-                        column: x => x.gid,
-                        principalSchema: "gf",
-                        principalTable: "guild_cfg",
-                        principalColumn: "gid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "memes",
                 schema: "gf",
                 columns: table => new
@@ -821,12 +799,6 @@ namespace TheGodfather.Migrations
                 column: "gid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_insults_gid",
-                schema: "gf",
-                table: "insults",
-                column: "gid");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_purchasable_items_gid",
                 schema: "gf",
                 table: "purchasable_items",
@@ -936,10 +908,6 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "guild_ranks",
-                schema: "gf");
-
-            migrationBuilder.DropTable(
-                name: "insults",
                 schema: "gf");
 
             migrationBuilder.DropTable(

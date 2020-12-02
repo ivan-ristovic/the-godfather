@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using NUnit.Framework;
+using TheGodfather.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Modules.Administration.Common;
 

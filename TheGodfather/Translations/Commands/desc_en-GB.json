@@ -113,6 +113,8 @@
   "guild memberlist": "Shows all guild members.",
   "guild prune": "Removes guild members who weren't active in the given amount of days.",
   "guild rename": "Renames the current guild.",
+  "help": "Shows the help embed.",
+  "insult": "Writes an insult targeting a user. Alternatively, you can provide text to use as insult target.",
   "message": "Message control commands.",
   "message attachments": "View all message attachments. If the message is not provided, scans the last sent message before command invocation.",
   "message delete": "Deletes messages from the current channel. Group call deletes given amount of most recent messages.",

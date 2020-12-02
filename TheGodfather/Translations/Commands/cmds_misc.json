@@ -38,7 +38,14 @@
   "help": {
     "usage": [
       [],
+      [ "arg-module" ],
       [ "arg-cmd" ]
+    ]
+  },
+  "insult": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-string" ]
     ]
   }
 }

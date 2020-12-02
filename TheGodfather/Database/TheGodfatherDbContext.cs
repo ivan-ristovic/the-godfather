@@ -26,7 +26,6 @@ namespace TheGodfather.Database
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
         public virtual DbSet<GuildTask> GuildTasks { get; protected set; }
-        public virtual DbSet<Insult> Insults { get; protected set; }
         public virtual DbSet<Meme> Memes { get; protected set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; protected set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; protected set; }

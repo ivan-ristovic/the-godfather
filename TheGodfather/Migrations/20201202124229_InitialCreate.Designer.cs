@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20201120152534_InitialCreate")]
+    [Migration("20201202124229_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -716,31 +716,6 @@ namespace TheGodfather.Migrations
                     b.ToTable("scheduled_tasks");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.Insult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("content");
-
-                    b.Property<long>("GuildIdDb")
-                        .HasColumnType("bigint")
-                        .HasColumnName("gid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuildIdDb");
-
-                    b.ToTable("insults");
-                });
-
             modelBuilder.Entity("TheGodfather.Database.Models.Meme", b =>
                 {
                     b.Property<long>("GuildIdDb")
@@ -1272,17 +1247,6 @@ namespace TheGodfather.Migrations
                     b.Navigation("GuildConfig");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.Insult", b =>
-                {
-                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
-                        .WithMany("Insults")
-                        .HasForeignKey("GuildIdDb")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GuildConfig");
-                });
-
             modelBuilder.Entity("TheGodfather.Database.Models.Meme", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
@@ -1443,8 +1407,6 @@ namespace TheGodfather.Migrations
                     b.Navigation("ForbiddenNames");
 
                     b.Navigation("GuildTasks");
-
-                    b.Navigation("Insults");
 
                     b.Navigation("Memes");
 
