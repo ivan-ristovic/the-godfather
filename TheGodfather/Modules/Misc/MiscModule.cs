@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -21,54 +20,53 @@ using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Modules.Misc.Extensions;
+using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
-#endregion
 
 namespace TheGodfather.Modules.Misc
 {
     [Module(ModuleType.Misc)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
-    public class MiscModule : TheGodfatherModule
+    public class MiscModule : TheGodfatherServiceModule<RandomService>
     {
+        public MiscModule(RandomService service)
+            : base(service) { }
 
-        public MiscModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
-        #region COMMAND_8BALL
+        
+        #region 8ball
         [Command("8ball")]
-        [Description("An almighty ball which knows the answer to any question you ask. Alright, the answer is random, so what?")]
         [Aliases("8b")]
-
         public Task EightBallAsync(CommandContext ctx,
-                                  [RemainingText, Description("A question for the almighty ball.")] string question)
+                                  [RemainingText, Description("desc-8b-question")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException("The almighty ball requires a question.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-8b");
 
-            return this.InformAsync(ctx, $"{ctx.User.Mention} {EightBall.GenerateAnswer(question, ctx.Channel.Users)}", ":8ball:");
+            return this.Service.EightBall(ctx.Channel, question, out string answer)
+                ? ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, answer)
+                : ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Description = $"{Emojis.EightBall} {answer}",
+                    Color = this.ModuleColor
+                });
         }
         #endregion
 
-        #region COMMAND_COINFLIP
+        #region coinflip
         [Command("coinflip")]
-        [Description("Flip a coin.")]
         [Aliases("coin", "flip")]
-        public Task CoinflipAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(new SecureRandom().NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
+        public Task CoinflipAsync(CommandContext ctx,
+                                 [Description("desc-coinflip-ratio")] int ratio = 1)
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.NewMoon, this.Service.Coinflip(ratio) ? "fmt-coin-heads" : "fmt-coin-tails", ctx.User.Mention);
         #endregion
 
-        #region COMMAND_DICE
+        #region dice
         [Command("dice")]
-        [Description("Roll a dice.")]
         [Aliases("die", "roll")]
-        public Task DiceAsync(CommandContext ctx)
-            => this.InformAsync(ctx, Emojis.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(new SecureRandom().Next(1, 7).ToString())}");
+        public Task DiceAsync(CommandContext ctx,
+                             [Description("desc-dice-sides")] int sides = 6)
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-dice", ctx.User.Mention, this.Service.Dice(sides));
         #endregion
 
         #region COMMAND_INVITE

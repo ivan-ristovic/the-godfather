@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Misc
         {
             MemeTemplate? t = await MemeGenService.GetMemeTemplateAsync(template);
             if (t is null)
-                throw new CommandFailedException(ctx, "cmd-err-meme-template-fail");
+                throw new CommandFailedException(ctx, "cmd-err-meme-template-404");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = $"{t.Name}: {t.Key}", 

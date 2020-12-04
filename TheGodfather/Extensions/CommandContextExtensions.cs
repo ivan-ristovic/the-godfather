@@ -195,18 +195,19 @@ namespace TheGodfather.Extensions
         private static async Task InternalInformAsync(this CommandContext ctx, DiscordEmoji? emoji = null, string? key = null,
                                                       bool important = true, DiscordColor? color = null, params object?[]? args)
         {
+            emoji ??= Emojis.CheckMarkSuccess;
             ulong gid = ctx.Guild?.Id ?? 0;
             if (!important && (ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid)?.ReactionResponse ?? false)) {
                 try {
-                    await ctx.Message.CreateReactionAsync(emoji ?? Emojis.CheckMarkSuccess);
+                    await ctx.Message.CreateReactionAsync(emoji);
                 } catch (NotFoundException) {
-                    await InfoAsync(ctx, "str-done");
+                    await InfoAsync(ctx, emoji, "str-done");
                 }
             } else {
                 LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
                 string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done" : key, args);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Description = response,
+                    Description = $"{emoji} {response}",
                     Color = color ?? DiscordColor.Green
                 });
             }

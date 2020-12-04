@@ -1,4 +1,9 @@
 {
+  "8ball": {
+    "usage": [
+      [ "arg-string" ]
+    ]
+  },
   "birthday": {
     "usage": [
       [ "arg-usr" ],
@@ -33,6 +38,12 @@
   "birthday removeall": {
     "usage": [
       []
+    ]
+  },
+  "coinflip": {
+    "usage": [
+      [],
+      [ "arg-five" ]
     ]
   },
   "help": {

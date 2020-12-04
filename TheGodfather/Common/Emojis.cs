@@ -98,8 +98,10 @@ namespace TheGodfather.Common
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
         public static DiscordEmoji Clock1 => DiscordEmoji.FromUnicode("\U0001f550");
+        public static DiscordEmoji EightBall => DiscordEmoji.FromUnicode("\U0001f3b1");
         public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
         public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
+        public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("U0001f311");
         public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
         public static DiscordEmoji Tada => DiscordEmoji.FromUnicode("\U0001f389");

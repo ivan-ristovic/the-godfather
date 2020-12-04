@@ -1,4 +1,6 @@
 {
+  "8ball": "Do you ponder the mysteries of our world? Ask the Almighty 8Ball whatever you want! But beware, because the truth can sometimes hurt...",
+  "Dice": "Throws a dice!",
   "automaticroles": "Automatic roles commands. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for the guild, effective immediately.",
   "automaticroles add": "Registers given role(s) as automatic.",
   "automaticroles clear": "Removes all automatic roles.",
@@ -36,6 +38,7 @@
   "channel settopic": "Modifies channel's topic.",
   "channel setuserlimit": "Modifies voice channel user limit.",
   "channel viewperms": "Shows permissions for member/role in a given channel.",
+  "coinflip": "Flips a coin!",
   "commandrules": "Bot command rule management (allowing or forbiding certain commands). Group call shows active command rules in specified channel or globally if the channel is not specified.",
   "commandrules allow": "Allows command execution only in specified channel(s), or globally if they are not specified.",
   "commandrules deleteall": "Remove all command rules.",
