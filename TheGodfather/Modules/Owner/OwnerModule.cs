@@ -654,5 +654,24 @@ namespace TheGodfather.Modules.Owner
             return this.ExitAsync(ctx);
         }
         #endregion
+
+        #region UPTIME
+        [Command("uptime")]
+        public Task UptimeAsync(CommandContext ctx)
+        {
+            BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
+            UptimeInformation uptimeInfo = bas.ShardUptimeInformation[ctx.Client.ShardId];
+            TimeSpan processUptime = uptimeInfo.ProgramUptime;
+            TimeSpan socketUptime = uptimeInfo.SocketUptime;
+
+            return this.InformAsync(ctx, Emojis.Information,
+                Formatter.Bold($"Uptime information:") +
+                $"\n\n{Formatter.Bold("Shard:")} {ctx.Client.ShardId}\n" +
+                $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
+                $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
+            );
+        }
+        #endregion
+
     }
 }

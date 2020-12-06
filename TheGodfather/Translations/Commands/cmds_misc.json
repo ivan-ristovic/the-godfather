@@ -59,6 +59,12 @@
       [ "arg-string" ]
     ]
   },
+  "invite": {
+    "usage": [
+      [],
+      [ "arg-timespan-day" ]
+    ]
+  },
   "leave": {
     "usage": [
       []
@@ -69,10 +75,9 @@
       [ "arg-string" ]
     ]
   },
-  "invite": {
+  "unleet": {
     "usage": [
-      [],
-      [ "arg-timespan-day" ]
+      [ "arg-string" ]
     ]
   },
   "meme": {
@@ -136,6 +141,16 @@
       [],
       [ "arg-usr" ],
       [ "arg-usr", "arg-usr", "arg-usr" ]
+    ]
+  },
+  "report": {
+    "usage": [
+      [ "arg-report" ]
+    ]
+  },
+  "say": {
+    "usage": [
+      [ "arg-string" ]
     ]
   }
 }

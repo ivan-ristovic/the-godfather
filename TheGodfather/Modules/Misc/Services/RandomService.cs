@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Humanizer;
 using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Common;
@@ -98,11 +100,21 @@ namespace TheGodfather.Modules.Misc.Services
             var sb = new StringBuilder();
             foreach (char c in text) {
                 char code = this.rng.NextBool() ? char.ToUpperInvariant(c) : char.ToLowerInvariant(c);
-                if (rng.NextBool() && this.leetAlphabet.TryGetValue(code, out string? codes))
+                if (this.rng.NextBool() && this.leetAlphabet.TryGetValue(code, out string? codes))
                     code = this.rng.ChooseRandomChar(codes);
                 sb.Append(code);
             }
             return sb.ToString();
+        }
+
+        public string FromLeet(string leet)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in leet.ToLowerInvariant()) {
+                KeyValuePair<char, string> match = this.leetAlphabet.FirstOrDefault(kvp => kvp.Value.Contains(c));
+                sb.Append(match.Key != '\0' ? match.Key : c);
+            }
+            return sb.ToString().Humanize(LetterCasing.Sentence);
         }
 
         public string Size(ulong uid)

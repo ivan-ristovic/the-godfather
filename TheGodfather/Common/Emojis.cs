@@ -48,7 +48,7 @@ namespace TheGodfather.Common
             }.ToImmutableList();
 
             public static IReadOnlyList<DiscordEmoji> Suits => _suits;
-            public static ImmutableList<DiscordEmoji> _suits = new List<DiscordEmoji> {
+            private static readonly ImmutableList<DiscordEmoji> _suits = new List<DiscordEmoji> {
                 DiscordEmoji.FromUnicode("\u2660"),         // :spades:
                 DiscordEmoji.FromUnicode("\u2663"),         // :clubs:
                 DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
@@ -101,6 +101,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji EightBall => DiscordEmoji.FromUnicode("\U0001f3b1");
         public static DiscordEmoji Heartbeat => DiscordEmoji.FromUnicode("\U0001f493");
         public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
+        public static DiscordEmoji Loudspeaker => DiscordEmoji.FromUnicode("\U0001f4e2");
         public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
         public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("U0001f311");
         public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
@@ -128,9 +129,9 @@ namespace TheGodfather.Common
 
             public static DiscordEmoji Get(int index)
             {
-                if (index < 1 || index > 10)
-                    throw new ArgumentOutOfRangeException("Index can't be lower than 1 or greater than 10");
-                return _numbers[index];
+                return index < 1 || index > 10
+                    ? throw new ArgumentOutOfRangeException(nameof(index), "Index can't be lower than 1 or greater than 10")
+                    : _numbers[index];
             }
         }
         #endregion

@@ -45,22 +45,6 @@ namespace TheGodfather.Extensions
             return m.FirstOrDefault();
         }
 
-        public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
-        {
-            var messages = new List<DiscordMessage>();
-
-            // TODO fix
-            //for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
-            //    ulong? lastId = messages.FirstOrDefault()?.Id;
-            //    IReadOnlyList<DiscordMessage> requested = lastId is null
-            //        ? await channel.GetMessagesAsync(step)
-            //        : await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
-            //    messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
-            //}
-
-            return messages.AsReadOnly();
-        }
-
         public static async Task<DiscordOverwrite?> FindOverwriteForRoleAsync(this DiscordChannel channel, DiscordRole role)
         {
             IEnumerable<DiscordOverwrite> roleOverwrites = channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role);

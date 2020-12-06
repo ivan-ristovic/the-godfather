@@ -18,6 +18,16 @@ namespace TheGodfather.Extensions
             return null;
         }
 
+        public static async Task<DiscordDmChannel?> CreateOwnerDmChannel(this DiscordClient client)
+        {
+            foreach (DiscordUser owner in client.CurrentApplication.Owners) {
+                DiscordDmChannel? dm = await client.CreateDmChannelAsync(owner.Id);
+                if (dm is { })
+                    return dm;
+            }
+            return null;
+        }
+
         public static bool IsOwnedBy(this DiscordClient client, DiscordUser user)
             => client.CurrentApplication?.Owners.Contains(user) ?? false;
     }

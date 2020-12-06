@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -21,7 +19,6 @@ using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -105,7 +102,7 @@ namespace TheGodfather.Modules.Misc
         [Command("leet")]
         [Aliases("l33t", "1337")]
         public Task L33tAsync(CommandContext ctx,
-                             [RemainingText, Description("Text.")] string text)
+                             [RemainingText, Description("desc-say")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
@@ -173,197 +170,94 @@ namespace TheGodfather.Modules.Misc
             => this.InternalRateAsync(ctx, users);
         #endregion
 
-        #region COMMAND_REPORT
+        #region report
         [Command("report"), UsesInteractivity]
-        [Description("Send a report message to owner about a bug (please don't abuse... please).")]
+        [Cooldown(1, 3600, CooldownBucketType.User)]
         public async Task SendErrorReportAsync(CommandContext ctx,
-                                              [RemainingText, Description("Issue text.")] string issue)
+                                              [RemainingText, Description("desc-issue")] string issue)
         {
             if (string.IsNullOrWhiteSpace(issue))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-issue-none");
 
-            if (await ctx.WaitForBoolReplyAsync("Are you okay with your user and guild info being sent for further inspection?")) {
-                Log.Information($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owners.First().Id);
-                if (dm is null)
-                    throw new CommandFailedException("Owner has disabled DMs.");
+            DiscordDmChannel? dm = await ctx.Client.CreateOwnerDmChannel();
+            if (dm is null)
+                throw new CommandFailedException(ctx, "cmd-err-issue-fail");
+
+            if (await ctx.WaitForBoolReplyAsync("q-issue")) {
+                Log.Warning($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}");
                 var emb = new DiscordEmbedBuilder {
-                    Title = "Issue",
+                    Title = "Issue reported",
                     Description = issue
                 };
                 emb.WithAuthor(ctx.User.ToString(), iconUrl: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl);
-                emb.AddField("Guild", $"{ctx.Guild.ToString()} owned by {ctx.Guild.Owner.ToString()}");
+                if (ctx.Guild is { })
+                    emb.AddField("Guild", $"{ctx.Guild} owned by {ctx.Guild.Owner}");
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build());
-                await this.InformAsync(ctx, "Your issue has been reported.", important: false);
+                await ctx.InfoAsync(this.ModuleColor, "str-reported");
             }
         }
         #endregion
 
-        #region COMMAND_SAY
+        #region say
         [Command("say")]
-        [Description("Echo echo echo.")]
-        [Aliases("repeat")]
-
+        [Aliases("repeat", "echo")]
         public Task SayAsync(CommandContext ctx,
-                            [RemainingText, Description("Text to say.")] string text)
+                            [RemainingText, Description("desc-say")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _))
-                throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
-
-            return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
+            return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
+                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                : ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithDescription($"{Emojis.Loudspeaker} {Formatter.Strip(text)}");
+                });
         }
         #endregion
 
-        #region COMMAND_SIMULATE
-        [Command("simulate")]
-        [Description("Simulate another user.")]
+        #region simulate
+        //[Command("simulate")]
         [Aliases("sim")]
-
+        [RequireGuild]
         public async Task SimulateAsync(CommandContext ctx,
-                                       [Description("Member to simulate.")] DiscordMember member)
+                                       [Description("desc-member")] DiscordMember member)
         {
-            var wbRegex = new Regex(@"\b");
-            var rng = new SecureRandom();
-
-            // IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
-            //string[] parts = messages
-            //    .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id)))
-            //    .Select(m => SplitMessage(m.Content))
-            //    .Distinct()
-            //    .Shuffle()
-            //    .Take(1 + rng.Next(10))
-            //    .ToArray();
-
-            //if (!parts.Any())
-            //    throw new CommandFailedException("Not enough messages were sent from that user recently!");
-
-            //await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-            //    Description = $"{Emojis.Information} {string.Join(" ", parts)}",
-            //    Color = this.ModuleColor,
-            //}.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
-
-
-            //string SplitMessage(string data)
-            //{
-            //    string[] words = wbRegex.Split(data);
-            //    if (words.Length == 1)
-            //        return words[0];
-            //    int start = rng.Next(words.Length);
-            //    int count = rng.Next(0, words.Length - start);
-            //    return string.Join(" ", words.Skip(start).Take(count));
-            //}
+            // TODO
         }
         #endregion
 
-        #region COMMAND_TTS
+        #region tts
         [Command("tts")]
-        [Description("Sends a tts message.")]
-
         [RequirePermissions(Permissions.SendTtsMessages)]
         public Task TtsAsync(CommandContext ctx,
-                            [RemainingText, Description("Text.")] string text)
+                            [RemainingText, Description("desc-say")] string text)
         {
+
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (ctx.Services.GetService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _))
-                throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
-
-            return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
+            return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
+                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                : ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
         }
         #endregion
 
-        #region COMMAND_UNLEET
+        #region unleet
         [Command("unleet")]
-        [Description("Translates a message from leetspeak (expecting only letters in translated output).")]
         [Aliases("unl33t")]
-
         public Task Unl33tAsync(CommandContext ctx,
-                               [RemainingText, Description("Text to unleet.")] string text)
+                               [RemainingText, Description("desc-say")] string leet)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+            if (string.IsNullOrWhiteSpace(leet))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
 
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                char add = char.ToLowerInvariant(c);
-                switch (add) {
-                    case '1': add = 'i'; break;
-                    case '@': add = 'a'; break;
-                    case '4': add = 'a'; break;
-                    case '3': add = 'e'; break;
-                    case '5': add = 's'; break;
-                    case '7': add = 't'; break;
-                    case '0': add = 'o'; break;
-                    default: break;
-                }
-                sb.Append(add);
-            }
-
-            return this.InformAsync(ctx, Emojis.Information, sb.ToString());
-        }
-        #endregion
-
-        #region COMMAND_UPTIME
-        [Command("uptime")]
-        [Description("Prints out bot runtime information.")]
-        public Task UptimeAsync(CommandContext ctx)
-        {
-            BotActivityService bas = ctx.Services.GetService<BotActivityService>();
-            UptimeInformation uptimeInfo = bas.ShardUptimeInformation[ctx.Client.ShardId];
-            TimeSpan processUptime = uptimeInfo.ProgramUptime;
-            TimeSpan socketUptime = uptimeInfo.SocketUptime;
-
-            return this.InformAsync(ctx, Emojis.Information,
-                Formatter.Bold($"Uptime information:") +
-                $"\n\n{Formatter.Bold("Shard:")} {ctx.Client.ShardId}\n" +
-                $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
-                $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
-            );
-        }
-        #endregion
-
-        #region COMMAND_ZUGIFY
-        [Command("zugify")]
-        [Description("I don't even...")]
-        [Aliases("z")]
-
-        public Task ZugifyAsync(CommandContext ctx,
-                               [RemainingText, Description("Text.")] string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
-
-            text = text.ToLowerInvariant();
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                if (char.IsLetter(c)) {
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{c}:"));
-                } else if (char.IsDigit(c)) {
-                    if (c == '0')
-                        sb.Append(DiscordEmoji.FromName(ctx.Client, ":zero:"));
-                    else
-                        sb.Append(Emojis.Numbers.Get(c - '0' - 1));
-                } else if (char.IsWhiteSpace(c)) {
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:"));
-                } else if (c == '?')
-                    sb.Append(Emojis.Question);
-                else if (c == '!')
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":exclamation:"));
-                else if (c == '.')
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":stop_button:"));
-                else
-                    sb.Append(c);
-                sb.Append(' ');
-            }
-
+            string text = this.Service.FromLeet(leet);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = sb.ToString()
-            }.Build());
+                Color = this.ModuleColor,
+                Description = $"{Emojis.Information} {text}",
+            });
         }
         #endregion
 
