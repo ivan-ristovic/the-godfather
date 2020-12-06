@@ -24,6 +24,8 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed partial class ChannelModule : TheGodfatherModule
     {
+        private static DiscordColor EmbColor = ModuleType.Administration.ToDiscordColor();
+
         #region channel
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -708,15 +710,15 @@ namespace TheGodfather.Modules.Administration
             if (parent is null)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-cat");
 
-            IEnumerable<DiscordChannel> children = channels.Where(c => c != parent);
-            if (children.Any()) {
+            IEnumerable<DiscordChannel>? children = channels?.Where(c => c != parent);
+            if (children?.Any() ?? false) {
                 foreach (DiscordChannel channel in children)
                     await ModifyParent(channel);
             } else {
                 await ModifyParent(ctx.Channel);
             }
 
-            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children.Separate()); 
+            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children?.SepBy() ?? ctx.Channel.ToString()); 
 
 
             Task ModifyParent(DiscordChannel channel)
@@ -749,7 +751,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
             if (slowmode is { } && !_ratelimitValues.Contains(slowmode))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-ratelimit", _ratelimitValues.Separate(", "));
+                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-ratelimit", _ratelimitValues.SepBy(", "));
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.PerUserRateLimit = slowmode;

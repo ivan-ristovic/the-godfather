@@ -78,8 +78,8 @@ namespace TheGodfather.Modules.Misc
             if (expiryTime is null) {
                 IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
                 invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
-            } 
-            
+            }
+
             if (invite is null || expiryTime is { }) {
                 expiryTime ??= TimeSpan.FromSeconds(86400);
 
@@ -118,179 +118,64 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_NSFW
-        [Command("nsfw")]
-        [Description("Wraps the URL into a special NSFW block.")]
-
-        [RequireBotPermissions(Permissions.ManageMessages)]
-        public async Task NsfwAsync(CommandContext ctx,
-                                   [Description("URL to wrap.")] Uri url,
-                                   [RemainingText, Description("Additional info")] string info = null)
-        {
-            await ctx.Message.DeleteAsync();
-
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{Emojis.NoEntry} NSFW link from {ctx.Member.DisplayName} {Emojis.NoEntry}",
-                Description = FormatterExt.Spoiler(url.ToString()),
-                Color = DiscordColor.Red
-            };
-            if (!string.IsNullOrWhiteSpace(info))
-                emb.AddField("Additional info", Formatter.BlockCode(Formatter.Strip(info)));
-
-            await ctx.RespondAsync(embed: emb.Build());
-        }
-        #endregion
-
-        #region COMMAND_PENIS
+        #region penis
         [Command("penis"), Priority(1)]
-        [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]
-
         public Task PenisAsync(CommandContext ctx,
-                              [Description("Who to measure.")] DiscordMember member = null)
-            => this.PenisAsync(ctx, member as DiscordUser);
-
-        [Command("penis"), Priority(0)]
-        public Task PenisAsync(CommandContext ctx,
-                              [Description("Who to measure.")] DiscordUser user = null)
-        {
-            user = user ?? ctx.User;
-
-            StringBuilder sb = new StringBuilder($"{user.Mention}'s size:").AppendLine().AppendLine();
-
-            if (user.IsCurrent) {
-                sb.AppendLine(Formatter.Bold($"8{new string('=', 45)}"));
-                sb.Append(Formatter.Italic("(Please plug in a second monitor for the entire display)"));
-                return this.InformAsync(ctx, Emojis.Ruler, sb.ToString());
-            }
-
-            sb.Append(Formatter.Bold($"8{new string('=', (int)(user.Id % 40))}D"));
-
-            return this.InformAsync(ctx, Emojis.Ruler, sb.ToString());
-        }
-        #endregion
-
-        #region COMMAND_PENISCOMPARE
-        [Command("peniscompare"), Priority(1)]
-        [Description("Comparison of the results given by ``penis`` command.")]
-        [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
-
-        public Task PenisCompareAsync(CommandContext ctx,
-                                     [Description("User1.")] params DiscordMember[] members)
-            => this.PenisCompareAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
+                              [Description("desc-members")] params DiscordMember[] members)
+            => this.InternalPenisAsync(ctx, members);
 
         [Command("peniscompare"), Priority(0)]
-        public Task PenisCompareAsync(CommandContext ctx,
-                                     [Description("User1.")] params DiscordUser[] users)
-        {
-            if (users is null || users.Length < 2 || users.Length >= 10)
-                throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
-
-            var sb = new StringBuilder();
-            foreach (DiscordUser u in users.Distinct()) {
-                if (u.IsCurrent)
-                    return this.InformAsync(ctx, Emojis.Ruler, "Please, I do not want to make everyone laugh at you...");
-                sb.Append('8').Append('=', (int)(u.Id % 40)).Append("D ").AppendLine(u.Mention);
-            }
-
-            return this.InformAsync(ctx, Emojis.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
-        }
+        public Task PenisAsync(CommandContext ctx,
+                              [Description("desc-users")] params DiscordUser[] users)
+            => this.InternalPenisAsync(ctx, users);
         #endregion
 
-        #region COMMAND_PING
+        #region ping
         [Command("ping")]
-        [Description("Ping the bot.")]
         public Task PingAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:");
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Heartbeat, "fmt-ping", ctx.Client.Ping);
         #endregion
 
-        #region COMMAND_PREFIX
+        #region prefix
         [Command("prefix")]
-        [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix", "pref", "setpref")]
-
-        [RequireOwnerOrPermissions(Permissions.Administrator)]
+        [RequireGuild, RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
-                                             [Description("Prefix to set.")] string prefix = null)
+                                             [Description("desc-prefix")] string? prefix = null)
         {
+            GuildConfigService gcs = ctx.Services.GetRequiredService<GuildConfigService>();
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = ctx.Services.GetService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
-                await this.InformAsync(ctx, Emojis.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
+                string p = gcs.GetGuildPrefix(ctx.Guild.Id);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "fmt-prefix", p);
                 return;
             }
 
-            if (prefix.Length > 8)
-                throw new CommandFailedException("Prefix cannot be longer than 8 characters.");
+            if (prefix.Length > GuildConfig.PrefixLimit)
+                throw new CommandFailedException(ctx, "cmd-err-prefix", GuildConfig.PrefixLimit);
 
-            GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.Prefix = (prefix == ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix) ? null : prefix;
-            });
-
-            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(gcfg.Prefix ?? ctx.Services.GetService<BotConfigService>().CurrentConfiguration.Prefix)}", important: false);
+            GuildConfig gcfg = await gcs.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Prefix = prefix);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_RATE
+        #region rate
         [Command("rate"), Priority(1)]
-        [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
-
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("Who to measure.")] params DiscordMember[] members)
-            => this.RateAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
+                             [Description("desc-members")] params DiscordMember[] members)
+            => this.InternalRateAsync(ctx, members);
 
-        [Command("rate"), Priority(1)]
-        public async Task RateAsync(CommandContext ctx,
-                                   [Description("Who to measure.")] params DiscordUser[] users)
-        {
-            users = users?.Distinct().ToArray() ?? null;
-            if (users is null || !users.Any() || users.Length > 8)
-                throw new InvalidCommandUsageException("You must provide atleast 1 and at most 8 users to rate.");
-
-            try {
-                using var chart = new Bitmap("Resources/graph.png");
-                using var g = Graphics.FromImage(chart);
-                Brush[] colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
-
-                int position = 0;
-                foreach (DiscordUser user in users)
-                    DrawUserRating(g, user, position++);
-
-                using (var ms = new MemoryStream()) {
-                    chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    ms.Position = 0;
-                    await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                        Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
-                        Color = this.ModuleColor
-                    });
-                }
-
-                void DrawUserRating(Graphics graphics, DiscordUser user, int pos)
-                {
-                    int start_x, start_y;
-                    if (user.Id == ctx.Client.CurrentUser.Id) {
-                        start_x = chart.Width - 10;
-                        start_y = 0;
-                    } else {
-                        start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
-                        start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
-                    }
-                    graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
-                    graphics.DrawString(user.Username, new Font("Arial", 13), colors[pos], 750, pos * 30 + 20);
-                    graphics.Flush();
-                }
-            } catch (FileNotFoundException e) {
-                Log.Error(e, "graph.png load failed!");
-                throw new CommandFailedException("I can't find the graph image on server machine, please contact owner and tell him.");
-            }
-        }
+        [Command("rate"), Priority(0)]
+        public Task RateAsync(CommandContext ctx,
+                             [Description("desc-users")] params DiscordUser[] users)
+            => this.InternalRateAsync(ctx, users);
         #endregion
 
         #region COMMAND_REPORT
         [Command("report"), UsesInteractivity]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
-
         public async Task SendErrorReportAsync(CommandContext ctx,
                                               [RemainingText, Description("Issue text.")] string issue)
         {
@@ -479,6 +364,52 @@ namespace TheGodfather.Modules.Misc
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
+        }
+        #endregion
+
+
+        #region helpers
+        private Task InternalPenisAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+        {
+            users = users.Distinct().ToList();
+            if (!users.Any())
+                users = new[] { ctx.User };
+            if (users.Count >= 10)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-size");
+
+            var sb = new StringBuilder();
+            foreach (DiscordUser user in users) {
+                if (user.IsCurrent)
+                    return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                sb.Append(Formatter.Bold(this.Service.Size(user.Id))).Append(' ').AppendLine(user.Mention);
+            }
+
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedDescription("fmt-size", Emojis.Ruler, sb.ToString());
+            });
+        }
+
+
+        public async Task InternalRateAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+        {
+            users = users.Distinct().ToList();
+            if (!users.Any())
+                users = new[] { ctx.User };
+            if (users.Count > 8)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-rate");
+
+            if (users.Any(u => u.IsCurrent)) {
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                return;
+            }
+
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
+            await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
+                Description = lcs.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).SepBy(", ")),
+                Color = this.ModuleColor,
+            });
         }
         #endregion
     }

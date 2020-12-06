@@ -99,6 +99,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
         public static DiscordEmoji Clock1 => DiscordEmoji.FromUnicode("\U0001f550");
         public static DiscordEmoji EightBall => DiscordEmoji.FromUnicode("\U0001f3b1");
+        public static DiscordEmoji Heartbeat => DiscordEmoji.FromUnicode("\U0001f493");
         public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
         public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
         public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("U0001f311");

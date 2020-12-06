@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Misc.Common
             }
 
             if (cmd.Aliases?.Any() ?? false)
-                this.emb.AddLocalizedTitleField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).Separate(", "), inline: true);
+                this.emb.AddLocalizedTitleField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).SepBy(", "), inline: true);
 
             this.emb.AddLocalizedTitleField("str-category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
@@ -87,11 +87,11 @@ namespace TheGodfather.Modules.Misc.Common
             if (checks.Any(chk => chk is RequirePrivilegedUserAttribute))
                 pb.AppendLine(Formatter.Bold(this.GetS("str-priv-only")));
             if (perms.Any())
-                pb.AppendLine(Formatter.InlineCode(perms.Separate(", ")));
+                pb.AppendLine(Formatter.InlineCode(perms.SepBy(", ")));
             if (uperms.Any())
-                pb.Append(this.GetS("str-perms-user")).Append(' ').AppendLine(Formatter.InlineCode(uperms.Separate(", ")));
+                pb.Append(this.GetS("str-perms-user")).Append(' ').AppendLine(Formatter.InlineCode(uperms.SepBy(", ")));
             if (bperms.Any())
-                pb.Append(this.GetS("str-perms-bot")).Append(' ').AppendLine(Formatter.InlineCode(bperms.Separate(", ")));
+                pb.Append(this.GetS("str-perms-bot")).Append(' ').AppendLine(Formatter.InlineCode(bperms.SepBy(", ")));
 
             string pstr = pb.ToString();
             if (!string.IsNullOrWhiteSpace(pstr))
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Misc.Common
                 }
             }
 
-            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).Separate()));
+            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).SepBy()));
 
             return this;
         }
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Misc.Common
         {
             if (subcommands.Any()) {
                 string title = string.IsNullOrWhiteSpace(this.name) ? "str-cmds" : "str-subcmds";
-                this.emb.AddLocalizedTitleField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).Separate(", "));
+                this.emb.AddLocalizedTitleField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).SepBy(", "));
             }
             return this;
         }

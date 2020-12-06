@@ -121,7 +121,7 @@ namespace TheGodfather.Extensions
                 int to = from + pageSize > arr.Length ? arr.Length : from + pageSize;
                 pages.Add(new Page(embed: new DiscordEmbedBuilder {
                     Title = title,
-                    Description = arr[from..to].Select(selector).Separate(),
+                    Description = arr[from..to].Select(selector).SepBy(),
                     Color = color ?? DiscordColor.Black,
                     Footer = new DiscordEmbedBuilder.EmbedFooter {
                         Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from, to, arr.Length, i, pageCount),
@@ -208,7 +208,7 @@ namespace TheGodfather.Extensions
                 string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done" : key, args);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{emoji} {response}",
-                    Color = color ?? DiscordColor.Green
+                    Color = color ?? DiscordColor.Green,
                 });
             }
         }

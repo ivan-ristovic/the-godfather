@@ -32,7 +32,7 @@ namespace TheGodfather.Attributes
                 ModuleType.Chickens => DiscordColor.Orange,
                 ModuleType.Currency => DiscordColor.DarkGreen,
                 ModuleType.Games => DiscordColor.CornflowerBlue,
-                ModuleType.Misc => DiscordColor.White,
+                ModuleType.Misc => DiscordColor.Azure,
                 ModuleType.Music => DiscordColor.Aquamarine,
                 ModuleType.Owner => DiscordColor.DarkButNotBlack,
                 ModuleType.Polls => DiscordColor.Orange,

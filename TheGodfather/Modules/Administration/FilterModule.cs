@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
-                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).Separate());
+                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).SepBy());
                 if (eb.Length > 0)
                     emb.AddLocalizedTitleField("str-errs", eb.ToString());
             });
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
-                    emb.WithDescription(ids.Separate());
+                    emb.WithDescription(ids.SepBy());
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
-                    emb.WithDescription(regexStrings.Separate());
+                    emb.WithDescription(regexStrings.SepBy());
                 });
                 
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);

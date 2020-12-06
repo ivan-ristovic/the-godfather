@@ -110,9 +110,9 @@ namespace TheGodfather.Modules.Administration
             await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, validChannels.Select(c => c.Id));
             if (channels.Any()) {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), validChannels.Separate());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), validChannels.SepBy());
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), validChannels.Separate());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), validChannels.SepBy());
             } else {
                 if (allow)
                     await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow-global", Formatter.InlineCode(cmd.QualifiedName));

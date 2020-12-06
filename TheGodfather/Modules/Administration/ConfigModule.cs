@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-prefix", channel: channel, reply: false)) {
                 await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-prefix-new", GuildConfig.PrefixLimit);
-                InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= 8);
+                InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.PrefixLimit);
                 gcfg.Prefix = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
             }
         }
@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Administration
                 gcfg.RatelimitEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().SepBy(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.RatelimitAction = action.Value;
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Administration
                 gcfg.AntispamEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().SepBy(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntispamAction = action.Value;
@@ -333,7 +333,7 @@ namespace TheGodfather.Modules.Administration
                 gcfg.AntifloodEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().Separate(", "));
+                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().SepBy(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntifloodAction = action.Value;

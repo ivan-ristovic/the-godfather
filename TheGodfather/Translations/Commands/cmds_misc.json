@@ -112,5 +112,30 @@
       [],
       [ "arg-meme-template" ]
     ]
+  },
+  "penis": {
+    "usage": [
+      [],
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-usr", "arg-usr" ]
+    ]
+  },
+  "ping": {
+    "usage": [
+      []
+    ]
+  },
+  "prefix": {
+    "usage": [
+      [],
+      [ "arg-prefix" ]
+    ]
+  },
+  "rate": {
+    "usage": [
+      [],
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-usr", "arg-usr" ]
+    ]
   }
 }

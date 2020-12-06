@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedTitleField("str-email", member.Email, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-activity", member.Presence.Activity?.ToDetailedString(), inline: true, unknown: false);
                 if (member.Roles.Any())
-                    emb.AddLocalizedTitleField("str-roles", member.Roles.Select(r => r.Mention).Separate(", "));
+                    emb.AddLocalizedTitleField("str-roles", member.Roles.Select(r => r.Mention).SepBy(", "));
             });
 
 

@@ -47,9 +47,9 @@ namespace TheGodfather.Modules.Administration
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-sr-change");
-                emb.AddLocalizedTitleField("str-roles-add", roles.Separate());
+                emb.AddLocalizedTitleField("str-roles-add", roles.SepBy());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-add", roles.Separate());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-add", roles.SepBy());
         }
         #endregion
 
@@ -67,9 +67,9 @@ namespace TheGodfather.Modules.Administration
             await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-sr-change");
-                emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
+                emb.AddLocalizedTitleField("str-roles-rem", roles.SepBy());
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-rem", roles.Separate());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-rem", roles.SepBy());
         }
         #endregion
 
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-sr-change");
-                        emb.AddLocalizedTitleField("str-roles-rem", roles.Separate());
+                        emb.AddLocalizedTitleField("str-roles-rem", roles.SepBy());
                     },
                     addInvocationFields: false
                 );

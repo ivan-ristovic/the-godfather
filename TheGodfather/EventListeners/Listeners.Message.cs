@@ -47,7 +47,7 @@ namespace TheGodfather.EventListeners
             foreach (DiscordMessage msg in e.Messages) {
                 sw.WriteLine($"[{msg.Timestamp}] {msg.Author}");
                 sw.WriteLine(string.IsNullOrWhiteSpace(msg.Content) ? "?" : msg.Content);
-                sw.WriteLine(msg.Attachments.Select(a => $"{a.FileName} ({a.FileSize})").Separate(", "));
+                sw.WriteLine(msg.Attachments.Select(a => $"{a.FileName} ({a.FileSize})").SepBy(", "));
                 sw.Flush();
             }
             ms.Seek(0, SeekOrigin.Begin);
@@ -211,9 +211,9 @@ namespace TheGodfather.EventListeners
             if (e.Message.Embeds.Any())
                 emb.AddLocalizedTitleField("str-embeds", e.Message.Embeds.Count, inline: true);
             if (e.Message.Reactions.Any())
-                emb.AddLocalizedTitleField("str-reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).Separate(" "), inline: true);
+                emb.AddLocalizedTitleField("str-reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).SepBy(" "), inline: true);
             if (e.Message.Attachments.Any()) {
-                emb.AddLocalizedTitleField("str-attachments", e.Message.Attachments.Select(a => ToMaskedUrl(a)).Separate(), inline: true);
+                emb.AddLocalizedTitleField("str-attachments", e.Message.Attachments.Select(a => ToMaskedUrl(a)).SepBy(), inline: true);
 
                 static string ToMaskedUrl(DiscordAttachment a)
                     => Formatter.MaskedUrl($"{a.FileName} ({a.FileSize.ToMetric(decimals: 0)}B)", new Uri(a.Url));
