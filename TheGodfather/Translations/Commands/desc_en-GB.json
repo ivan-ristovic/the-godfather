@@ -158,6 +158,8 @@
   "say": "Echo! Echo! Echo!",
   "tts": "Sends a TTS message.",
   "unleet": "Attempts to translate message from leetspeak.",
+  "random choice": "Chooses a random option from a comma separated option list.",
+  "random raffle": "Choose a user from the online members list optionally belonging to a given role.",
   "selfassignableroles": "Self-assignable roles commands. Self-assignable roles can be granted to members by themselves using the `give` command. Group call lists all self-assignable roles for the guild. Group call with an arbitrary amount of roles will add those roles to the self-assignable roles list for the guild, effective immediately.",
   "selfassignableroles add": "Registers given role(s) as self-assignable.",
   "selfassignableroles clear": "Removes all self-assignable roles.",

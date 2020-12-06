@@ -120,6 +120,14 @@ namespace TheGodfather.Modules.Misc.Services
         public string Size(ulong uid)
             => $"8{new string('=', (int)(uid % 40))}D";
 
+        public string Choice(string optionStr)
+        {
+            IEnumerable<string> options = optionStr
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Distinct();
+            return this.rng.ChooseRandomElement(options);
+        }
+
         public Stream Rate(IEnumerable<(string Label, ulong Id)> users)
         {
             if (this.ratingChart is null)
