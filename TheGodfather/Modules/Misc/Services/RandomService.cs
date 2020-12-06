@@ -79,10 +79,10 @@ namespace TheGodfather.Modules.Misc.Services
         {
             var sb = new StringBuilder();
             foreach (char c in text) {
-                char code = char.ToLowerInvariant(c);
-                if (this.leetAlphabet.TryGetValue(code, out string? codes))
+                char code = this.rng.NextBool() ? char.ToUpperInvariant(c) : char.ToLowerInvariant(c);
+                if (rng.NextBool() && this.leetAlphabet.TryGetValue(code, out string? codes))
                     code = this.rng.ChooseRandomChar(codes);
-                sb.Append(this.rng.NextBool() ? char.ToUpperInvariant(code) : char.ToLowerInvariant(code));
+                sb.Append(code);
             }
             return sb.ToString();
         }
