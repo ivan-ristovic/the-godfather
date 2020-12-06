@@ -10,12 +10,10 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -34,7 +32,7 @@ namespace TheGodfather.Modules.Misc
         public MiscModule(RandomService service)
             : base(service) { }
 
-        
+
         #region 8ball
         [Command("8ball")]
         [Aliases("8b")]
@@ -69,102 +67,54 @@ namespace TheGodfather.Modules.Misc
             => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-dice", ctx.User.Mention, this.Service.Dice(sides));
         #endregion
 
-        #region COMMAND_INVITE
+        #region invite
         [Command("invite")]
-        [Description("Get an instant invite link for the current guild.")]
         [Aliases("getinvite")]
         [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task GetInstantInviteAsync(CommandContext ctx)
+        public async Task GetInstantInviteAsync(CommandContext ctx,
+                                               [Description("desc-invite-expire")] TimeSpan? expiryTime = null)
         {
-            IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
-            IEnumerable<DiscordInvite> permanent = invites.Where(inv => !inv.IsTemporary);
-            if (permanent.Any()) {
-                await ctx.RespondAsync(permanent.First().ToString());
-            } else {
-                DiscordInvite invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: ctx.BuildInvocationDetailsString());
-                await ctx.RespondAsync($"{invite} {Formatter.Italic("(This invite will expire in one hour!)")}");
+            DiscordInvite? invite = null;
+            if (expiryTime is null) {
+                IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
+                invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
+            } 
+            
+            if (invite is null || expiryTime is { }) {
+                expiryTime ??= TimeSpan.FromSeconds(86400);
+
+                // TODO check timespan because only some values are allowed - 400 is thrown
+                invite = await ctx.Channel.CreateInviteAsync(max_age: (int)expiryTime.Value.TotalSeconds, temporary: true, reason: ctx.BuildInvocationDetailsString());
             }
+
+            await ctx.RespondAsync(invite.ToString());
         }
         #endregion
 
-        #region COMMAND_ITEMS
-        [Command("items")]
-        [Description("View user's purchased items (see ``bank`` and ``shop``).")]
-        [Aliases("myitems", "purchases")]
-
-        [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task GetPurchasedItemsAsync(CommandContext ctx,
-                                                [Description("User.")] DiscordUser user = null)
-        {
-            user = user ?? ctx.User;
-
-            List<PurchasedItem> items;
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                items = await db.PurchasedItems
-                    .Include(i => i.Item)
-                    .Where(i => i.UserIdDb == (long)ctx.User.Id && i.Item.GuildIdDb == (long)ctx.Guild.Id)
-                    .OrderBy(i => i.Item.Price)
-                    .ToListAsync();
-            }
-
-            if (!items.Any())
-                throw new CommandFailedException("No items purchased!");
-
-            await ctx.PaginateAsync(
-                $"Items owned by {user.Username}",
-                items,
-                i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
-                this.ModuleColor,
-                5
-            );
-        }
-        #endregion
-
-        #region COMMAND_LEAVE
+        #region leave
         [Command("leave"), UsesInteractivity]
-        [Description("Makes Godfather leave the guild.")]
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            if (await ctx.WaitForBoolReplyAsync("Are you sure you want me to leave this guild?")) {
-                await this.InformAsync(ctx, Emojis.Wave, "Go find a new bot, since this one is leaving!");
+            if (await ctx.WaitForBoolReplyAsync("q-leave"))
                 await ctx.Guild.LeaveAsync();
-            } else {
-                await this.InformAsync(ctx, "Guess I'll stay then.", ":no_mouth:");
-            }
         }
         #endregion
 
-        #region COMMAND_LEET
+        #region leet
         [Command("leet")]
-        [Description("Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.")]
-        [Aliases("l33t")]
-
+        [Aliases("l33t", "1337")]
         public Task L33tAsync(CommandContext ctx,
                              [RemainingText, Description("Text.")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
 
-            var rng = new SecureRandom();
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                char add;
-                bool r = rng.NextBool();
-                switch (c) {
-                    case 'i': add = r ? 'i' : '1'; break;
-                    case 'l': add = r ? 'l' : '1'; break;
-                    case 'e': add = r ? 'e' : '3'; break;
-                    case 'a': add = r ? '@' : '4'; break;
-                    case 't': add = r ? 't' : '7'; break;
-                    case 'o': add = r ? 'o' : '0'; break;
-                    case 's': add = r ? 's' : '5'; break;
-                    default: add = c; break;
-                }
-                sb.Append(rng.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
-            }
-
-            return this.InformAsync(ctx, Emojis.Information, sb.ToString());
+            string leet = this.Service.ToLeet(text);
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Color = this.ModuleColor,
+                Description = $"{Emojis.Information} {leet}",
+            });
         }
         #endregion
 

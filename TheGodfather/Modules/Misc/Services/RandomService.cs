@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Services;
@@ -27,11 +31,21 @@ namespace TheGodfather.Modules.Misc.Services
         public bool IsDisabled => false;
 
         private readonly SecureRandom rng;
+        private ImmutableDictionary<char, string> leetAlphabet;
 
 
         public RandomService(bool loadData = true)
         {
             this.rng = new SecureRandom();
+            this.leetAlphabet = new Dictionary<char, string>() {
+                { 'i' , "i1" },
+                { 'l' , "l1" },
+                { 'e' , "e3" },
+                { 'a' , "@4" },
+                { 't' , "t7" },
+                { 'o' , "o0" },
+                { 's' , "s5" },
+            }.ToImmutableDictionary();
             if (loadData)
                 this.LoadData("Resources");
         }
@@ -39,14 +53,19 @@ namespace TheGodfather.Modules.Misc.Services
 
         public void LoadData(string path)
         {
-            try {
-                Log.Debug("Loading random service data from {Folder}", path);
+            LoadLeetAlphabet(Path.Combine(path, "leet_alphabet.json"));
 
-                // TODO
-
-            } catch (Exception e) {
-                Log.Fatal(e, "Failed to load command translations");
-                throw;
+            void LoadLeetAlphabet(string alphabetPath)
+            {
+                try {
+                    Log.Debug("Loading leet alphabet from {Path}", alphabetPath);
+                    string json = File.ReadAllText(alphabetPath, Encoding.UTF8);
+                    this.leetAlphabet = JsonConvert.DeserializeObject<Dictionary<char, string>>(json)
+                        .ToImmutableDictionary();
+                } catch (Exception e) {
+                    Log.Fatal(e, "Failed to load leet alphabet");
+                    throw;
+                }
             }
         }
 
@@ -55,6 +74,18 @@ namespace TheGodfather.Modules.Misc.Services
 
         public int Dice(int sides = 6)
             => this.rng.Next(sides) + 1;
+
+        public string ToLeet(string text)
+        {
+            var sb = new StringBuilder();
+            foreach (char c in text) {
+                char code = char.ToLowerInvariant(c);
+                if (this.leetAlphabet.TryGetValue(code, out string? codes))
+                    code = this.rng.ChooseRandomChar(codes);
+                sb.Append(this.rng.NextBool() ? char.ToUpperInvariant(code) : char.ToLowerInvariant(code));
+            }
+            return sb.ToString();
+        }
 
         public string GetRandomYesNoAnswer()
             => this.rng.ChooseRandomElement(_regularAnswers);

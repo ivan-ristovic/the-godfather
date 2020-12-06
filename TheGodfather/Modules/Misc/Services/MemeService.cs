@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;

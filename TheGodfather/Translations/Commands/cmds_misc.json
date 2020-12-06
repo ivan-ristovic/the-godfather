@@ -59,6 +59,22 @@
       [ "arg-string" ]
     ]
   },
+  "leave": {
+    "usage": [
+      []
+    ]
+  },
+  "leet": {
+    "usage": [
+      [ "arg-str" ]
+    ]
+  },
+  "invite": {
+    "usage": [
+      [],
+      [ "arg-timespan-day" ]
+    ]
+  },
   "meme": {
     "usage": [
       [],

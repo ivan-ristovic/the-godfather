@@ -98,5 +98,8 @@ namespace TheGodfather.Common
 
         public T ChooseRandomElement<T>(IEnumerable<T> collection)
             => collection.ElementAt(this.Next(collection.Count()));
+
+        public char ChooseRandomChar(string str)
+            => str[this.Next(0, str.Length)];
     }
 }

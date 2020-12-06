@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
@@ -39,6 +40,40 @@ namespace TheGodfather.Modules.Currency
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
+
+        // FIXME this doesnt belong in misc module
+        #region COMMAND_ITEMS
+        [Command("items")]
+        [Description("View user's purchased items (see ``bank`` and ``shop``).")]
+        [Aliases("myitems", "purchases")]
+
+        [RequirePermissions(Permissions.CreateInstantInvite)]
+        public async Task GetPurchasedItemsAsync(CommandContext ctx,
+                                                [Description("User.")] DiscordUser user = null)
+        {
+            user = user ?? ctx.User;
+
+            List<PurchasedItem> items;
+            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
+                items = await db.PurchasedItems
+                    .Include(i => i.Item)
+                    .Where(i => i.UserIdDb == (long)ctx.User.Id && i.Item.GuildIdDb == (long)ctx.Guild.Id)
+                    .OrderBy(i => i.Item.Price)
+                    .ToListAsync();
+            }
+
+            if (!items.Any())
+                throw new CommandFailedException("No items purchased!");
+
+            await ctx.PaginateAsync(
+                $"Items owned by {user.Username}",
+                items,
+                i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
+                this.ModuleColor,
+                5
+            );
+        }
+        #endregion
 
         #region COMMAND_SHOP_ADD
         [Command("add"), Priority(1)]

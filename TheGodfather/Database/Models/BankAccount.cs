@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("bank_accounts")]
-    public class BankAccount
+    public class BankAccount : IEquatable<BankAccount>
     {
         [NotMapped]
         public static readonly int StartingBalance = 10000;
@@ -27,5 +28,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(BankAccount? other)
+            => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as BankAccount);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.UserId).GetHashCode();
     }
 }
