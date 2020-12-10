@@ -75,11 +75,6 @@
       [ "arg-string" ]
     ]
   },
-  "unleet": {
-    "usage": [
-      [ "arg-string" ]
-    ]
-  },
   "meme": {
     "usage": [
       [],
@@ -136,6 +131,32 @@
       [ "arg-prefix" ]
     ]
   },
+  "rank": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "rank add": {
+    "usage": [
+      [ "arg-five", "arg-name" ]
+    ]
+  },
+  "rank list": {
+    "usage": [
+      []
+    ]
+  },
+  "rank remove": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "rank top": {
+    "usage": [
+      []
+    ]
+  },
   "rate": {
     "usage": [
       [],
@@ -149,6 +170,11 @@
     ]
   },
   "say": {
+    "usage": [
+      [ "arg-string" ]
+    ]
+  },
+  "unleet": {
     "usage": [
       [ "arg-string" ]
     ]

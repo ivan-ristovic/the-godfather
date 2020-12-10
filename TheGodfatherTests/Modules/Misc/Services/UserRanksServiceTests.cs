@@ -13,60 +13,60 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new UserRanksService();
+            this.Service = new UserRanksService(TestDbProvider.Database);
         }
 
 
         [Test]
         public void CalculateRankForMessageCountTests()
         {
-            Assert.That(this.Service.CalculateRankForMessageCount(0), Is.Zero);
-            Assert.That(this.Service.CalculateRankForMessageCount(1), Is.Zero);
-            Assert.That(this.Service.CalculateRankForMessageCount(9), Is.Zero);
-            Assert.That(this.Service.CalculateRankForMessageCount(10), Is.EqualTo(1));
-            Assert.That(this.Service.CalculateRankForMessageCount(20), Is.EqualTo(1));
-            Assert.That(this.Service.CalculateRankForMessageCount(39), Is.EqualTo(1));
-            Assert.That(this.Service.CalculateRankForMessageCount(40), Is.EqualTo(2));
-            Assert.That(this.Service.CalculateRankForMessageCount(60), Is.EqualTo(2));
-            Assert.That(this.Service.CalculateRankForMessageCount(89), Is.EqualTo(2));
-            Assert.That(this.Service.CalculateRankForMessageCount(90), Is.EqualTo(3));
-            Assert.That(this.Service.CalculateRankForMessageCount(101), Is.EqualTo(3));
-            Assert.That(this.Service.CalculateRankForMessageCount(159), Is.EqualTo(3));
-            Assert.That(this.Service.CalculateRankForMessageCount(160), Is.EqualTo(4));
-            Assert.That(this.Service.CalculateRankForMessageCount(250), Is.EqualTo(5));
-            Assert.That(this.Service.CalculateRankForMessageCount(88361), Is.EqualTo(94));
+            Assert.That(UserRanksService.CalculateRankForXp(0), Is.Zero);
+            Assert.That(UserRanksService.CalculateRankForXp(1), Is.Zero);
+            Assert.That(UserRanksService.CalculateRankForXp(9), Is.Zero);
+            Assert.That(UserRanksService.CalculateRankForXp(10), Is.EqualTo(1));
+            Assert.That(UserRanksService.CalculateRankForXp(20), Is.EqualTo(1));
+            Assert.That(UserRanksService.CalculateRankForXp(39), Is.EqualTo(1));
+            Assert.That(UserRanksService.CalculateRankForXp(40), Is.EqualTo(2));
+            Assert.That(UserRanksService.CalculateRankForXp(60), Is.EqualTo(2));
+            Assert.That(UserRanksService.CalculateRankForXp(89), Is.EqualTo(2));
+            Assert.That(UserRanksService.CalculateRankForXp(90), Is.EqualTo(3));
+            Assert.That(UserRanksService.CalculateRankForXp(101), Is.EqualTo(3));
+            Assert.That(UserRanksService.CalculateRankForXp(159), Is.EqualTo(3));
+            Assert.That(UserRanksService.CalculateRankForXp(160), Is.EqualTo(4));
+            Assert.That(UserRanksService.CalculateRankForXp(250), Is.EqualTo(5));
+            Assert.That(UserRanksService.CalculateRankForXp(88361), Is.EqualTo(94));
         }
 
         [Test]
         public void GetAndIncrementMessageCountForUserTests()
         {
             foreach (ulong id in MockData.Ids)
-                Assert.That(this.Service.GetMessageCountForUser(id), Is.Zero);
+                Assert.That(this.Service.GetUserXp(id), Is.Zero);
 
-            Assert.That(this.Service.IncrementMessageCountForUser(MockData.Ids[0]), Is.Zero);
+            Assert.That(this.Service.ChangeXp(MockData.Ids[0]), Is.Zero);
 
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[0]), Is.EqualTo(1));
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[1]), Is.Zero);
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[2]), Is.Zero);
+            Assert.That(this.Service.GetUserXp(MockData.Ids[0]), Is.EqualTo(1));
+            Assert.That(this.Service.GetUserXp(MockData.Ids[1]), Is.Zero);
+            Assert.That(this.Service.GetUserXp(MockData.Ids[2]), Is.Zero);
 
             for (int i = 0; i < 9; i++)
-                Assert.That(this.Service.IncrementMessageCountForUser(MockData.Ids[1]), Is.Zero);
-            Assert.That(this.Service.IncrementMessageCountForUser(MockData.Ids[1]), Is.EqualTo(1));
-            Assert.That(this.Service.IncrementMessageCountForUser(MockData.Ids[1]), Is.Zero);
+                Assert.That(this.Service.ChangeXp(MockData.Ids[1]), Is.Zero);
+            Assert.That(this.Service.ChangeXp(MockData.Ids[1]), Is.EqualTo(1));
+            Assert.That(this.Service.ChangeXp(MockData.Ids[1]), Is.Zero);
 
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[0]), Is.EqualTo(1));
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[1]), Is.EqualTo(11));
-            Assert.That(this.Service.GetMessageCountForUser(MockData.Ids[2]), Is.Zero);
+            Assert.That(this.Service.GetUserXp(MockData.Ids[0]), Is.EqualTo(1));
+            Assert.That(this.Service.GetUserXp(MockData.Ids[1]), Is.EqualTo(11));
+            Assert.That(this.Service.GetUserXp(MockData.Ids[2]), Is.Zero);
         }
 
         [Test]
         public void CalculateRankForUserTests()
         {
             foreach (ulong id in MockData.Ids)
-                Assert.That(this.Service.GetMessageCountForUser(id), Is.Zero);
+                Assert.That(this.Service.GetUserXp(id), Is.Zero);
 
             for (int i = 0; i < 10; i++)
-                this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
+                this.Service.ChangeXp(MockData.Ids[0]);
 
             Assert.That(this.Service.CalculateRankForUser(MockData.Ids[0]), Is.EqualTo(1));
             Assert.That(this.Service.CalculateRankForUser(MockData.Ids[1]), Is.Zero);
@@ -76,14 +76,14 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         [Test]
         public void BlankDatabaseSyncTests()
         {
-            this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
-            this.Service.IncrementMessageCountForUser(MockData.Ids[0]);
+            this.Service.ChangeXp(MockData.Ids[0]);
+            this.Service.ChangeXp(MockData.Ids[0]);
             for (int i = 0; i < 9; i++)
-                this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
-            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
+                this.Service.ChangeXp(MockData.Ids[1]);
+            this.Service.ChangeXp(MockData.Ids[2]);
 
             TestDbProvider.AlterAndVerify(
-                alter: db => this.Service.Sync(db),
+                alter: db => Assert.That(this.Service.Sync()),
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
                     XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
@@ -103,8 +103,8 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         [Test]
         public void FilledDatabaseSyncTests()
         {
-            this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
-            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
+            this.Service.ChangeXp(MockData.Ids[1]);
+            this.Service.ChangeXp(MockData.Ids[2]);
 
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
@@ -120,7 +120,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     };
                     db.XpCounts.AddRange(msgcount);
                 },
-                alter: db => this.Service.Sync(db),
+                alter: db => Assert.That(this.Service.Sync()),
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
                     XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
@@ -140,8 +140,8 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         [Test]
         public void RepetitiveSyncTests()
         {
-            this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
-            this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
+            this.Service.ChangeXp(MockData.Ids[1]);
+            this.Service.ChangeXp(MockData.Ids[2]);
 
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
@@ -158,15 +158,15 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     db.XpCounts.AddRange(msgcount);
                 },
                 alter: db => {
-                    this.Service.Sync(db);
-                    this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
-                    this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
-                    this.Service.Sync(db);
-                    this.Service.IncrementMessageCountForUser(MockData.Ids[1]);
-                    this.Service.IncrementMessageCountForUser(MockData.Ids[2]);
-                    this.Service.Sync(db);
-                    this.Service.Sync(db);
-                    this.Service.Sync(db);
+                    Assert.That(this.Service.Sync());
+                    this.Service.ChangeXp(MockData.Ids[1]);
+                    this.Service.ChangeXp(MockData.Ids[2]);
+                    Assert.That(this.Service.Sync());
+                    this.Service.ChangeXp(MockData.Ids[1]);
+                    this.Service.ChangeXp(MockData.Ids[2]);
+                    Assert.That(this.Service.Sync());
+                    Assert.That(this.Service.Sync());
+                    Assert.That(this.Service.Sync());
                 },
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);

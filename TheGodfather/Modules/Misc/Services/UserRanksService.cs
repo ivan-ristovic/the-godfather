@@ -1,54 +1,59 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Services;
 
 namespace TheGodfather.Misc.Services
 {
-    public sealed class UserRanksService : ITheGodfatherService
+    public sealed class UserRanksService : DbAbstractionServiceBase<XpCount, ulong>
     {
-        public bool IsDisabled => false;
-        public ReadOnlyDictionary<ulong, uint> UserXP => new ReadOnlyDictionary<ulong, uint>(this.xps);
-
+        public override bool IsDisabled => throw new NotImplementedException();
 
         private readonly ConcurrentDictionary<ulong, uint> xps;
 
 
-        public UserRanksService()
+        public UserRanksService(DbContextBuilder dbb)
+            : base(dbb)
         {
             this.xps = new ConcurrentDictionary<ulong, uint>();
         }
 
 
-        public short CalculateRankForMessageCount(uint msgcount)
+        public static short CalculateRankForXp(uint msgcount)
+
             => (short)Math.Floor(Math.Sqrt(msgcount / 10));
 
-        public short CalculateRankForUser(ulong uid)
-            => this.xps.TryGetValue(uid, out uint count) ? this.CalculateRankForMessageCount(count) : (short)0;
-
-        public uint CalculateXpNeededForRank(short index)
+        public static uint CalculateXpNeededForRank(short index)
             => (uint)(index * index * 10);
 
-        public uint GetMessageCountForUser(ulong uid)
+        public short CalculateRankForUser(ulong uid)
+            => this.xps.TryGetValue(uid, out uint count) ? CalculateRankForXp(count) : (short)0;
+
+        public uint GetUserXp(ulong uid)
             => this.xps.TryGetValue(uid, out uint count) ? count : 0;
 
-        public short IncrementMessageCountForUser(ulong uid)
+        public short ChangeXp(ulong uid, uint change = 1)
         {
-            this.xps.AddOrUpdate(uid, 1, (k, v) => v + 1);
+            this.xps.AddOrUpdate(uid, 1, (k, v) => v + change);
 
-            short prev = this.CalculateRankForMessageCount(this.xps[uid] - 1);
-            short curr = this.CalculateRankForMessageCount(this.xps[uid]);
+            short prev = CalculateRankForXp(this.xps[uid] - change);
+            short curr = CalculateRankForXp(this.xps[uid]);
 
-            return curr != prev ? curr : (short)0;
+            return curr != prev ? curr : 0;
         }
 
-        public void Sync(TheGodfatherDbContext db)
+        public bool Sync()
         {
             bool failed = true;
             try {
-                foreach ((ulong uid, uint count) in this.UserXP) {
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
+                foreach ((ulong uid, uint count) in this.xps) {
                     XpCount uxp = db.XpCounts.Find((long)uid);
                     if (uxp is null) {
                         db.XpCounts.Add(new XpCount {
@@ -62,12 +67,30 @@ namespace TheGodfather.Misc.Services
                 }
                 db.SaveChanges();
                 failed = false;
-            } catch (Exception e) {
-                throw e;
             } finally {
                 if (!failed)
                     this.xps.Clear();
             }
+            return failed;
         }
+
+        public async Task<XpRank?> FindRankAsync(ulong gid)
+        {
+            XpRank? rank = null;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
+                rank = await db.XpRanks.FindAsync((long)gid, rank);
+            return rank;
+        }
+
+        public async Task<IReadOnlyList<XpCount>> GetTopRankedUsersAsync(int count = 10)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            return await this.DbSetSelector(db).OrderByDescending(r => r.Xp).Take(count).ToListAsync();
+        }
+
+        public override DbSet<XpCount> DbSetSelector(TheGodfatherDbContext db) => db.XpCounts;
+        public override XpCount EntityFactory(ulong id) => new XpCount { UserId = id };
+        public override ulong EntityIdSelector(XpCount entity) => entity.UserId;
+        public override object[] EntityPrimaryKeySelector(ulong id) => new object[] { id };
     }
 }

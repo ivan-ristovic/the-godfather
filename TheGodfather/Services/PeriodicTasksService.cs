@@ -63,8 +63,7 @@ namespace TheGodfather.Services
                 }
 
                 try {
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        shard.Services.GetRequiredService<UserRanksService>().Sync(db);
+                    shard.Services.GetRequiredService<UserRanksService>().Sync();
                     Log.Debug("Database sync successful");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during database sync");

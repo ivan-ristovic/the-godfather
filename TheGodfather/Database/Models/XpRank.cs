@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("guild_ranks")]
-    public class XpRank
+    public class XpRank : IEquatable<XpRank>
     {
         public const int NameLimit = 32;
 
@@ -22,5 +23,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(XpRank? other)
+            => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as XpRank);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.Rank).GetHashCode();
     }
 }

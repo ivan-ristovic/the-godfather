@@ -1,4 +1,4 @@
-#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,190 +7,163 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
-#endregion
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
     [Group("rank"), Module(ModuleType.Misc), NotBlocked]
-    [Description("User ranking commands. Group command prints given user's rank.")]
     [Aliases("ranks", "ranking", "level")]
-
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RanksModule : TheGodfatherServiceModule<UserRanksService>
+    public class RanksModule : TheGodfatherServiceModule<GuildRanksService>
     {
-
-        public RanksModule(UserRanksService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
+        public RanksModule(GuildRanksService service)
+            : base(service) { }
 
 
-        [GroupCommand]
+        #region rank
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-member")] DiscordMember? member = null)
+            => this.ExecuteGroupAsync(ctx, member as DiscordUser);
+
+        [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("User.")] DiscordUser user = null)
+                                           [Description("desc-user")] DiscordUser? user = null)
         {
             user ??= ctx.User;
 
-            short rank = this.Service.CalculateRankForUser(user.Id);
-            uint msgcount = this.Service.GetMessageCountForUser(user.Id);
+            UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
+            short rank = rs.CalculateRankForUser(user.Id);
+            XpRank? rankInfo = ctx.Guild is { } ? await rs.FindRankAsync(ctx.Guild.Id) : null;
 
-            XpRank rankInfo;
-            using (TheGodfatherDbContext db = this.Database.CreateContext())
-                rankInfo = await db.XpRanks.FindAsync((long)ctx.Guild.Id, rank);
-
-            var emb = new DiscordEmbedBuilder {
-                Title = user.Username,
-                Color = this.ModuleColor,
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
-                    Url = user.AvatarUrl
-                }
-            };
-            emb.AddField("Rank", $"{Formatter.Bold($"#{rank}")} : {Formatter.Italic(rankInfo?.Name ?? "No custom rank name set for this rank in this guild")}");
-            emb.AddField("XP", $"{msgcount}", inline: true);
-            emb.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
-
-            await ctx.RespondAsync(embed: emb.Build());
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithTitle(user.ToDiscriminatorString());
+                emb.WithThumbnail(user.AvatarUrl);
+                emb.AddLocalizedTitleField("str-rank", rank, inline: true);
+                emb.AddLocalizedTitleField("str-xp", rs.GetUserXp(user.Id), inline: true);
+                emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank(++rank), inline: true);
+                if (rankInfo is { })
+                    emb.AddLocalizedTitleField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
+                else
+                    emb.AddLocalizedField("str-rank", "str-rank-noname", inline: true);
+            });
         }
+        #endregion
 
-
-        #region COMMAND_RANK_ADD
-        [Command("add"), Priority(1)]
-        [Description("Add a custom name for given rank in this guild.")]
-        [Aliases("+", "a", "rename", "rn", "newname", "<", "<<", "+=")]
+        #region rank add
+        [Command("add"), Priority(0)]
+        [Aliases("register", "rename", "mv", "newname", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Rank.")] short rank,
-                                  [RemainingText, Description("Rank name.")] string name)
+                                  [Description("str-rank")] short rank,
+                                  [RemainingText, Description("str-rank-name")] string name)
         {
-            if (rank < 0 || rank > 99)
-                throw new CommandFailedException("You can only set rank names in range [0, 99]!");
+            if (rank < 0 || rank > 150)
+                throw new CommandFailedException(ctx, "cmd-err-rank", 0, 150);
 
             if (string.IsNullOrWhiteSpace(name))
-                throw new CommandFailedException("Name for the rank is missing!");
+                throw new CommandFailedException(ctx, "cmd-err-name-404");
 
-            if (name.Length > 30)
-                throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
+            if (name.Length > XpRank.NameLimit)
+                throw new CommandFailedException(ctx, "cmd-err-name", XpRank.NameLimit);
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                XpRank dbr = db.XpRanks.SingleOrDefault(r => r.GuildId == ctx.Guild.Id && r.Rank == rank);
-                if (dbr is null) {
-                    db.XpRanks.Add(new XpRank {
-                        GuildId = ctx.Guild.Id,
-                        Name = name,
-                        Rank = rank
-                    });
-                } else {
-                    dbr.Name = name;
-                }
+            await this.Service.RemoveAsync(ctx.Guild.Id, rank);
+            await this.Service.AddAsync(new XpRank {
+                GuildId = ctx.Guild.Id,
+                Name = name,
+                Rank = rank,
+            });
 
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, $"Successfully added rank {Formatter.Bold(name)} as an alias for rank {Formatter.Bold(rank.ToString())}.", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_RANK_DELETE
+        #region rank delete
         [Command("delete")]
-        [Description("Remove a custom name for given rank in this guild.")]
-        [Aliases("-", "remove", "rm", "del", "revert")]
-
+        [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Rank.")] short rank)
+                                     [Description("str-rank")] short rank)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.XpRanks.Remove(new XpRank {
-                    GuildId = ctx.Guild.Id,
-                    Rank = rank
-                });
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, $"Removed an alias for rank {Formatter.Bold(rank.ToString())}", important: false);
+            await this.Service.RemoveAsync(ctx.Guild.Id, rank);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_RANK_LIST
+        #region rank list
         [Command("list")]
-        [Description("Print all customized ranks for this guild.")]
-        [Aliases("levels", "ls", "l", "print")]
+        [Aliases("print", "show", "ls", "l", "p")]
         public async Task RankListAsync(CommandContext ctx)
         {
-            List<XpRank> ranks;
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                ranks = await db.XpRanks
-                    .Where(r => r.GuildId == ctx.Guild.Id)
-                    .OrderBy(r => r.Rank)
-                    .ToListAsync();
-            }
-
+            IReadOnlyList<XpRank> ranks = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!ranks.Any())
-                throw new CommandFailedException("No custom rank names registered for this guild!");
+                throw new CommandFailedException(ctx, "cmd-err-rank-none");
 
             await ctx.PaginateAsync(
-                "Custom ranks for this guild",
-                ranks,
-                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")} | XP needed: {Formatter.InlineCode($"{this.Service.CalculateXpNeededForRank(rank.Rank):D5}")} | {Formatter.Bold(rank.Name)}",
+                "str-ranks",
+                ranks.OrderBy(r => r.Rank),
+                rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")}" +
+                        $" | XP: {Formatter.InlineCode($"{UserRanksService.CalculateXpNeededForRank(rank.Rank):D5}")}" +
+                        $" | {Formatter.Bold(rank.Name)}",
                 this.ModuleColor
             );
         }
         #endregion
 
-        #region COMMAND_RANK_TOP
+        #region rank top
         [Command("top")]
         [Description("Get rank leaderboard.")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var emb = new DiscordEmbedBuilder {
-                Title = "Top ranked users (globally)",
-                Color = this.ModuleColor
-            };
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+            emb.WithLocalizedTitle("str-rank-top");
+            emb.WithColor(this.ModuleColor);
+            string unknown = lcs.GetString(ctx.Guild.Id, "str-404");
 
-            Dictionary<short, string> ranks;
-            Dictionary<ulong, uint> top;
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                ranks = await db.XpRanks
-                    .Where(r => r.GuildId == ctx.Guild.Id)
-                    .OrderBy(r => r.Rank)
-                    .ToDictionaryAsync(r => r.Rank, r => r.Name);
-                top = await db.XpCounts
-                    .OrderByDescending(r => r.Xp)
-                    .Take(10)
-                    .ToDictionaryAsync(r => r.UserId, r => r.Xp);
-            }
+            UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
+            IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync();
 
+            var ranks = new Dictionary<short, string>();
             var notFoundUsers = new List<ulong>();
-            foreach ((ulong uid, uint xp) in top) {
-                DiscordUser user = null;
+            foreach (XpCount xpc in top) {
+                DiscordUser? user = null;
                 try {
-                    user = await ctx.Client.GetUserAsync(uid);
+                    user = await ctx.Client.GetUserAsync(xpc.UserId);
                 } catch (NotFoundException) {
-                    notFoundUsers.Add(uid);
+                    notFoundUsers.Add(xpc.UserId);
                 }
 
-                short rank = this.Service.CalculateRankForMessageCount(xp);
-                if (ranks.TryGetValue(rank, out string name))
-                    emb.AddField(user?.Username ?? "<unknown>", $"{name} ({rank}) ({xp} XP)");
-                else
-                    emb.AddField(user?.Username ?? "<unknown>", $"Level {rank} ({xp} XP)");
-            }
+                short rank = UserRanksService.CalculateRankForXp(xpc.Xp);
+                if (!ranks.ContainsKey(rank)) {
+                    XpRank? gr = await this.Service.GetAsync(ctx.Guild.Id, rank);
+                    if (gr is { })
+                        ranks.Add(rank, gr.Name);
+                }
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.XpCounts.RemoveRange(notFoundUsers.Select(uid => new XpCount() { UserId = uid }));
-                await db.SaveChangesAsync();
+                if (ranks.TryGetValue(rank, out string? name))
+                    emb.AddField(user?.Username ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
+                else
+                    emb.AddField(user?.Username ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");
+
             }
 
             await ctx.RespondAsync(embed: emb.Build());
+
+            try {
+                int removed = await rs.RemoveAsync(notFoundUsers);
+                LogExt.Debug(ctx, "Removed {Count} not found users from XP count table", removed);
+            } catch (Exception e) {
+                LogExt.Warning(ctx, e, "Failed to remove not found users from XP count table");
+            }
         }
         #endregion
     }

@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("xp_count")]
-    public class XpCount
+    public class XpCount : IEquatable<XpCount>
     {
         [Key]
         [Column("uid")]
@@ -17,5 +18,15 @@ namespace TheGodfather.Database.Models
         public int XpDb { get; set; }
         [NotMapped]
         public uint Xp { get => (uint)this.XpDb; set => this.XpDb = (int)value; }
+
+
+        public bool Equals(XpCount? other)
+            => other is { } && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as XpCount);
+
+        public override int GetHashCode()
+            => this.UserId.GetHashCode();
     }
 }

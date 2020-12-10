@@ -71,8 +71,8 @@ namespace TheGodfather.EventListeners
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content)) { 
                 // TODO move to service
-                if (e.Message.Content.StartsWith(shard.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
-                    short rank = shard.Services.GetRequiredService<UserRanksService>().IncrementMessageCountForUser(e.Author.Id);
+                if (!e.Message.Content.StartsWith(shard.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
+                    short rank = shard.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Author.Id);
                     if (rank != 0) {
                         LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
                         XpRank? rankInfo;
