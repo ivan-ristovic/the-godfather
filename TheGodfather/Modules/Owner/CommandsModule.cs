@@ -13,7 +13,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("commands"), NotBlocked]
+    [Group("commands"), Module(ModuleType.Owner), Hidden]
     [Aliases("cmds", "cmd")]
     [RequireOwner]
     public sealed class CommandsModule : TheGodfatherServiceModule<CommandService>

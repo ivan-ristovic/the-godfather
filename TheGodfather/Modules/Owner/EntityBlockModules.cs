@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Owner
     }
 
 
-    [Group("blockedusers"), Module(ModuleType.Owner), NotBlocked]
+    [Group("blockedusers"), Module(ModuleType.Owner), Hidden]
     [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
     [RequirePrivilegedUser]
     public sealed class BlockedUsersModule : BlockedEntityModule<DiscordUser>
@@ -201,7 +201,7 @@ namespace TheGodfather.Modules.Owner
 
     }
 
-    [Group("blockedchannels"), Module(ModuleType.Owner), NotBlocked]
+    [Group("blockedchannels"), Module(ModuleType.Owner), Hidden]
     [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
     [RequirePrivilegedUser]
     public sealed class BlockedChannelsModule : BlockedEntityModule<DiscordChannel>
@@ -299,7 +299,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
     }
 
-    [Group("blockedguilds"), Module(ModuleType.Owner), NotBlocked]
+    [Group("blockedguilds"), Module(ModuleType.Owner), Hidden]
     [Aliases("bg", "blockedg", "blockguild", "bguilds", "bguild", "bgld")]
     [RequirePrivilegedUser]
     public sealed class BlockedGuildsModule : BlockedEntityModule<DiscordGuild>

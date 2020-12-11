@@ -12,7 +12,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("statuses"), NotBlocked]
+    [Group("statuses"), Module(ModuleType.Owner), Hidden]
     [Aliases("status", "botstatus", "activity", "activities")]
     [RequireOwner]
     public class StatusModule : TheGodfatherServiceModule<BotActivityService>

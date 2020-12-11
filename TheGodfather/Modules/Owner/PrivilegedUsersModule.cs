@@ -13,8 +13,7 @@ using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("privilegedusers"), NotBlocked]
-    [Description("Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.")]
+    [Group("privilegedusers"),  Module(ModuleType.Owner), Hidden]
     [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
     [RequireOwner]
     public class PrivilegedUsersModule : TheGodfatherServiceModule<PrivilegedUserService>
