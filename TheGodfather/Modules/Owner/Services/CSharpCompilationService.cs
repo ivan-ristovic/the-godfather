@@ -34,7 +34,9 @@ namespace TheGodfather.Modules.Owner.Services
                     .Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location))
                     .Select(x => MetadataReference.CreateFromFile(x.Location));
 
-            SyntaxTree ast = SyntaxFactory.ParseSyntaxTree(code, new CSharpParseOptions().WithKind(SourceCodeKind.Script).WithLanguageVersion(LanguageVersion.Latest));
+            SyntaxTree ast = SyntaxFactory.ParseSyntaxTree(code, new CSharpParseOptions()
+                                          .WithKind(SourceCodeKind.Script)
+                                          .WithLanguageVersion(LanguageVersion.Latest));
             var opts = new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 scriptClassName: type,

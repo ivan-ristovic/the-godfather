@@ -112,6 +112,12 @@ namespace TheGodfather.Services
             }
             return res.AsReadOnly();
         }
+
+        public async Task<TEntity> GetAsync(TEntityId id)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            return await this.DbSetSelector(db).FindAsync(id);
+        }
     }
 
     public abstract class DbAbstractionServiceBase<TEntity, TGroupId, TEntityId> : ITheGodfatherService

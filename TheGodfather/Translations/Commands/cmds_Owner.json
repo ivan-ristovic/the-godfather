@@ -104,5 +104,37 @@
     "usage": [
       []
     ]
+  },
+  "statuses": {
+    "usage": [
+      [],
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "statuses add": {
+    "usage": [
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "statuses delete": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "statuses list": {
+    "usage": [
+      []
+    ]
+  },
+  "statuses set": {
+    "usage": [
+      [ "arg-five" ],
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "statuses setrotation": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
   }
 }

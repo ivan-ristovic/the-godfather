@@ -29,14 +29,12 @@ namespace TheGodfather.Services
                     return;
                 }
 
-                if (!shard.Services?.GetRequiredService<BotActivityService>().StatusRotationEnabled ?? false)
+                BotActivityService bas = shard.Services.GetRequiredService<BotActivityService>();
+                if (!bas.StatusRotationEnabled)
                     return;
 
                 try {
-                    BotStatus? status = null;
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext())
-                        status = db.BotStatuses.Shuffle().FirstOrDefault();
-
+                    BotStatus? status = bas.GetRandomStatus();
                     if (status is null)
                         Log.Warning("No extra bot statuses present in the database.");
 

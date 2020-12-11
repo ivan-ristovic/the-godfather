@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using Microsoft.EntityFrameworkCore;
+using TheGodfather.Database;
+using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Common;
 
 namespace TheGodfather.Services
 {
-    public sealed class BotActivityService : ITheGodfatherService, IDisposable
+    public sealed class BotActivityService : DbAbstractionServiceBase<BotStatus, int>, IDisposable
     {
-        public bool IsDisabled => false;
         public bool IsBotListening {
             get => this.isBotListening;
             set {
@@ -27,12 +31,15 @@ namespace TheGodfather.Services
         public CancellationTokenSource MainLoopCts { get; }
         public ImmutableDictionary<int, UptimeInformation> ShardUptimeInformation { get; }
 
+        public override bool IsDisabled => false;
+
         private bool statusRotationEnabled;
         private bool isBotListening;
         private readonly object lck = new object();
 
 
-        public BotActivityService(int shardCount)
+        public BotActivityService(DbContextBuilder dbb, int shardCount)
+            : base(dbb)
         {
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
@@ -55,5 +62,16 @@ namespace TheGodfather.Services
         {
             this.MainLoopCts.Dispose();
         }
+
+        public BotStatus? GetRandomStatus()
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            return this.DbSetSelector(db).Shuffle().FirstOrDefault();
+        }
+
+        public override DbSet<BotStatus> DbSetSelector(TheGodfatherDbContext db) => db.BotStatuses;
+        public override BotStatus EntityFactory(int id) => new BotStatus { Id = id };
+        public override int EntityIdSelector(BotStatus entity) => entity.Id;
+        public override object[] EntityPrimaryKeySelector(int id) => new object[] { id };
     }
 }

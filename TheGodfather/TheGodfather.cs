@@ -119,7 +119,7 @@ namespace TheGodfather
             IServiceCollection services = new ServiceCollection()
                 .AddSingleton(cfg)
                 .AddSingleton(dbb)
-                .AddSingleton(new BotActivityService(cfg.CurrentConfiguration.ShardCount))
+                .AddSingleton(new BotActivityService(dbb, cfg.CurrentConfiguration.ShardCount))
                 .AddSingleton(new AsyncExecutionService())
                 .AddSharedServices()
                 ;

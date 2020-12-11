@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DSharpPlus.Entities;
 
 namespace TheGodfather.Database.Models
 {
     [Table("bot_statuses")]
-    public class BotStatus
+    public class BotStatus : IEquatable<BotStatus>
     {
         public const int StatusLimit = 64;
 
@@ -19,5 +20,15 @@ namespace TheGodfather.Database.Models
 
         [Column("activity_type"), Required]
         public ActivityType Activity { get; set; } = ActivityType.Playing;
+
+
+        public bool Equals(BotStatus? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as BotStatus);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 }
