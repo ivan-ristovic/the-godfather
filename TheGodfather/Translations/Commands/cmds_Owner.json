@@ -64,5 +64,45 @@
     "usage": [
       []
     ]
+  },
+  "commands": {
+    "usage": [
+      []
+    ]
+  },
+  "commands add": {
+    "usage": [
+      [ "arg-code" ]
+    ]
+  },
+  "commands delete": {
+    "usage": [
+      [ "arg-cmd" ]
+    ]
+  },
+  "commands list": {
+    "usage": [
+      []
+    ]
+  },
+  "privilegedusers": {
+    "usage": [
+      []
+    ]
+  },
+  "privilegedusers add": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "privilegedusers delete": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "privilegedusers list": {
+    "usage": [
+      []
+    ]
   }
 }
