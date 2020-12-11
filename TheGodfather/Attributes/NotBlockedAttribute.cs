@@ -17,7 +17,7 @@ namespace TheGodfather.Attributes
         {
             if (!ctx.Services.GetRequiredService<BotActivityService>().IsBotListening)
                 return Task.FromResult(false);
-            if (ctx.Services.GetRequiredService<BlockingService>().IsBlocked(ctx.Channel.Id, ctx.User.Id))
+            if (ctx.Services.GetRequiredService<BlockingService>().IsBlocked(ctx.Guild.Id, ctx.Channel.Id, ctx.User.Id))
                 return Task.FromResult(false);
             if (BlockingCommandRuleExists())
                 return Task.FromResult(false);

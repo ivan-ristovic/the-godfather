@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Misc
 {
     [Module(ModuleType.Misc)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
-    public class MiscModule : TheGodfatherServiceModule<RandomService>
+    public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     {
         public MiscModule(RandomService service)
             : base(service) { }

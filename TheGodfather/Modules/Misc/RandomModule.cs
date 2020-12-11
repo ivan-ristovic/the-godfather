@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Misc
     [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RandomModule : TheGodfatherServiceModule<RandomService>
+    public sealed class RandomModule : TheGodfatherServiceModule<RandomService>
     {
         public RandomModule(RandomService service)
             : base(service) { }

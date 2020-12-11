@@ -1,9 +1,7 @@
-﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using TheGodfather.Database;
-#endregion
 
 namespace TheGodfather.Modules.Owner.Extensions
 {

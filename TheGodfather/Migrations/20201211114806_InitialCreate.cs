@@ -16,12 +16,25 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    cid = table.Column<long>(type: "bigint", nullable: false),
+                    id = table.Column<long>(type: "bigint", nullable: false),
                     reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_blocked_channels", x => x.cid);
+                    table.PrimaryKey("PK_blocked_channels", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "blocked_guilds",
+                schema: "gf",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false),
+                    reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_blocked_guilds", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -29,12 +42,12 @@ namespace TheGodfather.Migrations
                 schema: "gf",
                 columns: table => new
                 {
-                    uid = table.Column<long>(type: "bigint", nullable: false),
+                    id = table.Column<long>(type: "bigint", nullable: false),
                     reason = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_blocked_users", x => x.uid);
+                    table.PrimaryKey("PK_blocked_users", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -864,6 +877,10 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "blocked_channels",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "blocked_guilds",
                 schema: "gf");
 
             migrationBuilder.DropTable(

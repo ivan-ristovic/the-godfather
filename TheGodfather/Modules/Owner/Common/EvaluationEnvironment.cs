@@ -1,8 +1,6 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-#endregion
 
 namespace TheGodfather.Modules.Owner.Common
 {

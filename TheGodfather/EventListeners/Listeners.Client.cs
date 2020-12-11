@@ -11,6 +11,7 @@ using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
 
 namespace TheGodfather.EventListeners
@@ -54,6 +55,12 @@ namespace TheGodfather.EventListeners
         public static async Task GuildCreateEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
             LogExt.Information(shard.Id, "Joined {NewGuild}", e.Guild);
+
+            if (shard.Services.GetRequiredService<BlockingService>().IsGuildBlocked(e.Guild.Id)) {
+                LogExt.Information(shard.Id, "{Guild} is blocked. Leaving...", e.Guild);
+                await e.Guild.LeaveAsync();
+                return;
+            }
 
             await shard.Services.GetRequiredService<GuildConfigService>().RegisterGuildAsync(e.Guild.Id);
 

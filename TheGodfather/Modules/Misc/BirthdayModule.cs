@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region birthday delete
-        [Command("delete"), Priority(1), UsesInteractivity]
+        [Command("delete"), Priority(1)]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("desc-bd-user")] DiscordUser user)

@@ -1,4 +1,4 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -7,147 +7,126 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
     [Group("grant"), Module(ModuleType.Misc), NotBlocked]
-    [Description("Requests to grant the sender a certain object (role for example).")]
     [Aliases("give")]
-    [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class GrantModule : TheGodfatherModule
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Guild)]
+    public sealed class GrantModule : TheGodfatherModule
     {
-
-        public GrantModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
-        [GroupCommand, Priority(1)]
+        #region grant
+        [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Role to grant.")] DiscordRole role)
+                                           [Description("desc-roles-add")] params DiscordRole[] roles)
         {
             DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
             if (bot is null)
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
             if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
-                await this.GiveRoleAsync(ctx, role);
+                await this.GiveRoleAsync(ctx, roles);
             else
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
         }
+        #endregion
 
-        [GroupCommand, Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Nickname to set.")] string name)
-        {
-            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-            if (bot is null)
-                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageNicknames) });
-
-            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageNicknames))
-                await this.GiveNameAsync(ctx, name);
-            else
-                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageNicknames) });
-        }
-
-
-        #region COMMAND_GRANT_ROLE
+        #region grant role
         [Command("role")]
-        [Description("Grants you a role from this guild's self-assignable roles list.")]
-        [Aliases("rl", "r")]
-
+        [Aliases("roles", "rl", "r")]
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task GiveRoleAsync(CommandContext ctx,
-                                       [Description("Role to grant.")] DiscordRole role)
+                                       [Description("desc-roles-add")] params DiscordRole[] roles)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (!db.SelfRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
-                    throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+            SelfRoleService service = ctx.Services.GetRequiredService<SelfRoleService>();
+
+            var failedRoles = new List<DiscordRole>();
+            foreach (DiscordRole role in roles.Distinct()) {
+                if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
+                    await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("rsn-grant-role"));
+                else
+                    failedRoles.Add(role);
             }
 
-            await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("Granted self-assignable role."));
-            await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
+            if (failedRoles.Any())
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-grant-fail", failedRoles.Select(r => r.Mention).SepBy());
+            else
+                await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_GRANT_NAME
+        #region grant nickname
         [Command("nickname")]
-        [Description("Grants you a given nickname.")]
         [Aliases("nick", "name", "n")]
-
         [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task GiveNameAsync(CommandContext ctx,
                                        [RemainingText, Description("Nickname to set.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Nickname missing.");
-
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (db.ForbiddenNames.Any(n => n.GuildId == ctx.Guild.Id && n.Regex.IsMatch(name)))
-                    throw new CommandFailedException($"Name {name} matches one of the forbidden names in this guild.");
-            }
+                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+            
+            ForbiddenNamesService service = ctx.Services.GetRequiredService<ForbiddenNamesService>();
+            if (service.IsNameForbidden(ctx.Guild.Id, name, out _))
+                throw new CommandFailedException(ctx, "cmd-err-fn-match");
 
             await ctx.Member.ModifyAsync(m => {
                 m.Nickname = name;
-                m.AuditLogReason = "Self-rename";
+                m.AuditLogReason = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, "rsn-grant-name");
             });
-            await this.InformAsync(ctx, "Successfully granted the required nickname.", important: false);
+
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
     }
 
     [Group("revoke"), Module(ModuleType.Misc), NotBlocked]
-    [Description("Requests to revoke a certain object from the sender (role for example).")]
     [Aliases("take")]
-    [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class RevokeModule : TheGodfatherModule
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Guild)]
+    public sealed class RevokeModule : TheGodfatherModule
     {
-
-        public RevokeModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
+        #region revoke
         [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Role to grant.")] DiscordRole role)
+                                           [Description("desc-roles-del")] params DiscordRole[] roles)
         {
             DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
             if (bot is null)
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
             if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
-                await this.RevokeRoleAsync(ctx, role);
+                await this.RevokeRoleAsync(ctx, roles);
             else
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
         }
+        #endregion
 
-
-        #region COMMAND_REVOKE_ROLE
+        #region revoke role
         [Command("role")]
-        [Description("Revokes from your role list a role from this guild's self-assignable roles list.")]
         [Aliases("rl", "r")]
-
         [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task RevokeRoleAsync(CommandContext ctx,
-                                         [Description("Role to revoke.")] DiscordRole role)
+                                         [Description("desc-roles-del")] params DiscordRole[] roles)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (!db.SelfRoles.Any(r => r.GuildId == ctx.Guild.Id && r.RoleId == role.Id))
-                    throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+            SelfRoleService service = ctx.Services.GetRequiredService<SelfRoleService>();
+
+            var failedRoles = new List<DiscordRole>();
+            foreach (DiscordRole role in roles.Distinct()) {
+                if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
+                    await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("rsn-revoke-role"));
+                else
+                    failedRoles.Add(role);
             }
 
-            await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("Revoked self-assignable role."));
-            await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
+            if (failedRoles.Any())
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-revoke-fail", failedRoles.Select(r => r.Mention).SepBy());
+            else
+                await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
     }

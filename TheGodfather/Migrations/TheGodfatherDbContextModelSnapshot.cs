@@ -83,32 +83,48 @@ namespace TheGodfather.Migrations
 
             modelBuilder.Entity("TheGodfather.Database.Models.BlockedChannel", b =>
                 {
-                    b.Property<long>("ChannelIdDb")
+                    b.Property<long>("IdDb")
                         .HasColumnType("bigint")
-                        .HasColumnName("cid");
+                        .HasColumnName("id");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("reason");
 
-                    b.HasKey("ChannelIdDb");
+                    b.HasKey("IdDb");
 
                     b.ToTable("blocked_channels");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.BlockedUser", b =>
+            modelBuilder.Entity("TheGodfather.Database.Models.BlockedGuild", b =>
                 {
-                    b.Property<long>("UserIdDb")
+                    b.Property<long>("IdDb")
                         .HasColumnType("bigint")
-                        .HasColumnName("uid");
+                        .HasColumnName("id");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("reason");
 
-                    b.HasKey("UserIdDb");
+                    b.HasKey("IdDb");
+
+                    b.ToTable("blocked_guilds");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.BlockedUser", b =>
+                {
+                    b.Property<long>("IdDb")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("reason");
+
+                    b.HasKey("IdDb");
 
                     b.ToTable("blocked_users");
                 });

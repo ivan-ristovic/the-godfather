@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Misc
     [Group("insult"), Module(ModuleType.Misc), NotBlocked]
     [Aliases("burn", "ins", "roast")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class InsultModule : TheGodfatherServiceModule<InsultService>
+    public sealed class InsultModule : TheGodfatherServiceModule<InsultService>
     {
         public InsultModule(InsultService service)
             : base(service) { }

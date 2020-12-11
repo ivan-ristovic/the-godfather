@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Misc
     [Group("meme"), Module(ModuleType.Misc), NotBlocked]
     [Aliases("memes", "mm")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
-    public sealed partial class MemeModule : TheGodfatherServiceModule<MemeService>
+    public sealed class MemeModule : TheGodfatherServiceModule<MemeService>
     {
         public MemeModule(MemeService service)
             : base(service) { }

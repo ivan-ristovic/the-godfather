@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Group("rank"), Module(ModuleType.Misc), NotBlocked]
     [Aliases("ranks", "ranking", "level")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RanksModule : TheGodfatherServiceModule<GuildRanksService>
+    public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
     {
         public RanksModule(GuildRanksService service)
             : base(service) { }
@@ -120,7 +120,6 @@ namespace TheGodfather.Modules.Misc
 
         #region rank top
         [Command("top")]
-        [Description("Get rank leaderboard.")]
         public async Task TopAsync(CommandContext ctx)
         {
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
@@ -143,13 +142,13 @@ namespace TheGodfather.Modules.Misc
                 }
 
                 short rank = UserRanksService.CalculateRankForXp(xpc.Xp);
-                if (!ranks.ContainsKey(rank)) {
+                if (ctx.Guild is { } && !ranks.ContainsKey(rank)) {
                     XpRank? gr = await this.Service.GetAsync(ctx.Guild.Id, rank);
                     if (gr is { })
                         ranks.Add(rank, gr.Name);
                 }
 
-                if (ranks.TryGetValue(rank, out string? name))
+                if (ctx.Guild is { } && ranks.TryGetValue(rank, out string? name))
                     emb.AddField(user?.Username ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
                 else
                     emb.AddField(user?.Username ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");

@@ -66,7 +66,7 @@ namespace TheGodfather.EventListeners
                 return;
             }
 
-            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Guild.Id, e.Channel.Id, e.Author.Id))
                 return;
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content)) { 
@@ -139,7 +139,7 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Channel.Id, e.Author.Id))
+            if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Guild.Id, e.Channel.Id, e.Author.Id))
                 return;
 
             ReactionsService rs = shard.Services.GetRequiredService<ReactionsService>();
