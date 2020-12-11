@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Misc
             }
 
             if (failedRoles.Any())
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-grant-fail", failedRoles.Select(r => r.Mention).SepBy());
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-grant-fail", failedRoles.Select(r => r.Mention).JoinWith());
             else
                 await ctx.InfoAsync(this.ModuleColor);
         }
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Misc
             }
 
             if (failedRoles.Any())
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-revoke-fail", failedRoles.Select(r => r.Mention).SepBy());
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-revoke-fail", failedRoles.Select(r => r.Mention).JoinWith());
             else
                 await ctx.InfoAsync(this.ModuleColor);
         }

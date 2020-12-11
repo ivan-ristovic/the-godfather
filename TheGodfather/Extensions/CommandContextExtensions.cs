@@ -121,7 +121,7 @@ namespace TheGodfather.Extensions
                 int to = from + pageSize > arr.Length ? arr.Length : from + pageSize;
                 pages.Add(new Page(embed: new DiscordEmbedBuilder {
                     Title = title,
-                    Description = arr[from..to].Select(selector).SepBy(),
+                    Description = arr[from..to].Select(selector).JoinWith(),
                     Color = color ?? DiscordColor.Black,
                     Footer = new DiscordEmbedBuilder.EmbedFooter {
                         Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from, to, arr.Length, i, pageCount),

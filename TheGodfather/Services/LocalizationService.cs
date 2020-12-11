@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -22,8 +23,8 @@ namespace TheGodfather.Services
         public string DefaultLocale { get; }
         public IReadOnlyList<string> AvailableLocales => this.strings?.Keys.ToList().AsReadOnly() ?? new List<string>().AsReadOnly();
 
-        private ImmutableDictionary<string, ImmutableDictionary<string, string>>? strings;
-        private ImmutableDictionary<string, ImmutableDictionary<string, string>>? cmddesc;
+        private ConcurrentDictionary<string, ImmutableDictionary<string, string>>? strings;
+        private ConcurrentDictionary<string, ImmutableDictionary<string, string>>? cmddesc;
         private readonly GuildConfigService gcs;
         private bool isDataLoaded;
 
@@ -40,18 +41,18 @@ namespace TheGodfather.Services
         public void LoadData(string path)
         {
             Log.Debug("Loading translation strings from {Path}", path);
-            this.strings = ReadStrings(path, "*.json");
+            this.strings = new (ReadStrings(path, "*.json"));
             Log.Information("Loaded translation strings");
 
             path = Path.Combine(path, "Commands");
             Log.Debug("Loading command descriptions from {Path}", path);
-            this.cmddesc = ReadStrings(path, "desc_*.json");
+            this.cmddesc = new (ReadStrings(path, "desc_*.json"));
             Log.Information("Loaded command descriptions");
 
             this.isDataLoaded = true;
 
 
-            ImmutableDictionary<string, ImmutableDictionary<string, string>> ReadStrings(string path, string searchPattern)
+            Dictionary<string, ImmutableDictionary<string, string>> ReadStrings(string path, string searchPattern)
             {
                 var strs = new Dictionary<string, ImmutableDictionary<string, string>>();
 
@@ -65,14 +66,15 @@ namespace TheGodfather.Services
                             if (locale.Equals(this.DefaultLocale))
                                 defLocaleLoaded = true;
                             Dictionary<string, string> translation = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                            strs.Add(locale, translation.ToImmutableDictionary());
+                            if (!strs.TryAdd(locale, translation.ToImmutableDictionary()))
+                                Log.Error("Duplicate locale found in lookup table: {Locale}", locale);
                         } catch (Exception e) {
                             Log.Error(e, "Failed to load strings for locale: {LocaleJson}", fi.Name);
                         }
                     }
                 } catch (IOException e) {
                     Log.Fatal(e, "Failed to load strings from path {Path}", path);
-                    throw e;
+                    throw;
                 }
 
                 if (!strs.Any())
@@ -81,7 +83,7 @@ namespace TheGodfather.Services
                 if (!defLocaleLoaded)
                     throw new IOException($"Default locale {this.DefaultLocale} is not loaded");
 
-                return strs.ToImmutableDictionary();
+                return strs;
             }
         }
 
@@ -93,12 +95,12 @@ namespace TheGodfather.Services
                 throw new ArgumentNullException(nameof(key));
 
             string locale = this.GetGuildLocale(gid);
-            if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string> localeStrings)) {
-                if (!localeStrings.TryGetValue(key, out string response)) {
+            if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string>? localeStrings)) {
+                if (!localeStrings.TryGetValue(key, out string? response)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
                     throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key)} Please report this.");
                 }
-                if (!localeStrings.TryGetValue("str-404", out string str404)) {
+                if (!localeStrings.TryGetValue("str-404", out string? str404)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", "str-404", locale);
                     throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode("str-404")} Please report this.");
                 }
@@ -120,8 +122,8 @@ namespace TheGodfather.Services
             if (!this.cmddesc?.TryGetValue(locale, out desc) ?? true)
                 throw new LocalizationException($"Failed to find locale {locale}");
 
-            if (desc is null || !desc.TryGetValue(command, out string localizedDesc))
-                throw new LocalizationException($"Failed to find description for command {command} in locale {locale}");
+            if (desc is null || !desc.TryGetValue(command, out string? localizedDesc))
+                throw new LocalizationException($"Failed to find description for command `{command}` in locale `{locale}`");
 
             return localizedDesc;
         }
@@ -163,6 +165,12 @@ namespace TheGodfather.Services
                 return false;
             await this.gcs.ModifyConfigAsync(gid, cfg => cfg.TimezoneId = tzid);
             return true;
+        }
+
+        public bool RemoveCommandDescription(string command)
+        {
+            this.AssertIsDataLoaded();
+            return this.cmddesc?.TryRemove(command, out _) ?? true;
         }
 
 

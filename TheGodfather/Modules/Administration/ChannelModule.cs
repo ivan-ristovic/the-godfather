@@ -718,7 +718,7 @@ namespace TheGodfather.Modules.Administration
                 await ModifyParent(ctx.Channel);
             }
 
-            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children?.SepBy() ?? ctx.Channel.ToString()); 
+            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children?.JoinWith() ?? ctx.Channel.ToString()); 
 
 
             Task ModifyParent(DiscordChannel channel)
@@ -751,7 +751,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
             if (slowmode is { } && !_ratelimitValues.Contains(slowmode))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-ratelimit", _ratelimitValues.SepBy(", "));
+                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-ratelimit", _ratelimitValues.JoinWith(", "));
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.PerUserRateLimit = slowmode;

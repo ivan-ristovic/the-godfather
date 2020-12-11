@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Misc
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithLocalizedTitle("h-title");
-                emb.WithLocalizedDescription("fmt-modules", Enum.GetNames<ModuleType>().Select(s => $"• {s}").SepBy());
+                emb.WithLocalizedDescription("fmt-modules", Enum.GetNames<ModuleType>().Select(s => $"• {s}").JoinWith());
                 emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
             });
         }
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Misc
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(module.ToDiscordColor());
                 emb.WithLocalizedTitle("h-title-m", module);
-                emb.WithLocalizedDescription(module.ToLocalizedDescriptionKey(), cmds.Select(s => Formatter.InlineCode(s)).SepBy(", "));
+                emb.WithLocalizedDescription(module.ToLocalizedDescriptionKey(), cmds.Select(s => Formatter.InlineCode(s)).JoinWith(", "));
                 emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
             });
         }

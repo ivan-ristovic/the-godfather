@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using Serilog;
 using TheGodfather.Attributes;
+using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 
@@ -17,8 +20,8 @@ namespace TheGodfather.Services
 
         private readonly LocalizationService lcs;
         private readonly GuildConfigService gcs;
-        private Dictionary<string, CommandInfo> commands;
-        private Dictionary<ModuleType, HashSet<string>> modules;
+        private ConcurrentDictionary<string, CommandInfo> commands;
+        private ImmutableDictionary<ModuleType, ConcurrentHashSet<string>> modules;
         private bool isDataLoaded;
 
 
@@ -26,8 +29,8 @@ namespace TheGodfather.Services
         {
             this.lcs = lcs;
             this.gcs = gcs;
-            this.commands = new Dictionary<string, CommandInfo>();
-            this.modules = new Dictionary<ModuleType, HashSet<string>>();
+            this.commands = new ConcurrentDictionary<string, CommandInfo>();
+            this.modules = new Dictionary<ModuleType, ConcurrentHashSet<string>>().ToImmutableDictionary();
             if (loadData)
                 this.LoadData("Translations");
         }
@@ -35,8 +38,8 @@ namespace TheGodfather.Services
 
         public void LoadData(string root)
         {
-            this.commands = new Dictionary<string, CommandInfo>();
-            this.modules = new Dictionary<ModuleType, HashSet<string>>();
+            var commands = new Dictionary<string, CommandInfo>();
+            var modules = new Dictionary<ModuleType, ConcurrentHashSet<string>>();
 
             string path = Path.Combine(root, "Commands");
             try {
@@ -50,10 +53,12 @@ namespace TheGodfather.Services
                 throw;
             }
 
-            if (!this.commands.Any())
+            if (!commands.Any())
                 throw new IOException("No valid JSON files found");
 
             this.isDataLoaded = true;
+            this.commands = new ConcurrentDictionary<string, CommandInfo>(commands);
+            this.modules = modules.ToImmutableDictionary();
 
 
             ModuleType ParseModuleType(FileInfo fi)
@@ -63,8 +68,8 @@ namespace TheGodfather.Services
                     module = ModuleType.Uncategorized;
                     Log.Error("Failed to parse module name from file {FileName}", fi.Name);
                 }
-                if (!this.modules.ContainsKey(module))
-                    this.modules.Add(module, new HashSet<string>());
+                if (!modules.ContainsKey(module))
+                    modules.Add(module, new ConcurrentHashSet<string>());
                 return module;
             }
 
@@ -73,7 +78,7 @@ namespace TheGodfather.Services
                 try {
                     string json = File.ReadAllText(fi.FullName);
                     foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)) {
-                        
+
                         info.Module = module;
                         foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
                             try {
@@ -83,11 +88,12 @@ namespace TheGodfather.Services
                                 Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
                             }
                         }
-                        this.commands.Add(cmd, info);
+                        if (!commands.TryAdd(cmd, info))
+                            Log.Error("Duplicate command found in lookup table: {Command}", cmd);
 
                         if (!info.Hidden) {
                             string group = cmd.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
-                            this.modules[module].Add(group);
+                            modules[module].Add(group);
                         }
                     }
                     Log.Debug("Loaded command list from: {FileName}", fi.Name);
@@ -124,6 +130,16 @@ namespace TheGodfather.Services
             this.AssertIsDataLoaded();
             return this.modules.GetValueOrDefault(module)?.ToList().AsReadOnly() ?? new List<string>().AsReadOnly();
         }
+
+        public bool RemoveCommand(string command)
+        {
+            this.AssertIsDataLoaded();
+
+            return this.commands.TryRemove(command, out CommandInfo? info)
+                && info is { } 
+                && (this.modules.GetValueOrDefault(info.Module)?.TryRemove(command) ?? false);
+        }
+
 
         private void AssertIsDataLoaded()
         {

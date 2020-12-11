@@ -301,7 +301,7 @@ namespace TheGodfather.Modules.Misc
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
             await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                Description = lcs.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).SepBy(", ")),
+                Description = lcs.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
                 Color = this.ModuleColor,
             });
         }

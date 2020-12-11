@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DSharpPlus;
@@ -9,6 +10,7 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
@@ -56,12 +58,13 @@ namespace TheGodfather.Modules.Misc.Common
             CommandService cs = this.Context.Services.GetRequiredService<CommandService>();
             try {
                 this.desc = cs.GetCommandDescription(this.GuildId, cmd.QualifiedName);
-            } catch (KeyNotFoundException e) {
+            } catch (Exception e) when (e is LocalizationException || e is KeyNotFoundException)  {
                 LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
+                this.desc = this.GetS("h-desc-none");
             }
 
             if (cmd.Aliases?.Any() ?? false)
-                this.emb.AddLocalizedTitleField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).SepBy(", "), inline: true);
+                this.emb.AddLocalizedTitleField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).JoinWith(", "), inline: true);
 
             this.emb.AddLocalizedTitleField("str-category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
@@ -87,11 +90,11 @@ namespace TheGodfather.Modules.Misc.Common
             if (checks.Any(chk => chk is RequirePrivilegedUserAttribute))
                 pb.AppendLine(Formatter.Bold(this.GetS("str-priv-only")));
             if (perms.Any())
-                pb.AppendLine(Formatter.InlineCode(perms.SepBy(", ")));
+                pb.AppendLine(Formatter.InlineCode(perms.JoinWith(", ")));
             if (uperms.Any())
-                pb.Append(this.GetS("str-perms-user")).Append(' ').AppendLine(Formatter.InlineCode(uperms.SepBy(", ")));
+                pb.Append(this.GetS("str-perms-user")).Append(' ').AppendLine(Formatter.InlineCode(uperms.JoinWith(", ")));
             if (bperms.Any())
-                pb.Append(this.GetS("str-perms-bot")).Append(' ').AppendLine(Formatter.InlineCode(bperms.SepBy(", ")));
+                pb.Append(this.GetS("str-perms-bot")).Append(' ').AppendLine(Formatter.InlineCode(bperms.JoinWith(", ")));
 
             string pstr = pb.ToString();
             if (!string.IsNullOrWhiteSpace(pstr))
@@ -131,7 +134,7 @@ namespace TheGodfather.Modules.Misc.Common
                 }
             }
 
-            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).SepBy()));
+            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
 
             return this;
         }
@@ -140,7 +143,7 @@ namespace TheGodfather.Modules.Misc.Common
         {
             if (subcommands.Any()) {
                 string title = string.IsNullOrWhiteSpace(this.name) ? "str-cmds" : "str-subcmds";
-                this.emb.AddLocalizedTitleField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).SepBy(", "));
+                this.emb.AddLocalizedTitleField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).JoinWith(", "));
             }
             return this;
         }
