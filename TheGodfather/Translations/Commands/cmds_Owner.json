@@ -1,0 +1,68 @@
+{
+  "blockedchannels": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "blockedchannels add": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "blockedchannels delete": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "blockedchannels list": {
+    "usage": [
+      []
+    ]
+  },
+  "blockedguilds": {
+    "usage": [
+      [],
+      [ "arg-gld" ]
+    ]
+  },
+  "blockedguilds add": {
+    "usage": [
+      [ "arg-gld" ],
+      [ "arg-gld", "arg-rsn" ]
+    ]
+  },
+  "blockedguilds delete": {
+    "usage": [
+      [ "arg-gld" ]
+    ]
+  },
+  "blockedguilds list": {
+    "usage": [
+      []
+    ]
+  },
+  "blockedusers": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "blockedusers add": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ]
+    ]
+  },
+  "blockedusers delete": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "blockedusers list": {
+    "usage": [
+      []
+    ]
+  }
+}
