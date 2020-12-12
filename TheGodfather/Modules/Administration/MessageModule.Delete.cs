@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
             #region message delete
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-message-del-amount")] int amount = 1,
+                                               [Description("desc-msg-del-amount")] int amount = 1,
                                                [RemainingText, Description("desc-rsn")] string? reason = null)
             {
                 if (amount < 1 || amount > 10000)
@@ -43,8 +43,8 @@ namespace TheGodfather.Modules.Administration
             [Command("after")]
             [Aliases("aft", "af")]
             public async Task DeleteMessagesAfterAsync(CommandContext ctx,
-                                                      [Description("desc-message")] DiscordMessage message,
-                                                      [Description("desc-message-del-amount")] int amount = 1,
+                                                      [Description("desc-msg")] DiscordMessage message,
+                                                      [Description("desc-msg-del-amount")] int amount = 1,
                                                       [RemainingText, Description("desc-rsn")] string? reason = null)
             {
                 if (amount < 1 || amount > 10000)
@@ -59,8 +59,8 @@ namespace TheGodfather.Modules.Administration
             [Command("before")]
             [Aliases("bef", "bf")]
             public async Task DeleteMessagesBeforeAsync(CommandContext ctx,
-                                                       [Description("desc-message")] DiscordMessage message,
-                                                       [Description("desc-message-del-amount")] int amount = 1,
+                                                       [Description("desc-msg")] DiscordMessage message,
+                                                       [Description("desc-msg-del-amount")] int amount = 1,
                                                        [RemainingText, Description("desc-rsn")] string? reason = null)
             {
                 if (amount < 1 || amount > 10000)
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
 
             [Command("from"), Priority(0)]
             public Task DeleteMessagesFromUserAsync(CommandContext ctx,
-                                                   [Description("desc-message-del-amount")] int amount,
+                                                   [Description("desc-msg-del-amount")] int amount,
                                                    [Description("desc-member")] DiscordMember member,
                                                    [RemainingText, Description("desc-rsn")] string? reason = null)
                 => this.DeleteMessagesFromUserAsync(ctx, member, amount, reason);
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
             [Command("reactions")]
             [Aliases("react", "re")]
             public async Task DeleteReactionsAsync(CommandContext ctx,
-                                                  [Description("desc-message")] DiscordMessage? message = null,
+                                                  [Description("desc-msg")] DiscordMessage? message = null,
                                                   [RemainingText, Description("desc-rsn")] string? reason = null)
             {
                 message ??= await ctx.Channel.GetLastMessageAsync();
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Administration
             [Aliases("r", "rgx", "regexp", "reg")]
             public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                           [Description("desc-regex")] string pattern,
-                                                          [Description("desc-message-del-amount")] int amount = 5,
+                                                          [Description("desc-msg-del-amount")] int amount = 5,
                                                           [RemainingText, Description("desc-rsn")] string? reason = null)
             {
                 if (amount < 1 || amount > 100)
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Administration
 
             [Command("regex"), Priority(0)]
             public Task DeleteMessagesFromRegexAsync(CommandContext ctx,
-                                                    [Description("desc-message-del-amount")] int amount,
+                                                    [Description("desc-msg-del-amount")] int amount,
                                                     [Description("desc-regex")] string pattern,
                                                     [RemainingText, Description("desc-rsn")] string? reason = null)
                 => this.DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason);

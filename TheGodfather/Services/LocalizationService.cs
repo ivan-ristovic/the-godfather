@@ -112,7 +112,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetCommandDescription(ulong gid, string command)
+        public string GetCommandDescription(ulong? gid, string command)
         {
             this.AssertIsDataLoaded();
 

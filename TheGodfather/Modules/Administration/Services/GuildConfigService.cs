@@ -52,10 +52,12 @@ namespace TheGodfather.Modules.Administration.Services
         public CachedGuildConfig GetCachedConfig(ulong gid)
             => this.gcfg.GetValueOrDefault(gid, new CachedGuildConfig());
 
-        public string GetGuildPrefix(ulong gid)
+        public string GetGuildPrefix(ulong? gid)
         {
-            return this.gcfg.TryGetValue(gid, out CachedGuildConfig? gcfg) && !string.IsNullOrWhiteSpace(gcfg?.Prefix)
-                ? this.gcfg[gid].Prefix
+            if (gid is null)
+                return this.cfg.Prefix;
+            return this.gcfg.TryGetValue(gid.Value, out CachedGuildConfig? gcfg) && !string.IsNullOrWhiteSpace(gcfg?.Prefix)
+                ? this.gcfg[gid.Value].Prefix
                 : this.cfg.Prefix;
         }
 

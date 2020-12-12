@@ -30,9 +30,9 @@ namespace TheGodfather.Modules.Administration
             => this.GuildInfoAsync(ctx);
         #endregion
 
-        #region guild getbans
-        [Command("getbans")]
-        [Aliases("banlist", "viewbanlist", "getbanlist", "bans", "viewbans")]
+        #region guild bans
+        [Command("bans")]
+        [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
         {
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region guild getlogs
+        #region guild log
         [Command("log")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
@@ -171,14 +171,14 @@ namespace TheGodfather.Modules.Administration
 
         [Command("prune"), Priority(2)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("str-prune-days")] int days,
+                                     [Description("desc-prune-days")] int days,
                                      [Description("desc-prune-roles")] DiscordRole role,
                                      [RemainingText, Description("desc-rsn")] string reason)
             => this.InternalPruneAsync(ctx, days, reason, new[] { role });
 
         [Command("prune"), Priority(1)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("str-prune-days")] int days,
+                                     [Description("desc-prune-days")] int days,
                                      [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.InternalPruneAsync(ctx, days, reason);
 

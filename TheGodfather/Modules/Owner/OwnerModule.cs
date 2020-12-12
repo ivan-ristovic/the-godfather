@@ -261,29 +261,12 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
-        #region COMMAND_FILELOG
-        [Command("filelog")]
-        [Description("Toggle writing to log file.")]
-        [Aliases("setfl", "fl", "setfilelog")]
-
-        [RequireOwner]
-        public Task FileLogAsync(CommandContext ctx,
-                                [Description("Enable?")] bool enable = true)
-        {
-            // TODO rework needed since Serilog introduction
-            return ctx.RespondAsync("This command is broken dude, remember?");
-            //return this.InformAsync(ctx, $"File logging {(enable ? "enabled" : "disabled")}", important: false);
-        }
-        #endregion
-
-        #region COMMAND_GENERATECOMMANDS
+        #region generatecommandlist
         [Command("generatecommandlist")]
-        [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
-        [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
-
+        [Aliases("gendocs", "docs", "cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
         [RequireOwner]
         public async Task GenerateCommandListAsync(CommandContext ctx,
-                                                  [RemainingText, Description("File path.")] string path = null)
+                                                  [RemainingText, Description("desc-folder")] string? path = null)
         {
             if (string.IsNullOrWhiteSpace(path))
                 path = "Documentation";
@@ -296,8 +279,12 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(path);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (IOException e) {
-                throw new CommandFailedException("Failed to create the directories!", e);
+                LogExt.Error(ctx, e, "Failed to delete/create documentation directory");
+                throw new CommandFailedException(ctx, "cmd-err-doc-clean");
             }
+
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            CommandService cs = ctx.Services.GetRequiredService<CommandService>();
 
             var sb = new StringBuilder();
             sb.AppendLine("# Command list");
@@ -310,7 +297,9 @@ namespace TheGodfather.Modules.Owner
                 .ToDictionary(g => g.Key, g => g.OrderBy(c => c.QualifiedName).ToList());
 
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
-                sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine().AppendLine();
+                sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine();
+                sb.AppendLine(Formatter.Italic(lcs.GetString(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
+                sb.AppendLine().AppendLine();
 
                 foreach (Command cmd in cmdlist) {
                     if (cmd is CommandGroup || cmd.Parent is null)
@@ -323,61 +312,61 @@ namespace TheGodfather.Modules.Owner
                     if (cmd.IsHidden)
                         sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                    sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
+                    sb.AppendLine(Formatter.Italic(lcs.GetCommandDescription(null, cmd.QualifiedName))).AppendLine();
+
+                    if (cmd.Aliases.Any()) {
+                        sb.AppendLine(Formatter.Bold("Aliases:"));
+                        sb.Append('`').AppendJoin(", ", cmd.Aliases).Append('`').AppendLine();
+                    }
 
                     IEnumerable<CheckBaseAttribute> execChecks = cmd.ExecutionChecks.AsEnumerable();
-                    CommandGroup parent = cmd.Parent;
-                    while (!(parent is null)) {
+                    CommandGroup? parent = cmd.Parent;
+                    while (parent is { }) {
                         execChecks = execChecks.Union(parent.ExecutionChecks);
                         parent = parent.Parent;
                     }
 
                     IEnumerable<string> perms = execChecks
                         .Where(chk => chk is RequirePermissionsAttribute)
-                        .Select(chk => chk as RequirePermissionsAttribute)
+                        .Cast<RequirePermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString())
                         .Union(execChecks
                             .Where(chk => chk is RequireOwnerOrPermissionsAttribute)
-                            .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
+                            .Cast<RequireOwnerOrPermissionsAttribute>()
                             .Select(chk => chk.Permissions.ToPermissionString())
                         );
                     IEnumerable<string> uperms = execChecks
                         .Where(chk => chk is RequireUserPermissionsAttribute)
-                        .Select(chk => chk as RequireUserPermissionsAttribute)
+                        .Cast<RequireUserPermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString());
                     IEnumerable<string> bperms = execChecks
                         .Where(chk => chk is RequireBotPermissionsAttribute)
-                        .Select(chk => chk as RequireBotPermissionsAttribute)
+                        .Cast<RequireBotPermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString());
 
                     if (execChecks.Any(chk => chk is RequireOwnerAttribute))
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
-                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine();
+                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine().AppendLine();
 
                     if (perms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", perms))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", perms).Append('`').AppendLine().AppendLine();
                     }
                     if (uperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", uperms))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", uperms).Append('`').AppendLine().AppendLine();
                     }
                     if (bperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", bperms))).AppendLine();
-                    }
-
-                    if (cmd.Aliases.Any()) {
-                        sb.AppendLine(Formatter.Bold("Aliases:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", bperms).Append('`').AppendLine().AppendLine();
                     }
 
                     foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
                         if (!overload.Arguments.Any())
                             continue;
 
-                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
+                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority}:" : "Arguments:")).AppendLine();
                         foreach (CommandArgument arg in overload.Arguments) {
                             if (arg.IsOptional)
                                 sb.Append("(optional) ");
@@ -390,28 +379,40 @@ namespace TheGodfather.Modules.Owner
                             sb.Append(Formatter.InlineCode(type));
                             sb.Append(" : ");
 
-                            sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
+                            sb.Append('*');
+                            if (string.IsNullOrWhiteSpace(arg.Description))
+                                sb.Append("No description provided.");
+                            else
+                                sb.Append(lcs.GetString(null, arg.Description));
+                            sb.Append('*');
 
-                            if (arg.IsOptional)
-                                sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue is null ? "None" : arg.DefaultValue.ToString())).Append(")");
+                            if (arg.IsOptional) {
+                                sb.Append(" (def: `");
+                                if (arg.DefaultValue is null)
+                                    sb.Append("None`)");
+                                else
+                                    sb.Append(arg.DefaultValue).Append("`)");
+                            }
 
                             sb.AppendLine().AppendLine();
                         }
                     }
 
-                    /* FIXME
-                    if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExampleArgsAttribute) is UsageExampleArgsAttribute examples)
-                        sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine(Formatter.BlockCode(examples.JoinExamples(cmd, ctx), "xml"));
-                    */
+                    if (cmd is not CommandGroup || (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)) {
+                        IReadOnlyList<string> examples = cs.GetCommandUsageExamples(null, cmd.QualifiedName);
+                        if (examples.Any())
+                            sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine(Formatter.BlockCode(examples.JoinWith(), "xml"));
+                    }
 
                     sb.AppendLine("</p></details>").AppendLine().AppendLine("---").AppendLine();
                 }
 
-                string filename = Path.Combine(parts.FullName, $"{mattr.Module.ToString()}.md");
+                string filename = Path.Combine(parts.FullName, $"{mattr.Module}.md");
                 try {
                     File.WriteAllText(filename, sb.ToString());
                 } catch (IOException e) {
-                    throw new CommandFailedException($"IO Exception occured while saving {filename}!", e);
+                    LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", filename);
+                    throw new CommandFailedException(ctx, "cmd-err-doc-save", filename);
                 }
 
                 sb.Clear();
@@ -420,16 +421,18 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command modules:");
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 string mname = mattr.Module.ToString();
-                sb.Append("  - ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
+                sb.Append("  - ").Append('[').Append(mname).Append(']').Append('(').Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
             }
 
+            string mainDocFilename = Path.Combine(current.FullName, $"README.md");
             try {
-                File.WriteAllText(Path.Combine(current.FullName, $"README.md"), sb.ToString());
+                File.WriteAllText(mainDocFilename, sb.ToString());
             } catch (IOException e) {
-                throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
+                LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", mainDocFilename);
+                throw new CommandFailedException(ctx, "cmd-err-doc-save", mainDocFilename);
             }
 
-            await this.InformAsync(ctx, $"Command list created at: {Formatter.InlineCode(current.FullName)}!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 

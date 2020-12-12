@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("a", "files", "la")]
         [RequirePermissions(Permissions.ReadMessageHistory)]
         public async Task ListAttachmentsAsync(CommandContext ctx,
-                                              [Description("desc-message")] DiscordMessage? msg = null)
+                                              [Description("desc-msg")] DiscordMessage? msg = null)
         {
             msg ??= await ctx.Channel.GetLastMessageAsync();
             if (msg is null || msg.Attachments.Count > DiscordLimits.EmbedFieldLimit)

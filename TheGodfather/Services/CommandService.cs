@@ -10,6 +10,7 @@ using Serilog;
 using TheGodfather.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services
@@ -103,10 +104,10 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetCommandDescription(ulong gid, string command)
+        public string GetCommandDescription(ulong? gid, string command)
             => this.lcs.GetCommandDescription(gid, command);
 
-        public IReadOnlyList<string> GetCommandUsageExamples(ulong gid, string command)
+        public IReadOnlyList<string> GetCommandUsageExamples(ulong? gid, string command)
         {
             CommandInfo cmdInfo = this.GetInfoForCommand(command);
             string locale = this.lcs.GetGuildLocale(gid);
@@ -116,7 +117,7 @@ namespace TheGodfather.Services
                 foreach (List<string> args in cmdInfo.UsageExamples) {
                     string cmd = $"{this.gcs.GetGuildPrefix(gid)}{command}";
                     if (args.Any())
-                        examples.Add($"{cmd} {string.Join(" ", args.Select(arg => this.lcs.GetString(gid, arg)))}");
+                        examples.Add($"{cmd} {args.Select(arg => this.lcs.GetString(gid, arg)).JoinWith(" ")}");
                     else
                         examples.Add(cmd);
                 }

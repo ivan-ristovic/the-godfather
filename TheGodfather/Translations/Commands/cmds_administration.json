@@ -10,16 +10,16 @@
       [ "arg-role", "arg-role-raw" ]
     ]
   },
-  "automaticroles clear": {
+  "automaticroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "automaticroles deleteall": {
     "usage": [ [] ]
   },
   "automaticroles list": {
     "usage": [ [] ]
-  },
-  "automaticroles remove": {
-    "usage": [
-      [ "arg-role", "arg-role-raw" ]
-    ]
   },
   "channel": {
     "usage": [
@@ -62,6 +62,14 @@
   },
   "channel delete": {
     "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel info": {
+    "usage": [
+      [],
       [ "arg-chn-text" ],
       [ "arg-chn-voice" ],
       [ "arg-chn-text", "arg-rsn" ]
@@ -187,6 +195,11 @@
       [ "arg-cmd" ],
       [ "arg-chn-text", "arg-cmd" ],
       [ "arg-cmd", "arg-chn-text", "arg-chn-text2" ]
+    ]
+  },
+  "commandrules deleteall": {
+    "usage": [
+      []
     ]
   },
   "commandrules forbid": {
@@ -316,6 +329,31 @@
   "config linkfilter": {
     "usage": [
       []
+    ]
+  },
+  "config linkfilter booters": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter invites": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter iploggers": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter shocksites": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter shorteners": {
+    "usage": [
+      [ "arg-bool" ]
     ]
   },
   "config localization": {
@@ -465,7 +503,7 @@
       [ "arg-emoji-name", "arg-emoji-url" ]
     ]
   },
-  "emoji del": {
+  "emoji delete": {
     "usage": [
       [ "arg-emoji-name" ],
       [ "arg-emoji-name", "arg-rsn" ]
@@ -575,15 +613,9 @@
       []
     ]
   },
-  "guild getbans": {
+  "guild bans": {
     "usage": [
       []
-    ]
-  },
-  "guild getlogs": {
-    "usage": [
-      [],
-      [ "arg-ten" ]
     ]
   },
   "guild icon": {
@@ -595,6 +627,12 @@
   "guild info": {
     "usage": [
       []
+    ]
+  },
+  "guild log": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
     ]
   },
   "guild memberlist": {
@@ -690,7 +728,17 @@
       [ "arg-role" ]
     ]
   },
+  "role create": {
+    "usage": [
+      [ "arg-name", "arg-color", "arg-bool", "arg-bool" ]
+    ]
+  },
   "role delete": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role info": {
     "usage": [
       [ "arg-role" ]
     ]
@@ -741,7 +789,12 @@
       [ "arg-role", "arg-role-raw" ]
     ]
   },
-  "selfassignableroles clear": {
+  "selfassignableroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "selfassignableroles deleteall": {
     "usage": [ [] ]
   },
   "selfassignableroles list": {
@@ -752,21 +805,9 @@
       [ "arg-role", "arg-role-raw" ]
     ]
   },
-  "webhook": {
-    "usage": [
-      [],
-      [ "arg-chn-text" ]
-    ]
-  },
   "user": {
     "usage": [
       [ "arg-usr" ]
-    ]
-  },
-  "user grantrole": {
-    "usage": [
-      [ "arg-usr", "arg-role" ],
-      [ "arg-role", "arg-usr" ]
     ]
   },
   "user avatar": {
@@ -784,6 +825,12 @@
   "user deafen": {
     "usage": [
       [ "arg-usr" ]
+    ]
+  },
+  "user grantrole": {
+    "usage": [
+      [ "arg-usr", "arg-role" ],
+      [ "arg-role", "arg-usr" ]
     ]
   },
   "user info": {
@@ -811,15 +858,15 @@
       [ "arg-usr" ]
     ]
   },
+  "user revokeallroles": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
   "user revokerole": {
     "usage": [
       [ "arg-usr", "arg-role" ],
       [ "arg-role", "arg-usr" ]
-    ]
-  },
-  "user revokeallroles": {
-    "usage": [
-      [ "arg-usr" ]
     ]
   },
   "user setname": {
@@ -860,15 +907,27 @@
       [ "arg-usr" ]
     ]
   },
+  "user unmutevoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
   "user warn": {
     "usage": [
       [ "arg-usr" ],
       [ "arg-usr", "arg-warn" ]
     ]
   },
-  "user unmutevoice": {
+  "webhook": {
     "usage": [
-      [ "arg-usr" ]
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook add": {
+    "usage": [
+      [],
+      [ "arg-url-image", "arg-chn-text", "arg-name" ]
     ]
   },
   "webhook delete": {

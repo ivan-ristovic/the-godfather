@@ -11,8 +11,8 @@ using TheGodfather.Extensions;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("roles"), Module(ModuleType.Administration), NotBlocked]
-    [Aliases("role", "rl")]
+    [Group("role"), Module(ModuleType.Administration), NotBlocked]
+    [Aliases("roles", "rl")]
     [RequireGuild]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class RoleModule : TheGodfatherModule
@@ -209,8 +209,8 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region role setvisibility
-        [Command("setvisible"), Priority(1)]
-        [Aliases("separate", "h", "seth", "hoist", "sethoist")]
+        [Command("setvisibility"), Priority(1)]
+        [Aliases("setvisible", "separate", "h", "seth", "hoist", "sethoist")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetVisibleAsync(CommandContext ctx,
                                          [Description("desc-role")] DiscordRole role,
@@ -221,7 +221,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor);
         }
 
-        [Command("setvisible"), Priority(0)]
+        [Command("setvisibility"), Priority(0)]
         public Task SetVisibleAsync(CommandContext ctx,
                                    [Description("desc-hoisted")] bool hoisted,
                                    [Description("desc-role")] DiscordRole role,

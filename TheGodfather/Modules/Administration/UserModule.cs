@@ -254,7 +254,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("mv", "voicemute", "vmute", "mutev", "vm")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteVoiceAsync(CommandContext ctx,
-                                        [Description("Member to mute.")] DiscordMember member,
+                                        [Description("desc-member")] DiscordMember member,
                                         [RemainingText, Description("desc-rsn")] string? reason = null)
         {
             await member.SetMuteAsync(true, reason: ctx.BuildInvocationDetailsString(reason));
@@ -484,7 +484,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("umv", "voiceunmute", "vunmute", "unmutev", "vum")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task UnmuteVoiceAsync(CommandContext ctx,
-                                          [Description("Member to unmute.")] DiscordMember member,
+                                          [Description("desc-member")] DiscordMember member,
                                           [RemainingText, Description("desc-rsn")] string? reason = null)
         {
             await member.SetMuteAsync(false, reason: ctx.BuildInvocationDetailsString(reason));

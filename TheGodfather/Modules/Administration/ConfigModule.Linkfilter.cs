@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
                 await this.LogConfigChangeAsync(ctx, "str-lf-gore", enable);
             }
 
-            [Command("disturbingsites"), Priority(0)]
+            [Command("shocksites"), Priority(0)]
             public Task DisturbingSitesAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);

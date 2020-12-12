@@ -318,14 +318,14 @@ namespace TheGodfather.Modules.Administration
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
                 => InternalModifyPositionAsync(ctx, channel, position, reason);
 
-            [Command("setposition"), Priority(1)]
+            [Command("position"), Priority(1)]
             public Task ModifyPositionAsync(CommandContext ctx,
                                            [Description("str-pos")] int position,
                                            [Description("desc-chn-mod")] DiscordChannel channel,
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
                 => InternalModifyPositionAsync(ctx, channel, position, reason);
 
-            [Command("setposition"), Priority(0)]
+            [Command("position"), Priority(0)]
             public Task ModifyPositionAsync(CommandContext ctx,
                                            [Description("str-pos")] int position,
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
@@ -362,7 +362,7 @@ namespace TheGodfather.Modules.Administration
             public Task ModifyTopicAsync(CommandContext ctx,
                                         [Description("desc-rsn")] string reason,
                                         [Description("desc-chn-mod")] DiscordChannel channel,
-                                        [RemainingText, Description("New topic.")] string topic)
+                                        [RemainingText, Description("desc-chn-topic")] string topic)
                 => InternalModifyTopicsync(ctx, channel, topic, reason);
 
             [Command("topic"), Priority(1)]
@@ -405,7 +405,7 @@ namespace TheGodfather.Modules.Administration
                                      [RemainingText, Description("desc-rsn")] string? reason = null)
             => InternalModifyUserLimitAsync(ctx, channel, userlimit, reason);
 
-        [Command("userlimit"), Priority(0)]
+        [Command("setuserlimit"), Priority(0)]
         public Task SetUserLimitAsync(CommandContext ctx,
                                      [Description("str-user-limit")] int userlimit,
                                      [Description("desc-chn-mod")] DiscordChannel channel,
@@ -422,21 +422,21 @@ namespace TheGodfather.Modules.Administration
                                [RemainingText, Description("desc-rsn")] string? reason = null)
             => InternalModifyNameAsync(ctx, channel, name, reason);
 
-        [Command("name"), Priority(2)]
+        [Command("setname"), Priority(2)]
         public Task RenameAsync(CommandContext ctx,
                                [Description("str-name")] string name,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [RemainingText, Description("desc-rsn")] string? reason = null)
             => InternalModifyNameAsync(ctx, channel, name, reason);
 
-        [Command("name"), Priority(1)]
+        [Command("setname"), Priority(1)]
         public Task RenameAsync(CommandContext ctx,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [RemainingText, Description("str-name")] string name)
             => InternalModifyNameAsync(ctx, channel, name, null);
 
 
-        [Command("name"), Priority(0)]
+        [Command("setname"), Priority(0)]
         public Task RenameAsync(CommandContext ctx,
                                [RemainingText, Description("desc-rsn")] string name)
             => InternalModifyNameAsync(ctx, ctx.Channel, name, null);
@@ -532,7 +532,7 @@ namespace TheGodfather.Modules.Administration
         public Task SetTopicAsync(CommandContext ctx,
                                  [Description("desc-rsn")] string reason,
                                  [Description("desc-chn-mod")] DiscordChannel channel,
-                                 [RemainingText, Description("New topic.")] string topic)
+                                 [RemainingText, Description("desc-chn-topic")] string topic)
             => InternalModifyTopicsync(ctx, channel, topic, reason);
 
         [Command("settopic"), Priority(1)]
@@ -552,7 +552,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("perms", "permsfor", "testperms", "listperms", "permissions")]
         [RequireBotPermissions(Permissions.Administrator)]
         public Task PrintPermsAsync(CommandContext ctx,
-                                   [Description("str-member")] DiscordMember? member = null,
+                                   [Description("desc-member")] DiscordMember? member = null,
                                    [Description("desc-chn-mod")] DiscordChannel? channel = null)
         {
             member ??= ctx.Member;
@@ -575,12 +575,12 @@ namespace TheGodfather.Modules.Administration
         [Command("viewperms"), Priority(2)]
         public Task PrintPermsAsync(CommandContext ctx,
                                    [Description("desc-chn-mod")] DiscordChannel channel,
-                                   [Description("str-member")] DiscordMember? member = null)
+                                   [Description("desc-member")] DiscordMember? member = null)
             => this.PrintPermsAsync(ctx, member, channel);
 
         [Command("viewperms"), Priority(1)]
         public async Task PrintPermsAsync(CommandContext ctx,
-                                         [Description("str-role")] DiscordRole role,
+                                         [Description("desc-role")] DiscordRole role,
                                          [Description("desc-chn-mod")] DiscordChannel? channel = null)
         {
             if (role.Position > ctx.Member.Hierarchy)
@@ -608,7 +608,7 @@ namespace TheGodfather.Modules.Administration
         [Command("viewperms"), Priority(0)]
         public Task PrintPermsAsync(CommandContext ctx,
                                    [Description("desc-chn-mod")] DiscordChannel channel,
-                                   [Description("str-role")] DiscordRole role)
+                                   [Description("desc-role")] DiscordRole role)
             => this.PrintPermsAsync(ctx, role, channel);
         #endregion
 
