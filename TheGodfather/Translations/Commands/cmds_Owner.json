@@ -85,6 +85,31 @@
       []
     ]
   },
+  "owner announce": {
+    "usage": [
+      [ "arg-announcement" ]
+    ]
+  },
+  "owner avatar": {
+    "usage": [
+      [ "arg-url-image" ]
+    ]
+  },
+  "owner dbquery": {
+    "usage": [
+      [ "arg-sql" ]
+    ]
+  },
+  "owner eval": {
+    "usage": [
+      [ "arg-code" ]
+    ]
+  },
+  "owner name": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
   "privilegedusers": {
     "usage": [
       []

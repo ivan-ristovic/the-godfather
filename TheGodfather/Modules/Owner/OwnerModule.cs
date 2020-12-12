@@ -1,6 +1,6 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Diagnostics;
@@ -16,7 +16,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -28,45 +27,34 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Modules.Owner.Extensions;
+using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
-#endregion
 
 namespace TheGodfather.Modules.Owner
 {
     [Group("owner"), Module(ModuleType.Owner), Hidden]
-    [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
-    [Cooldown(3, 5, CooldownBucketType.Global)]
     public partial class OwnerModule : TheGodfatherModule
     {
-
-        public OwnerModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
-        #region COMMAND_ANNOUNCE
-        [Command("announce"), NotBlocked, UsesInteractivity]
-        [Description("Send a message to all guilds the bot is in.")]
-        [Aliases("a", "ann")]
-
+        #region announce
+        [Command("announce"), UsesInteractivity]
+        [Aliases("ann")]
         [RequireOwner]
         public async Task AnnounceAsync(CommandContext ctx,
-                                       [RemainingText, Description("Message to send.")] string message)
+                                       [RemainingText, Description("desc-announcement")] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(Formatter.Strip(message))}"))
+            if (!await ctx.WaitForBoolReplyAsync("q-announcement", args: Formatter.Strip(message)))
                 return;
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "An announcement from my owner",
-                Description = message,
-                Color = DiscordColor.Red
-            };
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
+            emb.WithLocalizedTitle("str-announcement");
+            emb.WithDescription(message);
+            emb.WithColor(DiscordColor.Red);
 
             var eb = new StringBuilder();
             foreach (TheGodfatherShard shard in TheGodfather.ActiveShards) {
@@ -74,86 +62,103 @@ namespace TheGodfather.Modules.Owner
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {
-                        eb.AppendLine($"Warning: Failed to send a message to {guild.ToString()}");
+                        eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-announce", shard.Id, guild.Name, guild.Id));
                     }
                 }
             }
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-err", eb.ToString());
             else
-                await this.InformAsync(ctx, Emojis.Information, "Sent the message to all guilds!", important: false);
+                await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_BOTAVATAR
-        [Command("botavatar"), NotBlocked]
-        [Description("Set bot avatar.")]
-        [Aliases("setbotavatar", "setavatar")]
-
+        #region avatar
+        [Command("avatar")]
+        [Aliases("setavatar", "setbotavatar", "profilepic", "a")]
         [RequireOwner]
         public async Task SetBotAvatarAsync(CommandContext ctx,
-                                           [Description("URL.")] Uri url)
+                                           [Description("desc-image-url")] Uri url)
         {
-            if (!await url.ContentTypeHeaderIsImageAsync())
-                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+            if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.AvatarSizeLimit))
+                throw new CommandFailedException(ctx, "cmd-err-image-url-fail", DiscordLimits.AvatarSizeLimit);
 
             try {
                 using MemoryStream ms = await HttpService.GetMemoryStreamAsync(url);
                 await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
             } catch (WebException e) {
-                throw new CommandFailedException("Web exception thrown while fetching the image.", e);
+                throw new CommandFailedException(ctx, e, "err-url-image-fail");
             }
 
-            await this.InformAsync(ctx, "Successfully changed the bot avatar!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_BOTNAME
-        [Command("botname"), NotBlocked]
-        [Description("Set bot name.")]
-        [Aliases("setbotname", "setname")]
-
+        #region name
+        [Command("name")]
+        [Aliases("botname", "setbotname", "setname")]
         [RequireOwner]
         public async Task SetBotNameAsync(CommandContext ctx,
-                                         [RemainingText, Description("New name.")] string name)
+                                         [RemainingText, Description("desc-name")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Name missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+
+            if (name.Length > DiscordLimits.NameLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-name", DiscordLimits.NameLimit);
 
             await ctx.Client.UpdateCurrentUserAsync(username: name);
-            await this.InformAsync(ctx, $"Renamed the current bot user to {Formatter.Bold(ctx.Client.CurrentUser.Username)}");
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_DBQUERY
-        [Command("dbquery"), NotBlocked, Priority(0)]
-        [Description("Execute SQL query on the bot database.")]
-        [Aliases("sql", "dbq", "q")]
-
+        #region dbquery
+        [Command("dbquery"), Priority(1)]
+        [Aliases("sql", "dbq", "q", "query")]
         [RequireOwner]
+        public async Task DatabaseQuery(CommandContext ctx)
+        {
+            if (!ctx.Message.Attachments.Any())
+                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att");
+
+            DiscordAttachment? attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
+            if (attachment is null)
+                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att-none");
+
+            string query;
+            try {
+                query = await HttpService.GetStringAsync(attachment.Url).ConfigureAwait(false);
+            } catch (Exception e) {
+                throw new CommandFailedException(ctx, e, "err-attachment");
+            }
+
+            await this.DatabaseQuery(ctx, query);
+        }
+
+        [Command("dbquery"), Priority(0)]
         public async Task DatabaseQuery(CommandContext ctx,
-                                       [RemainingText, Description("SQL Query.")] string query)
+                                       [RemainingText, Description("desc-sql")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Query missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-dbq-sql-none");
 
             var res = new List<IReadOnlyDictionary<string, string>>();
-            using (TheGodfatherDbContext db = this.Database.CreateContext())
+            using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
             using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
                 DbDataReader reader = dr.DbDataReader;
                 while (await reader.ReadAsync()) {
                     var dict = new Dictionary<string, string>();
 
                     for (int i = 0; i < reader.FieldCount; i++)
-                        dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
+                        dict[reader.GetName(i)] = reader[i] is DBNull ? "NULL" : reader[i]?.ToString() ?? "NULL";
 
                     res.Add(new ReadOnlyDictionary<string, string>(dict));
                 }
             }
 
             if (!res.Any() || !res.First().Any()) {
-                await this.InformAsync(ctx, Emojis.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Information, "str-dbq-none");
                 return;
             }
 
@@ -165,7 +170,7 @@ namespace TheGodfather.Modules.Owner
                 .Length;
 
             await ctx.PaginateAsync(
-                "Query results",
+                "str-dbq-res",
                 res.Take(25),
                 row => {
                     var sb = new StringBuilder();
@@ -177,132 +182,87 @@ namespace TheGodfather.Modules.Owner
                 1
             );
         }
-
-        [Command("dbquery"), Priority(1)]
-        public async Task DatabaseQuery(CommandContext ctx)
-        {
-            if (!ctx.Message.Attachments.Any())
-                throw new CommandFailedException("Either write a query or attach a .sql file containing it!");
-
-            DiscordAttachment attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
-            if (attachment is null)
-                throw new CommandFailedException("No .sql files attached!");
-
-            string query;
-            try {
-                query = await HttpService.GetStringAsync(attachment.Url).ConfigureAwait(false);
-            } catch (Exception e) {
-                LogExt.Debug(ctx, e, "Failed to upload attachment");
-                throw new CommandFailedException("An error occured while getting the file.", e);
-            }
-
-            await this.DatabaseQuery(ctx, query);
-        }
         #endregion
 
-        #region COMMAND_EVAL
-        [Command("eval"), NotBlocked]
-        [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
-        [Aliases("compile", "run", "e", "c", "r")]
-
+        #region eval
+        [Command("eval")]
+        [Aliases("evaluate", "compile", "run", "e", "c", "r")]
         [RequireOwner]
         public async Task EvaluateAsync(CommandContext ctx,
-                                       [RemainingText, Description("Code to evaluate.")] string code)
+                                       [RemainingText, Description("desc-code")] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new InvalidCommandUsageException("Code missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
 
-            int cs1 = code.IndexOf("```") + 3;
-            int cs2 = code.LastIndexOf("```");
-            if (cs1 == -1 || cs2 == -1)
-                throw new InvalidCommandUsageException("You need to wrap the code into a code block.");
-            code = code.Substring(cs1, cs2 - cs1);
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            DiscordMessage msg = await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-eval");
+                emb.WithColor(this.ModuleColor);
+            });
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "Evaluating...",
-                Color = this.ModuleColor
-            };
+            Script<object>? snippet = CSharpCompilationService.Compile(code, out ImmutableArray<Diagnostic> diag, out Stopwatch compileTime);
+            if (snippet is null) {
+                await msg.DeleteAsync();
+                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+            }
 
-            DiscordMessage msg = await ctx.RespondAsync(embed: emb.Build());
-
-            var globals = new EvaluationEnvironment(ctx);
-            ScriptOptions sopts = ScriptOptions.Default
-                .WithImports("System", "System.Collections.Generic", "System.Linq", "System.Net.Http",
-                    "System.Net.Http.Headers", "System.Reflection", "System.Text", "System.Text.RegularExpressions",
-                    "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities",
-                    "DSharpPlus.Interactivity")
-                .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
-
-            var sw1 = Stopwatch.StartNew();
-            Script<object> snippet = CSharpScript.Create(code, sopts, typeof(EvaluationEnvironment));
-            System.Collections.Immutable.ImmutableArray<Diagnostic> diag = snippet.Compile();
-            sw1.Stop();
-
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
+            
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
-                emb = new DiscordEmbedBuilder {
-                    Title = "Compilation failed",
-                    Description = $"Compilation failed after {sw1.ElapsedMilliseconds.ToString("#,##0")}ms with {diag.Length} errors.",
-                    Color = DiscordColor.Red
-                };
+                emb.WithLocalizedTitle("str-eval-fail-compile");
+                emb.WithLocalizedDescription("fmt-eval-fail-compile", compileTime.ElapsedMilliseconds, diag.Length);
+                emb.WithColor(DiscordColor.Red);
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddField($"Error at line: {ls.StartLinePosition.Line}, {ls.StartLinePosition.Character}", Formatter.InlineCode(d.GetMessage()));
+                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.InlineCode(d.GetMessage()), titleArgs: new[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character });
                 }
 
-                if (diag.Length > 3) {
-                    emb.AddField("Some errors were omitted", $"{diag.Length - 3} errors not displayed");
-                }
+                if (diag.Length > 3)
+                    emb.AddLocalizedField("str-eval-omit", "fmt-eval-omit", contentArgs: new object[] { diag.Length - 3 });
 
-                if (!(msg is null))
-                    msg = await msg.ModifyAsync(embed: emb.Build());
+                await UpdateOrRespondAsync();
                 return;
             }
 
-            Exception exc = null;
-            ScriptState<object> css = null;
-            var sw2 = Stopwatch.StartNew();
+            Exception? exc = null;
+            ScriptState<object>? res = null;
+            var runTime = Stopwatch.StartNew();
             try {
-                css = await snippet.RunAsync(globals);
-                exc = css.Exception;
+                 res = await snippet.RunAsync(new EvaluationEnvironment(ctx));
             } catch (Exception e) {
                 exc = e;
             }
-            sw2.Stop();
+            runTime.Stop();
 
-            if (!(exc is null)) {
-                emb = new DiscordEmbedBuilder {
-                    Title = "Execution failed",
-                    Description = $"Execution failed after {sw2.ElapsedMilliseconds.ToString("#,##0")}ms with {Formatter.InlineCode($"{exc.GetType()} : {exc.Message}")}.",
-                    Color = this.ModuleColor
-                };
-
-                if (!(msg is null))
-                    msg = await msg.ModifyAsync(embed: emb.Build());
-                return;
+            if (exc is { } || res is null) {
+                emb.WithLocalizedTitle("str-eval-fail-run");
+                emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc.GetType(), exc.Message);
+                emb.WithColor(DiscordColor.Red);
+                await UpdateOrRespondAsync();
+            } else {
+                emb.WithLocalizedTitle("str-eval-succ");
+                emb.WithColor(this.ModuleColor);
+                if (res.ReturnValue is { }) {
+                    emb.AddLocalizedTitleField("str-result", res.ReturnValue, false);
+                    emb.AddLocalizedTitleField("str-result-type", res.ReturnValue.GetType(), true);
+                } else {
+                    emb.AddLocalizedField("str-result", "str-eval-value-none", inline: true);
+                }
+                emb.AddLocalizedTitleField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedTitleField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
+                if (res.ReturnValue is { })
+                await UpdateOrRespondAsync();
             }
 
-            emb = new DiscordEmbedBuilder {
-                Title = "Evaluation successful",
-                Color = DiscordColor.Aquamarine
-            };
 
-            emb.AddField("Result", css.ReturnValue is null ? "No value returned" : css.ReturnValue.ToString(), false);
-            emb.AddField("Compilation time", string.Concat(sw1.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
-            emb.AddField("Execution time", string.Concat(sw2.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
-
-            if (!(css.ReturnValue is null))
-                emb.AddField("Return type", css.ReturnValue.GetType().ToString(), true);
-
-            if (!(msg is null))
-                await msg.ModifyAsync(embed: emb.Build());
-            else
-                await ctx.RespondAsync(embed: emb.Build());
+            Task UpdateOrRespondAsync()
+                => msg is { } ? msg.ModifyAsync(embed: emb.Build()) : ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
         #region COMMAND_FILELOG
-        [Command("filelog"), NotBlocked]
+        [Command("filelog")]
         [Description("Toggle writing to log file.")]
         [Aliases("setfl", "fl", "setfilelog")]
 
@@ -317,7 +277,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_GENERATECOMMANDS
-        [Command("generatecommandlist"), NotBlocked]
+        [Command("generatecommandlist")]
         [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
 
@@ -474,7 +434,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_LEAVEGUILDS
-        [Command("leaveguilds"), NotBlocked]
+        [Command("leaveguilds")]
         [Description("Leaves the given guilds.")]
         [Aliases("leave", "gtfo")]
 
@@ -497,7 +457,7 @@ namespace TheGodfather.Modules.Owner
                 }
             }
 
-            if (gids.All(gid => gid != ctx.Guild.Id)) {
+            if (gids.All(gid => gid != ctx.Guild?.Id)) {
                 if (eb.Length > 0)
                     await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
                 else
@@ -507,7 +467,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_LOG
-        [Command("log"), NotBlocked, Priority(1)]
+        [Command("log"), Priority(1)]
         [Description("Upload the bot log file or add a remark to it.")]
         [Aliases("getlog", "remark", "rem")]
 
@@ -529,7 +489,7 @@ namespace TheGodfather.Modules.Owner
             await ctx.RespondWithFileAsync(fs);
         }
 
-        [Command("log"), NotBlocked, Priority(0)]
+        [Command("log"), Priority(0)]
         public Task LogAsync(CommandContext ctx,
                             [Description("Log level.")] string level,
                             [RemainingText, Description("Remark.")] string text)
@@ -542,7 +502,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SENDMESSAGE
-        [Command("sendmessage"), NotBlocked]
+        [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
 
@@ -572,7 +532,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SHUTDOWN
-        [Command("shutdown"), Priority(1), NotBlocked]
+        [Command("shutdown"), Priority(1)]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
 
@@ -589,7 +549,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SUDO
-        [Command("sudo"), NotBlocked]
+        [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
 
@@ -623,7 +583,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_UPDATE
-        [Command("update"), NotBlocked]
+        [Command("update")]
         [Description("Update and restart the bot.")]
         [Aliases("upd", "u")]
         [RequireOwner]
@@ -657,6 +617,7 @@ namespace TheGodfather.Modules.Owner
 
         #region UPTIME
         [Command("uptime")]
+        [RequirePrivilegedUser]
         public Task UptimeAsync(CommandContext ctx)
         {
             BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
@@ -672,6 +633,5 @@ namespace TheGodfather.Modules.Owner
             );
         }
         #endregion
-
     }
 }

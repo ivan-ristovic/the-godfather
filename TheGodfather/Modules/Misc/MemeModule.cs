@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > Meme.NameLimit)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-name", Meme.NameLimit);
 
-            if (!await url.ContentTypeHeaderIsImageAsync())
+            if (!await url.ContentTypeHeaderIsImageAsync(null))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail");
 
             await this.Service.AddAsync(new Meme {

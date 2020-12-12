@@ -35,7 +35,7 @@ namespace TheGodfather.Extensions
         }
 
         
-        public static Task RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
+        public static Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();

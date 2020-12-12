@@ -1,18 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Scripting;
+using TheGodfather.Modules.Owner.Common;
 
 namespace TheGodfather.Modules.Owner.Services
 {
     public static class CSharpCompilationService
     {
         private static readonly Regex _cbRegex = new Regex(@"```(cs\n)?(?<code>[^`]+)```", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static ImmutableArray<string> _usings = new[] { 
+            "System", "System.Collections.Generic", "System.Linq", "System.Text",
+            "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities",
+            "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity",
+            "TheGodfather.Modules", "TheGodfather.Exceptions", "TheGodfather.Attributes" 
+        }.ToImmutableArray();
 
         public static Type? CompileCommand(string code)
         {
@@ -40,11 +52,7 @@ namespace TheGodfather.Modules.Owner.Services
             var opts = new CSharpCompilationOptions(
                 OutputKind.DynamicallyLinkedLibrary,
                 scriptClassName: type,
-                usings: new[] { "System", "System.Collections.Generic", "System.Linq", "System.Text",
-                                "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities",
-                                "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity",
-                                "TheGodfather.Modules", "TheGodfather.Exceptions", "TheGodfather.Attributes",
-                },
+                usings: _usings,
                 optimizationLevel: OptimizationLevel.Release,
                 allowUnsafe: true,
                 platform: Platform.AnyCpu
@@ -63,6 +71,29 @@ namespace TheGodfather.Modules.Owner.Services
             moduleType = outerType?.GetNestedTypes().FirstOrDefault(x => x.BaseType == typeof(TheGodfatherModule));
 
             return moduleType;
+        }
+
+        public static Script<object>? Compile(string code, out ImmutableArray<Diagnostic> diagnostics, out Stopwatch compileTime)
+        {
+            diagnostics = Array.Empty<Diagnostic>().ToImmutableArray();
+            compileTime = new Stopwatch();
+
+            Match m = _cbRegex.Match(code);
+            if (!m.Success)
+                return null;
+
+            code = m.Groups["code"].ToString();
+
+            ScriptOptions sopts = ScriptOptions.Default
+                .WithImports(_usings)
+                .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
+
+            compileTime = Stopwatch.StartNew();
+            Script<object> snippet = CSharpScript.Create(code, sopts, typeof(EvaluationEnvironment));
+            diagnostics = snippet.Compile();
+            compileTime.Stop();
+
+            return snippet;
         }
     }
 }

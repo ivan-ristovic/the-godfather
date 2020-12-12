@@ -87,13 +87,11 @@ namespace TheGodfather.Modules.Administration
                     throw new InvalidCommandUsageException(ctx, "cmd-err-image-url");
             }
 
-            if (!await url.ContentTypeHeaderIsImageAsync())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail");
+            if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.GuildIconLimit))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail", DiscordLimits.EmojiSizeLimit.ToMetric());
 
             try {
                 using Stream stream = await HttpService.GetStreamAsync(url);
-                if (stream.Length >= DiscordLimits.GuildIconLimit)
-                    throw new CommandFailedException(ctx, "cmd-err-image-url-size", DiscordLimits.EmojiSizeLimit.ToMetric());
                 await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
                 await ctx.InfoAsync(this.ModuleColor);
             } catch (WebException e) {

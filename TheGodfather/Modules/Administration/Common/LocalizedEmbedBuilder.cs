@@ -18,10 +18,10 @@ namespace TheGodfather.Modules.Administration.Common
         private readonly ulong gid;
 
 
-        public LocalizedEmbedBuilder(LocalizationService lcs, ulong gid)
+        public LocalizedEmbedBuilder(LocalizationService lcs, ulong? gid)
         {
             this.lcs = lcs;
-            this.gid = gid;
+            this.gid = gid ?? 0;
             this.emb = new DiscordEmbedBuilder();
         }
 
