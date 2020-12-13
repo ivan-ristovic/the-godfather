@@ -107,7 +107,7 @@
   },
   "owner generatecommandlist": {
     "usage": [
-      [ ]
+      []
     ]
   },
   "owner leaveguilds": {
@@ -116,9 +116,46 @@
       [ "arg-ulong" ]
     ]
   },
+  "owner log": {
+    "usage": [
+      [],
+      [ "arg-level" ],
+      [ "arg-string" ]
+    ]
+  },
+  "owner sendmessage": {
+    "usage": [
+      [ "arg-send-uc" ],
+      [ "arg-ulong" ],
+      [ "arg-msg" ]
+    ]
+  },
   "owner name": {
     "usage": [
       [ "arg-name" ]
+    ]
+  },
+  "owner shutdown": {
+    "usage": [
+      [],
+      [ "arg-timespan", "arg-five" ],
+      [ "arg-timespan" ]
+    ]
+  },
+  "owner sudo": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-cmd" ]
+    ]
+  },
+  "owner toggleignore": {
+    "usage": [
+      []
+    ]
+  },
+  "owner uptime": {
+    "usage": [
+      []
     ]
   },
   "privilegedusers": {

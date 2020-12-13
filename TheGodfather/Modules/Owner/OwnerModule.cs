@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -345,6 +344,10 @@ namespace TheGodfather.Modules.Owner
                         .Cast<RequireBotPermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString());
 
+                    if (execChecks.Any(chk => chk is RequireGuildAttribute))
+                        sb.AppendLine(Formatter.Bold("Guild only.")).AppendLine();
+                    if (execChecks.Any(chk => chk is RequireDirectMessageAttribute))
+                        sb.AppendLine(Formatter.Bold("DM only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequireOwnerAttribute))
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
@@ -536,41 +539,37 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
-        #region COMMAND_SENDMESSAGE
+        #region sendmessage
         [Command("sendmessage")]
-        [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
-
         [RequirePrivilegedUser]
         public async Task SendAsync(CommandContext ctx,
-                                   [Description("u/c (for user or channel.)")] string desc,
-                                   [Description("User/Channel ID.")] ulong xid,
-                                   [RemainingText, Description("Message.")] string message)
+                                   [Description("desc-send")] string desc,
+                                   [Description("desc-id")] ulong xid,
+                                   [RemainingText, Description("desc-send-msg")] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new InvalidCommandUsageException();
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (desc == "u") {
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(xid);
+            if (string.Equals(desc, "u", StringComparison.InvariantCultureIgnoreCase)) {
+                DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(xid);
                 if (dm is null)
-                    throw new CommandFailedException("I can't talk to that user...");
+                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
                 await dm.SendMessageAsync(message);
-            } else if (desc == "c") {
+            } else if (string.Equals(desc, "c", StringComparison.InvariantCultureIgnoreCase)) {
                 DiscordChannel channel = await ctx.Client.GetChannelAsync(xid);
                 await channel.SendMessageAsync(message);
             } else {
-                throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
+                throw new InvalidCommandUsageException(ctx);
             }
 
-            await this.InformAsync(ctx, $"Successfully sent the given message!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_SHUTDOWN
+        #region shutdown
         [Command("shutdown"), Priority(1)]
-        [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
                              [Description("Time until shutdown.")] TimeSpan timespan,
@@ -583,74 +582,41 @@ namespace TheGodfather.Modules.Owner
             => TheGodfather.Stop(exitCode);
         #endregion
 
-        #region COMMAND_SUDO
+        #region sudo
         [Command("sudo")]
-        [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-
-        [RequirePrivilegedUser]
-        public Task SudoAsync(CommandContext ctx,
-                             [Description("Member to execute as.")] DiscordMember member,
-                             [RemainingText, Description("Command text to execute.")] string command)
+        [RequireGuild, RequirePrivilegedUser]
+        public async Task SudoAsync(CommandContext ctx,
+                                   [Description("desc-member")] DiscordMember member,
+                                   [RemainingText, Description("desc-cmd-full")] string command)
         {
             if (string.IsNullOrWhiteSpace(command))
-                throw new InvalidCommandUsageException("Missing command to execute.");
+                throw new InvalidCommandUsageException(ctx);
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
             if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute || c is RequirePrivilegedUserAttribute))
-                throw new CommandFailedException("Cannot sudo privileged commands!");
+                throw new CommandFailedException(ctx, "cmd-err-sudo");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
-            return cmd is null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
+            if ((await cmd.RunChecksAsync(fctx, false)).Any())
+                throw new CommandFailedException(ctx, "cmd-err-sudo-chk");
+
+            await ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 
-        #region COMMAND_TOGGLEIGNORE
+        #region toggleignore
         [Command("toggleignore")]
-        [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
         [RequirePrivilegedUser]
         public Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            BotActivityService bas = ctx.Services.GetService<BotActivityService>();
+            BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
             bool ignoreEnabled = bas.ToggleListeningStatus();
-            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(ignoreEnabled.ToString())}", important: false);
+            return ctx.InfoAsync(this.ModuleColor, ignoreEnabled ? "str-off" : "str-on");
         }
         #endregion
 
-        #region COMMAND_UPDATE
-        [Command("update")]
-        [Description("Update and restart the bot.")]
-        [Aliases("upd", "u")]
-        [RequireOwner]
-        public Task UpdateAsync(CommandContext ctx)
-        {
-            ProcessStartInfo psi;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                psi = new ProcessStartInfo {
-                    FileName = "bash",
-                    Arguments = $"install.sh {Process.GetCurrentProcess().Id}",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = false,
-                    CreateNoWindow = true
-                };
-            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                psi = new ProcessStartInfo {
-                    FileName = "install.bat",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = false,
-                    CreateNoWindow = true
-                };
-            } else {
-                throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
-            }
-
-            var proc = new Process { StartInfo = psi };
-            proc.Start();
-            return this.ExitAsync(ctx);
-        }
-        #endregion
-
-        #region UPTIME
+        #region uptime
         [Command("uptime")]
         [RequirePrivilegedUser]
         public Task UptimeAsync(CommandContext ctx)
@@ -660,12 +626,14 @@ namespace TheGodfather.Modules.Owner
             TimeSpan processUptime = uptimeInfo.ProgramUptime;
             TimeSpan socketUptime = uptimeInfo.SocketUptime;
 
-            return this.InformAsync(ctx, Emojis.Information,
-                Formatter.Bold($"Uptime information:") +
-                $"\n\n{Formatter.Bold("Shard:")} {ctx.Client.ShardId}\n" +
-                $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
-                $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
-            );
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-uptime-info");
+                emb.WithDescription($"{TheGodfather.ApplicationName} {TheGodfather.ApplicationVersion}");
+                emb.AddLocalizedTitleField("str-shard", $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
+                emb.AddLocalizedTitleField("str-uptime-bot", processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedTitleField("str-uptime-socket", socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.WithColor(this.ModuleColor);
+            });
         }
         #endregion
     }
