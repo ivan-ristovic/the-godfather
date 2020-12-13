@@ -171,6 +171,8 @@
   "owner dbquery": "Queries the bot database using given SQL query or uploaded SQL file.",
   "owner eval": "Evaluates a snippet of C# code, in context.",
   "owner generatecommandslist": "Generates bot documentation in markdown ready for GitHub.",
+  "owner leaveguilds": "Generates bot documentation in markdown ready for GitHub.",
+  "owner log": "Logs a given remark or uploads bot log file if remark is not given.",
   "owner name": "Sets the bot name.",
   "penis": "An accurate measurement.",
   "ping": "Pings the bot.",

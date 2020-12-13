@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Serilog;
 using Serilog.Events;
 using TheGodfather.Database;
 
@@ -40,8 +41,20 @@ namespace TheGodfather.Services.Common
         [JsonProperty("log-path")]
         public string LogPath { get; set; } = "gf.log";
 
+        [JsonProperty("log-file-rolling")]
+        public RollingInterval RollingInterval { get; set; } = RollingInterval.Day;
+
         [JsonProperty("log-to-file")]
         public bool LogToFile { get; set; } = false;
+
+        [JsonProperty("log-buffer")]
+        public bool UseBufferedFileLogger { get; set; } = false;
+
+        [JsonProperty("log-max-files")]
+        public int? MaxLogFiles { get; set; }
+
+        [JsonProperty("log-template")]
+        public string? CustomLogTemplate { get; set; }
 
         [JsonProperty("key-omdb")]
         public string OMDbKey { get; set; } = "<insert OMDb API key>";

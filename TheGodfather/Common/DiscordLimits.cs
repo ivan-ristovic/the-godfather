@@ -2,6 +2,7 @@
 {
     public static class DiscordLimits
     {
+        public const int AttachmentLimit = 8 * 1024 * 1024;
         public const int AvatarSizeLimit = 256000;
         public const int CategoryChannelLimit = 50;
         public const int ChannelLimit = 500;

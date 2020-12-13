@@ -105,6 +105,17 @@
       [ "arg-code" ]
     ]
   },
+  "owner generatecommandlist": {
+    "usage": [
+      [ ]
+    ]
+  },
+  "owner leaveguilds": {
+    "usage": [
+      [ "arg-gld" ],
+      [ "arg-ulong" ]
+    ]
+  },
   "owner name": {
     "usage": [
       [ "arg-name" ]

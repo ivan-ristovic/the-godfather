@@ -15,7 +15,8 @@ namespace TheGodfather.Extensions
     {
         public static Logger CreateLogger(BotConfig cfg)
         {
-            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
+            string template = cfg.CustomLogTemplate 
+                ?? "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
 
             LoggerConfiguration lcfg = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -31,7 +32,10 @@ namespace TheGodfather.Extensions
                     cfg.LogPath,
                     cfg.LogLevel,
                     outputTemplate: template,
-                    rollingInterval: RollingInterval.Day
+                    rollingInterval: cfg.RollingInterval,
+                    buffered: cfg.UseBufferedFileLogger,
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: cfg.MaxLogFiles
                 );
             }
 

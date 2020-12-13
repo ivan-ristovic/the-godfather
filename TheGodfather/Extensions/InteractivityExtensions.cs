@@ -15,6 +15,29 @@ namespace TheGodfather.Extensions
 {
     internal static class InteractivityExtensions
     {
+        public static async Task<int?> WaitForOptionReplyAsync(this InteractivityExtension interactivity, CommandContext ctx, int max, int min = 0)
+        {
+            InteractivityService ins = ctx.Services.GetRequiredService<InteractivityService>();
+
+            ins.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
+
+            int? response = await WaitForOptionReplyAsync(interactivity, ctx.Channel, ctx.User, max, min);
+
+            if (!ins.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
+                throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
+
+            return response;
+        }
+
+        public static async Task<int?> WaitForOptionReplyAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, int max, int min = 0)
+        {
+            int index = 0;
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
+                m => m.Channel == channel && m.Author == user && int.TryParse(m.Content, out index) && index < max && index >= min
+            );
+            return mctx.TimedOut ? null : index;
+        }
+
         public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx)
         {
             InteractivityService ins = ctx.Services.GetRequiredService<InteractivityService>();

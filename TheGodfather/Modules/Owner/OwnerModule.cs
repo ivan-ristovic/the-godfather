@@ -14,6 +14,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using Humanizer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Scripting;
@@ -207,7 +208,7 @@ namespace TheGodfather.Modules.Owner
             }
 
             var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
-            
+
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
                 emb.WithLocalizedTitle("str-eval-fail-compile");
                 emb.WithLocalizedDescription("fmt-eval-fail-compile", compileTime.ElapsedMilliseconds, diag.Length);
@@ -229,7 +230,7 @@ namespace TheGodfather.Modules.Owner
             ScriptState<object>? res = null;
             var runTime = Stopwatch.StartNew();
             try {
-                 res = await snippet.RunAsync(new EvaluationEnvironment(ctx));
+                res = await snippet.RunAsync(new EvaluationEnvironment(ctx));
             } catch (Exception e) {
                 exc = e;
             }
@@ -252,7 +253,7 @@ namespace TheGodfather.Modules.Owner
                 emb.AddLocalizedTitleField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
                 emb.AddLocalizedTitleField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
                 if (res.ReturnValue is { })
-                await UpdateOrRespondAsync();
+                    await UpdateOrRespondAsync();
             }
 
 
@@ -436,71 +437,102 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
-        #region COMMAND_LEAVEGUILDS
-        [Command("leaveguilds")]
-        [Description("Leaves the given guilds.")]
+        #region leaveguilds
+        [Command("leaveguilds"), Priority(1)]
         [Aliases("leave", "gtfo")]
-
         [RequireOwner]
+        public Task LeaveGuildsAsync(CommandContext ctx,
+                                    [Description("desc-guilds")] params DiscordGuild[] guilds)
+            => this.LeaveGuildsAsync(ctx, guilds.Select(g => g.Id).ToArray());
+
+        [Command("leaveguilds"), Priority(0)]
         public async Task LeaveGuildsAsync(CommandContext ctx,
-                                          [Description("Guild ID list.")] params ulong[] gids)
+                                          [Description("desc-guilds")] params ulong[] gids)
         {
             if (gids is null || !gids.Any())
-                throw new InvalidCommandUsageException("IDs missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             var eb = new StringBuilder();
             foreach (ulong gid in gids) {
                 try {
-                    if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild guild))
+                    if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild? guild))
                         await guild.LeaveAsync();
                     else
-                        eb.AppendLine($"Warning: I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                        eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-guild-leave", gid));
                 } catch {
-                    eb.AppendLine($"Error: Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                    eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-guild-leave-fail", gid));
                 }
             }
 
-            if (gids.All(gid => gid != ctx.Guild?.Id)) {
+            if (ctx.Guild is { } && !gids.Contains(ctx.Guild.Id)) {
                 if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                    await ctx.FailAsync("fmt-err", eb);
                 else
-                    await this.InformAsync(ctx, Emojis.Information, "Successfully left all given guilds!", important: false);
+                    await ctx.InfoAsync(this.ModuleColor);
+            } else {
+                await ctx.InfoAsync(this.ModuleColor);
             }
         }
         #endregion
 
-        #region COMMAND_LOG
-        [Command("log"), Priority(1)]
-        [Description("Upload the bot log file or add a remark to it.")]
+        #region log
+        [Command("log"), Priority(1), UsesInteractivity]
         [Aliases("getlog", "remark", "rem")]
-
         [RequireOwner]
         public async Task LogAsync(CommandContext ctx,
-                                  [Description("Bypass current configuration and search file anyway?")] bool bypassConfig = false)
+                                  [Description("desc-log-bp")] bool bypassConfig = false)
         {
-            // TODO rework needed since Serilog introduction
-            await ctx.RespondAsync("This command is broken dude, remember?");
-
-            BotConfig cfg = ctx.Services.GetService<BotConfigService>().CurrentConfiguration;
+            BotConfig cfg = ctx.Services.GetRequiredService<BotConfigService>().CurrentConfiguration;
 
             if (!bypassConfig && !cfg.LogToFile)
-                throw new CommandFailedException("Logs aren't dumped to any files.");
+                throw new CommandFailedException(ctx, "cmd-err-log-off");
+
             var fi = new FileInfo(cfg.LogPath);
-            if (fi.Exists && fi.Length > 8 * 1024 * 1024)
-                throw new CommandFailedException("The file is too big to upload!");
-            using var fs = new FileStream(cfg.LogPath, FileMode.Open);
+            if (fi.Exists) {
+                fi = new FileInfo(cfg.LogPath);
+                if (fi.Length > DiscordLimits.AttachmentLimit)
+                    throw new CommandFailedException(ctx, "cmd-err-log-size", fi.Name, fi.Length.Megabytes().Humanize());
+            } else {
+                DirectoryInfo? di = fi.Directory;
+                if (di?.Exists ?? false) {
+                    var fis = di.GetFiles()
+                        .OrderByDescending(fi => fi.CreationTime)
+                        .Select((fi, i) => (fi, i))
+                        .ToDictionary(tup => tup.i, tup => tup.fi)
+                        ;
+                    if (!fis.Any())
+                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+
+                    await ctx.PaginateAsync(
+                        "q-log-select",
+                        fis,
+                        kvp => Formatter.InlineCode($"{kvp.Key:D3}: {kvp.Value.Name}"),
+                        this.ModuleColor
+                    );
+
+                    int? index = await ctx.Client.GetInteractivity().WaitForOptionReplyAsync(ctx, fis.Count);
+                    if (index is null)
+                        return;
+
+                    if (!fis.TryGetValue(index.Value, out fi))
+                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                } else {
+                    throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                }
+            }
+
+            using FileStream? fs = fi.OpenRead();
             await ctx.RespondWithFileAsync(fs);
         }
 
         [Command("log"), Priority(0)]
         public Task LogAsync(CommandContext ctx,
-                            [Description("Log level.")] string level,
-                            [RemainingText, Description("Remark.")] string text)
+                            [Description("desc-log-lvl")] LogEventLevel level,
+                            [RemainingText, Description("desc-log-msg")] string text)
         {
-            if (!Enum.TryParse(level.Titleize(), out LogEventLevel logLevel))
-                throw new CommandFailedException($"Invalid log level!");
-            Log.Write(logLevel, "{LogRemark}", text);
-            return this.InformAsync(ctx, "Done!", important: false);
+            Log.Write(level, "{LogRemark}", text);
+            return ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 

@@ -124,7 +124,7 @@ namespace TheGodfather.Extensions
                     Description = arr[from..to].Select(selector).JoinWith(),
                     Color = color ?? DiscordColor.Black,
                     Footer = new DiscordEmbedBuilder.EmbedFooter {
-                        Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from, to, arr.Length, i, pageCount),
+                        Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from + 1, to, arr.Length, i, pageCount),
                     }
                 }));
                 from += pageSize;
