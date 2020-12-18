@@ -148,25 +148,6 @@ namespace TheGodfather.Modules.Reactions.Services
             return removed;
         }
 
-        // TODO remove
-        public async Task<int> RemoveEmojiReactionsAsync(ulong gid, IEnumerable<string> toRemove)
-        {
-            if (!toRemove.Any())
-                return 0;
-
-            if (!this.ereactions.TryGetValue(gid, out ConcurrentHashSet<EmojiReaction>? ers) || !ers.Any())
-                return 0;
-
-            int removed = ers.RemoveWhere(er => toRemove.Contains(er.Response));
-
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == gid && toRemove.Contains(er.Response)));
-                await db.SaveChangesAsync();
-            }
-
-            return removed;
-        }
-
         public async Task<int> RemoveEmojiReactionsAsync(ulong gid)
         {
             int removed = 0;
@@ -233,8 +214,11 @@ namespace TheGodfather.Modules.Reactions.Services
                    .Where(er => reactions.Any(r => r.Id == er.Id))
                    .ToList();
                 foreach (EmojiReaction er in toUpdate) {
-                    foreach (string trigger in triggers)
-                        er.DbTriggers.Remove(er.DbTriggers.FirstOrDefault(r => er.Id == r.ReactionId && r.Trigger == trigger));
+                    foreach (string trigger in triggers) {
+                        EmojiReactionTrigger? t = er.DbTriggers.FirstOrDefault(r => er.Id == r.ReactionId && r.Trigger == trigger);
+                        if (t is { })
+                            er.DbTriggers.Remove(t);
+                    }
                     if (er.DbTriggers.Any())
                         db.EmojiReactions.Update(er);
                     else
@@ -373,8 +357,11 @@ namespace TheGodfather.Modules.Reactions.Services
                     .Where(tr => reactions.Any(r => r.Id == tr.Id))
                     .ToList();
                 foreach (TextReaction tr in toUpdate) {
-                    foreach (string trigger in triggers)
-                        tr.DbTriggers.Remove(tr.DbTriggers.FirstOrDefault(r => tr.Id == r.ReactionId && r.Trigger == trigger));
+                    foreach (string trigger in triggers) {
+                        TextReactionTrigger? t = tr.DbTriggers.FirstOrDefault(r => tr.Id == r.ReactionId && r.Trigger == trigger);
+                        if (t is { })
+                            tr.DbTriggers.Remove(t);
+                    }
                     if (tr.DbTriggers.Any())
                         db.TextReactions.Update(tr);
                     else

@@ -18,6 +18,7 @@ using Humanizer;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             string quote = await QuoteService.GetRandomQuoteAsync();
             if (quote is null)

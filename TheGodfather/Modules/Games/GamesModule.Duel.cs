@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -58,7 +59,7 @@ namespace TheGodfather.Modules.Games
                 this.Service.RegisterEventInChannel(duel, ctx.Channel.Id);
 
                 try {
-                    await duel.RunAsync();
+                    await duel.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
                     await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelWon++);
                     if (duel.Winner.Id == ctx.User.Id)
                         await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelLost++);

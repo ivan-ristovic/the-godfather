@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Chickens
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (war.Team1.Any() && war.Team2.Any()) {
-                        await war.RunAsync();
+                        await war.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         var sb = new StringBuilder();
 

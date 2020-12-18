@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Games
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (race.ParticipantCount > 1) {
-                        await race.RunAsync();
+                        await race.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         if (race.IsTimeoutReached) {
                             if (race.Winner is null)

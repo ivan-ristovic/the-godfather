@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
                 var ttt = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
                 this.Service.RegisterEventInChannel(ttt, ctx.Channel.Id);
                 try {
-                    await ttt.RunAsync();
+                    await ttt.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (!(ttt.Winner is null)) {
                         if (ttt.IsTimeoutReached)

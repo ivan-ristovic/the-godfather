@@ -10,6 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -65,7 +66,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
+                    await quiz.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (quiz.IsTimeoutReached) {
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");
@@ -139,7 +140,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
+                    await quiz.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (quiz.IsTimeoutReached) {
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");
@@ -172,7 +173,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await this.InformAsync(ctx, Emojis.Clock1, "Quiz will start in 10s! Get ready!");
                     await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
+                    await quiz.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (quiz.IsTimeoutReached) {
                         await this.InformAsync(ctx, Emojis.AlarmClock, "Aborting quiz due to no replies...");

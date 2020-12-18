@@ -10,6 +10,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.Chickens
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
-                        await ambush.RunAsync();
+                        await ambush.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         var sb = new StringBuilder();
 

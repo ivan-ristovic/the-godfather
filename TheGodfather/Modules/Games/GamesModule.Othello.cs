@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -53,7 +54,7 @@ namespace TheGodfather.Modules.Games
                 var othello = new OthelloGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
                 this.Service.RegisterEventInChannel(othello, ctx.Channel.Id);
                 try {
-                    await othello.RunAsync();
+                    await othello.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (!(othello.Winner is null)) {
                         if (othello.IsTimeoutReached)

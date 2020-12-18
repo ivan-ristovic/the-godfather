@@ -12,6 +12,7 @@ using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
 

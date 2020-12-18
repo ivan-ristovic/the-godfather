@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services;
 
 namespace TheGodfather.Common
 {
@@ -10,6 +11,6 @@ namespace TheGodfather.Common
         InteractivityExtension Interactivity { get; }
 
 
-        Task RunAsync();
+        Task RunAsync(LocalizationService lcs);
     }
 }

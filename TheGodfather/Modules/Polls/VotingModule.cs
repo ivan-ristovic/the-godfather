@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -8,15 +7,13 @@ using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Polls
 {
     [Group("vote"), Module(ModuleType.Polls), NotBlocked]
     [Description("Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.")]
     [Aliases("votefor", "vf")]
-
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
 

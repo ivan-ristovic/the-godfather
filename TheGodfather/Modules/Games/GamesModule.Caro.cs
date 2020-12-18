@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
                 var caro = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
                 this.Service.RegisterEventInChannel(caro, ctx.Channel.Id);
                 try {
-                    await caro.RunAsync();
+                    await caro.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (!(caro.Winner is null)) {
                         if (caro.IsTimeoutReached)

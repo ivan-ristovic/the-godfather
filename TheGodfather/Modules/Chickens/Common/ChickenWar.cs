@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens.Common
@@ -43,7 +44,7 @@ namespace TheGodfather.Modules.Chickens.Common
         }
 
 
-        public async Task RunAsync()
+        public async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
 

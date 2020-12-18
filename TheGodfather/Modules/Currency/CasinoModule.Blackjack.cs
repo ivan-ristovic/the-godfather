@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.ParticipantCount > 0) {
-                        await game.RunAsync();
+                        await game.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         if (game.Winners.Any()) {
                             if (game.Winner is null) {

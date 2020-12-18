@@ -10,6 +10,7 @@ using DSharpPlus.Interactivity;
 using Humanizer;
 using TheGodfather.Common;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
@@ -60,7 +61,7 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             try {
                 using Bitmap wof = RotateWheel(_wheel, this.index * -45);

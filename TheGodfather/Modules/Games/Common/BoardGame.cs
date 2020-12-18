@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -39,7 +40,7 @@ namespace TheGodfather.Modules.Games.Common
             => (col >= 0 && col < this.SizeY && row >= 0 && row < this.SizeX) ? this.board[row, col] : -1;
 
 
-        public sealed override async Task RunAsync()
+        public sealed override async Task RunAsync(LocalizationService lcs)
         {
             this.msgHandle = await this.Channel.SendMessageAsync($"{this.player1.Mention} vs {this.player2.Mention}");
 

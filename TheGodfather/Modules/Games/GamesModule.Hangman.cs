@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Games
                 var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, reply.Content, reply.Author);
                 this.Service.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
-                    await hangman.RunAsync();
+                    await hangman.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (!(hangman.Winner is null))
                         await this.Database.UpdateStatsAsync(hangman.Winner.Id, s => s.HangmanWon++);

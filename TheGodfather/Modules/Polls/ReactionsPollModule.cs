@@ -1,10 +1,9 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Database;
@@ -12,12 +11,11 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Polls
 {
     [Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ReactionsPollModule : TheGodfatherServiceModule<ChannelEventService>
     {
 
@@ -55,7 +53,7 @@ namespace TheGodfather.Modules.Polls
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
                 rpoll.Options = options;
 
-                await rpoll.RunAsync();
+                await rpoll.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
             } finally {
                 this.Service.UnregisterEventInChannel(ctx.Channel.Id);
             }

@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
                 var connect4 = new ConnectFourGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
                 this.Service.RegisterEventInChannel(connect4, ctx.Channel.Id);
                 try {
-                    await connect4.RunAsync();
+                    await connect4.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                     if (!(connect4.Winner is null)) {
                         if (connect4.IsTimeoutReached)

@@ -15,6 +15,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -114,7 +115,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             var wof = new WheelOfFortuneGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency);
-            await wof.RunAsync();
+            await wof.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
             if (wof.WonAmount > 0) {
                 using TheGodfatherDbContext db = this.Database.CreateContext();

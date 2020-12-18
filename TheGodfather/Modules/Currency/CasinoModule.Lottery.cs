@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.ParticipantCount > 1) {
-                        await game.RunAsync();
+                        await game.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         if (game.Winners.Any()) {
                             await this.InformAsync(ctx, Emojis.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");

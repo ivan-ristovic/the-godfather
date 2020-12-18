@@ -10,6 +10,7 @@ using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             int timeouts = 0;
             int currentQuestionIndex = 1;

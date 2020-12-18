@@ -11,6 +11,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             var questions = new Queue<string>(_countries.Keys.Shuffle());
 

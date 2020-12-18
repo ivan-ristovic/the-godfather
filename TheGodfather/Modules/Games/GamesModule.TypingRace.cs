@@ -6,6 +6,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
@@ -51,7 +52,7 @@ namespace TheGodfather.Modules.Games
                     if (race.ParticipantCount > 1) {
                         await this.InformAsync(ctx, Emojis.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.");
                         await Task.Delay(TimeSpan.FromSeconds(10));
-                        await race.RunAsync();
+                        await race.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
 
                         if (!(race.Winner is null))
                             await this.InformAsync(ctx, Emojis.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");

@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -53,7 +54,8 @@ namespace TheGodfather.Modules.Games
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.ParticipantCount > 1) {
-                        await game.RunAsync();
+                        LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+                        await game.RunAsync(lcs);
 
                         foreach (ulong uid in game.WinnerIds)
                             await this.Database.UpdateStatsAsync(uid, s => s.AnimalRacesWon++);

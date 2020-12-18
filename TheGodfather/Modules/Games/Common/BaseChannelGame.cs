@@ -2,6 +2,7 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
@@ -23,6 +24,6 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public abstract Task RunAsync();
+        public abstract Task RunAsync(LocalizationService lcs);
     }
 }
