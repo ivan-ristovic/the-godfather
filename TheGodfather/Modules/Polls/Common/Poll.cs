@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Extensions;
 using TheGodfather.Services;
 
@@ -14,6 +13,11 @@ namespace TheGodfather.Modules.Polls.Common
 {
     public class Poll : IChannelEvent
     {
+        public const int MinTimeSeconds = 10;
+        public const int MaxTimeDays = 1;
+        public const int MaxTimeSeconds = MaxTimeDays * 3600 * 24;
+        public const int MaxPollOptions = 10;
+
         public string Question { get; }
         public bool IsRunning { get; protected set; }
         public List<string> Options { get; set; }
@@ -62,11 +66,10 @@ namespace TheGodfather.Modules.Polls.Common
                 if (this.TimeUntilEnd.TotalSeconds < 1)
                     break;
 
-                try {
-                    await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(10) ? this.TimeUntilEnd : TimeSpan.FromSeconds(10), this.cts.Token);
-                } catch (TaskCanceledException) {
-                    await this.Channel.InformFailureAsync("The poll has been cancelled!");
-                }
+                await Task.Delay(
+                    this.TimeUntilEnd <= TimeSpan.FromSeconds(MinTimeSeconds) ? this.TimeUntilEnd : TimeSpan.FromSeconds(MinTimeSeconds), 
+                    this.cts.Token
+                );
             }
 
             this.IsRunning = false;

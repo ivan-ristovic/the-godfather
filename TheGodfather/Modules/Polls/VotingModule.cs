@@ -1,67 +1,60 @@
 ﻿using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Polls
 {
     [Group("vote"), Module(ModuleType.Polls), NotBlocked]
-    [Description("Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.")]
     [Aliases("votefor", "vf")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
-
-        public VotingModule(ChannelEventService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
+        public VotingModule(ChannelEventService service)
+            : base(service) { }
 
 
+        #region vote
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Option to vote for.")] int option)
+                                           [Description("desc-poll-o")] int option)
         {
             Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
-                throw new CommandFailedException("There are no polls running in this channel.");
+                throw new CommandFailedException(ctx, "cmd-err-poll-none");
 
             option--;
             if (!poll.IsValidVote(option))
-                throw new CommandFailedException($"Invalid poll option. Valid range: [1, {poll.Options.Count}].");
+                throw new CommandFailedException(ctx, "cmd-err-poll-opt-inv", poll.Options.Count);
 
             if (poll.UserVoted(ctx.User.Id))
-                throw new CommandFailedException("You have already voted in this poll!");
+                throw new CommandFailedException(ctx, "cmd-err-poll-vote");
 
             poll.VoteFor(ctx.User.Id, option);
-
-            await this.InformAsync(ctx, $"{ctx.User.Mention} voted for: {Formatter.Bold(poll.OptionWithId(option))} in poll: {Formatter.Italic($"\"{poll.Question}\"")}", important: false);
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-vote", ctx.User.Mention, poll.OptionWithId(option), poll.Question);
         }
+        #endregion
 
-
-        #region COMMAND_CANCEL
+        #region vote cancel
         [Command("cancel")]
-        [Description("Cancel your vote in the current poll.")]
         [Aliases("c", "reset")]
         public Task CancelAsync(CommandContext ctx)
         {
             Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
-                throw new CommandFailedException("There are no text polls running in this channel.");
+                throw new CommandFailedException(ctx, "cmd-err-poll-none");
 
             if (!poll.UserVoted(ctx.User.Id))
-                throw new CommandFailedException("You have not voted in this poll!");
+                throw new CommandFailedException(ctx, "cmd-err-poll-vote-cancel");
 
             if (!poll.CancelVote(ctx.User.Id))
-                throw new CommandFailedException("Failed to cancel your vote!");
+                throw new CommandFailedException(ctx, "cmd-err-poll-vote-cancel-fail");
 
-            return this.InformAsync(ctx, "Your vote has been cancelled!", important: false);
+            return ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
     }

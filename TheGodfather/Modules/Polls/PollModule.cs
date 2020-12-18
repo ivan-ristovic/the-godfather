@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -17,43 +18,40 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
-    [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
-
-        public PollModule(ChannelEventService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
+        public PollModule(ChannelEventService service)
+            : base(service) { }
 
 
+        #region poll
         [GroupCommand, Priority(2)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Time for poll to run.")] TimeSpan timeout,
-                                           [RemainingText, Description("Question.")] string question)
+                                           [Description("desc-poll-t")] TimeSpan timeout,
+                                           [RemainingText, Description("desc-poll-q")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException("Poll requires a question.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-q-none");
 
             if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out _))
-                throw new CommandFailedException("Another event is already running in this channel.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-dup");
 
-            if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
-                throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
+            if (timeout < TimeSpan.FromSeconds(Poll.MinTimeSeconds) || timeout >= TimeSpan.FromDays(Poll.MaxTimeDays))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-time", Poll.MinTimeSeconds, Poll.MaxTimeDays);
 
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
             this.Service.RegisterEventInChannel(poll, ctx.Channel.Id);
             try {
-                await this.InformAsync(ctx, Emojis.Question, "And what will be the possible answers? (separate with a semicolon)");
-                System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
-                if (options is null || options.Count < 2 || options.Count > 10)
-                    throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
+                List<string>? options = await ctx.WaitAndParsePollOptionsAsync();
+                if (options is null || options.Count < 2 || options.Count > Poll.MaxPollOptions)
+                    throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 poll.Options = options;
 
                 await poll.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
-
+            } catch (TaskCanceledException) {
+                await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {
                 this.Service.UnregisterEventInChannel(ctx.Channel.Id);
             }
@@ -61,28 +59,27 @@ namespace TheGodfather.Modules.Polls
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Question.")] string question,
-                                     [Description("Time for poll to run.")] TimeSpan timeout)
+                                     [Description("desc-poll-q")] string question,
+                                     [Description("desc-poll-t")] TimeSpan timeout)
             => this.ExecuteGroupAsync(ctx, timeout, question);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Question.")] string question)
+                                     [RemainingText, Description("desc-poll-q")] string question)
             => this.ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question);
+        #endregion
 
-
-        #region COMMAND_STOP
+        #region poll stop
         [Command("stop")]
-        [Description("Stops a running poll.")]
         [Aliases("end", "cancel")]
         public Task StopAsync(CommandContext ctx)
         {
             Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || poll is ReactionsPoll)
-                throw new CommandFailedException("There are no text polls running in this channel.");
+                throw new CommandFailedException(ctx, "cmd-err-poll-none");
 
-            if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User.Id != poll.Initiator.Id)
-                throw new CommandFailedException("You do not have the sufficient permissions to close another person's poll!");
+            if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User != poll.Initiator)
+                throw new CommandFailedException(ctx, "cmd-err-poll-cancel-perms");
 
             poll.Stop();
             this.Service.UnregisterEventInChannel(ctx.Channel.Id);
