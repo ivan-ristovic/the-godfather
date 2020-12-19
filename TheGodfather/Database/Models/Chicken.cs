@@ -46,7 +46,7 @@ namespace TheGodfather.Database.Models
 
 
         public const int NameLimit = 32;
-        public const int MinVitalityToFight = 32;
+        public const int MinVitalityToFight = 25;
         public const int MaxFightStrDiff = 75;
 
 

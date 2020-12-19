@@ -151,5 +151,8 @@ namespace TheGodfather.Modules.Chickens.Services
             db.UpdateRange(chickens);
             await db.SaveChangesAsync();
         }
+
+        public Task UpdateAsync(params Chicken[] chickens)
+            => this.UpdateAsync(chickens.AsEnumerable());
     }
 }
