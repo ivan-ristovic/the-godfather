@@ -21,9 +21,9 @@ namespace TheGodfather.Database.Models
 
     public enum ChickenStatUpgrade
     {
-        Strength = 0,
-        Vitality = 1,
-        MaxVitality = 2
+        Str = 0,
+        Vit = 1,
+        MaxVit = 2
     }
 
 
@@ -187,7 +187,7 @@ namespace TheGodfather.Database.Models
         public int TotalStrength {
             get {
                 int? upgradedStrength = this.Upgrades
-                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.Strength)
+                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.Str)
                     .Sum(u => u.Upgrade.Modifier);
                 return this.BareStrength + (upgradedStrength ?? 0);
             }
@@ -195,7 +195,7 @@ namespace TheGodfather.Database.Models
         public int TotalVitality {
             get {
                 int? upgradedVitality = this.Upgrades
-                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.Vitality)
+                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.Vit)
                     .Sum(u => u.Upgrade.Modifier);
                 int total = this.BareVitality + (upgradedVitality ?? 0);
                 return (total > this.TotalMaxVitality) ? this.TotalMaxVitality : total;
@@ -204,7 +204,7 @@ namespace TheGodfather.Database.Models
         public int TotalMaxVitality {
             get {
                 int? upgradedMaxVitality = this.Upgrades
-                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.MaxVitality)
+                    ?.Where(u => u.Upgrade.UpgradesStat == ChickenStatUpgrade.MaxVit)
                     .Sum(u => u.Upgrade.Modifier);
                 return this.BareMaxVitality + (upgradedMaxVitality ?? 0);
             }

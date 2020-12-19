@@ -69,6 +69,8 @@
   "chicken sell": "Sells your chicken.",
   "chicken top": "Shows all strongest chickens in this guild.",
   "chicken train": "Trains your chicken at the cost of some guild currency. Group call trains your chicken's strength.",
+  "chicken upgrade": "Upgrade your chicken with items you can buy using guild currency. Group call lists all available upgrades or buys an upgrade with specified ID.",
+  "chicken upgrade list": "Lists all available chicken upgrades.",
   "coinflip": "Flips a coin!",
   "commandrules": "Bot command rule management (allowing or forbiding certain commands). Group call shows active command rules in specified channel or globally if the channel is not specified.",
   "commandrules allow": "Allows command execution only in specified channel(s), or globally if they are not specified.",

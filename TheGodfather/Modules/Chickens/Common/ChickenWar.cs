@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Chickens.Common
 {

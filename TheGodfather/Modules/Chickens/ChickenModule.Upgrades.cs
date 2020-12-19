@@ -1,86 +1,95 @@
-﻿#region USING_DIRECTIVES
-#endregion
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
+using TheGodfather.Common;
+using TheGodfather.Database.Models;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Services;
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Chickens
 {
-    //public partial class ChickenModule
-    //{
-    //    [Group("upgrades"), UsesInteractivity]
-    //    [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.")]
-    //    [Aliases("perks", "upgrade", "u")]
+    public partial class ChickenModule
+    {
+        [Group("upgrade"), UsesInteractivity]
+        [Aliases("perks", "upgrades", "upg", "u")]
+        public sealed class UpgradeModule : TheGodfatherServiceModule<ChickenUpgradeService>
+        {
+            #region chicken upgrade
+            [GroupCommand, Priority(1)]
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => this.ListAsync(ctx);
 
-    //    public class UpgradeModule : TheGodfatherServiceModule<ChannelEventService>
-    //    {
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("desc-chicken-upgrade-ids")] params int[] ids)
+            {
+                if (ids is null || !ids.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-upg-ids-none");
 
-    //        public UpgradeModule(ChannelEventService service, DbContextBuilder db)
-    //            : base(service, db)
-    //        {
+                if (ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-war");
 
-    //        }
+                Chicken? chicken = await ctx.Services.GetRequiredService<ChickenService>().GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
+                if (chicken is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                chicken.Owner = ctx.User;
 
+                if (chicken.Stats.Upgrades?.Any(u => ids.Contains(u.Id)) ?? false)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-upg-dup");
 
-    //        [GroupCommand, Priority(1)]
-    //        public Task ExecuteGroupAsync(CommandContext ctx)
-    //            => this.ListAsync(ctx);
+                IReadOnlyList<ChickenUpgrade> upgrades = await this.Service.GetAsync();
+                var toBuy = upgrades.Where(u => ids.Contains(u.Id)).ToList();
 
-    //        [GroupCommand, Priority(0)]
-    //        public async Task ExecuteGroupAsync(CommandContext ctx,
-    //                                           [Description("IDs of the upgrades to buy.")] params int[] ids)
-    //        {
-    //            if (ids is null || !ids.Any())
-    //                throw new CommandFailedException("You need to specify the IDs of the upgrades you wish to purchase.");
+                CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                long totalCost = toBuy.Sum(u => u.Cost);
+                string upgradeNames = toBuy.Select(u => u.Name).JoinWith(", ");
+                if (!await ctx.WaitForBoolReplyAsync("q-chicken-upg", args: new[] { ctx.User.Mention, $"{totalCost:n0}", gcfg.Currency, upgradeNames }))
+                    return;
 
-    //            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
-    //                throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, totalCost))
+                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, $"{totalCost:n0}");
 
-    //            CachedGuildConfig gcfg = ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                await ctx.Services.GetRequiredService<ChickenBoughtUpgradeService>().AddAsync(
+                    toBuy.Select(u => new ChickenBoughtUpgrade {
+                        Id = u.Id,
+                        GuildId = chicken.GuildId,
+                        UserId = chicken.UserId
+                    })
+                );
 
-    //            Chicken? chicken = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, ctx.User.Id, findOwner: false);
-    //            if (chicken is null)
-    //                throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {gcfg.Currency}).");
+                int addedStr = toBuy.Where(u => u.UpgradesStat == ChickenStatUpgrade.Str).Sum(u => u.Modifier);
+                int addedVit = toBuy.Where(u => u.UpgradesStat == ChickenStatUpgrade.MaxVit).Sum(u => u.Modifier);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-upg", ctx.User.Mention, chicken.Name, toBuy.Count, addedStr, addedVit);
+            }
+            #endregion
 
-    //            if (chicken.Stats.Upgrades.Any(u => ids.Contains(u.Id)))
-    //                throw new CommandFailedException("Your chicken already one of those upgrades!");
-
-    //            using TheGodfatherDbContext db = this.Database.CreateContext();
-    //            foreach (int id in ids) {
-    //                ChickenUpgrade upgrade = await db.ChickenUpgrades.FindAsync(id);
-    //                if (upgrade is null)
-    //                    throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
-
-    //                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention} are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Cost:n0}")} {gcfg.Currency}?"))
-    //                    return;
-
-    //                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Cost))
-    //                    throw new CommandFailedException($"You do not have enough {gcfg.Currency} to buy that upgrade!");
-
-    //                db.ChickensBoughtUpgrades.Add(new ChickenBoughtUpgrade {
-    //                    Id = upgrade.Id,
-    //                    GuildId = chicken.GuildId,
-    //                    UserId = chicken.UserId
-    //                });
-    //                await this.InformAsync(ctx, Emojis.Chicken, $"{ctx.User.Mention} upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
-    //            }
-
-    //            await db.SaveChangesAsync();
-    //        }
-
-
-    //        #region COMMAND_CHICKEN_UPGRADE_LIST
-    //        [Command("list")]
-    //        [Description("List all available upgrades.")]
-    //        [Aliases("ls", "view")]
-    //        public async Task ListAsync(CommandContext ctx)
-    //        {
-    //            using TheGodfatherDbContext db = this.Database.CreateContext();
-    //            await ctx.PaginateAsync(
-    //                "Available chicken upgrades",
-    //                db.ChickenUpgrades.OrderByDescending(u => u.Cost),
-    //                u => $"{Formatter.InlineCode($"{u.Id:D2}")} | {u.Name} | {Formatter.Bold($"{u.Cost:n0}")} | +{Formatter.Bold(u.Modifier.ToString())} {u.UpgradesStat.ToShortString()}",
-    //                this.ModuleColor
-    //            );
-    //        }
-    //        #endregion
-    //    }
-    //}
+            #region chicken upgrade list
+            [Command("list")]
+            [Aliases("print", "show", "view", "ls", "l", "p")]
+            public async Task ListAsync(CommandContext ctx)
+            {
+                IReadOnlyList<ChickenUpgrade> upgrades = await this.Service.GetAsync();
+                await ctx.PaginateAsync(upgrades.OrderBy(u => u.Cost), (emb, u) => {
+                    emb.WithTitle(u.Name);
+                    emb.AddLocalizedTitleField("str-id", u.Id, inline: true);
+                    emb.AddLocalizedTitleField("str-cost", $"{u.Cost:n0}", inline: true);
+                    emb.AddLocalizedTitleField("str-cost", $"+{u.Modifier}{u.UpgradesStat.Humanize(LetterCasing.AllCaps)}", inline: true);
+                    return emb;
+                }, this.ModuleColor);
+            }
+            #endregion
+        }
+    }
 }

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("chicken_upgrades")]
-    public class ChickenUpgrade
+    public class ChickenUpgrade : IEquatable<ChickenUpgrade>
     {
         public const int NameLimit = 32;
 
@@ -34,5 +35,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual ICollection<ChickenBoughtUpgrade> BoughtUpgrades { get; set; }
+
+
+        public bool Equals(ChickenUpgrade? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as ChickenUpgrade);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 }

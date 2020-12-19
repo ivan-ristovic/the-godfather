@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Administration
 
         #region automaticroles list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<ulong> rids = this.Service.GetIds(ctx.Guild.Id);

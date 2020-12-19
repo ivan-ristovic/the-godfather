@@ -222,7 +222,7 @@ namespace TheGodfather.Modules.Chickens
 
         #region chicken list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<Chicken> chickens = await this.Service.GetAllAsync(ctx.Guild.Id);

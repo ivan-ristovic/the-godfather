@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Owner
 
         #region commands list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
             return ctx.PaginateAsync(

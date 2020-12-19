@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Owner
 
         #region blockedusers list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
             => this.BaseListAsync(ctx);
         #endregion
@@ -251,7 +251,7 @@ namespace TheGodfather.Modules.Owner
 
         #region blockedchannels list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
             => this.BaseListAsync(ctx);
         #endregion
@@ -345,7 +345,7 @@ namespace TheGodfather.Modules.Owner
 
         #region blockedguilds list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
             => this.BaseListAsync(ctx);
         #endregion

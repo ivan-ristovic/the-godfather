@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region emojireaction list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
             IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(ctx.Guild.Id);

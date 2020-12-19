@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Owner
 
         #region privilegedusers list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<PrivilegedUser> privileged = await this.Service.GetAsync();

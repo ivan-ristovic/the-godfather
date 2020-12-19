@@ -98,5 +98,15 @@
     "usage": [
       []
     ]
+  },
+  "chicken upgrade": {
+    "usage": [
+      [ "arg-five", "arg-ten" ]
+    ]
+  },
+  "chicken upgrade list": {
+    "usage": [
+      []
+    ]
   }
 }

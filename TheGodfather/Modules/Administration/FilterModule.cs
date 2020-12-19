@@ -195,7 +195,7 @@ namespace TheGodfather.Modules.Administration
 
         #region filter list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
             IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);

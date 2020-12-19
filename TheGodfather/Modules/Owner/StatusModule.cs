@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Owner
 
         #region status list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<BotStatus> statuses = await this.Service.GetAsync();

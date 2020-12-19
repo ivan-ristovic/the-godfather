@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Administration
 
             #region config locale list
             [Command("list")]
-            [Aliases("print", "show", "ls", "l", "p")]
+            [Aliases("print", "show", "view", "ls", "l", "p")]
             public Task ListLocalesAsync(CommandContext ctx)
             {
                 IReadOnlyList<string> locales = this.Service.AvailableLocales;

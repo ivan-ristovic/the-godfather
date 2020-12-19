@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
 
         #region rank list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task RankListAsync(CommandContext ctx)
         {
             IReadOnlyList<XpRank> ranks = await this.Service.GetAllAsync(ctx.Guild.Id);

@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Administration
 
         #region commandrules list
         [Command("list"), Priority(1)]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx,
                              [RemainingText, Description("desc-cr-cmd")] string command)
             => this.PrintRulesAsync(ctx, cmd: command);

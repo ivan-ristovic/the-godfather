@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region textreactions list
         [Command("list")]
-        [Aliases("print", "show", "ls", "l", "p")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
             IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(ctx.Guild.Id);
