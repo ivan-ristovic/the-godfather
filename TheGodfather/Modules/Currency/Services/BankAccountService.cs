@@ -35,16 +35,19 @@ namespace TheGodfather.Modules.Currency.Services
         public override IQueryable<BankAccount> GroupSelector(IQueryable<BankAccount> entities, ulong grid)
             => entities.Where(acc => (ulong)acc.GuildIdDb == grid);
 
-        public async Task<bool> AddToBankAccountAsync(ulong gid, ulong uid, long change)
+        public Task IncreaseBankAccountAsync(ulong gid, ulong uid, long change)
+            => this.ModifyBankAccountAsync(gid, uid, b => b + change);
+
+        public async Task<bool> TryDecreaseBankAccountAsync(ulong gid, ulong uid, long change)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             BankAccount? account = await this.GetAsync(gid, uid);
             if (account is null || account.Balance < change)
                 return false;
-            
+
             account.Balance += change;
             db.BankAccounts.Update(account);
-            
+
             await db.SaveChangesAsync();
             return true;
         }

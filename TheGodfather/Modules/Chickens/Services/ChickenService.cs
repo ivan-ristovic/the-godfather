@@ -141,5 +141,15 @@ namespace TheGodfather.Modules.Chickens.Services
                 .ToList()
                 .AsReadOnly();
         }
+
+        public async Task UpdateAsync(IEnumerable<Chicken> chickens)
+        {
+            if (!chickens.Any())
+                return;
+
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.UpdateRange(chickens);
+            await db.SaveChangesAsync();
+        }
     }
 }

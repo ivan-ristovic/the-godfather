@@ -55,24 +55,25 @@ namespace TheGodfather.Modules.Chickens
             if (member == ctx.User)
                 throw new CommandFailedException(ctx, "cmd-err-chicken-self");
 
-            Chicken? c1 = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, ctx.User.Id);
+            Chicken? c1 = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
             if (c1 is null)
                 throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+            c1.Owner = ctx.User;
 
             if (c1.Stats.TotalVitality < Chicken.MinVitalityToFight)
                 throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
 
-            Chicken? c2 = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, member.Id);
+            Chicken? c2 = await this.Service.GetCompleteAsync(ctx.Guild.Id, member.Id);
             if (c2 is null)
                 throw new CommandFailedException(ctx, "cmd-err-chicken-404", member.Mention);
+            c2.Owner = member;
 
             if (c1.IsTooStrongFor(c2))
                 throw new CommandFailedException(ctx, "cmd-err-chicken-strdiff", Chicken.MaxFightStrDiff);
 
-
             var res = ChickenFightResult.Fight(c1, c2);
             await this.Service.UpdateAsync(res);
-            await ctx.Services.GetRequiredService<BankAccountService>().AddToBankAccountAsync(ctx.Guild.Id, res.Winner.UserId, res.Reward);
+            await ctx.Services.GetRequiredService<BankAccountService>().IncreaseBankAccountAsync(ctx.Guild.Id, res.Winner.UserId, res.Reward);
 
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
@@ -85,9 +86,9 @@ namespace TheGodfather.Modules.Chickens
                 desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-w", Emojis.Trophy, res.Winner.Name)).AppendLine();
                 desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain", res.Winner.Name, res.StrGain));
                 if (res.IsLoserDead)
-                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", res.Winner.Name));
+                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", res.Loser.Name));
                 else
-                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", res.Winner.Name, ChickenFightResult.VitLoss));
+                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", res.Loser.Name, ChickenFightResult.VitLoss));
                 desc.AppendLine();
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-rew", res.Winner.Owner?.Mention, res.Reward, currency));
@@ -218,7 +219,7 @@ namespace TheGodfather.Modules.Chickens
                 return;
 
             await this.Service.RemoveAsync(chicken);
-            await ctx.Services.GetRequiredService<BankAccountService>().AddToBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price);
+            await ctx.Services.GetRequiredService<BankAccountService>().IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price);
 
             await ctx.InfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-sell", ctx.User.Mention, chicken.Name, price);
         }

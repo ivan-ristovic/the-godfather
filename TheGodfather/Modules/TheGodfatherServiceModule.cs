@@ -8,7 +8,7 @@ namespace TheGodfather.Modules
     {
         protected TService Service { get; }
 
-
+        // TODO DI inject?
         protected TheGodfatherServiceModule(TService service)
         {
             this.Service = service;
