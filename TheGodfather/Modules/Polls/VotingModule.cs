@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Polls
     [Group("vote"), Module(ModuleType.Polls), NotBlocked]
     [Aliases("votefor", "vf")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
+    public sealed class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
         #region vote
         [GroupCommand]

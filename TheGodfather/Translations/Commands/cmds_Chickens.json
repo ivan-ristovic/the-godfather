@@ -6,6 +6,41 @@
       [ "arg-name" ]
     ]
   },
+  "chicken buy": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy alien": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy default": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy list": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken buy steroidempowered": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy trained": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy wellfed": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
   "chicken fight": {
     "usage": [
       [ "arg-mem" ],

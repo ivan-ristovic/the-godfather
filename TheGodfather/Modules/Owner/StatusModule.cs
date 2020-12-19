@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Owner
     [Group("statuses"), Module(ModuleType.Owner), Hidden]
     [Aliases("status", "botstatus", "activity", "activities")]
     [RequireOwner]
-    public class StatusModule : TheGodfatherServiceModule<BotActivityService>
+    public sealed class StatusModule : TheGodfatherServiceModule<BotActivityService>
     {
         #region statuses
         [GroupCommand, Priority(1)]

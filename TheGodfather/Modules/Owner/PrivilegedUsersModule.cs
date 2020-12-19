@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Owner
     [Group("privilegedusers"), Module(ModuleType.Owner), Hidden]
     [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
     [RequireOwner]
-    public class PrivilegedUsersModule : TheGodfatherServiceModule<PrivilegedUserService>
+    public sealed class PrivilegedUsersModule : TheGodfatherServiceModule<PrivilegedUserService>
     {
         #region privilegedusers
         [GroupCommand, Priority(1)]

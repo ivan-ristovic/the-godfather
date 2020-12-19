@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Owner
 {
     [Group("owner"), Module(ModuleType.Owner), Hidden]
     [Aliases("admin", "o")]
-    public partial class OwnerModule : TheGodfatherModule
+    public sealed class OwnerModule : TheGodfatherModule
     {
         #region announce
         [Command("announce"), UsesInteractivity]

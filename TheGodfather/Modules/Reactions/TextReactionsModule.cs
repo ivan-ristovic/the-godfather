@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Reactions
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
+    public sealed class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
         #region textreactions
         [GroupCommand, Priority(1)]

@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class PollModule : TheGodfatherServiceModule<ChannelEventService>
+    public sealed class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
         #region poll
         [GroupCommand, Priority(2)]

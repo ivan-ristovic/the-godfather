@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Reactions
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [RequireGuild, RequirePermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
+    public sealed class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
         #region emojireaction
         [GroupCommand, Priority(2)]
