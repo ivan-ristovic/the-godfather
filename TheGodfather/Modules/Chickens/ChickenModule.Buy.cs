@@ -1,21 +1,16 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Chickens.Extensions;
 using TheGodfather.Modules.Chickens.Services;
-using TheGodfather.Modules.Currency.Extensions;
 using TheGodfather.Modules.Currency.Services;
 using TheGodfather.Services.Common;
 
@@ -25,12 +20,8 @@ namespace TheGodfather.Modules.Chickens
     {
         [Group("buy"), UsesInteractivity]
         [Aliases("b", "shop")]
-        public class BuyModule : TheGodfatherServiceModule<ChickenService>
+        public sealed class BuyModule : TheGodfatherServiceModule<ChickenService>
         {
-            public BuyModule(ChickenService service)
-                : base(service) { }
-
-
             #region chicken buy
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx,
@@ -95,7 +86,7 @@ namespace TheGodfather.Modules.Chickens
             #endregion
 
 
-            #region Helpers
+            #region internals
             private async Task TryBuyInternalAsync(CommandContext ctx, ChickenType type, string name)
             {
                 if (string.IsNullOrWhiteSpace(name))

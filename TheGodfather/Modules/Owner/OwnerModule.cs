@@ -50,8 +50,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.WaitForBoolReplyAsync("q-announcement", args: Formatter.Strip(message)))
                 return;
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
+            var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
             emb.WithLocalizedTitle("str-announcement");
             emb.WithDescription(message);
             emb.WithColor(DiscordColor.Red);
@@ -62,7 +61,7 @@ namespace TheGodfather.Modules.Owner
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {
-                        eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-announce", shard.Id, guild.Name, guild.Id));
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-announce", shard.Id, guild.Name, guild.Id));
                     }
                 }
             }
@@ -194,7 +193,6 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(code))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             DiscordMessage msg = await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithLocalizedTitle("str-eval");
                 emb.WithColor(this.ModuleColor);
@@ -206,7 +204,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
             }
 
-            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
+            var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
 
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
                 emb.WithLocalizedTitle("str-eval-fail-compile");
@@ -283,7 +281,6 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException(ctx, "cmd-err-doc-clean");
             }
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             CommandService cs = ctx.Services.GetRequiredService<CommandService>();
 
             var sb = new StringBuilder();
@@ -298,7 +295,7 @@ namespace TheGodfather.Modules.Owner
 
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine();
-                sb.AppendLine(Formatter.Italic(lcs.GetString(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
+                sb.AppendLine(Formatter.Italic(this.Localization.GetString(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
                 sb.AppendLine().AppendLine();
 
                 foreach (Command cmd in cmdlist) {
@@ -312,7 +309,7 @@ namespace TheGodfather.Modules.Owner
                     if (cmd.IsHidden)
                         sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                    sb.AppendLine(Formatter.Italic(lcs.GetCommandDescription(null, cmd.QualifiedName))).AppendLine();
+                    sb.AppendLine(Formatter.Italic(this.Localization.GetCommandDescription(null, cmd.QualifiedName))).AppendLine();
 
                     if (cmd.Aliases.Any()) {
                         sb.AppendLine(Formatter.Bold("Aliases:"));
@@ -387,7 +384,7 @@ namespace TheGodfather.Modules.Owner
                             if (string.IsNullOrWhiteSpace(arg.Description))
                                 sb.Append("No description provided.");
                             else
-                                sb.Append(lcs.GetString(null, arg.Description));
+                                sb.Append(this.Localization.GetString(null, arg.Description));
                             sb.Append('*');
 
                             if (arg.IsOptional) {
@@ -455,16 +452,15 @@ namespace TheGodfather.Modules.Owner
             if (gids is null || !gids.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             var eb = new StringBuilder();
             foreach (ulong gid in gids) {
                 try {
                     if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild? guild))
                         await guild.LeaveAsync();
                     else
-                        eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-guild-leave", gid));
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave", gid));
                 } catch {
-                    eb.AppendLine(lcs.GetString(ctx.Guild?.Id, "cmd-err-guild-leave-fail", gid));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave-fail", gid));
                 }
             }
 

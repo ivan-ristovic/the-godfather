@@ -13,7 +13,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -23,10 +22,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("as")]
         public sealed class AntispamModule : TheGodfatherServiceModule<AntispamService>
         {
-            public AntispamModule(AntispamService service)
-                : base(service) { }
-
-
             #region config antispam
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -78,10 +73,9 @@ namespace TheGodfather.Modules.Administration
                 IReadOnlyList<ExemptedAntispamEntity> exempts = await this.Service.GetExemptsAsync(ctx.Guild.Id);
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
-                    LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
                         emb.WithLocalizedTitle("str-antispam");
-                        emb.WithLocalizedDescription("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                        emb.WithLocalizedDescription("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
                             emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);

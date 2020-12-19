@@ -2,7 +2,6 @@
 using System.IO;
 using NUnit.Framework;
 using TheGodfather.Database.Models;
-using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 

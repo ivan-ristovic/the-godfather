@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Currency.Services
         public override DbSet<BankAccount> DbSetSelector(TheGodfatherDbContext db)
             => db.BankAccounts;
 
-        public override BankAccount EntityFactory(ulong grid, ulong id) 
+        public override BankAccount EntityFactory(ulong grid, ulong id)
             => new BankAccount { UserId = id, GuildId = grid };
 
         public override ulong EntityGroupSelector(BankAccount entity)
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Currency.Services
         public async Task ModifyBankAccountAsync(ulong gid, ulong uid, Func<long, long> balanceModifier)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            
+
             bool created = false;
 
             BankAccount? account = await this.GetAsync(gid, uid);

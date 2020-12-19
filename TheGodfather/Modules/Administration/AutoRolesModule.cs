@@ -20,10 +20,6 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class AutoRolesModule : TheGodfatherServiceModule<AutoRoleService>
     {
-        public AutoRolesModule(AutoRoleService service) 
-            : base(service) { }
-
-
         #region automaticroles
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)

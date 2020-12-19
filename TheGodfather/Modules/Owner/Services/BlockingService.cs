@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             return blocked;
         }
-        
+
         public async Task<bool> BlockGuildAsync(ulong gid, string? reason = null)
         {
             if (!this.bGuilds.Add(gid))

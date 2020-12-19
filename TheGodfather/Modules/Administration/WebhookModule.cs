@@ -9,7 +9,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -25,11 +24,12 @@ namespace TheGodfather.Modules.Administration
     [RequireGuild, RequirePermissions(Permissions.ManageWebhooks)]
     public sealed class WebhookModule : TheGodfatherModule
     {
+        #region webhook
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-chn-wh-list")] DiscordChannel? channel = null)
             => this.ListAsync(ctx, channel);
-
+        #endregion
 
         #region webhook add
         [Command("add"), Priority(7)]
@@ -198,7 +198,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        #region Helpers
+        #region internals
         private async Task CreateWebhookAsync(CommandContext ctx, DiscordChannel channel, string name, Uri? avatarUrl, string? reason)
         {
             // TODO what about other channel types? news, store etc?
@@ -227,7 +227,7 @@ namespace TheGodfather.Modules.Administration
                 try {
                     DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
                     if (dm is { }) {
-                        var emb = new LocalizedEmbedBuilder(ctx.Services.GetRequiredService<LocalizationService>(), ctx.Guild.Id);
+                        var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
                         emb.WithLocalizedTitle("fmt-wh-add", Formatter.Bold(Formatter.Strip(wh.Name)), channel.Mention);
                         emb.WithDescription(FormatterExt.Spoiler(wh.BuildUrlString()));
                         emb.WithColor(this.ModuleColor);
@@ -261,14 +261,13 @@ namespace TheGodfather.Modules.Administration
 
             bool displayToken = await ctx.WaitForBoolReplyAsync("q-display-tokens", reply: false);
 
-            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
             await ctx.PaginateAsync(
                 whs.OrderBy(wh => wh.ChannelId),
                 (emb, wh) => emb
                     .WithLocalizedTitle("fmt-wh", wh.Name, wh.ChannelId)
                     .WithThumbnail(wh.AvatarUrl)
                     .AddLocalizedTitleField("str-id", wh.Id, inline: true)
-                    .AddLocalizedTitleField("str-created-at", ls.GetLocalizedTime(ctx.Guild.Id, wh.CreationTimestamp, unknown: true), inline: true)
+                    .AddLocalizedTitleField("str-created-at", this.Localization.GetLocalizedTime(ctx.Guild.Id, wh.CreationTimestamp, unknown: true), inline: true)
                     .AddLocalizedTitleField("str-created-by", wh.User?.Mention, inline: true)
                     .AddLocalizedTitleField("str-token", SanitizeWebhookData(wh, wh.Token), unknown: false)
                     .AddLocalizedTitleField("str-url", SanitizeWebhookData(wh, wh.BuildUrlString()), unknown: false)

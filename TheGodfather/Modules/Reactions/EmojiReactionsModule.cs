@@ -9,7 +9,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
@@ -17,7 +16,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Reactions.Extensions;
 using TheGodfather.Modules.Reactions.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Reactions
 {
@@ -27,10 +25,6 @@ namespace TheGodfather.Modules.Reactions
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
-        public EmojiReactionsModule(ReactionsService service)
-            : base(service) { }
-
-
         #region emojireaction
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -142,16 +136,15 @@ namespace TheGodfather.Modules.Reactions
             var eb = new StringBuilder();
             var validTriggers = new HashSet<string>();
             var foundReactions = new HashSet<EmojiReaction>();
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             foreach (string trigger in triggers.Select(t => t.ToLowerInvariant()).Distinct()) {
                 if (!trigger.TryParseRegex(out _)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 
                 IEnumerable<EmojiReaction> found = ers.Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
                     continue;
                 }
 
@@ -239,7 +232,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
 
-        #region Helpers
+        #region internals
         private static string FormatEmojiReaction(DiscordClient client, EmojiReaction er)
         {
             string emoji;
@@ -262,15 +255,14 @@ namespace TheGodfather.Modules.Reactions
 
             var eb = new StringBuilder();
             var validTriggers = new HashSet<string>();
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
                 if (trigger.Length > ReactionTrigger.TriggerLimit) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-len", trigger, ReactionTrigger.TriggerLimit));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-len", trigger, ReactionTrigger.TriggerLimit));
                     continue;
                 }
 
                 if (regex && !trigger.TryParseRegex(out _)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 

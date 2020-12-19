@@ -17,10 +17,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("lf")]
         public sealed class LinkfilterModule : TheGodfatherServiceModule<LinkfilterService>
         {
-            public LinkfilterModule(LinkfilterService service)
-                : base(service) { }
-
-
             #region config linkfilter
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -158,8 +154,8 @@ namespace TheGodfather.Modules.Administration
             #endregion
 
 
-            #region Helpers
-            protected Task LogConfigChangeAsync(CommandContext ctx, string key, bool value)
+            #region internals
+            private Task LogConfigChangeAsync(CommandContext ctx, string key, bool value)
             {
                 return ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");

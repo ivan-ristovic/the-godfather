@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Polls.Common
                     break;
 
                 await Task.Delay(
-                    this.TimeUntilEnd <= TimeSpan.FromSeconds(MinTimeSeconds) ? this.TimeUntilEnd : TimeSpan.FromSeconds(MinTimeSeconds), 
+                    this.TimeUntilEnd <= TimeSpan.FromSeconds(MinTimeSeconds) ? this.TimeUntilEnd : TimeSpan.FromSeconds(MinTimeSeconds),
                     this.cts.Token
                 );
             }

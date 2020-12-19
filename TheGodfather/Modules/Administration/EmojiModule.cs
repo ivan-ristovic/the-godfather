@@ -9,7 +9,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Humanizer;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -113,7 +112,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
 
-                var emb = new LocalizedEmbedBuilder(ctx.Services.GetRequiredService<LocalizationService>(), ctx.Guild.Id);
+                var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
                 emb.WithColor(this.ModuleColor);
                 emb.WithLocalizedTitle("str-emoji-details");
                 emb.WithDescription($"{gemoji.GetDiscordName()} ({gemoji.Id})");

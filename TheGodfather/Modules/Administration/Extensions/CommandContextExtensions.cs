@@ -17,12 +17,12 @@ namespace TheGodfather.Modules.Administration.Extensions
                 return Task.CompletedTask;
 
             modifyLogEmbed(emb);
-    
+
             if (addInvocationFields) {
                 emb.AddInvocationFields(ctx);
                 emb.WithLocalizedTimestamp(iconUrl: ctx.User.AvatarUrl);
             }
-            
+
             return logService.LogAsync(ctx.Guild, emb);
         }
 

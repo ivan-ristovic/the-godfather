@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc.Common
             CommandService cs = this.Context.Services.GetRequiredService<CommandService>();
             try {
                 this.desc = cs.GetCommandDescription(this.GuildId, cmd.QualifiedName);
-            } catch (Exception e) when (e is LocalizationException || e is KeyNotFoundException)  {
+            } catch (Exception e) when (e is LocalizationException || e is KeyNotFoundException) {
                 LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
                 this.desc = this.GetS("h-desc-none");
             }
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Misc.Common
         }
 
 
-        private string GetS(string key, params object?[]? args) 
+        private string GetS(string key, params object?[]? args)
             => this.lcs.GetString(this.GuildId, key, args);
     }
 }

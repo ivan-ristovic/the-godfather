@@ -63,8 +63,8 @@ namespace TheGodfather.Services
         private static void CheckForFaultsAndUpdateState<T>(Task task, AsyncState<T> state)
         {
             if (task.IsFaulted) {
-                state.Exception = task.Exception?.InnerExceptions.Count == 1 
-                    ? task.Exception.InnerException 
+                state.Exception = task.Exception?.InnerExceptions.Count == 1
+                    ? task.Exception.InnerException
                     : task.Exception ?? new Exception("No details provided");
             } else if (task.IsCanceled) {
                 state.Exception = new TaskCanceledException(task);

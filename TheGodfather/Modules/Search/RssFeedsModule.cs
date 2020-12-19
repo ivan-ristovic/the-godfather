@@ -26,13 +26,6 @@ namespace TheGodfather.Modules.Search
     public class RssFeedsModule : TheGodfatherModule
     {
 
-        public RssFeedsModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         #region COMMAND_RSS
         [Command("rss")]
         [Description("Get the latest topics from the given RSS feed URL.")]
@@ -62,14 +55,6 @@ namespace TheGodfather.Modules.Search
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class SubscribeModule : TheGodfatherModule
         {
-
-            public SubscribeModule(DbContextBuilder db)
-                : base(db)
-            {
-
-            }
-
-
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("URL.")] Uri url,
@@ -158,14 +143,6 @@ namespace TheGodfather.Modules.Search
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
         public class UnsubscribeModule : TheGodfatherModule
         {
-
-            public UnsubscribeModule(DbContextBuilder db)
-                : base(db)
-            {
-
-            }
-
-
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the subscriptions to remove.")] params int[] ids)

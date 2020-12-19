@@ -8,7 +8,7 @@ namespace TheGodfather.Database.Models
     public class PurchasableItem
     {
         public const int NameLimit = 128;
-     
+
         public PurchasableItem()
         {
             this.Purchases = new HashSet<PurchasedItem>();

@@ -14,10 +14,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class InsultModule : TheGodfatherServiceModule<InsultService>
     {
-        public InsultModule(InsultService service)
-            : base(service) { }
-
-
         #region insult
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx,

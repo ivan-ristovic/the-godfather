@@ -12,11 +12,9 @@ using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -26,10 +24,6 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
-        public FilterModule(FilteringService service)
-            : base(service) { }
-
-
         #region filter
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -50,37 +44,35 @@ namespace TheGodfather.Modules.Administration
             if (filters is null || !filters.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-f-missing");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-            
             var eb = new StringBuilder();
             foreach (string regexString in filters) {
                 if (regexString.Contains('%')) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-%", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-%", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (regexString.Length < 3 || regexString.Length > Filter.FilterLimit) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
                     continue;
                 }
 
                 if (ctx.Services.GetRequiredService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-invalid", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-invalid", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex))
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
             }
 
             await ctx.GuildLogAsync(emb => {
@@ -102,10 +94,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         public class FilterDeleteModule : TheGodfatherServiceModule<FilteringService>
         {
-            public FilterDeleteModule(FilteringService service)
-                : base(service) { }
-
-
             #region filter delete
             [GroupCommand, Priority(1)]
             public Task DeleteAsync(CommandContext ctx,
@@ -179,7 +167,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
                     emb.WithDescription(regexStrings.JoinWith());
                 });
-                
+
                 await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
             }
             #endregion

@@ -7,7 +7,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -21,14 +20,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WikiModule : TheGodfatherModule
     {
-
-        public WikiModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)

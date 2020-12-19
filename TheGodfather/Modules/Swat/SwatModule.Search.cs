@@ -27,14 +27,6 @@ namespace TheGodfather.Modules.Swat
 
         public class SwatSearchModule : TheGodfatherModule
         {
-
-            public SwatSearchModule(DbContextBuilder db)
-                : base(db)
-            {
-
-            }
-
-
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("IP or range.")] IPAddressRange ip,

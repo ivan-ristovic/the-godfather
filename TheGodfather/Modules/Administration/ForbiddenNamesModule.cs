@@ -8,7 +8,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
@@ -16,7 +15,6 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -26,10 +24,6 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class ForbiddenNamesModule : TheGodfatherServiceModule<ForbiddenNamesService>
     {
-        public ForbiddenNamesModule(ForbiddenNamesService service)
-            : base(service) { }
-
-
         #region forbiddennames
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -50,28 +44,26 @@ namespace TheGodfather.Modules.Administration
             if (names is null || !names.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-fn-pat-none");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-
             var eb = new StringBuilder();
             var addedPatterns = new List<Regex>();
             foreach (string regexString in names) {
                 if (regexString.Length < 3 || regexString.Length > ForbiddenName.NameLimit) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-size", Formatter.InlineCode(regexString), ForbiddenName.NameLimit));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-size", Formatter.InlineCode(regexString), ForbiddenName.NameLimit));
                     continue;
                 }
 
                 if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-invalid", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-invalid", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (this.Service.IsSafePattern(regex)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-unsafe", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-unsafe", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
                 if (!await this.Service.AddForbiddenNameAsync(ctx.Guild.Id, regex)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-fn-dup", Formatter.InlineCode(regexString)));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-dup", Formatter.InlineCode(regexString)));
                     continue;
                 }
 
@@ -86,15 +78,15 @@ namespace TheGodfather.Modules.Administration
                     try {
                         await member.ModifyAsync(m => {
                             m.Nickname = member.Id.ToString();
-                            m.AuditLogReason = lcs.GetString(ctx.Guild.Id, "rsn-fname-match", match);
+                            m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, "rsn-fname-match", match);
                         });
                         if (!member.IsBot)
-                            await member.SendMessageAsync(lcs.GetString(null, "dm-fname-match", Formatter.Italic(ctx.Guild.Name)));
+                            await member.SendMessageAsync(this.Localization.GetString(null, "dm-fname-match", Formatter.Italic(ctx.Guild.Name)));
                     } catch (UnauthorizedException) {
                         if (!failed) {
                             failed = true;
-                            eb.Append(lcs.GetString(ctx.Guild.Id, "err-fname-match"));
-                        } 
+                            eb.Append(this.Localization.GetString(ctx.Guild.Id, "err-fname-match"));
+                        }
                     }
                 }
             }
@@ -118,10 +110,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         public class ForbiddenNamesDeleteModule : TheGodfatherServiceModule<ForbiddenNamesService>
         {
-            public ForbiddenNamesDeleteModule(ForbiddenNamesService service)
-                : base(service) { }
-
-
             #region forbiddennames delete
             [GroupCommand, Priority(1)]
             public Task DeleteAsync(CommandContext ctx,

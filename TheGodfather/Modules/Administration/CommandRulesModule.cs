@@ -6,7 +6,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
@@ -14,7 +13,6 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -24,10 +22,6 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class CommandRulesModule : TheGodfatherServiceModule<CommandRulesService>
     {
-        public CommandRulesModule(CommandRulesService service)
-            : base(service) { }
-
-
         #region commandrules
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -119,7 +113,7 @@ namespace TheGodfather.Modules.Administration
                 else
                     await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid-global", Formatter.InlineCode(cmd.QualifiedName));
             }
-            
+
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cr-change");
                 emb.WithColor(this.ModuleColor);
@@ -137,11 +131,9 @@ namespace TheGodfather.Modules.Administration
             else if (!global)
                 crs = crs.Where(cr => cr.ChannelId == 0);
 
-            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-
             return crs.Any()
                 ? ctx.PaginateAsync(
-                    ls.GetString(ctx.Guild.Id, "fmt-cr-list", ctx.Guild.Name),
+                    this.Localization.GetString(ctx.Guild.Id, "fmt-cr-list", ctx.Guild.Name),
                     crs.OrderBy(cr => cr.ChannelId),
                     cr => MakeListItem(cr),
                     this.ModuleColor
@@ -153,14 +145,14 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordEmoji mark = cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X;
 
-                string location = ls.GetString(ctx.Guild.Id, "str-global");
+                string location = this.Localization.GetString(ctx.Guild.Id, "str-global");
                 if (cr.ChannelId != 0) {
                     DiscordChannel? chn = ctx.Guild.GetChannel(cr.ChannelId);
                     if (chn is { })
                         location = chn.Mention;
                 }
 
-                return ls.GetString(ctx.Guild.Id, "fmt-cr-list-item", mark, location, Formatter.InlineCode(cr.Command));
+                return this.Localization.GetString(ctx.Guild.Id, "fmt-cr-list-item", mark, location, Formatter.InlineCode(cr.Command));
             }
         }
         #endregion

@@ -20,7 +20,7 @@ namespace TheGodfather.Extensions
             }
         }
 
-        public static async Task<DiscordAuditLogEntry?> GetRecentAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType? type = null, 
+        public static async Task<DiscordAuditLogEntry?> GetRecentAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType? type = null,
                                                                                     TimeSpan? period = null)
         {
             period ??= TimeSpan.FromSeconds(5);
@@ -33,8 +33,8 @@ namespace TheGodfather.Extensions
             return null;
         }
 
-        public static async Task<T?> GetLatestAuditLogEntryAsync<T>(this DiscordGuild guild, AuditLogActionType? type = null, 
-                                                                    TimeSpan? period = null) 
+        public static async Task<T?> GetLatestAuditLogEntryAsync<T>(this DiscordGuild guild, AuditLogActionType? type = null,
+                                                                    TimeSpan? period = null)
             where T : DiscordAuditLogEntry
         {
             DiscordAuditLogEntry? entry = await GetRecentAuditLogEntryAsync(guild, type, period);

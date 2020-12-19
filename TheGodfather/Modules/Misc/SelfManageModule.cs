@@ -12,7 +12,6 @@ using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -70,14 +69,14 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
-            
+
             ForbiddenNamesService service = ctx.Services.GetRequiredService<ForbiddenNamesService>();
             if (service.IsNameForbidden(ctx.Guild.Id, name, out _))
                 throw new CommandFailedException(ctx, "cmd-err-fn-match");
 
             await ctx.Member.ModifyAsync(m => {
                 m.Nickname = name;
-                m.AuditLogReason = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild.Id, "rsn-grant-name");
+                m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, "rsn-grant-name");
             });
 
             await ctx.InfoAsync(this.ModuleColor);

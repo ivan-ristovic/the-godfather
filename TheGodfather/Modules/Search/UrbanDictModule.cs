@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
@@ -19,14 +18,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class UrbanDictModule : TheGodfatherModule
     {
-
-        public UrbanDictModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Query.")] string query)

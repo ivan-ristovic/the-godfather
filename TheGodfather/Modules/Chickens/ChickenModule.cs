@@ -27,10 +27,6 @@ namespace TheGodfather.Modules.Chickens
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class ChickenModule : TheGodfatherServiceModule<ChickenService>
     {
-        public ChickenModule(ChickenService service)
-            : base(service) { }
-
-
         #region chicken
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -75,23 +71,22 @@ namespace TheGodfather.Modules.Chickens
             await this.Service.UpdateAsync(res);
             await ctx.Services.GetRequiredService<BankAccountService>().IncreaseBankAccountAsync(ctx.Guild.Id, res.Winner.UserId, res.Reward);
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
 
                 var desc = new StringBuilder();
-                desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-h",
+                desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-h",
                     Emojis.Chicken, c1.Name, c1.Stats.ToShortString(), Emojis.DuelSwords, c2.Name, c2.Stats.ToShortString(), Emojis.Chicken
                 )).AppendLine();
-                desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-w", Emojis.Trophy, res.Winner.Name)).AppendLine();
-                desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain", res.Winner.Name, res.StrGain));
+                desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-w", Emojis.Trophy, res.Winner.Name)).AppendLine();
+                desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain", res.Winner.Name, res.StrGain));
                 if (res.IsLoserDead)
-                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", res.Loser.Name));
+                    desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", res.Loser.Name));
                 else
-                    desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", res.Loser.Name, ChickenFightResult.VitLoss));
+                    desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", res.Loser.Name, ChickenFightResult.VitLoss));
                 desc.AppendLine();
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-                desc.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-rew", res.Winner.Owner?.Mention, res.Reward, currency));
+                desc.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-rew", res.Winner.Owner?.Mention, res.Reward, currency));
                 emb.WithDescription(desc);
             });
         }
@@ -156,7 +151,7 @@ namespace TheGodfather.Modules.Chickens
                 emb.WithLocalizedFooter("str-chickens", chicken.Owner?.AvatarUrl);
             });
         }
-        
+
         [Command("info"), Priority(1)]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("desc-chicken-name")] string chickenName)
@@ -266,7 +261,7 @@ namespace TheGodfather.Modules.Chickens
         #endregion
 
 
-        #region Helpers
+        #region internals
         private async Task PrintChickensAsync(CommandContext ctx, IEnumerable<Chicken> chickens)
         {
             if (!chickens.Any())

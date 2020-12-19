@@ -20,10 +20,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("log", "modlog")]
         public sealed class LoggingModule : TheGodfatherServiceModule<LoggingService>
         {
-            public LoggingModule(LoggingService service)
-                : base(service) { }
-
-
             #region config logging
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,

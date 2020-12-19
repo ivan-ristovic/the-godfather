@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -28,13 +26,6 @@ namespace TheGodfather.Modules.Games
 
         public class OthelloModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public OthelloModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,

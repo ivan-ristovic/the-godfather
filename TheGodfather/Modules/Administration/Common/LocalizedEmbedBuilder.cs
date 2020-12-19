@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Administration.Common
                 this.WithDescription(desc);
             return this;
         }
-        
+
         public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object?[]? titleArgs = null, object?[]? descArgs = null)
         {
             this.WithLocalizedTitle(type, title, titleArgs);
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration.Common
                 this.emb.AddField(localizedTitle, string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr, inline);
             } else {
                 if (!string.IsNullOrWhiteSpace(objStr))
-                   this.emb.AddField(localizedTitle, objStr, inline);
+                    this.emb.AddField(localizedTitle, objStr, inline);
             }
             return this;
         }

@@ -14,26 +14,26 @@ namespace TheGodfather.Modules.Chickens.Services
         public override bool IsDisabled => false;
 
 
-        public ChickenService(DbContextBuilder dbb) 
+        public ChickenService(DbContextBuilder dbb)
             : base(dbb) { }
 
 
-        public override DbSet<Chicken> DbSetSelector(TheGodfatherDbContext db) 
+        public override DbSet<Chicken> DbSetSelector(TheGodfatherDbContext db)
             => db.Chickens;
-        
-        public override IQueryable<Chicken> GroupSelector(IQueryable<Chicken> ars, ulong gid) 
+
+        public override IQueryable<Chicken> GroupSelector(IQueryable<Chicken> ars, ulong gid)
             => ars.Where(ar => ar.GuildIdDb == (long)gid);
-        
-        public override Chicken EntityFactory(ulong gid, ulong uid) 
+
+        public override Chicken EntityFactory(ulong gid, ulong uid)
             => new Chicken { GuildId = gid, UserId = uid };
 
         public override ulong EntityIdSelector(Chicken c)
             => c.UserId;
 
-        public override ulong EntityGroupSelector(Chicken c) 
+        public override ulong EntityGroupSelector(Chicken c)
             => c.GuildId;
 
-        public override object[] EntityPrimaryKeySelector(ulong gid, ulong uid) 
+        public override object[] EntityPrimaryKeySelector(ulong gid, ulong uid)
             => new object[] { (long)gid, (long)uid };
 
         public async Task UpdateAsync(ChickenFightResult res)
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Chickens.Services
         public async Task<Chicken?> GetCompleteAsync(ulong gid, ulong uid)
         {
             Chicken? chicken = null;
-            using (TheGodfatherDbContext db = dbb.CreateContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 chicken = await db.Chickens
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Chickens.Services
             if (chicken is null)
                 return false;
 
-            using (TheGodfatherDbContext db = dbb.CreateContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 chicken.Vitality = (chicken.Vitality + amount) > chicken.BareMaxVitality
                     ? chicken.BareMaxVitality
                     : chicken.Vitality + amount;
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Chickens.Services
             if (chicken is null)
                 return false;
 
-            using (TheGodfatherDbContext db = dbb.CreateContext()) {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 chicken.Name = name;
                 db.Chickens.Update(chicken);
                 await db.SaveChangesAsync();

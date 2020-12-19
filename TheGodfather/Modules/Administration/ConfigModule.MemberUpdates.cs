@@ -18,10 +18,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("enter", "join", "wlc", "wm", "w")]
         public sealed class ConfigModuleWelcome : TheGodfatherServiceModule<GuildConfigService>
         {
-            public ConfigModuleWelcome(GuildConfigService service)
-                : base(service) { }
-
-
             #region config welcome
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -110,10 +106,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("quit", "lv", "lm", "l")]
         public class ConfigModuleLeave : TheGodfatherServiceModule<GuildConfigService>
         {
-            public ConfigModuleLeave(GuildConfigService service)
-                : base(service) { }
-
-
             #region config leave
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,

@@ -1,6 +1,5 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Modules.Administration.Common;
@@ -46,7 +45,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             }
 
             if (gcfg.LeaveChannelId != default) {
-                    DiscordChannel? lchn = guild.GetChannel(gcfg.LeaveChannelId);
+                DiscordChannel? lchn = guild.GetChannel(gcfg.LeaveChannelId);
                 if (lchn is null) {
                     emb.AddLocalizedField("str-memupd-l", "err-memupd-l-404", inline: true);
                 } else {

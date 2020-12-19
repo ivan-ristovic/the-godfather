@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -130,7 +129,7 @@ namespace TheGodfather.Tests.Services
                     this.AddMockData(db);
                     return Task.CompletedTask;
                 },
-                alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[2]), Is.EqualTo(1)), 
+                alter: async _ => Assert.That(await this.Service.AddAsync(MockData.Ids[2]), Is.EqualTo(1)),
                 verify: db => {
                     Assert.That(this.Service.GetIds(), Is.EquivalentTo(MockData.Ids.Take(3)));
                     Assert.That(db.PrivilegedUsers, Is.EquivalentTo(MockData.Ids.Take(3).Select(id => new PrivilegedUser { UserId = id })));
@@ -444,7 +443,7 @@ namespace TheGodfather.Tests.Services
                 },
                 verify: db => {
                     Assert.That(db.AutoRoles, Is.Empty);
-                    foreach (ulong gid in MockData.Ids) 
+                    foreach (ulong gid in MockData.Ids)
                         Assert.That(this.Service.GetIds(gid), Is.Empty);
                     return Task.CompletedTask;
                 }
@@ -570,7 +569,7 @@ namespace TheGodfather.Tests.Services
         public override ulong EntityIdSelector(AutoRole entity) => entity.RoleId;
         public override ulong EntityGroupSelector(AutoRole entity) => entity.GuildId;
         public override object[] EntityPrimaryKeySelector(ulong gid, ulong id) => new object[] { (long)gid, (long)id };
-        public override IQueryable<AutoRole> GroupSelector(IQueryable<AutoRole> entities, ulong gid) 
+        public override IQueryable<AutoRole> GroupSelector(IQueryable<AutoRole> entities, ulong gid)
             => entities.Where(e => e.GuildIdDb == (long)gid);
     }
 }

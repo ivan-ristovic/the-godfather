@@ -16,7 +16,7 @@ namespace TheGodfather.Extensions
         public static async Task<bool> TestHeadersAsync(this Uri uri, string contentType, long? contentLengthLimit)
         {
             try {
-                (_, HttpContentHeaders headers)  = await HttpService.HeadAsync(uri).ConfigureAwait(false);
+                (_, HttpContentHeaders headers) = await HttpService.HeadAsync(uri).ConfigureAwait(false);
                 return headers.ContentTypeHeaderStartsWith(contentType) && headers.ContentLength <= contentLengthLimit;
             } catch {
 

@@ -9,7 +9,6 @@ using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
-using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services.Common;

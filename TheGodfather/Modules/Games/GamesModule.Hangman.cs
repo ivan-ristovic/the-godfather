@@ -5,12 +5,10 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -27,12 +25,6 @@ namespace TheGodfather.Modules.Games
         [Aliases("h", "hang")]
         public class HangmanModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public HangmanModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
 
 
             [GroupCommand]

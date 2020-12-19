@@ -14,8 +14,7 @@ namespace TheGodfather.Database.Models
     {
         public static char ToFlag(this ExemptedEntityType entity)
         {
-            return entity switch
-            {
+            return entity switch {
                 ExemptedEntityType.Channel => 'c',
                 ExemptedEntityType.Member => 'm',
                 ExemptedEntityType.Role => 'r',

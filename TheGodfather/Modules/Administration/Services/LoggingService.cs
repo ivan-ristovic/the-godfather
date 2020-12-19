@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
         public static async Task TryExecuteWithReportAsync(TheGodfatherShard shard, DiscordGuild guild, Task action,
-                                                           string code403Key, string code404Key, 
+                                                           string code403Key, string code404Key,
                                                            string[]? code403args = null, string[]? code404args = null,
                                                            Func<Task>? code403action = null, Func<Task>? code404action = null)
         {
@@ -163,7 +163,7 @@ namespace TheGodfather.Modules.Administration.Services
                 await AwaitSilentAsync(this.ReportAsync(guild, code404Key, code404args));
                 await AwaitSilentAsync(code404action);
             }
-            
+
             return default;
         }
 

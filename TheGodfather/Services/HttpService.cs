@@ -14,8 +14,8 @@ namespace TheGodfather.Services
         static HttpService()
         {
             _handler = new HttpClientHandler { AllowAutoRedirect = false };
-            _client = new HttpClient(_handler, disposeHandler: true) { 
-                Timeout = TimeSpan.FromSeconds(5) 
+            _client = new HttpClient(_handler, disposeHandler: true) {
+                Timeout = TimeSpan.FromSeconds(5)
             };
         }
 
@@ -31,10 +31,10 @@ namespace TheGodfather.Services
 
         public static Task<HttpResponseMessage> GetAsync(string requestUri)
             => _client.GetAsync(requestUri);
-        
+
         public static Task<string> GetStringAsync(Uri requestUri)
             => _client.GetStringAsync(requestUri);
-        
+
         public static Task<string> GetStringAsync(string requestUri)
             => _client.GetStringAsync(requestUri);
 
@@ -46,7 +46,7 @@ namespace TheGodfather.Services
 
         public static Task<MemoryStream> GetMemoryStreamAsync(Uri requestUri)
             => GetMemoryStreamAsync(requestUri.ToString());
-     
+
         public static async Task<MemoryStream> GetMemoryStreamAsync(string requestUri)
         {
             using Stream stream = await GetStreamAsync(requestUri);

@@ -29,14 +29,6 @@ namespace TheGodfather.Modules.Swat
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class SwatModule : TheGodfatherModule
     {
-
-        public SwatModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         #region COMMAND_IP
         [Command("ip")]
         [Description("Return IP of the registered server by name.")]

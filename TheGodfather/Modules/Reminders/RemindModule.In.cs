@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using TheGodfather.Database;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -17,13 +15,6 @@ namespace TheGodfather.Modules.Reminders
 
         public class RemindInModule : RemindModule
         {
-
-            public RemindInModule(SchedulingService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand, Priority(2)]
             public new Task ExecuteGroupAsync(CommandContext ctx,

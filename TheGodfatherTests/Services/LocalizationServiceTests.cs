@@ -82,7 +82,7 @@ namespace TheGodfather.Tests.Services
                     gcfg.TimezoneId = null;
                     gcfg.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
-                
+
                     gcfg = db.Configs.Find((long)MockData.Ids[1]);
                     gcfg.TimezoneId = "UTC";
                     gcfg.Locale = "en-US";

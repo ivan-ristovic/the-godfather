@@ -21,14 +21,6 @@ namespace TheGodfather.Modules.Games
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class GamesModule : TheGodfatherModule
     {
-
-        public GamesModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
@@ -131,8 +123,7 @@ namespace TheGodfather.Modules.Games
             else
                 throw new CommandFailedException("Invalid pick. Must be rock, paper or scissors.");
 
-            DiscordEmoji gfPick = (new SecureRandom().Next(3)) switch
-            {
+            DiscordEmoji gfPick = (new SecureRandom().Next(3)) switch {
                 0 => DiscordEmoji.FromName(ctx.Client, ":new_moon:"),
                 1 => DiscordEmoji.FromName(ctx.Client, ":newspaper:"),
                 _ => DiscordEmoji.FromName(ctx.Client, ":scissors:"),

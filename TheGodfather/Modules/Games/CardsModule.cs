@@ -8,7 +8,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using TexasHoldem.Logic.Cards;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Services;
@@ -22,13 +21,6 @@ namespace TheGodfather.Modules.Games
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CardsModule : TheGodfatherModule
     {
-        public CardsModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ResetDeckAsync(ctx);

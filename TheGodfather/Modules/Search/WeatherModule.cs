@@ -8,7 +8,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -22,13 +21,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
-
-        public WeatherModule(WeatherService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,

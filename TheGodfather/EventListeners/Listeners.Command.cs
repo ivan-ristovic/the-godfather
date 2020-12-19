@@ -46,10 +46,10 @@ namespace TheGodfather.EventListeners
             LogExt.Debug(
                 shard.Id,
                 new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
-                e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown", 
+                e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
                 e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
-            
+
             if (e.Exception is null)
                 return Task.CompletedTask;
 
@@ -120,8 +120,7 @@ namespace TheGodfather.EventListeners
                             break;
                         default:
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
-                                string line = attr switch
-                                {
+                                string line = attr switch {
                                     RequirePermissionsAttribute p => lcs.GetString(gid, "cmd-chk-perms", p.Permissions.ToPermissionString()),
                                     RequireUserPermissionsAttribute up => lcs.GetString(gid, "cmd-chk-perms-usr", up.Permissions.ToPermissionString()),
                                     RequireOwnerOrPermissionsAttribute op => lcs.GetString(gid, "cmd-chk-perms-usr", op.Permissions.ToPermissionString()),

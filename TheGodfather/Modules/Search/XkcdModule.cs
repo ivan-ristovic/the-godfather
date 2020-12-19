@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
@@ -19,14 +18,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class XkcdModule : TheGodfatherModule
     {
-
-        public XkcdModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Comic ID.")] int id)

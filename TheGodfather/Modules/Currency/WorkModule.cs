@@ -17,14 +17,6 @@ namespace TheGodfather.Modules.Currency
     [Module(ModuleType.Currency), NotBlocked]
     public class WorkModule : TheGodfatherModule
     {
-
-        public WorkModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         #region COMMAND_SLUT
         [Command("slut")]
         [Description("Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.")]

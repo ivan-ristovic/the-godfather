@@ -8,7 +8,7 @@ namespace TheGodfather.Database.Models
     public class RssFeed
     {
         public const int UrlLimit = 512;
-     
+
         public RssFeed()
         {
             this.Subscriptions = new HashSet<RssSubscription>();

@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        #region Helpers
+        #region internals
         public async Task InternalPruneAsync(CommandContext ctx, int days = 7, string? reason = null, params DiscordRole[] roles)
         {
             if (days < 1 || days > 30)

@@ -24,12 +24,6 @@ namespace TheGodfather.Modules.Currency
         private static readonly long _maxBet = 5_000_000_000;
 
 
-        public GambleModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
 
         #region COMMAND_GAMBLE_COINFLIP
         [Command("coinflip"), Priority(1)]

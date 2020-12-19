@@ -7,7 +7,7 @@ namespace TheGodfather.Services.Common
     {
         public string Currency { get; set; } = "credits";
         public string Prefix { get; set; } = "!";
-        public string Locale { 
+        public string Locale {
             get => this.locale;
             set {
                 this.locale = value;

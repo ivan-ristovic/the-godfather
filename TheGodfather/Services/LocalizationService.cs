@@ -41,12 +41,12 @@ namespace TheGodfather.Services
         public void LoadData(string path)
         {
             Log.Debug("Loading translation strings from {Path}", path);
-            this.strings = new (ReadStrings(path, "*.json"));
+            this.strings = new(ReadStrings(path, "*.json"));
             Log.Information("Loaded translation strings");
 
             path = Path.Combine(path, "Commands");
             Log.Debug("Loading command descriptions from {Path}", path);
-            this.cmddesc = new (ReadStrings(path, "desc_*.json"));
+            this.cmddesc = new(ReadStrings(path, "desc_*.json"));
             Log.Information("Loaded command descriptions");
 
             this.isDataLoaded = true;

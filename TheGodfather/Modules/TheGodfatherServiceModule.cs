@@ -1,25 +1,11 @@
-﻿using System;
-using TheGodfather.Database;
-using TheGodfather.Services;
+﻿using TheGodfather.Services;
 
 namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherServiceModule<TService> : TheGodfatherModule where TService : ITheGodfatherService
     {
-        protected TService Service { get; }
-
-        // TODO DI inject?
-        protected TheGodfatherServiceModule(TService service)
-        {
-            this.Service = service;
-        }
-
-        // TODO remove
-        [Obsolete]
-        protected TheGodfatherServiceModule(TService service, DbContextBuilder db)
-            : base(db)
-        {
-            this.Service = service;
-        }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        protected TService Service { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
 }

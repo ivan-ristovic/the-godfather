@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public bool IsSafePattern(Regex regex) 
+        public bool IsSafePattern(Regex regex)
             => _ids.All(u => !regex.IsMatch(u.ToString()));
 
         public bool IsNameForbidden(ulong gid, string name, out ForbiddenName? match)
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public Task<int> RemoveForbiddenNamesMatchingAsync(ulong gid, string match)
             => this.InternalRemoveByPredicateAsync(gid, fn => fn.Regex.IsMatch(match));
-        
+
 
         private IQueryable<ForbiddenName> InternalGetForbiddenNamesForGuild(TheGodfatherDbContext db, ulong gid)
             => db.ForbiddenNames.Where(n => n.GuildIdDb == (long)gid);

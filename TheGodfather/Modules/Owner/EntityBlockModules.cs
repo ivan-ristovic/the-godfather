@@ -15,10 +15,6 @@ namespace TheGodfather.Modules.Owner
 {
     public abstract class BlockedEntityModule<T> : TheGodfatherServiceModule<BlockingService> where T : SnowflakeObject
     {
-        public BlockedEntityModule(BlockingService service)
-            : base(service) { }
-
-
         public abstract Task<int> BlockAsync(IEnumerable<ulong> ids, string? reason);
         public abstract Task<int> UnblockAsync(IEnumerable<ulong> ids);
         public abstract Task<IReadOnlyList<(T Entity, string? Reason)>> ListBlockedAsync(CommandContext ctx);
@@ -107,10 +103,6 @@ namespace TheGodfather.Modules.Owner
     [RequirePrivilegedUser]
     public sealed class BlockedUsersModule : BlockedEntityModule<DiscordUser>
     {
-        public BlockedUsersModule(BlockingService service)
-            : base(service) { }
-
-
         #region blockedusers
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -206,10 +198,6 @@ namespace TheGodfather.Modules.Owner
     [RequirePrivilegedUser]
     public sealed class BlockedChannelsModule : BlockedEntityModule<DiscordChannel>
     {
-        public BlockedChannelsModule(BlockingService service)
-            : base(service) { }
-
-
         #region blockedchannels
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -304,10 +292,6 @@ namespace TheGodfather.Modules.Owner
     [RequirePrivilegedUser]
     public sealed class BlockedGuildsModule : BlockedEntityModule<DiscordGuild>
     {
-        public BlockedGuildsModule(BlockingService service)
-            : base(service) { }
-
-
         #region blockedguilds
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx)

@@ -8,11 +8,9 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -31,13 +29,6 @@ namespace TheGodfather.Modules.Games
 
         public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public QuizModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand, Priority(4)]
             public async Task ExecuteGroupAsync(CommandContext ctx,

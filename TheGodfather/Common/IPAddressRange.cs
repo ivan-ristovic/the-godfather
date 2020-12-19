@@ -6,9 +6,9 @@ namespace TheGodfather.Common
 {
     public sealed class IPAddressRange
     {
-        private static readonly Regex _formatRegex 
+        private static readonly Regex _formatRegex
             = new Regex(
-                @"^(?<range>\d{1,3}\.(\*\.\*\.\*|\d{1,3}\.\*\.\*|\d{1,3}\.\d{1,3}\.\*|\d{1,3}\.\d{1,3}\.\d{1,3}|(\d{1,3}\.){0,2}\d{1,3}))(:(?<port>[1-9]\d{0,4}))?$", 
+                @"^(?<range>\d{1,3}\.(\*\.\*\.\*|\d{1,3}\.\*\.\*|\d{1,3}\.\d{1,3}\.\*|\d{1,3}\.\d{1,3}\.\d{1,3}|(\d{1,3}\.){0,2}\d{1,3}))(:(?<port>[1-9]\d{0,4}))?$",
                 RegexOptions.Compiled
             );
 
@@ -17,7 +17,7 @@ namespace TheGodfather.Common
             res = null;
 
             Match m = _formatRegex.Match(str);
-            if (!m.Success || !m.Groups.TryGetValue("range", out Group rangeGroup) || !rangeGroup.Success)
+            if (!m.Success || !m.Groups.TryGetValue("range", out Group? rangeGroup) || !rangeGroup.Success)
                 return false;
 
             string[] quartets = rangeGroup.Value.Split(".", StringSplitOptions.RemoveEmptyEntries);
@@ -28,7 +28,7 @@ namespace TheGodfather.Common
                     return false;
             }
 
-            if (m.Groups.TryGetValue("port", out Group portGroup) && portGroup.Success) {
+            if (m.Groups.TryGetValue("port", out Group? portGroup) && portGroup.Success) {
                 if (!ushort.TryParse(portGroup.Value, out ushort port) || port < 10)
                     return false;
             }

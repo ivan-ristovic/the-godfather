@@ -16,9 +16,10 @@ namespace TheGodfather.Modules
     {
         // TODO remove dbb once all services are made
         [Obsolete]
-        public DbContextBuilder Database { get; } = null!;
+        protected DbContextBuilder Database { get; } = null!;
 
-        public DiscordColor ModuleColor { get; }
+        protected LocalizationService Localization { get; set; }
+        protected DiscordColor ModuleColor { get; }
 
 
         protected TheGodfatherModule()
@@ -26,15 +27,6 @@ namespace TheGodfather.Modules
             var moduleAttr = Attribute.GetCustomAttribute(this.GetType(), typeof(ModuleAttribute)) as ModuleAttribute;
             this.ModuleColor = moduleAttr?.Module.ToDiscordColor() ?? DiscordColor.Green;
         }
-
-        // TODO remove
-        [Obsolete]
-        protected TheGodfatherModule(DbContextBuilder dbb)
-            : this()
-        {
-            this.Database = dbb;
-        }
-
 
         // TODO remove
         [Obsolete]

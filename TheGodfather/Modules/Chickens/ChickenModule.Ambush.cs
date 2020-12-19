@@ -23,12 +23,8 @@ namespace TheGodfather.Modules.Chickens
     {
         [Group("ambush")]
         [Aliases("gangattack")]
-        public class AmbushModule : TheGodfatherServiceModule<ChickenService>
+        public sealed class AmbushModule : TheGodfatherServiceModule<ChickenService>
         {
-            public AmbushModule(ChickenService service)
-                : base(service) { }
-
-
             #region chicken ambush
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -67,8 +63,7 @@ namespace TheGodfather.Modules.Chickens
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
-                        var lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                        await ambush.RunAsync(lcs);
+                        await ambush.RunAsync(this.Localization);
 
                         ChickenFightResult? res = ambush.Result;
                         if (res is null)
@@ -79,16 +74,16 @@ namespace TheGodfather.Modules.Chickens
                         foreach (Chicken chicken in ambush.WinningTeam) {
                             chicken.Stats.BareStrength += gain;
                             chicken.Stats.BareVitality -= 10;
-                            sb.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain-loss", chicken.Name, gain, 10));
+                            sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain-loss", chicken.Name, gain, 10));
                         }
                         await this.Service.UpdateAsync(ambush.WinningTeam);
 
                         foreach (Chicken chicken in ambush.LosingTeam) {
                             chicken.Stats.BareVitality -= 50;
                             if (chicken.Stats.TotalVitality > 0)
-                                sb.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", chicken.Name));
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", chicken.Name));
                             else
-                                sb.AppendLine(lcs.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", chicken.Name, ChickenFightResult.VitLoss));
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", chicken.Name, ChickenFightResult.VitLoss));
                         }
                         await this.Service.RemoveAsync(ambush.LosingTeam.Where(c => c.Stats.TotalVitality <= 0));
                         await this.Service.UpdateAsync(ambush.LosingTeam.Where(c => c.Stats.TotalVitality > 0));
@@ -143,7 +138,7 @@ namespace TheGodfather.Modules.Chickens
             #endregion
 
 
-            #region Helpers
+            #region internals
             private async Task<Chicken> TryJoinInternalAsync(CommandContext ctx, bool team2 = true)
             {
                 if (!ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar? ambush) || ambush is null)

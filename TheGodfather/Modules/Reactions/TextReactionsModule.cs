@@ -14,7 +14,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Reactions.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Reactions
 {
@@ -24,10 +23,6 @@ namespace TheGodfather.Modules.Reactions
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
-        public TextReactionsModule(ReactionsService service)
-            : base(service) { }
-
-
         #region textreactions
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -98,16 +93,15 @@ namespace TheGodfather.Modules.Reactions
             var eb = new StringBuilder();
             var validTriggers = new HashSet<string>();
             var foundReactions = new HashSet<TextReaction>();
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             foreach (string trigger in triggers.Select(t => t.ToLowerInvariant()).Distinct()) {
                 if (!trigger.TryParseRegex(out _)) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 
                 IEnumerable<TextReaction> found = ers.Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
-                    eb.AppendLine(lcs.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
                     continue;
                 }
 
@@ -197,7 +191,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
 
-        #region Helpers
+        #region internals
         private async Task AddTextReactionAsync(CommandContext ctx, string trigger, string response, bool regex)
         {
             if (string.IsNullOrWhiteSpace(response))

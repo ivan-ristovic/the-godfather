@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Modules.Search.Services;
 #endregion
 
@@ -17,13 +16,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class JokesModule : TheGodfatherModule
     {
-
-        public JokesModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)

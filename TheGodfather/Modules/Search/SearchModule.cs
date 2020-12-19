@@ -7,7 +7,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
@@ -20,13 +19,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(5, 10, CooldownBucketType.Channel)]
     public class SearchModule : TheGodfatherModule
     {
-
-        public SearchModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
 
         #region COMMAND_CAT
         [Command("cat")]

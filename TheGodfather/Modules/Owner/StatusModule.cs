@@ -17,10 +17,6 @@ namespace TheGodfather.Modules.Owner
     [RequireOwner]
     public class StatusModule : TheGodfatherServiceModule<BotActivityService>
     {
-        public StatusModule(BotActivityService service)
-            : base(service) { }
-
-
         #region statuses
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)

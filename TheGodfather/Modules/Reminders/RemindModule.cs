@@ -28,13 +28,6 @@ namespace TheGodfather.Modules.Reminders
     public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
     {
 
-        public RemindModule(SchedulingService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
-
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,

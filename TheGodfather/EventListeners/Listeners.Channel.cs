@@ -25,7 +25,7 @@ namespace TheGodfather.EventListeners
                 new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
                 e.Channel.Recipients.Humanize(Environment.NewLine)
-            ); 
+            );
             return Task.CompletedTask;
         }
 

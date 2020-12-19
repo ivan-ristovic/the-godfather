@@ -21,7 +21,7 @@ namespace TheGodfather.Exceptions
         // END remove
 
 
-        public CommandFailedException(CommandContext ctx, params object[]? args) 
+        public CommandFailedException(CommandContext ctx, params object[]? args)
             : base(ctx, "cmd-fail", args)
         {
 

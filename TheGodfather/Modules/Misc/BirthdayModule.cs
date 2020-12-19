@@ -8,13 +8,11 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -24,10 +22,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
     {
-        public BirthdayModule(BirthdayService service)
-            : base(service) { }
-
-
         #region birthday
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -66,11 +60,10 @@ namespace TheGodfather.Modules.Misc
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             DateTimeStyles styles = DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AssumeLocal | DateTimeStyles.AllowInnerWhite;
 
             DateTime dt = DateTime.Now;
-            if (date is { } && !DateTime.TryParse(date, lcs.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
+            if (date is { } && !DateTime.TryParse(date, this.Localization.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-date-format");
 
             if (channel.Type != ChannelType.Text)
@@ -83,7 +76,7 @@ namespace TheGodfather.Modules.Misc
                 UserId = user.Id
             });
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, lcs.GetLocalizedTime(ctx.Guild.Id, dt));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, this.Localization.GetLocalizedTime(ctx.Guild.Id, dt));
         }
 
         [Command("add"), Priority(1)]
@@ -168,13 +161,12 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
 
-        #region Helpers
+        #region internals
         public async Task InternalListAsync(CommandContext ctx, IReadOnlyList<Birthday> bds)
         {
             if (!bds.Any())
                 throw new CommandFailedException(ctx, "cmd-err-bd-none");
 
-            var lcs = ctx.Services.GetRequiredService<LocalizationService>();
             var bdaysToRemove = new List<Birthday>();
             var lines = new List<string>();
             foreach (IGrouping<ulong, Birthday> g in bds.GroupBy(bd => bd.ChannelId)) {
@@ -183,7 +175,7 @@ namespace TheGodfather.Modules.Misc
                     foreach (Birthday bd in g) {
                         DiscordUser? user = await ctx.Client.GetUserAsync(bd.UserId);
                         if (user is { })
-                            lines.Add($"{Formatter.InlineCode(lcs.GetLocalizedTime(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
+                            lines.Add($"{Formatter.InlineCode(this.Localization.GetLocalizedTime(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
                         else
                             bdaysToRemove.Add(bd);
                     }

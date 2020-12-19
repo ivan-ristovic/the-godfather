@@ -28,14 +28,6 @@ namespace TheGodfather.Modules.Currency
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class ShopModule : TheGodfatherModule
     {
-
-        public ShopModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);

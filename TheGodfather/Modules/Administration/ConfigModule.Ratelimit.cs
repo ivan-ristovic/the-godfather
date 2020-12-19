@@ -13,7 +13,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -23,10 +22,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("rl")]
         public sealed class RatelimitModule : TheGodfatherServiceModule<RatelimitService>
         {
-            public RatelimitModule(RatelimitService service)
-                : base(service) { }
-
-
             #region config ratelimit
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -78,10 +73,9 @@ namespace TheGodfather.Modules.Administration
                 IReadOnlyList<ExemptedRatelimitEntity> exempts = await this.Service.GetExemptsAsync(ctx.Guild.Id);
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
-                    LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
                         emb.WithLocalizedTitle("str-ratelimit");
-                        emb.WithLocalizedDescription("fmt-settings-rl", gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
+                        emb.WithLocalizedDescription("fmt-settings-rl", gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
                             emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);

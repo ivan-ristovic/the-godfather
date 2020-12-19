@@ -18,7 +18,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration
@@ -29,16 +28,12 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfigService>
     {
-        public ConfigModule(GuildConfigService service)
-            : base(service) { }
-
-
         #region config
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            await ctx.RespondAsync(embed: gcfg.ToDiscordEmbed(ctx.Guild, ctx.Services.GetRequiredService<LocalizationService>()));
+            await ctx.RespondAsync(embed: gcfg.ToDiscordEmbed(ctx.Guild, this.Localization));
         }
         #endregion
 
@@ -50,34 +45,32 @@ namespace TheGodfather.Modules.Administration
         {
             channel ??= ctx.Channel;
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-
             var gcfg = new GuildConfig();
-            await channel.LocalizedEmbedAsync(lcs, "str-setup");
+            await channel.LocalizedEmbedAsync(this.Localization, "str-setup");
             await Task.Delay(TimeSpan.FromSeconds(10));
 
-            await SetupPrefixAsync(gcfg, ctx, channel);
-            await SetupLoggingAsync(gcfg, ctx, channel);
+            await this.SetupPrefixAsync(gcfg, ctx, channel);
+            await this.SetupLoggingAsync(gcfg, ctx, channel);
 
             gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync("q-setup-verbose", channel, false);
             gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync("q-setup-suggestions", channel, false);
 
-            await SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
-            await SetupMuteRoleAsync(gcfg, ctx, channel);
-            await SetupLinkfilterAsync(gcfg, ctx, channel);
-            await SetupAntispamAsync(gcfg, ctx, channel);
-            await SetupRatelimitAsync(gcfg, ctx, channel);
-            await SetupAntifloodAsync(gcfg, ctx, channel);
-            await SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
-            await SetupCurrencyAsync(gcfg, ctx, channel);
+            await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
+            await this.SetupMuteRoleAsync(gcfg, ctx, channel);
+            await this.SetupLinkfilterAsync(gcfg, ctx, channel);
+            await this.SetupAntispamAsync(gcfg, ctx, channel);
+            await this.SetupRatelimitAsync(gcfg, ctx, channel);
+            await this.SetupAntifloodAsync(gcfg, ctx, channel);
+            await this.SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
+            await this.SetupCurrencyAsync(gcfg, ctx, channel);
 
-            await channel.SendMessageAsync(embed: gcfg.ToDiscordEmbed(ctx.Guild, lcs));
+            await channel.SendMessageAsync(embed: gcfg.ToDiscordEmbed(ctx.Guild, this.Localization));
 
             if (await ctx.WaitForBoolReplyAsync("q-setup-review", channel: channel)) {
                 await this.ApplySettingsAsync(ctx, gcfg);
-                await channel.EmbedAsync(lcs.GetString(ctx.Guild.Id, "str-done"), Emojis.CheckMarkSuccess);
+                await channel.EmbedAsync(this.Localization.GetString(ctx.Guild.Id, "str-done"), Emojis.CheckMarkSuccess);
             } else {
-                await channel.InformFailureAsync(lcs.GetString(ctx.Guild.Id, "str-aborting"));
+                await channel.InformFailureAsync(this.Localization.GetString(ctx.Guild.Id, "str-aborting"));
             }
         }
         #endregion
@@ -98,7 +91,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedField("str-silent", enable ? "str-on" : "str-off", inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, enable ?  "str-cfg-silent-on" : "str-cfg-silent-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-silent-on" : "str-cfg-silent-off");
         }
 
         [Command("silent"), Priority(0)]
@@ -160,14 +153,14 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 muteRole = ctx.Guild.GetRole(cfg.MuteRoleId);
-                if (muteRole is null) { 
+                if (muteRole is null) {
                     await ctx.FailAsync("err-muterole-404");
                     return;
                 }
             } else {
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.MuteRoleId = muteRole.Id);
             }
-    
+
             await ctx.InfoAsync(this.ModuleColor, "fmt-muterole", muteRole.Name);
         }
         #endregion
@@ -192,26 +185,26 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        #region Helpers
-        private static async Task SetupPrefixAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        #region internals
+        private async Task SetupPrefixAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-prefix", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-prefix-new", GuildConfig.PrefixLimit);
+                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-prefix-new", GuildConfig.PrefixLimit);
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.PrefixLimit);
                 gcfg.Prefix = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
             }
         }
 
-        private static async Task SetupLoggingAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupLoggingAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-log", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-log-chn");
+                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-log-chn");
                 DiscordChannel? logchn = await ctx.Client.GetInteractivity().WaitForChannelMentionAsync(channel, ctx.User);
                 gcfg.LogChannelId = logchn?.Id ?? default;
             }
         }
 
-        private static async Task SetupMemberUpdateMessagesAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupMemberUpdateMessagesAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             await GetChannelIdAndMessageAsync(welcome: true);
             await GetChannelIdAndMessageAsync(welcome: false);
@@ -219,11 +212,10 @@ namespace TheGodfather.Modules.Administration
 
             async Task GetChannelIdAndMessageAsync(bool welcome)
             {
-                LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
                 InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
                 if (await ctx.WaitForBoolReplyAsync(welcome ? "q-setup-memupd-wm" : "q-setup-memupd-lm", channel: channel, reply: false)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-memupd-chn");
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-memupd-chn");
 
                     DiscordChannel? chn = await interactivity.WaitForChannelMentionAsync(channel, ctx.User);
                     if (chn is { } && chn.Type == ChannelType.Text) {
@@ -234,7 +226,7 @@ namespace TheGodfather.Modules.Administration
                     }
 
                     if (await ctx.WaitForBoolReplyAsync("q-setup-memupd-msg", channel: channel, reply: false)) {
-                        await channel.LocalizedEmbedAsync(lcs, "q-setup-memupd-msg-new");
+                        await channel.LocalizedEmbedAsync(this.Localization, "q-setup-memupd-msg-new");
                         InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= 128);
                         if (mctx.TimedOut) {
                             throw new CommandFailedException(ctx, "str-timeout");
@@ -249,12 +241,12 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupMuteRoleAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupMuteRoleAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             DiscordRole? muteRole = null;
 
             if (await ctx.WaitForBoolReplyAsync("q-setup-muterole", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(ctx.Services.GetRequiredService<LocalizationService>(), "q-setup-muterole-new");
+                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-muterole-new");
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.MentionedRoles.Count == 1);
                 muteRole = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.MentionedRoles.FirstOrDefault();
             }
@@ -268,7 +260,7 @@ namespace TheGodfather.Modules.Administration
             gcfg.MuteRoleId = muteRole?.Id ?? 0;
         }
 
-        private static async Task SetupLinkfilterAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupLinkfilterAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-lf", channel: channel, reply: false)) {
                 gcfg.LinkfilterSettings.Enabled = true;
@@ -280,21 +272,20 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupRatelimitAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupRatelimitAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             if (await ctx.WaitForBoolReplyAsync("q-setup-rl", channel: channel, reply: false)) {
                 gcfg.RatelimitEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().JoinWith(", "));
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", args: Enum.GetNames<PunishmentAction>().JoinWith(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.RatelimitAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-rl-sens", channel: channel, reply: false, args: gcfg.RatelimitSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= RatelimitSettings.MinSensitivity && sens <= RatelimitSettings.MaxSensitivity
                     );
@@ -303,21 +294,20 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupAntispamAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupAntispamAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             if (await ctx.WaitForBoolReplyAsync("q-setup-as", channel: channel, reply: false)) {
                 gcfg.AntispamEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().JoinWith(", "));
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<PunishmentAction>().JoinWith(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntispamAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-sens", channel: channel, reply: false, args: gcfg.AntispamSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
                     );
@@ -326,21 +316,20 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupAntifloodAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupAntifloodAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             if (await ctx.WaitForBoolReplyAsync("q-setup-af", channel: channel, reply: false)) {
                 gcfg.AntifloodEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-action", Enum.GetNames<PunishmentAction>().JoinWith(", "));
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<PunishmentAction>().JoinWith(", "));
                     PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntifloodAction = action.Value;
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-sens", channel: channel, reply: false, args: gcfg.AntifloodSensitivity)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntifloodSettings.MinSensitivity && sens <= AntifloodSettings.MaxSensitivity
                     );
@@ -348,7 +337,7 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-af-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short cd) && cd >= AntifloodSettings.MinCooldown && cd <= AntifloodSettings.MaxCooldown
                     );
@@ -357,16 +346,15 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupAntiInstantLeaveAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupAntiInstantLeaveAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             if (await ctx.WaitForBoolReplyAsync("q-setup-il", channel: channel, reply: false)) {
                 gcfg.AntiInstantLeaveEnabled = true;
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-il-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(lcs, "q-setup-new-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
-                        m => short.TryParse(m.Content, out short cd) 
+                        m => short.TryParse(m.Content, out short cd)
                           && cd >= AntiInstantLeaveSettings.MinCooldown && cd <= AntiInstantLeaveSettings.MaxCooldown
                     );
                     gcfg.AntiInstantLeaveCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
@@ -374,11 +362,10 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
-        private static async Task SetupCurrencyAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        private async Task SetupCurrencyAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             if (await ctx.WaitForBoolReplyAsync("q-setup-currency", channel: channel, reply: false)) {
-                LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                await channel.LocalizedEmbedAsync(lcs, "q-setup-currency-new", GuildConfig.CurrencyLimit);
+                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-currency-new", GuildConfig.CurrencyLimit);
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.CurrencyLimit);
                 gcfg.Currency = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
             }
@@ -397,9 +384,8 @@ namespace TheGodfather.Modules.Administration
                 cfg.WelcomeMessage = gcfg.WelcomeMessage;
             });
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             LoggingService ls = ctx.Services.GetRequiredService<LoggingService>();
-            await ls.LogAsync(ctx.Guild, gcfg.ToDiscordEmbed(ctx.Guild, lcs, update: true));
+            await ls.LogAsync(ctx.Guild, gcfg.ToDiscordEmbed(ctx.Guild, this.Localization, update: true));
         }
         #endregion
     }

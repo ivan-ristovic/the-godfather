@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -19,11 +18,11 @@ namespace TheGodfather.Modules.Owner.Services
     public static class CSharpCompilationService
     {
         private static readonly Regex _cbRegex = new Regex(@"```(cs\n)?(?<code>[^`]+)```", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static ImmutableArray<string> _usings = new[] { 
+        private static ImmutableArray<string> _usings = new[] {
             "System", "System.Collections.Generic", "System.Linq", "System.Text",
             "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.Entities",
             "DSharpPlus.CommandsNext", "DSharpPlus.CommandsNext.Attributes", "DSharpPlus.Interactivity",
-            "TheGodfather.Modules", "TheGodfather.Exceptions", "TheGodfather.Attributes" 
+            "TheGodfather.Modules", "TheGodfather.Exceptions", "TheGodfather.Attributes"
         }.ToImmutableArray();
 
         public static Type? CompileCommand(string code)

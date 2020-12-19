@@ -21,7 +21,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, params object?[]? args)
             => LocalizedEmbedAsync(channel, lcs, key, null, null, args);
 
-        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, 
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key,
                                                                DiscordEmoji? icon, DiscordColor? color,
                                                                object?[]? args)
         {

@@ -1,6 +1,5 @@
 ﻿using DSharpPlus.Entities;
 using NUnit.Framework;
-using TheGodfather.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Modules.Administration.Common;
 
@@ -310,7 +309,7 @@ namespace TheGodfather.Tests.Common.Converters
             Assert.That(parsed, Is.EqualTo(expected));
         }
 
-        private void AssertConvertFail<TConverter, TValue>(TConverter converter, string text) where TConverter : BaseArgumentConverter<TValue> 
+        private void AssertConvertFail<TConverter, TValue>(TConverter converter, string text) where TConverter : BaseArgumentConverter<TValue>
             => Assert.That(converter.TryConvert(text, out _), Is.False);
     }
 }

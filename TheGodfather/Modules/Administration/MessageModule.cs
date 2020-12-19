@@ -12,13 +12,11 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.EventHandling;
 using DSharpPlus.Interactivity.Extensions;
 using Humanizer;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -96,11 +94,10 @@ namespace TheGodfather.Modules.Administration
             if (!pinned.Any())
                 throw new CommandFailedException(ctx, "cmd-err-pinned-none");
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             IEnumerable<Page> pages = pinned.Select(m => new Page(
-                $"{Formatter.Bold(m.Author.Username)} @ {lcs.GetLocalizedTime(ctx.Guild.Id, m.CreationTimestamp)}",
+                $"{Formatter.Bold(m.Author.Username)} @ {this.Localization.GetLocalizedTime(ctx.Guild.Id, m.CreationTimestamp)}",
                 // TODO 
-                GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(lcs.GetString(ctx.Guild.Id, "str-jumplink"), m.JumpLink))
+                GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(this.Localization.GetString(ctx.Guild.Id, "str-jumplink"), m.JumpLink))
             ));
 
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
@@ -111,7 +108,7 @@ namespace TheGodfather.Modules.Administration
                 if (em is { })
                     return new DiscordEmbedBuilder(em);
 
-                var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+                var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
                 if (!string.IsNullOrWhiteSpace(m.Content))
                     emb.WithDescription(m.Content);
                 return emb.GetBuilder();

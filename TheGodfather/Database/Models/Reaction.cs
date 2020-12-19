@@ -21,7 +21,7 @@ namespace TheGodfather.Database.Models
     public abstract class Reaction : IEquatable<Reaction>
     {
         public const int ResponseLimit = 128;
-     
+
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -79,10 +79,10 @@ namespace TheGodfather.Database.Models
         public abstract void CacheDbTriggers();
 
 
-        public bool AddTrigger(string trigger, bool isRegex = false) 
+        public bool AddTrigger(string trigger, bool isRegex = false)
             => trigger.TryParseRegex(out Regex? regex, escape: !isRegex) && regex is { } && this.triggerRegexes.Add(regex);
 
-        public bool RemoveTrigger(string trigger) 
+        public bool RemoveTrigger(string trigger)
             => trigger.TryParseRegex(out Regex? regex) && regex is { } && this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
 
         public bool IsMatch(string str)

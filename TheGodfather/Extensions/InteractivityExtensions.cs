@@ -77,7 +77,7 @@ namespace TheGodfather.Extensions
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
                 m => m.Channel == channel && m.Author == user && converter.TryConvert(m.Content, out _)
             );
-            
+
             if (!mctx.TimedOut) {
                 new PunishmentActionConverter().TryConvert(mctx.Result.Content, out PunishmentAction action);
                 return action;
@@ -87,7 +87,7 @@ namespace TheGodfather.Extensions
         }
 
         public static Task<InteractivityResult<DiscordMessage>> GetNextMessageAsync(this DiscordChannel channel, DiscordUser user,
-                                                                                    Func<DiscordMessage, bool> predicate) 
+                                                                                    Func<DiscordMessage, bool> predicate)
             => channel.GetNextMessageAsync(m => m.Author == user && predicate(m));
     }
 }

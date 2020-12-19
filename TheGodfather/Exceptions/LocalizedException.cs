@@ -9,7 +9,7 @@ namespace TheGodfather.Exceptions
     {
         public string LocalizedMessage { get; }
 
-        
+
         public LocalizedException(string rawMessage)
             : base(rawMessage)
         {

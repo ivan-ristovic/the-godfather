@@ -21,10 +21,6 @@ namespace TheGodfather.Modules.Misc
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class MemeModule : TheGodfatherServiceModule<MemeService>
     {
-        public MemeModule(MemeService service)
-            : base(service) { }
-
-
         #region meme
         [GroupCommand, Priority(1)]
         [RequirePermissions(Permissions.EmbedLinks)]
@@ -176,7 +172,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException(ctx, "cmd-err-meme-template-404");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = $"{t.Name}: {t.Key}", 
+                Title = $"{t.Name}: {t.Key}",
                 ImageUrl = t.Url,
                 Color = this.ModuleColor,
                 Url = t.Url,

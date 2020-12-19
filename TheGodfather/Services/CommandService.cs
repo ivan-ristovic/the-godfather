@@ -137,7 +137,7 @@ namespace TheGodfather.Services
             this.AssertIsDataLoaded();
 
             return this.commands.TryRemove(command, out CommandInfo? info)
-                && info is { } 
+                && info is { }
                 && (this.modules.GetValueOrDefault(info.Module)?.TryRemove(command) ?? false);
         }
 

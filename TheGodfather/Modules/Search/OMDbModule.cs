@@ -6,7 +6,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
@@ -22,13 +21,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
-
-        public OMDbModule(OMDbService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,

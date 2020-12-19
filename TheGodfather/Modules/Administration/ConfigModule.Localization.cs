@@ -15,10 +15,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("locale", "language", "lang", "region")]
         public sealed class LocalizationModule : TheGodfatherServiceModule<LocalizationService>
         {
-            public LocalizationModule(LocalizationService service)
-                : base(service) { }
-
-
+            #region config localization
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-locale")] string locale)
@@ -27,7 +24,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx)
                 => ctx.InfoAsync(this.ModuleColor, "fmt-locale", this.Service.GetGuildLocale(ctx.Guild.Id));
-
+            #endregion
 
             #region config localization set
             [Command("set")]

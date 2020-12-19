@@ -24,13 +24,13 @@ namespace TheGodfather.Modules.Misc.Services
         public override Meme EntityFactory(ulong grid, string name)
             => new Meme { GuildId = grid, Name = name };
 
-        public override string EntityIdSelector(Meme entity) 
+        public override string EntityIdSelector(Meme entity)
             => entity.Name;
 
-        public override ulong EntityGroupSelector(Meme entity) 
+        public override ulong EntityGroupSelector(Meme entity)
             => entity.GuildId;
 
-        public override object[] EntityPrimaryKeySelector(ulong grid, string name) 
+        public override object[] EntityPrimaryKeySelector(ulong grid, string name)
             => new object[] { grid, name };
     }
 }

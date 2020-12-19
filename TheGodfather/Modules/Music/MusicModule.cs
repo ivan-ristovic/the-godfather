@@ -8,7 +8,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Search.Services;
@@ -26,12 +25,6 @@ namespace TheGodfather.Modules.Music
         // TODO move to shared or even better create a transient module ?
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
-
-        public MusicModule(YtService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
 
 
         #region COMMAND_CONNECT

@@ -28,13 +28,6 @@ namespace TheGodfather.Modules.Currency
         public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public HoldemModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
-
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Amount of money required to enter.")] int amount = 1000)

@@ -6,9 +6,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Humanizer;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -69,7 +67,7 @@ namespace TheGodfather.EventListeners
             if (shard.Services.GetRequiredService<BlockingService>().IsBlocked(e.Guild.Id, e.Channel.Id, e.Author.Id))
                 return;
 
-            if (!string.IsNullOrWhiteSpace(e.Message?.Content)) { 
+            if (!string.IsNullOrWhiteSpace(e.Message?.Content)) {
                 // TODO move to service
                 if (!e.Message.Content.StartsWith(shard.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
                     short rank = shard.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Author.Id);
@@ -125,7 +123,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
-            
+
             // TODO automatize, same below in message update handler
             await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
             string sanitizedContent = Formatter.Strip(e.Message.Content);
@@ -148,7 +146,7 @@ namespace TheGodfather.EventListeners
                 EmojiReaction? er = rs.FindMatchingEmojiReactions(e.Guild.Id, e.Message.Content)
                     .Shuffle()
                     .FirstOrDefault();
-                
+
                 // TODO move to service
                 if (er is { }) {
                     try {
@@ -290,7 +288,7 @@ namespace TheGodfather.EventListeners
             static string? FormatContent(DiscordMessage? msg)
                 => string.IsNullOrWhiteSpace(msg?.Content) ? null : Formatter.BlockCode(msg.Content.Truncate(700));
         }
-        
+
         [AsyncEventListener(DiscordEventType.MessageReactionsCleared)]
         public static Task MessageReactionsClearedEventHandlerAsync(TheGodfatherShard shard, MessageReactionsClearEventArgs e)
         {
@@ -308,7 +306,7 @@ namespace TheGodfather.EventListeners
 
             if (LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
                 return Task.CompletedTask;
-            
+
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
 
             string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);

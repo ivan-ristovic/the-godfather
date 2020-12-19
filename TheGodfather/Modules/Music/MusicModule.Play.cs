@@ -6,10 +6,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
-using TheGodfather.Modules.Search.Services;
 #endregion
 
 namespace TheGodfather.Modules.Music
@@ -24,13 +22,6 @@ namespace TheGodfather.Modules.Music
         [RequireOwner]
         public class PlayModule : MusicModule
         {
-
-            public PlayModule(YtService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,

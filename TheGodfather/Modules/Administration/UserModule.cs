@@ -158,10 +158,9 @@ namespace TheGodfather.Modules.Administration
 
             string ToPresenceString(DiscordPresence? presence)
             {
-                LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
                 return presence is { }
                     ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
-                    : lcs.GetString(ctx.Guild.Id, "str-offline");
+                    : this.Localization.GetString(ctx.Guild.Id, "str-offline");
             }
         }
 
@@ -191,10 +190,9 @@ namespace TheGodfather.Modules.Administration
 
             string ToPresenceString(DiscordPresence? presence)
             {
-                LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
                 return presence is { }
                     ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
-                    : lcs.GetString(ctx.Guild.Id, "str-offline");
+                    : this.Localization.GetString(ctx.Guild.Id, "str-offline");
             }
         }
         #endregion
@@ -261,11 +259,11 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
-        
+
         #region user revokerole
         [Command("revokerole"), Priority(1)]
         [Description("Revoke a role from member.")]
-        [Aliases("-role", "-r", ">r", ">>r", "rr", "remover", "remr", "-roles", "removeroles", "removerole", 
+        [Aliases("-role", "-r", ">r", ">>r", "rr", "remover", "remr", "-roles", "removeroles", "removerole",
                  "revokeroles", "takeroles", "revrole", "revroles", "tr")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task RevokeRolesAsync(CommandContext ctx,
@@ -368,9 +366,8 @@ namespace TheGodfather.Modules.Administration
             string name = user.ToString();
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: 0, reason: ctx.BuildInvocationDetailsString(reason));
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, name, lcs.GetLocalizedTime(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, name, this.Localization.GetLocalizedTime(ctx.Guild.Id, until));
 
             var task = new GuildTask {
                 ExecutionTime = until,
@@ -416,16 +413,15 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-temp-time");
 
             await ctx.Services.GetRequiredService<AntispamService>().PunishMemberAsync(
-                ctx.Guild, 
-                member, 
-                PunishmentAction.TemporaryMute, 
-                timespan, 
+                ctx.Guild,
+                member,
+                PunishmentAction.TemporaryMute,
+                timespan,
                 ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute")
             );
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, lcs.GetLocalizedTime(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, this.Localization.GetLocalizedTime(ctx.Guild.Id, until));
         }
 
         [Command("tempmute"), Priority(0)]
@@ -472,7 +468,7 @@ namespace TheGodfather.Modules.Administration
         public async Task UnmuteAsync(CommandContext ctx,
                                      [Description("desc-member")] DiscordMember member,
                                      [RemainingText, Description("desc-rsn")] string? reason = null)
-        { 
+        {
             DiscordRole muteRole = await ctx.Services.GetRequiredService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
             await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);

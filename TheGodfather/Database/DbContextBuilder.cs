@@ -25,8 +25,7 @@ namespace TheGodfather.Database
             cfg ??= new DbConfig();
             this.Provider = cfg.Provider;
             this.Options = options;
-            this.ConnectionString = this.Provider switch
-            {
+            this.ConnectionString = this.Provider switch {
                 DbProvider.PostgreSql => new NpgsqlConnectionStringBuilder {
                     Host = cfg.Hostname,
                     Port = cfg.Port,

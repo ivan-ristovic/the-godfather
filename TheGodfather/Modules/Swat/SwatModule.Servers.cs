@@ -25,14 +25,6 @@ namespace TheGodfather.Modules.Swat
         [RequirePrivilegedUser]
         public class SwatServersModule : TheGodfatherModule
         {
-
-            public SwatServersModule(DbContextBuilder db)
-                : base(db)
-            {
-
-            }
-
-
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
                 => this.ListAsync(ctx);

@@ -3,8 +3,6 @@ using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reminders
@@ -16,13 +14,6 @@ namespace TheGodfather.Modules.Reminders
 
         public class RemindHereModule : RemindModule
         {
-
-            public RemindHereModule(SchedulingService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand, Priority(1)]
             public new Task ExecuteGroupAsync(CommandContext ctx,
@@ -40,14 +31,6 @@ namespace TheGodfather.Modules.Reminders
 
             public class RemindHereInModule : RemindHereModule
             {
-
-                public RemindHereInModule(SchedulingService service, DbContextBuilder db)
-                    : base(service, db)
-                {
-
-                }
-
-
                 [GroupCommand]
                 public new Task ExecuteGroupAsync(CommandContext ctx,
                                                  [Description("Time span until reminder.")] TimeSpan timespan,
@@ -61,14 +44,6 @@ namespace TheGodfather.Modules.Reminders
 
             public class RemindHereAtModule : RemindModule
             {
-
-                public RemindHereAtModule(SchedulingService service, DbContextBuilder db)
-                    : base(service, db)
-                {
-
-                }
-
-
                 [GroupCommand, Priority(0)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Date and/or time.")] DateTimeOffset when,

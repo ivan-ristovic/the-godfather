@@ -14,10 +14,6 @@ namespace TheGodfather.Modules.Polls
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class VotingModule : TheGodfatherServiceModule<ChannelEventService>
     {
-        public VotingModule(ChannelEventService service)
-            : base(service) { }
-
-
         #region vote
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,

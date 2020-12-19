@@ -13,14 +13,11 @@ using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("privilegedusers"),  Module(ModuleType.Owner), Hidden]
+    [Group("privilegedusers"), Module(ModuleType.Owner), Hidden]
     [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
     [RequireOwner]
     public class PrivilegedUsersModule : TheGodfatherServiceModule<PrivilegedUserService>
     {
-        public PrivilegedUsersModule(PrivilegedUserService service)
-            : base(service) { }
-
         #region privilegedusers
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -41,7 +38,7 @@ namespace TheGodfather.Modules.Owner
             if (users is null || !users.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-missing-users");
 
-            await this.Service.AddAsync(users.Select(u => new PrivilegedUser { UserId = u.Id } ));
+            await this.Service.AddAsync(users.Select(u => new PrivilegedUser { UserId = u.Id }));
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
@@ -66,7 +63,7 @@ namespace TheGodfather.Modules.Owner
         public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<PrivilegedUser> privileged = await this.Service.GetAsync();
-            
+
             var notFound = new List<PrivilegedUser>();
             var valid = new List<DiscordUser>();
             foreach (PrivilegedUser pu in privileged) {

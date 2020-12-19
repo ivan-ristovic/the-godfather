@@ -16,10 +16,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.User)]
     public sealed class HelpModule : TheGodfatherServiceModule<CommandService>
     {
-        public HelpModule(CommandService cs)
-            : base(cs) { }
-
-
         #region help
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -46,7 +42,7 @@ namespace TheGodfather.Modules.Misc
         }
 
         [GroupCommand, Priority(0)]
-        public Task ExecuteGroupAsync(CommandContext ctx, 
+        public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("desc-cmd")] params string[] cmd)
             => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, cmd);
         #endregion

@@ -26,14 +26,6 @@ namespace TheGodfather.Modules.Currency
 
         public class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public BlackjackModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
-
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Bid amount.")] int bid = 5)

@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 using TheGodfather.EventListeners.Attributes;
-using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.EventListeners
 {

@@ -27,12 +27,6 @@ namespace TheGodfather.Modules.Currency
         public class LotteryModule : TheGodfatherServiceModule<ChannelEventService>
         {
 
-            public LotteryModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,

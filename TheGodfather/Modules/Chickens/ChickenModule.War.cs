@@ -1,23 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Common;
-using TheGodfather.Database;
-using TheGodfather.Database.Models;
-using TheGodfather.Exceptions;
-using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Chickens.Extensions;
-using TheGodfather.Modules.Currency.Extensions;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

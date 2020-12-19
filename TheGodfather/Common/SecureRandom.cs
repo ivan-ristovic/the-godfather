@@ -19,9 +19,9 @@ namespace TheGodfather.Common
         {
             this.rng.Dispose();
         }
-        
-        
-        public void Dispose() 
+
+
+        public void Dispose()
             => this.rng.Dispose();
 
         public bool NextBool(int trueRatio = 1)

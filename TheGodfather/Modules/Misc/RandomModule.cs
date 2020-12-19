@@ -20,10 +20,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class RandomModule : TheGodfatherServiceModule<RandomService>
     {
-        public RandomModule(RandomService service)
-            : base(service) { }
-
-
         #region random choose
         [Command("choice")]
         [Aliases("select", "choose")]

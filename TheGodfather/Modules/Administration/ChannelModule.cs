@@ -8,13 +8,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -24,7 +21,8 @@ namespace TheGodfather.Modules.Administration
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed partial class ChannelModule : TheGodfatherModule
     {
-        private static DiscordColor EmbColor = ModuleType.Administration.ToDiscordColor();
+        private static readonly DiscordColor EmbColor = ModuleType.Administration.ToDiscordColor();
+
 
         #region channel
         [GroupCommand]
@@ -186,23 +184,22 @@ namespace TheGodfather.Modules.Administration
             if (ctx.Channel.IsPrivate || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 throw new CommandFailedException(ctx, "cmd-err-chn-perms");
 
-            var emb = new LocalizedEmbedBuilder(ctx.Services.GetRequiredService<LocalizationService>(), ctx.Guild.Id);
-            emb.WithTitle(channel.ToString());
-            emb.WithColor(this.ModuleColor);
-            if (!string.IsNullOrWhiteSpace(channel.Topic))
-                emb.WithDescription(Formatter.Italic(Formatter.Strip(channel.Topic)));
-            emb.AddLocalizedTitleField("str-chn-type", channel.Type, inline: true);
-            emb.AddLocalizedTitleField("str-nsfw", channel.IsNSFW, inline: true);
-            emb.AddLocalizedTitleField("str-pos", channel.Position, inline: true);
-            emb.AddLocalizedTitleField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
-            if (channel.Type == ChannelType.Voice) {
-                emb.AddLocalizedTitleField("str-bitrate", channel.Bitrate, inline: true);
-                if (channel.UserLimit > 0)
-                    emb.AddLocalizedTitleField("str-user-limit", channel.UserLimit, inline: true);
-            }
-            emb.AddLocalizedTimestampField("str-created-at", channel.CreationTimestamp, inline: true);
-
-            return ctx.RespondAsync(embed: emb.Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle(channel.ToString());
+                emb.WithColor(this.ModuleColor);
+                if (!string.IsNullOrWhiteSpace(channel.Topic))
+                    emb.WithDescription(Formatter.Italic(Formatter.Strip(channel.Topic)));
+                emb.AddLocalizedTitleField("str-chn-type", channel.Type, inline: true);
+                emb.AddLocalizedTitleField("str-nsfw", channel.IsNSFW, inline: true);
+                emb.AddLocalizedTitleField("str-pos", channel.Position, inline: true);
+                emb.AddLocalizedTitleField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
+                if (channel.Type == ChannelType.Voice) {
+                    emb.AddLocalizedTitleField("str-bitrate", channel.Bitrate, inline: true);
+                    if (channel.UserLimit > 0)
+                        emb.AddLocalizedTitleField("str-user-limit", channel.UserLimit, inline: true);
+                }
+                emb.AddLocalizedTimestampField("str-created-at", channel.CreationTimestamp, inline: true);
+            });
         }
         #endregion
 
@@ -280,7 +277,7 @@ namespace TheGodfather.Modules.Administration
                                        [Description("str-name")] bool nsfw,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
                 => InternalModifyNsfwAsync(ctx, channel, nsfw, reason);
-            
+
             [Command("nsfw"), Priority(1)]
             public Task ModifyNsfwAsync(CommandContext ctx,
                                        [Description("str-name")] bool nsfw,
@@ -559,17 +556,15 @@ namespace TheGodfather.Modules.Administration
             channel ??= ctx.Channel;
             Permissions perms = member.PermissionsIn(channel);
 
-            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-
-            string permsStr = ls.GetString(ctx.Guild.Id, "fmt-chn-perms-none", member.DisplayName, channel.Name);
+            string permsStr = this.Localization.GetString(ctx.Guild.Id, "fmt-chn-perms-none", member.DisplayName, channel.Name);
             if (perms.HasPermission(Permissions.AccessChannels))
                 permsStr = perms.ToPermissionString();
 
-            var emb = new LocalizedEmbedBuilder(ls, ctx.Guild.Id);
-            emb.WithLocalizedTitle("fmt-chn-perms", member.ToDiscriminatorString(), channel);
-            emb.WithDescription(permsStr);
-            emb.WithColor(this.ModuleColor);
-            return ctx.RespondAsync(embed: emb.Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("fmt-chn-perms", member.ToDiscriminatorString(), channel);
+                emb.WithDescription(permsStr);
+                emb.WithColor(this.ModuleColor);
+            });
         }
 
         [Command("viewperms"), Priority(2)]
@@ -587,22 +582,18 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException(ctx, "fmt-role-perms-none");
 
             channel ??= ctx.Channel;
-
             DiscordOverwrite? ow = await channel.FindOverwriteForRoleAsync(role);
 
-            LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-            var emb = new LocalizedEmbedBuilder(ls, ctx.Guild.Id);
-            emb.WithLocalizedTitle("fmt-chn-perms", role.Mention, channel);
-            emb.WithColor(this.ModuleColor);
-
-            if (ow is { }) {
-                emb.AddLocalizedTitleField("str-allowed", ow.Allowed.ToPermissionString())
-                   .AddLocalizedTitleField("str-denied", ow.Denied.ToPermissionString());
-            } else {
-                emb.WithLocalizedDescription("fmt-chn-ow-none", role.Permissions.ToPermissionString());
-            }
-
-            await ctx.RespondAsync(embed: emb.Build());
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("fmt-chn-perms", role.Mention, channel);
+                emb.WithColor(this.ModuleColor);
+                if (ow is { }) {
+                    emb.AddLocalizedTitleField("str-allowed", ow.Allowed.ToPermissionString())
+                       .AddLocalizedTitleField("str-denied", ow.Denied.ToPermissionString());
+                } else {
+                    emb.WithLocalizedDescription("fmt-chn-ow-none", role.Permissions.ToPermissionString());
+                }
+            });
         }
 
         [Command("viewperms"), Priority(0)]
@@ -687,7 +678,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-name", Formatter.InlineCode(channel.Id.ToString()), name);
         }
-        
+
         private static async Task InternalModifyNsfwAsync(CommandContext ctx, DiscordChannel channel, bool nsfw, string? reason)
         {
             if (channel.Type != ChannelType.Text)
@@ -701,7 +692,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
             }));
 
-            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-nsfw", Formatter.Bold(channel.Name), nsfw); 
+            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-nsfw", Formatter.Bold(channel.Name), nsfw);
         }
 
         private static async Task InternalModifyParentAsync(CommandContext ctx, DiscordChannel[]? channels, string? reason)
@@ -718,7 +709,7 @@ namespace TheGodfather.Modules.Administration
                 await ModifyParent(ctx.Channel);
             }
 
-            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children?.JoinWith() ?? ctx.Channel.ToString()); 
+            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-parent", Formatter.Bold(parent.Name), children?.JoinWith() ?? ctx.Channel.ToString());
 
 
             Task ModifyParent(DiscordChannel channel)
@@ -740,7 +731,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
             }));
 
-            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-pos", 
+            await ctx.InfoAsync(EmbColor, "fmt-chn-mod-pos",
                                 channel.Type == ChannelType.Text ? channel.Mention : Formatter.Bold(channel.Name), position
             );
         }

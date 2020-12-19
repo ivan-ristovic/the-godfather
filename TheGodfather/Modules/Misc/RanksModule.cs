@@ -14,7 +14,6 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -23,10 +22,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
     {
-        public RanksModule(GuildRanksService service)
-            : base(service) { }
-
-
         #region rank
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
@@ -122,11 +117,10 @@ namespace TheGodfather.Modules.Misc
         [Command("top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+            var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
             emb.WithLocalizedTitle("str-rank-top");
             emb.WithColor(this.ModuleColor);
-            string unknown = lcs.GetString(ctx.Guild.Id, "str-404");
+            string unknown = this.Localization.GetString(ctx.Guild.Id, "str-404");
 
             UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
             IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync();

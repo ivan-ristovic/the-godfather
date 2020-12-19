@@ -29,14 +29,6 @@ namespace TheGodfather.Modules.Currency
 
     public class BankModule : TheGodfatherModule
     {
-
-        public BankModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("User.")] DiscordUser user = null)
@@ -289,7 +281,7 @@ namespace TheGodfather.Modules.Currency
         [Command("unregister"), Priority(0)]
         public Task UnregisterAsync(CommandContext ctx,
                                    [Description("User whose account to delete.")] DiscordMember member)
-            => this.UnregisterAsync(ctx, member as DiscordUser, false);
+            => this.UnregisterAsync(ctx, member, false);
         #endregion
     }
 }

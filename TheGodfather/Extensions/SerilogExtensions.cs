@@ -15,7 +15,7 @@ namespace TheGodfather.Extensions
     {
         public static Logger CreateLogger(BotConfig cfg)
         {
-            string template = cfg.CustomLogTemplate 
+            string template = cfg.CustomLogTemplate
                 ?? "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
 
             LoggerConfiguration lcfg = new LoggerConfiguration()

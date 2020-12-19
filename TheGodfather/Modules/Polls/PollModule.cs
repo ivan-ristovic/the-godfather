@@ -4,12 +4,9 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
@@ -21,10 +18,6 @@ namespace TheGodfather.Modules.Polls
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {
-        public PollModule(ChannelEventService service)
-            : base(service) { }
-
-
         #region poll
         [GroupCommand, Priority(2)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -49,7 +42,7 @@ namespace TheGodfather.Modules.Polls
                     throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 poll.Options = options;
 
-                await poll.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
+                await poll.RunAsync(this.Localization);
             } catch (TaskCanceledException) {
                 await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {

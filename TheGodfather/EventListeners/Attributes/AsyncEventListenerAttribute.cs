@@ -37,11 +37,11 @@ namespace TheGodfather.EventListeners.Attributes
                         Log.Error(ex, "Listener threw an exception");
                     }
                 });
-                
+
                 return Task.CompletedTask;
             }
 
-            
+
             #region Event hooking
             switch (this.EventType) {
                 case DiscordEventType.ChannelCreated:

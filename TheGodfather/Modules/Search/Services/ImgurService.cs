@@ -1,11 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Imgur.API.Authentication;
-using Imgur.API.Models;
-using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search.Services

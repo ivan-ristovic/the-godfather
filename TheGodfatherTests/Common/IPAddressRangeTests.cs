@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
 using TheGodfather.Common;
-using WebSocket4Net.Command;
 
 namespace TheGodfather.Tests.Common
 {

@@ -7,7 +7,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -21,14 +20,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
-
-        public YoutubeModule(YtService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)

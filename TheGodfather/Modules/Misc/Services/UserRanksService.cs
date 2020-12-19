@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +32,7 @@ namespace TheGodfather.Misc.Services
             => (uint)(index * index * 10);
 
         public short CalculateRankForUser(ulong uid)
-            => this.xps.TryGetValue(uid, out uint count) ? CalculateRankForXp(count) : (short)0;
+            => this.xps.TryGetValue(uid, out uint count) ? CalculateRankForXp(count) : 0;
 
         public uint GetUserXp(ulong uid)
             => this.xps.TryGetValue(uid, out uint count) ? count : 0;

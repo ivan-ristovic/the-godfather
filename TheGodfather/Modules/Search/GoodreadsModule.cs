@@ -2,10 +2,8 @@
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -20,13 +18,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
-
-        public GoodreadsModule(GoodreadsService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,

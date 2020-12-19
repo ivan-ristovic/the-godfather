@@ -8,7 +8,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -18,10 +17,6 @@ namespace TheGodfather.Modules.Administration
         [Aliases("il")]
         public sealed class AntiInstantLeaveModule : TheGodfatherServiceModule<AntiInstantLeaveService>
         {
-            public AntiInstantLeaveModule(AntiInstantLeaveService service)
-                : base(service) { }
-
-
             #region config instantleave
             [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -60,10 +55,9 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx)
             {
-                return ctx.WithGuildConfigAsync(gcfg => {
-                    LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                    return ctx.InfoAsync(this.ModuleColor, "fmt-settings-rl", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, lcs));
-                });
+                return ctx.WithGuildConfigAsync(
+                    gcfg => ctx.InfoAsync(this.ModuleColor, "fmt-settings-rl", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization))
+                );
             }
             #endregion
 
@@ -74,7 +68,7 @@ namespace TheGodfather.Modules.Administration
                                               [Description("desc-sens")] short? cooldown = null)
             {
                 if (cooldown is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-il-cd", gcfg.AntiInstantLeaveCooldown ));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-il-cd", gcfg.AntiInstantLeaveCooldown));
                     return;
                 }
 

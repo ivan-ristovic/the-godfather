@@ -57,7 +57,7 @@ namespace TheGodfather.Extensions
 
     public sealed class CommandKeyValuePairComparer : IEqualityComparer<KeyValuePair<string, Command>>
     {
-        public bool Equals([AllowNull] KeyValuePair<string, Command> x, [AllowNull] KeyValuePair<string, Command> y) 
+        public bool Equals([AllowNull] KeyValuePair<string, Command> x, [AllowNull] KeyValuePair<string, Command> y)
             => ReferenceEquals(x, y) || Equals(x.Value?.QualifiedName, y.Value?.QualifiedName);
 
         public int GetHashCode([DisallowNull] KeyValuePair<string, Command> obj)

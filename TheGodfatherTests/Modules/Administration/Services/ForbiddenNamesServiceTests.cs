@@ -41,7 +41,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                         Assert.That(this.Service.GetGuildForbiddenNames(id), Is.Empty);
                 }
             );
-            
+
             TestDbProvider.Verify(
                 db => {
                     for (int i = 0; i < MockData.Ids.Count; i++)

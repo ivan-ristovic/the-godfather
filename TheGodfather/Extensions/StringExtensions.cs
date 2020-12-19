@@ -61,8 +61,8 @@ namespace TheGodfather.Extensions
 
         public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
         {
-            return TryParseRegex(pattern, out Regex? regex, options, escape) && regex is { } 
-                ? regex 
+            return TryParseRegex(pattern, out Regex? regex, options, escape) && regex is { }
+                ? regex
                 : throw new ArgumentException($"Invalid regex string: {pattern}", nameof(pattern));
         }
     }

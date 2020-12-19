@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Administration.Services
                 return !DbFetch(db, qualifiedCommandName, gid, 0)?.Allowed ?? false;
             }
 
-            
+
             static CommandRule? DbFetch(TheGodfatherDbContext db, string qcmd, ulong gid, ulong cid)
             {
                 IEnumerable<CommandRule> crs = db.CommandRules

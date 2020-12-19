@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
@@ -26,13 +24,6 @@ namespace TheGodfather.Modules.Games
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         public class NumberRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public NumberRaceModule(ChannelEventService service, DbContextBuilder db)
-                : base(service, db)
-            {
-
-            }
-
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)

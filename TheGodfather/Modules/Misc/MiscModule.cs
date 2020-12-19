@@ -18,7 +18,6 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Misc.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -26,10 +25,6 @@ namespace TheGodfather.Modules.Misc
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     {
-        public MiscModule(RandomService service)
-            : base(service) { }
-
-
         #region 8ball
         [Command("8ball")]
         [Aliases("8b")]
@@ -262,7 +257,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
 
-        #region helpers
+        #region internals
         private Task InternalPenisAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
         {
             users = users.Distinct().ToList();
@@ -298,10 +293,9 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
             await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                Description = lcs.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
+                Description = this.Localization.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
                 Color = this.ModuleColor,
             });
         }

@@ -10,7 +10,7 @@ namespace TheGodfather.Modules.Owner.Services
         public override bool IsDisabled => false;
 
 
-        public PrivilegedUserService(DbContextBuilder dbb) 
+        public PrivilegedUserService(DbContextBuilder dbb)
             : base(dbb) { }
 
         public override DbSet<PrivilegedUser> DbSetSelector(TheGodfatherDbContext db) => db.PrivilegedUsers;

@@ -15,14 +15,14 @@ namespace TheGodfather.Modules.Chickens.Common
         public bool IsLoserDead => this.Loser.Stats.TotalVitality <= 0;
 
 
-        private ChickenFightResult(Chicken winner, Chicken loser, int gain) 
+        private ChickenFightResult(Chicken winner, Chicken loser, int gain)
         {
             this.Winner = winner;
             this.Loser = loser;
             this.StrGain = gain;
         }
 
-        
+
         public static ChickenFightResult Fight(Chicken c1, Chicken c2)
         {
             int chance = 50 + c1.Stats.TotalStrength - c2.Stats.TotalStrength;

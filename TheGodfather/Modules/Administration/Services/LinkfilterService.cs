@@ -51,16 +51,16 @@ namespace TheGodfather.Modules.Administration.Services
         private Task<bool> ScanForBootersAsync(MessageCreateEventArgs e)
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Match(e.Message);
-            return match.Success 
-                ? this.DeleteAsync(e, "DDoS/Booter website", match) 
+            return match.Success
+                ? this.DeleteAsync(e, "DDoS/Booter website", match)
                 : Task.FromResult(false);
         }
 
         private Task<bool> ScanForIpLoggersAsync(MessageCreateEventArgs e)
         {
             LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Match(e.Message);
-            return match.Success 
-                ? this.DeleteAsync(e, "IP logging website", match) 
+            return match.Success
+                ? this.DeleteAsync(e, "IP logging website", match)
                 : Task.FromResult(false);
         }
 
@@ -109,9 +109,9 @@ namespace TheGodfather.Modules.Administration.Services
             await ls.LogAsync(e.Guild, emb);
         }
 
-        public override void Dispose() 
-        { 
-        
+        public override void Dispose()
+        {
+
         }
     }
 }

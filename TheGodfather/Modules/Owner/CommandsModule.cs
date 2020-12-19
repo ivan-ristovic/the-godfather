@@ -18,10 +18,6 @@ namespace TheGodfather.Modules.Owner
     [RequireOwner]
     public sealed class CommandsModule : TheGodfatherServiceModule<CommandService>
     {
-        public CommandsModule(CommandService service)
-            : base(service) { }
-
-
         #region commands
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)

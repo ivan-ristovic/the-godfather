@@ -5,7 +5,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -19,13 +18,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
-
-        public GiphyModule(GiphyService service, DbContextBuilder db)
-            : base(service, db)
-        {
-
-        }
-
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,

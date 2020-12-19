@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration.Services
 
                     IEnumerable<DiscordChannel> overwriteTargets = guild.Channels
                         .Select(kvp => kvp.Value)
-                        .Where(c => c.Type == ChannelType.Category 
+                        .Where(c => c.Type == ChannelType.Category
                                  || ((c.Type == ChannelType.Text || c.Type == ChannelType.Voice) && c.Parent is null)
                         );
 

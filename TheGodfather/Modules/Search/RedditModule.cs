@@ -21,14 +21,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RedditModule : TheGodfatherModule
     {
-
-        public RedditModule(DbContextBuilder db)
-            : base(db)
-        {
-
-        }
-
-
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Subreddit.")] string sub = "all")

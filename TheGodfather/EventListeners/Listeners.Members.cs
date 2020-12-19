@@ -29,7 +29,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Guild is null)
                 return;
-            
+
             LogExt.Debug(shard.Id, "Member added: {Member} {Guild}", e.Member, e.Guild);
 
             GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
@@ -101,7 +101,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
-            
+
             GuildConfig gcfg = await shard.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
 
             if (gcfg.AntifloodEnabled)
@@ -116,7 +116,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
-            
+
             LogExt.Debug(shard.Id, "Member removed: {Member} {Guild}", e.Member, e.Guild);
 
             GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
@@ -161,7 +161,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Guild is null || e.Member is null || e.Member.IsBot)
                 return;
-            
+
             LogExt.Debug(shard.Id, "Member updated: {Member} {Guild}", e.Member, e.Guild);
 
             LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
@@ -242,7 +242,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.User.IsBot)
                 return;
-            
+
             LogExt.Debug(shard.Id, "Presence updated: {User}", e.User);
 
             GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
@@ -270,7 +270,7 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedPropertyChangeField("str-flags-oauth", e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
                     emb.AddLocalizedPropertyChangeField("str-premium-type", e.UserBefore.PremiumType, e.UserAfter.PremiumType);
                     emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
-                    
+
                     // TODO improve
                     emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
 

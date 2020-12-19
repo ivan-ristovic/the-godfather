@@ -114,7 +114,7 @@ namespace TheGodfather.EventListeners
             LogExt.Debug(shard.Id, "Role created: {Role} {Guild}", e.Role, e.Guild);
             if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
-            
+
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-gld-role-add", e.Role);
             emb.AddLocalizedPropertyChangeField("str-managed", false, e.Role?.IsManaged ?? false, inline: true);
 

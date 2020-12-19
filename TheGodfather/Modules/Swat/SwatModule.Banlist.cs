@@ -28,13 +28,6 @@ namespace TheGodfather.Modules.Swat
         public class SwatBanlistModule : TheGodfatherModule
         {
 
-            public SwatBanlistModule(DbContextBuilder db)
-                : base(db)
-            {
-
-            }
-
-
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
                 => this.ListAsync(ctx);

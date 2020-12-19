@@ -34,7 +34,7 @@ namespace TheGodfather.Extensions
             return mctx.TimedOut ? null : mctx.Result.Author;
         }
 
-        
+
         public static Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
