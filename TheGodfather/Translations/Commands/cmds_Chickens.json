@@ -1,0 +1,52 @@
+{
+  "chicken": {
+    "usage": [
+      [],
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken fight": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken heal": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken info": {
+    "usage": [
+      [],
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken list": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken rename": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken sell": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken top": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken topglobal": {
+    "usage": [
+      []
+    ]
+  }
+}

@@ -7,38 +7,38 @@ namespace TheGodfather.Services
     {
         public bool IsDisabled => false;
 
-        private readonly ConcurrentDictionary<ulong, IChannelEvent> _events;
+        private readonly ConcurrentDictionary<ulong, IChannelEvent?> events;
 
 
         public ChannelEventService()
         {
-            this._events = new ConcurrentDictionary<ulong, IChannelEvent>();
+            this.events = new ConcurrentDictionary<ulong, IChannelEvent?>();
         }
 
 
-        public IChannelEvent GetEventInChannel(ulong cid)
-            => this._events.TryGetValue(cid, out IChannelEvent e) && !(e is null) ? e : null;
+        public IChannelEvent? GetEventInChannel(ulong cid)
+            => this.events.TryGetValue(cid, out IChannelEvent? e) && e is { } ? e : null;
 
-        public T GetEventInChannel<T>(ulong cid) where T : class, IChannelEvent
+        public T? GetEventInChannel<T>(ulong cid) where T : class, IChannelEvent
             => this.GetEventInChannel(cid) as T;
 
         public bool IsEventRunningInChannel(ulong cid)
-            => !(this.GetEventInChannel(cid) is null);
+            => this.GetEventInChannel(cid) is { };
 
-        public bool IsEventRunningInChannel(ulong cid, out IChannelEvent @event)
+        public bool IsEventRunningInChannel(ulong cid, out IChannelEvent? @event)
         {
             @event = null;
-            IChannelEvent chnEvent = this.GetEventInChannel(cid);
+            IChannelEvent? chnEvent = this.GetEventInChannel(cid);
             if (chnEvent is null)
                 return false;
             @event = chnEvent;
             return true;
         }
 
-        public bool IsEventRunningInChannel<T>(ulong cid, out T @event) where T : class, IChannelEvent
+        public bool IsEventRunningInChannel<T>(ulong cid, out T? @event) where T : class, IChannelEvent
         {
             @event = null;
-            IChannelEvent chnEvent = this.GetEventInChannel<T>(cid);
+            IChannelEvent? chnEvent = this.GetEventInChannel<T>(cid);
             if (chnEvent is null || !(chnEvent is T))
                 return false;
             @event = chnEvent as T;
@@ -49,13 +49,13 @@ namespace TheGodfather.Services
         {
             if (this.IsEventRunningInChannel(cid))
                 throw new System.InvalidOperationException("Another event is running in channel!");
-            this._events.AddOrUpdate(cid, cevent, (c, e) => cevent);
+            this.events.AddOrUpdate(cid, cevent, (c, e) => cevent);
         }
 
         public void UnregisterEventInChannel(ulong cid)
         {
-            if (!this._events.TryRemove(cid, out _))
-                this._events[cid] = null;
+            if (!this.events.TryRemove(cid, out _))
+                this.events[cid] = null;
         }
     }
 }

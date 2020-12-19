@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -32,5 +34,46 @@ namespace TheGodfather.Modules.Currency.Services
 
         public override IQueryable<BankAccount> GroupSelector(IQueryable<BankAccount> entities, ulong grid)
             => entities.Where(acc => (ulong)acc.GuildIdDb == grid);
+
+        public async Task<bool> AddToBankAccountAsync(ulong gid, ulong uid, long change)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            BankAccount? account = await this.GetAsync(gid, uid);
+            if (account is null || account.Balance < change)
+                return false;
+            
+            account.Balance += change;
+            db.BankAccounts.Update(account);
+            
+            await db.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task ModifyBankAccountAsync(ulong gid, ulong uid, Func<long, long> balanceModifier)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            
+            bool created = false;
+
+            BankAccount? account = await this.GetAsync(gid, uid);
+            if (account is null) {
+                account = new BankAccount {
+                    GuildId = gid,
+                    UserId = uid
+                };
+                created = true;
+            }
+
+            account.Balance = balanceModifier(account.Balance);
+            if (account.Balance < 0)
+                account.Balance = 0;
+
+            if (created)
+                db.BankAccounts.Add(account);
+            else
+                db.BankAccounts.Update(account);
+
+            await db.SaveChangesAsync();
+        }
     }
 }

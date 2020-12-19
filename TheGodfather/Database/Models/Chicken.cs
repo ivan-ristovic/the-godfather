@@ -26,22 +26,9 @@ namespace TheGodfather.Database.Models
         MaxVitality = 2
     }
 
-    public static class UpgradedStatExtensions
-    {
-        public static string ToShortString(this ChickenStatUpgrade stat)
-        {
-            return stat switch
-            {
-                ChickenStatUpgrade.Strength => "STR",
-                ChickenStatUpgrade.Vitality => "HP",
-                ChickenStatUpgrade.MaxVitality => "MAXHP",
-                _ => "?",
-            };
-        }
-    }
 
     [Table("chickens")]
-    public class Chicken
+    public class Chicken : IEquatable<Chicken>
     {
         public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats> {
             { ChickenType.Default, new ChickenStats { BareStrength = 50, BareMaxVitality = 100, BareVitality = 100 } },
@@ -59,6 +46,8 @@ namespace TheGodfather.Database.Models
 
 
         public const int NameLimit = 32;
+        public const int MinVitalityToFight = 32;
+        public const int MaxFightStrDiff = 75;
 
 
         [Column("uid")]
@@ -151,20 +140,8 @@ namespace TheGodfather.Database.Models
             }
         }
 
-        public Chicken Fight(Chicken other)
-        {
-            int chance = 50 + this.Stats.TotalStrength - other.Stats.TotalStrength;
-
-            if (this.Stats.TotalStrength > other.Stats.TotalStrength) {
-                if (chance > 99)
-                    chance = 99;
-            } else {
-                if (chance < 1)
-                    chance = 1;
-            }
-
-            return new SecureRandom().Next(100) < chance ? this : other;
-        }
+        public bool IsTooStrongFor(Chicken other)
+            => Math.Abs(this.Stats.TotalStrength - other.Stats.TotalStrength) > MaxFightStrDiff;
 
         public int DetermineStrengthGain(Chicken loser)
         {
@@ -174,6 +151,15 @@ namespace TheGodfather.Database.Models
                 ? Math.Max(7 - (str1 - str2) / 5, 1)
                 : str2 > str1 ? (str2 - str1) / 5 + 5 : 5;
         }
+
+        public bool Equals(Chicken? other)
+            => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as Chicken);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.UserId).GetHashCode();
     }
 
     public sealed class ChickenStats

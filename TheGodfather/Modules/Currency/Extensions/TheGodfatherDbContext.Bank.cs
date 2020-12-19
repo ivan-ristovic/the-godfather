@@ -7,6 +7,7 @@ namespace TheGodfather.Modules.Currency.Extensions
 {
     public static class TheGodfatherDbContextBankExtensions
     {
+        [Obsolete]
         public static async Task<bool> TryDecreaseBankAccountAsync(this TheGodfatherDbContext db, ulong uid, ulong gid, long amount)
         {
             BankAccount account = await db.BankAccounts.FindAsync((long)gid, (long)uid);
@@ -17,6 +18,7 @@ namespace TheGodfather.Modules.Currency.Extensions
             return true;
         }
 
+        [Obsolete]
         public static async Task ModifyBankAccountAsync(this TheGodfatherDbContext db, ulong uid, ulong gid, Func<long, long> balanceModifier)
         {
             bool created = false;
