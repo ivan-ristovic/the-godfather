@@ -71,6 +71,8 @@
   "chicken train": "Trains your chicken at the cost of some guild currency. Group call trains your chicken's strength.",
   "chicken upgrade": "Upgrade your chicken with items you can buy using guild currency. Group call lists all available upgrades or buys an upgrade with specified ID.",
   "chicken upgrade list": "Lists all available chicken upgrades.",
+  "chicken war": "Starts a chicken war! Users can make their chickens join one of the teams.",
+  "chicken war join": "Joins a specified team (via name or number) in a pending chicken war.",
   "coinflip": "Flips a coin!",
   "commandrules": "Bot command rule management (allowing or forbiding certain commands). Group call shows active command rules in specified channel or globally if the channel is not specified.",
   "commandrules allow": "Allows command execution only in specified channel(s), or globally if they are not specified.",

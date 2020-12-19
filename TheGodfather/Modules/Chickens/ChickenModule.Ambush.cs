@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken.Stats.TotalVitality < Chicken.MinVitalityToFight)
                     throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
 
-                if (ambush.Started)
+                if (ambush.IsRunning)
                     throw new CommandFailedException(ctx, "cmd-err-chicken-ambush-started");
 
                 if (!ambush.AddParticipant(chicken, ctx.User, team2: team2))

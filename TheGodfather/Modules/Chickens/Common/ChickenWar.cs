@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Chickens.Common
         public DiscordChannel Channel { get; protected set; }
         public InteractivityExtension Interactivity { get; protected set; }
         public int Gain { get; private set; }
-        public bool Started { get; private set; }
+        public bool IsRunning { get; private set; }
         public ConcurrentQueue<Chicken> Team1 { get; }
         public ConcurrentQueue<Chicken> Team2 { get; }
         public ConcurrentQueue<Chicken> WinningTeam => this.Team1Won ? this.Team1 : this.Team2;
@@ -29,12 +29,12 @@ namespace TheGodfather.Modules.Chickens.Common
         public ChickenFightResult? Result { get; private set; }
 
 
-        public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string team1, string team2)
+        public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string? team1, string? team2)
         {
             this.Interactivity = interactivity;
             this.Channel = channel;
 
-            this.Started = false;
+            this.IsRunning = false;
 
             if (!string.IsNullOrWhiteSpace(team1))
                 this.Team1Name = team1;
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Chickens.Common
 
         public async Task RunAsync(LocalizationService _)
         {
-            this.Started = true;
+            this.IsRunning = true;
 
             int str1 = this.Team1.Sum(c => c.Stats.TotalStrength);
             int str2 = this.Team2.Sum(c => c.Stats.TotalStrength);

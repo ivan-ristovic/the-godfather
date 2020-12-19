@@ -1,143 +1,142 @@
-﻿#region USING_DIRECTIVES
-#endregion
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Common;
+using TheGodfather.Database.Models;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Modules.Chickens.Services;
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Chickens
 {
-    //public partial class ChickenModule
-    //{
-    //    [Group("war")]
-    //    [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
-    //    [Aliases("gangwar", "battle")]
+    public partial class ChickenModule
+    {
+        [Group("war")]
+        [Aliases("gangwar", "battle")]
+        public sealed class WarModule : TheGodfatherServiceModule<ChickenService>
+        {
+            #region chicken war
+            [GroupCommand]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("desc-team1-name")] string? team1 = null,
+                                               [Description("desc-team2-name")] string? team2 = null)
+            {
+                ChannelEventService evs = ctx.Services.GetRequiredService<ChannelEventService>();
+                if (evs.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
 
-    //    public class WarModule : TheGodfatherServiceModule<ChannelEventService>
-    //    {
+                var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
+                evs.RegisterEventInChannel(war, ctx.Channel.Id);
+                try {
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-chicken-war-start");
+                    await Task.Delay(TimeSpan.FromMinutes(1));
 
-    //        public WarModule(ChannelEventService service, DbContextBuilder db)
-    //            : base(service, db)
-    //        {
+                    if (war.Team1.Any() && war.Team2.Any()) {
+                        await war.RunAsync(this.Localization);
 
-    //        }
+                        ChickenFightResult? res = war.Result;
+                        if (res is null)
+                            return;
 
+                        var sb = new StringBuilder();
+                        int gain = (int)Math.Floor((double)res.StrGain / war.WinningTeam.Count);
+                        BankAccountService bas = ctx.Services.GetRequiredService<BankAccountService>();
+                        foreach (Chicken chicken in war.WinningTeam) {
+                            chicken.Stats.BareStrength += gain;
+                            chicken.Stats.BareVitality -= 20;
+                            sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain-loss", chicken.Name, gain, 10));
+                            await bas.IncreaseBankAccountAsync(chicken.GuildId, chicken.UserId, res.Reward);
+                        }
+                        await this.Service.UpdateAsync(war.WinningTeam);
 
-    //        [GroupCommand]
-    //        public async Task ExecuteGroupAsync(CommandContext ctx,
-    //                                           [Description("Team 1 name.")] string team1 = null,
-    //                                           [Description("Team 2 name.")] string team2 = null)
-    //        {
-    //            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
-    //                throw new CommandFailedException("Another event is already running in the current channel.");
+                        foreach (Chicken chicken in war.LosingTeam) {
+                            chicken.Stats.BareVitality -= 50;
+                            if (chicken.Stats.TotalVitality > 0)
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", chicken.Name));
+                            else
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", chicken.Name, ChickenFightResult.VitLoss));
+                        }
+                        await this.Service.RemoveAsync(war.LosingTeam.Where(c => c.Stats.TotalVitality <= 0));
+                        await this.Service.UpdateAsync(war.LosingTeam.Where(c => c.Stats.TotalVitality > 0));
 
-    //            var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
-    //            this.Service.RegisterEventInChannel(war, ctx.Channel.Id);
-    //            try {
-    //                await this.InformAsync(ctx, Emojis.Clock1, $"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.");
-    //                await Task.Delay(TimeSpan.FromMinutes(1));
+                        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                            emb.WithLocalizedTitle("fmt-chicken-war-won", Emojis.Chicken, war.Team1Won ? war.Team1Name : war.Team2Name);
+                            emb.WithDescription(sb.ToString());
+                            emb.WithLocalizedFooter("fmt-chicken-war-rew", null, res.Reward);
+                            emb.WithColor(this.ModuleColor);
+                        });
+                    } else {
+                        await ctx.FailAsync(Emojis.AlarmClock, "str-chicken-war-none");
+                    }
+                } finally {
+                    evs.UnregisterEventInChannel(ctx.Channel.Id);
+                }
+            }
+            #endregion
 
-    //                if (war.Team1.Any() && war.Team2.Any()) {
-    //                    await war.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
+            #region chicken war join
+            [Command("join"), Priority(1)]
+            [Aliases("+", "compete", "enter", "j", "<", "<<")]
+            public Task JoinAsync(CommandContext ctx,
+                                 [Description("desc-team-no")] int team)
+                => this.TryJoinInternalAsync(ctx, teamId: team);
 
-    //                    var sb = new StringBuilder();
-
-    //                    using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-    //                        foreach (Chicken chicken in war.Team1Won ? war.Team1 : war.Team2) {
-    //                            chicken.Stats.BareStrength += war.Gain;
-    //                            chicken.Stats.BareVitality -= 10;
-    //                            db.Chickens.Update(chicken);
-    //                            await db.ModifyBankAccountAsync(chicken.UserId, ctx.Guild.Id, v => v + 100000);
-    //                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
-    //                        }
-
-    //                        foreach (Chicken chicken in war.Team1Won ? war.Team2 : war.Team1) {
-    //                            chicken.Stats.BareVitality -= 50;
-    //                            if (chicken.Stats.TotalVitality > 0) {
-    //                                db.Chickens.Update(chicken);
-    //                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 25 HP!");
-    //                            } else {
-    //                                db.Chickens.Remove(chicken);
-    //                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
-    //                            }
-    //                        }
-
-    //                        await db.SaveChangesAsync();
-    //                    }
-
-    //                    await this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.\n\n{sb.ToString()}");
-    //                } else {
-    //                    await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).");
-    //                }
-
-    //            } finally {
-    //                this.Service.UnregisterEventInChannel(ctx.Channel.Id);
-    //            }
-    //        }
+            [Command("join"), Priority(0)]
+            public Task JoinAsync(CommandContext ctx,
+                                 [RemainingText, Description("desc-team-name")] string team)
+                => this.TryJoinInternalAsync(ctx, teamName: team);
+            #endregion
 
 
-    //        #region COMMAND_CHICKEN_WAR_JOIN
-    //        [Command("join"), Priority(1)]
-    //        [Description("Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.")]
-    //        [Aliases("+", "compete", "enter", "j")]
+            #region internals
+            private async Task TryJoinInternalAsync(CommandContext ctx, int? teamId = null, string? teamName = null)
+            {
+                if (!ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar? war) || war is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-war-none");
 
-    //        public async Task JoinAsync(CommandContext ctx,
-    //                                   [Description("Number 1 or 2 depending of team you wish to join.")] int team)
-    //        {
-    //            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar war))
-    //                throw new CommandFailedException("There are no chicken wars running in this channel.");
+                Chicken? chicken = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
+                if (chicken is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                chicken.Owner = ctx.User;
 
-    //            if (war.Started)
-    //                throw new CommandFailedException("War has already started, you can't join it.");
+                if (chicken.Stats.TotalVitality < Chicken.MinVitalityToFight)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
 
-    //            if (war.IsParticipating(ctx.User))
-    //                throw new CommandFailedException("Your chicken is already participating in the war!");
+                if (war.IsRunning)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-war-started");
 
-    //            Chicken? chicken = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, ctx.User.Id, findOwner: false);
-    //            if (chicken is null)
-    //                throw new CommandFailedException("You do not own a chicken!");
-    //            chicken.Owner = ctx.User;
+                if (!war.IsParticipating(ctx.User))
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-war-dup");
 
-    //            if (chicken.Stats.TotalVitality < 25)
-    //                throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+                if (teamId is { }) {
+                    switch (teamId) {
+                        case 1: war.AddParticipant(chicken, ctx.User, team1: true); break;
+                        case 2: war.AddParticipant(chicken, ctx.User, team2: true); break;
+                        default:
+                            throw new CommandFailedException(ctx, "cmd-err-chicken-war-team-404");
+                    }
+                } else if (teamName is { }) {
+                    if (string.Equals(teamName, war.Team1Name, StringComparison.InvariantCultureIgnoreCase))
+                        war.AddParticipant(chicken, ctx.User, team1: true);
+                    else if (string.Equals(teamName, war.Team2Name, StringComparison.InvariantCultureIgnoreCase))
+                        war.AddParticipant(chicken, ctx.User, team2: true);
+                    else
+                        throw new CommandFailedException(ctx, "cmd-err-chicken-war-team-404");
+                } else {
+                    throw new CommandFailedException(ctx);
+                }
 
-    //            switch (team) {
-    //                case 1: war.AddParticipant(chicken, ctx.User, team1: true); break;
-    //                case 2: war.AddParticipant(chicken, ctx.User, team2: true); break;
-    //                default:
-    //                    throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
-    //            }
-
-    //            await this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team == 1 ? war.Team1Name : war.Team2Name)}.");
-    //        }
-
-    //        [Command("join"), Priority(0)]
-    //        public async Task JoinAsync(CommandContext ctx,
-    //                                   [RemainingText, Description("Team name to join.")] string team)
-    //        {
-    //            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar war))
-    //                throw new CommandFailedException("There are no chicken wars running in this channel.");
-
-    //            if (war.Started)
-    //                throw new CommandFailedException("War has already started, you can't join it.");
-
-    //            if (war.IsParticipating(ctx.User))
-    //                throw new CommandFailedException("Your chicken is already participating in the war!");
-
-    //            Chicken? chicken = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, ctx.User.Id, findOwner: false);
-    //            if (chicken is null)
-    //                throw new CommandFailedException("You do not own a chicken!");
-    //            chicken.Owner = ctx.User;
-
-    //            if (chicken.Stats.TotalVitality < 25)
-    //                throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");
-
-    //            if (string.Compare(team, war.Team1Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-    //                war.AddParticipant(chicken, ctx.User, team1: true);
-    //            else if (string.Compare(team, war.Team2Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-    //                war.AddParticipant(chicken, ctx.User, team2: true);
-    //            else
-    //                throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
-
-    //            await this.InformAsync(ctx, Emojis.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team)}.");
-    //        }
-    //        #endregion
-    //    }
-    //}
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-war-join");
+            }
+            #endregion
+        }
+    }
 }
