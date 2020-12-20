@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace TheGodfather.Modules.Currency.Services
             => entity.UserId;
 
         public override object[] EntityPrimaryKeySelector(ulong grid, ulong id)
-            => new object[] { grid, id };
+            => new object[] { (long)grid, (long)id };
 
         public override IQueryable<BankAccount> GroupSelector(IQueryable<BankAccount> entities, ulong grid)
             => entities.Where(acc => (ulong)acc.GuildIdDb == grid);
@@ -76,6 +77,45 @@ namespace TheGodfather.Modules.Currency.Services
             else
                 db.BankAccounts.Update(account);
 
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<IReadOnlyList<BankAccount>> GetTopAccountsAsync(ulong? gid = null, int amount = 10)
+        {
+            List<BankAccount> topAccounts;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            topAccounts = await 
+                (gid is { } ? db.BankAccounts.Where(a => a.GuildId == gid) : db.BankAccounts)
+                .OrderByDescending(a => a.Balance)
+                .Take(amount)
+                .ToListAsync();
+            return topAccounts;
+        }
+
+        public async Task<bool> TransferAsync(ulong gid, ulong src, ulong dst, long amount)
+        {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                try {
+                    await db.Database.BeginTransactionAsync();
+
+                    if (!await this.TryDecreaseBankAccountAsync(gid, src, amount))
+                        return false;
+                    await this.IncreaseBankAccountAsync(gid, dst, amount);
+                    await db.SaveChangesAsync();
+
+                    db.Database.CommitTransaction();
+                } catch {
+                    db.Database.RollbackTransaction();
+                    throw;
+                }
+            }
+            return true;
+        }
+
+        public async Task RemoveAllAsync(ulong uid)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.BankAccounts.RemoveRange(db.BankAccounts.Where(acc => acc.UserIdDb == (long)uid));
             await db.SaveChangesAsync();
         }
     }

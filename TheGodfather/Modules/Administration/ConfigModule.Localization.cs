@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-            #region config locale list
+            #region config localization list
             [Command("list")]
             [Aliases("print", "show", "view", "ls", "l", "p")]
             public Task ListLocalesAsync(CommandContext ctx)

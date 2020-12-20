@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -29,7 +28,7 @@ namespace TheGodfather.Modules.Chickens.Services
             => entity.Id;
 
         public override object[] EntityPrimaryKeySelector((ulong gid, ulong uid) grid, int id)
-            => new object[] { grid.gid, grid.uid, id };
+            => new object[] { (long)grid.gid, (long)grid.uid, id };
 
         public override IQueryable<ChickenBoughtUpgrade> GroupSelector(IQueryable<ChickenBoughtUpgrade> entities, (ulong gid, ulong uid) grid)
             => entities.Where(bu => bu.GuildIdDb == (long)grid.gid && bu.UserIdDb == (long)grid.uid);

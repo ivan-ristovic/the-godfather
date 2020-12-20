@@ -18,8 +18,8 @@ namespace TheGodfather.Modules
         [Obsolete]
         protected DbContextBuilder Database { get; } = null!;
 
-        protected LocalizationService Localization { get; set; }
-        protected DiscordColor ModuleColor { get; }
+        public LocalizationService Localization { get; set; }
+        public DiscordColor ModuleColor { get; }
 
 
         protected TheGodfatherModule()

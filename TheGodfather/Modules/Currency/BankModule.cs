@@ -1,5 +1,5 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,278 +9,233 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Humanizer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
-using TheGodfather.Modules.Currency.Extensions;
-#endregion
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Currency
 {
     [Group("bank"), Module(ModuleType.Currency), NotBlocked]
-    [Description("WM bank commands. Group call prints out given user's bank balance. Accounts periodically get an increase.")]
     [Aliases("$", "$$", "$$$")]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-
-    public class BankModule : TheGodfatherModule
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
+    public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
     {
+        #region bank
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("User.")] DiscordUser user = null)
-            => this.GetBalanceAsync(ctx, user);
+                                     [Description("desc-member")] DiscordMember? member = null)
+            => this.GetBalanceAsync(ctx, member);
+        #endregion
 
-
-        #region COMMAND_BANK_BALANCE
+        #region bank balance
         [Command("balance")]
-        [Description("View someone's bank account in this guild.")]
         [Aliases("s", "status", "bal", "money")]
-
         public async Task GetBalanceAsync(CommandContext ctx,
-                                         [Description("User.")] DiscordUser user = null)
+                                         [Description("desc-member")] DiscordMember? member = null)
         {
-            user = user ?? ctx.User;
+            member ??= ctx.Member;
 
-            long? balance;
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                BankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
-                balance = account?.Balance;
-            }
-
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{Emojis.MoneyBag} Bank account for {user.Username}",
-                Color = this.ModuleColor,
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
-                    Url = user.AvatarUrl
+            BankAccount? balance = await this.Service.GetAsync(ctx.Guild.Id, member.Id);
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedTitle("fmt-bank-acc", Emojis.MoneyBag, member.ToDiscriminatorString());
+                emb.WithThumbnail(member.AvatarUrl);
+                if (balance is { }) {
+                    string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+                    CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
+                    emb.WithLocalizedDescription("fmt-bank-acc-value", balance.Balance.ToWords(culture), currency);
+                    emb.AddLocalizedTitleField("fmt-bank-acc-value-num", $"{balance.Balance:n0}");
+                } else {
+                    emb.WithLocalizedDescription("fmt-bank-acc-none");
                 }
-            };
-
-            if (balance.HasValue) {
-                emb.WithDescription($"Account value: {Formatter.Bold(balance.Value.ToWords())} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}");
-                emb.AddField("Numeric value", $"{balance.Value:n0}");
-            } else {
-                emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
-            }
-            emb.WithFooter("\"Your money is safe in our hands.\" - WM Bank");
-
-            await ctx.RespondAsync(embed: emb.Build());
+                emb.WithLocalizedFooter("fmt-bank-footer", ctx.Client.CurrentUser.AvatarUrl);
+            });
         }
         #endregion
 
-        #region COMMAND_BANK_CURRENCY
-        [Command("currency")]
-        [Description("Set currency for this guild. Currency can be either emoji or text.")]
-        [Aliases("sc", "setcurrency")]
-
-        public async Task GetOrSetCurrencyAsync(CommandContext ctx,
-                                               [RemainingText, Description("New currency.")] string currency = null)
+        #region config currency
+        [Command("currency"), Priority(1)]
+        [Aliases("setcurrency", "curr")]
+        public async Task CurrencyAsync(CommandContext ctx,
+                                       [Description("desc-currency")] string currency)
         {
-            if (string.IsNullOrWhiteSpace(currency)) {
-                await this.InformAsync(ctx, Emojis.MoneyBag, $"Currency for this guild: {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency ?? "credit"}");
-            } else {
-                if (currency.Length > 30)
-                    throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
+            if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
+                throw new CommandFailedException(ctx, "cmd-err-currency");
 
-                GuildConfig gcfg = await ctx.Services.GetService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
-                    cfg.Currency = currency;
-                });
+            await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
 
-                await this.InformAsync(ctx, $"Changed the currency to: {gcfg.Currency}", important: false);
-            }
+            await this.CurrencyAsync(ctx);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-currency", currency, inline: true);
+            });
+        }
+
+        [Command("suggestions"), Priority(0)]
+        public Task CurrencyAsync(CommandContext ctx)
+        {
+            CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
         }
         #endregion
 
-        #region COMMAND_BANK_GRANT
+        #region bank grant
         [Command("grant"), Priority(1)]
-        [Description("Magically increase another user's bank balance.")]
         [Aliases("give")]
-
         [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser user,
-                                    [Description("Amount.")] long amount)
+                                    [Description("desc-member")] DiscordMember member,
+                                    [Description("desc-amount")] long amount)
         {
-            if (amount < 0 || amount > 1_000_000_000_000)
-                throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1_000_000_000_000:n0}]");
+            if (amount < 1 || amount > 1_000_000_000_000)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", $"{1_000_000_000_000:n0}");
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                BankAccount account = await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)user.Id);
-                if (account is null)
-                    throw new CommandFailedException("Given user does not have a WM bank account!");
-                account.Balance += amount;
-                db.BankAccounts.Update(account);
-                await db.SaveChangesAsync();
-            }
+            await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
 
-            await this.InformAsync(ctx, Emojis.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} on the lottery! (seems legit)");
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-grant", member.Mention, $"{amount:n0}", currency);
         }
 
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
-                              [Description("Amount.")] long amount,
-                              [Description("User.")] DiscordUser user)
-            => this.GrantAsync(ctx, user, amount);
+                              [Description("desc-amount")] long amount,
+                              [Description("desc-member")] DiscordMember member)
+            => this.GrantAsync(ctx, member, amount);
         #endregion
 
-        #region COMMAND_BANK_REGISTER
+        #region bank register
         [Command("register")]
-        [Description("Open an account in WM bank for this guild.")]
         [Aliases("r", "signup", "activate")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (await db.BankAccounts.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id) is null)
-                    db.BankAccounts.Add(new BankAccount { GuildId = ctx.Guild.Id, UserId = ctx.User.Id });
-                else
-                    throw new CommandFailedException("You already own an account in WM bank!");
+            if (await this.Service.ContainsAsync(ctx.Guild.Id, ctx.User.Id))
+                throw new CommandFailedException(ctx, "cmd-err-bank-register");
 
-                await db.SaveChangesAsync();
-            }
+            await this.Service.AddAsync(new BankAccount {
+                GuildId = ctx.Guild.Id,
+                UserId = ctx.User.Id,
+            });
 
-            await this.InformAsync(ctx, Emojis.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get {BankAccount.StartingBalance} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency} for free.");
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-register", ctx.User.Mention, BankAccount.StartingBalance, currency);
         }
         #endregion
 
-        #region COMMAND_BANK_TOP
+        #region bank top
         [Command("top")]
-        [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
-        public async Task GetLeaderboardAsync(CommandContext ctx)
+        public async Task TopAsync(CommandContext ctx)
         {
-            List<BankAccount> topAccounts;
-
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                topAccounts = await db.BankAccounts
-                    .Where(a => a.GuildId == ctx.Guild.Id)
-                    .OrderByDescending(a => a.Balance)
-                    .Take(10)
-                    .ToListAsync();
-            }
+            IReadOnlyList<BankAccount> top = await this.Service.GetTopAccountsAsync(ctx.Guild.Id);
 
             var sb = new StringBuilder();
-            foreach (BankAccount account in topAccounts) {
+            var toRemove = new List<BankAccount>();
+            foreach (BankAccount account in top) {
                 try {
-                    DiscordUser u = await ctx.Client.GetUserAsync(account.UserId);
+                    DiscordMember u = await ctx.Guild.GetMemberAsync(account.UserId);
                     sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
                 } catch (NotFoundException) {
-
+                    LogExt.Debug(ctx, "Found 404 member while listing bank accouns: {UserId}", account.UserId);
+                    sb.AppendLine($"{Formatter.Bold("?")} | {Formatter.InlineCode($"{account.Balance:n0}")}");
+                    toRemove.Add(account);
                 }
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = $"Wealthiest users for guild {ctx.Guild.Name}",
-                Description = sb.ToString(),
-                Color = this.ModuleColor
-            }.Build());
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-bank-top");
+                emb.WithColor(this.ModuleColor);
+                emb.WithDescription(sb);
+            });
+
+            if (toRemove.Any())
+                await this.Service.RemoveAsync(toRemove);
         }
         #endregion
 
-        #region COMMAND_BANK_TOPGLOBAL
+        #region bank topglobal
         [Command("topglobal")]
-        [Description("Print the globally richest users.")]
         [Aliases("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
-        public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
+        public async Task GlobalTopAsync(CommandContext ctx)
         {
-            List<BankAccount> topAccounts;
-
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                topAccounts = await db.BankAccounts
-                    .OrderByDescending(a => a.Balance)
-                    .Take(10)
-                    .ToListAsync();
-            }
+            IReadOnlyList<BankAccount> top = await this.Service.GetTopAccountsAsync();
 
             var sb = new StringBuilder();
-            foreach (BankAccount account in topAccounts) {
+            var toRemove = new List<BankAccount>();
+            foreach (BankAccount account in top) {
                 try {
-                    DiscordUser u = await ctx.Client.GetUserAsync(account.UserId);
+                    DiscordMember u = await ctx.Guild.GetMemberAsync(account.UserId);
                     sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
                 } catch (NotFoundException) {
-
+                    LogExt.Debug(ctx, "Found 404 member while listing bank accouns: {UserId}", account.UserId);
+                    sb.AppendLine($"{Formatter.Bold("?")} | {Formatter.InlineCode($"{account.Balance:n0}")}");
+                    toRemove.Add(account);
                 }
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = "Globally wealthiest users:",
-                Description = sb.ToString(),
-                Color = this.ModuleColor
-            }.Build());
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-bank-topg");
+                emb.WithColor(this.ModuleColor);
+                emb.WithDescription(sb);
+            });
+
+            if (toRemove.Any())
+                await this.Service.RemoveAsync(toRemove);
         }
         #endregion
 
-        #region COMMAND_BANK_TRANSFER
+        #region bank transfer
         [Command("transfer"), Priority(1)]
-        [Description("Transfer funds from your account to another one.")]
-        [Aliases("lend")]
-
-        public async Task TransferCreditsAsync(CommandContext ctx,
-                                              [Description("User to send credits to.")] DiscordUser user,
-                                              [Description("Amount of currency to transfer.")] long amount)
+        [Aliases("lend", "tr")]
+        public async Task TransferAsync(CommandContext ctx,
+                                       [Description("desc-member")] DiscordMember member,
+                                       [Description("desc-amount")] long amount)
         {
-            if (amount <= 0)
-                throw new CommandFailedException("The transfer amount must be a positive value.");
+            if (amount < 1 || amount > 1_000_000_000_000)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", $"{1_000_000_000_000:n0}");
 
-            if (user.Id == ctx.User.Id)
-                throw new CommandFailedException("You can't transfer funds to yourself.");
+            if (member == ctx.User)
+                throw new CommandFailedException(ctx, "cmd-err-self-action");
 
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                try {
-                    await db.Database.BeginTransactionAsync();
+            if (!await this.Service.TransferAsync(ctx.Guild.Id, ctx.User.Id, member.Id, amount))
+                throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
 
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, amount))
-                        throw new CommandFailedException("You have insufficient funds.");
-                    await db.ModifyBankAccountAsync(user.Id, ctx.Guild.Id, v => v + amount);
-                    await db.SaveChangesAsync();
-
-                    db.Database.CommitTransaction();
-                } catch {
-                    db.Database.RollbackTransaction();
-                    throw;
-                }
-            }
-
-            await this.InformAsync(ctx, important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
 
         [Command("transfer"), Priority(0)]
-        public Task TransferCreditsAsync(CommandContext ctx,
-                                        [Description("Amount of currency to transfer.")] long amount,
-                                        [Description("User to send credits to.")] DiscordUser user)
-            => this.TransferCreditsAsync(ctx, user, amount);
+        public Task TransferAsync(CommandContext ctx,
+                                 [Description("desc-amount")] long amount,
+                                 [Description("desc-member")] DiscordMember member)
+            => this.TransferAsync(ctx, member, amount);
         #endregion
 
-        #region COMMAND_BANK_UNREGISTER
+        #region bank unregister
         [Command("unregister"), Priority(1)]
-        [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-
         [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
-                                         [Description("User whose account to delete.")] DiscordUser user,
-                                         [Description("Globally delete?")] bool global = false)
+                                         [Description("desc-member")] DiscordMember member,
+                                         [Description("desc-bank-del-g")] bool global = false)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                if (global) {
-                    db.BankAccounts.RemoveRange(db.BankAccounts.Where(a => a.UserId == user.Id));
-                } else {
-                    BankAccount acc = db.BankAccounts.SingleOrDefault(a => a.GuildId == ctx.Guild.Id && a.UserId == user.Id);
-                    if (acc is null)
-                        throw new CommandFailedException($"User {Formatter.Bold(user.Username)} does not have a bank account in this guild.");
-                    db.BankAccounts.Remove(acc);
-                }
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, important: false);
+            if (global)
+                await this.Service.RemoveAsync(ctx.Guild.Id, member.Id);
+            else
+                await this.Service.RemoveAllAsync(member.Id);
+            await ctx.InfoAsync(this.ModuleColor);
         }
 
         [Command("unregister"), Priority(0)]
         public Task UnregisterAsync(CommandContext ctx,
-                                   [Description("User whose account to delete.")] DiscordMember member)
+                                   [Description("desc-member")] DiscordMember member)
             => this.UnregisterAsync(ctx, member, false);
         #endregion
     }

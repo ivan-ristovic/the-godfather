@@ -1,0 +1,53 @@
+{
+  "bank": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "bank balance": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "bank currency": {
+    "usage": [
+      [],
+      [ "arg-string" ]
+    ]
+  },
+  "bank grant": {
+    "usage": [
+      [ "arg-mem", "arg-amount" ],
+      [ "arg-amount", "arg-mem" ]
+    ]
+  },
+  "bank register": {
+    "usage": [
+      []
+    ]
+  },
+  "bank top": {
+    "usage": [
+      []
+    ]
+  },
+  "bank topglobal": {
+    "usage": [
+      []
+    ]
+  },
+  "bank transfer": {
+    "usage": [
+      [ "arg-mem", "arg-amount" ],
+      [ "arg-amount", "arg-mem" ]
+    ]
+  },
+  "bank unregister": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-usr", "arg-bool" ]
+    ]
+  }
+}

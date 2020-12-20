@@ -292,6 +292,13 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config currency": {
+    "usage": [
+      [],
+      [ "arg-string" ],
+      [ "arg-emoji" ]
+    ]
+  },
   "config instantleave": {
     "usage": [
       [],

@@ -114,6 +114,34 @@ namespace TheGodfather.Modules.Administration
             => this.SilentResponseAsync(ctx);
         #endregion
 
+        #region config currency
+        [Command("currency"), Priority(1)]
+        [Aliases("setcurrency", "curr", "$", "$$", "$$$")]
+        public async Task CurrencyAsync(CommandContext ctx,
+                                       [Description("desc-currency")] string currency)
+        {
+            if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
+                throw new CommandFailedException(ctx, "cmd-err-currency");
+
+            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-currency", currency, inline: true);
+            });
+
+            await this.CurrencyAsync(ctx);
+        }
+
+        [Command("currency"), Priority(0)]
+        public Task CurrencyAsync(CommandContext ctx)
+        {
+            CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
+        }
+        #endregion
+
         #region config suggestions
         [Command("suggestions"), Priority(1)]
         [Aliases("suggestion", "cmdsug", "sugg", "sug", "help")]
