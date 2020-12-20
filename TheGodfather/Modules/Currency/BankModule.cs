@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Currency
                     string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                     CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
                     emb.WithLocalizedDescription("fmt-bank-acc-value", balance.Balance.ToWords(culture), currency);
-                    emb.AddLocalizedTitleField("fmt-bank-acc-value-num", $"{balance.Balance:n0}");
+                    emb.AddLocalizedTitleField("str-bank-acc-value-num", $"{balance.Balance:n0} {currency}");
                 } else {
                     emb.WithLocalizedDescription("fmt-bank-acc-none");
                 }

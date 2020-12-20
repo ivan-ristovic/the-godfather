@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +10,9 @@ using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
@@ -28,14 +27,12 @@ namespace TheGodfather.Modules.Currency.Common
                     return this.participants.Where(p => this.HandValue(p.Hand) <= 21).ToList().AsReadOnly();
                 return this.participants.Where(p => {
                     int value = this.HandValue(p.Hand);
-                    if (value > 21)
-                        return false;
-                    return value > hvalue;
+                    return value <= 21 && value > hvalue;
                 }).ToList().AsReadOnly();
             }
         }
 
-        private bool GameOver;
+        private bool gameOver;
         private readonly Deck deck;
         private readonly List<Card> hand;
         private readonly ConcurrentQueue<Participant> participants;
@@ -45,7 +42,7 @@ namespace TheGodfather.Modules.Currency.Common
             : base(interactivity, channel)
         {
             this.Started = false;
-            this.GameOver = false;
+            this.gameOver = false;
             this.deck = new Deck();
             this.hand = new List<Card>();
             this.participants = new ConcurrentQueue<Participant>();
@@ -56,41 +53,38 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync("Starting blackjack game...");
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-blackjack-starting"));
 
             foreach (Participant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
                 participant.Hand.Add(this.deck.GetNextCard());
                 if (this.HandValue(participant.Hand) == 21) {
-                    this.GameOver = true;
+                    this.gameOver = true;
                     this.Winner = participant.User;
                     break;
                 }
             }
 
-            if (this.GameOver) {
-                await this.PrintGameAsync(msg);
+            if (this.gameOver) {
+                await this.PrintGameAsync(lcs, msg);
                 return;
             }
 
-            while (this.participants.Any(p => !p.Standing)) {
-                foreach (Participant participant in this.participants) {
-                    if (participant.Standing)
-                        continue;
-
-                    await this.PrintGameAsync(msg, participant);
+            while (this.participants.Any(p => !p.IsStanding)) {
+                foreach (Participant participant in this.participants.Where(p => !p.IsStanding)) {
+                    await this.PrintGameAsync(lcs, msg, participant);
 
                     if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel, participant.User))
                         participant.Hand.Add(this.deck.GetNextCard());
                     else
-                        participant.Standing = true;
+                        participant.IsStanding = true;
 
                     if (this.HandValue(participant.Hand) > 21)
-                        participant.Standing = true;
+                        participant.IsStanding = true;
                 }
             }
 
-            await this.PrintGameAsync(msg);
+            await this.PrintGameAsync(lcs, msg);
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             while (this.HandValue(this.hand) <= 17)
@@ -99,8 +93,8 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.hand.Count == 2 && this.HandValue(this.hand) == 21)
                 await this.Channel.EmbedAsync("BLACKJACK!");
 
-            this.GameOver = true;
-            await this.PrintGameAsync(msg);
+            this.gameOver = true;
+            await this.PrintGameAsync(lcs, msg);
         }
 
         public void AddParticipant(DiscordUser user, int bid)
@@ -108,10 +102,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.IsParticipating(user))
                 return;
 
-            this.participants.Enqueue(new Participant {
-                User = user,
-                Bid = bid
-            });
+            this.participants.Enqueue(new Participant(user, bid));
         }
 
         public bool IsParticipating(DiscordUser user)
@@ -138,33 +129,31 @@ namespace TheGodfather.Modules.Currency.Common
             return value;
         }
 
-        private Task PrintGameAsync(DiscordMessage msg, Participant tomove = null)
+
+        private Task PrintGameAsync(LocalizationService lcs, DiscordMessage msg, Participant? toMove = null)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"House hand: (value: {this.HandValue(this.hand)})")).AppendLine();
+            sb.AppendLine(Formatter.Bold($"{lcs.GetString(this.Channel.GuildId, "str-house")}: {this.HandValue(this.hand)}"));
             if (this.hand.Any())
                 sb.AppendJoin(" | ", this.hand).AppendLine();
             else
                 sb.AppendLine(Emojis.Question).AppendLine();
 
             foreach (Participant participant in this.participants) {
-                sb.Append(participant.User.Mention);
-                sb.Append(" (value: ");
-                sb.Append(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
-                sb.AppendLine(")").AppendLine();
+                sb.Append(participant.User.Mention).Append(": ");
+                sb.AppendLine(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
                 sb.AppendJoin(" | ", participant.Hand);
-                sb.AppendLine();
+                sb.AppendLine().AppendLine();
             }
 
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{Emojis.Cards.Suits[0]} BLACKJACK GAME STATE {Emojis.Cards.Suits[0]}",
-                Description = sb.ToString(),
-                Color = DiscordColor.DarkGreen
-            };
+            var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
+            emb.WithLocalizedTitle("fmt-casino-blackjack", Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]);
+            emb.WithColor(DiscordColor.DarkGreen);
+            emb.WithDescription(sb);
 
-            if (!this.GameOver)
-                emb.AddField("Deciding whether to hit a card (type yes/no):", tomove?.User.Mention ?? "House");
+            if (!this.gameOver)
+                emb.AddLocalizedTitleField("str-casino-blackjack-hit", toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, "str-house"));
 
             return msg.ModifyAsync(embed: emb.Build());
         }
@@ -172,11 +161,18 @@ namespace TheGodfather.Modules.Currency.Common
 
         public sealed class Participant
         {
-            public int Bid { get; set; }
-            public List<Card> Hand { get; internal set; } = new List<Card>();
-            public DiscordUser User { get; internal set; }
-            public bool Standing { get; set; } = false;
+            public int Bid { get; }
+            public List<Card> Hand { get; }
+            public DiscordUser User { get; }
+            public bool IsStanding { get; set; }
             public ulong Id => this.User.Id;
+
+            public Participant(DiscordUser user, int bid)
+            {
+                this.User = user;
+                this.Bid = bid;
+                this.Hand = new List<Card>();
+            }
         }
     }
 }
