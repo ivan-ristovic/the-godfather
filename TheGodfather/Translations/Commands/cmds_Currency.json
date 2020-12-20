@@ -49,5 +49,16 @@
       [ "arg-mem" ],
       [ "arg-usr", "arg-bool" ]
     ]
+  },
+  "gamble coinflip": {
+    "usage": [
+      [ "arg-amount", "arg-coin" ],
+      [ "arg-coin", "arg-amount" ]
+    ]
+  },
+  "gamble dice": {
+    "usage": [
+      [ "arg-amount", "arg-five" ]
+    ]
   }
 }

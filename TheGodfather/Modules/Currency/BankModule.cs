@@ -97,12 +97,12 @@ namespace TheGodfather.Modules.Currency
                                     [Description("desc-amount")] long amount)
         {
             if (amount < 1 || amount > 1_000_000_000_000)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", $"{1_000_000_000_000:n0}");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", 1_000_000_000_000);
 
             await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
 
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-grant", member.Mention, $"{amount:n0}", currency);
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-grant", member.Mention, amount, currency);
         }
 
         [Command("grant"), Priority(0)]

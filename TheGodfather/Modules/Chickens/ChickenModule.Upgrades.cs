@@ -55,11 +55,11 @@ namespace TheGodfather.Modules.Chickens
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                 long totalCost = toBuy.Sum(u => u.Cost);
                 string upgradeNames = toBuy.Select(u => u.Name).JoinWith(", ");
-                if (!await ctx.WaitForBoolReplyAsync("q-chicken-upg", args: new[] { ctx.User.Mention, $"{totalCost:n0}", gcfg.Currency, upgradeNames }))
+                if (!await ctx.WaitForBoolReplyAsync("q-chicken-upg", args: new object[] { ctx.User.Mention, totalCost, gcfg.Currency, upgradeNames }))
                     return;
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, totalCost))
-                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, $"{totalCost:n0}");
+                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, totalCost);
 
                 await ctx.Services.GetRequiredService<ChickenBoughtUpgradeService>().AddAsync(
                     toBuy.Select(u => new ChickenBoughtUpgrade {

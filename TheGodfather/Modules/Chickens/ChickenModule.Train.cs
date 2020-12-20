@@ -88,11 +88,11 @@ namespace TheGodfather.Modules.Chickens
                     _ => throw new CommandFailedException(ctx),
                 };
 
-                if (!await ctx.WaitForBoolReplyAsync("q-chicken-train", args: new[] { ctx.User.Mention, stat, $"{price:n0}", gcfg.Currency }))
+                if (!await ctx.WaitForBoolReplyAsync("q-chicken-train", args: new object[] { ctx.User.Mention, stat, price, gcfg.Currency }))
                     return null;
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
-                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, $"{price:n0}");
+                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
 
                 return chicken;
             }

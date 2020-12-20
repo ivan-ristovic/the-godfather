@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Chickens
 
             long price = chicken.SellPrice;
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-            if (!await ctx.WaitForBoolReplyAsync("q-chicken-sell", args: new[] { ctx.User.Mention, $"{price:n0}", currency }))
+            if (!await ctx.WaitForBoolReplyAsync("q-chicken-sell", args: new object[] { ctx.User.Mention, price, currency }))
                 return;
 
             await this.Service.RemoveAsync(chicken);
