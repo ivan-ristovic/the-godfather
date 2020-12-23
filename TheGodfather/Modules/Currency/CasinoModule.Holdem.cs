@@ -1,133 +1,110 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Modules.Currency.Extensions;
+using TheGodfather.Modules.Currency.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
         [Group("holdem")]
-        [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
-
-        public class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
+        public sealed class HoldemModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
+            #region casino holdem
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Amount of money required to enter.")] int amount = 1000)
+                                               [Description("desc-gamble-balance")] int balance = HoldemGame.DefaultBalance)
             {
-                if (amount < 5)
-                    throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}");
+                if (balance < 1 || balance > MaxBid)
+                    throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
                         await this.JoinAsync(ctx);
                     else
-                        throw new CommandFailedException("Another event is already running in the current channel.");
+                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
                     return;
                 }
 
-                var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
+                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+                var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, balance);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, Emojis.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}.");
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-holdem-start", 
+                        HoldemGame.MaxParticipants, HoldemGame.DefaultBalance, currency
+                    );
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
+                    BankAccountService bas = ctx.Services.GetRequiredService<BankAccountService>();
                     if (game.Participants.Count > 1) {
                         await game.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
-
-                        if (!(game.Winner is null))
-                            await this.InformAsync(ctx, Emojis.Trophy, $"Winner: {game.Winner.Mention}");
-
-                        using TheGodfatherDbContext db = this.Database.CreateContext();
-                        foreach (HoldemGame.Participant participant in game.Participants)
-                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + participant.Balance);
-                        await db.SaveChangesAsync();
+                        if (game.Winner is { })
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winners", game.Winner.Mention);
                     } else {
-                        if (game.IsParticipating(ctx.User)) {
-                            using TheGodfatherDbContext db = this.Database.CreateContext();
-                            await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.MoneyNeeded);
-                            await db.SaveChangesAsync();
-                        }
-                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the Hold'Em game.");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-holdem-none");
                     }
+
+                    foreach (HoldemGame.Participant participant in game.Participants)
+                        await bas.IncreaseBankAccountAsync(ctx.Guild.Id, participant.Id, participant.Balance);
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
+            #endregion
 
-
-            #region COMMAND_HOLDEM_JOIN
+            #region casino holdem join
             [Command("join")]
-            [Description("Join a pending Texas Hold'Em game.")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame game))
-                    throw new CommandFailedException("There are no Texas Hold'Em games running in this channel.");
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame? game) || game is null)
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-none");
 
                 if (game.Started)
-                    throw new CommandFailedException("Texas Hold'Em game has already started, you can't join it.");
+                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-started");
 
-                if (game.Participants.Count >= 7)
-                    throw new CommandFailedException("Texas Hold'Em slots are full (max 7 participants), kthxbye.");
+                if (game.Participants.Count >= HoldemGame.MaxParticipants)
+                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-full");
 
                 if (game.IsParticipating(ctx.User))
-                    throw new CommandFailedException("You are already participating in the Texas Hold'Em game!");
+                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-dup");
+
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, game.MaxBalance))
+                    throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
 
                 DiscordMessage handle;
                 try {
-                    DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
-                    handle = await dm.SendMessageAsync("Alright, waiting for Hold'Em game to start! Once the game starts, return here to see your hand!");
+                    DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
+                    if (dm is null)
+                        throw new CommandFailedException(ctx, "cmd-err-dm-create");
+                    handle = await dm.LocalizedEmbedAsync(this.Localization, icon: Emojis.Cards.Suits[0], color: this.ModuleColor, key: "str-casino-holdem-dm");
                 } catch {
-                    throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
-                }
-
-                using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
-                        throw new CommandFailedException($"You do not have enough {ctx.Services.GetService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency}! Use command {Formatter.InlineCode("bank")} to check your account status.");
-                    await db.SaveChangesAsync();
+                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
                 }
 
                 game.AddParticipant(ctx.User, handle);
-                await this.InformAsync(ctx, Emojis.Cards.Suits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
+
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-casino-holdem-join", ctx.User.Mention);
             }
             #endregion
 
-            #region COMMAND_HOLDEM_RULES
+            #region casino holdem rules
             [Command("rules")]
-            [Description("Explain the Texas Hold'Em rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
-            {
-                return this.InformAsync(ctx,
-                    Emojis.Information,
-                    "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of " +
-                    "the card game of poker. Two cards, known as the hole cards, are dealt face down to " +
-                    "each player, and then five community cards are dealt face up in three stages. The " +
-                    "stages consist of a series of three cards (\"the flop\"), later an additional single " +
-                    "card (\"the turn\" or \"fourth street\"), and a final card (\"the river\" or \"fifth " +
-                    "street\"). Each player seeks the best five card poker hand from any combination of " +
-                    "the seven cards of the five community cards and their own two hole cards."
-                );
-            }
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-casino-holdem");
             #endregion
         }
     }

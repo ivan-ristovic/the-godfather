@@ -18,6 +18,9 @@ namespace TheGodfather.Modules.Currency.Common
 {
     public sealed class BlackjackGame : BaseChannelGame
     {
+        public const int InitialBid = 5;
+        public const int MaxParticipants = 5;
+
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
         public IReadOnlyList<Participant> Winners {
@@ -161,9 +164,9 @@ namespace TheGodfather.Modules.Currency.Common
 
         public sealed class Participant
         {
+            public DiscordUser User { get; }
             public int Bid { get; }
             public List<Card> Hand { get; }
-            public DiscordUser User { get; }
             public bool IsStanding { get; set; }
             public ulong Id => this.User.Id;
 

@@ -23,7 +23,7 @@ namespace TheGodfather.Extensions
 
         public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key,
                                                                DiscordEmoji? icon, DiscordColor? color,
-                                                               object?[]? args)
+                                                               params object?[]? args)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {lcs.GetString(channel.Guild.Id, key, args)}",

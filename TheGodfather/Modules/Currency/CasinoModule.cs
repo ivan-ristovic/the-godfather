@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Currency
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class CasinoModule : TheGodfatherServiceModule<BankAccountService>
     {
-        private const long MaxBid = 5_000_000_000;
+        private const long MaxBid = 1_000_000_000;
 
 
         #region casino

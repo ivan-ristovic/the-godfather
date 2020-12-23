@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Currency
             #region casino blackjack
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-gamble-bid")] int bid = 5)
+                                               [Description("desc-gamble-bid")] int bid = BlackjackGame.InitialBid)
             {
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
@@ -38,7 +38,9 @@ namespace TheGodfather.Modules.Currency
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-blackjack-start", currency);
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-blackjack-start", 
+                        BlackjackGame.MaxParticipants, BlackjackGame.InitialBid, currency
+                    );
                     await this.JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -48,7 +50,7 @@ namespace TheGodfather.Modules.Currency
 
                         if (game.Winners.Any()) {
                             if (game.Winner is null) {
-                                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-winners",
+                                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winners",
                                     game.Winners.Select(w => w.User.Mention).JoinWith(", ")
                                 );
                                 foreach (BlackjackGame.Participant winner in game.Winners)
@@ -61,7 +63,7 @@ namespace TheGodfather.Modules.Currency
                             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-blackjack-lose");
                         }
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "cmd-err-blackjack-none");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-holdem-none");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -73,15 +75,18 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
             public async Task JoinAsync(CommandContext ctx,
-                                       [Description("desc-gamble-bid")] int bid = 5)
+                                       [Description("desc-gamble-bid")] int bid = BlackjackGame.InitialBid)
             {
+                if (bid < 1 || bid > MaxBid)
+                    throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
+                
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame? game) || game is null)
                     throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-none");
 
                 if (game.Started)
                     throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-started");
 
-                if (game.ParticipantCount >= 5)
+                if (game.ParticipantCount >= BlackjackGame.MaxParticipants)
                     throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-full");
 
                 if (game.IsParticipating(ctx.User))
