@@ -101,5 +101,11 @@ namespace TheGodfather.Common
 
         public char ChooseRandomChar(string str)
             => str[this.Next(0, str.Length)];
+
+        public T? ChooseRandomEnumValue<T>() where T : Enum
+        {
+            Array v = Enum.GetValues(typeof(T));
+            return (T)v.GetValue(this.Next(v.Length));
+        }
     }
 }
