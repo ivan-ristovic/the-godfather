@@ -70,13 +70,13 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame? game) || game is null)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-none");
+                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-none");
 
                 if (game.Started)
                     throw new CommandFailedException(ctx, "cmd-err-casino-holdem-started");
 
                 if (game.Participants.Count >= HoldemGame.MaxParticipants)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-full");
+                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-full", HoldemGame.MaxParticipants);
 
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException(ctx, "cmd-err-casino-holdem-dup");

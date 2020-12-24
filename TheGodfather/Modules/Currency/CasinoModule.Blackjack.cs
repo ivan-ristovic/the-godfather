@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Currency
                             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-blackjack-lose");
                         }
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-holdem-none");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-blackjack-none");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-started");
 
                 if (game.ParticipantCount >= BlackjackGame.MaxParticipants)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-full");
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-full", BlackjackGame.MaxParticipants);
 
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-dup");

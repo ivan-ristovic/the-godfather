@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -11,17 +10,18 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
     public class LotteryGame : BaseChannelGame
     {
-        public static readonly int MaxNumber = 15;
-        public static readonly int DrawCount = 3;
-        public static readonly int TicketPrice = 250;
+        public const int MaxParticipants = 10;
+        public const int MaxNumber = 15;
+        public const int DrawCount = 3;
+        public const int TicketPrice = 250;
         public static readonly ImmutableArray<int> Prizes = new[] {
             0, 2500, 50000, 1000000
         }.ToImmutableArray();
@@ -46,13 +46,13 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", Emojis.MoneyBag);
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-lottery-starting"));
 
             IEnumerable<int> drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
             for (int i = 0; i < DrawCount; i++) {
                 await Task.Delay(TimeSpan.FromSeconds(5));
-                await this.PrintGameAsync(msg, drawn, i + 1);
+                await this.PrintGameAsync(lcs, msg, drawn, i + 1);
             }
 
             foreach (Participant participant in this.participants) {
@@ -65,34 +65,29 @@ namespace TheGodfather.Modules.Currency.Common
         {
             if (this.IsParticipating(user))
                 return;
-
-            this.participants.Enqueue(new Participant {
-                User = user,
-                Numbers = numbers
-            });
+            this.participants.Enqueue(new Participant(user, numbers));
         }
 
         public bool IsParticipating(DiscordUser user)
             => this.participants.Any(p => p.Id == user.Id);
 
-        private Task PrintGameAsync(DiscordMessage msg, IEnumerable<int> numbers, int step)
+        private Task PrintGameAsync(LocalizationService lcs, DiscordMessage msg, IEnumerable<int> numbers, int step)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"Drawn numbers:"));
-            sb.AppendLine(Formatter.Bold(string.Join(" ", numbers.Take(step)))).AppendLine();
+            sb.Append(Formatter.Bold(lcs.GetString(this.Channel.GuildId, "str-casino-lottery-drawn"))).Append(' ');
+            sb.AppendLine(Formatter.Bold(numbers.Take(step).JoinWith(" "))).AppendLine();
 
             foreach (Participant participant in this.participants) {
                 sb.Append(participant.User.Mention).Append(" | ");
-                sb.AppendLine(Formatter.Bold(string.Join(" ", participant.Numbers)));
+                sb.AppendLine(Formatter.Bold(participant.Numbers.JoinWith(" ")));
                 sb.AppendLine();
             }
 
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{Emojis.MoneyBag} LOTTERY DRAWS {Emojis.MoneyBag}",
-                Description = sb.ToString(),
-                Color = DiscordColor.DarkGreen
-            };
+            var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
+            emb.WithLocalizedTitle("fmt-casino-lottery", Emojis.MoneyBag, Emojis.MoneyBag);
+            emb.WithColor(DiscordColor.DarkGreen);
+            emb.WithDescription(sb);
 
             return msg.ModifyAsync(embed: emb.Build());
         }
@@ -100,11 +95,16 @@ namespace TheGodfather.Modules.Currency.Common
 
         public sealed class Participant
         {
-            public DiscordUser User { get; internal set; }
-            public int Bid { get; set; }
+            public DiscordUser User { get; }
+            public int[] Numbers { get; }
             public ulong Id => this.User.Id;
-            public int[] Numbers { get; set; }
             public int WinAmount { get; set; }
+
+            public Participant(DiscordUser user, int[] numbers)
+            {
+                this.User = user;
+                this.Numbers = numbers;
+            }
         }
     }
 }
