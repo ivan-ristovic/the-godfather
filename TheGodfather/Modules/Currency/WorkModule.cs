@@ -34,7 +34,6 @@ namespace TheGodfather.Modules.Currency
         }
         #endregion
 
-
         #region work crime
         [Command("crime")]
         [Cooldown(1, 300, CooldownBucketType.User)]

@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Currency
 {
     [Group("shop"), Module(ModuleType.Currency), NotBlocked]
     [Aliases("store", "mall")]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class ShopModule : TheGodfatherServiceModule<ShopService>
     {
         #region shop
@@ -32,13 +32,13 @@ namespace TheGodfather.Modules.Currency
         [Command("purchases")]
         [Aliases("myitems", "purchased", "bought")]
         public async Task GetPurchasedItemsAsync(CommandContext ctx,
-                                                [Description("desc-user")] DiscordUser? user = null)
+                                                [Description("desc-member")] DiscordMember? member = null)
         {
-            user ??= ctx.User;
+            member ??= ctx.Member;
 
-            IReadOnlyList<PurchasedItem> purchased = await this.Service.Purchases.GetAllCompleteAsync(user.Id);
+            IReadOnlyList<PurchasedItem> purchased = await this.Service.Purchases.GetAllCompleteAsync(member.Id);
             if (!purchased.Any()) {
-                await ctx.FailAsync("cmd-err-shop-purchased-none", user.Mention);
+                await ctx.FailAsync("cmd-err-shop-purchased-none", member.Mention);
                 return;
             }
 
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Currency
                 i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
                 this.ModuleColor,
                 5,
-                user.Mention
+                member.Mention
             );
         }
         #endregion
