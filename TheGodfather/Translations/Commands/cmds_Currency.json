@@ -50,6 +50,66 @@
       [ "arg-usr", "arg-bool" ]
     ]
   },
+  "casino": {
+    "usage": [
+      []
+    ]
+  },
+  "casino blackjack": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino blackjack join": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino blackjack rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino holdem": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino holdem join": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino holdem rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino lottery": {
+    "usage": [
+      [ "arg-one", "arg-five", "arg-ten" ]
+    ]
+  },
+  "casino lottery join": {
+    "usage": [
+      [ "arg-one", "arg-five", "arg-ten" ]
+    ]
+  },
+  "casino lottery rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino slot": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino wheeloffortune": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
   "gamble coinflip": {
     "usage": [
       [ "arg-amount", "arg-coin" ],

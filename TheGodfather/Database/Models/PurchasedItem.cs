@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("purchased_items")]
-    public class PurchasedItem
+    public class PurchasedItem : IEquatable<PurchasedItem>
     {
         [ForeignKey("Item")]
         [Column("id")]
@@ -17,6 +18,16 @@ namespace TheGodfather.Database.Models
         public ulong UserId { get => (ulong)this.UserIdDb; set => this.UserIdDb = (long)value; }
 
 
-        public virtual PurchasableItem Item { get; set; }
+        public virtual PurchasableItem Item { get; set; } = null!;
+
+
+        public bool Equals(PurchasedItem? other)
+            => other is { } && this.ItemId == other.ItemId && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as PurchasedItem);
+
+        public override int GetHashCode()
+            => (this.ItemId, this.UserId).GetHashCode();
     }
 }

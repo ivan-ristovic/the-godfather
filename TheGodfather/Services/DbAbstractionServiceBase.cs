@@ -229,12 +229,12 @@ namespace TheGodfather.Services
             return res.AsReadOnly();
         }
 
-        public async Task<TEntity?> GetAsync(TGroupId grid, TEntityId entity)
+        public async Task<TEntity?> GetAsync(TGroupId grid, TEntityId entityId)
         {
             TEntity? res = null;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 DbSet<TEntity> set = this.DbSetSelector(db);
-                res = await set.FindAsync(this.EntityPrimaryKeySelector(grid, entity));
+                res = await set.FindAsync(this.EntityPrimaryKeySelector(grid, entityId));
             }
             return res;
         }

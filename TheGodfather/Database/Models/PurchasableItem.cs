@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("purchasable_items")]
-    public class PurchasableItem
+    public class PurchasableItem : IEquatable<PurchasableItem>
     {
         public const int NameLimit = 128;
+        public const long PriceLimit = 100_000_000_000;
+
 
         public PurchasableItem()
         {
@@ -35,5 +38,15 @@ namespace TheGodfather.Database.Models
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
         public virtual ICollection<PurchasedItem> Purchases { get; set; }
+
+
+        public bool Equals(PurchasableItem? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as PurchasableItem);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 }
