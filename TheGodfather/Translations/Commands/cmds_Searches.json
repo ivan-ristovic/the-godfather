@@ -1,0 +1,34 @@
+{
+  "gif": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "gif random": {
+    "usage": [
+      []
+    ]
+  },
+  "gif trending": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "sticker": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "sticker random": {
+    "usage": [
+      []
+    ]
+  },
+  "sticker trending": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  }
+}

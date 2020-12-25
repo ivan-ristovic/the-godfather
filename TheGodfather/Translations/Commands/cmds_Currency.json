@@ -126,12 +126,6 @@
       []
     ]
   },
-  "shop purchases": {
-    "usage": [
-      [],
-      [ "arg-mem" ]
-    ]
-  },
   "shop add": {
     "usage": [
       [ "arg-name", "arg-amount" ],
@@ -150,11 +144,6 @@
       [ "arg-one", "arg-five" ]
     ]
   },
-  "shop sell": {
-    "usage": [
-      [ "arg-one", "arg-five" ]
-    ]
-  },
   "shop deleteall": {
     "usage": [
       []
@@ -165,17 +154,28 @@
       []
     ]
   },
+  "shop purchases": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "shop sell": {
+    "usage": [
+      [ "arg-one", "arg-five" ]
+    ]
+  },
   "work": {
     "usage": [
       []
     ]
   },
-  "work streets": {
+  "work crime": {
     "usage": [
       []
     ]
   },
-  "work crime": {
+  "work streets": {
     "usage": [
       []
     ]
