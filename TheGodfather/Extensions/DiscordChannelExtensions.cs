@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -55,5 +56,8 @@ namespace TheGodfather.Extensions
             }
             return null;
         }
+
+        public static bool IsNsfwOrNsfwName(this DiscordChannel channel) 
+            => channel.IsNSFW || channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase);
     }
 }

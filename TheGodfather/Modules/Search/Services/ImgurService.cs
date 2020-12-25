@@ -1,45 +1,45 @@
-﻿#region USING_DIRECTIVES
-#endregion
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Imgur.API.Authentication.Impl;
+using Imgur.API.Endpoints.Impl;
+using Imgur.API.Enums;
+using Imgur.API.Models;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Search.Services
 {
-    /*
-    public class ImgurService : ITheGodfatherService
+    public sealed class ImgurService : ITheGodfatherService
     {
         public bool IsDisabled => this.imgur is null;
 
-        private readonly ApiClient imgur;
-        private readonly GalleryEndpoint gEndpoint;
-        //private readonly ImageEndpoint iEndpoint;
+        private readonly ImgurClient? imgur;
+        //private readonly ImageEndpoint? iEndpoint;
+        private readonly GalleryEndpoint? gEndpoint;
 
 
         public ImgurService(BotConfigService cfg)
         {
             if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.ImgurKey)) {
                 this.imgur = new ImgurClient(cfg.CurrentConfiguration.ImgurKey);
-                this.gEndpoint = new GalleryEndpoint(this.imgur);
                 //this.iEndpoint = new ImageEndpoint(this.imgur);
+                this.gEndpoint = new GalleryEndpoint(this.imgur);
             }
         }
 
 
-
-
-        public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub, int amount,
-            SubredditGallerySortOrder order, TimeWindow time)
+        public async Task<IEnumerable<IGalleryItem>?> GetItemsFromSubAsync(string sub, int amount, SubredditGallerySortOrder order, TimeWindow tw)
         {
-            if (this.IsDisabled)
+            if (this.IsDisabled || this.gEndpoint is null)
                 return null;
-
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new ArgumentException("Subreddit missing!", nameof(sub));
-
+            
             if (amount < 1 || amount > 10)
-                throw new ArgumentException("Result amount out of range (max 10)", nameof(amount));
+                amount = 10;
 
-            IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, time).ConfigureAwait(false);
+            IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, tw)
+                .ConfigureAwait(false);
             return images.Take(amount);
         }
     }
-    */
 }

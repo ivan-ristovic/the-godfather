@@ -15,6 +15,37 @@
       [ "arg-ten" ]
     ]
   },
+  "goodreads": {
+    "usage": [
+      [],
+      [ "arg-query" ]
+    ]
+  },
+  "goodreads book": {
+    "usage": [
+      [],
+      [ "arg-query" ]
+    ]
+  },
+  "imgur": {
+    "usage": [
+      [ "arg-ten", "arg-sub" ],
+      [ "arg-sub" ]
+    ]
+  },
+  "imgur latest": {
+    "usage": [
+      [ "arg-ten", "arg-sub" ],
+      [ "arg-sub" ]
+    ]
+  },
+  "imgur top": {
+    "usage": [
+      [ "arg-ten", "arg-sub", "arg-timewindow" ],
+      [ "arg-ten", "arg-timewindow", "arg-sub" ],
+      [ "arg-timewindow", "arg-ten", "arg-sub" ]
+    ]
+  },
   "sticker": {
     "usage": [
       [ "arg-query" ]
@@ -29,18 +60,6 @@
     "usage": [
       [],
       [ "arg-ten" ]
-    ]
-  },
-  "goodreads": {
-    "usage": [
-      [],
-      [ "arg-query" ]
-    ]
-  },
-  "goodreads book": {
-    "usage": [
-      [],
-      [ "arg-query" ]
     ]
   }
 }
