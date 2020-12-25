@@ -81,6 +81,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
         public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
         public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
+        public static DiscordEmoji Joy => DiscordEmoji.FromUnicode("\U0001f602");
         public static DiscordEmoji Joystick => DiscordEmoji.FromUnicode("\U0001f579");
         public static DiscordEmoji O => DiscordEmoji.FromUnicode("\u2b55");
         public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");

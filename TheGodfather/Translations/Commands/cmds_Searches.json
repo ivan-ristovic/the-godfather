@@ -61,5 +61,20 @@
       [],
       [ "arg-ten" ]
     ]
+  },
+  "joke": {
+    "usage": [
+      []
+    ]
+  },
+  "joke search": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "joke yomama": {
+    "usage": [
+      []
+    ]
   }
 }

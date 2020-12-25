@@ -682,6 +682,7 @@
   "fmt-powered-by": "Powered by: {0}",
   "fmt-prefix": "Current prefix for this guild: **{0}**",
   "fmt-raffle": "Raffled: {0}",
+  "fmt-results": "Results:\n\n{0}",
   "fmt-rankup": "GG {0}! You have advanced to level {1} ({2})!",
   "fmt-rating": "{0} **Rating for:** {1}",
   "fmt-role-perms-none": "You cannot view permissions for roles which have position above your highest role position.",
