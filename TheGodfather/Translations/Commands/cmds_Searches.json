@@ -30,5 +30,17 @@
       [],
       [ "arg-ten" ]
     ]
+  },
+  "goodreads": {
+    "usage": [
+      [],
+      [ "arg-query" ]
+    ]
+  },
+  "goodreads book": {
+    "usage": [
+      [],
+      [ "arg-query" ]
+    ]
   }
 }

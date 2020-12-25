@@ -39,34 +39,6 @@ namespace TheGodfather.Modules.Search.Extensions
             return emb;
         }
 
-        public static IReadOnlyList<Page> ToDiscordPages(this GoodreadsSearchInfo info)
-        {
-            var pages = new List<Page>();
-
-            foreach (GoodreadsWork work in info.Results) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = work.Book.Title,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
-                        Url = work.Book.ImageUrl
-                    },
-                    Color = DiscordColor.DarkGray
-                };
-
-                emb.AddField("Author", work.Book.Author.Name, inline: true);
-                emb.AddField("Rating", $"{work.AverageRating} out of {work.RatingsCount} votes", inline: true);
-                emb.AddField("Date", $"{work.PublicationDayString}/{work.PublicationMonthString}/{work.PublicationYearString}", inline: true);
-                emb.AddField("Books count", work.BooksCount.ToString(), inline: true);
-                emb.AddField("Work ID", work.Id.ToString(), inline: true);
-                emb.AddField("Book ID", work.Book.Id.ToString(), inline: true);
-
-                emb.WithFooter($"Fethed results using Goodreads API in {info.QueryTime}s");
-
-                pages.Add(new Page(embed: emb));
-            }
-
-            return pages.AsReadOnly();
-        }
-
         public static DiscordEmbedBuilder ToDiscordEmbed(this MovieInfo info, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder {
