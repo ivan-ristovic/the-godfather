@@ -24,13 +24,13 @@ namespace TheGodfather.Services.Common
         public int FeedCheckStartDelay { get; set; } = 30;
 
         [JsonProperty("key-giphy")]
-        public string GiphyKey { get; set; } = "<insert GIPHY API key>";
+        public string GiphyKey { get; set; } = "";
 
         [JsonProperty("key-goodreads")]
-        public string GoodreadsKey { get; set; } = "<insert Goodreads API key>";
+        public string GoodreadsKey { get; set; } = "";
 
         [JsonProperty("key-imgur")]
-        public string ImgurKey { get; set; } = "<insert Imgur API key>";
+        public string ImgurKey { get; set; } = "";
 
         [JsonProperty("locale")]
         public string Locale { get; set; } = "en-GB";
@@ -57,22 +57,22 @@ namespace TheGodfather.Services.Common
         public string? CustomLogTemplate { get; set; }
 
         [JsonProperty("key-omdb")]
-        public string OMDbKey { get; set; } = "<insert OMDb API key>";
+        public string OMDbKey { get; set; } = "";
 
         [JsonProperty("shard-count")]
         public int ShardCount { get; set; } = 1;
 
         [JsonProperty("key-steam")]
-        public string SteamKey { get; set; } = "<insert Steam API key>";
+        public string SteamKey { get; set; } = "";
 
         [JsonProperty("key-weather")]
-        public string WeatherKey { get; set; } = "<insert OpenWeather API key>";
+        public string WeatherKey { get; set; } = "";
 
         [JsonProperty("key-youtube")]
-        public string YouTubeKey { get; set; } = "<insert YouTube API key>";
+        public string YouTubeKey { get; set; } = "";
 
         [JsonProperty("token")]
-        public string Token { get; set; } = "<insert Bot token>";
+        public string Token { get; set; } = "";
 
         [JsonProperty("logger-special-rules")]
         public List<SpecialLoggingRule> SpecialLoggerRules { get; set; } = new List<SpecialLoggingRule>();

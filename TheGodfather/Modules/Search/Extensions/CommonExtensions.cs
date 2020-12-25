@@ -10,6 +10,7 @@ using Humanizer;
 using TheGodfather.Common;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Search.Extensions
@@ -38,50 +39,6 @@ namespace TheGodfather.Modules.Search.Extensions
 
             return emb;
         }
-
-        public static DiscordEmbedBuilder ToDiscordEmbed(this MovieInfo info, DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder {
-                Title = info.Title,
-                Description = info.Plot,
-                Url = $"http://www.imdb.com/title/{ info.IMDbId }",
-            };
-
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            if (!string.IsNullOrWhiteSpace(info.Type))
-                emb.AddField("Type", info.Type, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Year))
-                emb.AddField("Air time", info.Year, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.IMDbId))
-                emb.AddField("IMDb ID", info.IMDbId, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Genre))
-                emb.AddField("Genre", info.Genre, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.ReleaseDate))
-                emb.AddField("Release date", info.ReleaseDate, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Rated))
-                emb.AddField("Rated", info.Rated, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Duration))
-                emb.AddField("Duration", info.Duration, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Actors))
-                emb.AddField("Actors", info.Actors, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.IMDbRating) && !string.IsNullOrWhiteSpace(info.IMDbVotes))
-                emb.AddField("IMDb rating", $"{info.IMDbRating} out of {info.IMDbVotes} votes", inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Writer))
-                emb.AddField("Writer", info.Writer, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Director))
-                emb.AddField("Director", info.Director, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
-                emb.WithThumbnail(info.Poster);
-
-            emb.WithFooter("Powered by OMDb.");
-
-            return emb;
-        }
-
-        public static Page ToDiscordPage(this MovieInfo info, DiscordColor? color = null)
-            => new Page(embed: info.ToDiscordEmbed(color));
 
         public static DiscordEmbedBuilder ToDiscordEmbed(this Quote quote, string altTitle = null)
         {

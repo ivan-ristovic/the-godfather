@@ -1,87 +1,103 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.Entities;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("imdb"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Search Open Movie Database. Group call searches by title.")]
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
-
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class OMDbModule : TheGodfatherServiceModule<OMDbService>
+    public sealed class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
-
+        #region imdb
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Title.")] string title)
+                                     [RemainingText, Description("desc-query")] string title)
             => this.SearchByTitleAsync(ctx, title);
+        #endregion
 
-
-        #region COMMAND_IMDB_SEARCH
+        #region imdb search
         [Command("search")]
-        [Description("Searches IMDb for given query and returns paginated results.")]
         [Aliases("s", "find")]
-
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("Search query.")] string query)
+                                     [RemainingText, Description("desc-query")] string query)
         {
             if (this.Service.IsDisabled)
                 throw new ServiceDisabledException(ctx);
 
-            IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query);
-            if (pages is null) {
-                await this.InformFailureAsync(ctx, "No results found!");
+            IReadOnlyList<MovieInfo>? res = await this.Service.SearchAsync(query);
+            if (res is null || !res.Any()) {
+                await ctx.FailAsync("cmd-err-res-none");
                 return;
             }
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
+            await ctx.PaginateAsync(res, (emb, r) => this.AddToEmbed(emb, r));
         }
         #endregion
 
-        #region COMMAND_IMDB_TITLE
+        #region imdb title
         [Command("title")]
-        [Description("Search by title.")]
         [Aliases("t", "name", "n")]
-
         public Task SearchByTitleAsync(CommandContext ctx,
-                                      [RemainingText, Description("Title.")] string title)
+                                      [RemainingText, Description("desc-query")] string title)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
         #endregion
 
-        #region COMMAND_IMDB_ID
+        #region imdb id
         [Command("id")]
-        [Description("Search by IMDb ID.")]
-
         public Task SearchByIdAsync(CommandContext ctx,
-                                   [Description("ID.")] string id)
+                                   [Description("desc-id")] string id)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);
         #endregion
 
 
-        #region HELPER_FUNCTIONS
+        #region internals
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
             if (this.Service.IsDisabled)
                 throw new ServiceDisabledException(ctx);
 
-            MovieInfo info = await this.Service.GetSingleResultAsync(type, query);
+            MovieInfo? info = await this.Service.SearchSingleAsync(type, query);
             if (info is null) {
-                await this.InformFailureAsync(ctx, "No results found!");
+                await ctx.FailAsync("cmd-err-res-none");
                 return;
             }
 
-            await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
+            await ctx.RespondWithLocalizedEmbedAsync(emb => this.AddToEmbed(emb, info));
+        }
+
+        public LocalizedEmbedBuilder AddToEmbed(LocalizedEmbedBuilder emb, MovieInfo info)
+        {
+            emb.WithTitle(info.Title);
+            emb.WithDescription(info.Plot);
+            emb.WithColor(DiscordColor.Yellow);
+            emb.WithUrl(this.Service.GetUrl(info.IMDbId));
+
+            emb.AddLocalizedTitleField("str-type", info.Type, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-year", info.Year, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-id", info.IMDbId, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-genre", info.Genre, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-rel-date", info.ReleaseDate, inline: true, unknown: false);
+            emb.AddLocalizedField("str-score", "fmt-rating-imdb", inline: true, contentArgs: new[] { info.IMDbRating, info.IMDbVotes });
+            emb.AddLocalizedTitleField("str-rating", info.Rated, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-duration", info.Duration, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-writer", info.Writer, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-director", info.Director, inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-actors", info.Actors, inline: true, unknown: false);
+            if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
+                emb.WithThumbnail(info.Poster);
+
+            emb.WithLocalizedFooter("fmt-powered-by", null, "OMDb");
+            return emb;
         }
         #endregion
     }

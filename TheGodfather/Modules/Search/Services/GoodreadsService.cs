@@ -11,7 +11,8 @@ namespace TheGodfather.Modules.Search.Services
 {
     public sealed class GoodreadsService : TheGodfatherHttpService
     {
-        private static readonly string _url = "https://www.goodreads.com/search/index.xml";
+        private const string Endpoint = "https://www.goodreads.com/search/index.xml";
+
         private static readonly XmlSerializer _serializer = new XmlSerializer(typeof(GoodreadsResponse));
         private static readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
 
@@ -33,7 +34,7 @@ namespace TheGodfather.Modules.Search.Services
 
             await _requestSemaphore.WaitAsync();
             try {
-                using Stream stream = await _http.GetStreamAsync($"{_url}?key={this.key}&q={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
+                using Stream stream = await _http.GetStreamAsync($"{Endpoint}?key={this.key}&q={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
                 var response = _serializer.Deserialize(stream) as GoodreadsResponse;
                 return response?.SearchInfo;
             } catch {
