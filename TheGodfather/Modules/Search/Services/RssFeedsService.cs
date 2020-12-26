@@ -7,7 +7,6 @@ using System.Xml;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -15,25 +14,36 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Search.Services
 {
-    public sealed class RssFeedsService : ITheGodfatherService
+    public sealed class RssFeedsService : DbAbstractionServiceBase<RssFeed, int>
     {
-        private static XmlReaderSettings _settings = new XmlReaderSettings {
-            MaxCharactersInDocument = 2097152,
-            IgnoreComments = true,
-            IgnoreWhitespace = true,
-        };
-
-        public bool IsDisabled => false;
-
-        private readonly DbContextBuilder dbb;
-
-
-        public RssFeedsService(DbContextBuilder dbb)
+        public static bool IsValidFeedURL(string url)
         {
-            this.dbb = dbb;
+            try {
+                var feed = SyndicationFeed.Load(XmlReader.Create(url, _settings));
+            } catch {
+                return false;
+            }
+            return true;
         }
 
+        public static IReadOnlyList<SyndicationItem>? GetFeedResults(string url, int amount = 5)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return null;
 
+            if (amount < 1 || amount > 20)
+                amount = 5;
+
+            try {
+                using var reader = XmlReader.Create(url, _settings);
+                var feed = SyndicationFeed.Load(reader);
+                return feed.Items?.Take(amount).ToList().AsReadOnly();
+            } catch {
+                return null;
+            }
+        }
+
+        [Obsolete]
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DbContextBuilder dbb)
         {
             IReadOnlyList<RssFeed> feeds;
@@ -102,48 +112,92 @@ namespace TheGodfather.Modules.Search.Services
             }
         }
 
-        public static IReadOnlyList<SyndicationItem> GetFeedResults(string url, int amount = 5)
+
+        private static readonly XmlReaderSettings _settings = new XmlReaderSettings {
+            MaxCharactersInDocument = 2097152,
+            IgnoreComments = true,
+            IgnoreWhitespace = true,
+        };
+
+
+        public RssSubscriptionService Subscriptions { get; }
+
+
+        public RssFeedsService(DbContextBuilder dbb)
+            : base(dbb)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing", nameof(url));
-
-            if (amount < 1 || amount > 20)
-                throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
-
-            try {
-                using var reader = XmlReader.Create(url, _settings);
-                var feed = SyndicationFeed.Load(reader);
-                return feed.Items?.Take(amount).ToList().AsReadOnly();
-            } catch {
-                return null;
-            }
+            this.Subscriptions = new RssSubscriptionService(dbb);
         }
 
-        public static bool IsValidFeedURL(string url)
+
+        public override bool IsDisabled => false;
+
+        public override DbSet<RssFeed> DbSetSelector(TheGodfatherDbContext db) => db.RssFeeds;
+        public override RssFeed EntityFactory(int id) => new RssFeed { Id = id };
+        public override int EntityIdSelector(RssFeed entity) => entity.Id;
+        public override object[] EntityPrimaryKeySelector(int id) => new object[] { id };
+
+        public async Task<RssFeed?> GetAsync(string url)
         {
-            try {
-                var feed = SyndicationFeed.Load(XmlReader.Create(url, _settings));
-            } catch {
+            url = url.ToLowerInvariant();
+            RssFeed? feed = null;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            feed = await db.RssFeeds.SingleOrDefaultAsync(f => f.Url == url);
+            return feed;
+        }
+
+        public async Task<bool> SubscribeAsync(ulong gid, ulong cid, string url, string? name = null)
+        {
+            SyndicationItem? newest = GetFeedResults(url)?.FirstOrDefault();
+            if (newest is null)
                 return false;
+
+            RssFeed? feed = await this.GetAsync(url);
+            if (feed is null) {
+                feed = new RssFeed {
+                    Url = url,
+                    LastPostUrl = newest.Links[0].Uri.ToString()
+                };
+                await this.AddAsync(feed);
             }
-            return true;
+
+            int added = await this.Subscriptions.AddAsync(new RssSubscription {
+                ChannelId = cid,
+                GuildId = gid,
+                Id = feed.Id,
+                Name = name ?? url
+            });
+
+            return added > 0;
         }
 
-        [Obsolete]
-        public static async Task SendFeedResultsAsync(DiscordChannel channel, IEnumerable<SyndicationItem> results)
+
+        public sealed class RssSubscriptionService : DbAbstractionServiceBase<RssSubscription, (ulong gid, ulong cid), int>
         {
-            if (results is null)
-                return;
+            public override bool IsDisabled => false;
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "Topics active recently",
-                Color = DiscordColor.White
-            };
 
-            foreach (SyndicationItem res in results)
-                emb.AddField(res.Title.Text.Truncate(255), res.Links.First().Uri.ToString());
+            public RssSubscriptionService(DbContextBuilder dbb)
+                : base(dbb) { }
 
-            await channel.SendMessageAsync(embed: emb.Build());
+
+            public override DbSet<RssSubscription> DbSetSelector(TheGodfatherDbContext db)
+                => db.RssSubscriptions;
+
+            public override IQueryable<RssSubscription> GroupSelector(IQueryable<RssSubscription> entities, (ulong gid, ulong cid) grid)
+                => entities.Where(s => s.GuildIdDb == (long)grid.gid && s.ChannelIdDb == (long)grid.cid);
+
+            public override RssSubscription EntityFactory((ulong gid, ulong cid) grid, int id)
+                => new RssSubscription { ChannelId = grid.cid, GuildId = grid.gid, Id = id };
+
+            public override int EntityIdSelector(RssSubscription entity)
+                => entity.Id;
+
+            public override (ulong gid, ulong cid) EntityGroupSelector(RssSubscription entity)
+                => (entity.GuildId, entity.ChannelId);
+
+            public override object[] EntityPrimaryKeySelector((ulong gid, ulong cid) grid, int id)
+                => new object[] { id, (long)grid.gid, (long)grid.cid };
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
@@ -83,7 +84,15 @@ namespace TheGodfather.Modules.Search
             if (res is null)
                 throw new CommandFailedException("Error getting world news.");
 
-            return RssFeedsService.SendFeedResultsAsync(ctx.Channel, res);
+            var emb = new DiscordEmbedBuilder {
+                Title = "Topics active recently",
+                Color = DiscordColor.White
+            };
+
+            foreach (SyndicationItem r in res)
+                emb.AddField(r.Title.Text, r.Links.First().Uri.ToString());
+
+            return ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 

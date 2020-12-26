@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("rss_feeds")]
-    public class RssFeed
+    public class RssFeed : IEquatable<RssFeed>
     {
         public const int UrlLimit = 512;
 
@@ -28,5 +29,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual ICollection<RssSubscription> Subscriptions { get; set; }
+
+
+        public bool Equals(RssFeed? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as RssFeed);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 }

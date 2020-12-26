@@ -5,7 +5,9 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -15,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
     [Aliases("r")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public sealed class RedditModule : TheGodfatherModule
+    public sealed class RedditModule : TheGodfatherServiceModule<RssFeedsService>
     {
         #region reddit
         [GroupCommand]
@@ -77,30 +79,55 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe")]
         [Aliases("sub", "follow")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub")] string sub)
+        public async Task SubscribeAsync(CommandContext ctx,
+                                        [Description("desc-sub")] string sub)
         {
-            // TODO
-            return Task.CompletedTask;
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
+
+            string? url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
+            if (url is null || rsub is null) {
+                if (rsub is null)
+                    throw new CommandFailedException(ctx, "cmd-err-sub-format");
+                else
+                    throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
+            }
+
+            if (await this.Service.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub))
+                await ctx.InfoAsync(this.ModuleColor);
+            else
+                await ctx.FailAsync("cmd-err-sub", url);
         }
         #endregion
 
         #region reddit unsubscribe
-        [Command("unsubscribe"), Priority(1)]
+        [Command("unsubscribe")]
         [Aliases("unfollow", "unsub")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public Task UnsubscribeAsync(CommandContext ctx,
-                                    [Description("desc-sub")] string sub)
-        {
-            // TODO
-            return Task.CompletedTask;
-        }
-
-        [Command("unsubscribe"), Priority(0)]
         public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("desc-id")] int id)
+                                          [Description("desc-sub")] string sub)
         {
-            // TODO
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
+
+            string? url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
+            if (url is null || rsub is null) {
+                if (rsub is null)
+                    throw new CommandFailedException(ctx, "cmd-err-sub-format");
+                else
+                    throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
+            }
+
+            RssFeed? feed = await this.Service.GetAsync(url);
+            if (feed is null)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-not");
+
+            RssSubscription? s = await this.Service.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+            if (s is null)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-not");
+
+            await this.Service.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
@@ -109,7 +136,7 @@ namespace TheGodfather.Modules.Search
         private Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
         {
             if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-sub");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
 
             string? url = RedditService.GetFeedURLForSubreddit(sub, category, out string? rsub);
             if (url is null || rsub is null) {
@@ -119,7 +146,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
             }
 
-            IReadOnlyList<SyndicationItem> res = RssFeedsService.GetFeedResults(url);
+            IReadOnlyList<SyndicationItem>? res = RssFeedsService.GetFeedResults(url);
             if (res is null)
                 throw new CommandFailedException(ctx, "cmd-err-sub-fail", rsub);
 

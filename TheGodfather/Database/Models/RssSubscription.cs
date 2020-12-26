@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
 {
     [Table("rss_subscriptions")]
-    public class RssSubscription
+    public class RssSubscription : IEquatable<RssSubscription>
     {
         public const int NameLimit = 64;
 
@@ -31,5 +32,15 @@ namespace TheGodfather.Database.Models
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
         public virtual RssFeed Feed { get; set; } = null!;
+
+
+        public bool Equals(RssSubscription? other)
+            => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.Id == other.Id;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as RssSubscription);
+
+        public override int GetHashCode()
+            => (this.GuildId, this.ChannelId, this.Id).GetHashCode();
     }
 }

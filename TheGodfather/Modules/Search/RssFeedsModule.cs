@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search
 {
     [Module(ModuleType.Searches), NotBlocked]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RssFeedsModule : TheGodfatherModule
+    public class RssFeedsModule : TheGodfatherServiceModule<RssFeedsService>
     {
 
         #region COMMAND_RSS
@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search
             if (res is null)
                 throw new CommandFailedException("Error getting feed from given URL.");
 
-            return RssFeedsService.SendFeedResultsAsync(ctx.Channel, res);
+            return SendFeedResultsAsync(ctx.Channel, res);
         }
         #endregion
 
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("sub", "subscriptions", "subscription")]
 
         [RequireOwnerOrPermissions(Permissions.ManageGuild)]
-        public class SubscribeModule : TheGodfatherModule
+        public class SubscribeModule : TheGodfatherServiceModule<RssFeedsService>
         {
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Search
                 if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
                     throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url.AbsoluteUri, name);
+                await this.Service.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url.AbsoluteUri, name);
                 await this.InformAsync(ctx, $"Subscribed to {url}!", important: false);
             }
 
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Search
                 if (url is null)
                     throw new CommandFailedException("That subreddit doesn't exist.");
 
-                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub);
+                await this.Service.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub);
                 await this.InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
             }
             #endregion
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 string feedurl = YtService.GetRssUrlForChannel(chid);
-                await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name);
+                await this.Service.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name);
                 await this.InformAsync(ctx, "Subscribed!", important: false);
             }
             #endregion
@@ -249,5 +249,22 @@ namespace TheGodfather.Modules.Search
             #endregion
         }
         #endregion
+
+
+        public static async Task SendFeedResultsAsync(DiscordChannel channel, IEnumerable<SyndicationItem> results)
+        {
+            if (results is null)
+                return;
+
+            var emb = new DiscordEmbedBuilder {
+                Title = "Topics active recently",
+                Color = DiscordColor.White
+            };
+
+            foreach (SyndicationItem res in results)
+                emb.AddField(res.Title.Text, res.Links.First().Uri.ToString());
+
+            await channel.SendMessageAsync(embed: emb.Build());
+        }
     }
 }
