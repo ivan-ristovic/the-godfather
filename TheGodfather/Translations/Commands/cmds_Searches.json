@@ -76,5 +76,56 @@
     "usage": [
       []
     ]
+  },
+  "reddit": {
+    "usage": [
+      [],
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit controversial": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit gilded": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit hot": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit new": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit rising": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit top": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit subscribe": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "reddit unsubscribe": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "rss": {
+    "usage": [
+      [ "arg-rss" ]
+    ]
   }
 }

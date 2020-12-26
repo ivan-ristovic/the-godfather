@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Search.Services
         public override int EntityIdSelector(RssFeed entity) => entity.Id;
         public override object[] EntityPrimaryKeySelector(int id) => new object[] { id };
 
-        public async Task<RssFeed?> GetAsync(string url)
+        public async Task<RssFeed?> GetByUrlAsync(string url)
         {
             url = url.ToLowerInvariant();
             RssFeed? feed = null;
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Search.Services
             if (newest is null)
                 return false;
 
-            RssFeed? feed = await this.GetAsync(url);
+            RssFeed? feed = await this.GetByUrlAsync(url);
             if (feed is null) {
                 feed = new RssFeed {
                     Url = url,
@@ -198,6 +198,18 @@ namespace TheGodfather.Modules.Search.Services
 
             public override object[] EntityPrimaryKeySelector((ulong gid, ulong cid) grid, int id)
                 => new object[] { id, (long)grid.gid, (long)grid.cid };
+
+            public async Task<RssSubscription?> GetByNameAsync((ulong gid, ulong cid) grid, string name)
+            {
+                name = name.ToLowerInvariant();
+                RssSubscription? sub = null;
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
+                sub = await this.GroupSelector(db.RssSubscriptions, grid)
+                    .Include(s => s.Feed)
+                    .SingleOrDefaultAsync(s => s.Name == name)
+                    ;
+                return sub;
+            }
         }
     }
 }

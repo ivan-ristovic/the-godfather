@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
@@ -76,12 +77,17 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region reddit subscribe
-        [Command("subscribe")]
+        [Command("subscribe"), Priority(1)]
         [Aliases("sub", "follow")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
+        [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
+                                        [Description("desc-chn")] DiscordChannel chn,
                                         [Description("desc-sub")] string sub)
         {
+            chn ??= ctx.Channel;
+            if (chn.Type != ChannelType.Text)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
 
@@ -98,12 +104,17 @@ namespace TheGodfather.Modules.Search
             else
                 await ctx.FailAsync("cmd-err-sub", url);
         }
+
+        public Task SubscribeAsync(CommandContext ctx,
+                                  [Description("desc-sub")] string sub,
+                                  [Description("desc-chn")] DiscordChannel? chn = null)
+            => this.SubscribeAsync(ctx, chn ?? ctx.Channel, sub);
         #endregion
 
         #region reddit unsubscribe
         [Command("unsubscribe")]
         [Aliases("unfollow", "unsub")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
+        [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("desc-sub")] string sub)
         {
@@ -118,7 +129,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
             }
 
-            RssFeed? feed = await this.Service.GetAsync(url);
+            RssFeed? feed = await this.Service.GetByUrlAsync(url);
             if (feed is null)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-sub-not");
 

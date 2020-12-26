@@ -162,7 +162,7 @@ namespace TheGodfather.Extensions
         {
             object[] allPropertyValues = ctx.Guild is { }
                 ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
-                : new object[] { ctx.User, ctx.Channel };
+                : new object[] { ctx.User, "DM", ctx.Channel };
             if (propertyValues?.Any() ?? false)
                 allPropertyValues = propertyValues.Concat(allPropertyValues).ToArray();
             InternalLogMany(level, ctx.Client.ShardId, new[] { template, "{User}", "{Guild}", "{Channel}" }, ex, allPropertyValues);

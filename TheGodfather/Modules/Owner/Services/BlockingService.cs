@@ -63,10 +63,10 @@ namespace TheGodfather.Modules.Owner.Services
         public bool IsUserBlocked(ulong uid)
             => this.bUsers.Contains(uid);
 
-        public bool IsGuildBlocked(ulong gid)
-            => this.bGuilds.Contains(gid);
+        public bool IsGuildBlocked(ulong? gid)
+            => gid is { } && this.bGuilds.Contains(gid.Value);
 
-        public bool IsBlocked(ulong gid, ulong cid, ulong uid)
+        public bool IsBlocked(ulong? gid, ulong cid, ulong uid)
             => this.IsGuildBlocked(gid) || this.IsChannelBlocked(cid) || this.IsUserBlocked(uid);
 
         public async Task<IReadOnlyList<BlockedChannel>> GetBlockedChannelsAsync()

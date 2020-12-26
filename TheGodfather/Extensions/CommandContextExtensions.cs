@@ -39,7 +39,7 @@ namespace TheGodfather.Extensions
         {
             channel ??= ctx.Channel;
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild.Id);
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
             action(emb);
             return channel.SendMessageAsync(embed: emb.Build());
         }
@@ -191,6 +191,14 @@ namespace TheGodfather.Extensions
             return mctx.TimedOut ? null : mctx.Result;
         }
 
+        public static Task ExecuteOtherCommandAsync(this CommandContext ctx, string command, params string?[] args)
+        {
+            string callStr = $"{command} {args.JoinWith(" ")}";
+            Command cmd = ctx.CommandsNext.FindCommand(callStr, out string actualArgs);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.User, ctx.Channel, callStr, ctx.Prefix, cmd, actualArgs);
+            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
+        }
+
 
         private static async Task InternalInformAsync(this CommandContext ctx, DiscordEmoji? emoji = null, string? key = null,
                                                       bool important = true, DiscordColor? color = null, params object?[]? args)
@@ -212,5 +220,6 @@ namespace TheGodfather.Extensions
                 });
             }
         }
+
     }
 }
