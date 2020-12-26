@@ -79,11 +79,11 @@ namespace TheGodfather.Modules.Search
         [Aliases("worldnews")]
         public Task NewsRssAsync(CommandContext ctx)
         {
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
+            IReadOnlyList<SyndicationItem> res = RssFeedsService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
             if (res is null)
                 throw new CommandFailedException("Error getting world news.");
 
-            return RssService.SendFeedResultsAsync(ctx.Channel, res);
+            return RssFeedsService.SendFeedResultsAsync(ctx.Channel, res);
         }
         #endregion
 

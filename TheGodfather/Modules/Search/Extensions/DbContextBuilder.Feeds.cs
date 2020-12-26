@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Search.Extensions
     {
         public static async Task SubscribeAsync(this DbContextBuilder dbb, ulong gid, ulong cid, string url, string? name = null)
         {
-            SyndicationItem? newest = RssService.GetFeedResults(url)?.FirstOrDefault();
+            SyndicationItem? newest = RssFeedsService.GetFeedResults(url)?.FirstOrDefault();
             if (newest is null)
                 throw new Exception("Can't load the feed entries.");
 

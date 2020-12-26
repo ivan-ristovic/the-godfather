@@ -15,6 +15,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 #endregion
@@ -34,14 +35,14 @@ namespace TheGodfather.Modules.Search
         public Task RssAsync(CommandContext ctx,
                             [Description("RSS feed URL.")] Uri url)
         {
-            if (!RssService.IsValidFeedURL(url.AbsoluteUri))
+            if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
                 throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url.AbsoluteUri);
+            IReadOnlyList<SyndicationItem> res = RssFeedsService.GetFeedResults(url.AbsoluteUri);
             if (res is null)
                 throw new CommandFailedException("Error getting feed from given URL.");
 
-            return RssService.SendFeedResultsAsync(ctx.Channel, res);
+            return RssFeedsService.SendFeedResultsAsync(ctx.Channel, res);
         }
         #endregion
 
@@ -60,7 +61,7 @@ namespace TheGodfather.Modules.Search
                                                [Description("URL.")] Uri url,
                                                [RemainingText, Description("Friendly name.")] string name = null)
             {
-                if (!RssService.IsValidFeedURL(url.AbsoluteUri))
+                if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
                     throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
                 await this.Database.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url.AbsoluteUri, name);

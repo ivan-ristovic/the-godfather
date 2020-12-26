@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
@@ -12,12 +11,29 @@ using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Search.Services
 {
-    public static class RssService
+    public sealed class RssFeedsService : ITheGodfatherService
     {
+        private static XmlReaderSettings _settings = new XmlReaderSettings {
+            MaxCharactersInDocument = 2097152,
+            IgnoreComments = true,
+            IgnoreWhitespace = true,
+        };
+
+        public bool IsDisabled => false;
+
+        private readonly DbContextBuilder dbb;
+
+
+        public RssFeedsService(DbContextBuilder dbb)
+        {
+            this.dbb = dbb;
+        }
+
+
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DbContextBuilder dbb)
         {
             IReadOnlyList<RssFeed> feeds;
@@ -95,7 +111,7 @@ namespace TheGodfather.Modules.Search.Services
                 throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
 
             try {
-                using var reader = XmlReader.Create(url);
+                using var reader = XmlReader.Create(url, _settings);
                 var feed = SyndicationFeed.Load(reader);
                 return feed.Items?.Take(amount).ToList().AsReadOnly();
             } catch {
@@ -106,13 +122,14 @@ namespace TheGodfather.Modules.Search.Services
         public static bool IsValidFeedURL(string url)
         {
             try {
-                var feed = SyndicationFeed.Load(XmlReader.Create(url));
+                var feed = SyndicationFeed.Load(XmlReader.Create(url, _settings));
             } catch {
                 return false;
             }
             return true;
         }
 
+        [Obsolete]
         public static async Task SendFeedResultsAsync(DiscordChannel channel, IEnumerable<SyndicationItem> results)
         {
             if (results is null)

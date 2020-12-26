@@ -80,7 +80,7 @@ namespace TheGodfather.Services
 
                 Log.Debug("Feed check starting...");
                 try {
-                    _async.Execute(RssService.CheckFeedsForChangesAsync(shard.Client, shard.Database));
+                    _async.Execute(RssFeedsService.CheckFeedsForChangesAsync(shard.Client, shard.Database));
                     Log.Debug("Feed check finished");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during feed check");

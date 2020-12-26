@@ -1,144 +1,129 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Reddit commands. Group call prints hottest posts from given sub.")]
     [Aliases("r")]
-
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RedditModule : TheGodfatherModule
+    public sealed class RedditModule : TheGodfatherModule
     {
+        #region reddit
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Subreddit.")] string sub = "all")
+                                     [Description("desc-sub")] string sub = "all")
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
+        #endregion
 
-
-        #region COMMAND_RSS_REDDIT_CONTROVERSIAL
+        #region reddit controversial
         [Command("controversial")]
         [Description("Get newest controversial posts for a subreddit.")]
-
+        [Aliases("c")]
         public Task ControversialAsync(CommandContext ctx,
-                                      [Description("Subreddit.")] string sub)
+                                      [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Controversial);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_GILDED
+        #region reddit gilded
         [Command("gilded")]
-        [Description("Get newest gilded posts for a subreddit.")]
-
+        [Aliases("g")]
         public Task GildedAsync(CommandContext ctx,
-                               [Description("Subreddit.")] string sub)
+                               [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Gilded);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_HOT
+        #region reddit hot
         [Command("hot")]
-        [Description("Get newest hot posts for a subreddit.")]
-
+        [Aliases("h")]
         public Task HotAsync(CommandContext ctx,
-                            [Description("Subreddit.")] string sub)
+                            [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_NEW
+        #region reddit new
         [Command("new")]
-        [Description("Get newest posts for a subreddit.")]
-        [Aliases("newest", "latest")]
-
+        [Aliases("n", "newest", "latest")]
         public Task NewAsync(CommandContext ctx,
-                            [Description("Subreddit.")] string sub)
+                            [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.New);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_RISING
+        #region reddit rising
         [Command("rising")]
-        [Description("Get newest rising posts for a subreddit.")]
-
+        [Aliases("r")]
         public Task RisingAsync(CommandContext ctx,
-                               [Description("Subreddit.")] string sub)
+                               [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Rising);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_TOP
+        #region reddit top
         [Command("top")]
-        [Description("Get top posts for a subreddit.")]
-
+        [Aliases("t")]
         public Task TopAsync(CommandContext ctx,
-                            [Description("Subreddit.")] string sub)
+                            [Description("desc-sub")] string sub)
             => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Top);
         #endregion
 
-        #region COMMAND_RSS_REDDIT_SUBSCRIBE
+        #region reddit subscribe
         [Command("subscribe")]
-        [Description("Add new feed for a subreddit.")]
-        [Aliases("add", "a", "+", "sub")]
-
+        [Aliases("sub", "follow")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("Subreddit.")] string sub)
+                                  [Description("desc-sub")] string sub)
         {
-            string command = $"sub r {sub}";
-            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
-            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
-            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
+            // TODO
+            return Task.CompletedTask;
         }
         #endregion
 
-        #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
+        #region reddit unsubscribe
         [Command("unsubscribe"), Priority(1)]
-        [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
-        [Aliases("del", "d", "rm", "-", "unsub")]
-
+        [Aliases("unfollow", "unsub")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task UnsubscribeAsync(CommandContext ctx,
-                                    [Description("Subreddit.")] string sub)
+                                    [Description("desc-sub")] string sub)
         {
-            string command = $"unsub r {sub}";
-            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
-            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.Member, ctx.Channel, command, ctx.Prefix, cmd, args);
-            return ctx.CommandsNext.ExecuteCommandAsync(fctx);
+            // TODO
+            return Task.CompletedTask;
         }
 
         [Command("unsubscribe"), Priority(0)]
         public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("Subscription ID.")] int id)
+                                          [Description("desc-id")] int id)
         {
-            using (TheGodfatherDbContext db = this.Database.CreateContext()) {
-                db.RssSubscriptions.Remove(new RssSubscription { ChannelId = ctx.Channel.Id, Id = id });
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
+            // TODO
         }
         #endregion
 
 
-        #region HELPER_FUNCTIONS
-        private async Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
+        #region internals
+        private Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
         {
-            string url = RedditService.GetFeedURLForSubreddit(sub, category, out string rsub);
-            if (url is null)
-                throw new CommandFailedException("That subreddit doesn't exist.");
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sub");
 
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
+            string? url = RedditService.GetFeedURLForSubreddit(sub, category, out string? rsub);
+            if (url is null || rsub is null) {
+                if (rsub is null)
+                    throw new CommandFailedException(ctx, "cmd-err-sub-format");
+                else
+                    throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
+            }
+
+            IReadOnlyList<SyndicationItem> res = RssFeedsService.GetFeedResults(url);
             if (res is null)
-                throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
+                throw new CommandFailedException(ctx, "cmd-err-sub-fail", rsub);
 
-            await RssService.SendFeedResultsAsync(ctx.Channel, res);
+            return ctx.SendRedditFeedResultsAsync(res, this.ModuleColor);
         }
         #endregion
     }
