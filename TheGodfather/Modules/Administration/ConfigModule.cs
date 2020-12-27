@@ -51,6 +51,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.SetupPrefixAsync(gcfg, ctx, channel);
             await this.SetupLoggingAsync(gcfg, ctx, channel);
+            await this.SetupBackupAsync(gcfg, ctx, channel);
 
             gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync("q-setup-verbose", channel, false);
             gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync("q-setup-suggestions", channel, false);
@@ -232,6 +233,23 @@ namespace TheGodfather.Modules.Administration
             }
         }
 
+        private async Task SetupBackupAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        {
+            if (await ctx.WaitForBoolReplyAsync("q-setup-bak", channel: channel, reply: false)) {
+                gcfg.BackupEnabled = true;
+                if (await ctx.WaitForBoolReplyAsync("q-setup-bak-ex", channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-bak-ex-list");
+                    InteractivityResult<DiscordMessage> res = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                        msg => msg.Author == ctx.User && msg.Channel == channel && msg.MentionedChannels.Any()
+                    );
+                    if (!res.TimedOut) {
+                        BackupService bs = ctx.Services.GetRequiredService<BackupService>();
+                        await bs.ExemptAsync(ctx.Guild.Id, res.Result.MentionedChannels.SelectIds());
+                    }
+                }
+            }
+        }
+
         private async Task SetupMemberUpdateMessagesAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
             await GetChannelIdAndMessageAsync(welcome: true);
@@ -404,6 +422,7 @@ namespace TheGodfather.Modules.Administration
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.AntifloodSettings = gcfg.AntifloodSettings;
                 cfg.AntiInstantLeaveSettings = gcfg.AntiInstantLeaveSettings;
+                cfg.BackupEnabled = gcfg.BackupEnabled;
                 cfg.CachedConfig = gcfg.CachedConfig;
                 cfg.LeaveChannelId = gcfg.LeaveChannelId;
                 cfg.LeaveMessage = gcfg.LeaveMessage;
