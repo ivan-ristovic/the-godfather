@@ -6,6 +6,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
@@ -57,6 +58,13 @@ namespace TheGodfather.EventListeners
             await logService.LogAsync(e.Guild, emb);
         }
 
+        [AsyncEventListener(DiscordEventType.ChannelCreated)]
+        public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        {
+            LogExt.Debug(shard.Id, "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            return shard.Services.GetRequiredService<BackupService>().AddChannel(e.Channel.GuildId, e.Channel.Id);
+        }
+
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
@@ -71,6 +79,14 @@ namespace TheGodfather.EventListeners
             emb.AddFieldsFromAuditLogEntry(entry);
 
             await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.ChannelDeleted)]
+        public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        {
+            shard.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
+            LogExt.Debug(shard.Id, "Added channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]

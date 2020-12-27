@@ -48,10 +48,9 @@ namespace TheGodfather.Extensions
             provider.ConfigureAwait(false);
             IEnumerable<Type> serviceTypes = GetServiceTypes(assembly);
             foreach (Type serviceType in serviceTypes)
-                _ = provider.GetService(serviceType);
+                _ = provider.GetRequiredService(serviceType);
             return provider;
         }
-
 
         private static IEnumerable<Type> GetServiceTypes(Assembly? assembly = null)
         {

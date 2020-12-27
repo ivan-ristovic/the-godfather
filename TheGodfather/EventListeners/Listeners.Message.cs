@@ -102,6 +102,14 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
+        public static Task MessageCreateBackupHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
+        {
+            return e.Guild is null 
+                ? Task.CompletedTask 
+                : shard.Services.GetRequiredService<BackupService>().BackupAsync(e.Message);
+        }
+
+        [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageFilterEventHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))

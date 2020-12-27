@@ -20,7 +20,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(5, 10, CooldownBucketType.Channel)]
     public class SearchModule : TheGodfatherModule
     {
-
         #region COMMAND_CAT
         [Command("cat")]
         [Description("Get a random cat image.")]

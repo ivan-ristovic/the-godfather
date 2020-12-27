@@ -55,10 +55,8 @@ namespace TheGodfather
 
         public async Task DisposeAsync()
         {
-            if (this.Client is { }) {
+            if (this.Client is { })
                 await this.Client.DisconnectAsync();
-                this.Client.Dispose();
-            }
         }
 
 

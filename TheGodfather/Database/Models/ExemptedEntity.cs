@@ -66,4 +66,24 @@ namespace TheGodfather.Database.Models
     {
 
     }
+
+    [Table("exempt_backup")]
+    public class ExemptedBackupEntity
+    {
+        [Column("cid")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long ChannelIdDb { get; set; }
+        [NotMapped]
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
+
+        [ForeignKey("GuildConfig")]
+        [Column("gid")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long GuildIdDb { get; set; }
+        [NotMapped]
+        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
+
+
+        public virtual GuildConfig GuildConfig { get; set; } = null!;
+    }
 }

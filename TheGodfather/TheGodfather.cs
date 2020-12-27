@@ -65,6 +65,7 @@ namespace TheGodfather
             }
 
             Log.Information("Powering off");
+            Log.CloseAndFlush();
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -72,7 +73,6 @@ namespace TheGodfather
         {
             Environment.ExitCode = exitCode;
             ServiceProvider?.GetRequiredService<BotActivityService>().MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
-            Log.CloseAndFlush();
             return Task.CompletedTask;
         }
 
@@ -159,16 +159,12 @@ namespace TheGodfather
             Log.Information("Cleaning up ...");
 
             PeriodicService?.Dispose();
+            ServiceProvider?.Dispose();
 
-            if (_shards is { }) {
-                foreach (TheGodfatherShard shard in _shards)
-                    await shard.DisposeAsync();
-            }
+            // TODO dispose services manually?
 
-            if (ServiceProvider is { }) {
-                foreach (IDisposable service in ServiceProvider.GetServices<IDisposable>())
-                    service.Dispose();
-            }
+            if (_shards is { })
+                await Task.WhenAll(_shards.Select(s => s.DisposeAsync()));
 
             Log.Information("Cleanup complete! Powering off");
         }

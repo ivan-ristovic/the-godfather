@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20201211114806_InitialCreate")]
+    [Migration("20201227095807_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace TheGodfather.Migrations
                 .HasDefaultSchema("gf")
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.0");
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("TheGodfather.Database.Models.AutoRole", b =>
                 {
@@ -325,6 +325,21 @@ namespace TheGodfather.Migrations
                     b.ToTable("exempt_antispam");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.ExemptedBackupEntity", b =>
+                {
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnType("bigint")
+                        .HasColumnName("gid");
+
+                    b.Property<long>("ChannelIdDb")
+                        .HasColumnType("bigint")
+                        .HasColumnName("cid");
+
+                    b.HasKey("GuildIdDb", "ChannelIdDb");
+
+                    b.ToTable("exempt_backup");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.ExemptedLoggingEntity", b =>
                 {
                     b.Property<long>("IdDb")
@@ -571,6 +586,10 @@ namespace TheGodfather.Migrations
                         .HasColumnType("smallint")
                         .HasDefaultValue((short)5)
                         .HasColumnName("antispam_sensitivity");
+
+                    b.Property<bool>("BackupEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("backup");
 
                     b.Property<string>("Currency")
                         .HasMaxLength(32)
@@ -1201,6 +1220,17 @@ namespace TheGodfather.Migrations
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
                         .WithMany("ExemptsAntispam")
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GuildConfig");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.ExemptedBackupEntity", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany()
                         .HasForeignKey("GuildIdDb")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -22,6 +22,7 @@ namespace TheGodfather.Database
         public virtual DbSet<GuildConfig> Configs { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; protected set; }
         public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; protected set; }
+        public virtual DbSet<ExemptedBackupEntity> ExemptsBackup { get; protected set; }
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; protected set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; protected set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
@@ -101,6 +102,7 @@ namespace TheGodfather.Database
             mb.Entity<CommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
             mb.Entity<EmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<ExemptedAntispamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<ExemptedBackupEntity>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb });
             mb.Entity<ExemptedLoggingEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedRatelimitEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<GameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);

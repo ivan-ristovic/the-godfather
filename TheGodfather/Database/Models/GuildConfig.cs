@@ -73,6 +73,9 @@ namespace TheGodfather.Database.Models
         [Column("locale"), MaxLength(LocaleLimit)]
         public string? Locale { get; set; }
 
+        [Column("backup")]
+        public bool BackupEnabled { get; set; }
+
         [Column("timezone_id"), MaxLength(TimezoneIdLimit)]
         public string? TimezoneId { get; set; }
 
