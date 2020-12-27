@@ -292,6 +292,22 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config backup": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config backup exempt": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config backup unexempt": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
   "config currency": {
     "usage": [
       [],

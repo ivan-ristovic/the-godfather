@@ -65,5 +65,22 @@ namespace TheGodfather.Modules.Administration.Extensions
             }
             return sb.ToString();
         }
+
+        public static async Task<string?> FormatExemptionsAsync(this IEnumerable<ExemptedBackupEntity> exempts, DiscordClient client)
+        {
+            if (!exempts.Any())
+                return null;
+
+            var sb = new StringBuilder();
+            foreach (ExemptedBackupEntity e in exempts) {
+                try {
+                    DiscordChannel chn = await client.GetChannelAsync(e.ChannelId);
+                    sb.AppendLine(chn.Mention);
+                } catch {
+                    sb.AppendLine(e.ChannelId.ToString());
+                }
+            }
+            return sb.ToString();
+        }
     }
 }
