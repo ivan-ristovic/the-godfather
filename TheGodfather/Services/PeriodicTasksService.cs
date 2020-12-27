@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using System.Threading;
+using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ using TheGodfather.Database.Models;
 using TheGodfather.Misc.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Extensions;
 
 namespace TheGodfather.Services
 {
@@ -80,10 +83,26 @@ namespace TheGodfather.Services
 
                 Log.Debug("Feed check starting...");
                 try {
-                    _async.Execute(RssFeedsService.CheckFeedsForChangesAsync(shard.Client, shard.Database));
+                    RssFeedsService rss = shard.Services.GetRequiredService<RssFeedsService>();
+                    IReadOnlyList<(RssFeed, SyndicationItem)>? updates = _async.Execute(rss.CheckAsync());
+
+                    var notFound = new List<RssSubscription>();
+                    foreach ((RssFeed feed, SyndicationItem latest) in updates) {
+                        foreach (RssSubscription sub in feed.Subscriptions) {
+                            if (!_async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(shard, sub, latest)))
+                                notFound.Add(sub);
+                            _async.Execute(Task.Delay(10));
+                        }
+                    }
+
                     Log.Debug("Feed check finished");
+
+                    if (notFound.Any()) {
+                        Log.Information("404 subscriptions found. Removing {0} subscriptions", notFound.Count);
+                        _async.Execute(rss.Subscriptions.RemoveAsync(notFound));
+                    }
                 } catch (Exception e) {
-                    Log.Error(e, "An error occured during feed check");
+                    Log.Error(e, "An error occured during periodic feed processing");
                 }
             } else {
                 Log.Error("FeedCheckCallback failed to cast sender to TheGodfatherShard");

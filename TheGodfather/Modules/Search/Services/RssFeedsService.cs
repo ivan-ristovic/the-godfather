@@ -4,9 +4,6 @@ using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using System.Xml;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -42,76 +39,6 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
             }
         }
-
-        [Obsolete]
-        public static async Task CheckFeedsForChangesAsync(DiscordClient client, DbContextBuilder dbb)
-        {
-            IReadOnlyList<RssFeed> feeds;
-            using (TheGodfatherDbContext db = dbb.CreateContext())
-                feeds = await db.RssFeeds.Include(f => f.Subscriptions).ToListAsync();
-
-            foreach (RssFeed feed in feeds) {
-                try {
-                    if (!feed.Subscriptions.Any()) {
-                        using TheGodfatherDbContext db = dbb.CreateContext();
-                        db.RssFeeds.Remove(feed);
-                        await db.SaveChangesAsync();
-                        continue;
-                    }
-
-                    SyndicationItem latest = GetFeedResults(feed.Url)?.FirstOrDefault();
-                    if (latest is null)
-                        continue;
-
-                    string url = latest.Links.FirstOrDefault()?.Uri.ToString();
-                    if (url is null)
-                        continue;
-
-                    if (string.Compare(url, feed.LastPostUrl, true) != 0) {
-                        using (TheGodfatherDbContext db = dbb.CreateContext()) {
-                            feed.LastPostUrl = url;
-                            db.RssFeeds.Update(feed);
-                            await db.SaveChangesAsync();
-                        }
-
-                        foreach (RssSubscription sub in feed.Subscriptions) {
-                            DiscordChannel chn;
-                            try {
-                                chn = await client.GetChannelAsync(sub.ChannelId);
-                            } catch (NotFoundException) {
-                                using TheGodfatherDbContext db = dbb.CreateContext();
-                                db.RssSubscriptions.Remove(sub);
-                                await db.SaveChangesAsync();
-                                continue;
-                            } catch {
-                                continue;
-                            }
-
-                            var emb = new DiscordEmbedBuilder {
-                                Title = latest.Title.Text,
-                                Url = url,
-                                Timestamp = latest.LastUpdatedTime > latest.PublishDate ? latest.LastUpdatedTime : latest.PublishDate,
-                                Color = DiscordColor.White,
-                            };
-
-                            if (latest.Content is TextSyndicationContent content)
-                                emb.WithImageUrl(RedditService.GetImageUrl(content));
-
-                            if (!string.IsNullOrWhiteSpace(sub.Name))
-                                emb.AddField("From", sub.Name);
-                            emb.AddField("Content link", url);
-
-                            await chn.SendMessageAsync(embed: emb.Build());
-
-                            await Task.Delay(100);
-                        }
-                    }
-                } catch {
-
-                }
-            }
-        }
-
 
         private static readonly XmlReaderSettings _settings = new XmlReaderSettings {
             MaxCharactersInDocument = 2097152,
@@ -169,6 +96,40 @@ namespace TheGodfather.Modules.Search.Services
             });
 
             return added > 0;
+        }
+
+        public async Task<IReadOnlyList<(RssFeed, SyndicationItem)>> CheckAsync()
+        {
+            IReadOnlyList<RssFeed> feeds;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            feeds = await db.RssFeeds.Include(f => f.Subscriptions).ToListAsync();
+
+            var results = new List<(RssFeed, SyndicationItem)>();
+            foreach (RssFeed feed in feeds) {
+                if (!feed.Subscriptions.Any()) {
+                    await this.RemoveAsync(feed);
+                    continue;
+                }
+
+                SyndicationItem? latest = GetFeedResults(feed.Url)?.FirstOrDefault();
+                if (latest is null)
+                    continue;
+
+                string? url = latest.Links.FirstOrDefault()?.Uri.ToString();
+                if (url is null)
+                    continue;
+
+                if (!url.Equals(feed.LastPostUrl, StringComparison.InvariantCultureIgnoreCase)) {
+                    feed.LastPostUrl = url;
+                    db.RssFeeds.Update(feed);
+                    await db.SaveChangesAsync();
+
+                    feed.Subscriptions = feed.Subscriptions.ToList();
+                    results.Add((feed, latest));
+                }
+            }
+
+            return results.AsReadOnly();
         }
 
 

@@ -1018,6 +1018,7 @@
   "str-eval-value-none": "No value returned.",
   "str-exempts": "Exempts",
   "str-f": "Guild filters",
+  "str-from": "From",
   "str-f-add": "Successfully registered all given filters.",
   "str-false": "False",
   "str-f-del": "Successfully unregistered {0} filters.",
