@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -140,6 +141,29 @@ namespace TheGodfather.Modules.Administration.Services
             } catch (IOException e) {
                 Log.Error(e, "Failed to write to backup stream for channel {ChannelId} in guild {", cid);
             }
+        }
+
+        public async Task<bool> WithBackupZipAsync(ulong gid, Func<Stream, Task> action)
+        {
+            string dirPath = Path.Combine("backup", gid.ToString());
+            string zipPath = Path.Combine("backup", $"{gid}.zip");
+
+            bool succ = false;
+            try {
+                ZipFile.CreateFromDirectory(dirPath, zipPath, CompressionLevel.Optimal, false);
+                using (var fs = new FileStream(zipPath, FileMode.Open))
+                    await action(fs);
+                succ = true;
+            } finally {
+                try {
+                    if (File.Exists(zipPath))
+                        File.Delete(zipPath);
+                } catch (IOException e) {
+                    Log.Error(e, "Failed to delete backup file: {ZipPath}", zipPath);
+                }
+            }
+
+            return succ;
         }
 
 

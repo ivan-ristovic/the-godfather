@@ -58,6 +58,16 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
+            #region config backup download
+            [Command("download")]
+            [Aliases("dl", "get", "zip")]
+            public async Task DownloadAsync(CommandContext ctx)
+            {
+                if (!await this.Service.WithBackupZipAsync(ctx.Guild.Id, s => ctx.RespondWithFileAsync("backup.zip", s)))
+                    throw new CommandFailedException(ctx, "cmd-err-backup");
+            }
+            #endregion
+
             #region config backup exempt
             [Command("exempt")]
             [Aliases("ex", "exc")]

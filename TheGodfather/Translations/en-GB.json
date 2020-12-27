@@ -117,6 +117,7 @@
   "cmd-err-announce": "- Warning: Shard {0} failed to send the announcement in guild {1} ({2})",
   "cmd-err-ar-none": "This guild has no automatic roles registered.",
   "cmd-err-auditlog-amount": "Amount of entries must be between 1 and {0}.",
+  "cmd-err-backup": "Backup folder for this guild cannot be found.",
   "cmd-err-bad-req": "Bad request! Details: {0}",
   "cmd-err-bank-grant": "Invalid amount! Needs to be in range [1, {0:n0}].",
   "cmd-err-bank-register": "You already have an opened account in this guild's bank.",

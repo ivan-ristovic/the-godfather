@@ -298,6 +298,11 @@
       [ "arg-bool" ]
     ]
   },
+  "config backup download": {
+    "usage": [
+      []
+    ]
+  },
   "config backup exempt": {
     "usage": [
       [ "arg-chn-text" ]
