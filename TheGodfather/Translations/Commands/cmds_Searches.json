@@ -137,6 +137,24 @@
       [ "arg-rss" ]
     ]
   },
+  "steam": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-name" ]
+    ]
+  },
+  "steam game": {
+    "usage": [
+      [ "arg-id" ],
+      [ "arg-name" ]
+    ]
+  },
+  "steam profile": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-name" ]
+    ]
+  },
   "sticker": {
     "usage": [
       [ "arg-query" ]

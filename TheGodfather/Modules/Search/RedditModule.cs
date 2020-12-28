@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -10,7 +11,6 @@ using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search
@@ -161,7 +161,22 @@ namespace TheGodfather.Modules.Search
             if (res is null)
                 throw new CommandFailedException(ctx, "cmd-err-sub-fail", rsub);
 
-            return ctx.SendRedditFeedResultsAsync(res, this.ModuleColor);
+            if (!res.Any())
+                return ctx.FailAsync("cmd-err-res-none");
+
+            return ctx.PaginateAsync(res, (emb, r) => {
+                emb.WithTitle(r.Title.Text);
+                emb.WithDescription(r.Summary, unknown: false);
+                emb.WithUrl(r.Links.First().Uri);
+                if (r.Content is TextSyndicationContent content) {
+                    string? url = RedditService.GetImageUrl(content);
+                    if (url is { })
+                        emb.WithImageUrl(url);
+                }
+                emb.AddLocalizedTitleField("str-author", r.Authors.First().Name, inline: true);
+                emb.WithLocalizedTimestamp(r.LastUpdatedTime);
+                return emb;
+            }, this.ModuleColor);
         }
         #endregion
     }
