@@ -316,6 +316,8 @@
   "status list": "Lists all currently registered statuses.",
   "status set": "Disables automatic rotation of bot statuses and sets the currents status by ID or explicit string until status rotation is enabled again.",
   "status setrotation": "Enables or disables automatic rotation of bot statuses.",
+  "steam": "Steam community commands. Group call searches Steam community profiles by ID or username (vanity URL).",
+  "steam profile": "Searches Steam community profiles by ID or username (vanity URL).",
   "sticker": "GIPHY sticker search commands. Group call searches GIPHY with given query and prints first stricker result.",
   "sticker random": "Prints a random sticker.",
   "sticker trending": "Prints a given amount of trending stickers.",
