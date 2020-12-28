@@ -76,9 +76,10 @@ namespace TheGodfather.Modules.Search
 
                 if (summary.UserStatus != UserStatus.Offline)
                     emb.AddLocalizedTitleField("str-status", summary.UserStatus.Humanize(LetterCasing.Sentence), inline: true);
-                else
+                else if (summary.LastLoggedOffDate.Year > 1000)
                     emb.AddLocalizedTimestampField("str-last-seen", summary.LastLoggedOffDate, inline: true);
 
+                emb.AddLocalizedTitleField("str-id", model.SteamID, inline: true);
                 emb.AddLocalizedTitleField("str-playing", summary.PlayingGameName, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-location", model.Location, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-real-name", model.RealName, inline: true, unknown: false);
