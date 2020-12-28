@@ -1,26 +1,39 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using TheGodfather.Services;
-#endregion;
 
 namespace TheGodfather.Modules.Search.Services
 {
     public class PetImagesService : TheGodfatherHttpService
     {
+        private const string CatUrl = "http://aws.random.cat/meow";
+        private const string DogUrl = "https://random.dog/";
+
         public override bool IsDisabled => false;
 
 
-        public static async Task<string> GetRandomCatImageAsync()
+        public static async Task<string?> GetRandomCatImageAsync()
         {
-            string data = await _http.GetStringAsync("http://aws.random.cat/meow").ConfigureAwait(false);
-            return JObject.Parse(data)["file"].ToString();
+            try {
+                string data = await _http.GetStringAsync(CatUrl).ConfigureAwait(false);
+                return JObject.Parse(data)["file"]?.ToString();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to retrieve random cat image");
+                return null;
+            }
         }
 
-        public static async Task<string> GetRandomDogImageAsync()
+        public static async Task<string?> GetRandomDogImageAsync()
         {
-            string data = await _http.GetStringAsync("https://random.dog/woof").ConfigureAwait(false);
-            return "https://random.dog/" + data;
+            try {
+                string data = await _http.GetStringAsync($"{DogUrl}/woof").ConfigureAwait(false);
+                return DogUrl + data;
+            } catch (Exception e) {
+                Log.Error(e, "Failed to retrieve random dog image");
+                return null;
+            }
         }
     }
 }

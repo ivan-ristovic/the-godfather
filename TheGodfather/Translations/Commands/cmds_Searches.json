@@ -1,4 +1,14 @@
 {
+  "cat": {
+    "usage": [
+      []
+    ]
+  },
+  "dog": {
+    "usage": [
+      []
+    ]
+  },
   "gif": {
     "usage": [
       [ "arg-query" ]
@@ -46,20 +56,9 @@
       [ "arg-timewindow", "arg-ten", "arg-sub" ]
     ]
   },
-  "sticker": {
+  "ip": {
     "usage": [
-      [ "arg-query" ]
-    ]
-  },
-  "sticker random": {
-    "usage": [
-      []
-    ]
-  },
-  "sticker trending": {
-    "usage": [
-      [],
-      [ "arg-ten" ]
+      [ "arg-ip" ]
     ]
   },
   "joke": {
@@ -73,6 +72,16 @@
     ]
   },
   "joke yomama": {
+    "usage": [
+      []
+    ]
+  },
+  "news": {
+    "usage": [
+      []
+    ]
+  },
+  "quoteoftheday": {
     "usage": [
       []
     ]
@@ -108,12 +117,12 @@
       [ "arg-sub" ]
     ]
   },
-  "reddit top": {
+  "reddit subscribe": {
     "usage": [
       [ "arg-sub" ]
     ]
   },
-  "reddit subscribe": {
+  "reddit top": {
     "usage": [
       [ "arg-sub" ]
     ]
@@ -126,6 +135,22 @@
   "rss": {
     "usage": [
       [ "arg-rss" ]
+    ]
+  },
+  "sticker": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "sticker random": {
+    "usage": [
+      []
+    ]
+  },
+  "sticker trending": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
     ]
   }
 }

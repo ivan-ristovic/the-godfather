@@ -1,14 +1,13 @@
-﻿#region USING_DIRECTIVES
-
+﻿#nullable disable
+using System;
 using Newtonsoft.Json;
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
     public class IpInfo
     {
         [JsonIgnore]
-        public bool Success => this.Status == "success";
+        public bool Success => this.Status.Equals("success", StringComparison.InvariantCultureIgnoreCase);
 
 
         [JsonProperty("status")]

@@ -20,44 +20,6 @@ namespace TheGodfather.Modules.Search.Extensions
         private static readonly string _unknown = Formatter.Italic("Unknown");
 
 
-        public static DiscordEmbedBuilder ToDiscordEmbed(this IpInfo info, DiscordColor? color = null)
-        {
-            var emb = new DiscordEmbedBuilder {
-                Title = $"IP geolocation info for {info.Ip}",
-            };
-
-            if (!(color is null))
-                emb.WithColor(color.Value);
-
-            emb.AddField("Location", $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
-            emb.AddField("Exact location", $"({info.Latitude}, {info.Longitude})", inline: true);
-            emb.AddField("ISP", string.IsNullOrWhiteSpace(info.Isp) ? _unknown : info.Isp, inline: true);
-            emb.AddField("Organization", string.IsNullOrWhiteSpace(info.Organization) ? _unknown : info.Organization, inline: true);
-            emb.AddField("AS number", string.IsNullOrWhiteSpace(info.As) ? _unknown : info.As, inline: true);
-
-            emb.WithFooter("Powered by ip-api.");
-
-            return emb;
-        }
-
-        public static DiscordEmbedBuilder ToDiscordEmbed(this Quote quote, string altTitle = null)
-        {
-            var emb = new DiscordEmbedBuilder {
-                Title = string.IsNullOrWhiteSpace(altTitle) ? "Quote" : altTitle,
-                Description = Formatter.Italic($"\"{quote.Content}\""),
-                Color = DiscordColor.SpringGreen,
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail {
-                    Url = quote.BackgroundImageUrl
-                },
-                Url = quote.Permalink
-            };
-            emb.AddField("Author", quote.Author);
-
-            emb.WithFooter("Powered by theysaidso.com");
-
-            return emb;
-        }
-
         public static string ToInfoString(this UrbanDictList res)
         {
             var sb = new StringBuilder("Definition by ");

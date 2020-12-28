@@ -1,8 +1,6 @@
-﻿#region USING_DIRECTIVES
-
+﻿#nullable disable
 using System.Collections.Generic;
 using Newtonsoft.Json;
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
@@ -16,11 +14,11 @@ namespace TheGodfather.Modules.Search.Common
     {
         public static string ToApiString(this OMDbQueryType type)
         {
-            switch (type) {
-                case OMDbQueryType.Id: return "i";
-                case OMDbQueryType.Title: return "t";
-                default: return "";
-            }
+            return type switch {
+                OMDbQueryType.Id => "i",
+                OMDbQueryType.Title => "t",
+                _ => "",
+            };
         }
     }
 
