@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Steam.Models.SteamCommunity;
@@ -65,6 +67,18 @@ namespace TheGodfather.Modules.Search.Services
 
             profile.Summary = _tagRegex.Replace(profile.Summary, string.Empty);
             return (profile, summary.Data);
+        }
+
+        public async Task<int?> GetVacBanCountAsync(ulong id)
+        {
+            if (this.IsDisabled)
+                return null;
+            try {
+                ISteamWebResponse<IReadOnlyCollection<PlayerBansModel>> bans = await this.user!.GetPlayerBansAsync(id);
+                return bans.Data.Sum(b => (int)b.NumberOfVACBans);
+            } catch {
+                return null;
+            }
         }
     }
 }

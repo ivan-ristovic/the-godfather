@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -59,7 +60,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException(ctx, "cmd-err-steam");
 
             (SteamCommunityProfileModel model, PlayerSummaryModel summary) = res.Value;
-            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+            return ctx.RespondWithLocalizedEmbedAsync(async emb => {
                 emb.WithTitle(summary.Nickname);
                 emb.WithDescription(model.Summary);
                 emb.WithColor(this.ModuleColor);
@@ -78,24 +79,29 @@ namespace TheGodfather.Modules.Search
                 else
                     emb.AddLocalizedTimestampField("str-last-seen", summary.LastLoggedOffDate, inline: true);
 
-                emb.AddLocalizedTitleField("str-playing ", summary.PlayingGameName, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-location ", model.Location, inline: true, unknown: false);
-
-                // TODO add more
-
+                emb.AddLocalizedTitleField("str-playing", summary.PlayingGameName, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-location", model.Location, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-real-name", model.RealName, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-rating", model.SteamRating, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-headline", model.Headline, unknown: false);
+                
+                // TODO
                 // emb.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
-                //if (model.IsVacBanned) {
-                //    System.Collections.Generic.IReadOnlyCollection<PlayerBansModel> bans = this.user.GetPlayerBansAsync(model.SteamID).Result.Data;
+                if (model.IsVacBanned) {
+                    int? bans = await this.Service.GetVacBanCountAsync(model.SteamID);
+                    if (bans is { })
+                        emb.AddLocalizedField("str-vac", "fmt-vac", contentArgs: new object[] { bans });
+                    else
+                        emb.AddLocalizedField("str-vac", "str-vac-ban", inline: true);
+                } else {
+                    emb.AddLocalizedField("str-vac", "str-vac-clean", inline: true);
+                }
 
-                //    uint bancount = 0;
-                //    foreach (PlayerBansModel b in bans)
-                //        bancount += b.NumberOfVACBans;
+                if (model.MostPlayedGames.Any())
+                    emb.AddLocalizedTitleField("str-most-played", model.MostPlayedGames.Take(5).Select(g => g.Name).JoinWith(", "));
 
-                //    em.AddField("VAC Status:", $"{Formatter.Bold(bancount.ToString())} ban(s) on record.", inline: true);
-                //} else {
-                //    em.AddField("VAC Status:", "No bans registered");
-                //}
+                emb.AddLocalizedTitleField("str-trade-ban", model.TradeBanState, inline: true, unknown: false);
             });
         }
         #endregion
