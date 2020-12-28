@@ -1,11 +1,10 @@
-﻿#region USING_DIRECTIVES
+﻿#nullable disable
 using System.Collections;
 using System.Collections.Generic;
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
-    public class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
+    public sealed class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
     {
         private readonly string query;
         private readonly IReadOnlyList<string> hits;
@@ -35,7 +34,7 @@ namespace TheGodfather.Modules.Search.Common
         public WikiSearchResult this[int index] => new WikiSearchResult(this.hits[index], this.snippets[index], this.urls[index]);
     }
 
-    public class WikiSearchResult
+    public sealed class WikiSearchResult
     {
         public string Title { get; }
         public string Snippet { get; }

@@ -13,14 +13,13 @@ using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search
 {
     [Module(ModuleType.Searches), NotBlocked]
     [Cooldown(5, 10, CooldownBucketType.Channel)]
-    public class SearchModule : TheGodfatherModule
+    public sealed class SearchModule : TheGodfatherModule
     {
         #region cat
         [Command("cat")]

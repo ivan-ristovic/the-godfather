@@ -1,6 +1,5 @@
-﻿#region USING_DIRECTIVES
+﻿#nullable disable
 using Newtonsoft.Json;
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
