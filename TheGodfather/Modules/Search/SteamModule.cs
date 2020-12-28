@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using Humanizer;
 using Steam.Models.SteamCommunity;
+using Steam.Models.SteamStore;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -43,7 +44,7 @@ namespace TheGodfather.Modules.Search
 
         [Command("profile"), Priority(0)]
         public async Task InfoAsync(CommandContext ctx,
-                                  [Description("desc-username")] string username)
+                                   [RemainingText, Description("desc-username")] string username)
         {
             if (this.Service.IsDisabled)
                 throw new ServiceDisabledException(ctx);
@@ -52,12 +53,39 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
 
+        #region steam game
+        [Command("game"), Priority(1)]
+        [Aliases("g", "gm", "store")]
+        public async Task GameAsync(CommandContext ctx,
+                                   [Description("desc-id")] uint id)
+        {
+            if (this.Service.IsDisabled)
+                throw new ServiceDisabledException(ctx);
+
+            await this.PrintGameAsync(ctx, await this.Service.GetStoreInfoAsync(id));
+        }
+
+        [Command("game"), Priority(0)]
+        public async Task GameAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-gamename")] string game)
+        {
+            if (this.Service.IsDisabled)
+                throw new ServiceDisabledException(ctx);
+
+            uint? id = await this.Service.GetAppIdAsync(game);
+            if (id is null)
+                throw new CommandFailedException(ctx, "cmd-err-steam-game");
+
+            await this.PrintGameAsync(ctx, await this.Service.GetStoreInfoAsync(id.Value));
+        }
+        #endregion
+
 
         #region internals
         private Task PrintProfileAsync(CommandContext ctx, (SteamCommunityProfileModel, PlayerSummaryModel)? res)
         {
             if (res is null)
-                throw new CommandFailedException(ctx, "cmd-err-steam");
+                throw new CommandFailedException(ctx, "cmd-err-steam-user");
 
             (SteamCommunityProfileModel model, PlayerSummaryModel summary) = res.Value;
             return ctx.RespondWithLocalizedEmbedAsync(async emb => {
@@ -85,7 +113,7 @@ namespace TheGodfather.Modules.Search
                 emb.AddLocalizedTitleField("str-real-name", model.RealName, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-rating", model.SteamRating, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-headline", model.Headline, unknown: false);
-                
+
                 // TODO
                 // emb.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
@@ -103,6 +131,25 @@ namespace TheGodfather.Modules.Search
                     emb.AddLocalizedTitleField("str-most-played", model.MostPlayedGames.Take(5).Select(g => g.Name).JoinWith(", "));
 
                 emb.AddLocalizedTitleField("str-trade-ban", model.TradeBanState, inline: true, unknown: false);
+            });
+        }
+
+        private Task PrintGameAsync(CommandContext ctx, StoreAppDetailsDataModel? res)
+        {
+            if (res is null)
+                throw new CommandFailedException(ctx, "cmd-err-steam-game");
+
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle(res.Name);
+                emb.WithDescription(res.ShortDescription);
+                emb.WithUrl(this.Service.GetGameStoreUrl(res.SteamAppId));
+                emb.WithThumbnail(res.HeaderImage);
+                emb.AddLocalizedTitleField("str-metacritic", res.Metacritic?.Score, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-price", res.PriceOverview?.FinalFormatted, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-release-date", res.ReleaseDate?.Date, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-devs", res.Developers.JoinWith(", "), inline: true);
+                emb.AddLocalizedTitleField("str-genres", res.Genres.Select(g => g.Description).JoinWith(", "));
+                emb.WithFooter(res.Website, null);
             });
         }
         #endregion

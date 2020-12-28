@@ -100,10 +100,16 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedFooter(string text, string? iconUrl, params object?[]? args)
+        public LocalizedEmbedBuilder WithLocalizedFooter(string key, string? iconUrl, params object?[]? args)
         {
-            string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, text, args));
+            string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, key, args));
             this.emb.WithFooter(localizedText, iconUrl);
+            return this;
+        }
+
+        public LocalizedEmbedBuilder WithFooter(string text, string? iconUrl)
+        {
+            this.emb.WithFooter(this.TruncateToFitFooterText(text), iconUrl);
             return this;
         }
 
