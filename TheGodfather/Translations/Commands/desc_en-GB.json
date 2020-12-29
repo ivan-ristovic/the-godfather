@@ -369,6 +369,8 @@
   "webhook deleteall": "Deletes all webhooks in a given channel list.",
   "webhook list": "Shows webhooks for a given channel.",
   "webhook listall": "Shows webhooks for the entire guild.",
+  "wikipedia": "Wikipedia search commands. Group call searches Wikipedia with given query.",
+  "wikipedia search": "Searches Wikipedia with given query.",
   "work": "Do something productive with your life or decide to earn money using immoral or illegal ways.",
   "work crime": "Attempt a crime. This can be done once every 5 minutes.",
   "work streets": "Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes."

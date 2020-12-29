@@ -6,15 +6,13 @@ namespace TheGodfather.Modules.Search.Common
 {
     public sealed class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
     {
-        private readonly string query;
         private readonly IReadOnlyList<string> hits;
         private readonly IReadOnlyList<string> snippets;
         private readonly IReadOnlyList<string> urls;
 
 
-        public WikiSearchResponse(string query, IReadOnlyList<string> hits, IReadOnlyList<string> snippets, IReadOnlyList<string> urls)
+        public WikiSearchResponse(IReadOnlyList<string> hits, IReadOnlyList<string> snippets, IReadOnlyList<string> urls)
         {
-            this.query = query;
             this.hits = hits;
             this.snippets = snippets;
             this.urls = urls;
