@@ -373,5 +373,9 @@
   "wikipedia search": "Searches Wikipedia with given query.",
   "work": "Do something productive with your life or decide to earn money using immoral or illegal ways.",
   "work crime": "Attempt a crime. This can be done once every 5 minutes.",
-  "work streets": "Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes."
+  "work streets": "Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes.",
+  "xkcd": "xkcd search commands. Group call returns a random comic or, if an ID is provided, a comic with given ID.",
+  "xkcd id": "Returns a xkcd comic with given ID.",
+  "xkcd latest": "Returns latest xkcd comic.",
+  "xkcd random": "Returns random xkcd comic.",
 }

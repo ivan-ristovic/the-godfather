@@ -185,5 +185,35 @@
     "usage": [
       [ "arg-five", "arg-city" ]
     ]
+  },
+  "wikipedia": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "wikipedia search": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "xkcd": {
+    "usage": [
+      []
+    ]
+  },
+  "xkcd id": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "xkcd latest": {
+    "usage": [
+      []
+    ]
+  },
+  "xkcd random": {
+    "usage": [
+      []
+    ]
   }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Attributes;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
@@ -27,6 +28,9 @@ namespace TheGodfather.Modules.Search
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("desc-query")] string query)
         {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+
             WikiSearchResponse? res = await WikiService.SearchAsync(query);
             if (res is null || !res.Any()) {
                 await ctx.FailAsync("cmd-err-res-none");
