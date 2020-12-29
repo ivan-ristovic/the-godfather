@@ -61,9 +61,9 @@ namespace TheGodfather.Modules.Search
         public async Task IpAsync(CommandContext ctx,
                                  [Description("desc-ip")] IPAddress ip)
         {
-            IpInfo info = await IpGeolocationService.GetInfoForIpAsync(ip);
-            if (!info.Success)
-                throw new CommandFailedException(ctx, "cmd-err-geoloc", info.ErrorMessage);
+            IpInfo? info = await IpGeolocationService.GetInfoForIpAsync(ip);
+            if (info is null || !info.Success)
+                throw new CommandFailedException(ctx, "cmd-err-geoloc");
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(info.Ip);

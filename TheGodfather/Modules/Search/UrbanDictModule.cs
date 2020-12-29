@@ -16,6 +16,7 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class UrbanDictModule : TheGodfatherModule
     {
+        #region urbandict
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("desc-query")] string query)
@@ -44,5 +45,6 @@ namespace TheGodfather.Modules.Search
                 query
             );
         }
+        #endregion
     }
 }

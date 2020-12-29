@@ -17,7 +17,6 @@ namespace TheGodfather.Modules.Search.Services
         public override bool IsDisabled => false;
 
 
-
         public static Task<string?> GetRandomJokeAsync()
             => ReadResponseAsync(JokesApi);
 

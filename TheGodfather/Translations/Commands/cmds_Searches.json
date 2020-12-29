@@ -175,5 +175,15 @@
     "usage": [
       [ "arg-query" ]
     ]
+  },
+  "weather": {
+    "usage": [
+      [ "arg-city" ]
+    ]
+  },
+  "weather forecast": {
+    "usage": [
+      [ "arg-five", "arg-city" ]
+    ]
   }
 }

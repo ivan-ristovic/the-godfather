@@ -1,23 +1,19 @@
-﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
+﻿using System.Net;
 using System.Threading.Tasks;
-using DSharpPlus.Entities;
 using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search.Services
 {
     public class WeatherService : TheGodfatherHttpService
     {
-        private static readonly string _url = "http://api.openweathermap.org/data/2.5";
+        private const string WeatherServiceUrl = "https://openweathermap.org";
+        private const string WeatherApiUrl = "http://api.openweathermap.org/data/2.5";
 
         public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
 
-        private readonly string key;
+        private readonly string? key;
 
 
         public WeatherService(BotConfigService cfg)
@@ -27,48 +23,37 @@ namespace TheGodfather.Modules.Search.Services
 
 
         public static string GetCityUrl(City city)
-        {
-            if (city is null)
-                throw new ArgumentException("City missing", nameof(city));
+            => GetCityUrl(city.Id);
 
-            return $"https://openweathermap.org/city/{ city.Id }";
-        }
+        public static string GetCityUrl(int id)
+            => $"{WeatherServiceUrl}/city/{id}";
 
         public static string GetWeatherIconUrl(Weather weather)
+            => $"{WeatherServiceUrl}/img/w/{weather.Icon}.png";
+
+        public async Task<CompleteWeatherData?> GetCurrentDataAsync(string query)
         {
-            if (weather is null)
-                throw new ArgumentException("Weather missing", nameof(weather));
-
-            return $"http://openweathermap.org/img/w/{ weather.Icon }.png";
-        }
-
-
-        public async Task<DiscordEmbed> GetEmbeddedCurrentWeatherDataAsync(string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing", nameof(query));
+            if (this.IsDisabled || string.IsNullOrWhiteSpace(query))
+                return null;
 
             try {
-                string response = await _http.GetStringAsync($"{_url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
-                WeatherData data = JsonConvert.DeserializeObject<WeatherData>(response);
-                return data.ToDiscordEmbed(DiscordColor.Aquamarine);
+                string url = $"{WeatherApiUrl}/weather?q={WebUtility.UrlEncode(query)}&appid={this.key}&units=metric";
+                string response = await _http.GetStringAsync(url).ConfigureAwait(false);
+                return JsonConvert.DeserializeObject<CompleteWeatherData>(response);
             } catch {
                 return null;
             }
         }
 
-        public async Task<IReadOnlyList<DiscordEmbedBuilder>> GetEmbeddedWeatherForecastAsync(string query, int amount = 7)
+        public async Task<Forecast?> GetForecastAsync(string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing", nameof(query));
-
-            if (amount < 1 || amount > 20)
-                throw new ArgumentException("Days amount out of range (max 20)", nameof(amount));
+            if (this.IsDisabled || string.IsNullOrWhiteSpace(query))
+                return null;
 
             try {
-                string response = await _http.GetStringAsync($"{_url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
-                Forecast forecast = JsonConvert.DeserializeObject<Forecast>(response);
-                return forecast.ToDiscordEmbedBuilders(amount);
+                string url = $"{WeatherApiUrl}/forecast?q={WebUtility.UrlEncode(query)}&appid={this.key}&units=metric";
+                string response = await _http.GetStringAsync(url).ConfigureAwait(false);
+                return JsonConvert.DeserializeObject<Forecast>(response);
             } catch {
                 return null;
             }

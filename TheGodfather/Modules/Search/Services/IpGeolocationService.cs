@@ -1,40 +1,38 @@
-﻿#region USING_DIRECTIVES
-using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search.Services
 {
-    public class IpGeolocationService : TheGodfatherHttpService
+    public sealed class IpGeolocationService : TheGodfatherHttpService
     {
-        private static readonly string _url = "http://ip-api.com/json";
+        private  const string IpApiUrl = "http://ip-api.com/json";
 
         public override bool IsDisabled => false;
 
 
-        public static Task<IpInfo> GetInfoForIpAsync(string ipstr)
+        public static Task<IpInfo?> GetInfoForIpAsync(string ipstr)
         {
-            if (string.IsNullOrWhiteSpace(ipstr))
-                throw new ArgumentException("IP missing!", nameof(ipstr));
-
-            if (!IPAddress.TryParse(ipstr, out IPAddress ip))
-                throw new ArgumentException("Given string does not map to a IPv4 address.");
+            if (string.IsNullOrWhiteSpace(ipstr) || !IPAddress.TryParse(ipstr, out IPAddress? ip))
+                return Task.FromResult<IpInfo?>(null);
 
             return GetInfoForIpAsync(ip);
         }
 
-        public static async Task<IpInfo> GetInfoForIpAsync(IPAddress ip)
+        public static async Task<IpInfo?> GetInfoForIpAsync(IPAddress? ip)
         {
             if (ip is null)
-                throw new ArgumentNullException(nameof(ip));
+                return null;
 
-            string response = await _http.GetStringAsync($"{_url}/{ip.ToString()}").ConfigureAwait(false);
-            IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response);
-            return data;
+            try {
+                string response = await _http.GetStringAsync($"{IpApiUrl}/{ip}").ConfigureAwait(false);
+                IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response);
+                return data;
+            } catch {
+                return null;
+            }
         }
     }
 }
