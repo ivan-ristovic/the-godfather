@@ -337,6 +337,7 @@
   "unleet": "Attempts to translate message from leetspeak.",
   "unsubscribe": "Commands for removing feed subscriptions. Group call unsubscribes the bot from given feed by ID or friendly name.",
   "unsubscribe all": "Removes all subscriptions in given channel.",
+  "urbandict": "Urban Dictionary commands. Group call searches Urban Dictionary for a given query.",
   "user": "User administration commands. Group call prints information about given user or guild member.",
   "user avatar": "Shows user avatar in full size.",
   "user ban": "Bans member from the guild.",

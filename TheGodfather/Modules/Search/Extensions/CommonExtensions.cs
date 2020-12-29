@@ -20,18 +20,6 @@ namespace TheGodfather.Modules.Search.Extensions
         private static readonly string _unknown = Formatter.Italic("Unknown");
 
 
-        public static string ToInfoString(this UrbanDictList res)
-        {
-            var sb = new StringBuilder("Definition by ");
-            sb.Append(Formatter.Bold(res.Author)).AppendLine().AppendLine();
-            sb.Append(Formatter.Bold(res.Word)).Append(" :");
-            sb.AppendLine(Formatter.BlockCode(res.Definition.Trim().Truncate(1000)));
-            if (!string.IsNullOrWhiteSpace(res.Example))
-                sb.Append("Examples:").AppendLine(Formatter.BlockCode(res.Example.Trim().Truncate(250)));
-            sb.Append(res.Permalink);
-            return sb.ToString();
-        }
-
         public static DiscordEmbedBuilder ToDiscordEmbed(this WeatherData data, DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder();

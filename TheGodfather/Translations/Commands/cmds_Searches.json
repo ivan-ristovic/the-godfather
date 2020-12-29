@@ -170,5 +170,10 @@
       [],
       [ "arg-ten" ]
     ]
+  },
+  "urbandict": {
+    "usage": [
+      [ "arg-query" ]
+    ]
   }
 }
