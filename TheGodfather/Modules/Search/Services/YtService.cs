@@ -1,249 +1,124 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json.Linq;
-using TheGodfather.Modules.Music.Common;
+using Serilog;
 using TheGodfather.Services;
 using YoutubeExplode;
-#endregion
+using YoutubeExplode.Channels;
+using YoutubeExplode.Videos;
 
 namespace TheGodfather.Modules.Search.Services
 {
-    public class YtService : TheGodfatherHttpService
+    public sealed class YtService : TheGodfatherHttpService
     {
-        private static readonly string _apiUrl = "https://www.googleapis.com/youtube/v3";
-        private static readonly string _ytUrl = "https://www.youtube.com";
-        private static readonly Regex _sanitizeRegex = new Regex("[^a-z0-9_-]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex _ytRegex = new Regex(@"\.(youtu(be)?)\.", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private const string YtApiUrl = "https://www.googleapis.com/youtube/v3";
+        private const string YtUrl = "https://www.youtube.com";
+        private static readonly Regex _ytVanityRegex =
+            new Regex(@"youtube\..+?/c/(.*?)(?:\?|&|/|$)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        public override bool IsDisabled => this.yt is null;
 
         private readonly YoutubeClient ytExplode;
-        private readonly YouTubeService yt;
-        private readonly string key;
+        private readonly YouTubeService? yt;
 
 
         public YtService(BotConfigService cfg)
         {
-            this.key = cfg.CurrentConfiguration.YouTubeKey;
             this.ytExplode = new YoutubeClient();
-            if (!string.IsNullOrWhiteSpace(this.key)) {
+            if (!string.IsNullOrWhiteSpace(cfg.CurrentConfiguration.YouTubeKey)) {
                 this.yt = new YouTubeService(new BaseClientService.Initializer {
-                    ApiKey = this.key,
+                    ApiKey = cfg.CurrentConfiguration.YouTubeKey,
                     ApplicationName = TheGodfather.ApplicationName
                 });
             }
         }
 
 
-        public static string GetRssUrlForChannel(string id)
+        public async Task<string?> GetRssUrlForChannel(string? idOrUrl)
         {
-            if (string.IsNullOrWhiteSpace(id) || _sanitizeRegex.IsMatch(id))
-                throw new ArgumentException("YouTube channel ID is either missing or invalid!", nameof(id));
-
-            return $"{_ytUrl}/feeds/videos.xml?channel_id={id}";
-        }
-
-
-        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
-
-
-        public async Task<string> ExtractChannelIdAsync(string url)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing!", nameof(url));
-
-            // FIXME
-            //if (YoutubeClient.TryParseChannelId(url, out string id))
-            //    return id;
-            string id = "";
-
-            string[] split = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            if (!split.Any(s => _ytRegex.IsMatch(s)))
+            if (this.IsDisabled)
                 return null;
 
-            id = split.Last();
-            try {
-                string getUrl = $"{_apiUrl}/channels?key={this.key}&forUsername={id}&part=id";
-                string response = await _http.GetStringAsync(getUrl).ConfigureAwait(false);
-                List<Dictionary<string, string>> items = JObject.Parse(response)["items"].ToObject<List<Dictionary<string, string>>>();
-                if (!(items is null) && items.Any())
-                    return items.First()["id"];
-            } catch {
+            string? id = await this.GetChannelIdAsync(idOrUrl);
+            return id is { } ? $"{YtUrl}/feeds/videos.xml?channel_id={idOrUrl}" : null;
+        }
 
+        public async Task<string?> GetChannelIdAsync(string? idOrUrl)
+        {
+            if (this.IsDisabled || string.IsNullOrWhiteSpace(idOrUrl))
+                return null;
+
+            ChannelId? cid = ChannelId.TryParse(idOrUrl);
+            if (cid is { })
+                return cid.Value;
+
+            VideoId? vid = VideoId.TryParse(idOrUrl);
+            if (vid is { }) {
+                YoutubeExplode.Channels.Channel channel = await this.ytExplode.Channels.GetByVideoAsync(vid.Value);
+                return channel.Id;
+            }
+
+            UserName? uid = UserName.TryParse(idOrUrl);
+            if (uid is { }) {
+                YoutubeExplode.Channels.Channel channel = await this.ytExplode.Channels.GetByUserAsync(uid.Value);
+                return channel.Id;
+            }
+
+            string? vanityName = _ytVanityRegex.Match(idOrUrl).Groups[1].Value;
+            if (string.IsNullOrWhiteSpace(vanityName))
+                return null;
+
+            string url = $"{YtApiUrl}/channels?key={this.yt?.ApiKey}&forUsername={vanityName}&part=id";
+            try {
+                string response = await _http.GetStringAsync(url).ConfigureAwait(false);
+                JToken? it = JObject.Parse(response)["items"];
+                if (it is null)
+                    return null;
+                List<Dictionary<string, string>>? items = it.ToObject<List<Dictionary<string, string>>>();
+                if (items is { } && items.Any())
+                    return items.First()["id"];
+            } catch (Exception e) {
+                Log.Error(e, "Failed to get/parse YouTube API response for request URL: {YtRequestURL}", url);
             }
 
             return null;
         }
 
-        public async Task<string> GetFirstVideoResultAsync(string query)
+        public string? GetUrlForResourceId(ResourceId id)
         {
-            if (this.IsDisabled)
-                return null;
-
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", nameof(query));
-
-            IReadOnlyList<SearchResult> res = await this.SearchAsync(query, 1, "video");
-            if (!res.Any())
-                return null;
-
-            return $"{_ytUrl}/watch?v={res.First().Id.VideoId}";
-        }
-
-        public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query, int amount = 1, string type = null)
-        {
-            if (this.IsDisabled)
-                return null;
-
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", nameof(query));
-
-            if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
-
-            IReadOnlyList<SearchResult> results = await this.SearchAsync(query, amount, type);
-            if (results is null || !results.Any())
-                return null;
-
-            var pages = new List<Page>();
-            foreach (SearchResult res in results.Take(10)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = res.Snippet.Title,
-                    Description = Formatter.Italic(string.IsNullOrWhiteSpace(res.Snippet.Description) ? "No description provided" : res.Snippet.Description),
-                    Color = DiscordColor.Red
-                };
-
-                if (!(res.Snippet.Thumbnails is null))
-                    emb.WithThumbnail(res.Snippet.Thumbnails.Default__.Url);
-
-                emb.AddField("Channel", res.Snippet.ChannelTitle, inline: true);
-                emb.AddField("Published at", res.Snippet.PublishedAt, inline: true);
-
-                switch (res.Id.Kind) {
-                    case "youtube#video":
-                        emb.WithUrl($"{_ytUrl}/watch?v={res.Id.VideoId}");
-                        break;
-                    case "youtube#channel":
-                        emb.WithDescription($"{_ytUrl}/channel/{res.Id.ChannelId}");
-                        break;
-                    case "youtube#playlist":
-                        emb.WithDescription($"{_ytUrl}/playlist?list={res.Id.PlaylistId}");
-                        break;
-                }
-
-                pages.Add(new Page(embed: emb));
-            }
-
-            return pages.AsReadOnly();
-        }
-
-        public async Task<SongInfo> GetSongInfoAsync(string url)
-        {
-            if (this.IsDisabled)
-                return null;
-
-            if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing!", nameof(url));
-
-            return await this.GetSongInfoViaYtExplodeAsync(url) ?? await this.GetSongInfoViaYtDlAsync(url);
-        }
-
-
-        private Task<SongInfo> GetSongInfoViaYtExplodeAsync(string url)
-        {
-            // FIXME
-            /*
-            if (!YoutubeClient.TryParseVideoId(url, out string id))
-                return null;
-
-            YoutubeExplode.Models.Video video = await this.ytExplode.GetVideoAsync(id).ConfigureAwait(false);
-            if (video is null)
-                return null;
-
-            YoutubeExplode.Models.MediaStreams.MediaStreamInfoSet streamInfo = await this.ytExplode.GetVideoMediaStreamInfosAsync(video.Id).ConfigureAwait(false);
-            YoutubeExplode.Models.MediaStreams.AudioStreamInfo stream = streamInfo.Audio
-                .OrderByDescending(x => x.Bitrate)
-                .FirstOrDefault();
-            if (stream is null)
-                return null;
-            return new SongInfo {
-                Provider = "YouTube",
-                Query = $"{_ytUrl}/watch?v={video.Id}",
-                Thumbnail = video.Thumbnails.MediumResUrl,
-                TotalTime = video.Duration,
-                Uri = stream.Url,
-                VideoId = video.Id,
-                Title = video.Title,
+            return id.Kind switch {
+                "youtube#video" => $"{YtUrl}/watch?v={id.VideoId}",
+                "youtube#channel" => $"{YtUrl}/channel/{id.ChannelId}",
+                "youtube#playlist" => $"{YtUrl}/playlist?list={id.PlaylistId}",
+                _ => null,
             };
-            */
-            return Task.FromResult<SongInfo>(null);
         }
 
-        private async Task<SongInfo> GetSongInfoViaYtDlAsync(string url)
+        public async Task<IReadOnlyList<SearchResult>?> SearchAsync(string query, int amount, string? type = null)
         {
-            string[] data = null;
-            try {
-                var ytdlinfo = new ProcessStartInfo {
-                    FileName = "Resources/youtube-dl",
-                    Arguments = $"-4 --geo-bypass -f bestaudio -e --get-url --get-id --get-thumbnail --get-duration --no-check-certificate --default-search \"ytsearch:\" \"{url}\"",
-                    UseShellExecute = false,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
-                };
-                using (var process = new Process { StartInfo = ytdlinfo }) {
-                    process.Start();
-                    string str = await process.StandardOutput.ReadToEndAsync();
-                    string err = await process.StandardError.ReadToEndAsync();
-                    if (!string.IsNullOrEmpty(err))
-                        throw new OperationCanceledException();
-                    if (!string.IsNullOrWhiteSpace(str))
-                        data = str.Split('\n');
-                }
-
-                if (data is null || data.Length < 6)
-                    return null;
-
-                if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out TimeSpan time))
-                    time = TimeSpan.FromHours(24);
-
-                return new SongInfo {
-                    Title = data[0],
-                    VideoId = data[1],
-                    Uri = data[2],
-                    Thumbnail = data[3],
-                    TotalTime = time,
-                    Provider = "YouTube",
-                    Query = "https://youtube.com/watch?v=" + data[1],
-                };
-            } catch (OperationCanceledException) {
-                throw;
-            } catch {
+            if (this.IsDisabled)
                 return null;
-            }
-        }
 
-        private async Task<IReadOnlyList<SearchResult>> SearchAsync(string query, int amount, string type = null)
-        {
-            SearchResource.ListRequest request = this.yt.Search.List("snippet");
+            SearchResource.ListRequest request = this.yt!.Search.List("snippet");
             request.Q = query;
-            request.MaxResults = amount;
+            request.MaxResults = (amount is > 1 and < 20) ? amount : 10;
             if (!string.IsNullOrWhiteSpace(type))
                 request.Type = type;
 
-            SearchListResponse response = await request.ExecuteAsync().ConfigureAwait(false);
+            try {
+                SearchListResponse response = await request.ExecuteAsync().ConfigureAwait(false);
+                return response.Items.ToList().AsReadOnly();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to get/parse YouTube API response for query: {Query}", query);
+            }
 
-            return response.Items.ToList().AsReadOnly();
+            return null;
         }
     }
 }

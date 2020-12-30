@@ -378,4 +378,11 @@
   "xkcd id": "Returns a xkcd comic with given ID.",
   "xkcd latest": "Returns latest xkcd comic.",
   "xkcd random": "Returns random xkcd comic.",
+  "youtube": "Youtube search commands. Group call searches YouTube for given query.",
+  "youtube search": "Searches YouTube for given query and returns given amount of results at most.",
+  "youtube searchchannel": "Searches YouTube for given query and returns given amount of YouTube channels at most.",
+  "youtube searchvideo": "Searches YouTube for given query and returns given amount of YouTube videos at most.",
+  "youtube searchplaylist": "Searches YouTube for given query and returns given amount of YouTube playlists at most.",
+  "youtube subscribe": "Subscribes to a YouTube channel.",
+  "youtube unsubscribe": "Removes registered YouTube subscription.",
 }

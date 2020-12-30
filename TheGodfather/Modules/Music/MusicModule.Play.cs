@@ -14,6 +14,7 @@ namespace TheGodfather.Modules.Music
 {
     public partial class MusicModule
     {
+        /*
         [Group("play")]
         [Description("Commands for playing music. Group call plays given URL or searches YouTube for given query and plays the first result.")]
         [Aliases("music", "p")]
@@ -124,6 +125,7 @@ namespace TheGodfather.Modules.Music
             }
             #endregion
         }
+        */
     }
 }
 

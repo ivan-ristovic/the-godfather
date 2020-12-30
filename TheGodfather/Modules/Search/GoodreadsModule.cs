@@ -2,13 +2,11 @@
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity.Extensions;
 using Humanizer;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search
