@@ -19,19 +19,23 @@ namespace TheGodfather.Modules.Administration.Extensions
             var sb = new StringBuilder();
             sb.Append('[').Append(msg.CreationTimestamp).Append("] ").Append(msg.Author.ToDiscriminatorString()).AppendLine(":");
 
-            sb.AppendLine(msg.Content);
+            if (!string.IsNullOrWhiteSpace(msg.Content))
+                sb.AppendLine(msg.Content);
+            
             foreach (DiscordEmbed e in msg.Embeds) {
                 sb.Append("----- ").Append(e.Title).AppendLine(" -----");
                 sb.AppendLine(e.Description);
-                foreach (DiscordEmbedField f in e.Fields) {
-                    sb.Append("# ").Append(f.Name).AppendLine(" #");
-                    sb.AppendLine(f.Value);
+                if (e.Fields is { }) {
+                    foreach (DiscordEmbedField f in e.Fields) {
+                        sb.Append("# ").Append(f.Name).AppendLine(" #");
+                        sb.AppendLine(f.Value);
+                    }
                 }
                 if (e.Image is { })
                     sb.AppendLine(e.Image.Url.ToString());
                 if (e.Footer is { })
                     sb.AppendLine("---").AppendLine(e.Footer.Text);
-                sb.Append('-', 12 + e.Title?.Length ?? 0);
+                sb.Append('-', 12 + (e.Title?.Length ?? 0));
             }
 
             foreach (DiscordAttachment att in msg.Attachments)

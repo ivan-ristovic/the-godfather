@@ -43,13 +43,16 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task EnableAsync(ulong gid)
         {
             this.streams.AddOrUpdate(gid, _ => new(), (_, sws) => sws);
-            await gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = true);
+            await this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = true);
         }
 
         public async Task DisableAsync(ulong gid)
         {
-            this.streams.TryRemove(gid, out _);
-            await gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = false);
+            if (this.streams.TryRemove(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
+                foreach (StreamWriter? sw in sws.Values)
+                    sw?.Dispose();
+            }
+            await this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = false);
         }
 
         public async Task AddChannel(ulong gid, ulong cid)

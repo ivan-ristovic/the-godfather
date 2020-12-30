@@ -32,13 +32,13 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-bak-enabled");
+                        emb.WithLocalizedDescription("evt-bak-enable");
                     } else {
-                        emb.WithLocalizedDescription("evt-bak-disabled");
+                        emb.WithLocalizedDescription("evt-bak-disable");
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-bak-enabled" : "evt-bak-disabled");
+                await ctx.InfoAsync(enable ? "evt-bak-enable" : "evt-bak-disable");
             }
 
             [GroupCommand, Priority(0)]
