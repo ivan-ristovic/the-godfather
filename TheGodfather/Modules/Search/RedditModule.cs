@@ -131,11 +131,11 @@ namespace TheGodfather.Modules.Search
 
             RssFeed? feed = await this.Service.GetByUrlAsync(url);
             if (feed is null)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-not");
+                throw new CommandFailedException(ctx, "cmd-err-sub-not");
 
             RssSubscription? s = await this.Service.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
             if (s is null)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-sub-not");
+                throw new CommandFailedException(ctx, "cmd-err-sub-not");
 
             await this.Service.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
             await ctx.InfoAsync(this.ModuleColor);

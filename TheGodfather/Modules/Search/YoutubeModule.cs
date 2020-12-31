@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using Google.Apis.YouTube.v3.Data;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
@@ -111,11 +112,23 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("desc-sub-name-url")] string subscription)
         {
-            string? feed = await this.Service.GetRssUrlForChannel(subscription);
-            if (feed is null)
+            string? url = await this.Service.GetRssUrlForChannel(subscription);
+            if (url is null)
                 throw new CommandFailedException(ctx, "cmd-err-sub-yt");
 
+            RssFeedsService rss = ctx.Services.GetRequiredService<RssFeedsService>();
+            RssSubscription? sub = await rss.Subscriptions.GetByNameAsync((ctx.Guild.Id, ctx.Channel.Id), subscription);
+            if (sub is null) {
+                RssFeed? feed = await rss.GetByUrlAsync(url);
+                if (feed is null)
+                    throw new CommandFailedException(ctx, "cmd-err-sub-not");
+                sub = await rss.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+            }
 
+            if (sub is null)
+                throw new CommandFailedException(ctx, "cmd-err-sub-not");
+            await rss.Subscriptions.RemoveAsync(sub);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
