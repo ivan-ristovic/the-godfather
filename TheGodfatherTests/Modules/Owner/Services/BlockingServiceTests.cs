@@ -44,10 +44,10 @@ namespace TheGodfather.Tests.Modules.Owner.Services
                     Assert.That(this.Service.IsUserBlocked(MockData.Ids[2]), Is.False);
                     Assert.That(this.Service.IsUserBlocked(MockData.Ids[3]), Is.False);
                     Assert.That(this.Service.IsUserBlocked(MockData.Ids[4]));
-                    Assert.That(this.Service.IsBlocked(cid: MockData.Ids[0], uid: MockData.Ids[1]));
-                    Assert.That(this.Service.IsBlocked(cid: MockData.Ids[3], uid: MockData.Ids[4]));
-                    Assert.That(this.Service.IsBlocked(cid: MockData.Ids[3], uid: MockData.Ids[3]), Is.False);
-                    Assert.That(this.Service.IsBlocked(cid: MockData.Ids[4], uid: MockData.Ids[2]), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[0], cid: MockData.Ids[0], uid: MockData.Ids[1]));
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[0], cid: MockData.Ids[3], uid: MockData.Ids[4]));
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[0], cid: MockData.Ids[3], uid: MockData.Ids[3]), Is.False);
+                    Assert.That(this.Service.IsBlocked(MockData.Ids[0], cid: MockData.Ids[4], uid: MockData.Ids[2]), Is.False);
                 }
             );
         }
@@ -71,8 +71,8 @@ namespace TheGodfather.Tests.Modules.Owner.Services
                     Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
                     IReadOnlyList<BlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
                     IReadOnlyList<BlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
-                    Assert.That(bchns.Select(c => c.ChannelId), Is.EquivalentTo(bcExpected));
-                    Assert.That(busrs.Select(u => u.UserId), Is.EquivalentTo(buExpected));
+                    Assert.That(bchns.Select(c => c.Id), Is.EquivalentTo(bcExpected));
+                    Assert.That(busrs.Select(u => u.Id), Is.EquivalentTo(buExpected));
                     Assert.That(bchns.Select(c => c.Reason), Is.EquivalentTo(new[] { "chn 1", "chn 1", "chn 2" }));
                     Assert.That(busrs.Select(u => u.Reason), Is.EquivalentTo(new[] { "usr 1", "usr 1", "usr 2" }));
                 }
@@ -286,24 +286,24 @@ namespace TheGodfather.Tests.Modules.Owner.Services
             Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
             IReadOnlyList<BlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
             IReadOnlyList<BlockedUser> busrs = await this.Service.GetBlockedUsersAsync();
-            Assert.That(bchns.Select(c => c.ChannelId), Is.EquivalentTo(bcExpected));
-            Assert.That(busrs.Select(u => u.UserId), Is.EquivalentTo(buExpected));
+            Assert.That(bchns.Select(c => c.Id), Is.EquivalentTo(bcExpected));
+            Assert.That(busrs.Select(u => u.Id), Is.EquivalentTo(buExpected));
             Assert.That(bchns.Select(c => c.Reason), Is.EquivalentTo(bcReasons));
             Assert.That(busrs.Select(u => u.Reason), Is.EquivalentTo(buReasons));
-            Assert.That(db.BlockedChannels.Select(c => c.ChannelId), Is.EquivalentTo(bcExpected));
-            Assert.That(db.BlockedUsers.Select(c => c.UserId), Is.EquivalentTo(buExpected));
+            Assert.That(db.BlockedChannels.Select(c => c.Id), Is.EquivalentTo(bcExpected));
+            Assert.That(db.BlockedUsers.Select(c => c.Id), Is.EquivalentTo(buExpected));
             Assert.That(db.BlockedChannels.Select(c => c.Reason), Is.EquivalentTo(bcReasons));
             Assert.That(db.BlockedUsers.Select(c => c.Reason), Is.EquivalentTo(buReasons));
         }
 
         private void AddMockData(TheGodfatherDbContext db)
         {
-            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[0], Reason = "chn 1" });
-            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[1], Reason = "chn 1" });
-            db.BlockedChannels.Add(new BlockedChannel { ChannelId = MockData.Ids[2], Reason = "chn 2" });
-            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[0], Reason = "usr 1" });
-            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[4], Reason = "usr 1" });
-            db.BlockedUsers.Add(new BlockedUser { UserId = MockData.Ids[5], Reason = "usr 2" });
+            db.BlockedChannels.Add(new BlockedChannel { Id = MockData.Ids[0], Reason = "chn 1" });
+            db.BlockedChannels.Add(new BlockedChannel { Id = MockData.Ids[1], Reason = "chn 1" });
+            db.BlockedChannels.Add(new BlockedChannel { Id = MockData.Ids[2], Reason = "chn 2" });
+            db.BlockedUsers.Add(new BlockedUser { Id = MockData.Ids[0], Reason = "usr 1" });
+            db.BlockedUsers.Add(new BlockedUser { Id = MockData.Ids[4], Reason = "usr 1" });
+            db.BlockedUsers.Add(new BlockedUser { Id = MockData.Ids[5], Reason = "usr 2" });
         }
     }
 }

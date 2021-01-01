@@ -49,7 +49,7 @@ namespace TheGodfather.Misc.Services
 
         public bool Sync()
         {
-            bool failed = true;
+            bool succ = false;
             try {
                 using TheGodfatherDbContext db = this.dbb.CreateContext();
                 foreach ((ulong uid, uint count) in this.xps) {
@@ -65,12 +65,12 @@ namespace TheGodfather.Misc.Services
                     }
                 }
                 db.SaveChanges();
-                failed = false;
+                succ = true;
             } finally {
-                if (!failed)
+                if (succ)
                     this.xps.Clear();
             }
-            return failed;
+            return succ;
         }
 
         public async Task<XpRank?> FindRankAsync(ulong gid)

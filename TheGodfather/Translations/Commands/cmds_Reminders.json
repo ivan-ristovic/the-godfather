@@ -2,8 +2,8 @@
   "remind": {
     "usage": [
       [],
-      [ "arg-timespan-d", "arg-announcement" ],
-      [ "arg-timespan-d", "arg-chn-text", "arg-announcement" ]
+      [ "arg-timespan-day", "arg-announcement" ],
+      [ "arg-timespan-day", "arg-chn-text", "arg-announcement" ]
     ]
   },
   "remind at": {
@@ -25,7 +25,7 @@
   },
   "remind here": {
     "usage": [
-      [ "arg-timespan-d", "arg-announcement" ]
+      [ "arg-timespan-day", "arg-announcement" ]
     ]
   },
   "remind here at": {
@@ -35,13 +35,13 @@
   },
   "remind here in": {
     "usage": [
-      [ "arg-timespan-d", "arg-announcement" ]
+      [ "arg-timespan-day", "arg-announcement" ]
     ]
   },
   "remind in": {
     "usage": [
-      [ "arg-timespan-d", "arg-announcement" ],
-      [ "arg-timespan-d", "arg-chn-text", "arg-announcement" ]
+      [ "arg-timespan-day", "arg-announcement" ],
+      [ "arg-timespan-day", "arg-chn-text", "arg-announcement" ]
     ]
   },
   "remind list": {

@@ -13,8 +13,8 @@ namespace TheGodfather.Modules.Misc.Services
     public class MemeGenService : TheGodfatherHttpService
     {
         public const string Provider = "memegen.link";
+        private const string ApiEndpoint = "https://api.memegen.link";
 
-        private static readonly string _endpoint = "https://api.memegen.link";
         private static readonly Regex _whitespaceRegex = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly ImmutableDictionary<char, string> _replacements = new Dictionary<char, string> {
             {'?', "~q"},
@@ -34,12 +34,12 @@ namespace TheGodfather.Modules.Misc.Services
 
 
         public static string GenerateMemeUrl(string template, string? topText, string? bottomText)
-            => $"{_endpoint}/images/{Sanitize(template)}/{Sanitize(topText)}/{Sanitize(bottomText)}.jpg?font=impact";
+            => $"{ApiEndpoint}/images/{Sanitize(template)}/{Sanitize(topText)}/{Sanitize(bottomText)}.jpg?font=impact";
 
         public static async Task<MemeTemplate?> GetMemeTemplateAsync(string template)
         {
             try {
-                string json = await _http.GetStringAsync($"{_endpoint}/templates/{Sanitize(template)}").ConfigureAwait(false);
+                string json = await _http.GetStringAsync($"{ApiEndpoint}/templates/{Sanitize(template)}").ConfigureAwait(false);
                 return JsonConvert.DeserializeObject<MemeTemplate>(json);
             } catch (HttpRequestException) {
                 return null;
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Misc.Services
 
         public static async Task<IReadOnlyList<MemeTemplate>> GetMemeTemplatesAsync()
         {
-            string json = await _http.GetStringAsync($"{_endpoint}/templates/").ConfigureAwait(false);
+            string json = await _http.GetStringAsync($"{ApiEndpoint}/templates/").ConfigureAwait(false);
             List<MemeTemplate> data = JsonConvert.DeserializeObject<List<MemeTemplate>>(json);
             return data.AsReadOnly();
         }

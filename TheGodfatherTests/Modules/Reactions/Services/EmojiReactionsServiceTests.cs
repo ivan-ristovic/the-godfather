@@ -107,18 +107,23 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "test" }, false), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "test" }, false),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
                     Assert.That(ers.Select(er => er.Id), Is.Unique);
-                    Assert.That(
+                    var x =
                         db.EmojiReactions
                           .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                           .Include(er => er.DbTriggers)
-                          .AsEnumerable()
+                          .AsEnumerable();
+                    Assert.That(
+                        x
                           .Single(er => er.Response == Emojis.Information.GetDiscordName() &&
                                         er.DbTriggers.Single().Trigger == "test"
                           ),
@@ -132,8 +137,14 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "test" }, false), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[1], Emojis.Information, new[] { "testing" }, false), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "test" }, false),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[1], Emojis.Information.GetDiscordName(), new[] { "testing" }, false),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(2).Items);
@@ -170,15 +181,24 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "test" }, false), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.AlarmClock, new[] { "regex(es)? (much)+" }, false), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "testing" }, false), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "test" }, false),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.AlarmClock.GetDiscordName(), new[] { "regex(es)? (much)+" }, false),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "testing" }, false),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(2).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(2).Items);
-                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == Emojis.Information.GetDiscordName());
+                    EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
                     Assert.That(info.Triggers, Has.Exactly(2).Items);
                     Assert.That(info.IsMatch("This is a tEst."));
                     Assert.That(info.IsMatch("This is a -tEsting."));
@@ -202,13 +222,16 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, true),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(1).Items);
-                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == Emojis.Information.GetDiscordName());
+                    EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
                     Assert.That(info.Triggers, Has.Exactly(1).Items);
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
@@ -236,14 +259,20 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information, new[] { "another test" }, false), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, true),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(), new[] { "another test" }, false),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
-                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == Emojis.Information.GetDiscordName());
+                    EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
                     Assert.That(info.Triggers, Has.Exactly(2).Items);
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
@@ -271,11 +300,13 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(
-                        MockData.Ids[0],
-                        Emojis.Information,
-                        new[] { "test(ing)? regex(es)?", "another test" },
-                        true),
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(
+                            MockData.Ids[0],
+                            Emojis.Information.GetDiscordName(),
+                            new[] { "test(ing)? regex(es)?", "another test" },
+                            true
+                        ),
                         Is.EqualTo(2)
                     );
                 },
@@ -283,7 +314,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
-                    EmojiReaction info = ers.SingleOrDefault(e => e.Response == Emojis.Information.GetDiscordName());
+                    EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
                     Assert.That(info.Triggers, Has.Exactly(2).Items);
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
@@ -311,14 +342,20 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken, new[] { "another test" }, true), Is.EqualTo(1));
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, true),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(), new[] { "another test" }, true),
+                        Is.EqualTo(1)
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
-                    EmojiReaction chicken = ers.SingleOrDefault(e => e.Response == Emojis.Chicken.GetDiscordName());
+                    EmojiReaction chicken = ers.Single(e => e.Response == Emojis.Chicken.GetDiscordName());
                     Assert.That(chicken.Triggers, Has.Exactly(3).Items);
                     Assert.That(chicken.IsMatch("This is old abc abc test which passes"));
                     Assert.That(chicken.IsMatch("This is a tEsting regexes example which passes"));
@@ -342,8 +379,14 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken, new[] { "test(ing)? regex(es)?" }, true), Is.EqualTo(1));
-                    Assert.That(await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken, new[] { "test(ing)? regex(es)?" }, false), Is.Zero);
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, true),
+                        Is.EqualTo(1)
+                    );
+                    Assert.That(
+                        await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, false),
+                        Is.Zero
+                    );
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(1).Items);
@@ -364,7 +407,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Information), Is.Zero);
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Information.GetDiscordName()), Is.Zero);
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
@@ -390,7 +433,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 alter: async db => {
                     this.UpdateEmojiReactionCount(db);
                     this.Service.LoadData();
-                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken), Is.EqualTo(1));
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName()), Is.EqualTo(1));
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) - 1).Items);
@@ -419,7 +462,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: async db => {
                     this.Service.LoadData();
-                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken), Is.Zero);
+                    Assert.That(await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName()), Is.Zero);
                 },
                 verify: db => {
                     Assert.That(db.EmojiReactions, Is.Empty);
