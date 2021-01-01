@@ -66,9 +66,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Common\IPTestData\ips.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_Misc.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -36,8 +36,6 @@ namespace TheGodfather.Database
         public virtual DbSet<RssFeed> RssFeeds { get; protected set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; protected set; }
         public virtual DbSet<SelfRole> SelfRoles { get; protected set; }
-        public virtual DbSet<SwatPlayer> SwatPlayers { get; set; }
-        public virtual DbSet<SwatServer> SwatServers { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; protected set; }
         public virtual DbSet<XpCount> XpCounts { get; protected set; }
         public virtual DbSet<XpRank> XpRanks { get; protected set; }
@@ -153,12 +151,6 @@ namespace TheGodfather.Database
             mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<RssSubscription>().HasKey(sub => new { sub.Id, sub.GuildIdDb, sub.ChannelIdDb });
             mb.Entity<SelfRole>().HasKey(sr => new { sr.GuildIdDb, sr.RoleIdDb });
-            mb.Entity<SwatPlayer>().Property(p => p.IsBlacklisted).HasDefaultValue(false);
-            mb.Entity<SwatPlayer>().HasIndex(p => p.Name).IsUnique();
-            mb.Entity<SwatPlayerAlias>().HasKey(p => new { p.Alias, p.PlayerId });
-            mb.Entity<SwatPlayerIP>().HasKey(p => new { p.IP, p.PlayerId });
-            mb.Entity<SwatServer>().HasKey(srv => new { srv.IP, srv.JoinPort, srv.QueryPort });
-            mb.Entity<SwatServer>().Property(srv => srv.JoinPort).HasDefaultValue(10480);
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<XpCount>().Property(xpc => xpc.XpDb).HasDefaultValue(1);
             mb.Entity<XpRank>().HasKey(xpr => new { xpr.GuildIdDb, xpr.Rank });

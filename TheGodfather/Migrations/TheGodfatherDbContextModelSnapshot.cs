@@ -936,103 +936,6 @@ namespace TheGodfather.Migrations
                     b.ToTable("self_roles");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<string>("Info")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("additional_info");
-
-                    b.Property<bool>("IsBlacklisted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_blacklisted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("swat_players");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerAlias", b =>
-                {
-                    b.Property<string>("Alias")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("alias");
-
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.HasKey("Alias", "PlayerId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("swat_aliases");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerIP", b =>
-                {
-                    b.Property<string>("IP")
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("ip");
-
-                    b.Property<int>("PlayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    b.HasKey("IP", "PlayerId");
-
-                    b.HasIndex("PlayerId");
-
-                    b.ToTable("swat_ips");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatServer", b =>
-                {
-                    b.Property<string>("IP")
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("ip");
-
-                    b.Property<int>("JoinPort")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(10480)
-                        .HasColumnName("join_port");
-
-                    b.Property<int>("QueryPort")
-                        .HasColumnType("integer")
-                        .HasColumnName("query_port");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("name");
-
-                    b.HasKey("IP", "JoinPort", "QueryPort");
-
-                    b.ToTable("swat_servers");
-                });
-
             modelBuilder.Entity("TheGodfather.Database.Models.TextReaction", b =>
                 {
                     b.Property<int>("Id")
@@ -1354,28 +1257,6 @@ namespace TheGodfather.Migrations
                     b.Navigation("GuildConfig");
                 });
 
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerAlias", b =>
-                {
-                    b.HasOne("TheGodfather.Database.Models.SwatPlayer", "Player")
-                        .WithMany("DbAliases")
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayerIP", b =>
-                {
-                    b.HasOne("TheGodfather.Database.Models.SwatPlayer", "Player")
-                        .WithMany("DbIPs")
-                        .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Player");
-                });
-
             modelBuilder.Entity("TheGodfather.Database.Models.TextReaction", b =>
                 {
                     b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
@@ -1473,13 +1354,6 @@ namespace TheGodfather.Migrations
             modelBuilder.Entity("TheGodfather.Database.Models.RssFeed", b =>
                 {
                     b.Navigation("Subscriptions");
-                });
-
-            modelBuilder.Entity("TheGodfather.Database.Models.SwatPlayer", b =>
-                {
-                    b.Navigation("DbAliases");
-
-                    b.Navigation("DbIPs");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.TextReaction", b =>
