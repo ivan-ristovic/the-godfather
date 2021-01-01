@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
-            if (amount < 1 || amount > 31)
+            if (amount is < 1 or > 31)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-weather", 1, 31);
 
             Forecast? data = await this.Service.GetForecastAsync(query);

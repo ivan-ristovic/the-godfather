@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("desc-enable")] bool enable,
                                                [Description("desc-sens")] short cooldown)
             {
-                if (cooldown < AntiInstantLeaveSettings.MinCooldown || cooldown > AntiInstantLeaveSettings.MaxCooldown)
+                if (cooldown is < AntiInstantLeaveSettings.MinCooldown or > AntiInstantLeaveSettings.MaxCooldown)
                     throw new CommandFailedException(ctx, "cmd-err-range-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
 
                 var settings = new AntiInstantLeaveSettings {
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                if (cooldown < AntiInstantLeaveSettings.MinCooldown || cooldown > AntiInstantLeaveSettings.MaxCooldown)
+                if (cooldown is < AntiInstantLeaveSettings.MinCooldown or > AntiInstantLeaveSettings.MaxCooldown)
                     throw new CommandFailedException(ctx, "cmd-err-range-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {

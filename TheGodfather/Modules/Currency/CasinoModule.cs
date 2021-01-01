@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Currency
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("desc-bid")] long bid = 5)
         {
-            if (bid < 1 || bid > MaxBid)
+            if (bid is < 1 or > MaxBid)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-bid", MaxBid);
 
             if (!await this.Service.TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, bid))
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("desc-bid")] long bid = 5)
         {
-            if (bid < 1 || bid > MaxBid)
+            if (bid is < 1 or > MaxBid)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-bid", MaxBid);
 
             if (!await this.Service.TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, bid))

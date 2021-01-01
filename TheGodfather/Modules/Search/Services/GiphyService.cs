@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled)
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 1;
 
             SearchResult res = await this.giphy!.GifSearch(new SearchParameter {
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled)
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 1;
 
             SearchResult res = await this.giphy!.TrendingGifs(new TrendingParameter {
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled)
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 1;
 
             SearchResult res = await this.giphy!.StickerSearch(new SearchParameter {
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled)
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 1;
 
             SearchResult res = await this.giphy!.TrendingStickers(new TrendingParameter {

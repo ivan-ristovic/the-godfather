@@ -27,11 +27,11 @@ namespace TheGodfather.Modules.Administration
                                                [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.Kick,
                                                [Description("desc-cooldown")] TimeSpan? cooldown = null)
             {
-                if (sens < AntifloodSettings.MinSensitivity || sens > AntifloodSettings.MaxSensitivity)
+                if (sens is < AntifloodSettings.MinSensitivity or > AntifloodSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
 
                 cooldown ??= TimeSpan.FromSeconds(10);
-                if (cooldown.Value.TotalSeconds < AntifloodSettings.MinCooldown || cooldown.Value.TotalSeconds > AntifloodSettings.MaxCooldown)
+                if (cooldown.Value.TotalSeconds is < AntifloodSettings.MinCooldown or > AntifloodSettings.MaxCooldown)
                     throw new CommandFailedException(ctx, "cmd-err-range-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
 
                 var settings = new AntifloodSettings {
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                if (sens < AntifloodSettings.MinSensitivity || sens > AntifloodSettings.MaxSensitivity)
+                if (sens is < AntifloodSettings.MinSensitivity or > AntifloodSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                if (cooldown.Value.TotalSeconds < AntifloodSettings.MinCooldown || cooldown.Value.TotalSeconds > AntifloodSettings.MaxCooldown)
+                if (cooldown.Value.TotalSeconds is < AntifloodSettings.MinCooldown or > AntifloodSettings.MaxCooldown)
                     throw new CommandFailedException(ctx, "cmd-err-range-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {

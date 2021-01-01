@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
-                if (amount < 1 || amount > 20)
+                if (amount is < 1 or > 20)
                     throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [1, 20]!");
 
                 QuestionDifficulty difficulty = QuestionDifficulty.Easy;
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Games
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
-                if (qnum < 5 || qnum > 50)
+                if (qnum is < 5 or > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5, 50]");
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Games
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {
-                if (qnum < 5 || qnum > 50)
+                if (qnum is < 5 or > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))

@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(url))
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 5;
 
             try {

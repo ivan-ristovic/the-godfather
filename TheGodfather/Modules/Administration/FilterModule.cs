@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (regexString.Length < 3 || regexString.Length > Filter.FilterLimit) {
+                if (regexString.Length is < 3 or > Filter.FilterLimit) {
                     eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
                     continue;
                 }

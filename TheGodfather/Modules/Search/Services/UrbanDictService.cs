@@ -27,9 +27,9 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             foreach (UrbanDictList res in data.List) {
-                res.Definition = new string(res.Definition.Where(c => c != ']' && c != '[').ToArray());
+                res.Definition = new string(res.Definition.Where(c => c is not ']' and not '[').ToArray());
                 if (!string.IsNullOrWhiteSpace(res.Example))
-                    res.Example = new string(res.Example.Where(c => c != ']' && c != '[').ToArray());
+                    res.Example = new string(res.Example.Where(c => c is not ']' and not '[').ToArray());
             }
 
             return data;

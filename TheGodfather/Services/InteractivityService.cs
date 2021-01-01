@@ -27,11 +27,11 @@ namespace TheGodfather.Services
         }
 
         public bool IsResponsePending(ulong cid, ulong uid)
-            => this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending) && pending.Contains(uid);
+            => this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong>? pending) && pending.Contains(uid);
 
         public bool RemovePendingResponse(ulong cid, ulong uid)
         {
-            if (!this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong> pending))
+            if (!this.PendingResponses.TryGetValue(cid, out ConcurrentHashSet<ulong>? pending))
                 return false;
 
             if (!pending.Contains(uid))

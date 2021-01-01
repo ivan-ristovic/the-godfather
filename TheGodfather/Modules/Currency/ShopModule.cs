@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Currency
             if (name.Length >= PurchasableItem.NameLimit)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-name", PurchasableItem.NameLimit);
 
-            if (price < 1 || price > PurchasableItem.PriceLimit)
+            if (price is < 1 or > PurchasableItem.PriceLimit)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-shop-price", PurchasableItem.PriceLimit);
 
             await this.Service.AddAsync(new PurchasableItem {

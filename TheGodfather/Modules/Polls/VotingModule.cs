@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Polls
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("desc-poll-o")] int option)
         {
-            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
+            Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException(ctx, "cmd-err-poll-none");
 
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Polls
         [Aliases("c", "reset")]
         public Task CancelAsync(CommandContext ctx)
         {
-            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
+            Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException(ctx, "cmd-err-poll-none");
 

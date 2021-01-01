@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("desc-sens")] short sens,
                                                [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.TemporaryMute)
             {
-                if (sens < AntispamSettings.MinSensitivity || sens > AntispamSettings.MaxSensitivity)
+                if (sens is < AntispamSettings.MinSensitivity or > AntispamSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
 
                 var settings = new AntispamSettings {
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                if (sens < AntispamSettings.MinSensitivity || sens > AntispamSettings.MaxSensitivity)
+                if (sens is < AntispamSettings.MinSensitivity or > AntispamSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {

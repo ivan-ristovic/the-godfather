@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("desc-sens")] short sens,
                                                [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.TemporaryMute)
             {
-                if (sens < RatelimitSettings.MinSensitivity || sens > RatelimitSettings.MaxSensitivity)
+                if (sens is < RatelimitSettings.MinSensitivity or > RatelimitSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
 
                 var settings = new RatelimitSettings {
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
                     return;
                 }
 
-                if (sens < RatelimitSettings.MinSensitivity || sens > RatelimitSettings.MaxSensitivity)
+                if (sens is < RatelimitSettings.MinSensitivity or > RatelimitSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {

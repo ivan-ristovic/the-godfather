@@ -20,7 +20,7 @@ namespace TheGodfather.Extensions
 
         public static string ToUserFriendlyString(this Card card)
         {
-            return card.Type >= CardType.Two && card.Type <= CardType.Ace
+            return card.Type is >= CardType.Two and <= CardType.Ace
                 ? Emojis.Cards.Values[(int)(card.Type - 1)] + card.Suit.ToFriendlyString()
                 : Emojis.Question + card.Suit.ToFriendlyString();
         }

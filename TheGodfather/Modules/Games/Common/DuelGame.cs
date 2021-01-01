@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Games.Common
             try {
                 await msg.DeleteAsync();
                 await mctx.Result.DeleteAsync();
-            } catch (Exception e) when (e is UnauthorizedException || e is NotFoundException) {
+            } catch (Exception e) when (e is UnauthorizedException or NotFoundException) {
                 // No permissions to delete the messages
             }
 

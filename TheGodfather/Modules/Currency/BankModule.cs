@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Currency
                                     [Description("desc-member")] DiscordMember member,
                                     [Description("desc-amount")] long amount)
         {
-            if (amount < 1 || amount > 1_000_000_000_000)
+            if (amount is < 1 or > 1_000_000_000_000)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", 1_000_000_000_000);
 
             await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Currency
                                        [Description("desc-member")] DiscordMember member,
                                        [Description("desc-amount")] long amount)
         {
-            if (amount < 1 || amount > 1_000_000_000_000)
+            if (amount is < 1 or > 1_000_000_000_000)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", $"{1_000_000_000_000:n0}");
 
             if (member == ctx.User)

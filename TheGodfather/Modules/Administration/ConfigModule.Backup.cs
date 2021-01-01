@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Administration
             private IEnumerable<ulong> SelectChildChannelIds(params DiscordChannel[] channels)
             {
                 return channels
-                    .Where(c => c.Type == ChannelType.Text || c.Type == ChannelType.Category)
+                    .Where(c => c.Type is ChannelType.Text or ChannelType.Category)
                     .SelectMany(c => c.Type == ChannelType.Category ? c.Children.Select(c => c.Id) : new[] { c.Id })
                     ;
             }

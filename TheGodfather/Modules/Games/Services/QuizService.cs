@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games.Services
             if (category < 0)
                 throw new ArgumentException("Category ID is invalid!", nameof(category));
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
 
             string reqUrl = $"{_url}/api.php?amount={amount}&category={category}&difficulty={difficulty.ToAPIString()}&type=multiple&encode=url3986";

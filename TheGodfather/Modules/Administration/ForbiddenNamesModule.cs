@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
             var eb = new StringBuilder();
             var addedPatterns = new List<Regex>();
             foreach (string regexString in names) {
-                if (regexString.Length < 3 || regexString.Length > ForbiddenName.NameLimit) {
+                if (regexString.Length is < 3 or > ForbiddenName.NameLimit) {
                     eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-size", Formatter.InlineCode(regexString), ForbiddenName.NameLimit));
                     continue;
                 }

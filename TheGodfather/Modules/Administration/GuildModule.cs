@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration
                                            [Description("desc-auditlog-amount")] int amount = 10,
                                            [Description("desc-auditlog-mem")] DiscordMember? member = null)
         {
-            if (amount < 1 || amount > 50)
+            if (amount is < 1 or > 50)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-auditlog-amount", 50);
 
             IReadOnlyList<DiscordAuditLogEntry> logs = await ctx.Guild.GetAuditLogsAsync(amount, member);
@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Administration
         #region internals
         public async Task InternalPruneAsync(CommandContext ctx, int days = 7, string? reason = null, params DiscordRole[] roles)
         {
-            if (days < 1 || days > 30)
+            if (days is < 1 or > 30)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-prune-days", 1, 30);
 
             int count = await ctx.Guild.GetPruneCountAsync(days);

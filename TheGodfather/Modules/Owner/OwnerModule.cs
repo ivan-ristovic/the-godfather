@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Owner
 
             if (exc is { } || res is null) {
                 emb.WithLocalizedTitle("str-eval-fail-run");
-                emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc.GetType(), exc.Message);
+                emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message);
                 emb.WithColor(DiscordColor.Red);
                 await UpdateOrRespondAsync();
             } else {
@@ -590,7 +590,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException(ctx);
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
-            if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute || c is RequirePrivilegedUserAttribute))
+            if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute or RequirePrivilegedUserAttribute))
                 throw new CommandFailedException(ctx, "cmd-err-sudo");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
             if ((await cmd.RunChecksAsync(fctx, false)).Any())

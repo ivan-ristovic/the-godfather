@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Misc
                                   [Description("str-rank")] short rank,
                                   [RemainingText, Description("str-rank-name")] string name)
         {
-            if (rank < 0 || rank > 150)
+            if (rank is < 0 or > 150)
                 throw new CommandFailedException(ctx, "cmd-err-rank", 0, 150);
 
             if (string.IsNullOrWhiteSpace(name))

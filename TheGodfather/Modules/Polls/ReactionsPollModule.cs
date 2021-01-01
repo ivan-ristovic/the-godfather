@@ -68,8 +68,8 @@ namespace TheGodfather.Modules.Polls
         [Aliases("end", "cancel")]
         public Task StopAsync(CommandContext ctx)
         {
-            Poll poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
-            if (poll is null || poll is not ReactionsPoll)
+            Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
+            if (poll is null or not ReactionsPoll)
                 throw new CommandFailedException(ctx, "cmd-err-poll-none");
 
             if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User != poll.Initiator)

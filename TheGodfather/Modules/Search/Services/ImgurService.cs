@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled || this.gEndpoint is null)
                 return null;
             
-            if (amount < 1 || amount > 10)
+            if (amount is < 1 or > 10)
                 amount = 10;
 
             IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, tw)

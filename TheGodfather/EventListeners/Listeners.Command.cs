@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             Exception ex = e.Exception;
-            while (ex is AggregateException || ex is TargetInvocationException)
+            while (ex is AggregateException or TargetInvocationException)
                 ex = ex.InnerException ?? ex;
 
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))

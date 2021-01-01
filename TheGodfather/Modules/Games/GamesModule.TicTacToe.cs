@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Games
                 if (opponent is null)
                     return;
 
-                if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)
+                if (movetime?.TotalSeconds is < 2 or > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var ttt = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);

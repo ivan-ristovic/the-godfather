@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Administration
             if (msg is null)
                 throw new CommandFailedException(ctx, "cmd-err-msg-404");
 
-            if (timespan?.TotalSeconds < 5 || timespan?.TotalSeconds > 300)
+            if (timespan?.TotalSeconds is < 5 or > 300)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-timespan", 5, 300);
 
             IEnumerable<PollEmoji> res = await msg.DoPollAsync(

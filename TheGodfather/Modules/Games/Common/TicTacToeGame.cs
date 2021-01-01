@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (player1plays && (xm.Author.Id != this.player1.Id)) return false;
                     if (!player1plays && (xm.Author.Id != this.player2.Id)) return false;
                     if (!int.TryParse(xm.Content, out field)) return false;
-                    return field > 0 && field < 10;
+                    return field is > 0 and < 10;
                 },
                 this.moveTime
             );

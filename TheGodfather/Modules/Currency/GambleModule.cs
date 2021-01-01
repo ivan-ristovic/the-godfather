@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Currency
                                        [Description("desc-gamble-bid")] long bid,
                                        [Description("desc-gamble-ht")] string bet)
         {
-            if (bid < 1 || bid > MaxBid)
+            if (bid is < 1 or > MaxBid)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-bid", MaxBid);
 
             if (string.IsNullOrWhiteSpace(bet))
@@ -69,10 +69,10 @@ namespace TheGodfather.Modules.Currency
                                        [Description("desc-gamble-bid")] long bid,
                                        [Description("desc-gamble-dice")] int bet = 5)
         {
-            if (bid < 1 || bid > MaxBid)
+            if (bid is < 1 or > MaxBid)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-bid", MaxBid);
 
-            if (bet < 1 || bet > 6)
+            if (bet is < 1 or > 6)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-dice");
 
             if (!await this.Service.TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, bid))

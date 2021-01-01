@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("desc-gamble-numbers-3")] params int[] numbers)
             {
-                if (numbers is null || numbers.Length != 3 || numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))
+                if (numbers is null || numbers.Length != 3 || numbers.Any(n => n is < 1 or > LotteryGame.MaxNumber))
                     throw new CommandFailedException(ctx, "cmd-err-casino-lottery-num", LotteryGame.MaxNumber);
 
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out LotteryGame? game) || game is null)

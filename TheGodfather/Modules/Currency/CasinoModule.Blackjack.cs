@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("desc-gamble-bid")] int bid = BlackjackGame.InitialBid)
             {
-                if (bid < 1 || bid > MaxBid)
+                if (bid is < 1 or > (int)MaxBid)
                     throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
                 
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame? game) || game is null)

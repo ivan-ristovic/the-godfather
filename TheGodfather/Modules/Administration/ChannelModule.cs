@@ -91,9 +91,9 @@ namespace TheGodfather.Modules.Administration
             {
                 CheckBitrate(ctx, bitrate);
                 CheckUserLimit(ctx, userlimit);
-                if (userlimit is { } && (userlimit < 1 || userlimit > DiscordLimits.VoiceChannelUserLimit))
+                if (userlimit is { } and (< 1 or > DiscordLimits.VoiceChannelUserLimit))
                     throw new InvalidCommandUsageException(ctx, "cmd-err-chn-userlimit", 1, DiscordLimits.VoiceChannelUserLimit);
-                if (bitrate is { } && (bitrate < DiscordLimits.VoiceChannelMinBitrate || bitrate > DiscordLimits.VoiceChannelMaxBitrate))
+                if (bitrate is { } and (< DiscordLimits.VoiceChannelMinBitrate or > DiscordLimits.VoiceChannelMaxBitrate))
                     throw new InvalidCommandUsageException(ctx, "cmd-err-chn-bitrate", DiscordLimits.VoiceChannelMinBitrate, DiscordLimits.VoiceChannelMinBitrate);
                 await CheckPotentialChannelNameAsync(ctx, name);
                 DiscordChannel c = await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildInvocationDetailsString());
@@ -628,13 +628,15 @@ namespace TheGodfather.Modules.Administration
 
         private static void CheckBitrate(CommandContext ctx, int? bitrate)
         {
-            if (bitrate is { } && (bitrate < DiscordLimits.VoiceChannelMinBitrate || bitrate > DiscordLimits.VoiceChannelMaxBitrate))
+            if (bitrate is
+            { } and (< DiscordLimits.VoiceChannelMinBitrate or > DiscordLimits.VoiceChannelMaxBitrate))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-bitrate", DiscordLimits.VoiceChannelMinBitrate, DiscordLimits.VoiceChannelMinBitrate);
         }
 
         private static void CheckUserLimit(CommandContext ctx, int? userlimit)
         {
-            if (userlimit is { } && (userlimit < 1 || userlimit > DiscordLimits.VoiceChannelUserLimit))
+            if (userlimit is
+            { } and (< 1 or > DiscordLimits.VoiceChannelUserLimit))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-userlimit", 1, DiscordLimits.VoiceChannelUserLimit);
         }
         #endregion
@@ -723,7 +725,8 @@ namespace TheGodfather.Modules.Administration
 
         private static async Task InternalModifyPositionAsync(CommandContext ctx, DiscordChannel channel, int position, string? reason)
         {
-            if (position is { } && position <= 0)
+            if (position is
+            { } and <= 0)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-pos");
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {

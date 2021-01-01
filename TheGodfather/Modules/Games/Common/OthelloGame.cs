@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Games.Common
                                 posY -= y;
                                 current = this.board[posY, posX];
                             }
-                        } else if (current == -1 || current == 0) {
+                        } else if (current is (-1) or 0) {
                             found = true;
                         }
                     }

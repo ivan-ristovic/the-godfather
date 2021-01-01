@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-gamble-balance")] int balance = HoldemGame.DefaultBalance)
             {
-                if (balance < 1 || balance > MaxBid)
+                if (balance is < 1 or > (int)MaxBid)
                     throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {

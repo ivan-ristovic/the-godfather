@@ -39,7 +39,7 @@ namespace TheGodfather.Services
         {
             @event = null;
             IChannelEvent? chnEvent = this.GetEventInChannel<T>(cid);
-            if (chnEvent is null || !(chnEvent is T))
+            if (chnEvent is null or not T)
                 return false;
             @event = chnEvent as T;
             return true;

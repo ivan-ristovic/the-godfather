@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(query))
                 return null;
 
-            if (amount < 1 || amount > 20)
+            if (amount is < 1 or > 20)
                 amount = 10;
 
             string url = $"{ApiUrl}&limit={amount}&namespace=0&format=json&search={WebUtility.UrlEncode(query)}";

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("desc-msg-del-amount")] int amount = 1,
                                                [RemainingText, Description("desc-rsn")] string? reason = null)
             {
-                if (amount < 1 || amount > 10000)
+                if (amount is < 1 or > 10000)
                     throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
 
                 if (amount > 10 && !await ctx.WaitForBoolReplyAsync("q-msg-del", args: amount))
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
                                                       [Description("desc-msg-del-amount")] int amount = 1,
                                                       [RemainingText, Description("desc-rsn")] string? reason = null)
             {
-                if (amount < 1 || amount > 10000)
+                if (amount is < 1 or > 10000)
                     throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAfterAsync(message.Id, amount);
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration
                                                        [Description("desc-msg-del-amount")] int amount = 1,
                                                        [RemainingText, Description("desc-rsn")] string? reason = null)
             {
-                if (amount < 1 || amount > 10000)
+                if (amount is < 1 or > 10000)
                     throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(message.Id, amount);
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
                                                          [Description("desc-msg-del-amount")] int amount = 1,
                                                          [RemainingText, Description("desc-rsn")] string? reason = null)
             {
-                if (amount < 1 || amount > 10000)
+                if (amount is < 1 or > 10000)
                     throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Administration
                                                           [Description("desc-msg-del-amount")] int amount = 5,
                                                           [RemainingText, Description("desc-rsn")] string? reason = null)
             {
-                if (amount < 1 || amount > 100)
+                if (amount is < 1 or > 100)
                     throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 100);
 
                 if (!pattern.TryParseRegex(out Regex? regex) || regex is null)

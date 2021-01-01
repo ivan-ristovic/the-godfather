@@ -160,7 +160,7 @@ namespace TheGodfather.Services.Common
                 if (role is null)
                     return;
                 this.async.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
-            } catch (Exception e) when (e is UnauthorizedException || e is NotFoundException) {
+            } catch (Exception e) when (e is UnauthorizedException or NotFoundException) {
                 // Do nothing, perms to unmute removed in meantime or 404
             } catch (Exception e) {
                 Log.Debug(e, "Error while handling unmute saved task");

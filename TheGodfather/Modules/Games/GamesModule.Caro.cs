@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Games
                 if (opponent is null)
                     return;
 
-                if (moveTime?.TotalSeconds < 2 || moveTime?.TotalSeconds > 120)
+                if (moveTime?.TotalSeconds is < 2 or > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var caro = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
