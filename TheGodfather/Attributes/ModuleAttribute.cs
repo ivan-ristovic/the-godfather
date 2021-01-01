@@ -18,7 +18,6 @@ namespace TheGodfather.Attributes
         Reactions,
         Reminders,
         Searches,
-        SWAT,
         Uncategorized
     }
 
@@ -38,7 +37,6 @@ namespace TheGodfather.Attributes
                 ModuleType.Polls => DiscordColor.Orange,
                 ModuleType.Reactions => DiscordColor.Yellow,
                 ModuleType.Reminders => DiscordColor.DarkRed,
-                ModuleType.SWAT => DiscordColor.Black,
                 ModuleType.Uncategorized => DiscordColor.Gray,
                 ModuleType.Searches => DiscordColor.Turquoise,
                 _ => DiscordColor.Green,
@@ -58,7 +56,6 @@ namespace TheGodfather.Attributes
                 ModuleType.Polls => "m-polls",
                 ModuleType.Reactions => "m-reactions",
                 ModuleType.Reminders => "m-reminders",
-                ModuleType.SWAT => "m-swat",
                 ModuleType.Uncategorized => "m-uncat",
                 ModuleType.Searches => "m-search",
                 _ => "h-desc-none",

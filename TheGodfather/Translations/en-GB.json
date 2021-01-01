@@ -832,8 +832,6 @@
   "m-reminders-raw": "This module contains reminder management commands.",
   "m-search": "This module contains internet search commands such as YouTube, Imgur, Giphy, Steam searches/subscriptions and many more.\n\n**Command list**:\n{0}",
   "m-search-raw": "This module contains internet search commands such as YouTube, Imgur, Giphy, Steam searches/subscriptions and many more.",
-  "m-swat": "This module contains commands for SWAT4 - a tactical FPS game.\n\n**Command list**:\n{0}",
-  "m-swat-raw": "This module contains commands for SWAT4 - a tactical FPS game.",
   "m-uncat": "Uncategorized commands.\n\n**Command list**:\n{0}",
   "m-uncat-raw": "Uncategorized commands.",
   "q-announcement": "Are you sure you want to unregister all automatic roles for this guild?",
