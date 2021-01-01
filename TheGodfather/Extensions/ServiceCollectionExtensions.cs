@@ -56,7 +56,7 @@ namespace TheGodfather.Extensions
         {
             assembly ??= Assembly.GetExecutingAssembly();
             Type gfService = typeof(ITheGodfatherService);
-            return assembly.GetTypes().Where(t => gfService.IsAssignableFrom(t) && !t.IsAbstract);
+            return assembly.GetTypes().Where(t => gfService.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface);
         }
     }
 }

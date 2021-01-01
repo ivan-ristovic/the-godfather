@@ -49,8 +49,8 @@ namespace TheGodfather.Modules.Administration.Services
         public bool IsGuildRegistered(ulong gid)
             => this.gcfg.TryGetValue(gid, out _);
 
-        public CachedGuildConfig GetCachedConfig(ulong gid)
-            => this.gcfg.GetValueOrDefault(gid, new CachedGuildConfig());
+        public CachedGuildConfig GetCachedConfig(ulong? gid)
+            => gid is null ? new CachedGuildConfig() : this.gcfg.GetValueOrDefault(gid.Value, new CachedGuildConfig());
 
         public string GetGuildPrefix(ulong? gid)
         {

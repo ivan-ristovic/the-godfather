@@ -100,6 +100,9 @@ namespace TheGodfather.EventListeners
                     Command command = shard.CNext.FindCommand(fcmdStr, out string args);
                     CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
                     return shard.CNext.ExecuteCommandAsync(fctx);
+                case ConcurrentOperationException coex:
+                    emb.WithLocalizedDescription("err-concurrent");
+                    break;
                 case BadRequestException brex:
                     emb.WithLocalizedDescription("cmd-err-bad-req", brex.JsonMessage);
                     break;

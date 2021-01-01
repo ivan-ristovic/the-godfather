@@ -97,7 +97,7 @@ namespace TheGodfather.Extensions
             );
 
             if (!interactivity.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
-                throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
 
             return mctx.TimedOut
                 ? null
@@ -186,7 +186,7 @@ namespace TheGodfather.Extensions
             interactivityService.AddPendingResponse(ctx.Channel.Id, user.Id);
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(m => m.Channel == dm && m.Author == user, waitInterval);
             if (interactivityService is { } && !interactivityService.RemovePendingResponse(ctx.Channel.Id, user.Id))
-                throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
 
             return mctx.TimedOut ? null : mctx.Result;
         }

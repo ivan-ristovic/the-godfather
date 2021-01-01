@@ -12,10 +12,10 @@ namespace TheGodfather.Services.Common
 {
     public sealed class ScheduledTaskExecutor : IDisposable
     {
-        public int Id { get; private set; }
+        public int Id => this.Job.Id;
         public ScheduledTask Job { get; }
 
-        public delegate Task TaskExecuted(int id, ScheduledTask task);
+        public delegate Task TaskExecuted(ScheduledTask task);
         public event TaskExecuted OnTaskExecuted;
 
         private readonly TheGodfatherShard shard;
@@ -23,13 +23,12 @@ namespace TheGodfather.Services.Common
         private Timer? timer;
 
 
-        public ScheduledTaskExecutor(int id, TheGodfatherShard shard, AsyncExecutionService async, ScheduledTask task)
+        public ScheduledTaskExecutor(TheGodfatherShard shard, AsyncExecutionService async, ScheduledTask task)
         {
-            this.Id = id;
             this.Job = task;
             this.shard = shard;
             this.async = async;
-            this.OnTaskExecuted += (id, task) => Task.CompletedTask;
+            this.OnTaskExecuted += task => Task.CompletedTask;
         }
 
 
@@ -81,7 +80,7 @@ namespace TheGodfather.Services.Common
                         }
                         DiscordUser user = await this.shard.Client.GetUserAsync(rem.UserId);
                         await channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                            Description = $"{Emojis.X} I have been asleep and failed to remind {user.Mention} to:\n\n{rem.Message}\n\n{rem.ExecutionTime.ToUtcTimestamp()}",
+                            Description = $"{Emojis.X} I have been asleep and failed to remind {user.Mention} to:\n\n{rem.Message}\n\n{rem.ExecutionTime}",
                             Color = DiscordColor.Red
                         });
                         break;
@@ -118,7 +117,7 @@ namespace TheGodfather.Services.Common
             } finally {
                 if (!rem.IsRepeating) {
                     try {
-                        this.async.Execute(this.OnTaskExecuted(this.Id, this.Job));
+                        this.async.Execute(this.OnTaskExecuted(this.Job));
                     } catch (Exception e) {
                         Log.Error(e, "Error while unscheduling send message saved task");
                     }
@@ -139,7 +138,7 @@ namespace TheGodfather.Services.Common
                 Log.Debug(e, "Error while handling unban saved task");
             } finally {
                 try {
-                    this.async.Execute(this.OnTaskExecuted(this.Id, this.Job));
+                    this.async.Execute(this.OnTaskExecuted(this.Job));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unban saved task");
                 }
@@ -163,7 +162,7 @@ namespace TheGodfather.Services.Common
                 Log.Debug(e, "Error while handling unmute saved task");
             } finally {
                 try {
-                    this.async.Execute(this.OnTaskExecuted(this.Id, this.Job));
+                    this.async.Execute(this.OnTaskExecuted(this.Job));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unmute saved task");
                 }

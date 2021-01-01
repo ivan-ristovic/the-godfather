@@ -9,7 +9,7 @@ namespace TheGodfather.Modules.Owner.Extensions
     {
         public static async Task<RelationalDataReader> ExecuteSqlQueryAsync(this DatabaseFacade databaseFacade,
                                                                             string sql,
-                                                                            TheGodfatherDbContext context,
+                                                                            TheGodfatherDbContext db,
                                                                             params object[] parameters)
         {
 
@@ -26,9 +26,9 @@ namespace TheGodfather.Modules.Owner.Extensions
                         new RelationalCommandParameterObject(
                             databaseFacade.GetService<IRelationalConnection>(),
                             parameterValues: rawSqlCommand.ParameterValues,
-                            null,
-                            context,
-                            null
+                            readerColumns: null,
+                            context: db,
+                            logger: null
                         )
                     );
             }

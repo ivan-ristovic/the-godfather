@@ -215,5 +215,44 @@
     "usage": [
       []
     ]
+  },
+  "youtube": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "youtube search": {
+    "usage": [
+      [ "arg-five", "arg-query" ]
+    ]
+  },
+  "youtube searchvideo": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "youtube searchchannel": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "youtube searchplaylist": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "youtube subscribe": {
+    "usage": [
+      [ "arg-yt-chn-url" ],
+      [ "arg-yt-chn-id" ],
+      [ "arg-yt-chn-url", "arg-sub-name" ]
+    ]
+  },
+  "youtube unsubscribe": {
+    "usage": [
+      [ "arg-yt-chn-url" ],
+      [ "arg-yt-chn-id" ],
+      [ "arg-sub-name" ]
+    ]
   }
 }

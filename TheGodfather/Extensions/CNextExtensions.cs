@@ -18,17 +18,18 @@ namespace TheGodfather.Extensions
             Type argConvType = typeof(IArgumentConverter);
             IEnumerable<Type> converterTypes = assembly
                 .GetTypes()
-                .Where(t => argConvType.IsAssignableFrom(t) && !t.IsAbstract)
+                .Where(t => argConvType.IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
                 ;
+
             foreach (Type converterType in converterTypes) {
                 try {
                     object? converterInstance = Activator.CreateInstance(converterType);
                     if (converterInstance is { }) {
                         cnext.RegisterConverter((dynamic)converterInstance);
-                        Log.Verbose("Registered converter: {Converter}", converterType.FullName);
+                        Log.Debug("Registered converter: {Converter}", converterType.Name);
                     }
                 } catch {
-                    Log.Error("Failed to register converter: {Converter}", converterType.FullName);
+                    Log.Error("Failed to register converter: {Converter}", converterType.Name);
                 }
             }
         }

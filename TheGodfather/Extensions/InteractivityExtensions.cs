@@ -24,7 +24,7 @@ namespace TheGodfather.Extensions
             int? response = await WaitForOptionReplyAsync(interactivity, ctx.Channel, ctx.User, max, min);
 
             if (!ins.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
-                throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
 
             return response;
         }
@@ -47,7 +47,7 @@ namespace TheGodfather.Extensions
             bool response = await WaitForBoolReplyAsync(interactivity, ctx.Channel, ctx.User);
 
             if (!ins.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
-                throw new ConcurrentOperationException(ctx, "err-concurrent-usr-rem");
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
 
             return response;
         }

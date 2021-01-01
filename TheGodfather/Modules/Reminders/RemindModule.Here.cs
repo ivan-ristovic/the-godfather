@@ -1,55 +1,43 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-#endregion
 
 namespace TheGodfather.Modules.Reminders
 {
     public partial class RemindModule
     {
         [Group("here")]
-        [Description("Send a reminder to the current channel after specific time span.")]
-
-        public class RemindHereModule : RemindModule
+        [RequireGuild]
+        public sealed class RemindHereModule : RemindModule
         {
-
+            #region remind here
             [GroupCommand, Priority(1)]
             public new Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Time span until reminder.")] TimeSpan timespan,
-                                             [RemainingText, Description("What to send?")] string message)
+                                             [Description("desc-remind-t")] TimeSpan timespan,
+                                             [RemainingText, Description("desc-remind-text")] string message)
                 => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
 
             [GroupCommand, Priority(0)]
-            public Task ExecuteGroupAsync(CommandContext ctx)
+            public new Task ExecuteGroupAsync(CommandContext ctx)
                 => this.ListAsync(ctx, ctx.Channel);
+            #endregion
 
+            #region remind here in
+            [Command("in")]
+            public Task InAsync(CommandContext ctx,
+                               [Description("desc-remind-t")] TimeSpan timespan,
+                               [RemainingText, Description("desc-remind-text")] string message)
+                => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
+            #endregion
 
-            [Group("in")]
-            [Description("Send a reminder to the current channel after specific time span.")]
-
-            public class RemindHereInModule : RemindHereModule
-            {
-                [GroupCommand]
-                public new Task ExecuteGroupAsync(CommandContext ctx,
-                                                 [Description("Time span until reminder.")] TimeSpan timespan,
-                                                 [RemainingText, Description("What to send?")] string message)
-                    => this.AddReminderAsync(ctx, timespan, ctx.Channel, message);
-            }
-
-
-            [Group("at")]
-            [Description("Send a reminder to the current channel at a specific point in time (given by date and time string).")]
-
-            public class RemindHereAtModule : RemindModule
-            {
-                [GroupCommand, Priority(0)]
-                public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Date and/or time.")] DateTimeOffset when,
-                                             [RemainingText, Description("What to send?")] string message)
-                    => this.AddReminderAsync(ctx, when - DateTimeOffset.Now, ctx.Channel, message);
-            }
+            #region remind here at
+            [Command("at")]
+            public Task AtAsync(CommandContext ctx,
+                               [Description("desc-remind-dt")] DateTimeOffset when,
+                               [RemainingText, Description("desc-remind-text")] string message)
+                => this.AddReminderAsync(ctx, when - DateTimeOffset.UtcNow, ctx.Channel, message);
+            #endregion
         }
     }
 }

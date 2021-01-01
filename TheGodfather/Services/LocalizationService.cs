@@ -139,7 +139,7 @@ namespace TheGodfather.Services
             return gid is null ? defCulture : this.gcs.GetCachedConfig(gid.Value)?.Culture ?? defCulture;
         }
 
-        public string GetLocalizedTime(ulong gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
+        public string GetLocalizedTime(ulong? gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
         {
             if (unknown && dt is null)
                 return this.GetString(gid, "str-404");
@@ -157,6 +157,21 @@ namespace TheGodfather.Services
                 return false;
             await this.gcs.ModifyConfigAsync(gid, cfg => cfg.Locale = locale);
             return true;
+        }
+
+        public TimeZoneInfo GetGuildTimeZoneId(ulong? gid)
+        {
+            if (gid is null)
+                return TimeZoneInfo.Utc;
+
+            CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid.Value) ?? new CachedGuildConfig();
+            try {
+                return TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId);
+            } catch (TimeZoneNotFoundException e) {
+                Log.Error(e, "Timezone ID {TimezoneId} for guild {GuildId} is invalid!", gcfg.TimezoneId, gid);
+            }
+
+            return TimeZoneInfo.Utc;
         }
 
         public async Task<bool> SetGuildTimezoneIdAsync(ulong gid, string tzid)

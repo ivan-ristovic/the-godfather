@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -77,7 +78,7 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.ExemptAsync(ctx.Guild.Id, channels.SelectIds());
+                await this.Service.ExemptAsync(ctx.Guild.Id, this.SelectChildChannelIds());
                 await ctx.InfoAsync(this.ModuleColor);
             }
             #endregion
@@ -91,8 +92,19 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.UnexemptAsync(ctx.Guild.Id, channels.SelectIds());
+                await this.Service.UnexemptAsync(ctx.Guild.Id, this.SelectChildChannelIds());
                 await ctx.InfoAsync(this.ModuleColor);
+            }
+            #endregion
+
+
+            #region internals
+            private IEnumerable<ulong> SelectChildChannelIds(params DiscordChannel[] channels)
+            {
+                return channels
+                    .Where(c => c.Type == ChannelType.Text || c.Type == ChannelType.Category)
+                    .SelectMany(c => c.Type == ChannelType.Category ? c.Children.Select(c => c.Id) : new[] { c.Id })
+                    ;
             }
             #endregion
         }
