@@ -1,8 +1,5 @@
-﻿#region USING_DIRECTIVES
-
+﻿#nullable disable
 using System.Xml.Serialization;
-
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
@@ -46,7 +43,7 @@ namespace TheGodfather.Modules.Search.Common
 
         [XmlElement("original_publication_year")]
         public string PublicationYearString {
-            get { return (this.PublicationYear.HasValue) ? this.PublicationYear.ToString() : null; }
+            get => this.PublicationYear?.ToString();
             set { this.PublicationYear = !string.IsNullOrEmpty(value) ? int.Parse(value) : default(int?); }
         }
 
@@ -55,7 +52,7 @@ namespace TheGodfather.Modules.Search.Common
 
         [XmlElement("original_publication_month")]
         public string PublicationMonthString {
-            get { return (this.PublicationMonth.HasValue) ? this.PublicationMonth.ToString() : null; }
+            get => this.PublicationMonth?.ToString();
             set { this.PublicationMonth = !string.IsNullOrEmpty(value) ? int.Parse(value) : default(int?); }
         }
 
@@ -64,7 +61,7 @@ namespace TheGodfather.Modules.Search.Common
 
         [XmlElement("original_publication_day")]
         public string PublicationDayString {
-            get { return (this.PublicationDay.HasValue) ? this.PublicationDay.ToString() : null; }
+            get => this.PublicationDay?.ToString();
             set { this.PublicationDay = !string.IsNullOrEmpty(value) ? int.Parse(value) : default(int?); }
         }
 

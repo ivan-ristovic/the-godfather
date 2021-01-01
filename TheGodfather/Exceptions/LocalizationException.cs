@@ -6,15 +6,6 @@ namespace TheGodfather.Exceptions
 {
     public class LocalizationException : LocalizedException
     {
-        // TODO remove
-        [Obsolete]
-        public LocalizationException(string message, Exception inner)
-            : base(null, message, inner)
-        {
-            throw new InvalidOperationException();
-        }
-        // END remove
-
         public LocalizationException(string rawMessage)
             : base(rawMessage)
         {

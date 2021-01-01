@@ -3,7 +3,7 @@ using TheGodfather.Attributes;
 
 namespace TheGodfather.Common.Converters
 {
-    public class ModuleTypeConverter : BaseArgumentConverter<ModuleType>
+    public sealed class ModuleTypeConverter : BaseArgumentConverter<ModuleType>
     {
         private static readonly Regex _adminRegex;
         private static readonly Regex _chickensRegex;
@@ -16,7 +16,6 @@ namespace TheGodfather.Common.Converters
         private static readonly Regex _reactionsRegex;
         private static readonly Regex _remindersRegex;
         private static readonly Regex _searchRegex;
-        private static readonly Regex _swatRegex;
         private static readonly Regex _uncategorizedRegex;
 
 
@@ -33,7 +32,6 @@ namespace TheGodfather.Common.Converters
             _reactionsRegex = new Regex(@"^react(ing|ions)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _remindersRegex = new Regex(@"^remind(ing|ers?)?|todo$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _searchRegex = new Regex(@"^search(es|ing)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            _swatRegex = new Regex(@"^swat4?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _uncategorizedRegex = new Regex(@"^un(known|categori[sz]ed)|none$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
@@ -65,8 +63,6 @@ namespace TheGodfather.Common.Converters
                 result = ModuleType.Reminders;
             else if (_searchRegex.IsMatch(value))
                 result = ModuleType.Searches;
-            else if (_swatRegex.IsMatch(value))
-                result = ModuleType.SWAT;
             else if (_uncategorizedRegex.IsMatch(value))
                 result = ModuleType.Uncategorized;
             else
