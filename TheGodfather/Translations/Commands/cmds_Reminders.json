@@ -1,7 +1,53 @@
 {
   "remind": {
     "usage": [
-      []
+      [],
+      [ "arg-timespan-d", "arg-announcement" ],
+      [ "arg-timespan-d", "arg-chn-text", "arg-announcement" ]
+    ]
+  },
+  "remind at": {
+    "usage": [
+      [ "arg-datetime", "arg-announcement" ],
+      [ "arg-datetime", "arg-chn-text", "arg-announcement" ]
+    ]
+  },
+  "remind delete": {
+    "usage": [
+      [ "arg-id" ]
+    ]
+  },
+  "remind deleteall": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "remind here": {
+    "usage": [
+      [ "arg-timespan-d", "arg-announcement" ]
+    ]
+  },
+  "remind here at": {
+    "usage": [
+      [ "arg-datetime", "arg-announcement" ]
+    ]
+  },
+  "remind here in": {
+    "usage": [
+      [ "arg-timespan-d", "arg-announcement" ]
+    ]
+  },
+  "remind in": {
+    "usage": [
+      [ "arg-timespan-d", "arg-announcement" ],
+      [ "arg-timespan-d", "arg-chn-text", "arg-announcement" ]
+    ]
+  },
+  "remind list": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
     ]
   }
 }

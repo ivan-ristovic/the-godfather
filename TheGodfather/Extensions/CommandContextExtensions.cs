@@ -143,7 +143,7 @@ namespace TheGodfather.Extensions
 
             IEnumerable<Page> pages = collection
                 .Select((e, i) => {
-                    var emb = new LocalizedEmbedBuilder(ls, ctx.Guild.Id);
+                    var emb = new LocalizedEmbedBuilder(ls, ctx.Guild?.Id);
                     emb.WithLocalizedFooter("fmt-page-footer-single", null, i + 1, count);
                     emb.WithColor(color ?? DiscordColor.Black);
                     emb = formatter(emb, e);

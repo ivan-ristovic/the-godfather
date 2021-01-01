@@ -27,7 +27,7 @@ namespace TheGodfather.Extensions
                                                                params object?[]? args)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{icon ?? ""} {lcs.GetString(channel.Guild.Id, key, args)}",
+                Description = $"{icon ?? ""} {lcs.GetString(channel.GuildId, key, args)}",
                 Color = color ?? DiscordColor.Green
             });
         }

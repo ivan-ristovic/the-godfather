@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Reminders
                     emb.AddLocalizedTitleField("str-repeating", r.RepeatInterval.Humanize(culture: culture), inline: true);
 
                 if (r.TimeUntilExecution < TimeSpan.FromDays(1))
-                    emb.AddLocalizedTitleField("str-executes-in", r.TimeUntilExecution.Humanize(3, culture: culture, minUnit: TimeUnit.Minute), inline: true);
+                    emb.AddLocalizedTitleField("str-executes-in", r.TimeUntilExecution.Humanize(3, culture: culture, minUnit: TimeUnit.Second), inline: true);
                 else
                     emb.AddLocalizedTimestampField("str-exec-time", r.ExecutionTime, inline: true);
 

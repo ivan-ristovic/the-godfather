@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
@@ -75,14 +76,16 @@ namespace TheGodfather.Services.Common
                             ? await this.shard.Client.GetChannelAsync(rem.ChannelId)
                             : await this.shard.Client.CreateDmChannelAsync(rem.UserId);
                         if (channel is null) {
-                            Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})", rem.Id, rem.ChannelId, rem.UserId);
+                            Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})", 
+                                rem.Id, rem.ChannelId, rem.UserId
+                            );
                             break;
                         }
                         DiscordUser user = await this.shard.Client.GetUserAsync(rem.UserId);
-                        await channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                            Description = $"{Emojis.X} I have been asleep and failed to remind {user.Mention} to:\n\n{rem.Message}\n\n{rem.ExecutionTime}",
-                            Color = DiscordColor.Red
-                        });
+                        LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
+                        await channel.LocalizedEmbedAsync(lcs, "fmt-remind-miss", Emojis.X, DiscordColor.Red, 
+                            lcs.GetLocalizedTime(channel.GuildId, rem.ExecutionTime), rem.Message
+                        );
                         break;
                     default:
                         throw new ArgumentException("Unknown saved task info type!", nameof(this.Job));
@@ -106,10 +109,11 @@ namespace TheGodfather.Services.Common
                 if (channel is null)
                     return;
                 DiscordUser user = this.async.Execute(this.shard.Client.GetUserAsync(rem.UserId));
-                this.async.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder {
-                    Description = $"{Emojis.AlarmClock} {rem.Message}",
-                    Color = DiscordColor.Orange
-                }));
+
+                LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
+                this.async.Execute(
+                    channel.LocalizedEmbedAsync(lcs, "fmt-remind-exec", Emojis.AlarmClock, DiscordColor.Green, user.Mention, rem.Message)
+                );
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime
             } catch (Exception e) {
