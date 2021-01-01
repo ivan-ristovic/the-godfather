@@ -117,10 +117,38 @@ namespace TheGodfather.Modules.Misc
                               [Description("desc-members")] params DiscordMember[] members)
             => this.InternalPenisAsync(ctx, members);
 
-        [Command("peniscompare"), Priority(0)]
+        [Command("penis"), Priority(0)]
         public Task PenisAsync(CommandContext ctx,
                               [Description("desc-users")] params DiscordUser[] users)
             => this.InternalPenisAsync(ctx, users);
+        #endregion
+
+        #region penisbros
+        [Command("penisbros"), Priority(1)]
+        [Aliases("sizebros", "lengthbros", "manhoodbros", "dickbros", "cockbros")]
+        [RequireGuild]
+        public Task PenisBrosAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember member)
+            => this.PenisBrosAsync(ctx, member as DiscordUser);
+
+        [Command("penisbros"), Priority(0)]
+        public Task PenisBrosAsync(CommandContext ctx,
+                                  [Description("desc-user")] DiscordUser? user = null)
+        {
+            user ??= ctx.User;
+            if (user.IsCurrent)
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+
+            int size = this.Service.Size(user.Id).Length;
+            IEnumerable<DiscordMember> cockbros = ctx.Guild.Members
+                .Select(kvp => kvp.Value)
+                .Where(m => m != user && this.Service.Size(m.Id).Length == size)
+                ;
+
+            return cockbros.Any()
+                ? ctx.PaginateAsync("fmt-penisbros", cockbros, m => m.Mention, this.ModuleColor, args: user.ToDiscriminatorString())
+                : ctx.FailAsync("cmd-err-penisbros-none", user.Mention);
+        }
         #endregion
 
         #region ping
@@ -209,17 +237,6 @@ namespace TheGodfather.Modules.Misc
                     emb.WithColor(this.ModuleColor);
                     emb.WithDescription($"{Emojis.Loudspeaker} {Formatter.Strip(text)}");
                 });
-        }
-        #endregion
-
-        #region simulate
-        //[Command("simulate")]
-        [Aliases("sim")]
-        [RequireGuild]
-        public async Task SimulateAsync(CommandContext ctx,
-                                       [Description("desc-member")] DiscordMember member)
-        {
-            // TODO
         }
         #endregion
 

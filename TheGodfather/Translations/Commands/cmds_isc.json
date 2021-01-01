@@ -136,6 +136,12 @@
       [ "arg-usr", "arg-usr", "arg-usr" ]
     ]
   },
+  "penisbros": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
   "ping": {
     "usage": [
       []
