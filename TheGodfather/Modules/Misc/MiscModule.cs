@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Misc
             int size = this.Service.Size(user.Id).Length;
             IEnumerable<DiscordMember> cockbros = ctx.Guild.Members
                 .Select(kvp => kvp.Value)
-                .Where(m => m != user && this.Service.Size(m.Id).Length == size)
+                .Where(m => m != user && m != ctx.Client.CurrentUser && this.Service.Size(m.Id).Length == size)
                 ;
 
             return cockbros.Any()

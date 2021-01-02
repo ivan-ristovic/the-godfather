@@ -26,6 +26,7 @@ namespace TheGodfather.Modules.Currency
 
         #region work streets
         [Command("streets")]
+        [Aliases("prostitute")]
         [Cooldown(1, 120, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
         {

@@ -168,8 +168,15 @@ namespace TheGodfather.Modules.Reminders
         {
             this.ThrowIfDM(ctx, channel);
 
-            if (channel is { } && channel.Type != ChannelType.Text)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+            if (channel is { }) {
+                if (channel.Type != ChannelType.Text)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+                if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
+                    throw new CommandFailedException(ctx, "cmd-err-remind-perms");
+                DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+                if (!channel.PermissionsFor(bot).HasFlag(Permissions.SendMessages))
+                    throw new CommandFailedException(ctx, "cmd-err-remind-permsb");
+            }
 
             if (string.IsNullOrWhiteSpace(message) || message.Length > Reminder.MessageLimit)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-remind-msg", Reminder.MessageLimit);

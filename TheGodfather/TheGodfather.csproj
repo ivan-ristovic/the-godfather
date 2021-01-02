@@ -610,6 +610,9 @@
     <None Update="Resources\wof.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Translations\Commands\cmds_Games.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Translations\Commands\cmds_Currency.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -634,7 +637,7 @@
     <None Update="Translations\Commands\cmds_Misc.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Translations\Commands\cmds_Administration.json">
+    <None Update="Translations\Commands\cmds_aAdministration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Translations\Commands\desc_en-GB.json">
