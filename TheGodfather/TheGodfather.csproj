@@ -637,7 +637,7 @@
     <None Update="Translations\Commands\cmds_Misc.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Translations\Commands\cmds_dministration.json">
+    <None Update="Translations\Commands\cmds_Administration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Translations\Commands\desc_en-GB.json">
