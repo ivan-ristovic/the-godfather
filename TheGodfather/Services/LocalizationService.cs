@@ -12,6 +12,7 @@ using Serilog;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services.Common;
+using TimeZoneConverter;
 
 namespace TheGodfather.Services
 {
@@ -159,14 +160,14 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public TimeZoneInfo GetGuildTimeZoneId(ulong? gid)
+        public TimeZoneInfo GetGuildTimeZone(ulong? gid)
         {
             if (gid is null)
                 return TimeZoneInfo.Utc;
 
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid.Value) ?? new CachedGuildConfig();
             try {
-                return TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId);
+                return TZConvert.GetTimeZoneInfo(gcfg.TimezoneId);
             } catch (TimeZoneNotFoundException e) {
                 Log.Error(e, "Timezone ID {TimezoneId} for guild {GuildId} is invalid!", gcfg.TimezoneId, gid);
             }

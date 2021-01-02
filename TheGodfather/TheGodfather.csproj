@@ -90,6 +90,7 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="5.0.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="TexasHoldemGameEngine" Version="2.0.0" />
+    <PackageReference Include="TimeZoneConverter" Version="3.3.0" />
     <PackageReference Include="YoutubeExplode" Version="5.1.9" />
   </ItemGroup>
 
