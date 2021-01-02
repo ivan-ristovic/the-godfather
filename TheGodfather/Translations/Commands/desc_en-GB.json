@@ -189,6 +189,7 @@
   "gamble dice": "Gambles on a dice throw. Default bid is 5.",
   "game": "Game commands. Group call lists all available games.",
   "game leaderboard": "Prints global leaderboard for all games.",
+  "game stats": "Prints game stats for a given user.",
   "gif": "GIPHY search commands. Group call searches GIPHY with given query and prints first result.",
   "gif random": "Prints a random GIF.",
   "gif trending": "Prints a given amount of trending GIFs.",

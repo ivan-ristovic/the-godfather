@@ -5,8 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheGodfather.Database.Models
 {
     [Table("game_stats")]
-    public class GameStats
+    public class GameStats : IEquatable<GameStats>
     {
+        public static int WinPercentage(int won, int lost)
+            => won + lost == 0 ? 0 : (int)Math.Round((double)won / (won + lost) * 100);
+
+
         [Key]
         [Column("uid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -57,7 +61,13 @@ namespace TheGodfather.Database.Models
         public int OthelloLost { get; set; }
 
 
-        public int CalculateWinPercentage(int won, int lost)
-            => won + lost == 0 ? 0 : (int)Math.Round((double)won / (won + lost) * 100);
+        public bool Equals(GameStats? other)
+            => !(other is null) && this.UserId == other.UserId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as GameStats);
+
+        public override int GetHashCode()
+            => this.UserId.GetHashCode();
     }
 }

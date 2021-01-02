@@ -3,5 +3,16 @@
     "usage": [
       []
     ]
+  },
+  "game leaderboard": {
+    "usage": [
+      []
+    ]
+  },
+  "game stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
   }
 }

@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,14 +6,12 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using TheGodfather.Database.Models;
-#endregion
 
 namespace TheGodfather.Modules.Games.Extensions
 {
     public static class GameStatsExtensions
     {
-        public static async Task<string> BuildStatsStringAsync(DiscordClient client,
-            IReadOnlyList<GameStats> top, Func<GameStats, string> selector)
+        public static async Task<string> BuildStatsStringAsync(DiscordClient client, IReadOnlyList<GameStats> top, Func<GameStats, string> selector)
         {
             var sb = new StringBuilder();
 
@@ -24,7 +21,7 @@ namespace TheGodfather.Modules.Games.Extensions
                     sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
-                    sb.Append("<unknown name>: ");
+                    sb.Append("<?>: ");
                 }
                 sb.Append(selector(userStats));
                 sb.AppendLine();
@@ -33,57 +30,31 @@ namespace TheGodfather.Modules.Games.Extensions
             return sb.ToString();
         }
 
+        public static string BuildDuelStatsString(this GameStats s)
+            => $"W: {s.DuelWon} L: {s.DuelLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.DuelWon, s.DuelLost)}")}%)";
 
-        public static DiscordEmbedBuilder ToPartialDiscordEmbed(this GameStats stats)
-        {
-            var emb = new DiscordEmbedBuilder {
-                Color = DiscordColor.Chartreuse
-            };
-            emb.AddField("Duel stats", stats.BuildDuelStatsString())
-               .AddField("Tic-Tac-Toe stats", stats.BuildTicTacToeStatsString())
-               .AddField("Connect4 stats", stats.BuildChain4StatsString())
-               .AddField("Caro stats", stats.BuildCaroStatsString())
-               .AddField("Othello stats", stats.BuildOthelloStatsString())
-               .AddField("Nunchi stats", stats.BuildNumberRaceStatsString(), inline: true)
-               .AddField("Quiz stats", stats.BuildQuizStatsString(), inline: true)
-               .AddField("Race stats", stats.BuildAnimalRaceStatsString(), inline: true)
-               .AddField("Hangman stats", stats.BuildHangmanStatsString(), inline: true);
-            return emb;
-        }
+        public static string BuildTicTacToeStatsString(this GameStats s)
+            => $"W: {s.TicTacToeWon} L: {s.TicTacToeLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.TicTacToeWon, s.TicTacToeLost)}")}%)";
 
-        public static DiscordEmbed ToDiscordEmbed(this GameStats stats, DiscordUser user)
-        {
-            DiscordEmbedBuilder emb = stats.ToPartialDiscordEmbed();
-            emb.WithTitle($"Stats for {user.Username}");
-            emb.WithThumbnail(user.AvatarUrl);
-            return emb.Build();
-        }
+        public static string BuildChain4StatsString(this GameStats s)
+            => $"W: {s.Chain4Won} L: {s.Chain4Lost} ({Formatter.Bold($"{GameStats.WinPercentage(s.Chain4Won, s.Chain4Lost)}")}%)";
 
-        public static string BuildDuelStatsString(this GameStats stats)
-            => $"W: {stats.DuelWon} L: {stats.DuelLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.DuelWon, stats.DuelLost)}")}%)";
+        public static string BuildCaroStatsString(this GameStats s)
+            => $"W: {s.CaroWon} L: {s.CaroLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.CaroWon, s.CaroLost)}")}%)";
 
-        public static string BuildTicTacToeStatsString(this GameStats stats)
-            => $"W: {stats.TicTacToeWon} L: {stats.TicTacToeLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.TicTacToeWon, stats.TicTacToeLost)}")}%)";
+        public static string BuildNumberRaceStatsString(this GameStats s)
+            => $"W: {s.NumberRacesWon}";
 
-        public static string BuildChain4StatsString(this GameStats stats)
-            => $"W: {stats.Chain4Won} L: {stats.Chain4Lost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.Chain4Won, stats.Chain4Lost)}")}%)";
+        public static string BuildQuizStatsString(this GameStats s)
+            => $"W: {s.QuizWon}";
 
-        public static string BuildCaroStatsString(this GameStats stats)
-            => $"W: {stats.CaroWon} L: {stats.CaroLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.CaroWon, stats.CaroLost)}")}%)";
+        public static string BuildAnimalRaceStatsString(this GameStats s)
+            => $"W: {s.AnimalRacesWon}";
 
-        public static string BuildNumberRaceStatsString(this GameStats stats)
-            => $"W: {stats.NumberRacesWon}";
+        public static string BuildHangmanStatsString(this GameStats s)
+            => $"W: {s.HangmanWon}";
 
-        public static string BuildQuizStatsString(this GameStats stats)
-            => $"W: {stats.QuizWon}";
-
-        public static string BuildAnimalRaceStatsString(this GameStats stats)
-            => $"W: {stats.AnimalRacesWon}";
-
-        public static string BuildHangmanStatsString(this GameStats stats)
-            => $"W: {stats.HangmanWon}";
-
-        public static string BuildOthelloStatsString(this GameStats stats)
-            => $"W: {stats.OthelloWon} L: {stats.OthelloLost} ({Formatter.Bold($"{stats.CalculateWinPercentage(stats.OthelloWon, stats.OthelloLost)}")}%)";
+        public static string BuildOthelloStatsString(this GameStats s)
+            => $"W: {s.OthelloWon} L: {s.OthelloLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.OthelloWon, s.OthelloLost)}")}%)";
     }
 }

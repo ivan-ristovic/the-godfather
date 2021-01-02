@@ -32,6 +32,8 @@ namespace TheGodfather.Modules.Misc
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-module")] ModuleType module)
         {
+            // TODO Check if module is executable
+
             IReadOnlyList<string> cmds = this.Service.GetCommandsInModule(module);
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(module.ToDiscordColor());
