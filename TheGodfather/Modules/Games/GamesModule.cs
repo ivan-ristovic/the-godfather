@@ -1,5 +1,5 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
@@ -10,22 +10,21 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Extensions;
-#endregion
 
 namespace TheGodfather.Modules.Games
 {
     [Group("game"), Module(ModuleType.Games), NotBlocked]
-    [Description("Starts a game for you to play!")]
     [Aliases("games", "gm")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class GamesModule : TheGodfatherModule
     {
+        #region game
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
             var sb = new StringBuilder();
-
             sb.AppendLine().AppendLine();
             sb.Append(Emojis.SmallBlueDiamond).AppendLine(" animalrace");
             sb.Append(Emojis.SmallBlueDiamond).AppendLine(" caro");
@@ -40,17 +39,17 @@ namespace TheGodfather.Modules.Games
             sb.Append(Emojis.SmallBlueDiamond).AppendLine(" tictactoe");
             sb.Append(Emojis.SmallBlueDiamond).AppendLine(" typingrace");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = "Available games:",
-                Description = sb.ToString(),
-                Color = this.ModuleColor,
-            }.WithFooter("Start a game by typing: game <game name>").Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-games");
+                emb.WithDescription(sb.ToString());
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedFooter("str-games-help", null);
+            });
         }
+        #endregion
 
-
-        #region COMMAND_GAME_LEADERBOARD
+        #region game leaderboard
         [Command("leaderboard")]
-        [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {

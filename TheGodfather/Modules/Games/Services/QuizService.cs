@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,11 +7,10 @@ using Newtonsoft.Json;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games.Services
 {
-    public class QuizService : TheGodfatherHttpService
+    public sealed class QuizService : TheGodfatherHttpService
     {
         private static readonly string _url = "https://opentdb.com";
 

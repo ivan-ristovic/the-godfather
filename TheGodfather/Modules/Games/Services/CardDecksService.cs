@@ -1,8 +1,5 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Concurrent;
-
+﻿using System.Collections.Concurrent;
 using TexasHoldem.Logic.Cards;
-#endregion
 
 namespace TheGodfather.Modules.Games.Services
 {
@@ -11,10 +8,10 @@ namespace TheGodfather.Modules.Games.Services
         private static readonly ConcurrentDictionary<ulong, Deck> _decks = new ConcurrentDictionary<ulong, Deck>();
 
 
-        public static Deck GetDeckInChannel(ulong cid)
-            => _decks.TryGetValue(cid, out Deck deck) ? deck : null;
+        public static Deck GetDeckForChannel(ulong cid)
+            => _decks.TryGetValue(cid, out Deck? deck) ? deck : new Deck();
 
-        public static void ResetDeckInChannel(ulong cid)
+        public static void ResetDeckForChannel(ulong cid)
             => _decks.AddOrUpdate(cid, new Deck(), (k, v) => new Deck());
     }
 }
