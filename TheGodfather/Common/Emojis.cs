@@ -40,7 +40,7 @@ namespace TheGodfather.Common
                 Numbers.Get(6),
                 Numbers.Get(7),
                 Numbers.Get(8),
-                DiscordEmoji.FromUnicode("\U0001f1f9"),     // :regional_indicator_t:
+                Numbers.Get(9),
                 DiscordEmoji.FromUnicode("\U0001f1ef"),     // :regional_indicator_j:
                 DiscordEmoji.FromUnicode("\U0001f1f6"),     // :regional_indicator_q:
                 DiscordEmoji.FromUnicode("\U0001f1f0"),     // :regional_indicator_k:
@@ -49,10 +49,10 @@ namespace TheGodfather.Common
 
             public static IReadOnlyList<DiscordEmoji> Suits => _suits;
             private static readonly ImmutableList<DiscordEmoji> _suits = new List<DiscordEmoji> {
-                DiscordEmoji.FromUnicode("\u2660"),         // :spades:
                 DiscordEmoji.FromUnicode("\u2663"),         // :clubs:
-                DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
                 DiscordEmoji.FromUnicode("\u2666"),         // :diamonds:
+                DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
+                DiscordEmoji.FromUnicode("\u2660"),         // :spades:
             }.ToImmutableList();
         }
         #endregion

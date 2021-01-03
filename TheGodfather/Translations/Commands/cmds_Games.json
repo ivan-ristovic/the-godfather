@@ -1,4 +1,19 @@
 {
+  "deck": {
+    "usage": [
+      []
+    ]
+  },
+  "deck draw": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "deck reset": {
+    "usage": [
+      []
+    ]
+  },
   "game": {
     "usage": [
       []
