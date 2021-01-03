@@ -192,6 +192,8 @@
   "gamble dice": "Gambles on a dice throw. Default bid is 5.",
   "game": "Game commands. Group call lists all available games.",
   "game leaderboard": "Prints global leaderboard for all games.",
+  "game rps": "Starts a new rock-paper-scissors game against TheGodfather.",
+  "game rps rules": "Prints rock-paper-scissors game rules.",
   "game stats": "Prints game stats for a given user.",
   "gif": "GIPHY search commands. Group call searches GIPHY with given query and prints first result.",
   "gif random": "Prints a random GIF.",
