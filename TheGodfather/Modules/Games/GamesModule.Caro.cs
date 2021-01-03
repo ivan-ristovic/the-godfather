@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
@@ -13,87 +12,100 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Modules.Games.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("caro")]
-        [Description("Starts a \"Caro\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding " +
-                     "to the row and column where you wish to play. You can also specify a time window in which " +
-                     "players must submit their move.")]
         [Aliases("c", "gomoku", "gobang")]
-
-        public class CaroModule : TheGodfatherServiceModule<ChannelEventService>
+        public sealed class CaroModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
+            #region game caro
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Move time (def. 30s).")] TimeSpan? moveTime = null)
+                                               [Description("desc-game-movetime")] TimeSpan? moveTime = null)
             {
-                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel!");
+                if (moveTime?.TotalSeconds is < 2 or > 120)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-game-movetime", 2, 120);
 
-                await this.InformAsync(ctx, Emojis.Question, $"Who wants to play Caro against {ctx.User.Username}?");
-                DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+
+                DiscordUser? opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
                     return;
 
-                if (moveTime?.TotalSeconds is < 2 or > 120)
-                    throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
+                var game = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
 
-                var caro = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
-                this.Service.RegisterEventInChannel(caro, ctx.Channel.Id);
                 try {
-                    await caro.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
+                    await game.RunAsync(this.Localization);
 
-                    if (!(caro.Winner is null)) {
-                        if (caro.IsTimeoutReached)
-                            await this.InformAsync(ctx, Emojis.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!");
+                    if (game.Winner is { }) {
+                        if (game.IsTimeoutReached)
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "str-game-timeout", game.Winner.Mention);
                         else
-                            await this.InformAsync(ctx, Emojis.Trophy, $"The winner is: {caro.Winner.Mention}!");
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-winners", game.Winner.Mention);
 
-                        await this.Database.UpdateStatsAsync(caro.Winner.Id, s => s.CaroWon++);
-                        if (caro.Winner.Id == ctx.User.Id)
-                            await this.Database.UpdateStatsAsync(opponent.Id, s => s.CaroLost++);
-                        else
-                            await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.CaroLost++);
+                        GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.CaroWon--);
+                        await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.CaroLost--);
                     } else {
-                        await this.InformAsync(ctx, Emojis.Joystick, "A draw... Pathetic...");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
                     }
+
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
+            #endregion
 
-
-            #region COMMAND_CARO_RULES
+            #region game caro rules
             [Command("rules")]
-            [Description("Explain the Caro game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-caro");
+            #endregion
+
+            #region game caro stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
             {
-                return this.InformAsync(ctx,
-                    Emojis.Information,
-                    "Caro (aka ``Gomoku`` or ``Gobang``) is similar to a Tic-Tac-Toe game played on a 10x10 board." +
-                    "The goal is to have an unbroken row of 5 symbols in order to win the game. Players play in " +
-                    "turns, placing their symbols on the board. The game ends when someone makes 5 symbols " +
-                    "in a row or when there are no more empty fields on the board."
-                );
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildCaroStatsString());
+                });
             }
             #endregion
 
-            #region COMMAND_CARO_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
+            #region game caro top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
             {
-                IReadOnlyList<GameStats> topStats = await this.Database.GetTopCaroStatsAsync();
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopCaroStatsAsync();
                 string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
-                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Caro:\n\n{top}");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-caro-top", topStats);
             }
             #endregion
         }

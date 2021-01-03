@@ -1,11 +1,9 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games.Common
 {
@@ -17,7 +15,7 @@ namespace TheGodfather.Modules.Games.Common
         protected bool deleteErrored;
         protected int move;
         protected TimeSpan moveTime;
-        protected DiscordMessage msgHandle;
+        protected DiscordMessage? msgHandle;
         protected DiscordUser player1;
         protected DiscordUser player2;
 
@@ -44,14 +42,14 @@ namespace TheGodfather.Modules.Games.Common
             this.msgHandle = await this.Channel.SendMessageAsync($"{this.player1.Mention} vs {this.player2.Mention}");
 
             while (!this.IsTimeoutReached && this.move < this.SizeY * this.SizeX && !this.IsGameOver()) {
-                await this.UpdateBoardAsync();
-                await this.AdvanceAsync();
+                await this.UpdateBoardAsync(lcs);
+                await this.AdvanceAsync(lcs);
             }
 
             if (this.IsGameOver())
                 this.ResolveGameWinner();
 
-            await this.UpdateBoardAsync();
+            await this.UpdateBoardAsync(lcs);
         }
 
 
@@ -63,7 +61,7 @@ namespace TheGodfather.Modules.Games.Common
             return true;
         }
 
-        protected virtual async Task AdvanceAsync()
+        protected virtual async Task AdvanceAsync(LocalizationService lcs)
         {
             int row = 0, col = 0;
             bool player1plays = (this.move % 2 == 0);
@@ -92,12 +90,12 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Result.DeleteAsync();
                     } catch {
-                        await this.Channel.InformFailureAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.");
+                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-perms"));
                         this.deleteErrored = true;
                     }
                 }
             } else {
-                await this.Channel.InformFailureAsync($"Move [{row} {col}] is invalid.");
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", row, col));
             }
         }
 
@@ -106,6 +104,6 @@ namespace TheGodfather.Modules.Games.Common
 
 
         protected abstract bool IsGameOver();
-        protected abstract Task UpdateBoardAsync();
+        protected abstract Task UpdateBoardAsync(LocalizationService lcs);
     }
 }

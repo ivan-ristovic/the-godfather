@@ -20,7 +20,7 @@ namespace TheGodfather.Extensions
     {
         // TODO remove
         [Obsolete]
-        public static async Task<DiscordUser?> WaitForGameOpponentAsync(this CommandContext ctx)
+        public static async Task<DiscordUser?> WaitGameOpponentObsolete(this CommandContext ctx)
         {
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {

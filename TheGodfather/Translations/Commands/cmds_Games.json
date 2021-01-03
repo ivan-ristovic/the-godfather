@@ -24,6 +24,28 @@
       []
     ]
   },
+  "game caro": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game caro rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game caro stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game caro top": {
+    "usage": [
+      []
+    ]
+  },
   "game animalrace join": {
     "usage": [
       []
