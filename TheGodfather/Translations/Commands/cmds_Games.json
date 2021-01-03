@@ -19,6 +19,27 @@
       []
     ]
   },
+  "game animalrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game animalrace top": {
+    "usage": [
+      []
+    ]
+  },
   "game leaderboard": {
     "usage": [
       []

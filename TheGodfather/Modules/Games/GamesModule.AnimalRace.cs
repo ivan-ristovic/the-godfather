@@ -1,8 +1,7 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -11,21 +10,22 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Modules.Games.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("animalrace")]
-        [Description("Start a new animal race!")]
-        [Aliases("animr", "arace", "ar", "animalr")]
-        public class AnimalRaceModule : TheGodfatherServiceModule<ChannelEventService>
+        [Aliases("animr", "arace", "ar", "animalr", "race")]
+        [RequireGuild]
+        public sealed class AnimalRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
+            #region game animalrace
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
@@ -33,63 +33,89 @@ namespace TheGodfather.Modules.Games
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is AnimalRace)
                         await this.JoinAsync(ctx);
                     else
-                        throw new CommandFailedException("Another event is already running in the current channel.");
+                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
                     return;
                 }
 
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, Emojis.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.");
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-animalrace-start", AnimalRace.MaxParticipants);
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.ParticipantCount > 1) {
-                        LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
-                        await game.RunAsync(lcs);
+                        GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                        await game.RunAsync(this.Localization);
 
-                        foreach (ulong uid in game.WinnerIds)
-                            await this.Database.UpdateStatsAsync(uid, s => s.AnimalRacesWon++);
+                        if (game.WinnerIds is { })
+                            await Task.WhenAll(game.WinnerIds.Select(w => gss.UpdateStatsAsync(w, s => s.AnimalRacesWon++)));
                     } else {
-                        await this.InformAsync(ctx, Emojis.AlarmClock, "Not enough users joined the race.");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-game-animalrace-none");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
+            #endregion
 
-
-            #region COMMAND_ANIMALRACE_JOIN
+            #region game animalrace join
             [Command("join")]
-            [Description("Join an existing animal race game.")]
-            [Aliases("+", "compete", "enter", "j")]
+            [Aliases("+", "compete", "enter", "j", "<<", "<")]
             public Task JoinAsync(CommandContext ctx)
             {
-                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out AnimalRace game))
-                    throw new CommandFailedException("There is no animal race game running in this channel.");
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out AnimalRace? game) || game is null)
+                    throw new CommandFailedException(ctx, "cmd-err-game-ar-none");
 
                 if (game.Started)
-                    throw new CommandFailedException("Race has already started, you can't join it.");
+                    throw new CommandFailedException(ctx, "cmd-err-game-ar-started");
 
-                if (game.ParticipantCount >= 10)
-                    throw new CommandFailedException("Race slots are full (max 10 participants), kthxbye.");
+                if (game.ParticipantCount >= AnimalRace.MaxParticipants)
+                    throw new CommandFailedException(ctx, "cmd-err-game-ar-full", AnimalRace.MaxParticipants);
 
-                if (!game.AddParticipant(ctx.User, out DiscordEmoji emoji))
-                    throw new CommandFailedException("You are already participating in the race!");
+                if (!game.AddParticipant(ctx.User, out DiscordEmoji? emoji))
+                    throw new CommandFailedException(ctx, "cmd-err-game-ar-dup");
 
-                return this.InformAsync(ctx, Emojis.Bicyclist, $"{ctx.User.Mention} joined the race as {emoji}");
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Bicyclist, "fmt-game-ar-join", ctx.User.Mention, emoji);
             }
             #endregion
 
-            #region COMMAND_ANIMALRACE_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
+            #region game animalrace stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
             {
-                IReadOnlyList<GameStats> topStats = await this.Database.GetTopAnimalRaceStatsAsync();
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildAnimalRaceStatsString());
+                });
+            }
+            #endregion
+
+            #region game animalrace top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
+            {
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopAnimalRaceStatsAsync();
                 string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
-                await this.InformAsync(ctx, Emojis.Trophy, $"Top players in Animal Race:\n\n{topStats}");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-ar-top", topStats);
             }
             #endregion
         }

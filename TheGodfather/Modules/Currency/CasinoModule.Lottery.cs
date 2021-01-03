@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency
 
                     BankAccountService bas = ctx.Services.GetRequiredService<BankAccountService>();
                     if (game.ParticipantCount > 1) {
-                        await game.RunAsync(ctx.Services.GetRequiredService<LocalizationService>());
+                        await game.RunAsync(this.Localization);
 
                         if (game.Winners.Any()) {
                             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winnings",
