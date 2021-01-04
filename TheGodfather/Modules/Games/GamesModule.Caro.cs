@@ -21,6 +21,7 @@ namespace TheGodfather.Modules.Games
     {
         [Group("caro")]
         [Aliases("c", "gomoku", "gobang")]
+        [RequireGuild]
         public sealed class CaroModule : TheGodfatherServiceModule<ChannelEventService>
         {
             #region game caro
@@ -36,11 +37,10 @@ namespace TheGodfather.Modules.Games
 
                 DiscordUser? opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
-                    return;
+                    throw new CommandFailedException(ctx, "cmd-err-game-op-none", ctx.User.Mention);
 
                 var game = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
-
                 try {
                     await game.RunAsync(this.Localization);
 

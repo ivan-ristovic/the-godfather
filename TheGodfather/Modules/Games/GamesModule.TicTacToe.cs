@@ -26,6 +26,7 @@ namespace TheGodfather.Modules.Games
                      "must submit their move.")]
         [Aliases("ttt")]
 
+        [RequireGuild]
         public class TicTacToeModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

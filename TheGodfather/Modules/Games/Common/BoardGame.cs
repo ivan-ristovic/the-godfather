@@ -95,12 +95,25 @@ namespace TheGodfather.Modules.Games.Common
                     }
                 }
             } else {
-                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", row, col));
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", $"({row},{col})"));
             }
         }
 
         protected virtual void ResolveGameWinner()
             => this.Winner = (this.move % 2 == 0) ? this.player2 : this.player1;
+
+        protected async Task UpdateOrResendHandleAsync(DiscordEmbed emb)
+        {
+            try {
+                if (this.msgHandle is { })
+                    this.msgHandle = await this.msgHandle.ModifyAsync(embed: emb);
+            } catch {
+                this.msgHandle = null;
+            }
+
+            if (this.msgHandle is null)
+                this.msgHandle = await this.Channel.SendMessageAsync(embed: emb);
+        }
 
 
         protected abstract bool IsGameOver();

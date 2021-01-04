@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -81,7 +82,7 @@ namespace TheGodfather.Modules.Games.Common
             return legal;
         }
 
-        protected override Task UpdateBoardAsync()
+        protected override Task UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
             sb.AppendLine(_Header);

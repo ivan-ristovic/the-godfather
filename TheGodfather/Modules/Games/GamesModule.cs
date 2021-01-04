@@ -66,8 +66,8 @@ namespace TheGodfather.Modules.Games
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
                 emb.AddLocalizedTitleField("str-game-top-caro", top, inline: true);
 
-                topStats = await this.Service.GetTopChain4StatsAsync();
-                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
+                topStats = await this.Service.GetTopConnect4StatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildConnect4StatsString());
                 emb.AddLocalizedTitleField("str-game-top-c4", top, inline: true);
 
                 topStats = await this.Service.GetTopDuelStatsAsync();
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Games
                 } else {
                     emb.AddLocalizedTitleField("str-game-stats-duel", stats.BuildDuelStatsString());
                     emb.AddLocalizedTitleField("str-game-stats-ttt", stats.BuildTicTacToeStatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-c4", stats.BuildChain4StatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-c4", stats.BuildConnect4StatsString());
                     emb.AddLocalizedTitleField("str-game-stats-caro", stats.BuildCaroStatsString());
                     emb.AddLocalizedTitleField("str-game-stats-ot", stats.BuildOthelloStatsString());
                     emb.AddLocalizedTitleField("str-game-stats-nr", stats.BuildNumberRaceStatsString(), inline: true);

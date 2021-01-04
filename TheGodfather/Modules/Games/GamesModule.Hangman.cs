@@ -23,6 +23,7 @@ namespace TheGodfather.Modules.Games
         [Group("hangman"), UsesInteractivity]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
+        [RequireGuild]
         public class HangmanModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -19,7 +20,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        protected override async Task AdvanceAsync()
+        protected override async Task AdvanceAsync(LocalizationService lcs)
         {
             int field = 0;
             bool player1plays = (this.move % 2 == 0);
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        protected override Task UpdateBoardAsync()
+        protected override Task UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
 

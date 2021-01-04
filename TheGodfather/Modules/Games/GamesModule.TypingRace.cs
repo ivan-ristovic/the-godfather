@@ -19,6 +19,7 @@ namespace TheGodfather.Modules.Games
         [Group("typingrace")]
         [Description("Start a new typing race!")]
         [Aliases("tr", "trace", "typerace", "typing", "typingr")]
+        [RequireGuild]
         public class TypingRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

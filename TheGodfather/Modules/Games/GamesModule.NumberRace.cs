@@ -22,6 +22,7 @@ namespace TheGodfather.Modules.Games
         [Group("numberrace")]
         [Description("Number racing game commands.")]
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
+        [RequireGuild]
         public class NumberRaceModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

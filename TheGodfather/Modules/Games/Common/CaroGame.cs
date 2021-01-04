@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games.Common
               .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
               .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder {
+            return this.UpdateOrResendHandleAsync(new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

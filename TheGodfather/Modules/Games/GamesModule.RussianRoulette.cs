@@ -20,6 +20,7 @@ namespace TheGodfather.Modules.Games
         [Group("russianroulette")]
         [Description("Starts a russian roulette game which I will commentate.")]
         [Aliases("rr", "roulette", "russianr")]
+        [RequireGuild]
         public class RussianRouletteModule : TheGodfatherServiceModule<ChannelEventService>
         {
 

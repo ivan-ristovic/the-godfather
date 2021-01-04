@@ -26,6 +26,7 @@ namespace TheGodfather.Modules.Games
         [Group("quiz")]
         [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
+        [RequireGuild]
 
         public class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {

@@ -62,6 +62,7 @@ namespace TheGodfather.Modules.Administration
             #region config backup download
             [Command("download")]
             [Aliases("dl", "get", "zip")]
+            [RequireUserPermissions(Permissions.Administrator)]
             public async Task DownloadAsync(CommandContext ctx)
             {
                 if (!await this.Service.WithBackupZipAsync(ctx.Guild.Id, s => ctx.RespondWithFileAsync("backup.zip", s)))

@@ -46,6 +46,28 @@
       []
     ]
   },
+  "game connect4": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game connect4 rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game connect4 stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game connect4 top": {
+    "usage": [
+      []
+    ]
+  },
   "game animalrace join": {
     "usage": [
       []
