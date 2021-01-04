@@ -51,8 +51,8 @@ namespace TheGodfather.Modules.Games
                             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-winners", game.Winner.Mention);
 
                         GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
-                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.CaroWon--);
-                        await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.CaroLost--);
+                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.TicTacToeWon++);
+                        await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.TicTacToeLost++);
                     } else {
                         await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
                     }

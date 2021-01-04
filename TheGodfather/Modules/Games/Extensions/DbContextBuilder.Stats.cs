@@ -38,11 +38,11 @@ namespace TheGodfather.Modules.Games.Extensions
 
         [Obsolete]
         public static Task<IReadOnlyList<GameStats>> GetTopChain4StatsAsync(this DbContextBuilder dbb, int amount = 10)
-            => dbb.GetTopStatsCollectionInternalAsync(amount, s => GameStats.WinPercentage(s.Chain4Won, s.Chain4Lost), s => s.Chain4Won);
+            => dbb.GetTopStatsCollectionInternalAsync(amount, s => GameStats.WinPercentage(s.Connect4Won, s.Connect4Lost), s => s.Connect4Won);
 
         [Obsolete]
         public static Task<IReadOnlyList<GameStats>> GetTopDuelStatsAsync(this DbContextBuilder dbb, int amount = 10)
-            => dbb.GetTopStatsCollectionInternalAsync(amount, s => GameStats.WinPercentage(s.DuelWon, s.DuelLost), s => s.DuelWon);
+            => dbb.GetTopStatsCollectionInternalAsync(amount, s => GameStats.WinPercentage(s.DuelsWon, s.DuelsLost), s => s.DuelsWon);
 
         [Obsolete]
         public static Task<IReadOnlyList<GameStats>> GetTopHangmanStatsAsync(this DbContextBuilder dbb, int amount = 10)

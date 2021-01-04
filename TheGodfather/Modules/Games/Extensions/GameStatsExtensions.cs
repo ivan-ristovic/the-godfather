@@ -31,13 +31,13 @@ namespace TheGodfather.Modules.Games.Extensions
         }
 
         public static string BuildDuelStatsString(this GameStats s)
-            => $"W: {s.DuelWon} L: {s.DuelLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.DuelWon, s.DuelLost)}")}%)";
+            => $"W: {s.DuelsWon} L: {s.DuelsLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.DuelsWon, s.DuelsLost)}")}%)";
 
         public static string BuildTicTacToeStatsString(this GameStats s)
             => $"W: {s.TicTacToeWon} L: {s.TicTacToeLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.TicTacToeWon, s.TicTacToeLost)}")}%)";
 
         public static string BuildConnect4StatsString(this GameStats s)
-            => $"W: {s.Chain4Won} L: {s.Chain4Lost} ({Formatter.Bold($"{GameStats.WinPercentage(s.Chain4Won, s.Chain4Lost)}")}%)";
+            => $"W: {s.Connect4Won} L: {s.Connect4Lost} ({Formatter.Bold($"{GameStats.WinPercentage(s.Connect4Won, s.Connect4Lost)}")}%)";
 
         public static string BuildCaroStatsString(this GameStats s)
             => $"W: {s.CaroWon} L: {s.CaroLost} ({Formatter.Bold($"{GameStats.WinPercentage(s.CaroWon, s.CaroLost)}")}%)";

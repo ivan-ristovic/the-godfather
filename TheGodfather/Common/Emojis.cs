@@ -112,6 +112,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
         public static DiscordEmoji Tada => DiscordEmoji.FromUnicode("\U0001f389");
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
+        public static DiscordEmoji Zap => DiscordEmoji.FromUnicode("\U000026a1");
         #endregion
 
         #region Numbers

@@ -84,6 +84,28 @@
       []
     ]
   },
+  "game duel": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "game duel rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game duel stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game duel top": {
+    "usage": [
+      []
+    ]
+  },
   "game leaderboard": {
     "usage": [
       []

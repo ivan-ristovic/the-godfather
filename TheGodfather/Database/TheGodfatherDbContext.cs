@@ -106,10 +106,10 @@ namespace TheGodfather.Database
             mb.Entity<GameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.CaroWon).HasDefaultValue(0);
-            mb.Entity<GameStats>().Property(s => s.Chain4Lost).HasDefaultValue(0);
-            mb.Entity<GameStats>().Property(s => s.Chain4Won).HasDefaultValue(0);
-            mb.Entity<GameStats>().Property(s => s.DuelLost).HasDefaultValue(0);
-            mb.Entity<GameStats>().Property(s => s.DuelWon).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.Connect4Lost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.Connect4Won).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.DuelsLost).HasDefaultValue(0);
+            mb.Entity<GameStats>().Property(s => s.DuelsWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.HangmanWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.NumberRacesWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.OthelloLost).HasDefaultValue(0);

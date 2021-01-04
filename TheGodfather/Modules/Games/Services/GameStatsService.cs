@@ -45,10 +45,10 @@ namespace TheGodfather.Modules.Games.Services
             => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.CaroWon, s.CaroLost), s => s.CaroWon);
 
         public Task<IReadOnlyList<GameStats>> GetTopConnect4StatsAsync(int amount = 10)
-            => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.Chain4Won, s.Chain4Lost), s => s.Chain4Won);
+            => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.Connect4Won, s.Connect4Lost), s => s.Connect4Won);
 
         public Task<IReadOnlyList<GameStats>> GetTopDuelStatsAsync(int amount = 10)
-            => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.DuelWon, s.DuelLost), s => s.DuelWon);
+            => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.DuelsWon, s.DuelsLost), s => s.DuelsWon);
 
         public Task<IReadOnlyList<GameStats>> GetTopHangmanStatsAsync(int amount = 10)
             => this.GetOrderedInternalAsync(amount, s => s.HangmanWon);
