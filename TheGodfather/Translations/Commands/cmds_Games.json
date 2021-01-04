@@ -126,5 +126,27 @@
       [],
       [ "arg-usr" ]
     ]
+  },
+  "game tictactoe": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game tictactoe rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game tictactoe stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game tictactoe top": {
+    "usage": [
+      []
+    ]
   }
 }
