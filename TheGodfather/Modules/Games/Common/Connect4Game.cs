@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class Connect4Game : BaseBoardGame
     {
-        private static readonly string _Header = string.Join("", Emojis.Numbers.All.Take(9));
+        private static readonly string _header = Emojis.Numbers.All.Take(9).JoinWith("");
 
 
         public Connect4Game(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Games.Common
         protected override Task UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(_Header);
+            sb.AppendLine(_header);
 
             for (int i = 0; i < this.SizeX; i++) {
                 for (int j = 0; j < this.SizeY; j++)

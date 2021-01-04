@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
     public sealed class CaroGame : BaseBoardGame
     {
-        private static readonly string _header = Emojis.ArrowUp + string.Join("", Emojis.Numbers.All);
+        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.JoinWith("");
 
 
         public CaroGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)

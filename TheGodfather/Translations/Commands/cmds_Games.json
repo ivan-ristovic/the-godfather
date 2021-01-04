@@ -24,6 +24,22 @@
       []
     ]
   },
+  "game animalrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game animalrace top": {
+    "usage": [
+      []
+    ]
+  },
   "game caro": {
     "usage": [
       [],
@@ -68,23 +84,29 @@
       []
     ]
   },
-  "game animalrace join": {
+  "game leaderboard": {
     "usage": [
       []
     ]
   },
-  "game animalrace stats": {
+  "game othello": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game othello rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game othello stats": {
     "usage": [
       [],
       [ "arg-usr" ]
     ]
   },
-  "game animalrace top": {
-    "usage": [
-      []
-    ]
-  },
-  "game leaderboard": {
+  "game othello top": {
     "usage": [
       []
     ]
