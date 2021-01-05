@@ -68,6 +68,9 @@ namespace TheGodfather.Modules.Games.Services
         public Task<IReadOnlyList<GameStats>> GetTopTicTacToeStatsAsync(int amount = 10)
             => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.TicTacToeWon, s.TicTacToeLost), s => s.TicTacToeWon);
 
+        public Task<IReadOnlyList<GameStats>> GetTopTypingRaceStatsAsync(int amount = 10)
+            => this.GetOrderedInternalAsync(amount, s => s.TypingRacesWon);
+
 
         private async Task<IReadOnlyList<GameStats>> GetOrderedInternalAsync<T>(int amount, Func<GameStats, T> orderBy, Func<GameStats, T>? thenBy = null)
         {

@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20210101122644_InitialCreate")]
+    [Migration("20210105203239_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -456,25 +456,25 @@ namespace TheGodfather.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("caro_won");
 
-                    b.Property<int>("Chain4Lost")
+                    b.Property<int>("Connect4Lost")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("c4_lost");
 
-                    b.Property<int>("Chain4Won")
+                    b.Property<int>("Connect4Won")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("c4_won");
 
-                    b.Property<int>("DuelLost")
+                    b.Property<int>("DuelsLost")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("duel_lost");
 
-                    b.Property<int>("DuelWon")
+                    b.Property<int>("DuelsWon")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
@@ -510,6 +510,10 @@ namespace TheGodfather.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("quiz_won");
 
+                    b.Property<int>("RussianRoulettesWon")
+                        .HasColumnType("integer")
+                        .HasColumnName("rr_won");
+
                     b.Property<int>("TicTacToeLost")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -521,6 +525,10 @@ namespace TheGodfather.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("ttt_won");
+
+                    b.Property<int>("TypingRacesWon")
+                        .HasColumnType("integer")
+                        .HasColumnName("tr_won");
 
                     b.HasKey("UserIdDb");
 

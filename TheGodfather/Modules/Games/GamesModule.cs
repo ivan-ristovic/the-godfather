@@ -82,6 +82,10 @@ namespace TheGodfather.Modules.Games
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
                 emb.AddLocalizedTitleField("str-game-top-nr", top, inline: true);
 
+                topStats = await this.Service.GetTopTypingRaceStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTypingRaceStatsString());
+                emb.AddLocalizedTitleField("str-game-top-tr", top, inline: true);
+
                 topStats = await this.Service.GetTopRussianRouletteStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildRussianRouletteStatsString());
                 emb.AddLocalizedTitleField("str-game-top-rr", top, inline: true);
@@ -131,6 +135,7 @@ namespace TheGodfather.Modules.Games
                     emb.AddLocalizedTitleField("str-game-stats-quiz", stats.BuildQuizStatsString(), inline: true);
                     emb.AddLocalizedTitleField("str-game-stats-ar", stats.BuildAnimalRaceStatsString(), inline: true);
                     emb.AddLocalizedTitleField("str-game-stats-rr", stats.BuildRussianRouletteStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-tr", stats.BuildTypingRaceStatsString(), inline: true);
                     emb.AddLocalizedTitleField("str-game-stats-hm", stats.BuildHangmanStatsString(), inline: true);
                 }
             });

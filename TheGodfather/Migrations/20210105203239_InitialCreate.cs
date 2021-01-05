@@ -94,6 +94,8 @@ namespace TheGodfather.Migrations
                     quiz_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     ar_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     nr_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    tr_won = table.Column<int>(type: "integer", nullable: false),
+                    rr_won = table.Column<int>(type: "integer", nullable: false),
                     ttt_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     ttt_lost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     c4_won = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
