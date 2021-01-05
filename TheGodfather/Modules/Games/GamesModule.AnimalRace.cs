@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Games
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-animalrace-start", AnimalRace.MaxParticipants);
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-ar-start", AnimalRace.MaxParticipants);
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Games
                         if (game.WinnerIds is { })
                             await Task.WhenAll(game.WinnerIds.Select(w => gss.UpdateStatsAsync(w, s => s.AnimalRacesWon++)));
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-game-animalrace-none");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-game-ar-none");
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);

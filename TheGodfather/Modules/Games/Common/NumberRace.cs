@@ -1,5 +1,4 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -8,13 +7,14 @@ using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class NumberRace : BaseChannelGame
+    public sealed class NumberRace : BaseChannelGame
     {
-        public int ParticipantCount => this.participants.Count();
+        public const int MaxParticipants = 10;
+
+        public int ParticipantCount => this.participants.Count;
         public bool Started { get; private set; }
 
         private readonly ConcurrentHashSet<DiscordUser> participants;
@@ -53,21 +53,17 @@ namespace TheGodfather.Modules.Games.Common
                     num++;
                     this.Winner = mctx.Result.Author;
                 } else {
-                    await this.Channel.EmbedAsync($"{mctx.Result.Author.Mention} lost!", Emojis.Dead);
-                    if (!(this.Winner is null) && this.Winner.Id == mctx.Result.Author.Id)
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Dead, null, "fmt-game-nr-lost", mctx.Result.Author.Mention);
+                    if (this.Winner is { } && this.Winner.Id == mctx.Result.Author.Id)
                         this.Winner = null;
-                    this.participants.RemoveWhere(u => mctx.Result.Author.Id == u.Id);
+                    this.participants.TryRemove(mctx.Result.Author);
                 }
             }
 
             this.Winner = this.participants.First();
         }
 
-        public bool AddParticipant(DiscordUser user)
-        {
-            if (this.participants.Any(u => user.Id == u.Id))
-                return false;
-            return this.participants.Add(user);
-        }
+        public bool AddParticipant(DiscordUser user) 
+            => !this.participants.Contains(user) && this.participants.Add(user);
     }
 }

@@ -111,6 +111,32 @@
       []
     ]
   },
+  "game numberrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game numberrace top": {
+    "usage": [
+      []
+    ]
+  },
   "game othello": {
     "usage": [
       [],
