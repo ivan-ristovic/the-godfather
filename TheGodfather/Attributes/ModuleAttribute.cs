@@ -2,6 +2,7 @@
 using System.Linq;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using TheGodfather.Modules;
 
 namespace TheGodfather.Attributes
 {
@@ -30,7 +31,7 @@ namespace TheGodfather.Attributes
                 ModuleType.Administration => DiscordColor.SapGreen,
                 ModuleType.Chickens => DiscordColor.Orange,
                 ModuleType.Currency => DiscordColor.DarkGreen,
-                ModuleType.Games => DiscordColor.CornflowerBlue,
+                ModuleType.Games => DiscordColor.Teal,
                 ModuleType.Misc => DiscordColor.Azure,
                 ModuleType.Music => DiscordColor.Aquamarine,
                 ModuleType.Owner => DiscordColor.DarkButNotBlack,
@@ -71,6 +72,13 @@ namespace TheGodfather.Attributes
         {
             var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
             return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : AttachedTo(cmd.Parent));
+        }
+
+        public static ModuleAttribute AttachedTo(Type t)
+        {
+            return GetCustomAttribute(t, typeof(ModuleAttribute)) is not ModuleAttribute moduleAttr
+                ? t.DeclaringType is { } ? AttachedTo(t.DeclaringType) : new ModuleAttribute(ModuleType.Uncategorized)
+                : moduleAttr;
         }
 
 
