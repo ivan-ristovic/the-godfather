@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException(ctx, "cmd-err-game-nr-dup");
 
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Bicyclist, "fmt-game-nr-join", ctx.User.Mention);
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Numbers.Get(1), "fmt-game-nr-join", ctx.User.Mention);
             }
             #endregion
 

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games.Services
 
         public async Task UpdateStatsAsync(ulong uid, Action<GameStats> action)
         {
-            using TheGodfatherDbContext db = dbb.CreateContext();
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
             GameStats stats = await db.GameStats.FindAsync((long)uid);
             if (stats is null) {
                 stats = new GameStats { UserId = uid };
@@ -61,6 +61,9 @@ namespace TheGodfather.Modules.Games.Services
 
         public Task<IReadOnlyList<GameStats>> GetTopQuizStatsAsync(int amount = 10)
             => this.GetOrderedInternalAsync(amount, s => s.QuizWon);
+
+        public Task<IReadOnlyList<GameStats>> GetTopRussianRouletteStatsAsync(int amount = 10)
+            => this.GetOrderedInternalAsync(amount, s => s.RussianRoulettesWon);
 
         public Task<IReadOnlyList<GameStats>> GetTopTicTacToeStatsAsync(int amount = 10)
             => this.GetOrderedInternalAsync(amount, s => GameStats.WinPercentage(s.TicTacToeWon, s.TicTacToeLost), s => s.TicTacToeWon);

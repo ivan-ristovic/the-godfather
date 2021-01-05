@@ -159,12 +159,68 @@
       []
     ]
   },
+  "game quiz": {
+    "usage": [
+      [],
+      [ "arg-ten" ],
+      [ "arg-ten", "arg-ten" ]
+    ]
+  },
+  "game quiz capitals": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "game quiz countries": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "game quiz stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game quiz top": {
+    "usage": [
+      []
+    ]
+  },
   "game rps": {
     "usage": [
       []
     ]
   },
   "game rps rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette join": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game russianroulette top": {
     "usage": [
       []
     ]

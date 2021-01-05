@@ -51,6 +51,9 @@ namespace TheGodfather.Modules.Games.Extensions
         public static string BuildAnimalRaceStatsString(this GameStats s)
             => $"W: {s.AnimalRacesWon}";
 
+        public static string BuildRussianRouletteStatsString(this GameStats s)
+            => $"W: {s.RussianRoulettesWon}";
+
         public static string BuildHangmanStatsString(this GameStats s)
             => $"W: {s.HangmanWon}";
 

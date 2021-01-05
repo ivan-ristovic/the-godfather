@@ -36,6 +36,9 @@ namespace TheGodfather.Database.Models
         [Column("nr_won")]
         public int NumberRacesWon { get; set; }
 
+        [Column("rr_won")]
+        public int RussianRoulettesWon { get; set; }
+
         [Column("ttt_won")]
         public int TicTacToeWon { get; set; }
 
