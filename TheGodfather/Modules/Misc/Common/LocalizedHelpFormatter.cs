@@ -134,7 +134,8 @@ namespace TheGodfather.Modules.Misc.Common
                 }
             }
 
-            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
+            if (cmd is CommandGroup { IsExecutableWithoutSubcommands: true })
+                this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
 
             return this;
         }

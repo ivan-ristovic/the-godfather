@@ -49,9 +49,9 @@ namespace TheGodfather.Modules.Currency
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             if (guess == actual) {
                 await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, 2 * bid);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-coin-w", flipped, bid, currency);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-coin-w", ctx.User.Mention, flipped, bid, currency);
             } else {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-coin-l", flipped, bid, currency);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-coin-l", ctx.User.Mention, flipped, bid, currency);
             }
         }
 

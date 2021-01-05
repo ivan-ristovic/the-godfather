@@ -188,6 +188,7 @@
   "forbiddennames delete pattern": "Removes forbidden names by their pattern.",
   "forbiddennames deleteall": "Removes all guild forbidden names.",
   "forbiddennames list": "Lists all forbidden names for this guild.",
+  "gamble": "Gambling commands - requires guild currency.",
   "gamble coinflip": "Gambles on a coinflip toss. Default bid is 5.",
   "gamble dice": "Gambles on a dice throw. Default bid is 5.",
   "game": "Game commands. Group call lists all available games.",
