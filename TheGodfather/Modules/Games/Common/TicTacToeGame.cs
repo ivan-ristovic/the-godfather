@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
@@ -67,7 +68,7 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        protected override Task UpdateBoardAsync(LocalizationService lcs)
+        protected override Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
 
@@ -86,7 +87,7 @@ namespace TheGodfather.Modules.Games.Common
               .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
               .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.UpdateOrResendHandleAsync(new DiscordEmbedBuilder {
+            return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

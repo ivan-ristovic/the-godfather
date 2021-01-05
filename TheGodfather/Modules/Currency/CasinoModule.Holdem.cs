@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Currency
                     DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
                     if (dm is null)
                         throw new CommandFailedException(ctx, "cmd-err-dm-create");
-                    handle = await dm.LocalizedEmbedAsync(this.Localization, icon: Emojis.Cards.Suits[0], color: this.ModuleColor, key: "str-casino-holdem-dm");
+                    handle = await dm.LocalizedEmbedAsync(this.Localization, Emojis.Cards.Suits[0], this.ModuleColor, "str-casino-holdem-dm");
                 } catch {
                     throw new CommandFailedException(ctx, "cmd-err-dm-create");
                 }

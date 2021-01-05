@@ -9,6 +9,7 @@ using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
@@ -79,15 +80,7 @@ namespace TheGodfather.Modules.Games.Common
             emb.WithDescription($"{header}\n\n{this.eb}");
             emb.WithColor(DiscordColor.Teal);
 
-            try {
-                if (this.msgHandle is { })
-                    this.msgHandle = await this.msgHandle.ModifyAsync(embed: emb.Build());
-            } catch {
-                this.msgHandle = null;
-            }
-
-            if (this.msgHandle is null)
-                this.msgHandle = await this.Channel.SendMessageAsync(embed: emb.Build());
+            this.msgHandle = await this.msgHandle.ModifyOrResendAsync(this.Channel, emb.Build());
         }
 
         private void UpdateHpBars()

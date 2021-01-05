@@ -76,14 +76,14 @@ namespace TheGodfather.Services.Common
                             ? await this.shard.Client.GetChannelAsync(rem.ChannelId)
                             : await this.shard.Client.CreateDmChannelAsync(rem.UserId);
                         if (channel is null) {
-                            Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})", 
+                            Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})",
                                 rem.Id, rem.ChannelId, rem.UserId
                             );
                             break;
                         }
                         DiscordUser user = await this.shard.Client.GetUserAsync(rem.UserId);
                         LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
-                        await channel.LocalizedEmbedAsync(lcs, "fmt-remind-miss", Emojis.X, DiscordColor.Red, 
+                        await channel.LocalizedEmbedAsync(lcs, Emojis.X, DiscordColor.Red, "fmt-remind-miss",
                             lcs.GetLocalizedTime(channel.GuildId, rem.ExecutionTime), rem.Message
                         );
                         break;
@@ -112,7 +112,7 @@ namespace TheGodfather.Services.Common
 
                 LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
                 this.async.Execute(
-                    channel.LocalizedEmbedAsync(lcs, "fmt-remind-exec", Emojis.AlarmClock, DiscordColor.Green, user.Mention, rem.Message)
+                    channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Green, "fmt-remind-exec", user.Mention, rem.Message)
                 );
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime

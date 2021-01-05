@@ -8,6 +8,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
@@ -90,7 +91,7 @@ namespace TheGodfather.Modules.Games.Common
                 sb.AppendLine();
             }
 
-            return msg.ModifyAsync(embed: new DiscordEmbedBuilder {
+            return msg.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

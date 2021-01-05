@@ -42,14 +42,14 @@ namespace TheGodfather.Modules.Games.Common
             this.msgHandle = await this.Channel.SendMessageAsync($"{this.player1.Mention} vs {this.player2.Mention}");
 
             while (!this.IsTimeoutReached && this.move < this.SizeY * this.SizeX && !this.IsGameOver()) {
-                await this.UpdateBoardAsync(lcs);
+                this.msgHandle = await this.UpdateBoardAsync(lcs);
                 await this.AdvanceAsync(lcs);
             }
 
             if (this.IsGameOver())
                 this.ResolveGameWinner();
 
-            await this.UpdateBoardAsync(lcs);
+           this.msgHandle = await this.UpdateBoardAsync(lcs);
         }
 
 
@@ -102,21 +102,8 @@ namespace TheGodfather.Modules.Games.Common
         protected virtual void ResolveGameWinner()
             => this.Winner = (this.move % 2 == 0) ? this.player2 : this.player1;
 
-        protected async Task UpdateOrResendHandleAsync(DiscordEmbed emb)
-        {
-            try {
-                if (this.msgHandle is { })
-                    this.msgHandle = await this.msgHandle.ModifyAsync(embed: emb);
-            } catch {
-                this.msgHandle = null;
-            }
-
-            if (this.msgHandle is null)
-                this.msgHandle = await this.Channel.SendMessageAsync(embed: emb);
-        }
-
 
         protected abstract bool IsGameOver();
-        protected abstract Task UpdateBoardAsync(LocalizationService lcs);
+        protected abstract Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs);
     }
 }
