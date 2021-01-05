@@ -1,33 +1,30 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using Humanizer;
-using TheGodfather.Common;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class TypingRaceGame : BaseChannelGame
+    public sealed class TypingRaceGame : BaseChannelGame
     {
-        private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);
+        public const int MaxParticipants = 10;
+        public const int MistakeThreshold = 5;
+
+        private static readonly Regex _wsRegex = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char> {
-        #region REPLACEMENTS
+            #region REPLACEMENTS
             {'`', '\''},
             {'’', '\''},
             {'“', '\"'},
@@ -36,11 +33,38 @@ namespace TheGodfather.Modules.Games.Common
             {'–', '-'},
             {'—', '-'},
             {'―', '-'}
-        #endregion
+            #endregion
         }.ToImmutableDictionary();
+        
+        private static string PrepareText(string text)
+        {
+            text = _wsRegex.Replace(text.Trim(), " ");
+            return new string(text.Select(c => _replacements.TryGetValue(c, out char tmp) ? tmp : c).ToArray());
+        }
+
+        private static Image RenderText(string text)
+        {
+            SizeF textSize;
+            using var font = new Font(FontFamily.GenericSansSerif, 40);
+
+            using (Image dummyImg = new Bitmap(1, 1)) {
+                using var g = Graphics.FromImage(dummyImg);
+                textSize = g.MeasureString(text, font);
+            }
+
+            Image img = new Bitmap((int)textSize.Width / 3, 4*(int)textSize.Height);
+            using (var g = Graphics.FromImage(img)) {
+                g.Clear(Color.White);
+                using Brush textBrush = new SolidBrush(Color.Black);
+                g.DrawString(text, font, textBrush, new RectangleF(0, 0, img.Width, img.Height));
+                g.Save();
+            }
+
+            return img;
+        }
+
 
         public bool Started { get; private set; }
-        public IReadOnlyList<ulong> WinnerIds { get; private set; }
         public int ParticipantCount => this.results.Count;
 
         private readonly ConcurrentDictionary<DiscordUser, int> results;
@@ -55,40 +79,24 @@ namespace TheGodfather.Modules.Games.Common
 
         public override async Task RunAsync(LocalizationService lcs)
         {
-            string quote = await QuoteService.GetRandomQuoteAsync();
+            string? quote = await QuoteService.GetRandomQuoteAsync();
             if (quote is null)
-                return;
-            quote.Truncate(230);
+                throw new InvalidOperationException("Failed to fetch quote for Typing Race game");
 
-            using (var image = new Bitmap(800, 300)) {
-                using (var g = Graphics.FromImage(image)) {
-                    g.InterpolationMode = InterpolationMode.High;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    var layout = new Rectangle(0, 0, image.Width, image.Height);
-                    g.FillRectangle(Brushes.White, layout);
-
-                    using (var font = new Font(FontFamily.GenericSansSerif, 30)) {
-                        g.DrawString(quote, font, Brushes.Black, layout);
-                    }
-
-                    g.Flush();
-                }
-
+            quote = PrepareText(quote);
+            using (Image image = RenderText(quote)) {
                 using var ms = new MemoryStream();
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 ms.Position = 0;
-                await this.Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)");
+                await this.Channel.SendFileAsync("typing-challenge.png", ms);
             }
 
-            quote = this.PrepareText(quote);
             InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
                 msg => {
                     if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
                         return false;
-                    int errors = quote.LevenshteinDistanceTo(this.PrepareText(msg.Content));
-                    if (errors > 50)
+                    int errors = quote.LevenshteinDistanceTo(PrepareText(msg.Content.Trim().ToLowerInvariant()));
+                    if (errors > MistakeThreshold)
                         return false;
                     this.results.AddOrUpdate(msg.Author, errors, (k, v) => Math.Min(errors, v));
                     return errors == 0;
@@ -96,47 +104,28 @@ namespace TheGodfather.Modules.Games.Common
                 TimeSpan.FromSeconds(60)
             );
 
-            IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = this.results
-                .Where(kvp => kvp.Value < 100)
-                .OrderBy(kvp => kvp.Value);
+            var ordered = this.results.OrderBy(kvp => kvp.Value).Where(kvp => kvp.Value < 50).Take(10).ToList();
             if (ordered.Any())
-                await this.Channel.SendMessageAsync(embed: this.EmbedResults(ordered));
-            else
-                await this.Channel.InformFailureAsync("No results to be shown for the typing race.");
+                await this.Channel.SendMessageAsync(embed: this.EmbedResults(lcs, ordered));
 
             this.Winner = ordered.First().Key;
         }
 
         public bool AddParticipant(DiscordUser user)
-        {
-            if (this.results.Any(kvp => kvp.Key.Id == user.Id))
-                return false;
-            return this.results.TryAdd(user, 100);
-        }
+            => this.results.TryAdd(user, int.MaxValue);
 
-        public DiscordEmbed EmbedResults(IOrderedEnumerable<KeyValuePair<DiscordUser, int>> results)
+        public DiscordEmbed EmbedResults(LocalizationService lcs, IEnumerable<KeyValuePair<DiscordUser, int>> results)
         {
             var sb = new StringBuilder();
 
-            foreach ((DiscordUser user, int result) in results.Take(10)) {
-                sb.Append(Formatter.Bold(user.Mention))
-                  .Append(" : ")
-                  .AppendLine($"{Formatter.Bold(result.ToString())} errors");
-            }
+            foreach ((DiscordUser user, int result) in results)
+                sb.AppendLine(lcs.GetString(this.Channel.GuildId, "fmt-game-tr-errors", user.Mention, result));
 
-            return new DiscordEmbedBuilder {
-                Title = $"{Emojis.Joystick} Typing race results:",
-                Description = sb.ToString(),
-                Color = DiscordColor.Green
-            }.Build();
-        }
-
-
-        private string PrepareText(string text)
-        {
-            text = _whitespaceMatcher.Replace(text, " ");
-            text = new string(text.Select(c => _replacements.TryGetValue(c, out char tmp) ? tmp : c).ToArray());
-            return text.ToLowerInvariant();
+            var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
+            emb.WithLocalizedTitle("fmt-game-tr-res");
+            emb.WithDescription(sb);
+            emb.WithColor(DiscordColor.Teal);
+            return emb.Build();
         }
     }
 }

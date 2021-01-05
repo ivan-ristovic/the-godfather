@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Games
                 var game = new RussianRouletteGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-rr-start", AnimalRace.MaxParticipants);
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-rr-start", RussianRouletteGame.MaxParticipants);
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 

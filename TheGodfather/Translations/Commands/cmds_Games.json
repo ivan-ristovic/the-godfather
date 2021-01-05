@@ -252,5 +252,26 @@
     "usage": [
       []
     ]
+  },
+  "game typingrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game typingrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game typingrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game typingrace top": {
+    "usage": [
+      []
+    ]
   }
 }
