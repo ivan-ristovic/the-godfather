@@ -1151,7 +1151,7 @@
   "str-eval-time-run": "Evaluation time (ms)",
   "str-eval-value-none": "No value returned.",
   "str-examples": "Examples:",
-  "str-exec-time": "",
+  "str-exec-time": "Execution time",
   "str-executes-in": "Executes in",
   "str-exempts": "Exempts",
   "str-f": "Guild filters",

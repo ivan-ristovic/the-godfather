@@ -18,23 +18,6 @@ namespace TheGodfather.Extensions
 {
     internal static class CommandContextExtensions
     {
-        // TODO remove
-        [Obsolete]
-        public static async Task<DiscordUser?> WaitGameOpponentObsolete(this CommandContext ctx)
-        {
-            InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                xm => {
-                    if (xm.Author.IsBot || xm.Author == ctx.User || xm.Channel != ctx.Channel)
-                        return false;
-                    string[] split = xm.Content.ToLowerInvariant().Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    return split.Length == 1 && (split[0] == "me" || split[0] == "i");
-                }
-            );
-
-            return mctx.TimedOut ? null : mctx.Result.Author;
-        }
-
-
         public static Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
