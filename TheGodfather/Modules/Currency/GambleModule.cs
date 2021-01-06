@@ -84,9 +84,9 @@ namespace TheGodfather.Modules.Currency
             if (bet == actual) {
                 long reward = 6 * bid;
                 await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, reward);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-dice-w", actual, reward, currency);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-dice-w", ctx.User.Mention, actual, reward, currency);
             } else {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-dice-l", actual, bid, currency);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-gamble-dice-l", ctx.User.Mention, actual, bid, currency);
             }
         }
         #endregion

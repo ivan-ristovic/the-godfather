@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -77,8 +78,8 @@ namespace TheGodfather.Modules.Music
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithColor(this.ModuleColor);
                     emb.WithLocalizedTitle("str-music-add");
+                    emb.WithDescription(Formatter.Bold(Formatter.Sanitize(track.Title)));
                     emb.AddLocalizedTitleField("str-author", track.Author, inline: true);
-                    emb.AddLocalizedTitleField("str-title", track.Title, inline: true);
                     emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);
                     emb.WithUrl(track.Uri);
                 });
