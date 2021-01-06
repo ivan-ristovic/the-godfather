@@ -218,7 +218,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             allowed ??= MockData.Ids.Except(blocked ?? Enumerable.Empty<ulong>());
             blocked ??= MockData.Ids.Except(allowed ?? Enumerable.Empty<ulong>());
 
-            if (allowed.Intersect(blocked).Any())
+            if (allowed!.Intersect(blocked).Any())
                 throw new InvalidOperationException("Channels cannot be blocked and allowed at the same time");
 
             string subcmd = $"{cmd} subcommand";

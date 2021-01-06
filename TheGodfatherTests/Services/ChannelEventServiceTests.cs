@@ -44,10 +44,10 @@ namespace TheGodfather.Tests.Services
             Assert.That(EventOfTypeIn<CaroGame>(MockData.Ids[1]), Is.Null);
 
 
-            IChannelEvent EventIn(ulong cid)
+            IChannelEvent? EventIn(ulong cid)
                 => this.Service.GetEventInChannel(cid);
 
-            T EventOfTypeIn<T>(ulong cid) where T : class, IChannelEvent
+            T? EventOfTypeIn<T>(ulong cid) where T : class, IChannelEvent
                 => this.Service.GetEventInChannel<T>(cid);
         }
 
@@ -68,30 +68,30 @@ namespace TheGodfather.Tests.Services
             Assert.That(IsEventRunningIn(MockData.Ids[1]), Is.True);
             Assert.That(IsEventRunningIn(MockData.Ids[2]), Is.False);
 
-            Assert.That(IsOutEventRunningIn(MockData.Ids[0], out IChannelEvent outEvent), Is.True);
+            Assert.That(IsOutEventRunningIn(MockData.Ids[0], out IChannelEvent? outEvent), Is.True);
             Assert.That(outEvent, Is.SameAs(caro));
             Assert.That(IsOutEventRunningIn(MockData.Ids[1], out outEvent), Is.True);
             Assert.That(outEvent, Is.SameAs(holdem));
             Assert.That(IsOutEventRunningIn(MockData.Ids[2], out outEvent), Is.False);
             Assert.That(outEvent, Is.Null);
 
-            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out CaroGame outCaro), Is.True);
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out CaroGame? outCaro), Is.True);
             Assert.That(outCaro, Is.SameAs(caro));
-            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out HoldemGame outHoldem), Is.False);
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[0], out HoldemGame? outHoldem), Is.False);
             Assert.That(outHoldem, Is.Null);
             Assert.That(IsEventOfTypeRunningIn(MockData.Ids[1], out outHoldem), Is.True);
             Assert.That(outHoldem, Is.SameAs(holdem));
-            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[2], out IChannelEvent ret3), Is.False);
+            Assert.That(IsEventOfTypeRunningIn(MockData.Ids[2], out IChannelEvent? ret3), Is.False);
             Assert.That(ret3, Is.Null);
 
 
             bool IsEventRunningIn(ulong cid)
                 => this.Service.IsEventRunningInChannel(cid);
 
-            bool IsOutEventRunningIn(ulong cid, out IChannelEvent @event)
+            bool IsOutEventRunningIn(ulong cid, out IChannelEvent? @event)
                 => this.Service.IsEventRunningInChannel(cid, out @event);
 
-            bool IsEventOfTypeRunningIn<T>(ulong cid, out T @event) where T : class, IChannelEvent
+            bool IsEventOfTypeRunningIn<T>(ulong cid, out T? @event) where T : class, IChannelEvent
                 => this.Service.IsEventRunningInChannel<T>(cid, out @event);
         }
 
@@ -118,7 +118,7 @@ namespace TheGodfather.Tests.Services
             Assert.That(EventIn(MockData.Ids[2]), Is.Null);
 
 
-            IChannelEvent EventIn(ulong cid)
+            IChannelEvent? EventIn(ulong cid)
                 => this.Service.GetEventInChannel(cid);
         }
 
@@ -149,7 +149,7 @@ namespace TheGodfather.Tests.Services
             Assert.That(() => this.Service.UnregisterEventInChannel(MockData.Ids[1]), Throws.Nothing);
 
 
-            IChannelEvent EventIn(ulong cid)
+            IChannelEvent? EventIn(ulong cid)
                 => this.Service.GetEventInChannel(cid);
         }
     }

@@ -229,12 +229,12 @@ namespace TheGodfather.Modules.Administration
                     if (dm is { }) {
                         var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
                         emb.WithLocalizedTitle("fmt-wh-add", Formatter.Bold(Formatter.Strip(wh.Name)), channel.Mention);
-                        emb.WithDescription(FormatterExt.Spoiler(wh.BuildUrlString()));
+                        emb.WithDescription($"||{wh.BuildUrlString()}||");
                         emb.WithColor(this.ModuleColor);
                         emb.WithThumbnail(wh.AvatarUrl);
                         emb.AddLocalizedTitleField("str-id", wh.Id, inline: true);
                         emb.AddLocalizedTitleField("str-name", wh.Name, inline: true);
-                        emb.AddLocalizedTitleField("str-token", FormatterExt.Spoiler(wh.Token));
+                        emb.AddLocalizedTitleField("str-token", $"||{wh.Token}||");
                         await dm.SendMessageAsync(embed: emb.Build());
                     } else {
                         await ctx.FailAsync("err-dm-fail");
@@ -277,7 +277,7 @@ namespace TheGodfather.Modules.Administration
 
 
             string? SanitizeWebhookData(DiscordWebhook wh, string data)
-                => displayToken && !string.IsNullOrWhiteSpace(wh.Token) ? FormatterExt.Spoiler(data) : null;
+                => displayToken && !string.IsNullOrWhiteSpace(wh.Token) ? $"||{data}||" : null;
         }
         #endregion
     }
