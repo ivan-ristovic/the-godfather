@@ -1,0 +1,66 @@
+﻿using System;
+using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.EventArgs;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Lavalink.EventArgs;
+using DSharpPlus.Net;
+using Emzi0767.Utilities;
+using Serilog;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
+
+namespace TheGodfather.Modules.Music.Services
+{
+    public sealed class LavalinkService : ITheGodfatherService
+    {
+        public bool IsDisabled => this.LavalinkNode is null;
+        public LavalinkNodeConnection? LavalinkNode { get; private set; }
+
+
+        private readonly LavalinkConfig cfg;
+        private readonly DiscordShardedClient client;
+
+        private readonly AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs> trackError;
+
+
+        public LavalinkService(BotConfigService cfg, DiscordShardedClient client)
+        {
+            this.cfg = cfg.CurrentConfiguration.LavalinkConfig;
+            this.client = client;
+            this.client.Ready += this.Client_Ready;
+            this.trackError = new AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs>("LAVALINK_ERROR", TimeSpan.Zero, this.ErrorHandler);
+        }
+
+
+        private Task Client_Ready(DiscordClient client, ReadyEventArgs e)
+        {
+            if (this.LavalinkNode is null) {
+                _ = Task.Run(async () => {
+                    LavalinkExtension lava = client.GetLavalink();
+                    this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
+                        Password = this.cfg.Password,
+                        SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
+                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                    });
+
+                    this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
+                });
+            }
+            return Task.CompletedTask;
+        }
+
+        public event AsyncEventHandler<LavalinkGuildConnection, TrackExceptionEventArgs> TrackExceptionThrown {
+            add => this.trackError.Register(value);
+            remove => this.trackError.Unregister(value);
+        }
+
+        private void ErrorHandler(
+            AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs> args,
+            Exception e,
+            AsyncEventHandler<LavalinkGuildConnection, TrackExceptionEventArgs> handler,
+            LavalinkGuildConnection conn,
+            TrackExceptionEventArgs eventArgs
+        ) => Log.Error(e, "Lavalink playback error: {0}", eventArgs.Error);
+    }
+}

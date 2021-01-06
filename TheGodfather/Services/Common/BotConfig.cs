@@ -11,6 +11,9 @@ namespace TheGodfather.Services.Common
         [JsonProperty("db-config")]
         public DbConfig DatabaseConfig { get; set; } = new DbConfig();
 
+        [JsonProperty("lava-config")]
+        public LavalinkConfig LavalinkConfig { get; set; } = new LavalinkConfig();
+
         [JsonProperty("db_sync_interval")]
         public int DatabaseSyncInterval { get; set; } = 600;
 

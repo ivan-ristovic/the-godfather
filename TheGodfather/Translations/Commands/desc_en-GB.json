@@ -321,6 +321,7 @@
   "penis": "An accurate measurement.",
   "penisbros": "Finds members with same `penis` command result as the given user.",
   "ping": "Pings the bot.",
+  "play": "Play audio from given URL.",
   "poll": "Starts a new poll in the current channel. You can also provide the time for the poll to run.",
   "poll stop": "Stops a running poll.",
   "prefix": "Gets or sets command prefix.",

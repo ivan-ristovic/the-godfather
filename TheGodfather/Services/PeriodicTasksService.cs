@@ -26,8 +26,8 @@ namespace TheGodfather.Services
         private static void BotActivityChangeCallback(object? _)
         {
             if (_ is TheGodfatherBot shard) {
-                if (shard.Client is null) {
-                    Log.Error("BotActivityChangeCallback detected null client - this should not happen");
+                if (shard.Client is null || shard.Client.CurrentUser is null) {
+                    Log.Error("BotActivityChangeCallback detected null client/user - this should not happen but is not nececarily an error");
                     return;
                 }
 

@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.Lavalink;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Extensions.Logging;
@@ -29,6 +30,7 @@ namespace TheGodfather
         public DiscordShardedClient Client => this.client ?? throw new BotUninitializedException();
         public IReadOnlyDictionary<int, InteractivityExtension> Interactivity => this.interactivity ?? throw new BotUninitializedException();
         public IReadOnlyDictionary<int, CommandsNextExtension> CNext => this.cnext ?? throw new BotUninitializedException();
+        public IReadOnlyDictionary<int, LavalinkExtension> Lavalink => this.lavalink ?? throw new BotUninitializedException();
         public IReadOnlyDictionary<string, Command> Commands => this.commands ?? throw new BotUninitializedException();
 
         private readonly BotConfigService? config;
@@ -37,6 +39,7 @@ namespace TheGodfather
         private ServiceProvider? services;
         private IReadOnlyDictionary<int, InteractivityExtension>? interactivity;
         private IReadOnlyDictionary<int, CommandsNextExtension>? cnext;
+        private IReadOnlyDictionary<int, LavalinkExtension>? lavalink;
         private IReadOnlyDictionary<string, Command>? commands;
 
 
@@ -68,6 +71,7 @@ namespace TheGodfather
             this.UpdateCommandList();
 
             this.interactivity = await this.SetupInteractivityAsync();
+            this.lavalink = await this.client.UseLavalinkAsync();
 
             Listeners.FindAndRegister(this);
 
