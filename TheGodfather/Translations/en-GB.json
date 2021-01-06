@@ -99,6 +99,7 @@
   "arg-usr-raw": "SomeUserName",
   "arg-warn": "This is a warning!",
   "arg-wh-name": "MyWebhookName",
+  "arg-yt-song": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
   "arg-yt-chn-id": "UCA5u8UquvO44Jcd3wZApyDg",
   "arg-yt-chn-url": "https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg",
   "cmd-404": "\u26D4 Command \"{0}\" not found!",

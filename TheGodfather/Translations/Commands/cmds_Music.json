@@ -1,0 +1,8 @@
+{
+  "music play": {
+    "usage": [
+      [ "arg-yt-song" ],
+      [ "arg-query" ]
+    ]
+  }
+}

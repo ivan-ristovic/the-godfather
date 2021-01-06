@@ -15,9 +15,11 @@ using TheGodfather.Modules.Music.Services;
 
 namespace TheGodfather.Modules.Music
 {
+    [Group("music"), Module(ModuleType.Music), NotBlocked]
+    [Aliases("songs", "song", "tracks", "track")]
     [RequireGuild]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ModuleLifespan(ModuleLifespan.Transient)]
-    [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public sealed class MusicModule : TheGodfatherServiceModule<MusicService>
     {
         private GuildMusicData? GuildMusicData { get; set; }
@@ -43,7 +45,7 @@ namespace TheGodfather.Modules.Music
         #endregion
 
 
-        #region play
+        #region music play
         [Command("play"), Priority(1)]
         [Aliases("p")]
         public async Task PlayAsync(CommandContext ctx,
