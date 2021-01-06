@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Search
             #endregion
 
             #region subscribe youtube
-            [Command("youtube")]
+            [Command("youtube"), Priority(2)]
             [Aliases("y", "yt", "ytube")]
             public Task YoutubeAsync(CommandContext ctx,
                                     [Description("desc-sub-chn")] DiscordChannel chn,
@@ -134,12 +134,18 @@ namespace TheGodfather.Modules.Search
                                     [RemainingText, Description("desc-name-f")] string? name = null)
                 => ctx.ExecuteOtherCommandAsync("youtube subscribe", chn.Mention, url.ToString(), name);
 
+            [Command("youtube"), Priority(1)]
+            public Task YoutubeAsync(CommandContext ctx,
+                                    [Description("desc-sub-url")] Uri url,
+                                    [Description("desc-sub-chn")] DiscordChannel chn,
+                                    [RemainingText, Description("desc-name-f")] string? name = null)
+                => this.YoutubeAsync(ctx, chn, url, name);
+
             [Command("youtube"), Priority(0)]
             public Task YoutubeAsync(CommandContext ctx,
                                     [Description("desc-sub-url")] Uri url,
-                                    [Description("desc-sub-chn")] DiscordChannel? chn = null,
                                     [RemainingText, Description("desc-name-f")] string? name = null)
-                => this.YoutubeAsync(ctx, chn ?? ctx.Channel, url, name);
+                => this.YoutubeAsync(ctx, ctx.Channel, url, name);
             #endregion
         }
         #endregion
