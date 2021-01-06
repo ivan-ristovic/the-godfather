@@ -1,78 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
 using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Music.Services;
-using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Music
 {
-    [NotBlocked, ModuleLifespan(ModuleLifespan.Transient)]
     [RequireGuild]
+    [ModuleLifespan(ModuleLifespan.Transient)]
+    [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public sealed class MusicModule : TheGodfatherServiceModule<MusicService>
     {
         private GuildMusicData? GuildMusicData { get; set; }
 
 
+        #region pre-execution
         public override async Task BeforeExecutionAsync(CommandContext ctx)
         {
-            var vs = ctx.Member.VoiceState;
-            var chn = vs?.Channel;
-            if (chn == null) {
-                await ctx.RespondAsync($"You need to be in a voice channel.");
-                throw new CommandFailedException(ctx);
-            }
+            DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
+            DiscordChannel? chn = memberVoiceState?.Channel;
+            if (chn is null)
+                throw new CommandFailedException(ctx, "cmd-err-music-vc");
 
-            var mbr = ctx.Guild.CurrentMember?.VoiceState?.Channel;
-            if (mbr != null && chn != mbr) {
-                await ctx.RespondAsync($"You need to be in the same voice channel.");
-                throw new CommandFailedException(ctx);
-            }
+            DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
+            if (botVoiceState is { } && chn != botVoiceState)
+                throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
 
             this.GuildMusicData = await this.Service.GetOrCreateDataAsync(ctx.Guild);
             this.GuildMusicData.CommandChannel = ctx.Channel;
 
             await base.BeforeExecutionAsync(ctx);
         }
+        #endregion
 
 
+        #region play
         [Command("play"), Priority(1)]
         [Aliases("p")]
         public async Task PlayAsync(CommandContext ctx,
                                    [Description("desc-audio-url")] Uri uri)
         {
-            var trackLoad = await this.Service.GetTracksAsync(uri);
-            var tracks = trackLoad.Tracks;
-            if (trackLoad.LoadResultType == LavalinkLoadResultType.LoadFailed || !tracks.Any()) {
-                await ctx.RespondAsync("No tracks were found at specified link.");
-                return;
-            }
+            LavalinkLoadResult tlr = await this.Service.GetTracksAsync(uri);
+            IEnumerable<LavalinkTrack> tracks = tlr.Tracks;
+            if (tlr.LoadResultType == LavalinkLoadResultType.LoadFailed || !tracks.Any() || this.GuildMusicData is null)
+                throw new CommandFailedException(ctx, "cmd-err-music-none");
 
             if (this.GuildMusicData.IsShuffled)
                 tracks = this.Service.Shuffle(tracks);
-            var trackCount = tracks.Count();
-            foreach (var track in tracks)
+
+            int trackCount = tracks.Count();
+            foreach (LavalinkTrack track in tracks)
                 this.GuildMusicData.Enqueue(new Song(track, ctx.Member));
 
-            var vs = ctx.Member.VoiceState;
-            var chn = vs.Channel;
+            DiscordChannel? chn = ctx.Member.VoiceState?.Channel;
+            if (chn is null)
+                throw new CommandFailedException(ctx, "cmd-err-music-vc");
+
             await this.GuildMusicData.CreatePlayerAsync(chn);
             await this.GuildMusicData.PlayAsync();
 
-            if (trackCount > 1)
-                await ctx.RespondAsync($"Added {trackCount:#,##0} tracks to playback queue.");
-            else {
-                var track = tracks.First();
-                await ctx.RespondAsync($"Added {Formatter.Bold(Formatter.Sanitize(track.Title))} by {Formatter.Bold(Formatter.Sanitize(track.Author))} to the playback queue.");
+            if (trackCount > 1) {
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-add-many", trackCount);
+            } else {
+                LavalinkTrack track = tracks.First();
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithLocalizedTitle("str-music-add");
+                    emb.AddLocalizedTitleField("str-author", track.Author, inline: true);
+                    emb.AddLocalizedTitleField("str-title", track.Title, inline: true);
+                    emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);
+                    emb.WithUrl(track.Uri);
+                });
             }
         }
+
+        [Command("play"), Priority(0)]
+        public async Task PlayAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-audio-query")] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+
+            // TODO
+        }
+        #endregion
     }
 }

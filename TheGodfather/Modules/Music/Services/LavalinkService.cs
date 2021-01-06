@@ -28,39 +28,37 @@ namespace TheGodfather.Modules.Music.Services
         {
             this.cfg = cfg.CurrentConfiguration.LavalinkConfig;
             this.client = client;
-            this.client.Ready += this.Client_Ready;
-            this.trackError = new AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs>("LAVALINK_ERROR", TimeSpan.Zero, this.ErrorHandler);
+            this.client.Ready += this.InitializeLavalinkAsync;
+            this.trackError = new AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs>("LAVALINK_ERROR", TimeSpan.Zero, this.LavalinkErrorHandler);
         }
 
-
-        private Task Client_Ready(DiscordClient client, ReadyEventArgs e)
-        {
-            if (this.LavalinkNode is null) {
-                _ = Task.Run(async () => {
-                    LavalinkExtension lava = client.GetLavalink();
-                    this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
-                        Password = this.cfg.Password,
-                        SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
-                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
-                    });
-
-                    this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
-                });
-            }
-            return Task.CompletedTask;
-        }
 
         public event AsyncEventHandler<LavalinkGuildConnection, TrackExceptionEventArgs> TrackExceptionThrown {
             add => this.trackError.Register(value);
             remove => this.trackError.Unregister(value);
         }
 
-        private void ErrorHandler(
+
+        private void LavalinkErrorHandler(
             AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs> args,
             Exception e,
             AsyncEventHandler<LavalinkGuildConnection, TrackExceptionEventArgs> handler,
             LavalinkGuildConnection conn,
             TrackExceptionEventArgs eventArgs
         ) => Log.Error(e, "Lavalink playback error: {0}", eventArgs.Error);
+
+        private async Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
+        {
+            if (this.LavalinkNode is null) {
+                LavalinkExtension lava = client.GetLavalink();
+                this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
+                    Password = this.cfg.Password,
+                    SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
+                    RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                });
+                this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
+            }
+        }
+
     }
 }

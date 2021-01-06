@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Music.Common
         public DiscordChannel? CommandChannel { get; set; }
 
         private readonly List<Song> queue;
-        private readonly SemaphoreSlim queueLock;
+        private readonly SemaphoreSlim queueSem;
         private readonly DiscordGuild guild;
         private readonly SecureRandom rng;
         private readonly LavalinkService lava;
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Music.Common
             this.rng = new SecureRandom();
             this.lava = lavalink;
             this.Identifier = this.guild.Id.ToString(CultureInfo.InvariantCulture);
-            this.queueLock = new SemaphoreSlim(1, 1);
+            this.queueSem = new SemaphoreSlim(1, 1);
             this.queue = new List<Song>();
             this.Queue = new ReadOnlyCollection<Song>(this.queue);
         }
@@ -48,16 +48,16 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task PlayAsync()
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
-            if (this.NowPlaying.Track?.TrackString == null)
+            if (this.NowPlaying.Track?.TrackString is null)
                 await this.PlayHandlerAsync();
         }
 
         public async Task StopAsync()
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
             this.NowPlaying = default;
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task PauseAsync()
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
             this.IsPlaying = false;
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task ResumeAsync()
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
             this.IsPlaying = true;
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task SetVolumeAsync(int volume)
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
             await this.player.SetVolumeAsync(volume);
@@ -93,38 +93,38 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task RestartAsync()
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
-            if (this.NowPlaying.Track.TrackString == null)
+            if (this.NowPlaying.Track.TrackString is null)
                 return;
 
-            await this.queueLock.WaitAsync();
+            await this.queueSem.WaitAsync();
             try {
                 this.queue.Insert(0, this.NowPlaying);
                 await this.player.StopAsync();
             } finally {
-                this.queueLock.Release();
+                this.queueSem.Release();
             }
         }
 
         public async Task SeekAsync(TimeSpan target, bool relative)
         {
-            if (this.player == null || !this.player.IsConnected)
+            if (this.player is null || !this.player.IsConnected)
                 return;
 
-            if (!relative)
-                await this.player.SeekAsync(target);
-            else
+            if (relative)
                 await this.player.SeekAsync(this.player.CurrentState.PlaybackPosition + target);
+            else
+                await this.player.SeekAsync(target);
         }
 
         public int EmptyQueue()
         {
             lock (this.queue) {
-                var itemCount = this.queue.Count;
+                int count = this.queue.Count;
                 this.queue.Clear();
-                return itemCount;
+                return count;
             }
         }
 
@@ -151,15 +151,15 @@ namespace TheGodfather.Modules.Music.Common
 
         public void SetRepeatMode(RepeatMode mode)
         {
-            var pMode = this.RepeatMode;
+            RepeatMode rmode = this.RepeatMode;
             this.RepeatMode = mode;
 
-            if (this.NowPlaying.Track.TrackString != null) {
-                if (mode == RepeatMode.Single && mode != pMode) {
+            if (this.NowPlaying.Track.TrackString is { }) {
+                if (mode == RepeatMode.Single && mode != rmode) {
                     lock (this.queue) {
                         this.queue.Insert(0, this.NowPlaying);
                     }
-                } else if (mode != RepeatMode.Single && pMode == RepeatMode.Single) {
+                } else if (mode != RepeatMode.Single && rmode == RepeatMode.Single) {
                     lock (this.queue) {
                         this.queue.RemoveAt(0);
                     }
@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Music.Common
                 } else if (!this.IsShuffled || !this.queue.Any()) {
                     this.queue.Add(item);
                 } else if (this.IsShuffled) {
-                    var index = this.rng.Next(0, this.queue.Count);
+                    int index = this.rng.Next(0, this.queue.Count);
                     this.queue.Insert(index, item);
                 }
             }
@@ -188,18 +188,18 @@ namespace TheGodfather.Modules.Music.Common
                     return null;
 
                 if (this.RepeatMode == RepeatMode.None) {
-                    var item = this.queue[0];
+                    Song item = this.queue[0];
                     this.queue.RemoveAt(0);
                     return item;
                 }
 
                 if (this.RepeatMode == RepeatMode.Single) {
-                    var item = this.queue[0];
+                    Song item = this.queue[0];
                     return item;
                 }
 
                 if (this.RepeatMode == RepeatMode.All) {
-                    var item = this.queue[0];
+                    Song item = this.queue[0];
                     this.queue.RemoveAt(0);
                     this.queue.Add(item);
                     return item;
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Music.Common
                 if (index < 0 || index >= this.queue.Count)
                     return null;
 
-                var item = this.queue[index];
+                Song item = this.queue[index];
                 this.queue.RemoveAt(index);
                 return item;
             }
@@ -223,10 +223,10 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task CreatePlayerAsync(DiscordChannel channel)
         {
-            if (this.player != null && this.player.IsConnected)
+            if (this.player != null && this.player.IsConnected || this.lava.IsDisabled)
                 return;
 
-            this.player = await this.lava.LavalinkNode.ConnectAsync(channel);
+            this.player = await this.lava.LavalinkNode!.ConnectAsync(channel);
             if (this.Volume != 100)
                 await this.player.SetVolumeAsync(this.Volume);
             this.player.PlaybackFinished += this.PlaybackFinishedAsync;
@@ -234,7 +234,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task DestroyPlayerAsync()
         {
-            if (this.player == null)
+            if (this.player is null)
                 return;
 
             if (this.player.IsConnected)
@@ -243,13 +243,8 @@ namespace TheGodfather.Modules.Music.Common
             this.player = null;
         }
 
-        public TimeSpan GetCurrentPosition()
-        {
-            if (this.NowPlaying.Track.TrackString == null)
-                return TimeSpan.Zero;
-
-            return this.player.CurrentState.PlaybackPosition;
-        }
+        public TimeSpan GetCurrentPosition() 
+            => this.NowPlaying.Track.TrackString is not null && this.player is { } ? this.player.CurrentState.PlaybackPosition : TimeSpan.Zero;
 
 
         private async Task PlaybackFinishedAsync(LavalinkGuildConnection con, TrackFinishEventArgs e)
@@ -261,16 +256,16 @@ namespace TheGodfather.Modules.Music.Common
 
         private async Task PlayHandlerAsync()
         {
-            var itemN = this.Dequeue();
-            if (itemN == null) {
+            Song? next = this.Dequeue();
+            if (next is null || this.player is null) {
                 this.NowPlaying = default;
                 return;
             }
 
-            var item = itemN.Value;
-            this.NowPlaying = item;
+            Song song = next.Value;
+            this.NowPlaying = song;
             this.IsPlaying = true;
-            await this.player.PlayAsync(item.Track);
+            await this.player.PlayAsync(song.Track);
         }
     }
 }
