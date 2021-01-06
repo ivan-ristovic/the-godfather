@@ -62,34 +62,34 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region youtube subscribe
-        [Command("subscribe"), Priority(3)]
+        [Command("subscribe"), Priority(5)]
         [Aliases("sub", "follow")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("desc-sub-chn")] DiscordChannel chn,
                                   [Description("desc-sub-yt")] Uri url,
-                                  [RemainingText, Description("Friendly name.")] string? name = null)
+                                  [RemainingText, Description("desc-name-f")] string? name = null)
             => this.SubscribeAsync(ctx, chn, url.AbsoluteUri, name);
         
-        [Command("subscribe"), Priority(2)]
+        [Command("subscribe"), Priority(4)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("desc-sub-yt")] Uri url,
-                                  [Description("desc-sub-chn")] DiscordChannel? chn = null,
-                                  [RemainingText, Description("Friendly name.")] string? name = null)
+                                  [Description("desc-sub-chn")] DiscordChannel chn,
+                                  [RemainingText, Description("desc-name-f")] string? name = null)
             => this.SubscribeAsync(ctx, chn ?? ctx.Channel, url.AbsoluteUri, name);
 
-        [Command("subscribe"), Priority(1)]
+        [Command("subscribe"), Priority(3)]
         public Task SubscribeAsync(CommandContext ctx,
                                   [Description("desc-sub-yt-username")] string username,
                                   [Description("desc-sub-chn")] DiscordChannel? chn = null,
-                                  [RemainingText, Description("Friendly name.")] string? name = null)
+                                  [RemainingText, Description("desc-name-f")] string? name = null)
             => this.SubscribeAsync(ctx, chn ?? ctx.Channel, username, name);
 
-        [Command("subscribe"), Priority(0)]
+        [Command("subscribe"), Priority(2)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("desc-sub-chn")] DiscordChannel chn,
                                         [Description("desc-sub-yt-username")] string username,
-                                        [RemainingText, Description("Friendly name.")] string? name = null)
+                                        [RemainingText, Description("desc-name-f")] string? name = null)
         {
             if (chn.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
@@ -103,6 +103,18 @@ namespace TheGodfather.Modules.Search
             await ctx.InfoAsync(this.ModuleColor);
         }
 
+        [Command("subscribe"), Priority(1)]
+        public Task SubscribeAsync(CommandContext ctx,
+                                  [Description("desc-sub-yt-username")] string username,
+                                  [RemainingText, Description("desc-name-f")] string? name = null)
+            => this.SubscribeAsync(ctx, ctx.Channel, username, name);
+
+
+        [Command("subscribe"), Priority(0)]
+        public Task SubscribeAsync(CommandContext ctx,
+                                  [Description("desc-sub-yt-username")] Uri url,
+                                  [RemainingText, Description("desc-name-f")] string? name = null)
+            => this.SubscribeAsync(ctx, ctx.Channel, url.AbsoluteUri, name);
         #endregion
 
         #region youtube unsubscribe

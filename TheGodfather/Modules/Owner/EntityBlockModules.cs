@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                                   [Description("Channels to unblock.")] params DiscordUser[] entities)
+                               [Description("desc-block-del")] params DiscordUser[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 
@@ -245,7 +245,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                                   [Description("Channels to unblock.")] params DiscordChannel[] entities)
+                               [Description("desc-block-del")] params DiscordChannel[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 
@@ -339,7 +339,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                                   [Description("Channels to unblock.")] params DiscordGuild[] entities)
+                               [Description("desc-block-del")] params DiscordGuild[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 

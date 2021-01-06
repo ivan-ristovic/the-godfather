@@ -30,13 +30,13 @@ namespace TheGodfather.Modules.Misc
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-bd-channel")] DiscordChannel? channel = null)
+                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
             => this.ListAsync(ctx, channel);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-bd-user")] DiscordUser user,
-                                     [Description("desc-bd-channel")] DiscordChannel channel,
+                                     [Description("desc-bd-chn")] DiscordChannel channel,
                                      [Description("desc-bd-date")] string? date = null)
             => this.AddAsync(ctx, user, date, channel);
 
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-bd-user")] DiscordUser user,
                                      [Description("desc-bd-date")] string? date,
-                                     [Description("desc-bd-channel")] DiscordChannel? channel = null)
+                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
             => this.AddAsync(ctx, user, date, channel);
         #endregion
 

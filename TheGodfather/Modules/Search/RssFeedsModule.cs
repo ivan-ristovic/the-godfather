@@ -131,14 +131,14 @@ namespace TheGodfather.Modules.Search
             public Task YoutubeAsync(CommandContext ctx,
                                     [Description("desc-sub-chn")] DiscordChannel chn,
                                     [Description("desc-sub-url")] Uri url,
-                                    [RemainingText, Description("Friendly name.")] string? name = null)
+                                    [RemainingText, Description("desc-name-f")] string? name = null)
                 => ctx.ExecuteOtherCommandAsync("youtube subscribe", chn.Mention, url.ToString(), name);
 
             [Command("youtube"), Priority(0)]
             public Task YoutubeAsync(CommandContext ctx,
                                     [Description("desc-sub-url")] Uri url,
                                     [Description("desc-sub-chn")] DiscordChannel? chn = null,
-                                    [RemainingText, Description("Friendly name.")] string? name = null)
+                                    [RemainingText, Description("desc-name-f")] string? name = null)
                 => this.YoutubeAsync(ctx, chn ?? ctx.Channel, url, name);
             #endregion
         }

@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("nick", "name", "n")]
         [RequireBotPermissions(Permissions.ManageNicknames)]
         public async Task GiveNameAsync(CommandContext ctx,
-                                       [RemainingText, Description("Nickname to set.")] string name)
+                                       [RemainingText, Description("desc-name")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");

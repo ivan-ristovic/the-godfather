@@ -119,7 +119,8 @@
   },
   "reddit subscribe": {
     "usage": [
-      [ "arg-sub" ]
+      [ "arg-sub" ],
+      [ "arg-sub", "arg-chn-text" ]
     ]
   },
   "reddit top": {
@@ -135,6 +136,49 @@
   "rss": {
     "usage": [
       [ "arg-rss" ]
+    ]
+  },
+  "rss subscribe": {
+    "usage": [
+      [ "arg-rss" ],
+      [ "arg-rss", "arg-chn-text", "arg-sub-name" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "subscribe reddit": {
+    "usage": [
+      [ "arg-sub" ],
+      [ "arg-sub", "arg-chn-text" ]
+    ]
+  },
+  "subscribe youtube": {
+    "usage": [
+      [ "arg-yt-chn-url" ],
+      [ "arg-yt-chn-url", "arg-sub-name" ],
+      [ "arg-yt-chn-id", "arg-chn-text" ]
+    ]
+  },
+  "unsubscribe": {
+    "usage": [
+      [ "arg-id" ],
+      [ "arg-sub-name" ]
+    ]
+  },
+  "unsubscribe all": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "unsubscribe reddit": {
+    "usage": [
+      [ "arg-sub" ]
+    ]
+  },
+  "unsubscribe youtube": {
+    "usage": [
+      [ "arg-sub-name" ],
+      [ "arg-yt-chn-url" ]
     ]
   },
   "steam": {

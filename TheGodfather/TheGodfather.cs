@@ -131,19 +131,19 @@ namespace TheGodfather
                 _shards.Add(shard);
             }
 
-            // CheckCommandLocalization(_shards[0]);
+            CheckCommandLocalization(_shards[0]);
 
             Log.Information("Booting the shards");
 
             return Task.WhenAll(_shards.Select(s => s.StartAsync()));
 
 
-            void CheckCommandLocalization(TheGodfatherShard shard)
+            static void CheckCommandLocalization(TheGodfatherShard shard)
             {
                 LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
-                foreach ((string cmdName, Command cmd) in shard.CNext.RegisteredCommands) {
+                foreach (Command cmd in shard.CNext.GetRegisteredCommands()) {
                     try {
-                        _ = lcs.GetCommandDescription(0, cmdName);
+                        _ = lcs.GetCommandDescription(0, cmd.QualifiedName);
                         IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
                         foreach (CommandArgument arg in args)
                             _ = lcs.GetString(null, arg.Description);

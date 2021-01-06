@@ -12,12 +12,12 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("statuses"), Module(ModuleType.Owner), Hidden]
-    [Aliases("status", "botstatus", "activity", "activities")]
+    [Group("status"), Module(ModuleType.Owner), Hidden]
+    [Aliases("statuses", "botstatus", "activity", "activities")]
     [RequireOwner]
     public sealed class StatusModule : TheGodfatherServiceModule<BotActivityService>
     {
-        #region statuses
+        #region status
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);

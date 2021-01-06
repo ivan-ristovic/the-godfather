@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Currency
             });
         }
 
-        [Command("suggestions"), Priority(0)]
+        [Command("currency"), Priority(0)]
         public Task CurrencyAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);

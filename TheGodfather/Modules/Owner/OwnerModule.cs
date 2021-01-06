@@ -261,7 +261,7 @@ namespace TheGodfather.Modules.Owner
 
         #region generatecommandlist
         [Command("generatecommandlist")]
-        [Aliases("gendocs", "docs", "cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
+        [Aliases("gendocs", "generatecommandslist", "docs", "cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
         [RequireOwner]
         public async Task GenerateCommandListAsync(CommandContext ctx,
                                                   [RemainingText, Description("desc-folder")] string? path = null)
@@ -568,13 +568,13 @@ namespace TheGodfather.Modules.Owner
         [Aliases("disable", "poweroff", "exit", "quit")]
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
-                             [Description("Time until shutdown.")] TimeSpan timespan,
-                             [Description("Exit code.")] int exitCode = 0)
+                             [Description("desc-exit-time")] TimeSpan timespan,
+                             [Description("desc-exit-code")] int exitCode = 0)
             => TheGodfather.Stop(exitCode, timespan);
 
         [Command("shutdown"), Priority(0)]
         public Task ExitAsync(CommandContext _,
-                             [Description("Exit code.")] int exitCode = 0)
+                             [Description("desc-exit-code")] int exitCode = 0)
             => TheGodfather.Stop(exitCode);
         #endregion
 
