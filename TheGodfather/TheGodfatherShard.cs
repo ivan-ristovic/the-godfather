@@ -93,7 +93,7 @@ namespace TheGodfather
 
             var client = new DiscordClient(cfg);
             client.Ready += (s, e) => {
-                Log.Information("Client ready!");
+                LogExt.Information(this.Id, "Client ready!");
                 return Task.CompletedTask;
             };
 
