@@ -47,18 +47,20 @@ namespace TheGodfather.Modules.Music.Services
             TrackExceptionEventArgs eventArgs
         ) => Log.Error(e, "Lavalink playback error: {0}", eventArgs.Error);
 
-        private async Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
+        private Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
         {
             if (this.LavalinkNode is null) {
-                LavalinkExtension lava = client.GetLavalink();
-                this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
-                    Password = this.cfg.Password,
-                    SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
-                    RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                _ = Task.Run(async () => {
+                    LavalinkExtension lava = client.GetLavalink();
+                    this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
+                        Password = this.cfg.Password,
+                        SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
+                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                    });
+                    this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
                 });
-                this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
             }
+            return Task.CompletedTask;
         }
-
     }
 }

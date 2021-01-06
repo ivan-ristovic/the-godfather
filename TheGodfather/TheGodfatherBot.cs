@@ -75,7 +75,6 @@ namespace TheGodfather
 
             Listeners.FindAndRegister(this);
 
-            Log.Information("Starting {ShardCount} shard(s)", this.Config.CurrentConfiguration.ShardCount);
             await this.Client.StartAsync();
         }
 

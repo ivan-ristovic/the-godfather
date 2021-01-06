@@ -5,12 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Database;
-using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 

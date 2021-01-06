@@ -175,10 +175,10 @@ namespace TheGodfather.Services
 
         public PeriodicTasksService(TheGodfatherBot shard, BotConfig cfg)
         {
-            this.BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, shard, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
+            this.BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, shard, TimeSpan.FromSeconds(25), TimeSpan.FromMinutes(10));
             this.DatabaseSyncTimer = new Timer(DatabaseSyncCallback, shard, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DatabaseSyncInterval));
             this.FeedCheckTimer = new Timer(FeedCheckCallback, shard, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
-            this.MiscActionsTimer = new Timer(MiscellaneousActionsCallback, shard, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            this.MiscActionsTimer = new Timer(MiscellaneousActionsCallback, shard, TimeSpan.FromSeconds(35), TimeSpan.FromHours(12));
         }
 
 
