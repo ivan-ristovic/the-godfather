@@ -1,15 +1,449 @@
 # Module: Owner
+*This module contains owner-only commands.*
+
+
+## Group: blockedchannels
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Blocked channels control commands.*
+
+**Aliases:**
+`bc, blockedc, blockchannel, bchannels, bchannel, bchn`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[channel...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[channel...]` : *Entities to block*
+
+**Overload 0:**
+
+`[channel]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedchannels
+!blockedchannels #my-text-channel
+```
+</p></details>
+
+---
+
+### blockedchannels add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Blocks channels from interacting with the bot.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[channel...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[channel...]` : *Entities to block*
+
+**Overload 0:**
+
+`[channel]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedchannels add #my-text-channel
+!blockedchannels add #my-text-channel Because I can!
+```
+</p></details>
+
+---
+
+### blockedchannels delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes channels from bot block list.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Privileged users only.**
+
+
+**Arguments:**
+
+`[channel...]` : *Entities to unblock*
+
+**Examples:**
+
+```xml
+!blockedchannels delete #my-text-channel
+```
+</p></details>
+
+---
+
+### blockedchannels list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all blocked channels.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!blockedchannels list
+```
+</p></details>
+
+---
+
+## Group: blockedguilds
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Blocked guilds control commands.*
+
+**Aliases:**
+`bg, blockedg, blockguild, bguilds, bguild, bgld`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[guild...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[guild...]` : *Entities to block*
+
+**Overload 0:**
+
+`[guild]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedguilds
+!blockedguilds Some Guild
+```
+</p></details>
+
+---
+
+### blockedguilds add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Blocks guilds from interacting with the bot.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[guild...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[guild...]` : *Entities to block*
+
+**Overload 0:**
+
+`[guild]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedguilds add Some Guild
+!blockedguilds add Some Guild Because I can!
+```
+</p></details>
+
+---
+
+### blockedguilds delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes guilds from bot block list.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Privileged users only.**
+
+
+**Arguments:**
+
+`[guild...]` : *Entities to unblock*
+
+**Examples:**
+
+```xml
+!blockedguilds delete Some Guild
+```
+</p></details>
+
+---
+
+### blockedguilds list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all blocked guilds.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!blockedguilds list
+```
+</p></details>
+
+---
+
+## Group: blockedusers
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Blocked users control commands.*
+
+**Aliases:**
+`bu, blockedu, blockuser, busers, buser, busr`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[user...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[user...]` : *Entities to block*
+
+**Overload 0:**
+
+`[user]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedusers
+!blockedusers @User
+```
+</p></details>
+
+---
+
+### blockedusers add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Blocks users from interacting with the bot.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Privileged users only.**
+
+
+**Overload 2:**
+
+`[user...]` : *Entities to block*
+
+**Overload 1:**
+
+`[string]` : *Reason for the action*
+
+`[user...]` : *Entities to block*
+
+**Overload 0:**
+
+`[user]` : *Entities to block*
+
+`[string...]` : *Reason for the action*
+
+**Examples:**
+
+```xml
+!blockedusers add @User
+!blockedusers add @User Because I can!
+```
+</p></details>
+
+---
+
+### blockedusers delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes users from bot block list.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Privileged users only.**
+
+
+**Arguments:**
+
+`[user...]` : *Entities to unblock*
+
+**Examples:**
+
+```xml
+!blockedusers delete @User
+```
+</p></details>
+
+---
+
+### blockedusers list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all blocked users.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!blockedusers list
+```
+</p></details>
+
+---
+
+## Group: commands
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Bot command manipulation during runtime.*
+
+**Aliases:**
+`cmds, cmd`
+**Owner-only.**
+
+**Examples:**
+
+```xml
+!commands
+```
+</p></details>
+
+---
+
+### commands add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a new bot command.*
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
+**Owner-only.**
+
+**Arguments:**
+
+`[string...]` : *C# code snippet in a markdown code block*
+
+**Examples:**
+
+```xml
+!commands add ```cs
+[Command("test")]
+public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
+```
+```
+</p></details>
+
+---
+
+### commands delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Deletes existing bot command.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Owner-only.**
+
+**Arguments:**
+
+`[string...]` : *Command name*
+
+**Examples:**
+
+```xml
+!commands delete sample command
+```
+</p></details>
+
+---
+
+### commands list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all bot commands.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Owner-only.**
+
+**Examples:**
+
+```xml
+!commands list
+```
+</p></details>
+
+---
 
 ## Group: owner
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Hidden.*
 
-*Owner-only bot administration commands.*
+*Commands restricted to bot owner(s).*
 
 **Aliases:**
 `admin, o`
-
 </p></details>
 
 ---
@@ -19,370 +453,41 @@
 
 *Send a message to all guilds the bot is in.*
 
-**Owner-only.**
-
 **Aliases:**
-`a, ann`
+`ann`
+**Owner-only.**
 
 **Arguments:**
 
-`[string...]` : *Message to send.*
+`[string...]` : *Announcement message*
 
 **Examples:**
 
 ```xml
-!owner announce SPAM SPAM
+!owner announce Some important announcement!
 ```
 </p></details>
 
 ---
 
-## Group: owner blockedchannels
+### owner avatar
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
-
-**Privileged users only.**
+*Sets the bot avatar.*
 
 **Aliases:**
-`bc, blockedc, blockchannel, bchannels, bchannel, bchn`
-
-**Overload 2:**
-
-`[channel...]` : *Channels to block.*
-
-**Overload 1:**
-
-`[string]` : *Reason (max 60 chars).*
-
-`[channel...]` : *Channels to block.*
-
-**Overload 0:**
-
-`[channel]` : *Channels to block.*
-
-`[string...]` : *Reason (max 60 chars).*
-
-</p></details>
-
----
-
-### owner blockedchannels add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add channel to blocked channels list.*
-
-**Privileged users only.**
-
-**Aliases:**
-`+, a, block, <, <<, +=`
-
-**Overload 2:**
-
-`[channel...]` : *Channels to block.*
-
-**Overload 1:**
-
-`[string]` : *Reason (max 60 chars).*
-
-`[channel...]` : *Channels to block.*
-
-**Overload 0:**
-
-`[channel]` : *Channel to block.*
-
-`[string...]` : *Reason (max 60 chars).*
-
-**Examples:**
-
-```xml
-!owner blockedchannels add #channel
-!owner blockedchannels add #channel Some reason
-!owner blockedchannels add 123123123123123
-!owner blockedchannels add #channel 123123123123123
-!owner blockedchannels add "This is some reason" #channel 123123123123123
-```
-</p></details>
-
----
-
-### owner blockedchannels delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove channel from blocked channels list.*
-
-**Privileged users only.**
-
-**Aliases:**
-`-, remove, rm, del, unblock, >, >>, -=`
+`setavatar, setbotavatar, profilepic, a`
+**Owner-only.**
 
 **Arguments:**
 
-`[channel...]` : *Channels to unblock.*
+`[URL]` : *Image URL*
 
 **Examples:**
 
 ```xml
-!owner blockedchannels delete #channel
-!owner blockedchannels delete 123123123123123
-!owner blockedchannels delete #channel1 #channel2 123123123123123
+!owner avatar http://some-image-url.com/image.png
 ```
-</p></details>
-
----
-
-### owner blockedchannels list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all blocked channels.*
-
-**Privileged users only.**
-
-**Aliases:**
-`ls, l, print`
-
-</p></details>
-
----
-
-## Group: owner blockedusers
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
-
-**Privileged users only.**
-
-**Aliases:**
-`bu, blockedu, blockuser, busers, buser, busr`
-
-**Overload 2:**
-
-`[user...]` : *Users to block.*
-
-**Overload 1:**
-
-`[string]` : *Reason (max 60 chars).*
-
-`[user...]` : *Users to block.*
-
-**Overload 0:**
-
-`[user]` : *Users to block.*
-
-`[string...]` : *Reason (max 60 chars).*
-
-</p></details>
-
----
-
-### owner blockedusers add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add users to blocked users list.*
-
-**Privileged users only.**
-
-**Aliases:**
-`+, a, block, <, <<, +=`
-
-**Overload 2:**
-
-`[user...]` : *Users to block.*
-
-**Overload 1:**
-
-`[string]` : *Reason (max 60 chars).*
-
-`[user...]` : *Users to block.*
-
-**Overload 0:**
-
-`[user]` : *Users to block.*
-
-`[string...]` : *Reason (max 60 chars).*
-
-**Examples:**
-
-```xml
-!owner blockedusers add @Someone
-!owner blockedusers add @Someone Troublemaker
-!owner blockedusers add 123123123123123
-!owner blockedusers add @Someone 123123123123123
-!owner blockedusers add "This is some reason" @Someone 123123123123123
-```
-</p></details>
-
----
-
-### owner blockedusers delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove users from blocked users list.*
-
-**Privileged users only.**
-
-**Aliases:**
-`-, remove, rm, del, unblock, >, >>, -=`
-
-**Arguments:**
-
-`[user...]` : *Users to unblock.*
-
-**Examples:**
-
-```xml
-!owner blockedusers delete @Someone
-!owner blockedusers delete 123123123123123
-!owner blockedusers delete @Someone 123123123123123
-```
-</p></details>
-
----
-
-### owner blockedusers list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all blocked users.*
-
-**Privileged users only.**
-
-**Aliases:**
-`ls, l, print`
-
-</p></details>
-
----
-
-### owner botavatar
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set bot avatar.*
-
-**Owner-only.**
-
-**Aliases:**
-`setbotavatar, setavatar`
-
-**Arguments:**
-
-`[URL]` : *URL.*
-
-**Examples:**
-
-```xml
-!owner botavatar http://someimage.png
-```
-</p></details>
-
----
-
-### owner botname
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set bot name.*
-
-**Owner-only.**
-
-**Aliases:**
-`setbotname, setname`
-
-**Arguments:**
-
-`[string...]` : *New name.*
-
-**Examples:**
-
-```xml
-!owner botname TheBotfather
-```
-</p></details>
-
----
-
-### owner clearlog
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Clear bot logs.*
-
-**Owner-only.**
-
-**Aliases:**
-`clearlogs, deletelogs, deletelog`
-
-</p></details>
-
----
-
-## Group: owner commands
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Manipulate bot commands in runtime.*
-
-**Owner-only.**
-
-**Aliases:**
-`cmds, cmd`
-
-</p></details>
-
----
-
-### owner commands add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add a new command.*
-
-**Owner-only.**
-
-**Aliases:**
-`+, a, <, <<, +=`
-
-**Arguments:**
-
-`[string...]` : *Code to evaluate.*
-
-**Examples:**
-
-```xml
-!owner commands add \`\`\`[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");\`\`\`
-```
-</p></details>
-
----
-
-### owner commands delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove an existing command.*
-
-**Owner-only.**
-
-**Aliases:**
-`-, remove, rm, del, >, >>, -=`
-
-**Arguments:**
-
-`[string...]` : *Command to remove.*
-
-**Examples:**
-
-```xml
-!owner commands delete say
-```
-</p></details>
-
----
-
-### owner commands list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all privileged users.*
-
-**Owner-only.**
-
-**Aliases:**
-`ls, l, print`
-
 </p></details>
 
 ---
@@ -390,22 +495,20 @@
 ### owner dbquery
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Execute SQL query on the bot database.*
-
-**Owner-only.**
+*Queries the bot database using given SQL query or uploaded SQL file.*
 
 **Aliases:**
-`sql, dbq, q`
+`sql, dbq, q, query`
+**Owner-only.**
 
 **Overload 0:**
 
-`[string...]` : *SQL Query.*
+`[string...]` : *SQL query*
 
 **Examples:**
 
 ```xml
-!owner dbquery 
-!owner dbquery SELECT * FROM gf.msgcount;
+!owner dbquery SELECT * FROM gf.<DATABASE_NAME>
 ```
 </p></details>
 
@@ -414,46 +517,23 @@
 ### owner eval
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Evaluates a snippet of C# code, in context. Surround the code in the code block.*
-
-**Owner-only.**
+*Evaluates a snippet of C# code, in context.*
 
 **Aliases:**
-`compile, run, e, c, r`
+`evaluate, compile, run, e, c, r`
+**Owner-only.**
 
 **Arguments:**
 
-`[string...]` : *Code to evaluate.*
+`[string...]` : *C# code snippet in a markdown code block*
 
 **Examples:**
 
 ```xml
-!owner eval \`\`\`await Context.RespondAsync("Hello!");\`\`\`
+!owner eval ```cs
+[Command("test")]
+public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 ```
-</p></details>
-
----
-
-### owner filelog
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Toggle writing to log file.*
-
-**Owner-only.**
-
-**Aliases:**
-`setfl, fl, setfilelog`
-
-**Arguments:**
-
-(optional) `[boolean]` : *Enable?* (def: `True`)
-
-**Examples:**
-
-```xml
-!owner filelog 
-!owner filelog on
-!owner filelog off
 ```
 </p></details>
 
@@ -462,22 +542,20 @@
 ### owner generatecommandlist
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Generates a markdown command-list. You can also provide a folder for the output.*
-
-**Owner-only.**
+*Generates bot documentation in markdown ready for GitHub.*
 
 **Aliases:**
-`cmdlist, gencmdlist, gencmds, gencmdslist`
+`gendocs, generatecommandslist, docs, cmdlist, gencmdlist, gencmds, gencmdslist`
+**Owner-only.**
 
 **Arguments:**
 
-(optional) `[string...]` : *File path.* (def: `None`)
+(optional) `[string...]` : *Output folder* (def: `None`)
 
 **Examples:**
 
 ```xml
-!owner generatecommandlist 
-!owner generatecommandlist Temp/blabla.md
+!owner generatecommandlist
 ```
 </p></details>
 
@@ -486,22 +564,25 @@
 ### owner leaveguilds
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Leaves the given guilds.*
-
-**Owner-only.**
+*Generates bot documentation in markdown ready for GitHub.*
 
 **Aliases:**
 `leave, gtfo`
+**Owner-only.**
 
-**Arguments:**
+**Overload 1:**
 
-`[unsigned long...]` : *Guild ID list.*
+`[guild...]` : *Guild names or IDs*
+
+**Overload 0:**
+
+`[unsigned long...]` : *Guild names or IDs*
 
 **Examples:**
 
 ```xml
-!owner leaveguilds 337570344149975050
-!owner leaveguilds 337570344149975050 201315884709576708
+!owner leaveguilds Some Guild
+!owner leaveguilds 361119455792594954
 ```
 </p></details>
 
@@ -510,110 +591,51 @@
 ### owner log
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Upload the bot log file or add a remark to it.*
-
-**Owner-only.**
+*Logs a given remark or uploads bot log file if remark is not given.*
 
 **Aliases:**
 `getlog, remark, rem`
+**Owner-only.**
 
 **Overload 1:**
 
-(optional) `[boolean]` : *Bypass current configuration and search file anyway?* (def: `False`)
+(optional) `[boolean]` : *Bypass current bot configuration?* (def: `False`)
 
 **Overload 0:**
 
-`[string]` : *Log level.*
+`[LogEventLevel]` : *Log event level*
 
-`[string...]` : *Remark.*
+`[string...]` : *Log message*
 
 **Examples:**
 
 ```xml
-!owner log 
-!owner log debug Hello world!
+!owner log
+!owner log Information
+!owner log Some string here
 ```
 </p></details>
 
 ---
 
-## Group: owner privilegedusers
+### owner name
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.*
-
-**Owner-only.**
+*Sets the bot name.*
 
 **Aliases:**
-`pu, privu, privuser, pusers, puser, pusr`
-
-**Overload 0:**
-
-`[user...]` : *Users to grant privilege to.*
-
-</p></details>
-
----
-
-### owner privilegedusers add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add users to privileged users list.*
-
+`botname, setbotname, setname`
 **Owner-only.**
-
-**Aliases:**
-`+, a, <, <<, +=`
 
 **Arguments:**
 
-`[user...]` : *Users to grant privilege to.*
+`[string...]` : *New name*
 
 **Examples:**
 
 ```xml
-!owner privilegedusers add add @Someone
-!owner privilegedusers add add @Someone @SomeoneElse
+!owner name SampleName
 ```
-</p></details>
-
----
-
-### owner privilegedusers delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove users from privileged users list.*
-
-**Owner-only.**
-
-**Aliases:**
-`-, remove, rm, del, >, >>, -=`
-
-**Arguments:**
-
-`[user...]` : *Users to revoke privileges from.*
-
-**Examples:**
-
-```xml
-!owner privilegedusers delete remove @Someone
-!owner privilegedusers delete remove 123123123123123
-!owner privilegedusers delete remove @Someone 123123123123123
-```
-</p></details>
-
----
-
-### owner privilegedusers list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all privileged users.*
-
-**Owner-only.**
-
-**Aliases:**
-`ls, l, print`
-
 </p></details>
 
 ---
@@ -621,26 +643,27 @@
 ### owner sendmessage
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Sends a message to a user or channel.*
-
-**Privileged users only.**
+*Sends a message to user or channel.*
 
 **Aliases:**
 `send, s`
+**Privileged users only.**
+
 
 **Arguments:**
 
-`[string]` : *u/c (for user or channel.)*
+`[string]` : *`u` (User) or `c` (Channel)*
 
-`[unsigned long]` : *User/Channel ID.*
+`[unsigned long]` : *ID*
 
-`[string...]` : *Message.*
+`[string...]` : *Message to send*
 
 **Examples:**
 
 ```xml
-!owner sendmessage u 303463460233150464 Hi to user!
-!owner sendmessage c 120233460278590414 Hi to channel!
+!owner sendmessage u
+!owner sendmessage 361119455792594954
+!owner sendmessage Sample message
 ```
 </p></details>
 
@@ -649,159 +672,29 @@
 ### owner shutdown
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Triggers the dying in the vineyard scene (power off the bot).*
-
-**Privileged users only.**
+*Powers off the bot.*
 
 **Aliases:**
 `disable, poweroff, exit, quit`
+**Privileged users only.**
+
 
 **Overload 1:**
 
-`[time span]` : *Time until shutdown.*
+`[time span]` : *Time until shutdown*
+
+(optional) `[int]` : *Process exit code* (def: `0`)
+
+**Overload 0:**
+
+(optional) `[int]` : *Process exit code* (def: `0`)
 
 **Examples:**
 
 ```xml
-!owner shutdown 
+!owner shutdown
+!owner shutdown 10s 5
 !owner shutdown 10s
-```
-</p></details>
-
----
-
-## Group: owner statuses
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.*
-
-**Owner-only.**
-
-**Aliases:**
-`status, botstatus, activity, activities`
-
-**Overload 0:**
-
-`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
-
-`[string...]` : *Status.*
-
-</p></details>
-
----
-
-### owner statuses add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add a status to running status queue.*
-
-**Owner-only.**
-
-**Aliases:**
-`+, a, <, <<, +=`
-
-**Arguments:**
-
-`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
-
-`[string...]` : *Status.*
-
-**Examples:**
-
-```xml
-!owner statuses add Playing CS:GO
-!owner statuses add Streaming on Twitch
-```
-</p></details>
-
----
-
-### owner statuses delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove status from running queue.*
-
-**Owner-only.**
-
-**Aliases:**
-`-, remove, rm, del, >, >>, -=`
-
-**Arguments:**
-
-`[int]` : *Status ID.*
-
-**Examples:**
-
-```xml
-!owner statuses delete 2
-```
-</p></details>
-
----
-
-### owner statuses list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all bot statuses.*
-
-**Owner-only.**
-
-**Aliases:**
-`ls, l, print`
-
-</p></details>
-
----
-
-### owner statuses set
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set status to given string or status with given index in database. This sets rotation to false.*
-
-**Owner-only.**
-
-**Aliases:**
-`s`
-
-**Overload 1:**
-
-`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
-
-`[string...]` : *Status.*
-
-**Overload 0:**
-
-`[int]` : *Status ID.*
-
-**Examples:**
-
-```xml
-!owner statuses set Playing with fire
-!owner statuses set 5
-```
-</p></details>
-
----
-
-### owner statuses setrotation
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set automatic rotation of bot statuses.*
-
-**Owner-only.**
-
-**Aliases:**
-`sr, setr`
-
-**Arguments:**
-
-(optional) `[boolean]` : *Enabled?* (def: `True`)
-
-**Examples:**
-
-```xml
-!owner statuses setrotation 
-!owner statuses setrotation off
 ```
 </p></details>
 
@@ -810,23 +703,26 @@
 ### owner sudo
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Executes a command as another user.*
-
-**Privileged users only.**
+*Executes command as another user.*
 
 **Aliases:**
 `execas, as`
+**Guild only.**
+
+**Privileged users only.**
+
 
 **Arguments:**
 
-`[member]` : *Member to execute as.*
+`[member]` : *Member*
 
-`[string...]` : *Command text to execute.*
+`[string...]` : *Full command call with arguments*
 
 **Examples:**
 
 ```xml
-!owner sudo @Someone rate
+!owner sudo Member
+!owner sudo sample command
 ```
 </p></details>
 
@@ -835,27 +731,263 @@
 ### owner toggleignore
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Toggle bot's reaction to commands.*
-
-**Privileged users only.**
+*Toggle bot listening status.*
 
 **Aliases:**
 `ti`
+**Privileged users only.**
 
+
+**Examples:**
+
+```xml
+!owner toggleignore
+```
 </p></details>
 
 ---
 
-### owner update
+### owner uptime
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Update and restart the bot.*
+*Prints bot uptime information.*
 
-**Owner-only.**
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!owner uptime
+```
+</p></details>
+
+---
+
+## Group: privilegedusers
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Commands to manage privileged users. Privileged users have permissions to execute some sensitive bot commands.*
 
 **Aliases:**
-`upd, u`
+`pu, privu, privuser, pusers, puser, pusr`
+**Owner-only.**
 
+**Overload 0:**
+
+`[user...]` : *User(s)*
+
+**Examples:**
+
+```xml
+!privilegedusers
+```
+</p></details>
+
+---
+
+### privilegedusers add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Adds given user(s) to privileged users list.*
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
+**Owner-only.**
+
+**Arguments:**
+
+`[user...]` : *User(s)*
+
+**Examples:**
+
+```xml
+!privilegedusers add @User
+```
+</p></details>
+
+---
+
+### privilegedusers delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes given user(s) from privileged users list.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Owner-only.**
+
+**Arguments:**
+
+`[user...]` : *User(s)*
+
+**Examples:**
+
+```xml
+!privilegedusers delete @User
+```
+</p></details>
+
+---
+
+### privilegedusers list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all privileged users.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Owner-only.**
+
+**Examples:**
+
+```xml
+!privilegedusers list
+```
+</p></details>
+
+---
+
+## Group: status
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Manipulates bot statuses. Group call either lists all statuses or adds a new status.*
+
+**Aliases:**
+`statuses, botstatus, activity, activities`
+**Owner-only.**
+
+**Overload 0:**
+
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo)*
+
+`[string...]` : *Bot status*
+
+**Examples:**
+
+```xml
+!status
+!status Playing Some Game
+```
+</p></details>
+
+---
+
+### status add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Adds a new status to the status list.*
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
+**Owner-only.**
+
+**Arguments:**
+
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo)*
+
+`[string...]` : *Bot status*
+
+**Examples:**
+
+```xml
+!status add Playing Some Game
+```
+</p></details>
+
+---
+
+### status delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes a status from the status list.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Owner-only.**
+
+**Arguments:**
+
+`[int...]` : *Bot status ID*
+
+**Examples:**
+
+```xml
+!status delete 5
+```
+</p></details>
+
+---
+
+### status list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all currently registered statuses.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Owner-only.**
+
+**Examples:**
+
+```xml
+!status list
+```
+</p></details>
+
+---
+
+### status set
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables automatic rotation of bot statuses and sets the currents status by ID or explicit string until status rotation is enabled again.*
+
+**Aliases:**
+`s`
+**Owner-only.**
+
+**Overload 1:**
+
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo)*
+
+`[string...]` : *Bot status*
+
+**Overload 0:**
+
+`[int]` : *Bot status ID*
+
+**Examples:**
+
+```xml
+!status set 5
+!status set Playing Some Game
+```
+</p></details>
+
+---
+
+### status setrotation
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables or disables automatic rotation of bot statuses.*
+
+**Aliases:**
+`sr, setr, rotate`
+**Owner-only.**
+
+**Arguments:**
+
+(optional) `[boolean]` : *Enable?* (def: `True`)
+
+**Examples:**
+
+```xml
+!status setrotation Yes/No
+```
 </p></details>
 
 ---

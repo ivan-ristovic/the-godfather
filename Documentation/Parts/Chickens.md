@@ -1,22 +1,30 @@
 # Module: Chickens
+*This module contains chicken management commands. Each user can own a chicken in the guild which he can nurture and train. Upgrade your chicken using multiple items at your disposal to increase chicken strength or vitality. When ready, battle your way through other chicken owners and gain experience and strength until you become the strongest chicken holder in all Discord. Take care though, other users can fight/ambush/poison your chicken, so make sure you are prepared!*
+
 
 ## Group: chicken
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manage your chicken. If invoked without subcommands, prints out your chicken information.*
+*Chicken management commands. If invoked without subcommands, prints out your chicken information.*
 
 **Aliases:**
 `cock, hen, chick, coc, cc`
+**Guild only.**
 
-**Arguments:**
+**Overload 1:**
 
-(optional) `[member]` : *User.* (def: `None`)
+(optional) `[member]` : *Member* (def: `None`)
+
+**Overload 1:**
+
+`[string]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken 
-!chicken @Someone
+!chicken
+!chicken Member
+!chicken SampleName
 ```
 </p></details>
 
@@ -29,20 +37,21 @@
 
 **Aliases:**
 `gangattack`
+**Guild only.**
 
 **Overload 1:**
 
-`[member]` : *Whose chicken to ambush?*
+`[member]` : *Member*
 
 **Overload 0:**
 
-`[string]` : *Name of the chicken to fight.*
+`[string]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken ambush @Someone
-!chicken ambush chicken
+!chicken ambush Member
+!chicken ambush SampleName
 ```
 </p></details>
 
@@ -55,7 +64,13 @@
 
 **Aliases:**
 `h, halp, hlp, ha`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken ambush help
+```
 </p></details>
 
 ---
@@ -67,7 +82,13 @@
 
 **Aliases:**
 `+, compete, enter, j, <, <<`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken ambush join
+```
 </p></details>
 
 ---
@@ -75,19 +96,20 @@
 ## Group: chicken buy
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a new chicken in this guild using your credits from WM bank.*
+*Buys a chicken! Group call buys the cheapest chicken type. To list all available chicken types, use command `chicken buy list`.*
 
 **Aliases:**
 `b, shop`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy My Chicken Name
+!chicken buy SampleName
 ```
 </p></details>
 
@@ -96,19 +118,20 @@
 ### chicken buy alien
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy an alien chicken.*
+*Buys a chicken from another planet far, far away.*
 
 **Aliases:**
 `a, extraterrestrial`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy alien My Chicken Name
+!chicken buy alien SampleName
 ```
 </p></details>
 
@@ -117,19 +140,20 @@
 ### chicken buy default
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a chicken of default strength (cheapest).*
+*Buys a default chicken.*
 
 **Aliases:**
 `d, def`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy default My Chicken Name
+!chicken buy default SampleName
 ```
 </p></details>
 
@@ -138,11 +162,17 @@
 ### chicken buy list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*List all available chicken types.*
+*Lists all chicken types available for purchase.*
 
 **Aliases:**
 `ls, view`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken buy list
+```
 </p></details>
 
 ---
@@ -150,19 +180,20 @@
 ### chicken buy steroidempowered
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a steroid-empowered chicken.*
+*Buys a chicken that was fed with steroids since the day it was born.*
 
 **Aliases:**
-`steroid, empowered`
+`s, steroid, empowered`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy steroidempowered My Chicken Name
+!chicken buy steroidempowered SampleName
 ```
 </p></details>
 
@@ -171,19 +202,20 @@
 ### chicken buy trained
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a trained chicken.*
+*Buys a chicken trained by Jackie Chan.*
 
 **Aliases:**
 `tr, train`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy trained My Chicken Name
+!chicken buy trained SampleName
 ```
 </p></details>
 
@@ -192,19 +224,20 @@
 ### chicken buy wellfed
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a well-fed chicken.*
+*Buys a well-fed chicken.*
 
 **Aliases:**
 `wf, fed`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *Chicken name.*
+`[string...]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken buy wellfed My Chicken Name
+!chicken buy wellfed SampleName
 ```
 </p></details>
 
@@ -213,36 +246,26 @@
 ### chicken fight
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Make your chicken and another user's chicken fight eachother!*
+*Make your chicken fight another member's chicken.*
 
 **Aliases:**
 `f, duel, attack`
+**Guild only.**
 
 **Overload 1:**
 
-`[member]` : *Member whose chicken to fight.*
+`[member]` : *Member*
 
 **Overload 0:**
 
-`[string]` : *Name of the chicken to fight.*
+`[string]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken fight @Someone
+!chicken fight Member
+!chicken fight SampleName
 ```
-</p></details>
-
----
-
-### chicken flu
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Pay a well-known scientist to create a disease that disintegrates weak chickens.*
-
-**Aliases:**
-`cancer, disease, blackdeath`
-
 </p></details>
 
 ---
@@ -250,11 +273,17 @@
 ### chicken heal
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Heal your chicken (+100 HP). There is one medicine made each 5 minutes, so you need to grab it before the others do!*
+*Heals your chicken. There is one medicine made per certain time period, so you need to grab it before the others do!*
 
 **Aliases:**
 `+hp, hp`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken heal
+```
 </p></details>
 
 ---
@@ -262,20 +291,44 @@
 ### chicken info
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View user's chicken info. If the user is not given, views sender's chicken info.*
+*Prints chicken information.*
 
 **Aliases:**
 `information, stats`
+**Guild only.**
 
-**Arguments:**
+**Overload 1:**
 
-(optional) `[member]` : *User.* (def: `None`)
+(optional) `[member]` : *Member* (def: `None`)
+
+**Overload 1:**
+
+`[string]` : *Chicken name*
 
 **Examples:**
 
 ```xml
-!chicken info 
-!chicken info @Someone
+!chicken info
+!chicken info Member
+!chicken info SampleName
+```
+</p></details>
+
+---
+
+### chicken list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all chickens in this guild.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Examples:**
+
+```xml
+!chicken list
 ```
 </p></details>
 
@@ -284,19 +337,20 @@
 ### chicken rename
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Rename your chicken.*
+*Renames your chicken.*
 
 **Aliases:**
 `rn, name`
+**Guild only.**
 
 **Arguments:**
 
-`[string...]` : *New chicken name.*
+`[string...]` : *New name*
 
 **Examples:**
 
 ```xml
-!chicken rename New Name
+!chicken rename SampleName
 ```
 </p></details>
 
@@ -305,11 +359,17 @@
 ### chicken sell
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Sell your chicken.*
+*Sells your chicken.*
 
 **Aliases:**
 `s`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken sell
+```
 </p></details>
 
 ---
@@ -317,11 +377,17 @@
 ### chicken top
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View the list of strongest chickens in the current guild.*
+*Shows all strongest chickens in this guild.*
 
 **Aliases:**
 `best, strongest`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken top
+```
 </p></details>
 
 ---
@@ -329,11 +395,17 @@
 ### chicken topglobal
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View the list of strongest chickens globally.*
+*Shows the strongest chickens in the world.*
 
 **Aliases:**
-`bestglobally, globallystrongest, globaltop, topg, gtop`
+`bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken topglobal
+```
 </p></details>
 
 ---
@@ -341,11 +413,17 @@
 ## Group: chicken train
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Train your chicken using your credits from WM bank.*
+*Trains your chicken at the cost of some guild currency. Group call trains your chicken's strength.*
 
 **Aliases:**
 `tr, t, exercise`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken train
+```
 </p></details>
 
 ---
@@ -353,11 +431,17 @@
 ### chicken train strength
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Train your chicken's strength using your credits from WM bank.*
+*Trains your chicken's strength at the cost of some guild currency.*
 
 **Aliases:**
 `str, st, s`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!chicken train strength
+```
 </p></details>
 
 ---
@@ -365,46 +449,57 @@
 ### chicken train vitality
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Train your chicken's vitality using your credits from WM bank.*
+*Trains your chicken's vitality at the cost of some guild currency.*
 
 **Aliases:**
 `vit, vi, v`
-
-</p></details>
-
----
-
-## Group: chicken upgrades
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.*
-
-**Aliases:**
-`perks, upgrade, u`
-
-**Overload 0:**
-
-`[int...]` : *IDs of the upgrades to buy.*
+**Guild only.**
 
 **Examples:**
 
 ```xml
-!chicken upgrades 
-!chicken upgrades 1
-!chicken upgrades 1 2 3
+!chicken train vitality
 ```
 </p></details>
 
 ---
 
-### chicken upgrades list
+## Group: chicken upgrade
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*List all available upgrades.*
+*Upgrade your chicken with items you can buy using guild currency. Group call lists all available upgrades or buys an upgrade with specified ID.*
 
 **Aliases:**
-`ls, view`
+`perks, upgrades, upg, u`
+**Guild only.**
 
+**Overload 0:**
+
+`[int...]` : *Chicken upgrade ID(s) to buy*
+
+**Examples:**
+
+```xml
+!chicken upgrade 5 10
+```
+</p></details>
+
+---
+
+### chicken upgrade list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all available chicken upgrades.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Examples:**
+
+```xml
+!chicken upgrade list
+```
 </p></details>
 
 ---
@@ -412,23 +507,23 @@
 ## Group: chicken war
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Declare a chicken war! Other users can put their chickens into teams which names you specify.*
+*Starts a chicken war! Users can make their chickens join one of the teams.*
 
 **Aliases:**
 `gangwar, battle`
+**Guild only.**
 
 **Arguments:**
 
-(optional) `[string]` : *Team 1 name.* (def: `None`)
+(optional) `[string]` : *Team 1 name* (def: `None`)
 
-(optional) `[string]` : *Team 2 name.* (def: `None`)
+(optional) `[string]` : *Team 2 name* (def: `None`)
 
 **Examples:**
 
 ```xml
-!chicken war 
-!chicken war Team1 Team2
-!chicken war "Team 1 name" "Team 2 name"
+!chicken war
+!chicken war SampleName SampleName
 ```
 </p></details>
 
@@ -437,23 +532,25 @@
 ### chicken war join
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.*
+*Joins a specified team (via name or number) in a pending chicken war.*
 
 **Aliases:**
-`+, compete, enter, j`
+`+, compete, enter, j, <, <<`
+**Guild only.**
 
 **Overload 1:**
 
-`[int]` : *Number 1 or 2 depending of team you wish to join.*
+`[int]` : *Team number to join*
 
 **Overload 0:**
 
-`[string...]` : *Team name to join.*
+`[string...]` : *Team name to join*
 
 **Examples:**
 
 ```xml
-!chicken war join Team Name
+!chicken war join 1
+!chicken war join SampleName
 ```
 </p></details>
 

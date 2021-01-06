@@ -1,31 +1,36 @@
 # Module: Polls
+*This module contains polling commands through textual or reaction polls.*
+
 
 ## Group: poll
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Starts a new poll in the current channel. You can provide also the time for the poll to run.*
+*Starts a new poll in the current channel. You can also provide the time for the poll to run.*
+
+**Guild only.**
 
 **Overload 2:**
 
-`[time span]` : *Time for poll to run.*
+`[time span]` : *Time for the poll to run*
 
-`[string...]` : *Question.*
+`[string...]` : *Poll question*
 
 **Overload 1:**
 
-`[string]` : *Question.*
+`[string]` : *Poll question*
 
-`[time span]` : *Time for poll to run.*
+`[time span]` : *Time for the poll to run*
 
 **Overload 0:**
 
-`[string...]` : *Question.*
+`[string...]` : *Poll question*
 
 **Examples:**
 
 ```xml
-!poll Do you vote for User1 or User2?
-!poll 5m Do you vote for User1 or User2?
+!poll Some poll question?
+!poll 10s Some poll question?
+!poll Some poll question? 10s
 ```
 </p></details>
 
@@ -36,12 +41,69 @@
 
 *Stops a running poll.*
 
-**Requires user permissions:**
-`Administrator`
+**Aliases:**
+`end, cancel`
+**Guild only.**
+
+**Examples:**
+
+```xml
+!poll stop
+```
+</p></details>
+
+---
+
+## Group: reactionspoll
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Starts a new reactions poll in the current channel. You can also provide the time for the poll to run.*
+
+**Aliases:**
+`rpoll, pollr, voter`
+**Guild only.**
+
+**Overload 2:**
+
+`[time span]` : *Time for the poll to run*
+
+`[string...]` : *Poll question*
+
+**Overload 1:**
+
+`[string]` : *Poll question*
+
+`[time span]` : *Time for the poll to run*
+
+**Overload 0:**
+
+`[string...]` : *Poll question*
+
+**Examples:**
+
+```xml
+!reactionspoll Some poll question?
+!reactionspoll 10s Some poll question?
+!reactionspoll Some poll question? 10s
+```
+</p></details>
+
+---
+
+### reactionspoll stop
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Stops a running reactions poll.*
 
 **Aliases:**
 `end, cancel`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!reactionspoll stop
+```
 </p></details>
 
 ---
@@ -49,19 +111,20 @@
 ## Group: vote
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.*
+*Manages voting in running polls. Group call registers a vote in the running poll for the option you entered.*
 
 **Aliases:**
 `votefor, vf`
+**Guild only.**
 
 **Arguments:**
 
-`[int]` : *Option to vote for.*
+`[int]` : *Option to vote for*
 
 **Examples:**
 
 ```xml
-!vote 1
+!vote 5
 ```
 </p></details>
 
@@ -70,11 +133,17 @@
 ### vote cancel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Cancel your vote in the current poll.*
+*Manages voting in running polls. Group call registers a vote in the running poll for the option you entered.*
 
 **Aliases:**
 `c, reset`
+**Guild only.**
 
+**Examples:**
+
+```xml
+!vote cancel
+```
 </p></details>
 
 ---
