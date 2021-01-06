@@ -37,6 +37,26 @@
       [ "arg-query" ]
     ]
   },
+  "imdb": {
+    "usage": [
+      [ "arg-imdb-title" ]
+    ]
+  },
+  "imdb id": {
+    "usage": [
+      [ "arg-imdb-id" ]
+    ]
+  },
+  "imdb search": {
+    "usage": [
+      [ "arg-imdb-title" ]
+    ]
+  },
+  "imdb title": {
+    "usage": [
+      [ "arg-imdb-title" ]
+    ]
+  },
   "imgur": {
     "usage": [
       [ "arg-ten", "arg-sub" ],
@@ -71,7 +91,7 @@
       [ "arg-query" ]
     ]
   },
-  "joke yomama": {
+  "joke yourmom": {
     "usage": [
       []
     ]
@@ -138,10 +158,50 @@
       [ "arg-rss" ]
     ]
   },
-  "rss subscribe": {
+  "steam": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-name" ]
+    ]
+  },
+  "steam game": {
+    "usage": [
+      [ "arg-id" ],
+      [ "arg-name" ]
+    ]
+  },
+  "steam profile": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-name" ]
+    ]
+  },
+  "sticker": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "sticker random": {
+    "usage": [
+      []
+    ]
+  },
+  "sticker trending": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "subscribe": {
     "usage": [
       [ "arg-rss" ],
       [ "arg-rss", "arg-chn-text", "arg-sub-name" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "subscribe list": {
+    "usage": [
+      [],
       [ "arg-chn-text" ]
     ]
   },
@@ -179,40 +239,6 @@
     "usage": [
       [ "arg-sub-name" ],
       [ "arg-yt-chn-url" ]
-    ]
-  },
-  "steam": {
-    "usage": [
-      [ "arg-ulong" ],
-      [ "arg-name" ]
-    ]
-  },
-  "steam game": {
-    "usage": [
-      [ "arg-id" ],
-      [ "arg-name" ]
-    ]
-  },
-  "steam profile": {
-    "usage": [
-      [ "arg-ulong" ],
-      [ "arg-name" ]
-    ]
-  },
-  "sticker": {
-    "usage": [
-      [ "arg-query" ]
-    ]
-  },
-  "sticker random": {
-    "usage": [
-      []
-    ]
-  },
-  "sticker trending": {
-    "usage": [
-      [],
-      [ "arg-ten" ]
     ]
   },
   "urbandict": {
@@ -270,17 +296,17 @@
       [ "arg-five", "arg-query" ]
     ]
   },
-  "youtube searchvideo": {
-    "usage": [
-      [ "arg-query" ]
-    ]
-  },
   "youtube searchchannel": {
     "usage": [
       [ "arg-query" ]
     ]
   },
   "youtube searchplaylist": {
+    "usage": [
+      [ "arg-query" ]
+    ]
+  },
+  "youtube searchvideo": {
     "usage": [
       [ "arg-query" ]
     ]

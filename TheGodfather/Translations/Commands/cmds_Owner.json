@@ -123,16 +123,16 @@
       [ "arg-string" ]
     ]
   },
+  "owner name": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
   "owner sendmessage": {
     "usage": [
       [ "arg-send-uc" ],
       [ "arg-ulong" ],
       [ "arg-msg" ]
-    ]
-  },
-  "owner name": {
-    "usage": [
-      [ "arg-name" ]
     ]
   },
   "owner shutdown": {
@@ -178,34 +178,34 @@
       []
     ]
   },
-  "statuses": {
+  "status": {
     "usage": [
       [],
       [ "arg-activity", "arg-status" ]
     ]
   },
-  "statuses add": {
+  "status add": {
     "usage": [
       [ "arg-activity", "arg-status" ]
     ]
   },
-  "statuses delete": {
+  "status delete": {
     "usage": [
       [ "arg-five" ]
     ]
   },
-  "statuses list": {
+  "status list": {
     "usage": [
       []
     ]
   },
-  "statuses set": {
+  "status set": {
     "usage": [
       [ "arg-five" ],
       [ "arg-activity", "arg-status" ]
     ]
   },
-  "statuses setrotation": {
+  "status setrotation": {
     "usage": [
       [ "arg-bool" ]
     ]

@@ -63,7 +63,7 @@ namespace TheGodfather
         public async Task StartAsync()
         {
             Log.Information("Initializing the bot...");
-            
+
             this.client = this.SetupClient();
 
             this.services = this.SetupServices();
@@ -151,12 +151,17 @@ namespace TheGodfather
 
             Log.Debug("Checking command translations...");
             LocalizationService lcs = this.Services.GetRequiredService<LocalizationService>();
+            CommandService cs = this.Services.GetRequiredService<CommandService>();
             foreach (Command cmd in cnext.Values.First().GetRegisteredCommands()) {
                 try {
                     _ = lcs.GetCommandDescription(0, cmd.QualifiedName);
-                    IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
-                    foreach (CommandArgument arg in args)
-                        _ = lcs.GetString(null, arg.Description);
+                    if (cmd is not CommandGroup group || group.IsExecutableWithoutSubcommands) {
+                        _ = cs.GetCommandDescription(0, cmd.QualifiedName);
+                        _ = cs.GetCommandUsageExamples(0, cmd.QualifiedName);
+                        IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
+                        foreach (CommandArgument arg in args)
+                            _ = lcs.GetString(null, arg.Description);
+                    }
                 } catch (LocalizationException e) {
                     Log.Warning(e, "Translation not found");
                 }

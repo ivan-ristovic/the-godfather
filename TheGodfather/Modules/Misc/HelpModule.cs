@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Misc
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-module")] ModuleType module)
         {
-            Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out var _);
+            Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out string _);
             if (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)
                 return this.ExecuteGroupAsync(ctx, module.ToString());
 

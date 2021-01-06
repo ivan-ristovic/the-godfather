@@ -106,6 +106,27 @@
       []
     ]
   },
+  "game hangman": {
+    "usage": [
+      []
+    ]
+  },
+  "game hangman rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game hangman stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game hangman top": {
+    "usage": [
+      []
+    ]
+  },
   "game leaderboard": {
     "usage": [
       []

@@ -154,7 +154,7 @@ namespace TheGodfather.Services
 
             return this.commands.TryGetValue(command, out CommandInfo? cmdInfo)
                 ? cmdInfo
-                : throw new KeyNotFoundException($"Failed to find info for {command}");
+                : throw new KeyNotFoundException($"Failed to find info for command: {command}");
         }
 
 

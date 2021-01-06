@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Music
                 LavalinkTrack track = tracks.First();
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("str-music-add");
+                    emb.WithLocalizedTitle("fmt-music-add", Emojis.Headphones);
                     emb.WithDescription(Formatter.Bold(Formatter.Sanitize(track.Title)));
                     emb.AddLocalizedTitleField("str-author", track.Author, inline: true);
                     emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);

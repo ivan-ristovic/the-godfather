@@ -18,6 +18,17 @@
       [ "arg-usr", "arg-chn-text", "arg-date" ]
     ]
   },
+  "birthday delete": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "birthday deleteall": {
+    "usage": [
+      []
+    ]
+  },
   "birthday list": {
     "usage": [
       [ "arg-usr" ],
@@ -46,13 +57,19 @@
       [ "arg-five" ]
     ]
   },
+  "dice": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
   "grant": {
     "usage": [
       [ "arg-role" ],
       [ "arg-name" ]
     ]
   },
-  "grant name": {
+  "grant nickname": {
     "usage": [
       [ "arg-name" ]
     ]
@@ -159,9 +176,25 @@
       [ "arg-usr" ]
     ]
   },
+  "random choice": {
+    "usage": [
+      [ "arg-opts" ]
+    ]
+  },
+  "random raffle": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
   "rank add": {
     "usage": [
       [ "arg-five", "arg-name" ]
+    ]
+  },
+  "rank delete": {
+    "usage": [
+      [ "arg-five" ]
     ]
   },
   "rank list": {
@@ -202,6 +235,11 @@
     ]
   },
   "say": {
+    "usage": [
+      [ "arg-string" ]
+    ]
+  },
+  "tts": {
     "usage": [
       [ "arg-string" ]
     ]

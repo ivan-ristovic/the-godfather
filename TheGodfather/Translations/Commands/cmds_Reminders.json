@@ -49,5 +49,12 @@
       [],
       [ "arg-chn-text" ]
     ]
+  },
+  "remind repeat": {
+    "usage": [
+      [],
+      [ "arg-timespan-day", "arg-announcement" ],
+      [ "arg-timespan-day", "arg-chn-text", "arg-announcement" ]
+    ]
   }
 }
