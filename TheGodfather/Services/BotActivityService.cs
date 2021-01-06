@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -29,7 +27,7 @@ namespace TheGodfather.Services
             }
         }
         public CancellationTokenSource MainLoopCts { get; }
-        public ImmutableDictionary<int, UptimeInformation> ShardUptimeInformation { get; }
+        public UptimeInformation UptimeInformation { get; }
 
         public override bool IsDisabled => false;
 
@@ -38,16 +36,13 @@ namespace TheGodfather.Services
         private readonly object lck = new object();
 
 
-        public BotActivityService(DbContextBuilder dbb, int shardCount)
+        public BotActivityService(DbContextBuilder dbb)
             : base(dbb)
         {
             this.IsBotListening = true;
             this.MainLoopCts = new CancellationTokenSource();
             this.StatusRotationEnabled = true;
-            var uptimeDict = new Dictionary<int, UptimeInformation>();
-            for (int i = 0; i < shardCount; i++)
-                uptimeDict.Add(i, new UptimeInformation(Process.GetCurrentProcess().StartTime));
-            this.ShardUptimeInformation = uptimeDict.ToImmutableDictionary();
+            this.UptimeInformation = new UptimeInformation(Process.GetCurrentProcess().StartTime);
         }
 
 

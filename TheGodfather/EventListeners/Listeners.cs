@@ -9,7 +9,7 @@ namespace TheGodfather.EventListeners
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; } = Enumerable.Empty<ListenerMethod>();
 
-        public static void FindAndRegister(TheGodfatherShard shard)
+        public static void FindAndRegister(TheGodfatherBot shard)
         {
             ListenerMethods =
                 from t in Assembly.GetExecutingAssembly().GetTypes()

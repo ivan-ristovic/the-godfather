@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Text;
+﻿using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,11 +11,11 @@ namespace TheGodfather.Services.Extensions
 {
     public static class PeriodicTasksServiceExtensions
     {
-        public static async Task<bool> SendFeedUpdateAsync(TheGodfatherShard shard, RssSubscription sub, SyndicationItem latest)
+        public static async Task<bool> SendFeedUpdateAsync(TheGodfatherBot shard, RssSubscription sub, SyndicationItem latest)
         {
             DiscordChannel? chn;
             try {
-                chn = await shard.Client.GetChannelAsync(sub.ChannelId);
+                chn = await shard.Client.GetShard(sub.GuildId).GetChannelAsync(sub.ChannelId);
             } catch (NotFoundException) {
                 return false;
             }

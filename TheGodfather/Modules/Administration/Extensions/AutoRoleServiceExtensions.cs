@@ -6,7 +6,7 @@ namespace TheGodfather.Modules.Administration.Extensions
 {
     public static class AutoRoleServiceExtensions
     {
-        public static async Task GrantRolesAsync(this AutoRoleService service, TheGodfatherShard shard, DiscordGuild guild, DiscordMember member)
+        public static async Task GrantRolesAsync(this AutoRoleService service, TheGodfatherBot shard, DiscordGuild guild, DiscordMember member)
         {
             foreach (ulong rid in service.GetIds(guild.Id)) {
                 DiscordRole? role = guild.GetRole(rid);

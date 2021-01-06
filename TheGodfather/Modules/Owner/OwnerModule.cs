@@ -56,12 +56,14 @@ namespace TheGodfather.Modules.Owner
             emb.WithColor(DiscordColor.Red);
 
             var eb = new StringBuilder();
-            foreach (TheGodfatherShard shard in TheGodfather.ActiveShards) {
-                foreach (DiscordGuild guild in shard.Client.Guilds.Select(kvp => kvp.Value)) {
+            IEnumerable<(int, IEnumerable<DiscordGuild>)> shardGuilds = TheGodfather.Bot!.Client.ShardClients
+                .Select(kvp => (kvp.Key, kvp.Value.Guilds.Values));
+            foreach ((int shardId, IEnumerable<DiscordGuild> guilds) in shardGuilds) {
+                foreach (DiscordGuild guild in guilds) {
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {
-                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-announce", shard.Id, guild.Name, guild.Id));
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-announce", shardId, guild.Name, guild.Id));
                     }
                 }
             }
@@ -618,9 +620,8 @@ namespace TheGodfather.Modules.Owner
         public Task UptimeAsync(CommandContext ctx)
         {
             BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
-            UptimeInformation uptimeInfo = bas.ShardUptimeInformation[ctx.Client.ShardId];
-            TimeSpan processUptime = uptimeInfo.ProgramUptime;
-            TimeSpan socketUptime = uptimeInfo.SocketUptime;
+            TimeSpan processUptime = bas.UptimeInformation.ProgramUptime;
+            TimeSpan socketUptime = bas.UptimeInformation.SocketUptime;
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithLocalizedTitle("str-uptime-info");

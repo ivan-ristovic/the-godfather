@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.EventListeners.Common;
@@ -20,9 +22,9 @@ namespace TheGodfather.EventListeners.Attributes
         }
 
 
-        public void Register(TheGodfatherShard shard, MethodInfo mi)
+        public void Register(TheGodfatherBot bot, MethodInfo mi)
         {
-            BotActivityService bas = shard.Services.GetRequiredService<BotActivityService>();
+            BotActivityService bas = bot.Services.GetRequiredService<BotActivityService>();
 
 
             Task OnEventWithArgs(object _, object e)
@@ -32,7 +34,7 @@ namespace TheGodfather.EventListeners.Attributes
 
                 _ = Task.Run(async () => {
                     try {
-                        await (Task)mi.Invoke(null, new object[] { shard, e })!;
+                        await (Task)mi.Invoke(null, new object[] { bot, e })!;
                     } catch (Exception ex) {
                         Log.Error(ex, "Listener threw an exception");
                     }
@@ -45,154 +47,157 @@ namespace TheGodfather.EventListeners.Attributes
             #region Event hooking
             switch (this.EventType) {
                 case DiscordEventType.ChannelCreated:
-                    shard.Client.ChannelCreated += OnEventWithArgs;
+                    bot.Client.ChannelCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.ChannelDeleted:
-                    shard.Client.ChannelDeleted += OnEventWithArgs;
+                    bot.Client.ChannelDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.ChannelPinsUpdated:
-                    shard.Client.ChannelPinsUpdated += OnEventWithArgs;
+                    bot.Client.ChannelPinsUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.ChannelUpdated:
-                    shard.Client.ChannelUpdated += OnEventWithArgs;
+                    bot.Client.ChannelUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.ClientErrored:
-                    shard.Client.ClientErrored += OnEventWithArgs;
+                    bot.Client.ClientErrored += OnEventWithArgs;
                     break;
                 case DiscordEventType.CommandErrored:
-                    shard.CNext.CommandErrored += OnEventWithArgs;
+                    foreach (CommandsNextExtension cnext in bot.CNext.Values)
+                        cnext.CommandErrored += OnEventWithArgs;
                     break;
                 case DiscordEventType.CommandExecuted:
-                    shard.CNext.CommandExecuted += OnEventWithArgs;
+                    foreach (CommandsNextExtension cnext in bot.CNext.Values)
+                        cnext.CommandExecuted += OnEventWithArgs;
                     break;
                 case DiscordEventType.DmChannelCreated:
-                    shard.Client.DmChannelCreated += OnEventWithArgs;
+                    bot.Client.DmChannelCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.DmChannelDeleted:
-                    shard.Client.DmChannelDeleted += OnEventWithArgs;
+                    bot.Client.DmChannelDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildAvailable:
-                    shard.Client.GuildAvailable += OnEventWithArgs;
+                    bot.Client.GuildAvailable += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildBanAdded:
-                    shard.Client.GuildBanAdded += OnEventWithArgs;
+                    bot.Client.GuildBanAdded += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildBanRemoved:
-                    shard.Client.GuildBanRemoved += OnEventWithArgs;
+                    bot.Client.GuildBanRemoved += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildCreated:
-                    shard.Client.GuildCreated += OnEventWithArgs;
+                    bot.Client.GuildCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildDeleted:
-                    shard.Client.GuildDeleted += OnEventWithArgs;
+                    bot.Client.GuildDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildDownloadCompleted:
-                    shard.Client.GuildDownloadCompleted += OnEventWithArgs;
+                    bot.Client.GuildDownloadCompleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildEmojisUpdated:
-                    shard.Client.GuildEmojisUpdated += OnEventWithArgs;
+                    bot.Client.GuildEmojisUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildIntegrationsUpdated:
-                    shard.Client.GuildIntegrationsUpdated += OnEventWithArgs;
+                    bot.Client.GuildIntegrationsUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildMemberAdded:
-                    shard.Client.GuildMemberAdded += OnEventWithArgs;
+                    bot.Client.GuildMemberAdded += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildMemberRemoved:
-                    shard.Client.GuildMemberRemoved += OnEventWithArgs;
+                    bot.Client.GuildMemberRemoved += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildMemberUpdated:
-                    shard.Client.GuildMemberUpdated += OnEventWithArgs;
+                    bot.Client.GuildMemberUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildMembersChunked:
-                    shard.Client.GuildMembersChunked += OnEventWithArgs;
+                    bot.Client.GuildMembersChunked += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildRoleCreated:
-                    shard.Client.GuildRoleCreated += OnEventWithArgs;
+                    bot.Client.GuildRoleCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildRoleUpdated:
-                    shard.Client.GuildRoleUpdated += OnEventWithArgs;
+                    bot.Client.GuildRoleUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildRoleDeleted:
-                    shard.Client.GuildRoleDeleted += OnEventWithArgs;
+                    bot.Client.GuildRoleDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildUnavailable:
-                    shard.Client.GuildUnavailable += OnEventWithArgs;
+                    bot.Client.GuildUnavailable += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildUpdated:
-                    shard.Client.GuildUpdated += OnEventWithArgs;
+                    bot.Client.GuildUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.Heartbeated:
-                    shard.Client.Heartbeated += OnEventWithArgs;
+                    bot.Client.Heartbeated += OnEventWithArgs;
                     break;
                 case DiscordEventType.InviteCreated:
-                    shard.Client.InviteCreated += OnEventWithArgs;
+                    bot.Client.InviteCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.InviteDeleted:
-                    shard.Client.InviteDeleted += OnEventWithArgs;
+                    bot.Client.InviteDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageAcknowledged:
-                    shard.Client.MessageAcknowledged += OnEventWithArgs;
+                    foreach (DiscordClient client in bot.Client.ShardClients.Values)
+                        client.MessageAcknowledged += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessagesBulkDeleted:
-                    shard.Client.MessagesBulkDeleted += OnEventWithArgs;
+                    bot.Client.MessagesBulkDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageCreated:
-                    shard.Client.MessageCreated += OnEventWithArgs;
+                    bot.Client.MessageCreated += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageReactionAdded:
-                    shard.Client.MessageReactionAdded += OnEventWithArgs;
+                    bot.Client.MessageReactionAdded += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageReactionRemoved:
-                    shard.Client.MessageReactionRemoved += OnEventWithArgs;
+                    bot.Client.MessageReactionRemoved += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageReactionsCleared:
-                    shard.Client.MessageReactionsCleared += OnEventWithArgs;
+                    bot.Client.MessageReactionsCleared += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageDeleted:
-                    shard.Client.MessageDeleted += OnEventWithArgs;
+                    bot.Client.MessageDeleted += OnEventWithArgs;
                     break;
                 case DiscordEventType.MessageUpdated:
-                    shard.Client.MessageUpdated += OnEventWithArgs;
+                    bot.Client.MessageUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.PresenceUpdated:
-                    shard.Client.PresenceUpdated += OnEventWithArgs;
+                    bot.Client.PresenceUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.Ready:
-                    shard.Client.Ready += OnEventWithArgs;
+                    bot.Client.Ready += OnEventWithArgs;
                     break;
                 case DiscordEventType.Resumed:
-                    shard.Client.Resumed += OnEventWithArgs;
+                    bot.Client.Resumed += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketClosed:
-                    shard.Client.SocketClosed += OnEventWithArgs;
+                    bot.Client.SocketClosed += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketErrored:
-                    shard.Client.SocketErrored += OnEventWithArgs;
+                    bot.Client.SocketErrored += OnEventWithArgs;
                     break;
                 case DiscordEventType.SocketOpened:
-                    shard.Client.SocketOpened += OnEventWithArgs;
+                    bot.Client.SocketOpened += OnEventWithArgs;
                     break;
                 case DiscordEventType.TypingStarted:
-                    shard.Client.TypingStarted += OnEventWithArgs;
+                    bot.Client.TypingStarted += OnEventWithArgs;
                     break;
                 case DiscordEventType.UnknownEvent:
-                    shard.Client.UnknownEvent += OnEventWithArgs;
+                    bot.Client.UnknownEvent += OnEventWithArgs;
                     break;
                 case DiscordEventType.UserSettingsUpdated:
-                    shard.Client.UserSettingsUpdated += OnEventWithArgs;
+                    bot.Client.UserSettingsUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.UserUpdated:
-                    shard.Client.UserUpdated += OnEventWithArgs;
+                    bot.Client.UserUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.VoiceServerUpdated:
-                    shard.Client.VoiceServerUpdated += OnEventWithArgs;
+                    bot.Client.VoiceServerUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.VoiceStateUpdated:
-                    shard.Client.VoiceStateUpdated += OnEventWithArgs;
+                    bot.Client.VoiceStateUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.WebhooksUpdated:
-                    shard.Client.WebhooksUpdated += OnEventWithArgs;
+                    bot.Client.WebhooksUpdated += OnEventWithArgs;
                     break;
                 default:
                     Log.Warning("No logic for handling event type: {EventType}", Enum.GetName(typeof(DiscordEventType), this.EventType));

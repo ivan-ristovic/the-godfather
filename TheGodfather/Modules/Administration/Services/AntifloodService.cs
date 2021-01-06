@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -14,8 +16,8 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildFloodUsers;
 
 
-        public AntifloodService(TheGodfatherShard shard)
-            : base(shard, "_gf: Flooding")
+        public AntifloodService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Flooding")
         {
             this.guildFloodUsers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
         }
@@ -39,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
             if (this.guildFloodUsers[e.Guild.Id].Count >= settings.Sensitivity) {
                 foreach (DiscordMember m in this.guildFloodUsers[e.Guild.Id]) {
                     await this.PunishMemberAsync(e.Guild, m, settings.Action);
-                    await Task.Delay(TimeSpan.FromMilliseconds(500));
+                    await Task.Delay(TimeSpan.FromMilliseconds(100));
                 }
                 this.guildFloodUsers[e.Guild.Id].Clear();
                 return;

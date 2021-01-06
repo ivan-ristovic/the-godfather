@@ -13,6 +13,7 @@ using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -38,8 +39,8 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public RatelimitService(TheGodfatherShard shard)
-            : base(shard, "_gf: Ratelimit hit")
+        public RatelimitService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Ratelimit hit")
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildRatelimitInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>>();
@@ -56,14 +57,14 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task<IReadOnlyList<ExemptedRatelimitEntity>> GetExemptsAsync(ulong gid)
         {
             List<ExemptedRatelimitEntity> exempts;
-            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
             exempts = await db.ExemptsRatelimit.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
             return exempts.AsReadOnly();
         }
 
         public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
-            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
             db.ExemptsRatelimit.AddExemptions(gid, type, ids);
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
-            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
             db.ExemptsRatelimit.RemoveRange(
                 db.ExemptsRatelimit.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
             );
@@ -81,7 +82,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
             this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
                 db.ExemptsRatelimit
                     .Where(ee => ee.GuildId == gid)

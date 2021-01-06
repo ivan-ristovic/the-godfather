@@ -25,7 +25,7 @@ namespace TheGodfather.Services
         #region Callbacks
         private static void BotActivityChangeCallback(object? _)
         {
-            if (_ is TheGodfatherShard shard) {
+            if (_ is TheGodfatherBot shard) {
                 if (shard.Client is null) {
                     Log.Error("BotActivityChangeCallback detected null client - this should not happen");
                     return;
@@ -56,7 +56,7 @@ namespace TheGodfather.Services
 
         private static void DatabaseSyncCallback(object? _)
         {
-            if (_ is TheGodfatherShard shard) {
+            if (_ is TheGodfatherBot shard) {
                 if (shard.Client is null) {
                     Log.Error("DatabaseSyncCallback detected null client - this should not happen");
                     return;
@@ -75,7 +75,7 @@ namespace TheGodfather.Services
 
         private static void FeedCheckCallback(object? _)
         {
-            if (_ is TheGodfatherShard shard) {
+            if (_ is TheGodfatherBot shard) {
                 if (shard.Client is null) {
                     Log.Error("FeedCheckCallback detected null client - this should not happen");
                     return;
@@ -111,7 +111,7 @@ namespace TheGodfather.Services
 
         private static void MiscellaneousActionsCallback(object? _)
         {
-            if (_ is TheGodfatherShard shard) {
+            if (_ is TheGodfatherBot shard) {
                 if (shard.Client is null) {
                     Log.Error("MiscellaneousActionsCallback detected null client - this should not happen");
                     return;
@@ -126,8 +126,8 @@ namespace TheGodfather.Services
                     }
 
                     foreach (Birthday birthday in todayBirthdays) {
-                        DiscordChannel channel = _async.Execute(shard.Client.GetChannelAsync(birthday.ChannelId));
-                        DiscordUser user = _async.Execute(shard.Client.GetUserAsync(birthday.UserId));
+                        DiscordChannel channel = _async.Execute(shard.Client.GetShard(birthday.GuildId).GetChannelAsync(birthday.ChannelId));
+                        DiscordUser user = _async.Execute(shard.Client.GetShard(birthday.GuildId).GetUserAsync(birthday.UserId));
                         _async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                             Description = $"{Emojis.Tada} Happy birthday, {user.Mention}! {Emojis.Cake}",
                             Color = DiscordColor.Aquamarine
@@ -173,7 +173,7 @@ namespace TheGodfather.Services
         #endregion
 
 
-        public PeriodicTasksService(TheGodfatherShard shard, BotConfig cfg)
+        public PeriodicTasksService(TheGodfatherBot shard, BotConfig cfg)
         {
             this.BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, shard, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             this.DatabaseSyncTimer = new Timer(DatabaseSyncCallback, shard, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DatabaseSyncInterval));

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -20,7 +21,7 @@ namespace TheGodfather.Services
             SchedulingService @this = _ as SchedulingService ?? throw new InvalidOperationException();
 
             try {
-                using TheGodfatherDbContext db = @this.shard.Database.CreateContext();
+                using TheGodfatherDbContext db = @this.dbb.CreateContext();
                 DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
                 var guildTasks = db.GuildTasks
                     .Where(t => t.ExecutionTime <= threshold)
@@ -67,20 +68,20 @@ namespace TheGodfather.Services
         public bool IsDisabled => false;
         public TimeSpan ReloadSpan { get; }
 
-        private readonly TheGodfatherShard shard;
+        private readonly DiscordShardedClient client;
+        private readonly DbContextBuilder dbb;
+        private readonly LocalizationService lcs;
         private readonly AsyncExecutionService async;
         private readonly TaskExecutorDictionary tasks;
         private readonly ConcurrentDictionary<ulong, TaskExecutorDictionary> reminders;
         private Timer? loadTimer;
 
 
-        public SchedulingService(TheGodfatherShard shard, AsyncExecutionService async, bool start = true)
+        public SchedulingService(DbContextBuilder dbb, DiscordShardedClient client, LocalizationService lcs, AsyncExecutionService async, bool start = true)
         {
-            // TODO since this is shard specific service, maybe make it so that the reminders are static, otherwise there will be
-            // duplicates for each shard? Also, check how that is even handled in cases where the guild which posted reminder
-            // is not watched by current shard
-
-            this.shard = shard;
+            this.client = client;
+            this.dbb = dbb;
+            this.lcs = lcs;
             this.async = async;
             this.tasks = new TaskExecutorDictionary();
             this.reminders = new ConcurrentDictionary<ulong, TaskExecutorDictionary>();
@@ -108,7 +109,7 @@ namespace TheGodfather.Services
         {
             ScheduledTaskExecutor? texec = null;
             try {
-                using TheGodfatherDbContext db = this.shard.Database.CreateContext();
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
                 if (task is Reminder rem) {
                     db.Reminders.Add(rem);
                     await db.SaveChangesAsync();
@@ -134,7 +135,7 @@ namespace TheGodfather.Services
                         taskExec.Dispose();
                     else
                         throw new KeyNotFoundException("Cannot find any guild task that matches the given ID.");
-                    using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
+                    using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                         db.GuildTasks.Remove(new GuildTask { Id = task.Id });
                         await db.SaveChangesAsync();
                     }
@@ -148,7 +149,7 @@ namespace TheGodfather.Services
                         if (!userReminders.Any())
                             this.reminders.TryRemove(rem.UserId, out _);
                     }
-                    using (TheGodfatherDbContext db = this.shard.Database.CreateContext()) {
+                    using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                         db.Reminders.Remove(new Reminder { Id = task.Id });
                         await db.SaveChangesAsync();
                     }
@@ -195,7 +196,7 @@ namespace TheGodfather.Services
 
         private ScheduledTaskExecutor CreateTaskExecutor(ScheduledTask task)
         {
-            var texec = new ScheduledTaskExecutor(this.shard, this.async, task);
+            var texec = new ScheduledTaskExecutor(this.client, this.lcs, this.async, task);
             texec.OnTaskExecuted += this.UnscheduleAsync;
             this.RegisterExecutor(texec);
             if (task.TimeUntilExecution > TimeSpan.Zero)

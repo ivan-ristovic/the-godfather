@@ -20,12 +20,9 @@ namespace TheGodfather
     {
         public static string ApplicationName { get; }
         public static string ApplicationVersion { get; }
-        public static IReadOnlyList<TheGodfatherShard> ActiveShards => _shards.AsReadOnly();
 
-        private static ServiceProvider? ServiceProvider { get; set; }
+        internal static TheGodfatherBot? Bot { get; set; }
         private static PeriodicTasksService? PeriodicService { get; set; }
-
-        private static readonly List<TheGodfatherShard> _shards = new List<TheGodfatherShard>();
 
 
         static TheGodfather()
@@ -46,15 +43,13 @@ namespace TheGodfather
                 Log.Information("Logger created.");
 
                 DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
-                await CreateAndBootShardsAsync(cfg, dbb);
+                
+                await StartAsync(cfg, dbb);
                 Log.Information("Booting complete!");
 
-                PeriodicService = new PeriodicTasksService(_shards[0], cfg.CurrentConfiguration);
-
-                if (ServiceProvider is null)
-                    throw new ArgumentNullException(nameof(ServiceProvider), "Service provider is not initialized.");
-
-                await Task.Delay(Timeout.Infinite, ServiceProvider.GetRequiredService<BotActivityService>().MainLoopCts.Token);
+                CancellationToken token = Bot?.Services.GetRequiredService<BotActivityService>().MainLoopCts.Token 
+                    ?? throw new InvalidOperationException("Bot not initialized");
+                await Task.Delay(Timeout.Infinite, token);
             } catch (TaskCanceledException) {
                 Log.Information("Shutdown signal received!");
             } catch (Exception e) {
@@ -72,7 +67,7 @@ namespace TheGodfather
         public static Task Stop(int exitCode = 0, TimeSpan? after = null)
         {
             Environment.ExitCode = exitCode;
-            ServiceProvider?.GetRequiredService<BotActivityService>().MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
+            Bot?.Services.GetRequiredService<BotActivityService>().MainLoopCts.CancelAfter(after ?? TimeSpan.Zero);
             return Task.CompletedTask;
         }
 
@@ -113,45 +108,11 @@ namespace TheGodfather
             return dbb;
         }
 
-        private static Task CreateAndBootShardsAsync(BotConfigService cfg, DbContextBuilder dbb)
+        private static Task StartAsync(BotConfigService cfg, DbContextBuilder dbb)
         {
-            Log.Information("Initializing services");
-            IServiceCollection services = new ServiceCollection()
-                .AddSingleton(cfg)
-                .AddSingleton(dbb)
-                .AddSingleton(new BotActivityService(dbb, cfg.CurrentConfiguration.ShardCount))
-                .AddSingleton(new AsyncExecutionService())
-                .AddSharedServices()
-                ;
-            ServiceProvider = services.BuildServiceProvider();
-
-            Log.Information("Creating {ShardCount} shard(s)", cfg.CurrentConfiguration.ShardCount);
-            for (int i = 0; i < cfg.CurrentConfiguration.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, services);
-                _shards.Add(shard);
-            }
-
-            CheckCommandLocalization(_shards[0]);
-
-            Log.Information("Booting the shards");
-
-            return Task.WhenAll(_shards.Select(s => s.StartAsync()));
-
-
-            static void CheckCommandLocalization(TheGodfatherShard shard)
-            {
-                LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
-                foreach (Command cmd in shard.CNext.GetRegisteredCommands()) {
-                    try {
-                        _ = lcs.GetCommandDescription(0, cmd.QualifiedName);
-                        IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
-                        foreach (CommandArgument arg in args)
-                            _ = lcs.GetString(null, arg.Description);
-                    } catch (LocalizationException e) {
-                        Log.Warning(e, "Translation not found");
-                    }
-                }
-            }
+            Bot = new TheGodfatherBot(cfg, dbb);
+            PeriodicService = new PeriodicTasksService(Bot, cfg.CurrentConfiguration);
+            return Bot.StartAsync();
         }
 
         private static async Task DisposeAsync()
@@ -159,13 +120,9 @@ namespace TheGodfather
             Log.Information("Cleaning up ...");
 
             PeriodicService?.Dispose();
-            ServiceProvider?.Dispose();
-
-            // TODO dispose services manually?
-
-            if (_shards is { })
-                await Task.WhenAll(_shards.Select(s => s.DisposeAsync()));
-
+            if (Bot is { })
+                await Bot.DisposeAsync();
+    
             Log.Information("Cleanup complete! Powering off");
         }
         #endregion

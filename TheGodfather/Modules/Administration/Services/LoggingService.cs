@@ -18,19 +18,19 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public sealed class LoggingService : ITheGodfatherService
     {
-        public static bool IsLogEnabledForGuild(TheGodfatherShard shard, ulong gid, out LoggingService logService, out LocalizedEmbedBuilder emb)
+        public static bool IsLogEnabledForGuild(TheGodfatherBot shard, ulong gid, out LoggingService logService, out LocalizedEmbedBuilder emb)
         {
             logService = shard.Services.GetRequiredService<LoggingService>();
             return logService.IsLogEnabledFor(gid, out emb);
         }
 
-        public static bool IsChannelExempted(TheGodfatherShard shard, DiscordGuild? guild, DiscordChannel channel, out GuildConfigService gcs)
+        public static bool IsChannelExempted(TheGodfatherBot shard, DiscordGuild? guild, DiscordChannel channel, out GuildConfigService gcs)
         {
             gcs = shard.Services.GetRequiredService<GuildConfigService>();
             return guild is { } && gcs.IsChannelExempted(guild.Id, channel.Id, channel.ParentId);
         }
 
-        public static async Task TryExecuteWithReportAsync(TheGodfatherShard shard, DiscordGuild guild, Task action,
+        public static async Task TryExecuteWithReportAsync(TheGodfatherBot shard, DiscordGuild guild, Task action,
                                                            string code403Key, string code404Key,
                                                            string[]? code403args = null, string[]? code404args = null,
                                                            Func<Task>? code403action = null, Func<Task>? code404action = null)
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public static async Task<T?> TryExecuteWithReportAsync<T>(TheGodfatherShard shard, DiscordGuild guild, Task<T> action,
+        public static async Task<T?> TryExecuteWithReportAsync<T>(TheGodfatherBot shard, DiscordGuild guild, Task<T> action,
                                                                   string code403Key, string code404Key, string[]?
                                                                   code403args = null, string[]? code404args = null,
                                                                   Func<Task>? code403action = null, Func<Task>? code404action = null)
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private static Task ReportAsync(TheGodfatherShard shard, DiscordGuild guild, string key, string[]? args)
+        private static Task ReportAsync(TheGodfatherBot shard, DiscordGuild guild, string key, string[]? args)
         {
             return !IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out _)
                 ? Task.CompletedTask

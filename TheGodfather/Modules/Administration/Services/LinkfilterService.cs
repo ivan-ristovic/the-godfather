@@ -2,15 +2,16 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
     public sealed class LinkfilterService : ProtectionService
     {
-        public LinkfilterService(TheGodfatherShard shard)
-            : base(shard, "_gf: Linkfilter") { }
+        public LinkfilterService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Linkfilter") { }
 
 
         public override bool TryAddGuildToWatch(ulong gid) => true;
@@ -96,8 +97,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc, LinkfilterMatch? match)
         {
-            LoggingService ls = this.shard.Services.GetRequiredService<LoggingService>();
-            if (!ls.IsLogEnabledFor(e.Guild.Id, out LocalizedEmbedBuilder emb))
+            if (!this.ls.IsLogEnabledFor(e.Guild.Id, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle("evt-lf-triggered");
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration.Services
                 emb.AddLocalizedTitleField("str-matched", match.Matched);
             emb.WithColor(DiscordColor.Red);
             emb.AddInvocationFields(e.Author, e.Channel);
-            await ls.LogAsync(e.Guild, emb);
+            await this.ls.LogAsync(e.Guild, emb);
         }
 
         public override void Dispose()

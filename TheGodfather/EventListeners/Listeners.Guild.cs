@@ -14,10 +14,10 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.GuildBanAdded)]
-        public static async Task GuildBanEventHandlerAsync(TheGodfatherShard shard, GuildBanAddEventArgs e)
+        public static async Task GuildBanEventHandlerAsync(TheGodfatherBot bot, GuildBanAddEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Banned: {Member} {Guild}", e.Member, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Banned: {Member} {Guild}", e.Member, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-ban-add");
@@ -29,10 +29,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildBanRemoved)]
-        public static async Task GuildUnbanEventHandlerAsync(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
+        public static async Task GuildUnbanEventHandlerAsync(TheGodfatherBot bot, GuildBanRemoveEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Unanned: {Member} {Guild}", e.Member, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Unanned: {Member} {Guild}", e.Member, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-ban-del");
@@ -44,19 +44,19 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildDeleted)]
-        public static Task GuildDeleteEventHandlerAsync(TheGodfatherShard shard, GuildDeleteEventArgs e)
+        public static Task GuildDeleteEventHandlerAsync(TheGodfatherBot bot, GuildDeleteEventArgs e)
         {
-            LogExt.Information(shard.Id, "Guild deleted {Guild}", e.Guild);
-            LogExt.Debug(shard.Id, "Guild deleted event args: {@GuildDeleteEventArgs}", e);
-            return shard.Services.GetRequiredService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
+            LogExt.Information(bot.GetId(e.Guild.Id), "Guild deleted {Guild}", e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild deleted event args: {@GuildDeleteEventArgs}", e);
+            return bot.Services.GetRequiredService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
-        public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
+        public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherBot bot, GuildEmojisUpdateEventArgs e)
         {
-            LogExt.Information(shard.Id, "Emojis updated {Guild}, ({EmojisBefore} to {EmojisAfter}", e.Guild, e.EmojisBefore, e.EmojisAfter);
-            LogExt.Debug(shard.Id, "Emojis updated: {@GuildEmojisUpdateEventArgs}", e);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Information(bot.GetId(e.Guild.Id), "Emojis updated {Guild}, ({EmojisBefore} to {EmojisAfter}", e.Guild, e.EmojisBefore, e.EmojisAfter);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Emojis updated: {@GuildEmojisUpdateEventArgs}", e);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             AuditLogActionType action = e.EmojisAfter.Count > e.EmojisBefore.Count
@@ -98,10 +98,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildIntegrationsUpdated)]
-        public static async Task GuildIntegrationsUpdateEventHandlerAsync(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
+        public static async Task GuildIntegrationsUpdateEventHandlerAsync(TheGodfatherBot bot, GuildIntegrationsUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Integrations updated: {Guild}", e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Integrations updated: {Guild}", e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildIntegrationsUpdated, "evt-gld-int-upd");
@@ -109,10 +109,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleCreated)]
-        public static async Task GuildRoleCreateEventHandlerAsync(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
+        public static async Task GuildRoleCreateEventHandlerAsync(TheGodfatherBot bot, GuildRoleCreateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Role created: {Role} {Guild}", e.Role, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Role created: {Role} {Guild}", e.Role, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-gld-role-add", e.Role);
@@ -124,10 +124,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleDeleted)]
-        public static async Task GuildRoleDeleteEventHandlerAsync(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
+        public static async Task GuildRoleDeleteEventHandlerAsync(TheGodfatherBot bot, GuildRoleDeleteEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Role deleted: {Role} {Guild}", e.Role, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Role deleted: {Role} {Guild}", e.Role, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-gld-role-del", e.Role);
@@ -138,14 +138,14 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildRoleUpdated)]
-        public static async Task GuildRoleUpdateEventHandlerAsync(TheGodfatherShard shard, GuildRoleUpdateEventArgs e)
+        public static async Task GuildRoleUpdateEventHandlerAsync(TheGodfatherBot bot, GuildRoleUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Role updated: {Role} {Guild}", e.RoleBefore, e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Role updated: {Role} {Guild}", e.RoleBefore, e.Guild);
             // FIXME Still no solution for Discord role position event spam...
             if (OnlyPositionUpdate(e.RoleBefore, e.RoleAfter))
                 return;
 
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleUpdated, "evt-gld-role-upd", e.RoleBefore);
@@ -177,10 +177,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.GuildUpdated)]
-        public static async Task GuildUpdateEventHandlerAsync(TheGodfatherShard shard, GuildUpdateEventArgs e)
+        public static async Task GuildUpdateEventHandlerAsync(TheGodfatherBot bot, GuildUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Guild updated: {Guild}", e.GuildBefore);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.GuildBefore.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.GuildBefore.Id), "Guild updated: {Guild}", e.GuildBefore);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.GuildBefore.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-gld-upd");
@@ -205,10 +205,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.VoiceServerUpdated)]
-        public static async Task GuildVoiceServerUpdateEventHandlerAsync(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
+        public static async Task GuildVoiceServerUpdateEventHandlerAsync(TheGodfatherBot bot, VoiceServerUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Guild voice server updated: {Endpoint} {Guild}", e.Endpoint, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild voice server updated: {Endpoint} {Guild}", e.Endpoint, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.VoiceServerUpdated, "evt-gld-vs-upd", e.Endpoint);
@@ -216,13 +216,13 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.InviteCreated)]
-        public static async Task InviteCreatedEventHandlerAsync(TheGodfatherShard shard, InviteCreateEventArgs e)
+        public static async Task InviteCreatedEventHandlerAsync(TheGodfatherBot bot, InviteCreateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Guild invite created: {Invite} {Guild}", e.Invite, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild invite created: {Invite} {Guild}", e.Invite, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             emb.WithLocalizedTitle(DiscordEventType.InviteCreated, "evt-gld-inv-add", e.Channel);
             emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
             emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);
@@ -234,13 +234,13 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.InviteDeleted)]
-        public static async Task InviteDeletedEventHandlerAsync(TheGodfatherShard shard, InviteDeleteEventArgs e)
+        public static async Task InviteDeletedEventHandlerAsync(TheGodfatherBot bot, InviteDeleteEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Guild invite deleted: {Invite} {Guild}", e.Invite, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild invite deleted: {Invite} {Guild}", e.Invite, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            LocalizationService ls = shard.Services.GetRequiredService<LocalizationService>();
+            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             emb.WithLocalizedTitle(DiscordEventType.InviteDeleted, "evt-gld-inv-add", e.Channel);
             emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
             emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);

@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -14,8 +16,8 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildNewMembers;
 
 
-        public AntiInstantLeaveService(TheGodfatherShard shard)
-            : base(shard, "_gf: Instant leave")
+        public AntiInstantLeaveService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Instant leave")
         {
             this.guildNewMembers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
         }

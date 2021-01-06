@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
@@ -19,16 +19,18 @@ namespace TheGodfather.Services.Common
         public delegate Task TaskExecuted(ScheduledTask task);
         public event TaskExecuted OnTaskExecuted;
 
-        private readonly TheGodfatherShard shard;
+        private readonly DiscordShardedClient client;
+        private readonly LocalizationService lcs;
         private readonly AsyncExecutionService async;
         private Timer? timer;
 
 
-        public ScheduledTaskExecutor(TheGodfatherShard shard, AsyncExecutionService async, ScheduledTask task)
+        public ScheduledTaskExecutor(DiscordShardedClient client, LocalizationService lcs, AsyncExecutionService async, ScheduledTask task)
         {
-            this.Job = task;
-            this.shard = shard;
+            this.client = client;
+            this.lcs = lcs;
             this.async = async;
+            this.Job = task;
             this.OnTaskExecuted += task => Task.CompletedTask;
         }
 
@@ -72,19 +74,19 @@ namespace TheGodfather.Services.Common
                         }
                         break;
                     case Reminder rem:
+                        DiscordClient client = this.client.GetShard(0);
                         DiscordChannel? channel = rem.ChannelId != 0
-                            ? await this.shard.Client.GetChannelAsync(rem.ChannelId)
-                            : await this.shard.Client.CreateDmChannelAsync(rem.UserId);
+                            ? await client.GetChannelAsync(rem.ChannelId)
+                            : await client.CreateDmChannelAsync(rem.UserId);
                         if (channel is null) {
                             Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})",
                                 rem.Id, rem.ChannelId, rem.UserId
                             );
                             break;
                         }
-                        DiscordUser user = await this.shard.Client.GetUserAsync(rem.UserId);
-                        LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
-                        await channel.LocalizedEmbedAsync(lcs, Emojis.X, DiscordColor.Red, "fmt-remind-miss",
-                            lcs.GetLocalizedTime(channel.GuildId, rem.ExecutionTime), rem.Message
+                        DiscordUser user = await client.GetUserAsync(rem.UserId);
+                        await channel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, "fmt-remind-miss",
+                            this.lcs.GetLocalizedTime(channel.GuildId, rem.ExecutionTime), rem.Message
                         );
                         break;
                     default:
@@ -103,16 +105,16 @@ namespace TheGodfather.Services.Common
             Reminder? rem = _ as Reminder ?? throw new InvalidCastException("Failed to cast scheduled task to Reminder");
 
             try {
+                DiscordClient client = this.client.GetShard(0);
                 DiscordChannel? channel = rem.ChannelId != 0
-                    ? this.async.Execute(this.shard.Client.GetChannelAsync(rem.ChannelId))
-                    : this.async.Execute(this.shard.Client.CreateDmChannelAsync(rem.UserId));
+                    ? this.async.Execute(client.GetChannelAsync(rem.ChannelId))
+                    : this.async.Execute(client.CreateDmChannelAsync(rem.UserId));
                 if (channel is null)
                     return;
-                DiscordUser user = this.async.Execute(this.shard.Client.GetUserAsync(rem.UserId));
+                DiscordUser user = this.async.Execute(client.GetUserAsync(rem.UserId));
 
-                LocalizationService lcs = this.shard.Services.GetRequiredService<LocalizationService>();
                 this.async.Execute(
-                    channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Green, "fmt-remind-exec", user.Mention, rem.Message)
+                    channel.LocalizedEmbedAsync(this.lcs, Emojis.AlarmClock, DiscordColor.Green, "fmt-remind-exec", user.Mention, rem.Message)
                 );
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime
@@ -134,7 +136,7 @@ namespace TheGodfather.Services.Common
             GuildTask? gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
             try {
-                DiscordGuild guild = this.async.Execute(this.shard.Client.GetGuildAsync(gt.GuildId));
+                DiscordGuild guild = this.async.Execute(this.client.GetShard(gt.GuildId).GetGuildAsync(gt.GuildId));
                 this.async.Execute(guild.UnbanMemberAsync(gt.UserId, $"Temporary ban time expired"));
             } catch (UnauthorizedException) {
                 // Do nothing, perms to unban removed in meantime
@@ -154,7 +156,7 @@ namespace TheGodfather.Services.Common
             GuildTask? gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
             try {
-                DiscordGuild guild = this.async.Execute(this.shard.Client.GetGuildAsync(gt.GuildId));
+                DiscordGuild guild = this.async.Execute(this.client.GetShard(gt.GuildId).GetGuildAsync(gt.GuildId));
                 DiscordRole? role = guild.GetRole(gt.RoleId);
                 DiscordMember member = this.async.Execute(guild.GetMemberAsync(gt.UserId));
                 if (role is null)

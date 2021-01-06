@@ -28,12 +28,12 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
-        public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
+        public static Task CommandExecutionEventHandler(TheGodfatherBot bot, CommandExecutionEventArgs e)
         {
             if (e.Command is null || e.Command.QualifiedName.StartsWith("help"))
                 return Task.CompletedTask;
             LogExt.Information(
-                shard.Id,
+                bot.GetId(e.Context.Guild?.Id),
                 new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
                 e.Command.QualifiedName, e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
@@ -41,10 +41,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.CommandErrored)]
-        public static Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
+        public static Task CommandErrorEventHandlerAsync(TheGodfatherBot bot, CommandErrorEventArgs e)
         {
             LogExt.Debug(
-                shard.Id,
+                bot.GetId(e.Context.Guild?.Id),
                 new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
                 e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
                 e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
                 return e.Context.Message.CreateReactionAsync(Emojis.X);
 
-            LocalizationService lcs = shard.Services.GetRequiredService<LocalizationService>();
+            LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
 
             ulong gid = e.Context.Guild?.Id ?? 0;
             var emb = new LocalizedEmbedBuilder(lcs, gid);
@@ -68,13 +68,13 @@ namespace TheGodfather.EventListeners
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid).SuggestionsEnabled)
+                    if (!bot.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid).SuggestionsEnabled)
                         return e.Context.Message.CreateReactionAsync(Emojis.Question);
 
                     emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
 
-                    CommandService cs = shard.Services.GetRequiredService<CommandService>();
-                    IEnumerable<KeyValuePair<string, Command>> similarCommands = shard.Commands
+                    CommandService cs = bot.Services.GetRequiredService<CommandService>();
+                    IEnumerable<KeyValuePair<string, Command>> similarCommands = bot.Commands
                         .Select(kvp => (cne.CommandName.LevenshteinDistanceTo(kvp.Key), kvp))
                         .Where(tup => tup.Item1 < 3)
                         .OrderBy(tup => tup.Item1)
@@ -97,9 +97,10 @@ namespace TheGodfather.EventListeners
                 case TargetInvocationException _:
                 case InvalidOperationException _:
                     string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
-                    Command command = shard.CNext.FindCommand(fcmdStr, out string args);
-                    CommandContext fctx = shard.CNext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
-                    return shard.CNext.ExecuteCommandAsync(fctx);
+                    CommandsNextExtension cnext = bot.CNext[bot.GetId(e.Context.Guild?.Id ?? 0)];
+                    Command command = cnext.FindCommand(fcmdStr, out string args);
+                    CommandContext fctx = cnext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
+                    return cnext.ExecuteCommandAsync(fctx);
                 case ConcurrentOperationException coex:
                     emb.WithLocalizedDescription("err-concurrent");
                     break;
@@ -146,14 +147,14 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedDescription("cmd-err-403");
                     break;
                 case TaskCanceledException tcex:
-                    LogExt.Warning(shard.Id, "Task cancelled");
+                    LogExt.Warning(bot.GetId(e.Context.Guild?.Id), "Task cancelled");
                     return Task.CompletedTask;
                 case NpgsqlException _:
                 case DbUpdateException _:
                     emb.WithLocalizedDescription("err-db");
                     break;
                 default:
-                    LogExt.Error(shard.Id, ex, "Unhandled error");
+                    LogExt.Error(bot.GetId(e.Context.Guild?.Id), ex, "Unhandled error");
                     break;
             }
 

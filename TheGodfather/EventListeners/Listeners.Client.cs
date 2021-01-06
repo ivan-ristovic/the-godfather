@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.Common;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
@@ -19,57 +20,57 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.ClientErrored)]
-        public static Task ClientErrorEventHandlerAsync(TheGodfatherShard shard, ClientErrorEventArgs e)
+        public static Task ClientErrorEventHandlerAsync(TheGodfatherBot bot, ClientErrorEventArgs e)
         {
             Exception ex = e.Exception;
             while (ex is AggregateException)
                 ex = ex.InnerException ?? ex;
 
-            LogExt.Error(shard.Id, ex, "Client errored!");
+            Log.Error(ex, "Client errored: {EventName}", e.EventName);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildAvailable)]
-        public static Task GuildAvailableEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
+        public static Task GuildAvailableEventHandlerAsync(TheGodfatherBot bot, GuildCreateEventArgs e)
         {
-            LogExt.Information(shard.Id, "Available: {AvailableGuild}", e.Guild);
-            GuildConfigService gcs = shard.Services.GetRequiredService<GuildConfigService>();
+            LogExt.Information(bot.GetId(e.Guild.Id), "Available: {AvailableGuild}", e.Guild);
+            GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
             return gcs.IsGuildRegistered(e.Guild.Id) ? Task.CompletedTask : gcs.RegisterGuildAsync(e.Guild.Id);
         }
 
         [AsyncEventListener(DiscordEventType.GuildUnavailable)]
-        public static Task GuildUnvailableEventHandlerAsync(TheGodfatherShard shard, GuildDeleteEventArgs e)
+        public static Task GuildUnvailableEventHandlerAsync(TheGodfatherBot bot, GuildDeleteEventArgs e)
         {
-            LogExt.Warning(shard.Id, "Unvailable: {UnvailableGuild}", e.Guild);
+            LogExt.Warning(bot.GetId(e.Guild.Id), "Unvailable: {UnvailableGuild}", e.Guild);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildDownloadCompleted)]
-        public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherShard shard, GuildDownloadCompletedEventArgs e)
+        public static Task GuildDownloadCompletedEventHandlerAsync(TheGodfatherBot bot, GuildDownloadCompletedEventArgs e)
         {
-            LogExt.Information(shard.Id, "All guilds for this shard are now downloaded ({Count} total)", e.Guilds.Count);
+            Log.Information("All guilds are now downloaded ({Count} total)", e.Guilds.Count);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.GuildCreated)]
-        public static async Task GuildCreateEventHandlerAsync(TheGodfatherShard shard, GuildCreateEventArgs e)
+        public static async Task GuildCreateEventHandlerAsync(TheGodfatherBot bot, GuildCreateEventArgs e)
         {
-            LogExt.Information(shard.Id, "Joined {NewGuild}", e.Guild);
+            LogExt.Information(bot.GetId(e.Guild.Id), "Joined {NewGuild}", e.Guild);
 
-            if (shard.Services.GetRequiredService<BlockingService>().IsGuildBlocked(e.Guild.Id)) {
-                LogExt.Information(shard.Id, "{Guild} is blocked. Leaving...", e.Guild);
+            if (bot.Services.GetRequiredService<BlockingService>().IsGuildBlocked(e.Guild.Id)) {
+                LogExt.Information(bot.GetId(e.Guild.Id), "{Guild} is blocked. Leaving...", e.Guild);
                 await e.Guild.LeaveAsync();
                 return;
             }
 
-            await shard.Services.GetRequiredService<GuildConfigService>().RegisterGuildAsync(e.Guild.Id);
+            await bot.Services.GetRequiredService<GuildConfigService>().RegisterGuildAsync(e.Guild.Id);
 
             DiscordChannel defChannel = e.Guild.GetDefaultChannel();
             if (!defChannel.PermissionsFor(e.Guild.CurrentMember).HasPermission(Permissions.SendMessages))
                 return;
 
-            string prefix = shard.Services.GetRequiredService<BotConfigService>().CurrentConfiguration.Prefix;
-            string owners = shard.Client.CurrentApplication.Owners.Select(o => o.ToDiscriminatorString()).Humanize(", ");
+            string prefix = bot.Services.GetRequiredService<BotConfigService>().CurrentConfiguration.Prefix;
+            string owners = bot.Client.CurrentApplication.Owners.Select(o => o.ToDiscriminatorString()).Humanize(", ");
             await defChannel.EmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{Emojis.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(prefix)}, but it can be changed " +
@@ -86,45 +87,45 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.SocketOpened)]
-        public static Task SocketOpenedEventHandlerAsync(TheGodfatherShard shard, SocketEventArgs _)
+        public static Task SocketOpenedEventHandlerAsync(TheGodfatherBot bot, SocketEventArgs _)
         {
-            LogExt.Debug(shard.Id, "Socket opened");
-            shard.Services.GetRequiredService<BotActivityService>().ShardUptimeInformation[shard.Id].SocketStartTime = DateTimeOffset.Now;
+            Log.Debug("Socket opened");
+            bot.Services.GetRequiredService<BotActivityService>().UptimeInformation.SocketStartTime = DateTimeOffset.Now;
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.SocketClosed)]
-        public static Task SocketClosedEventHandlerAsync(TheGodfatherShard shard, SocketCloseEventArgs e)
+        public static Task SocketClosedEventHandlerAsync(TheGodfatherBot bot, SocketCloseEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Socket closed with code {Code}: {Message}", e.CloseCode, e.CloseMessage);
+            Log.Debug("Socket closed with code {Code}: {Message}", e.CloseCode, e.CloseMessage);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.SocketErrored)]
-        public static Task SocketErroredEventHandlerAsync(TheGodfatherShard shard, SocketErrorEventArgs e)
+        public static Task SocketErroredEventHandlerAsync(TheGodfatherBot shard, SocketErrorEventArgs e)
         {
-            LogExt.Debug(shard.Id, e.Exception, "Socket errored");
+            Log.Debug(e.Exception, "Socket errored");
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.UnknownEvent)]
-        public static Task UnknownEventHandlerAsync(TheGodfatherShard shard, UnknownEventArgs e)
+        public static Task UnknownEventHandlerAsync(TheGodfatherBot shard, UnknownEventArgs e)
         {
-            LogExt.Error(shard.Id, new[] { "Unknown event ({UnknownEvent}) occured:", "{@UnknownEventJson}" }, e.EventName, e.Json);
+            Log.Error("Unknown event ({UnknownEvent}) occured: {@UnknownEventJson}", e.EventName, e.Json);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.UserUpdated)]
-        public static Task UserUpdatedEventHandlerAsync(TheGodfatherShard shard, UserUpdateEventArgs e)
+        public static Task UserUpdatedEventHandlerAsync(TheGodfatherBot bot, UserUpdateEventArgs e)
         {
-            LogExt.Information(shard.Id, new[] { "Bot updated:", "{@BotUserBefore}", "{@BotUserAfter}" }, e.UserBefore, e.UserAfter);
+            Log.Information("Bot updated: {@BotUserAfter}", e.UserAfter);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.UserSettingsUpdated)]
-        public static Task UserSettingsUpdatedEventHandlerAsync(TheGodfatherShard shard, UserSettingsUpdateEventArgs e)
+        public static Task UserSettingsUpdatedEventHandlerAsync(TheGodfatherBot bot, UserSettingsUpdateEventArgs e)
         {
-            LogExt.Information(shard.Id, "Bot settings updated: {@BotUser}", e.User);
+            Log.Information("User settings updated: {@User}", e.User);
             return Task.CompletedTask;
         }
     }

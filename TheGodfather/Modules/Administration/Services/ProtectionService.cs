@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
@@ -17,20 +17,27 @@ namespace TheGodfather.Modules.Administration.Services
     {
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
         protected string reason;
-        protected readonly TheGodfatherShard shard;
+        protected readonly DbContextBuilder dbb;
+        protected readonly SchedulingService ss;
+        protected readonly LoggingService ls;
+        protected readonly GuildConfigService gcs;
 
         public bool IsDisabled => false;
 
 
-        protected ProtectionService(TheGodfatherShard shard, string reason)
+        protected ProtectionService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs, string reason)
         {
-            this.shard = shard;
+            this.dbb = dbb;
+            this.ss = ss;
+            this.ls = ls;
+            this.gcs = gcs;
             this.reason = reason;
         }
 
 
         public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string? reason = null)
         {
+            Log.Debug("Punishing {Member} in guild {Guild} with action {ActionType} due to: {Reason}", member, guild, type, reason);
             try {
                 DiscordRole muteRole;
                 GuildTask gt;
@@ -55,7 +62,7 @@ namespace TheGodfather.Modules.Administration.Services
                             UserId = member.Id,
                             Type = ScheduledTaskType.Unban,
                         };
-                        await this.shard.Services.GetRequiredService<SchedulingService>().ScheduleAsync(gt);
+                        await this.ss.ScheduleAsync(gt);
                         break;
                     case PunishmentAction.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
@@ -69,16 +76,16 @@ namespace TheGodfather.Modules.Administration.Services
                             UserId = member.Id,
                             Type = ScheduledTaskType.Unmute,
                         };
-                        await this.shard.Services.GetRequiredService<SchedulingService>().ScheduleAsync(gt);
+                        await this.ss.ScheduleAsync(gt);
                         break;
                 }
             } catch {
-                if (LoggingService.IsLogEnabledForGuild(this.shard, guild.Id, out LoggingService log, out LocalizedEmbedBuilder emb)) {
+                if (this.ls.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb)) {
                     emb.WithLocalizedTitle("err-punish-failed");
                     emb.WithColor(DiscordColor.Red);
                     emb.AddLocalizedTitleField("str-user", member);
                     emb.AddLocalizedTitleField("str-rsn", reason ?? this.reason);
-                    await log.LogAsync(guild, emb.Build());
+                    await this.ls.LogAsync(guild, emb.Build());
                 }
             }
         }
@@ -89,8 +96,8 @@ namespace TheGodfather.Modules.Administration.Services
 
             await this.csem.WaitAsync();
             try {
-                using TheGodfatherDbContext db = this.shard.Database.CreateContext();
-                GuildConfig gcfg = await this.shard.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(guild.Id);
+                using TheGodfatherDbContext db = this.dbb.CreateContext();
+                GuildConfig gcfg = await this.gcs.GetConfigAsync(guild.Id);
                 muteRole = guild.GetRole(gcfg.MuteRoleId);
                 if (muteRole is null)
                     muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");

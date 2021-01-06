@@ -19,10 +19,10 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.DmChannelCreated)]
-        public static Task DmChannelCreateEventHandlerAsync(TheGodfatherShard shard, DmChannelCreateEventArgs e)
+        public static Task DmChannelCreateEventHandlerAsync(TheGodfatherBot bot, DmChannelCreateEventArgs e)
         {
             LogExt.Debug(
-                shard.Id,
+                bot.GetId(null),
                 new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
                 e.Channel.Recipients.Humanize(Environment.NewLine)
@@ -31,10 +31,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.DmChannelDeleted)]
-        public static Task DmChannelDeleteEventHandlerAsync(TheGodfatherShard shard, DmChannelDeleteEventArgs e)
+        public static Task DmChannelDeleteEventHandlerAsync(TheGodfatherBot bot, DmChannelDeleteEventArgs e)
         {
             LogExt.Debug(
-                shard.Id,
+                bot.GetId(null),
                 new[] { "Delete: DM {Channel}, recipients:", "{Recipients}" },
                 e.Channel,
                 e.Channel.Recipients.Humanize(Environment.NewLine)
@@ -43,10 +43,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
-        public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        public static async Task ChannelCreateEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Create: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Create: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create", e.Channel);
@@ -59,17 +59,17 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
-        public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
-            return shard.Services.GetRequiredService<BackupService>().AddChannel(e.Channel.GuildId, e.Channel.Id);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            return bot.Services.GetRequiredService<BackupService>().AddChannel(e.Channel.GuildId, e.Channel.Id);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
-        public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
+        public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherBot bot, ChannelDeleteEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete", e.Channel);
@@ -82,22 +82,22 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
-        public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
-            shard.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
-            LogExt.Debug(shard.Id, "Added channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            bot.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Added channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
-        public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
+        public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherBot bot, ChannelPinsUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
 
-            if (e.Guild is null || LoggingService.IsChannelExempted(shard, e.Guild, e.Channel, out _))
+            if (e.Guild is null || LoggingService.IsChannelExempted(bot, e.Guild, e.Channel, out _))
                 return;
 
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update");
@@ -105,8 +105,8 @@ namespace TheGodfather.EventListeners
 
             IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
-                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned.First().JumpLink));
-                string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embed>" : pinned.First().Content;
+                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned[0].JumpLink));
+                string content = string.IsNullOrWhiteSpace(pinned[0].Content) ? "<embed>" : pinned[0].Content;
                 emb.AddLocalizedTitleField("str-top-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
             }
             emb.AddLocalizedTimestampField("str-last-pin-timestamp", e.LastPinTimestamp);
@@ -115,17 +115,17 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.ChannelUpdated)]
-        public static async Task ChannelUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelUpdateEventArgs e)
+        public static async Task ChannelUpdateEventHandlerAsync(TheGodfatherBot bot, ChannelUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Channel update: {Channel}, {Guild}", e.ChannelBefore, e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Channel update: {Channel}, {Guild}", e.ChannelBefore, e.Guild);
 
-            if (e.ChannelBefore.IsPrivate || LoggingService.IsChannelExempted(shard, e.Guild, e.ChannelBefore, out _))
+            if (e.ChannelBefore.IsPrivate || LoggingService.IsChannelExempted(bot, e.Guild, e.ChannelBefore, out _))
                 return;
 
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
@@ -179,11 +179,11 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
-        public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
+        public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherBot bot, WebhooksUpdateEventArgs e)
         {
-            LogExt.Debug(shard.Id, "Webhooks update: {Channel}, {Guild}", e.Channel, e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Webhooks update: {Channel}, {Guild}", e.Channel, e.Guild);
 
-            if (!LoggingService.IsLogEnabledForGuild(shard, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.WebhooksUpdated, "evt-gld-wh-upd", e.Channel);
