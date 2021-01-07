@@ -43,22 +43,22 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.CommandErrored)]
         public static Task CommandErrorEventHandlerAsync(TheGodfatherBot bot, CommandErrorEventArgs e)
         {
-            LogExt.Debug(
-                bot.GetId(e.Context.Guild?.Id),
-                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
-                e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
-                e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
-            );
-
             if (e.Exception is null)
                 return Task.CompletedTask;
 
             Exception ex = e.Exception;
-            while (ex is AggregateException or TargetInvocationException)
-                ex = ex.InnerException ?? ex;
+            while (ex is AggregateException or TargetInvocationException && ex.InnerException is { })
+                ex = ex.InnerException;
 
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
                 return e.Context.Message.CreateReactionAsync(Emojis.X);
+
+            LogExt.Debug(
+                bot.GetId(e.Context.Guild?.Id),
+                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}", "{Message}" },
+                e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
+                e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel, ex.Message
+            );
 
             LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
 

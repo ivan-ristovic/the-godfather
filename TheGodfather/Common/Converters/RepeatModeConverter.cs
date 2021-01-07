@@ -13,7 +13,7 @@ namespace TheGodfather.Common.Converters
         static RepeatModeConverter()
         {
             _noneRegex = new Regex(@"^n(one)|0?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            _singleRegex = new Regex(@"^o(ne)?|1$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _singleRegex = new Regex(@"^o(ne)?|1|s(ingle)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _allRegex = new Regex(@"^a(ll)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
