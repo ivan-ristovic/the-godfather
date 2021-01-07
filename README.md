@@ -2,11 +2,17 @@
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
 [![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
-[![Discord Server](https://img.shields.io/discord/201315884709576705.svg?label=discord)](https://discord.gg/DTKmpwG)
+[![Discord Server](https://img.shields.io/discord/794671727291531274.svg?label=discord)](https://discord.gg/z7KZGQQxRz)
 [![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable)](https://github.com/ivan-ristovic/the-godfather/releases)
 [![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
 
-Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
+Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible but keeping the simplicity in mind.
+
+> Discord bots have grown very rapidly over the past few years and due to that growth it usually becomes hard to use them because of the unintuitive command system or due to performance issues. I have had a scenario where we had ten bots in the guild, because every bot did a unique job. Managing many bots and permissions for those bots quickly became overwhelming. Apart from that, only a handful of bots provided a customizable protection system against common destructive actions on Discord, yet it was still not enough - either the performance was poor due to it being a public bot instance, or the system was not customizable enough - that is if the system worked well to begin with. So, I have decided to create TheGodfather.
+> 
+> TheGodfather became a side project for me, and it developed quite quickly. I have always intended it to be a private bot, however I realised over time that there are surely people like myself frustrated of public bot instances and dozens of narrow-purpose bots with complex web-based management interfaces. So, after a long time, even though this project was open sourced from the start, I decided to open the bot to the public and make it easier to setup and use for people who aren't nececarily good with programming.
+>
+> TheGodfather is powered by the community that uses it - I do not have any financial gain from it. For that reason, the bot is meant to be self-hosted, but that might change in future if there are enough contributions from the community.
 
 Features:
   - Complete administration of the guild, channels, users, emojis, roles, integrations etc. via categorized commands.
