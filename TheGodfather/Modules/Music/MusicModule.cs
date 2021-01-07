@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -48,14 +49,38 @@ namespace TheGodfather.Modules.Music
         #endregion
 
 
-        #region music stop
-        [Command("stop")]
-        public async Task StopAsync(CommandContext ctx)
+        #region music
+        [GroupCommand]
+        public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            int removed = this.Player.EmptyQueue();
-            await this.Player.StopAsync();
-            await this.Player.DestroyPlayerAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
+            Song song = this.Player.NowPlaying;
+            if (string.IsNullOrWhiteSpace(this.Player.NowPlaying.Track?.TrackString))
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-none");
+
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-music-queue");
+                emb.WithColor(this.ModuleColor);
+                emb.WithDescription(Formatter.Bold(Formatter.Sanitize(song.Track.Title)));
+                emb.AddLocalizedTitleField("str-author", song.Track.Author, inline: true);
+                emb.AddLocalizedTitleField("str-duration", song.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedTitleField("str-requested-by", song.RequestedBy?.Mention, inline: true);
+            });
+        }
+        #endregion
+
+        #region music info
+        [Command("info")]
+        [Aliases("i", "player")]
+        public Task PlayerInfoAsync(CommandContext ctx)
+        {
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-music-player");
+                var totalQueueTime = TimeSpan.FromSeconds(this.Player.Queue.Sum(s => s.Track.Length.TotalSeconds));
+                emb.AddLocalizedTitleField("str-music-shuffled", this.Player.IsShuffled, inline: true);
+                emb.AddLocalizedTitleField("str-music-mode", this.Player.RepeatMode, inline: true);
+                emb.AddLocalizedTitleField("str-music-vol", $"{this.Player.Volume}%", inline: true);
+                emb.AddLocalizedTitleField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()}", inline: true);
+            });
         }
         #endregion
 
@@ -71,6 +96,17 @@ namespace TheGodfather.Modules.Music
 
             await this.Player.PauseAsync();
             await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-pause");
+        }
+        #endregion
+
+        #region music stop
+        [Command("stop")]
+        public async Task StopAsync(CommandContext ctx)
+        {
+            int removed = this.Player.EmptyQueue();
+            await this.Player.StopAsync();
+            await this.Player.DestroyPlayerAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
         }
         #endregion
 

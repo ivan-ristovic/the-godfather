@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -11,6 +12,32 @@ namespace TheGodfather.Modules.Music
 {
     public sealed partial class MusicModule
     {
+        #region music queue
+        [Command("queue")]
+        [Aliases("q", "playlist")]
+        public Task QueueAsync(CommandContext ctx)
+        {
+            if (this.Player.RepeatMode == RepeatMode.Single) {
+                Song song = this.Player.NowPlaying;
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-queue-rep",
+                    Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)
+                );
+            }
+
+            if (this.Player.Queue.Any())
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-queue-none");
+
+            return ctx.PaginateAsync(this.Player.Queue, (emb, s) => {
+                emb.WithLocalizedTitle("str-music-queue");
+                emb.WithDescription(Formatter.Bold(Formatter.Sanitize(s.Track.Title)));
+                emb.AddLocalizedTitleField("str-author", s.Track.Author, inline: true);
+                emb.AddLocalizedTitleField("str-duration", s.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedTitleField("str-requested-by", s.RequestedBy?.Mention, inline: true);
+                return emb;
+            }, this.ModuleColor);
+        }
+        #endregion
+
         #region music remove
         [Command("remove")]
         [Aliases("dequeue", "delete", "rm", "del", "d", "-", "-=")]

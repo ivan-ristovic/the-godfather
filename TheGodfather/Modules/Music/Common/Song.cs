@@ -19,19 +19,4 @@ namespace TheGodfather.Modules.Music.Common
             this.RequestedBy = requester;
         }
     }
-
-    public struct SongSerializable
-    {
-        [JsonProperty("track")]
-        public string Track { get; set; }
-
-        [JsonProperty("member_id")]
-        public ulong MemberId { get; set; }
-
-        public SongSerializable(Song mi)
-        {
-            this.Track = mi.Track.TrackString;
-            this.MemberId = mi.RequestedBy.Id;
-        }
-    }
 }
