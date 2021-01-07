@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 emb.AddLocalizedField("str-logging", "str-off", inline: true);
             }
 
-            emb.AddLocalizedTitleField("str-backup", gcfg.BackupEnabled ? "str-enabled" : "str-disabled", inline: true);
+            emb.AddLocalizedField("str-backup", gcfg.BackupEnabled ? "str-enabled" : "str-disabled", inline: true);
 
             if (gcfg.WelcomeChannelId != default) {
                 DiscordChannel? wchn = guild.GetChannel(gcfg.WelcomeChannelId);
