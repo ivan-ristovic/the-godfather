@@ -308,6 +308,7 @@
   "music info": "Prints player information.",
   "music pause": "Toggles playback pause.",
   "music play": "Play audio from given URL.",
+  "music playfile": "Play local audio file.",
   "music queue": "Prints the current playback queue.",
   "music remove": "Removes track with given index from the playback queue.",
   "music repeat": "Sets repeat mode (none, single, all).",

@@ -25,6 +25,11 @@
       [ "arg-query" ]
     ]
   },
+  "music playfile": {
+    "usage": [
+      [ "arg-file-mp3" ]
+    ]
+  },
   "music queue": {
     "usage": [
       []

@@ -105,6 +105,30 @@
 
 ---
 
+### music playfile
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Play local audio file.*
+
+**Aliases:**
+`pf, +f, +=f, addf, af`
+**Guild only.**
+
+**Owner-only.**
+
+**Arguments:**
+
+`[string...]` : *Audio URL*
+
+**Examples:**
+
+```xml
+!music playfile test.mp3
+```
+</p></details>
+
+---
+
 ### music queue
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

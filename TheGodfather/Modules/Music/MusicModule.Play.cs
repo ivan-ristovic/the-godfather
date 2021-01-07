@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Music
         [Command("playfile"), RequireOwner]
         [Aliases("pf", "+f", "+=f", "addf", "af")]
         public async Task PlayFileAsync(CommandContext ctx,
-                                       [Description("desc-audio-url")] string path)
+                                       [RemainingText, Description("desc-audio-url")] string path)
         {
             var fi = new FileInfo(path);
             LavalinkLoadResult tlr = await this.Service.GetTracksAsync(fi);

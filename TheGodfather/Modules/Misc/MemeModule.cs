@@ -162,38 +162,35 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region meme templates
-        [Command("templates"), Priority(1)]
+        [Command("templates")]
         [Aliases("template", "ts", "t")]
         public async Task TemplatesAsync(CommandContext ctx,
-                                        [RemainingText, Description("desc-meme-template")] string template)
+                                        [RemainingText, Description("desc-meme-template")] string? template = null)
         {
-            MemeTemplate? t = await MemeGenService.GetMemeTemplateAsync(template);
-            if (t is null)
-                throw new CommandFailedException(ctx, "cmd-err-meme-template-404");
+            if (string.IsNullOrWhiteSpace(template)) {
+                IReadOnlyList<MemeTemplate> templates = await MemeGenService.GetMemeTemplatesAsync();
+                if (templates is null)
+                    throw new CommandFailedException(ctx, "cmd-err-meme-template-fail");
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = $"{t.Name}: {t.Key}",
-                ImageUrl = t.Url,
-                Color = this.ModuleColor,
-                Url = t.Url,
-            }.Build());
+                await ctx.PaginateAsync(
+                    "str-meme-templates",
+                    templates.OrderBy(t => t.Key),
+                    t => $"{Formatter.Bold(t.Name)}: {Formatter.MaskedUrl(t.Key, new Uri(t.Url))}",
+                    this.ModuleColor
+                );
+            } else {
+                MemeTemplate? t = await MemeGenService.GetMemeTemplateAsync(template);
+                if (t is null)
+                    throw new CommandFailedException(ctx, "cmd-err-meme-template-404");
+
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Title = $"{t.Name}: {t.Key}",
+                    ImageUrl = t.Url,
+                    Color = this.ModuleColor,
+                    Url = t.Url,
+                }.Build());
+            }
         }
-
-        [Command("templates"), Priority(0)]
-        public async Task TemplatesAsync(CommandContext ctx)
-        {
-            IReadOnlyList<MemeTemplate> templates = await MemeGenService.GetMemeTemplatesAsync();
-            if (templates is null)
-                throw new CommandFailedException(ctx, "cmd-err-meme-template-fail");
-
-            await ctx.PaginateAsync(
-                "str-meme-templates",
-                templates.OrderBy(t => t.Key),
-                t => $"{Formatter.Bold(t.Name)}: {Formatter.MaskedUrl(t.Key, new Uri(t.Url))}",
-                this.ModuleColor
-            );
-        }
-
         #endregion
     }
 }

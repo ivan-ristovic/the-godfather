@@ -473,9 +473,9 @@
 `template, ts, t`
 **Guild only.**
 
-**Overload 1:**
+**Arguments:**
 
-`[string...]` : *Meme template*
+(optional) `[string...]` : *Meme template* (def: `None`)
 
 **Examples:**
 
