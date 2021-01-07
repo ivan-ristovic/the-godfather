@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Music.Services
         private readonly LavalinkService lavalink;
         private readonly LocalizationService lcs;
         private readonly SecureRandom rng;
-        private readonly ConcurrentDictionary<ulong, GuildMusicData> data;
+        private readonly ConcurrentDictionary<ulong, GuildMusicPlayer> data;
 
         public bool IsDisabled => this.lavalink.IsDisabled;
 
@@ -28,20 +28,20 @@ namespace TheGodfather.Modules.Music.Services
             this.lavalink = lavalink;
             this.lcs = lcs;
             this.rng = new SecureRandom();
-            this.data = new ConcurrentDictionary<ulong, GuildMusicData>();
+            this.data = new ConcurrentDictionary<ulong, GuildMusicPlayer>();
             this.lavalink.TrackExceptionThrown += this.LavalinkErrorHandler;
         }
 
 
-        public Task<GuildMusicData> GetOrCreateDataAsync(DiscordGuild guild)
+        public Task<GuildMusicPlayer> GetOrCreateDataAsync(DiscordGuild guild)
         {
             if (this.IsDisabled)
                 throw new InvalidOperationException();
 
-            if (this.data.TryGetValue(guild.Id, out GuildMusicData? gmd))
+            if (this.data.TryGetValue(guild.Id, out GuildMusicPlayer? gmd))
                 return Task.FromResult(gmd);
 
-            gmd = this.data.AddOrUpdate(guild.Id, new GuildMusicData(guild, this.lavalink), (k, v) => v);
+            gmd = this.data.AddOrUpdate(guild.Id, new GuildMusicPlayer(guild, this.lavalink), (k, v) => v);
             return Task.FromResult(gmd);
         }
 
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Music.Services
             if (e.Player?.Guild == null)
                 return;
 
-            if (!this.data.TryGetValue(e.Player.Guild.Id, out GuildMusicData? gd))
+            if (!this.data.TryGetValue(e.Player.Guild.Id, out GuildMusicPlayer? gd))
                 return;
 
             if (gd.CommandChannel is { }) {

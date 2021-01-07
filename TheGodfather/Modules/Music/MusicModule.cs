@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Lavalink;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -17,18 +14,23 @@ using TheGodfather.Modules.Music.Services;
 namespace TheGodfather.Modules.Music
 {
     [Group("music"), Module(ModuleType.Music), NotBlocked]
-    [Aliases("songs", "song", "tracks", "track")]
+    [Aliases("songs", "song", "tracks", "track", "audio", "mu")]
     [RequireGuild]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ModuleLifespan(ModuleLifespan.Transient)]
-    public sealed class MusicModule : TheGodfatherServiceModule<MusicService>
+    public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService>
     {
-        private GuildMusicData? GuildMusicData { get; set; }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        private GuildMusicPlayer Player { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 
         #region pre-execution
         public override async Task BeforeExecutionAsync(CommandContext ctx)
         {
+            if (this.Service.IsDisabled)
+                throw new ServiceDisabledException(ctx);
+
             DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
             DiscordChannel? chn = memberVoiceState?.Channel;
             if (chn is null)
@@ -38,62 +40,151 @@ namespace TheGodfather.Modules.Music
             if (botVoiceState is { } && chn != botVoiceState)
                 throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
 
-            this.GuildMusicData = await this.Service.GetOrCreateDataAsync(ctx.Guild);
-            this.GuildMusicData.CommandChannel = ctx.Channel;
+            this.Player = await this.Service.GetOrCreateDataAsync(ctx.Guild);
+            this.Player.CommandChannel = ctx.Channel;
 
             await base.BeforeExecutionAsync(ctx);
         }
         #endregion
 
 
-        #region music play
-        [Command("play"), Priority(1)]
-        [Aliases("p")]
-        public async Task PlayAsync(CommandContext ctx,
-                                   [Description("desc-audio-url")] Uri uri)
+        #region music stop
+        [Command("stop")]
+        public async Task StopAsync(CommandContext ctx)
         {
-            LavalinkLoadResult tlr = await this.Service.GetTracksAsync(uri);
-            IEnumerable<LavalinkTrack> tracks = tlr.Tracks;
-            if (tlr.LoadResultType == LavalinkLoadResultType.LoadFailed || !tracks.Any() || this.GuildMusicData is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-none");
+            int removed = this.Player.EmptyQueue();
+            await this.Player.StopAsync();
+            await this.Player.DestroyPlayerAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
+        }
+        #endregion
 
-            if (this.GuildMusicData.IsShuffled)
-                tracks = this.Service.Shuffle(tracks);
+        #region music pause
+        [Command("pause")]
+        [Aliases("ps")]
+        public async Task PauseAsync(CommandContext ctx)
+        {
+            if (!this.Player.IsPlaying) {
+                await this.ResumeAsync(ctx);
+                return;
+            }
 
-            int trackCount = tracks.Count();
-            foreach (LavalinkTrack track in tracks)
-                this.GuildMusicData.Enqueue(new Song(track, ctx.Member));
+            await this.Player.PauseAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-pause");
+        }
+        #endregion
 
-            DiscordChannel? chn = ctx.Member.VoiceState?.Channel;
-            if (chn is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-vc");
+        #region music resume
+        [Command("resume")]
+        [Aliases("unpause", "up", "rs")]
+        public async Task ResumeAsync(CommandContext ctx)
+        {
+            await this.Player.ResumeAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-resume");
+        }
+        #endregion
 
-            await this.GuildMusicData.CreatePlayerAsync(chn);
-            await this.GuildMusicData.PlayAsync();
+        #region music skip
+        [Command("skip")]
+        [Aliases("next", "n", "sk")]
+        public async Task SkipAsync(CommandContext ctx)
+        {
+            Song song = this.Player.NowPlaying;
+            await this.Player.StopAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-skip", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+        }
+        #endregion
 
-            if (trackCount > 1) {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-add-many", trackCount);
+        #region music seek
+        [Command("seek")]
+        [Aliases("s")]
+        public async Task SeekAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-music-seek")] TimeSpan position)
+        {
+            await this.Player.SeekAsync(position, false);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music forward
+        [Command("forward")]
+        [Aliases("fw", "f", ">", ">>")]
+        public async Task ForwardAsync(CommandContext ctx,
+                                      [RemainingText, Description("desc-music-fw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music rewind
+        [Command("rewind")]
+        [Aliases("bw", "rw", "<", "<<")]
+        public async Task RewindAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-music-bw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(-offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music volume
+        [Command("volume")]
+        [Aliases("vol", "v")]
+        public async Task VolumeAsync(CommandContext ctx,
+                                     [Description("desc-music-vol")] int volume = 100)
+        {
+            if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-music-vol", GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume);
+
+            await this.Player.SetVolumeAsync(volume);
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-vol", volume);
+        }
+        #endregion
+
+        #region music restart
+        [Command("restart")]
+        [Aliases("res", "replay")]
+        public async Task RestartAsync(CommandContext ctx)
+        {
+            Song song = this.Player.NowPlaying;
+            await this.Player.RestartAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-replay", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+        }
+        #endregion
+
+        #region music repeat
+        [Command("repeat")]
+        [Aliases("loop", "l", "rep", "lp")]
+        public Task RepeatAsync(CommandContext ctx,
+                               [Description("desc-music-mode")] RepeatMode mode = RepeatMode.Single)
+        {
+            this.Player.SetRepeatMode(mode);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-mode", mode);
+        }
+        #endregion
+
+        #region music shuffle
+        [Command("shuffle")]
+        [Aliases("randomize", "rng", "sh")]
+        public Task ShuffleAsync(CommandContext ctx)
+        {
+            if (this.Player.IsShuffled) {
+                this.Player.StopShuffle();
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-unshuffle");
             } else {
-                LavalinkTrack track = tracks.First();
-                await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                    emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("fmt-music-add", Emojis.Headphones);
-                    emb.WithDescription(Formatter.Bold(Formatter.Sanitize(track.Title)));
-                    emb.AddLocalizedTitleField("str-author", track.Author, inline: true);
-                    emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);
-                    emb.WithUrl(track.Uri);
-                });
+                this.Player.Shuffle();
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-shuffle");
             }
         }
+        #endregion
 
-        [Command("play"), Priority(0)]
-        public async Task PlayAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-audio-query")] string query)
+        #region music reshuffle
+        [Command("reshuffle")]
+        public Task ReshuffleAsync(CommandContext ctx)
         {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
-
-            // TODO
+            this.Player.Reshuffle();
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-reshuffle");
         }
         #endregion
     }

@@ -5,6 +5,5 @@
         None,
         Single,
         All,
-        Unknown
     }
 }

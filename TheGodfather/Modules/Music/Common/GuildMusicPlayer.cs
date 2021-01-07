@@ -14,13 +14,17 @@ using TheGodfather.Modules.Music.Services;
 
 namespace TheGodfather.Modules.Music.Common
 {
-    public sealed class GuildMusicData
+    public sealed class GuildMusicPlayer
     {
+        public const int DefVolume = 100;
+        public const int MinVolume = 0;
+        public const int MaxVolume = 150;
+
         public string Identifier { get; }
         public RepeatMode RepeatMode { get; private set; } = RepeatMode.None;
         public bool IsShuffled { get; private set; } = false;
         public bool IsPlaying { get; private set; } = false;
-        public int Volume { get; private set; } = 100;
+        public int Volume { get; private set; } = DefVolume;
         public IReadOnlyCollection<Song> Queue { get; }
         public Song NowPlaying { get; private set; } = default;
         public DiscordChannel? Channel => this.player?.Channel;
@@ -34,7 +38,7 @@ namespace TheGodfather.Modules.Music.Common
         private LavalinkGuildConnection? player;
 
         
-        public GuildMusicData(DiscordGuild guild, LavalinkService lavalink)
+        public GuildMusicPlayer(DiscordGuild guild, LavalinkService lavalink)
         {
             this.guild = guild;
             this.rng = new SecureRandom();
@@ -86,6 +90,9 @@ namespace TheGodfather.Modules.Music.Common
         {
             if (this.player is null || !this.player.IsConnected)
                 return;
+
+            if (volume < MinVolume || volume > MaxVolume)
+                volume = DefVolume;
 
             await this.player.SetVolumeAsync(volume);
             this.Volume = volume;
@@ -223,11 +230,11 @@ namespace TheGodfather.Modules.Music.Common
 
         public async Task CreatePlayerAsync(DiscordChannel channel)
         {
-            if (this.player != null && this.player.IsConnected || this.lava.IsDisabled)
+            if ((this.player != null && this.player.IsConnected) || this.lava.IsDisabled)
                 return;
 
             this.player = await this.lava.LavalinkNode!.ConnectAsync(channel);
-            if (this.Volume != 100)
+            if (this.Volume != DefVolume)
                 await this.player.SetVolumeAsync(this.Volume);
             this.player.PlaybackFinished += this.PlaybackFinishedAsync;
         }

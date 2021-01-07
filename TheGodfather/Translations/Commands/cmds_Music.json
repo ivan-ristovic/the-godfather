@@ -4,5 +4,70 @@
       [ "arg-yt-song" ],
       [ "arg-query" ]
     ]
+  },
+  "music stop": {
+    "usage": [
+      []
+    ]
+  },
+  "music pause": {
+    "usage": [
+      []
+    ]
+  },
+  "music resume": {
+    "usage": [
+      []
+    ]
+  },
+  "music skip": {
+    "usage": [
+      []
+    ]
+  },
+  "music restart": {
+    "usage": [
+      []
+    ]
+  },
+  "music seek": {
+    "usage": [
+      [ "arg-timespan-full" ]
+    ]
+  },
+  "music forward": {
+    "usage": [
+      [ "arg-timespan" ]
+    ]
+  },
+  "music rewind": {
+    "usage": [
+      [ "arg-timespan" ]
+    ]
+  },
+  "music volume": {
+    "usage": [
+      [ "arg-fifty" ]
+    ]
+  },
+  "music repeat": {
+    "usage": [
+      [ "arg-repeat-mode" ]
+    ]
+  },
+  "music shuffle": {
+    "usage": [
+      []
+    ]
+  },
+  "music reshuffle": {
+    "usage": [
+      []
+    ]
+  },
+  "music remove": {
+    "usage": [
+      [ "arg-five" ]
+    ]
   }
 }
