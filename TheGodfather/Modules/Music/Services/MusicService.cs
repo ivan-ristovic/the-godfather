@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -45,8 +46,11 @@ namespace TheGodfather.Modules.Music.Services
             return Task.FromResult(gmd);
         }
 
-        public Task<LavalinkLoadResult> GetTracksAsync(Uri uri) 
+        public Task<LavalinkLoadResult> GetTracksAsync(Uri uri)
             => !this.IsDisabled ? this.lavalink.LavalinkNode!.Rest.GetTracksAsync(uri) : throw new InvalidOperationException();
+
+        public Task<LavalinkLoadResult> GetTracksAsync(FileInfo fi)
+            => !this.IsDisabled ? this.lavalink.LavalinkNode!.Rest.GetTracksAsync(fi) : throw new InvalidOperationException();
 
         public IEnumerable<LavalinkTrack> Shuffle(IEnumerable<LavalinkTrack> tracks)
             => tracks.Shuffle(this.rng);

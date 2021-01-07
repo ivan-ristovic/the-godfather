@@ -402,6 +402,7 @@
   "desc-announcement": "Announcement message",
   "desc-audio-query": "Search query",
   "desc-audio-url": "Audio URL",
+  "desc-audio-path": "Audio path",
   "desc-auditlog-amount": "Amount of log entries to fetch",
   "desc-auditlog-mem": "Filter by member",
   "desc-avatar-url": "Avatar URL",
