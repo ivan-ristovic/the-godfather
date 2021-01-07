@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Music
                 );
             }
 
-            if (this.Player.Queue.Any())
+            if (!this.Player.Queue.Any())
                 return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-queue-none");
 
             return ctx.PaginateAsync(this.Player.Queue, (emb, s) => {

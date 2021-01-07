@@ -55,7 +55,7 @@ namespace TheGodfather.EventListeners
 
             LogExt.Debug(
                 bot.GetId(e.Context.Guild?.Id),
-                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}", "{Message}" },
+                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}", "Message: {Message}" },
                 e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
                 e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel, ex.Message
             );
