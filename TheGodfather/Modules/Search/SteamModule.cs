@@ -34,44 +34,26 @@ namespace TheGodfather.Modules.Search
         [Command("profile"), Priority(1)]
         [Aliases("id", "user", "info")]
         public async Task InfoAsync(CommandContext ctx,
-                                   [Description("desc-id")] ulong id)
-        {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
-            await this.PrintProfileAsync(ctx, await this.Service.GetInfoAsync(id));
-        }
+                                   [Description("desc-id")] ulong id) 
+            => await this.PrintProfileAsync(ctx, await this.Service.GetInfoAsync(id));
 
         [Command("profile"), Priority(0)]
         public async Task InfoAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-username")] string username)
-        {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
-            await this.PrintProfileAsync(ctx, await this.Service.GetInfoAsync(username));
-        }
+                                   [RemainingText, Description("desc-username")] string username) 
+            => await this.PrintProfileAsync(ctx, await this.Service.GetInfoAsync(username));
         #endregion
 
         #region steam game
         [Command("game"), Priority(1)]
         [Aliases("g", "gm", "store")]
         public async Task GameAsync(CommandContext ctx,
-                                   [Description("desc-id")] uint id)
-        {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
-            await this.PrintGameAsync(ctx, await this.Service.GetStoreInfoAsync(id));
-        }
+                                   [Description("desc-id")] uint id) 
+            => await this.PrintGameAsync(ctx, await this.Service.GetStoreInfoAsync(id));
 
         [Command("game"), Priority(0)]
         public async Task GameAsync(CommandContext ctx,
                                    [RemainingText, Description("desc-gamename")] string game)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             uint? id = await this.Service.GetAppIdAsync(game);
             if (id is null)
                 throw new CommandFailedException(ctx, "cmd-err-steam-game");

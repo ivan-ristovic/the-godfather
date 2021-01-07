@@ -23,9 +23,6 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
@@ -52,9 +49,6 @@ namespace TheGodfather.Modules.Search
                                        [Description("desc-amount-days")] int amount,
                                        [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 

@@ -31,9 +31,6 @@ namespace TheGodfather.Modules.Search
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             IReadOnlyList<MovieInfo>? res = await this.Service.SearchAsync(query);
             if (res is null || !res.Any()) {
                 await ctx.FailAsync("cmd-err-res-none");
@@ -63,9 +60,6 @@ namespace TheGodfather.Modules.Search
         #region internals
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             MovieInfo? info = await this.Service.SearchSingleAsync(type, query);
             if (info is null) {
                 await ctx.FailAsync("cmd-err-res-none");

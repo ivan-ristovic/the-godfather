@@ -148,9 +148,6 @@ namespace TheGodfather.Modules.Search
         #region internals
         private async Task SearchAndSendResultsAsync(CommandContext ctx, int amount, string query, string? type = null)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 

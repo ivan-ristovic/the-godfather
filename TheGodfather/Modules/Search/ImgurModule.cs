@@ -24,9 +24,6 @@ namespace TheGodfather.Modules.Search
                                            [Description("desc-res-num")] int amount,
                                            [RemainingText, Description("desc-sub")] string sub)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(sub)) {
                 await ctx.FailAsync("cmd-err-sub");
                 return;
@@ -56,9 +53,6 @@ namespace TheGodfather.Modules.Search
                                      [Description("desc-res-num")] int amount,
                                      [RemainingText, Description("desc-sub")] string sub)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(sub)) {
                 await ctx.FailAsync("cmd-err-sub");
                 return;
@@ -83,9 +77,6 @@ namespace TheGodfather.Modules.Search
                                   [Description("desc-res-num")] int amount,
                                   [RemainingText, Description("desc-sub")] string sub)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(sub)) {
                 await ctx.FailAsync("cmd-err-sub");
                 return;

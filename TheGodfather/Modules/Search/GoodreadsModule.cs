@@ -29,9 +29,6 @@ namespace TheGodfather.Modules.Search
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 

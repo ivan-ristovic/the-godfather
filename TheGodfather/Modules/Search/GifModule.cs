@@ -20,9 +20,6 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
@@ -39,9 +36,6 @@ namespace TheGodfather.Modules.Search
         [Aliases("r", "rand", "rnd", "rng")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             GiphyDotNet.Model.GiphyRandomImage.Data? res = await this.Service.GetRandomGifAsync();
             if (res is null)
                 await ctx.FailAsync("cmd-err-res-none");
@@ -56,9 +50,6 @@ namespace TheGodfather.Modules.Search
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("desc-res-num")] int amount = 5)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             GiphyDotNet.Model.GiphyImage.Data[]? res = await this.Service.GetTrendingGifsAsync(amount);
 
             if (res is null || !res.Any()) {
@@ -92,9 +83,6 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
@@ -111,9 +99,6 @@ namespace TheGodfather.Modules.Search
         [Aliases("r", "rand", "rnd", "rng")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             GiphyDotNet.Model.GiphyRandomImage.Data? res = await this.Service.GetRandomStickerAsync();
             if (res is null)
                 await ctx.FailAsync("cmd-err-res-none");
@@ -128,9 +113,6 @@ namespace TheGodfather.Modules.Search
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("desc-res-num")] int amount = 5)
         {
-            if (this.Service.IsDisabled)
-                throw new ServiceDisabledException(ctx);
-
             GiphyDotNet.Model.GiphyImage.Data[]? res = await this.Service.GetTrendingStickerssAsync(amount);
 
             if (res is null || !res.Any()) {
