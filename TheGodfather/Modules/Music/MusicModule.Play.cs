@@ -7,10 +7,13 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
+using Google.Apis.YouTube.v3.Data;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Music.Common;
+using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Music
 {
@@ -63,7 +66,22 @@ namespace TheGodfather.Modules.Music
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
-            // TODO
+            YtService yt = ctx.Services.GetRequiredService<YtService>();
+            if (yt.IsDisabled)
+                throw new ServiceDisabledException(ctx);
+
+            IReadOnlyList<SearchResult>? res = await yt.SearchAsync(query, 1);
+            if (res is null)
+                throw new CommandFailedException(ctx, "cmd-err-yt");
+
+            if (!res.Any())
+                throw new CommandFailedException(ctx, "cmd-err-res-none");
+
+            string? url = yt.GetUrlForResourceId(res[0].Id);
+            if (url is null)
+                throw new CommandFailedException(ctx, "cmd-err-yt");
+
+            await this.PlayAsync(ctx, new Uri(url));
         }
         #endregion
     }

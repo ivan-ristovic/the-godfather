@@ -1,11 +1,15 @@
 {
-  "music play": {
+  "music": {
     "usage": [
-      [ "arg-yt-song" ],
-      [ "arg-query" ]
+      []
     ]
   },
-  "music stop": {
+  "music forward": {
+    "usage": [
+      [ "arg-timespan" ]
+    ]
+  },
+  "music info": {
     "usage": [
       []
     ]
@@ -15,12 +19,28 @@
       []
     ]
   },
-  "music resume": {
+  "music play": {
+    "usage": [
+      [ "arg-yt-song" ],
+      [ "arg-query" ]
+    ]
+  },
+  "music queue": {
     "usage": [
       []
     ]
   },
-  "music skip": {
+  "music remove": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "music repeat": {
+    "usage": [
+      [ "arg-repeat-mode" ]
+    ]
+  },
+  "music reshuffle": {
     "usage": [
       []
     ]
@@ -30,14 +50,9 @@
       []
     ]
   },
-  "music seek": {
+  "music resume": {
     "usage": [
-      [ "arg-timespan-full" ]
-    ]
-  },
-  "music forward": {
-    "usage": [
-      [ "arg-timespan" ]
+      []
     ]
   },
   "music rewind": {
@@ -45,14 +60,9 @@
       [ "arg-timespan" ]
     ]
   },
-  "music volume": {
+  "music seek": {
     "usage": [
-      [ "arg-fifty" ]
-    ]
-  },
-  "music repeat": {
-    "usage": [
-      [ "arg-repeat-mode" ]
+      [ "arg-timespan-full" ]
     ]
   },
   "music shuffle": {
@@ -60,14 +70,19 @@
       []
     ]
   },
-  "music reshuffle": {
+  "music skip": {
     "usage": [
       []
     ]
   },
-  "music remove": {
+  "music stop": {
     "usage": [
-      [ "arg-five" ]
+      []
+    ]
+  },
+  "music volume": {
+    "usage": [
+      [ "arg-fifty" ]
     ]
   }
 }
