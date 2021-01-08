@@ -68,8 +68,12 @@ namespace TheGodfather.Modules.Misc
         {
             DiscordInvite? invite = null;
             if (expiryTime is null) {
-                IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
-                invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
+                if (ctx.Guild.VanityUrlCode is { }) {
+                    invite = await ctx.Guild.GetVanityInviteAsync();
+                } else {
+                    IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
+                    invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
+                }
             }
 
             if (invite is null || expiryTime is { }) {

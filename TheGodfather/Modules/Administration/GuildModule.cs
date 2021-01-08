@@ -115,11 +115,23 @@ namespace TheGodfather.Modules.Administration
                 emb.WithTitle(ctx.Guild.ToString());
                 emb.WithColor(this.ModuleColor);
                 emb.WithThumbnail(ctx.Guild.IconUrl);
+                emb.WithDescription(ctx.Guild.Description, unknown: false);
                 emb.AddLocalizedTitleField("str-members", ctx.Guild.MemberCount, inline: true);
                 emb.AddLocalizedTitleField("str-owner", ctx.Guild.Owner.Mention, inline: true);
                 emb.AddLocalizedTitleField("str-created-at", ctx.Guild.CreationTimestamp, inline: true);
                 emb.AddLocalizedTitleField("str-region", ctx.Guild.VoiceRegion.Name, inline: true);
                 emb.AddLocalizedTitleField("str-verlvl", ctx.Guild.VerificationLevel, inline: true);
+                emb.AddLocalizedTitleField("str-vanity-url", ctx.Guild.VanityUrlCode, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-discovery-url", ctx.Guild.DiscoverySplashUrl, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-banner", ctx.Guild.BannerUrl, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-banner-hash", ctx.Guild.Banner, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-boosters", ctx.Guild.PremiumSubscriptionCount, inline: true, unknown: false);
+                if (ctx.Guild.PremiumTier != PremiumTier.Unknown)
+                    emb.AddLocalizedTitleField("str-tier", (int)ctx.Guild.PremiumTier, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-members-max", ctx.Guild.MaxMembers, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-members-max-vid", ctx.Guild.MaxVideoChannelUsers, inline: true, unknown: false);
+                if (ctx.Guild.Features?.Any() ?? false)
+                    emb.AddLocalizedTitleField("str-features", ctx.Guild.Features.JoinWith(", "));
             });
         }
         #endregion
