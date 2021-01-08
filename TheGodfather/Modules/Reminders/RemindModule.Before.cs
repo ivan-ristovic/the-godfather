@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Reminders
     public partial class RemindModule
     {
         [Group("before")]
-        [Aliases("due")]
+        [Aliases("due", "b")]
         public class RemindBeforeModule : RemindModule
         {
             #region remind before

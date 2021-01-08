@@ -5,12 +5,14 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Music.Services;
+using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Modules.Music
 {
@@ -32,14 +34,16 @@ namespace TheGodfather.Modules.Music
             if (this.Service.IsDisabled)
                 throw new ServiceDisabledException(ctx);
 
-            DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
-            DiscordChannel? chn = memberVoiceState?.Channel;
-            if (chn is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-vc");
+            if (!ctx.Client.IsOwnedBy(ctx.User) && !await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id)) {
+                DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
+                DiscordChannel? chn = memberVoiceState?.Channel;
+                if (chn is null)
+                    throw new CommandFailedException(ctx, "cmd-err-music-vc");
 
-            DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
-            if (botVoiceState is { } && chn != botVoiceState)
-                throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
+                DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
+                if (botVoiceState is { } && chn != botVoiceState)
+                    throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
+            }
 
             this.Player = await this.Service.GetOrCreateDataAsync(ctx.Guild);
             this.Player.CommandChannel = ctx.Channel;
