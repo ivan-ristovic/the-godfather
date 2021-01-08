@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -60,6 +61,15 @@ namespace TheGodfather.EventListeners
             if (bot.Services.GetRequiredService<BlockingService>().IsGuildBlocked(e.Guild.Id)) {
                 LogExt.Information(bot.GetId(e.Guild.Id), "{Guild} is blocked. Leaving...", e.Guild);
                 await e.Guild.LeaveAsync();
+                return;
+            }
+
+            IReadOnlyCollection<DiscordMember> members = await e.Guild.GetAllMembersAsync();
+            int botCount = members.Where(m => m.IsBot).Count();
+            if (botCount > 25 || (members.Count - botCount < 0)) {
+                LogExt.Information(bot.GetId(e.Guild.Id), "{Guild} is most likely a bot farm. Leaving and blocking...", e.Guild);
+                await e.Guild.LeaveAsync();
+                await bot.Services.GetRequiredService<BlockingService>().BlockGuildAsync(e.Guild.Id, "Bot farm");
                 return;
             }
 
