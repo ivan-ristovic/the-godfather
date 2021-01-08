@@ -42,6 +42,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as Birthday);
 
         public override int GetHashCode()
-            => (this.GuildId, this.ChannelId, this.UserId).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.ChannelId, this.UserId);
     }
 }

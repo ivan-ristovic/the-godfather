@@ -15,6 +15,8 @@ namespace TheGodfather.Services.Common
             }
         }
         public string TimezoneId { get; set; } = "Central Europe Standard Time";
+        public string? StarboardEmoji { get; set; }
+        public int StarboardSensitivity { get; set; } = 5;
         public ulong LogChannelId { get; set; } = 0;
         public bool SuggestionsEnabled { get; set; } = false;
         public bool ReactionResponse { get; set; } = false;
@@ -23,6 +25,7 @@ namespace TheGodfather.Services.Common
         public RatelimitSettings RatelimitSettings { get; set; } = new RatelimitSettings();
 
         public bool LoggingEnabled => this.LogChannelId != default;
+        public bool StarboardEnabled => !string.IsNullOrWhiteSpace(this.StarboardEmoji);
         public CultureInfo Culture {
             get {
                 if (this.culture is null)

@@ -32,6 +32,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as XpRank);
 
         public override int GetHashCode()
-            => (this.GuildId, this.Rank).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.Rank);
     }
 }

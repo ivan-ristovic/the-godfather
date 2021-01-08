@@ -28,6 +28,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as PurchasedItem);
 
         public override int GetHashCode()
-            => (this.ItemId, this.UserId).GetHashCode();
+            => HashCode.Combine(this.ItemId, this.UserId);
     }
 }

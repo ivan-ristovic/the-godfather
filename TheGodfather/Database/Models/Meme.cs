@@ -37,6 +37,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as Meme);
 
         public override int GetHashCode()
-            => (this.GuildId, this.Name).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.Name);
     }
 }

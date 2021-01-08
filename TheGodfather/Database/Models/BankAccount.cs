@@ -37,6 +37,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as BankAccount);
 
         public override int GetHashCode()
-            => (this.GuildId, this.UserId).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.UserId);
     }
 }

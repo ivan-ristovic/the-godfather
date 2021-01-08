@@ -32,6 +32,12 @@ namespace TheGodfather.Modules.Administration.Common
             return this;
         }
 
+        public LocalizedEmbedBuilder WithAuthor(string author, string? url = null, string? iconUrl = null)
+        {
+            this.emb.WithAuthor(author, url, iconUrl);
+            return this;
+        }
+
         public LocalizedEmbedBuilder WithLocalizedTitle(string title, params object?[]? args)
         {
             string localizedTitle = this.lcs.GetString(this.gid, title, args);

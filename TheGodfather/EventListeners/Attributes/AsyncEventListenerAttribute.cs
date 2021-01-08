@@ -151,6 +151,9 @@ namespace TheGodfather.EventListeners.Attributes
                 case DiscordEventType.MessageReactionRemoved:
                     bot.Client.MessageReactionRemoved += OnEventWithArgs;
                     break;
+                case DiscordEventType.MessageReactionRemovedEmoji:
+                    bot.Client.MessageReactionRemovedEmoji += OnEventWithArgs;
+                    break;
                 case DiscordEventType.MessageReactionsCleared:
                     bot.Client.MessageReactionsCleared += OnEventWithArgs;
                     break;

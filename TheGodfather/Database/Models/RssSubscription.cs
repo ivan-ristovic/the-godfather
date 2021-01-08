@@ -41,6 +41,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as RssSubscription);
 
         public override int GetHashCode()
-            => (this.GuildId, this.ChannelId, this.Id).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.ChannelId, this.Id);
     }
 }

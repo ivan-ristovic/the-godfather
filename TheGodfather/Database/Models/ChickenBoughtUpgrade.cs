@@ -34,6 +34,6 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as ChickenBoughtUpgrade);
 
         public override int GetHashCode()
-            => (this.GuildId, this.UserId, this.Id).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.UserId, this.Id);
     }
 }

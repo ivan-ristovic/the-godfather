@@ -39,6 +39,7 @@ namespace TheGodfather.EventListeners.Common
         MessageDeleted,
         MessageReactionAdded,
         MessageReactionRemoved,
+        MessageReactionRemovedEmoji,
         MessageReactionsCleared,
         MessageUpdated,
         MessagesBulkDeleted,
@@ -139,6 +140,7 @@ namespace TheGodfather.EventListeners.Common
                 case DiscordEventType.MessageDeleted:
                 case DiscordEventType.MessageReactionAdded:
                 case DiscordEventType.MessageReactionRemoved:
+                case DiscordEventType.MessageReactionRemovedEmoji:
                 case DiscordEventType.MessageReactionsCleared:
                 case DiscordEventType.MessageUpdated:
                 case DiscordEventType.MessagesBulkDeleted:

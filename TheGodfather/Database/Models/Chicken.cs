@@ -159,7 +159,7 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as Chicken);
 
         public override int GetHashCode()
-            => (this.GuildId, this.UserId).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.UserId);
     }
 
     public sealed class ChickenStats

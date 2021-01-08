@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services.Common;
 
@@ -100,6 +101,21 @@ namespace TheGodfather.Database.Models
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
 
+
+        #region Starboard
+        [Column("starboard_cid")]
+        public long StarboardChannelIdDb { get; set; }
+        [NotMapped]
+        public ulong StarboardChannelId { get => (ulong)this.StarboardChannelIdDb; set => this.StarboardChannelIdDb = (long)value; }
+        
+        [Column("starboard_emoji"), MaxLength(DiscordLimits.EmojiNameLimit)]
+        public string? StarboardEmoji { get; set; }
+        [NotMapped]
+        public bool StarboardEnabled => !string.IsNullOrWhiteSpace(this.StarboardEmoji);
+
+        [Column("starboard_sens")]
+        public int StarboardSensitivity { get; set; } = 5;
+        #endregion
 
         #region Welcome/Leave Settings
         [Column("welcome_cid")]
@@ -264,6 +280,8 @@ namespace TheGodfather.Database.Models
                 Prefix = this.Prefix ?? "!",
                 RatelimitSettings = this.RatelimitSettings,
                 ReactionResponse = this.ReactionResponse,
+                StarboardEmoji = this.StarboardEmoji,
+                StarboardSensitivity = this.StarboardSensitivity,
                 SuggestionsEnabled = this.SuggestionsEnabled,
                 TimezoneId = this.TimezoneId ?? "Central Europe Standard Time",
             };
@@ -276,6 +294,8 @@ namespace TheGodfather.Database.Models
                 this.Prefix = value.Prefix;
                 this.RatelimitSettings = value.RatelimitSettings;
                 this.ReactionResponse = value.ReactionResponse;
+                this.StarboardEmoji = value.StarboardEmoji;
+                this.StarboardSensitivity = value.StarboardSensitivity;
                 this.SuggestionsEnabled = value.SuggestionsEnabled;
                 this.TimezoneId = value.TimezoneId;
             }

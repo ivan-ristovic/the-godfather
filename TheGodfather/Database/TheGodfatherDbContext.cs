@@ -36,6 +36,7 @@ namespace TheGodfather.Database
         public virtual DbSet<RssFeed> RssFeeds { get; protected set; }
         public virtual DbSet<RssSubscription> RssSubscriptions { get; protected set; }
         public virtual DbSet<SelfRole> SelfRoles { get; protected set; }
+        public virtual DbSet<StarboardMessage> StarboardMessages { get; protected set; }
         public virtual DbSet<TextReaction> TextReactions { get; protected set; }
         public virtual DbSet<XpCount> XpCounts { get; protected set; }
         public virtual DbSet<XpRank> XpRanks { get; protected set; }
@@ -151,6 +152,7 @@ namespace TheGodfather.Database
             mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<RssSubscription>().HasKey(sub => new { sub.Id, sub.GuildIdDb, sub.ChannelIdDb });
             mb.Entity<SelfRole>().HasKey(sr => new { sr.GuildIdDb, sr.RoleIdDb });
+            mb.Entity<StarboardMessage>().HasKey(sm => new { sm.GuildIdDb, sm.ChannelIdDb, sm.MessageIdDb });
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
             mb.Entity<XpCount>().Property(xpc => xpc.XpDb).HasDefaultValue(1);
             mb.Entity<XpRank>().HasKey(xpr => new { xpr.GuildIdDb, xpr.Rank });

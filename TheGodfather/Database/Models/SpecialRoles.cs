@@ -29,7 +29,7 @@ namespace TheGodfather.Database.Models
             => this.Equals(other as SpecialRole);
 
         public override int GetHashCode()
-            => (this.GuildId, this.RoleId).GetHashCode();
+            => HashCode.Combine(this.GuildId, this.RoleId);
     }
 
     [Table("auto_roles")]
