@@ -139,15 +139,20 @@ namespace TheGodfather.Services
             var defCulture = new CultureInfo(this.DefaultLocale);
             return gid is null ? defCulture : this.gcs.GetCachedConfig(gid.Value)?.Culture ?? defCulture;
         }
+        
+        public DateTimeOffset GetLocalizedTime(ulong? gid, DateTimeOffset? dt = null)
+        {
+            CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
+            DateTimeOffset time = dt ?? DateTimeOffset.Now;
+            return TimeZoneInfo.ConvertTime(time, TZConvert.GetTimeZoneInfo(gcfg.TimezoneId));
+        }
 
-        public string GetLocalizedTime(ulong? gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
+        public string GetLocalizedTimeString(ulong? gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
         {
             if (unknown && dt is null)
                 return this.GetString(gid, "str-404");
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
-            DateTimeOffset time = dt ?? DateTimeOffset.Now;
-            time = TimeZoneInfo.ConvertTime(time, TZConvert.GetTimeZoneInfo(gcfg.TimezoneId));
-            return time.ToString(format, gcfg.Culture);
+            return this.GetLocalizedTime(gid, dt).ToString(format, gcfg.Culture);
         }
 
         public async Task<bool> SetGuildLocaleAsync(ulong gid, string locale)

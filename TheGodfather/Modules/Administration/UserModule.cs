@@ -367,7 +367,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: 0, reason: ctx.BuildInvocationDetailsString(reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, name, this.Localization.GetLocalizedTime(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, name, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until));
 
             var task = new GuildTask {
                 ExecutionTime = until,
@@ -421,7 +421,7 @@ namespace TheGodfather.Modules.Administration
             );
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, this.Localization.GetLocalizedTime(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until));
         }
 
         [Command("tempmute"), Priority(0)]

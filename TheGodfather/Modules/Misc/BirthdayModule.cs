@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Misc
                 UserId = user.Id
             });
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, this.Localization.GetLocalizedTime(ctx.Guild.Id, dt));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, dt));
         }
 
         [Command("add"), Priority(1)]
@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Misc
                     foreach (Birthday bd in g) {
                         DiscordUser? user = await ctx.Client.GetUserAsync(bd.UserId);
                         if (user is { })
-                            lines.Add($"{Formatter.InlineCode(this.Localization.GetLocalizedTime(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
+                            lines.Add($"{Formatter.InlineCode(this.Localization.GetLocalizedTimeString(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
                         else
                             bdaysToRemove.Add(bd);
                     }

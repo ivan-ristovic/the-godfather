@@ -269,7 +269,7 @@ namespace TheGodfather.Modules.Misc
                              [RemainingText, Description("desc-tz")] string? timezone = null)
         {
             if (string.IsNullOrWhiteSpace(timezone)) {
-                string time = this.Localization.GetLocalizedTime(ctx.Guild?.Id, DateTimeOffset.Now);
+                string time = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, DateTimeOffset.Now);
                 string tz = this.Localization.GetGuildTimeZone(ctx.Guild?.Id).DisplayName;
                 return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", tz, time);
             }

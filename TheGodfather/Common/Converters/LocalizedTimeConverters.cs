@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Common;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
@@ -28,6 +30,23 @@ namespace TheGodfather.Common.Converters
             return DateTimeOffset.TryParse(value, culture, DateTimeStyles.AllowWhiteSpaces, out DateTimeOffset result)
                 ? Task.FromResult(Optional.FromValue(result))
                 : Task.FromResult(Optional.FromNoValue<DateTimeOffset>());
+        }
+    }
+
+    public class DayOfWeekConverter : IArgumentConverter<DayOfWeek>
+    {
+        public Task<Optional<DayOfWeek>> ConvertAsync(string value, CommandContext ctx)
+        {
+            CultureInfo culture = ctx.Services.GetRequiredService<LocalizationService>().GetGuildCulture(ctx.Guild?.Id);
+            (bool, DayOfWeek) match = culture.DateTimeFormat.DayNames
+                .Concat(culture.DateTimeFormat.AbbreviatedDayNames)
+                .Concat(culture.DateTimeFormat.ShortestDayNames)
+                .Select((n, i) => (n.Equals(value, StringComparison.InvariantCultureIgnoreCase), (DayOfWeek)(i % 7)))
+                .FirstOrDefault(t => t.Item1)
+                ;
+            return match.Item1
+                ? Task.FromResult(new Optional<DayOfWeek>(match.Item2))
+                : Task.FromResult(Optional.FromNoValue<DayOfWeek>());
         }
     }
 }

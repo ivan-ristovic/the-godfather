@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException(ctx, "cmd-err-pinned-none");
 
             IEnumerable<Page> pages = pinned.Select(m => new Page(
-                $"{Formatter.Bold(m.Author.Username)} @ {this.Localization.GetLocalizedTime(ctx.Guild.Id, m.CreationTimestamp)}",
+                $"{Formatter.Bold(m.Author.Username)} @ {this.Localization.GetLocalizedTimeString(ctx.Guild.Id, m.CreationTimestamp)}",
                 // TODO 
                 GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(this.Localization.GetString(ctx.Guild.Id, "str-jumplink"), m.JumpLink))
             ));

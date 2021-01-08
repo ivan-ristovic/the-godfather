@@ -86,7 +86,7 @@ namespace TheGodfather.Services.Common
                         }
                         DiscordUser user = await client.GetUserAsync(rem.UserId);
                         await channel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, "fmt-remind-miss",
-                            this.lcs.GetLocalizedTime(channel.GuildId, rem.ExecutionTime), rem.Message
+                            this.lcs.GetLocalizedTimeString(channel.GuildId, rem.ExecutionTime), rem.Message
                         );
                         break;
                     default:

@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Administration
                     .WithLocalizedTitle("fmt-wh", wh.Name, wh.ChannelId)
                     .WithThumbnail(wh.AvatarUrl)
                     .AddLocalizedTitleField("str-id", wh.Id, inline: true)
-                    .AddLocalizedTitleField("str-created-at", this.Localization.GetLocalizedTime(ctx.Guild.Id, wh.CreationTimestamp, unknown: true), inline: true)
+                    .AddLocalizedTitleField("str-created-at", this.Localization.GetLocalizedTimeString(ctx.Guild.Id, wh.CreationTimestamp, unknown: true), inline: true)
                     .AddLocalizedTitleField("str-created-by", wh.User?.Mention, inline: true)
                     .AddLocalizedTitleField("str-token", SanitizeWebhookData(wh, wh.Token), unknown: false)
                     .AddLocalizedTitleField("str-url", SanitizeWebhookData(wh, wh.BuildUrlString()), unknown: false)

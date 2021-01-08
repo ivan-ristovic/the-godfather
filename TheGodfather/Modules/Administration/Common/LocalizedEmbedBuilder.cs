@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration.Common
 
         public LocalizedEmbedBuilder WithLocalizedTimestamp(DateTimeOffset? timestamp = null, string? iconUrl = null)
         {
-            string? localizedTime = this.lcs.GetLocalizedTime(this.gid, timestamp);
+            string? localizedTime = this.lcs.GetLocalizedTimeString(this.gid, timestamp);
             this.emb.WithFooter(localizedTime, iconUrl);
             return this;
         }
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Administration.Common
         public LocalizedEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object?[]? args)
         {
             if (timestamp is { })
-                this.AddLocalizedTitleField(title, this.lcs.GetLocalizedTime(this.gid, timestamp), inline, true, args);
+                this.AddLocalizedTitleField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp), inline, true, args);
             return this;
         }
 

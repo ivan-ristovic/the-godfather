@@ -229,7 +229,7 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
             emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
             emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
-            emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTime(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
+            emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
             await logService.LogAsync(e.Guild, emb);
         }
 
@@ -247,7 +247,7 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
             emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
             emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
-            emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTime(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
+            emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
             await logService.LogAsync(e.Guild, emb);
         }
     }

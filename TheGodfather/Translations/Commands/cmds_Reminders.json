@@ -12,6 +12,37 @@
       [ "arg-datetime", "arg-chn-text", "arg-announcement" ]
     ]
   },
+  "remind before": {
+    "usage": [
+      [ "arg-datetime" ],
+      [ "arg-timespan" ],
+      [ "arg-datetime", "arg-chn-text" ]
+    ]
+  },
+  "remind before next": {
+    "usage": [
+      [ "arg-weekday" ],
+      [ "arg-weekday", "arg-chn-text" ]
+    ]
+  },
+  "remind before next day": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "remind before next week": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "remind before tomorrow": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
   "remind delete": {
     "usage": [
       [ "arg-id" ]

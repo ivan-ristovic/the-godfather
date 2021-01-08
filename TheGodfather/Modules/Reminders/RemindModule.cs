@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Reminders
                 else
                     await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-rep", rel, message);
             } else {
-                string abs = this.Localization.GetLocalizedTime(ctx.Guild?.Id, when);
+                string abs = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, when);
                 if (channel is { })
                     await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-c", channel.Mention, rel, abs, message);
                 else

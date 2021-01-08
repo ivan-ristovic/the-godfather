@@ -95,14 +95,14 @@ namespace TheGodfather.Tests.Services
                 verify: db => {
                     var dt = new DateTime(2020, 1, 1, 12, 0, 0, DateTimeKind.Utc);
                     var dto = new DateTimeOffset(2020, 1, 1, 12, 0, 0, TimeSpan.FromHours(1));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dt, "G"), Is.EqualTo("2020-01-01 13:00:00"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dt), Is.EqualTo("1/1/2020 12:00 PM"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dt, "r"), Is.EqualTo("Wed, 01 Jan 2020 12:00:00 GMT"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dt, "r"), Is.EqualTo("Wed, 01 Jan 2020 12:00:00 GMT"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dto), Is.EqualTo("2020-01-01 12:00"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dto, "G"), Is.EqualTo("1/1/2020 11:00:00 AM"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[0], dto, "r"), Is.EqualTo("Wed, 01 Jan 2020 11:00:00 GMT"));
-                    Assert.That(this.Service.GetLocalizedTime(MockData.Ids[1], dto, "r"), Is.EqualTo("Wed, 01 Jan 2020 11:00:00 GMT"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[0], dt, "G"), Is.EqualTo("2020-01-01 13:00:00"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[1], dt), Is.EqualTo("1/1/2020 12:00 PM"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[0], dt, "r"), Is.EqualTo("Wed, 01 Jan 2020 12:00:00 GMT"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[1], dt, "r"), Is.EqualTo("Wed, 01 Jan 2020 12:00:00 GMT"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[0], dto), Is.EqualTo("2020-01-01 12:00"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[1], dto, "G"), Is.EqualTo("1/1/2020 11:00:00 AM"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[0], dto, "r"), Is.EqualTo("Wed, 01 Jan 2020 11:00:00 GMT"));
+                    Assert.That(this.Service.GetLocalizedTimeString(MockData.Ids[1], dto, "r"), Is.EqualTo("Wed, 01 Jan 2020 11:00:00 GMT"));
                 }
             );
         }
