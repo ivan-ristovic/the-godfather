@@ -244,7 +244,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
-            if (e.UserBefore.Presence.Status != e.UserAfter.Presence.Status)
+            if (e.UserBefore.Presence?.Status != e.UserAfter.Presence?.Status)
                 return;
 
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
