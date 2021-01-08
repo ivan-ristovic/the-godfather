@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
@@ -19,7 +20,7 @@ namespace TheGodfather.Modules.Music
     [Group("music"), Module(ModuleType.Music), NotBlocked]
     [Aliases("songs", "song", "tracks", "track", "audio", "mu")]
     [RequireGuild]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ModuleLifespan(ModuleLifespan.Transient)]
     public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService>
     {
@@ -43,6 +44,9 @@ namespace TheGodfather.Modules.Music
                 DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
                 if (botVoiceState is { } && chn != botVoiceState)
                     throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
+
+                if (!chn.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
+                    throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
             }
 
             this.Player = await this.Service.GetOrCreateDataAsync(ctx.Guild);

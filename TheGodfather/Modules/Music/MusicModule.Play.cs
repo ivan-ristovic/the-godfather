@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Music
             foreach (LavalinkTrack track in tracks)
                 this.Player.Enqueue(new Song(track, ctx.Member));
 
-            DiscordChannel? chn = ctx.Member.VoiceState?.Channel;
+            DiscordChannel? chn = ctx.Member.VoiceState?.Channel ?? ctx.Guild.CurrentMember.VoiceState?.Channel;
             if (chn is null)
                 throw new CommandFailedException(ctx, "cmd-err-music-vc");
 

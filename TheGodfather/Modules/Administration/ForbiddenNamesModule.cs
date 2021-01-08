@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                 addedPatterns.Add(regex);
             }
 
-            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
+            DiscordMember bot = ctx.Guild.CurrentMember;
             bool failed = false;
             foreach (DiscordMember member in ctx.Guild.Members.Select(kvp => kvp.Value).Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
                 Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));

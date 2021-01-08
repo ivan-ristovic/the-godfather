@@ -173,8 +173,7 @@ namespace TheGodfather.Modules.Reminders
                     throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
                 if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
                     throw new CommandFailedException(ctx, "cmd-err-remind-perms");
-                DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-                if (!channel.PermissionsFor(bot).HasFlag(Permissions.SendMessages))
+                if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                     throw new CommandFailedException(ctx, "cmd-err-remind-permsb");
             }
 

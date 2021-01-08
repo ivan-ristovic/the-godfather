@@ -440,6 +440,7 @@
   "desc-chn-text-name": "Text channel name",
   "desc-chn-topic": "Channel topic",
   "desc-chn-userlimit": "User limit",
+  "desc-chn-voice": "Voice channel",
   "desc-chn-voice-name": "Voice channel name",
   "desc-chn-wh-add": "Channel where to add the webhook",
   "desc-chn-wh-del": "Channel whose webhooks to delete",

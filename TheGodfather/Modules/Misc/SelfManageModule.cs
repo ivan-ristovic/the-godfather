@@ -22,15 +22,14 @@ namespace TheGodfather.Modules.Misc
     {
         #region grant
         [GroupCommand, Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("desc-roles-add")] params DiscordRole[] roles)
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-roles-add")] params DiscordRole[] roles)
         {
-            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-            if (bot is null)
+            if (ctx.Guild.CurrentMember is null)
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
-            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
-                await this.GiveRoleAsync(ctx, roles);
+            if (ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
+                return this.GiveRoleAsync(ctx, roles);
             else
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
         }
@@ -94,11 +93,10 @@ namespace TheGodfather.Modules.Misc
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("desc-roles-del")] params DiscordRole[] roles)
         {
-            DiscordMember bot = await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id);
-            if (bot is null)
+            if (ctx.Guild.CurrentMember is null)
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
-            if (ctx.Channel.PermissionsFor(bot).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
+            if (ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
                 await this.RevokeRoleAsync(ctx, roles);
             else
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });

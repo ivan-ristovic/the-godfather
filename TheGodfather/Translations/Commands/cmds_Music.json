@@ -89,5 +89,15 @@
     "usage": [
       [ "arg-fifty" ]
     ]
+  },
+  "voice connect": {
+    "usage": [
+      [ "arg-chn-voice" ]
+    ]
+  },
+  "voice disconnect": {
+    "usage": [
+      []
+    ]
   }
 }
