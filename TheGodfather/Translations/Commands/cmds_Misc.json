@@ -170,12 +170,6 @@
       [ "arg-prefix" ]
     ]
   },
-  "rank": {
-    "usage": [
-      [],
-      [ "arg-usr" ]
-    ]
-  },
   "random choice": {
     "usage": [
       [ "arg-opts" ]
@@ -185,6 +179,12 @@
     "usage": [
       [],
       [ "arg-role" ]
+    ]
+  },
+  "rank": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
     ]
   },
   "rank add": {
@@ -237,6 +237,12 @@
   "say": {
     "usage": [
       [ "arg-string" ]
+    ]
+  },
+  "time": {
+    "usage": [
+      [],
+      [ "arg-tz" ]
     ]
   },
   "tts": {

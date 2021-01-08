@@ -429,6 +429,7 @@
   "textreaction deleteall": "Removes all guild text reactions.",
   "textreaction find": "Finds text reactions that are triggered by a given text.",
   "textreaction list": "Lists all emoji reactions for this guild.",
+  "time": "Shows time in a given timezone or localized guild time if timezone is not provided.",
   "tts": "Sends a TTS message.",
   "unleet": "Attempts to translate message from leetspeak.",
   "unsubscribe": "Commands for removing feed subscriptions. Group call unsubscribes the bot from given feed by ID or friendly name.",

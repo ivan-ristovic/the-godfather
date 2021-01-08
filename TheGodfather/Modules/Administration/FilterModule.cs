@@ -199,14 +199,15 @@ namespace TheGodfather.Modules.Administration
         public Task ListAsync(CommandContext ctx)
         {
             IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);
-            return fs.Any()
-                ? ctx.PaginateAsync(
-                    "str-f",
-                    fs.OrderBy(f => f.Id),
-                    f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
-                    this.ModuleColor
-                )
-                : throw new CommandFailedException(ctx, "cmd-err-f-none");
+            if (!fs.Any())
+                throw new CommandFailedException(ctx, "cmd-err-f-none");
+
+            return ctx.PaginateAsync(
+                "str-f",
+                fs.OrderBy(f => f.Id),
+                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
+                this.ModuleColor
+            );
         }
         #endregion
     }

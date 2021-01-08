@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Misc.Services;
+using TimeZoneConverter;
 
 namespace TheGodfather.Modules.Misc
 {
@@ -257,6 +259,27 @@ namespace TheGodfather.Modules.Misc
             return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
                 ? throw new CommandFailedException(ctx, "cmd-err-say")
                 : ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
+        }
+        #endregion
+
+        #region time
+        [Command("time")]
+        [Aliases("t")]
+        public Task TimeAsync(CommandContext ctx,
+                             [RemainingText, Description("desc-tz")] string? timezone = null)
+        {
+            if (string.IsNullOrWhiteSpace(timezone)) {
+                string time = this.Localization.GetLocalizedTime(ctx.Guild?.Id, DateTimeOffset.Now);
+                string tz = this.Localization.GetGuildTimeZone(ctx.Guild?.Id).DisplayName;
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", tz, time);
+            }
+
+            if (!TZConvert.TryGetTimeZoneInfo(timezone, out TimeZoneInfo info))
+                throw new CommandFailedException(ctx, "cmd-err-tz");
+
+            CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
+            string timeStr = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, info).ToString("G", culture);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", info.DisplayName, timeStr);
         }
         #endregion
 

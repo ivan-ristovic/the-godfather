@@ -146,7 +146,7 @@ namespace TheGodfather.Services
                 return this.GetString(gid, "str-404");
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid) ?? new CachedGuildConfig();
             DateTimeOffset time = dt ?? DateTimeOffset.Now;
-            time = TimeZoneInfo.ConvertTime(time, TimeZoneInfo.FindSystemTimeZoneById(gcfg.TimezoneId));
+            time = TimeZoneInfo.ConvertTime(time, TZConvert.GetTimeZoneInfo(gcfg.TimezoneId));
             return time.ToString(format, gcfg.Culture);
         }
 
