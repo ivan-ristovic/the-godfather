@@ -85,6 +85,122 @@
 
 ---
 
+## Group: remind before
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reminders before specified absolute or relative point in time.*
+
+**Aliases:**
+`due, b`
+**Overload 1:**
+
+`[date and time]` : *Localized due date*
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Overload 0:**
+
+`[time span]` : *Localized due time*
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Examples:**
+
+```xml
+!remind before 11-10-2020 11:00:03
+!remind before 10s
+!remind before 11-10-2020 11:00:03 #my-text-channel
+```
+</p></details>
+
+---
+
+## Group: remind before next
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reminders due to given day of week.*
+
+**Aliases:**
+`nxt, n`
+**Arguments:**
+
+`[DayOfWeek]` : *Day of week*
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Examples:**
+
+```xml
+!remind before next Tuesday
+!remind before next Tuesday #my-text-channel
+```
+</p></details>
+
+---
+
+### remind before next day
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reminders due to tomorrow.*
+
+**Aliases:**
+`d`
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Examples:**
+
+```xml
+!remind before next day
+!remind before next day #my-text-channel
+```
+</p></details>
+
+---
+
+### remind before next week
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reminders due to next week.*
+
+**Aliases:**
+`w`
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Examples:**
+
+```xml
+!remind before next week
+!remind before next week #my-text-channel
+```
+</p></details>
+
+---
+
+### remind before tomorrow
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reminders due to tomorrow.*
+
+**Aliases:**
+`tmrw, t, tomo`
+**Arguments:**
+
+(optional) `[channel]` : *Channel to list* (def: `None`)
+
+**Examples:**
+
+```xml
+!remind before tomorrow
+!remind before tomorrow #my-text-channel
+```
+</p></details>
+
+---
+
 ### remind delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

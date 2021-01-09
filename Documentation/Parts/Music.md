@@ -361,3 +361,67 @@
 
 ---
 
+## Group: voice
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Voice channel bot commands.*
+
+**Aliases:**
+`v`
+**Guild only.**
+
+**Privileged users only.**
+
+
+</p></details>
+
+---
+
+### voice connect
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Connects the bot to a voice channel.*
+
+**Aliases:**
+`c, con, conn`
+**Guild only.**
+
+**Privileged users only.**
+
+
+**Arguments:**
+
+(optional) `[channel...]` : *Voice channel* (def: `None`)
+
+**Examples:**
+
+```xml
+!voice connect My Voice Channel
+```
+</p></details>
+
+---
+
+### voice disconnect
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disconnects the bot from voice channels.*
+
+**Aliases:**
+`d, disconn, dc`
+**Guild only.**
+
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!voice disconnect
+```
+</p></details>
+
+---
+

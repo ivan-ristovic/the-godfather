@@ -545,6 +545,27 @@
 
 ---
 
+## time
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Shows time in a given timezone or localized guild time if timezone is not provided.*
+
+**Aliases:**
+`t`
+**Arguments:**
+
+(optional) `[string...]` : *IANA/Windows timezone ID* (def: `None`)
+
+**Examples:**
+
+```xml
+!time
+!time CET
+```
+</p></details>
+
+---
+
 ## tts
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

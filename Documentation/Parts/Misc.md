@@ -689,3 +689,98 @@
 
 ---
 
+## Group: starboard
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Guild starboard commands. Starboard is a channel where member-voted messages will be saved. Something like pins however the starboard is not limited to one channel, has no limits on the number of starred messages, and it is automatically updated. If a message has more than a number of specified emoji reactions, it will be saved in the starboard. The number of reactions before saving is referred to as *sensitivity*, whereas the emoji is referred to as a *star* (star being the default emoji). Both are customziable. Group call shows current starboard information for the guild or enables/disables starboard in given channel and using given star emoji.*
+
+**Aliases:**
+`star, sb`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+`[emoji]` : *Emoji*
+
+`[channel]` : *Channel*
+
+(optional) `[int]` : *Sensitivity* (def: `None`)
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+`[channel]` : *Emoji*
+
+(optional) `[emoji]` : *Channel* (def: `None`)
+
+(optional) `[int]` : *Sensitivity* (def: `None`)
+
+**Examples:**
+
+```xml
+!starboard
+!starboard Yes/No #my-text-channel
+!starboard Yes/No #my-text-channel :emoji:
+!starboard Yes/No #my-text-channel :emoji: 5
+```
+</p></details>
+
+---
+
+### starboard channel
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Sets starboard channel.*
+
+**Aliases:**
+`chn, setchannel, setchn, setc, location`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+`[channel]` : *Channel*
+
+**Examples:**
+
+```xml
+!starboard channel
+```
+</p></details>
+
+---
+
+### starboard sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets starboard sensitivity.*
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+(optional) `[int]` : *Sensitivity* (def: `None`)
+
+**Examples:**
+
+```xml
+!starboard sensitivity
+!starboard sensitivity 5
+```
+</p></details>
+
+---
+

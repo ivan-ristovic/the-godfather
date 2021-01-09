@@ -15,6 +15,7 @@ Just another general-purpose Discord bot developed with the goal to remove all o
 > *TheGodfather is powered by the community that uses it - I do not have any financial gain from it. For that reason, the bot is meant to be self-hosted, but that might change in future if there are enough contributions from the community.*
 
 Features:
+  - Categorized and intuitive command group system.
   - Complete administration of the guild, channels, users, emojis, roles, integrations etc. via categorized commands.
   - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
   - Eases your pain with auto-assignable roles and self-assignable roles.
@@ -31,9 +32,9 @@ Features:
   - Interactive text or reaction polls.
   - Reminders in DM and guild channels.
   - Music playback and queue management commands supporting YouTube, Twitch, Soundcloud and many more.
+  - Starboard with customizable star emoji and reaction threshold.
   - Chicken training, battles and wars!
-  - Categorized and intuitive command group system.
-  - Translations and guild-specific culture setting (e.g. language, timezone). Currently supported languages/cultures: `en-UK` (default), `en-US`.
+  - Guild-specific culture setting (e.g. language, timezone). Currently supported languages/cultures: `en-UK` (default), `en-US`.
 
 
 Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
