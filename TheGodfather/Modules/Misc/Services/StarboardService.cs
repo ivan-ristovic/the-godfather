@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Misc.Services
                             }
                         } else {
                             upd = true;
-                            if (res.Entry.Stars < this.GetMinimumStarCount(res.Entry.GuildId))
+                            if (res.Entry.Stars <= 0)
                                 this.DbSetSelector(db).Remove(dbMsg);
                             else
                                 this.DbSetSelector(db).Update(res.Entry);
