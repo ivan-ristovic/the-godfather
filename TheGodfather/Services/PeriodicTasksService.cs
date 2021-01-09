@@ -180,7 +180,7 @@ namespace TheGodfather.Services
                     LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
                     StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
 
-                    foreach ((ulong gid, List<StarboardModificationResult> toUpdate) in ss.GetPendingUpdates()) {
+                    foreach ((ulong gid, List<StarboardMessage> toUpdate) in ss.GetUpdatedMessages()) {
                         if (!ss.IsStarboardEnabled(gid, out ulong starChannelId, out string emoji))
                             continue;
 
@@ -193,59 +193,64 @@ namespace TheGodfather.Services
                             LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard config {ChannelId} for guild {GuildId}", starChannelId, gid);
                         }
 
-                        if (starChannel is { } && starEmoji is { }) {
-                            foreach (StarboardModificationResult res in toUpdate) {
-                                if (res.ActionType == StarboardActionType.None || res.Entry.ChannelId == starChannelId)
-                                    continue;
+                        int threshold = ss.GetMinimumStarCount(gid);
 
-                                DiscordChannel? channel = null;
-                                DiscordMessage? message = null;
+                        if (starChannel is null || starEmoji is null) {
+                            // TODO disable starboard and clear all starboard messages from db
+                            continue;
+                        }
+
+                        foreach (StarboardMessage updMsg in toUpdate) {
+                            DiscordChannel? channel = null;
+                            DiscordMessage? message = null;
+                            DiscordMessage? starMessage = null;
+
+                            try {
+                                channel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(updMsg.ChannelId));
+                                message = _async.Execute(channel.GetMessageAsync(updMsg.MessageId));
+                                updMsg.Stars = message?.GetReactionsCount(starEmoji) ?? 0;
+                            } catch (NotFoundException) {
+                                LogExt.Debug(bot.GetId(gid), "Failed to fetch message {MessageId} in channel {ChannelId} for guild {GuildId}",
+                                    updMsg.MessageId, updMsg.ChannelId, gid
+                                );
+                            }
+
+                            if (message is null)
+                                continue;
+
+                            StarboardModificationResult res = _async.Execute(ss.SyncWithDbAsync(updMsg));
+                            if (res.Entry is { } && res.Entry.StarMessageId != 0) {
                                 try {
-                                    channel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(res.Entry.ChannelId));
-                                    message = _async.Execute(channel.GetMessageAsync(res.Entry.MessageId));
+                                    starMessage = _async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
                                 } catch (NotFoundException) {
-                                    LogExt.Debug(bot.GetId(gid), "Failed to fetch message {MessageId} in channel {ChannelId} for guild {GuildId}",
-                                        res.Entry.MessageId, res.Entry.ChannelId, gid
+                                    LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard message {MessageId} in channel {ChannelId} for guild {GuildId}",
+                                        res.Entry.StarMessageId, starChannelId, gid
                                     );
-                                    continue;
-                                }
-
-                                DiscordMessage? starMessage = null;
-                                if (res.ActionType != StarboardActionType.Add) {
-                                    try {
-                                        starMessage = _async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
-                                    } catch (NotFoundException) {
-                                        LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard message {MessageId} in channel {ChannelId} for guild {GuildId}",
-                                            res.Entry.StarMessageId, starChannelId, gid
-                                        );
-                                    }
-                                }
-
-                                try {
-                                    switch (res.ActionType) {
-                                        case StarboardActionType.Add:
-                                            DiscordMessage sm = _async.Execute(
-                                                starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars))
-                                            );
-                                            _async.Execute(ss.AddStarboardLinkAsync(gid, channel.Id, message.Id, sm.Id));
-                                            break;
-                                        case StarboardActionType.Remove:
-                                            if (starMessage is { })
-                                                _async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
-                                            break;
-                                        case StarboardActionType.Update:
-                                            if (starMessage is null)
-                                                _async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars)));
-                                            else
-                                                _async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars)));
-                                            break;
-                                    }
-                                } catch {
-                                    // TODO
                                 }
                             }
-                        } else {
-                            // TODO disable starboard and clear all starboard messages from db
+
+                            try {
+                                switch (res.ActionType) {
+                                    case StarboardActionType.Send:
+                                        starMessage = _async.Execute(
+                                            starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars))
+                                        );
+                                        _async.Execute(ss.AddStarboardLinkAsync(updMsg.GuildId, updMsg.ChannelId, updMsg.MessageId, starMessage.Id));
+                                        break;
+                                    case StarboardActionType.Delete:
+                                        if (starMessage is { })
+                                            _async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
+                                        break;
+                                    case StarboardActionType.Modify:
+                                        if (starMessage is null)
+                                            _async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
+                                        else
+                                            _async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
+                                        break;
+                                }
+                            } catch {
+                                // TODO
+                            }
                         }
                     }
 

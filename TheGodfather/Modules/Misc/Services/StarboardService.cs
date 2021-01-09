@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Services;
@@ -16,14 +17,14 @@ namespace TheGodfather.Modules.Misc.Services
         public override bool IsDisabled => false;
 
         private readonly GuildConfigService gcs;
-        private readonly List<StarboardModificationResult> pendingUpdates;
+        private readonly ConcurrentHashSet<StarboardMessage> updated;
 
 
         public StarboardService(DbContextBuilder dbb, GuildConfigService gcs)
             : base(dbb)
         {
             this.gcs = gcs;
-            this.pendingUpdates = new();
+            this.updated = new();
         }
 
 
@@ -44,39 +45,40 @@ namespace TheGodfather.Modules.Misc.Services
             });
         }
 
-        public async Task<StarboardModificationResult> UpdateStarCountAsync(ulong gid, ulong cid, ulong mid, int count)
+        public void RegisterModifiedMessage(ulong gid, ulong cid, ulong mid)
+            => this.updated.Add(new StarboardMessage { ChannelId = cid, GuildId = gid, MessageId = mid });
+
+        public async Task<StarboardModificationResult> SyncWithDbAsync(StarboardMessage msg)
         {
-            int starsPre = 0;
-            StarboardMessage? msg = await this.GetAsync(gid, (cid, mid));
-            if (msg is null) {
-                msg = new StarboardMessage {
-                    ChannelId = cid,
-                    GuildId = gid,
-                    MessageId = mid,
-                    Stars = count,
-                };
+            StarboardActionType type = StarboardActionType.None;
+
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            StarboardMessage? dbmsg = await db.StarboardMessages.FindAsync(msg.GuildIdDb, msg.ChannelIdDb, msg.MessageIdDb);
+            if (dbmsg is null) {
+                if (msg.Stars >= this.GetMinimumStarCount(msg.GuildId)) {
+                    db.StarboardMessages.Add(msg);
+                    type = StarboardActionType.Send;
+                    dbmsg = msg;
+                }
             } else {
-                starsPre = msg.Stars;
-                msg.Stars = count == 0 ? 0 : msg.Stars + count;
+                if (msg.Stars >= this.GetMinimumStarCount(msg.GuildId)) {
+                    dbmsg.Stars = msg.Stars;
+                    db.StarboardMessages.Update(dbmsg);
+                    type = StarboardActionType.Modify;
+                } else {
+                    db.StarboardMessages.Remove(dbmsg);
+                    type = StarboardActionType.Delete;
+                }
             }
 
-            var res = new StarboardModificationResult(msg, starsPre, this.GetMinimumStarCount(gid));
-            lock (this.pendingUpdates) {
-                this.pendingUpdates.RemoveAll(r => r.Entry.Equals(res.Entry));
-                this.pendingUpdates.Add(res);
-            }
-            return res;
+            if (type != StarboardActionType.None)
+                await db.SaveChangesAsync();
+
+            return new StarboardModificationResult(dbmsg, type);
         }
 
-        public IReadOnlyDictionary<ulong, List<StarboardModificationResult>> GetPendingUpdates()
-        {
-            Dictionary<ulong, List<StarboardModificationResult>> res;
-            lock (this.pendingUpdates) {
-                res = this.pendingUpdates.GroupBy(r => r.Entry.GuildId).ToDictionary(g => g.Key, g => g.ToList());
-                this.Sync();
-            }
-            return res;
-        }
+        public IReadOnlyDictionary<ulong, List<StarboardMessage>> GetUpdatedMessages()
+            => this.updated.GroupBy(sm => sm.GuildId).ToDictionary(g => g.Key, g => g.ToList());
 
         public async Task AddStarboardLinkAsync(ulong gid, ulong cid, ulong mid, ulong smid)
         {
@@ -95,9 +97,6 @@ namespace TheGodfather.Modules.Misc.Services
             }
             await db.SaveChangesAsync();
         }
-
-        public ulong GetStarboardChannel(ulong gid)
-            => this.gcs.GetCachedConfig(gid).StarboardChannelId;
 
         public int GetStarboardSensitivity(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
@@ -125,41 +124,5 @@ namespace TheGodfather.Modules.Misc.Services
 
         public override object[] EntityPrimaryKeySelector(ulong grid, (ulong, ulong) id)
             => new object[] { (long)grid, (long)id.Item1, (long)id.Item2 };
-
-
-        private bool Sync()
-        {
-            if (!this.pendingUpdates.Any())
-                return true;
-
-            bool succ = false;
-            bool upd = false;
-            try {
-                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                    foreach (StarboardModificationResult res in this.pendingUpdates) {
-                        StarboardMessage? dbMsg = db.StarboardMessages.Find((long)res.Entry.GuildId, (long)res.Entry.ChannelId, (long)res.Entry.MessageId);
-                        if (dbMsg is null) {
-                            if (res.Entry.Stars != 0) {
-                                this.DbSetSelector(db).Add(res.Entry);
-                                upd = true;
-                            }
-                        } else {
-                            upd = true;
-                            if (res.Entry.Stars <= 0)
-                                this.DbSetSelector(db).Remove(dbMsg);
-                            else
-                                this.DbSetSelector(db).Update(res.Entry);
-                        }
-                    }
-                    if (upd)
-                        db.SaveChanges();
-                }
-            } finally {
-                if (upd)
-                    this.pendingUpdates.Clear();
-            }
-
-            return succ;
-        }
     }
 }
