@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
 
-        private readonly string key;
+        private readonly string? key;
 
 
         public GoodreadsService(BotConfigService cfg)

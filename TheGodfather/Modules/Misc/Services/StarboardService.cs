@@ -102,6 +102,9 @@ namespace TheGodfather.Modules.Misc.Services
         public int GetStarboardSensitivity(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
 
+        public Task SetStarboardSensitivityAsync(ulong gid, int sens)
+            => this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.StarboardSensitivity = sens);
+
         public int GetMinimumStarCount(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
 

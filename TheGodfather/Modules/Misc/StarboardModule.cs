@@ -94,6 +94,7 @@ namespace TheGodfather.Modules.Misc
             if (sens is < 1)
                 throw new CommandFailedException(ctx, "cmd-err-range-sens", 0);
 
+            await this.Service.SetStarboardSensitivityAsync(ctx.Guild.Id, sens);
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cfg-upd");
                 emb.WithColor(this.ModuleColor);
