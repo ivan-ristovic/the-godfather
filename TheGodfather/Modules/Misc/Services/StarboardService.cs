@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Database;
@@ -15,12 +16,14 @@ namespace TheGodfather.Modules.Misc.Services
         public override bool IsDisabled => false;
 
         private readonly GuildConfigService gcs;
+        private readonly List<StarboardModificationResult> pendingUpdates;
 
 
         public StarboardService(DbContextBuilder dbb, GuildConfigService gcs)
             : base(dbb)
         {
             this.gcs = gcs;
+            this.pendingUpdates = new();
         }
 
 
@@ -48,35 +51,44 @@ namespace TheGodfather.Modules.Misc.Services
                     MessageId = mid,
                     Stars = count,
                 };
-                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                    this.DbSetSelector(db).Add(msg);
-                    await db.SaveChangesAsync();
-                }
             } else {
                 starsPre = msg.Stars;
-                if (count == 0) {
-                    await this.RemoveAsync(msg);
-                } else {
-                    msg.Stars += count;
-                    using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                        this.DbSetSelector(db).Update(msg);
-                        await db.SaveChangesAsync();
-                    }
-                }
+                msg.Stars = count == 0 ? 0 : msg.Stars + count;
             }
 
-            return new StarboardModificationResult(msg, starsPre, this.GetMinimumStarCount(gid));
+            var res = new StarboardModificationResult(msg, starsPre, this.GetMinimumStarCount(gid));
+            lock (this.pendingUpdates) {
+                this.pendingUpdates.RemoveAll(r => r.Entry.Equals(res.Entry));
+                this.pendingUpdates.Add(res);
+            }
+            return res;
+        }
+
+        public IReadOnlyDictionary<ulong, List<StarboardModificationResult>> GetPendingUpdates()
+        {
+            Dictionary<ulong, List<StarboardModificationResult>> res;
+            lock (this.pendingUpdates) {
+                res = this.pendingUpdates.GroupBy(r => r.Entry.GuildId).ToDictionary(g => g.Key, g => g.ToList());
+                this.Sync();
+            }
+            return res;
         }
 
         public async Task AddStarboardLinkAsync(ulong gid, ulong cid, ulong mid, ulong smid)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            this.DbSetSelector(db).Update(new StarboardMessage {
-                GuildId = gid,
-                ChannelId = cid,
-                MessageId = mid,
-                StarMessageId = smid,
-            });
+            StarboardMessage? msg = await this.DbSetSelector(db).FindAsync((long)gid, (long)cid, (long)mid);
+            if (msg is null) {
+                this.DbSetSelector(db).Add(new StarboardMessage {
+                    GuildId = gid,
+                    ChannelId = cid,
+                    MessageId = mid,
+                    StarMessageId = smid,
+                });
+            } else {
+                msg.StarMessageId = smid;
+                this.DbSetSelector(db).Update(msg);
+            }
             await db.SaveChangesAsync();
         }
 
@@ -106,5 +118,41 @@ namespace TheGodfather.Modules.Misc.Services
 
         public override object[] EntityPrimaryKeySelector(ulong grid, (ulong, ulong) id)
             => new object[] { (long)grid, (long)id.Item1, (long)id.Item2 };
+
+
+        private bool Sync()
+        {
+            if (!this.pendingUpdates.Any())
+                return true;
+
+            bool succ = false;
+            bool upd = false;
+            try {
+                using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                    foreach (StarboardModificationResult res in this.pendingUpdates) {
+                        StarboardMessage? dbMsg = db.StarboardMessages.Find((long)res.Entry.GuildId, (long)res.Entry.ChannelId, (long)res.Entry.MessageId);
+                        if (dbMsg is null) {
+                            if (res.Entry.Stars != 0) {
+                                this.DbSetSelector(db).Add(res.Entry);
+                                upd = true;
+                            }
+                        } else {
+                            upd = true;
+                            if (res.Entry.Stars < this.GetMinimumStarCount(res.Entry.GuildId))
+                                this.DbSetSelector(db).Remove(dbMsg);
+                            else
+                                this.DbSetSelector(db).Update(res.Entry);
+                        }
+                    }
+                    if (upd)
+                        db.SaveChanges();
+                }
+            } finally {
+                if (upd)
+                    this.pendingUpdates.Clear();
+            }
+
+            return succ;
+        }
     }
 }

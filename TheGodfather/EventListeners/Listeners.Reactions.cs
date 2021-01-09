@@ -47,95 +47,42 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionAdded)]
-        public static async Task MessageReactionAddedEventHandlerAsync(TheGodfatherBot bot, MessageReactionAddEventArgs e)
+        public static Task MessageReactionAddedEventHandlerAsync(TheGodfatherBot bot, MessageReactionAddEventArgs e)
         {
             if (e.Guild is null || e.Channel is null || e.Message is null)
-                return;
+                return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star) {
-                StarboardModificationResult res = await ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 1);
-                await UpdateStarboardAsync(bot, e.Emoji, res, e.Guild, e.Message);
-            }
+            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+                return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 1);
+
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionRemoved)]
-        public static async Task MessageReactionRemovedEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEventArgs e)
+        public static Task MessageReactionRemovedEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEventArgs e)
         {
             if (e.Guild is null || e.Channel is null || e.Message is null)
-                return;
+                return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star) {
-                StarboardModificationResult res = await ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, -1);
-                await UpdateStarboardAsync(bot, e.Emoji, res, e.Guild, e.Message);
-            }
+            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+                return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, -1);
+
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionRemovedEmoji)]
-        public static async Task MessageReactionRemovedEmojiEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEmojiEventArgs e)
+        public static Task MessageReactionRemovedEmojiEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEmojiEventArgs e)
         {
             if (e.Guild is null || e.Channel is null || e.Message is null)
-                return;
+                return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star) {
-                StarboardModificationResult res = await ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 0);
-                await UpdateStarboardAsync(bot, e.Emoji, res, e.Guild, e.Message);
-            }
-        }
+            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+                return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 0);
 
-
-        private static async Task UpdateStarboardAsync(TheGodfatherBot bot, DiscordEmoji star, StarboardModificationResult res,
-                                                       DiscordGuild guild, DiscordMessage msg)
-        {
-            if (res.ActionType == StarboardActionType.None)
-                return;
-
-            msg = await msg.Channel.GetMessageAsync(msg.Id);
-
-            StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            ulong starChannelId = await ss.GetStarboardChannelAsync(guild.Id);
-            if (starChannelId == msg.Channel.Id)
-                return;
-
-            DiscordChannel? starChannel = null;
-            DiscordMessage? starMessage = null;
-            try {
-                starChannel = await bot.Client.GetShard(guild.Id).GetChannelAsync(starChannelId);
-                if (res.ActionType != StarboardActionType.Add)
-                    starMessage = await starChannel.GetMessageAsync(res.Entry.StarMessageId);
-            } catch (NotFoundException) {
-                LogExt.Debug(bot.GetId(guild.Id),
-                    "Failed to fetch star message {MessageId} in channel {ChannelId}, guild {GuildId}",
-                    res.Entry.StarMessageId, starChannelId, guild.Id
-                );
-            }
-            if (starChannel is { }) {
-                LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
-                try {
-                    switch (res.ActionType) {
-                        case StarboardActionType.Add:
-                            DiscordMessage sm = await starChannel.SendMessageAsync(embed: msg.ToStarboardEmbed(lcs, star, res.Entry.Stars));
-                            await ss.AddStarboardLinkAsync(guild.Id, msg.Channel.Id, msg.Id, sm.Id);
-                            break;
-                        case StarboardActionType.Remove:
-                            if (starMessage is { })
-                                await starMessage.DeleteAsync("_gf: Starboard - delete");
-                            break;
-                        case StarboardActionType.Update:
-                            if (starMessage is null)
-                                await starChannel.SendMessageAsync(embed: msg.ToStarboardEmbed(lcs, star, res.Entry.Stars));
-                            else
-                                await starMessage.ModifyAsync(embed: msg.ToStarboardEmbed(lcs, star, res.Entry.Stars));
-                            break;
-                    }
-                } catch {
-                    // TODO
-                }
-            } else {
-                // TODO disable starboard and clear all starboard messages from db
-            }
+            return Task.CompletedTask;
         }
     }
 }

@@ -5,13 +5,18 @@ using System.ServiceModel.Syndication;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
+using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Modules.Misc.Extensions;
+using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Extensions;
@@ -25,13 +30,13 @@ namespace TheGodfather.Services
         #region Callbacks
         private static void BotActivityChangeCallback(object? _)
         {
-            if (_ is TheGodfatherBot shard) {
-                if (shard.Client is null || shard.Client.CurrentUser is null) {
+            if (_ is TheGodfatherBot bot) {
+                if (bot.Client is null || bot.Client.CurrentUser is null) {
                     Log.Error("BotActivityChangeCallback detected null client/user - this should not happen but is not nececarily an error");
                     return;
                 }
 
-                BotActivityService bas = shard.Services.GetRequiredService<BotActivityService>();
+                BotActivityService bas = bot.Services.GetRequiredService<BotActivityService>();
                 if (!bas.StatusRotationEnabled)
                     return;
 
@@ -42,54 +47,54 @@ namespace TheGodfather.Services
 
                     DiscordActivity activity = status is { }
                         ? new DiscordActivity(status.Status, status.Activity)
-                        : new DiscordActivity($"@{shard.Client?.CurrentUser.Username} help", ActivityType.Playing);
+                        : new DiscordActivity($"@{bot.Client?.CurrentUser.Username} help", ActivityType.Playing);
 
-                    _async.Execute(shard.Client!.UpdateStatusAsync(activity));
+                    _async.Execute(bot.Client!.UpdateStatusAsync(activity));
                     Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during activity change");
                 }
             } else {
-                Log.Error("BotActivityChangeCallback failed to cast sender to TheGodfatherShard");
+                Log.Error("BotActivityChangeCallback failed to cast sender");
             }
         }
 
-        private static void DatabaseSyncCallback(object? _)
+        private static void XpSyncCallback(object? _)
         {
-            if (_ is TheGodfatherBot shard) {
-                if (shard.Client is null) {
-                    Log.Error("DatabaseSyncCallback detected null client - this should not happen");
+            if (_ is TheGodfatherBot bot) {
+                if (bot.Client is null) {
+                    Log.Error("XpSyncCallback detected null client - this should not happen");
                     return;
                 }
 
                 try {
-                    shard.Services.GetRequiredService<UserRanksService>().Sync();
-                    Log.Debug("Database sync successful");
+                    bot.Services.GetRequiredService<UserRanksService>().Sync();
+                    Log.Debug("XP data synced with the database");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during database sync");
                 }
             } else {
-                Log.Error("DatabaseSyncCallback failed to cast sender to TheGodfatherShard");
+                Log.Error("XpSyncCallback failed to cast sender");
             }
         }
 
         private static void FeedCheckCallback(object? _)
         {
-            if (_ is TheGodfatherBot shard) {
-                if (shard.Client is null) {
+            if (_ is TheGodfatherBot bot) {
+                if (bot.Client is null) {
                     Log.Error("FeedCheckCallback detected null client - this should not happen");
                     return;
                 }
 
                 Log.Debug("Feed check starting...");
                 try {
-                    RssFeedsService rss = shard.Services.GetRequiredService<RssFeedsService>();
+                    RssFeedsService rss = bot.Services.GetRequiredService<RssFeedsService>();
                     IReadOnlyList<(RssFeed, SyndicationItem)>? updates = _async.Execute(rss.CheckAsync());
 
                     var notFound = new List<RssSubscription>();
                     foreach ((RssFeed feed, SyndicationItem latest) in updates) {
                         foreach (RssSubscription sub in feed.Subscriptions) {
-                            if (!_async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(shard, sub, latest)))
+                            if (!_async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(bot, sub, latest)))
                                 notFound.Add(sub);
                             _async.Execute(Task.Delay(10));
                         }
@@ -105,43 +110,43 @@ namespace TheGodfather.Services
                     Log.Error(e, "An error occured during periodic feed processing");
                 }
             } else {
-                Log.Error("FeedCheckCallback failed to cast sender to TheGodfatherShard");
+                Log.Error("FeedCheckCallback failed to cast sender");
             }
         }
 
         private static void MiscellaneousActionsCallback(object? _)
         {
-            if (_ is TheGodfatherBot shard) {
-                if (shard.Client is null) {
+            if (_ is TheGodfatherBot bot) {
+                if (bot.Client is null) {
                     Log.Error("MiscellaneousActionsCallback detected null client - this should not happen");
                     return;
                 }
 
                 try {
                     List<Birthday> todayBirthdays;
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
+                    using (TheGodfatherDbContext db = bot.Database.CreateContext()) {
                         todayBirthdays = db.Birthdays
                             .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                             .ToList();
                     }
 
                     foreach (Birthday birthday in todayBirthdays) {
-                        DiscordChannel channel = _async.Execute(shard.Client.GetShard(birthday.GuildId).GetChannelAsync(birthday.ChannelId));
-                        DiscordUser user = _async.Execute(shard.Client.GetShard(birthday.GuildId).GetUserAsync(birthday.UserId));
+                        DiscordChannel channel = _async.Execute(bot.Client.GetShard(birthday.GuildId).GetChannelAsync(birthday.ChannelId));
+                        DiscordUser user = _async.Execute(bot.Client.GetShard(birthday.GuildId).GetUserAsync(birthday.UserId));
                         _async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                             Description = $"{Emojis.Tada} Happy birthday, {user.Mention}! {Emojis.Cake}",
                             Color = DiscordColor.Aquamarine
                         }));
 
-                        using TheGodfatherDbContext db = shard.Database.CreateContext();
+                        using TheGodfatherDbContext db = bot.Database.CreateContext();
                         birthday.LastUpdateYear = DateTime.Now.Year;
                         db.Birthdays.Update(birthday);
                         db.SaveChanges();
                     }
                     Log.Debug("Birthdays checked");
 
-                    using (TheGodfatherDbContext db = shard.Database.CreateContext()) {
-                        switch (shard.Database.Provider) {
+                    using (TheGodfatherDbContext db = bot.Database.CreateContext()) {
+                        switch (bot.Database.Provider) {
                             case DbProvider.PostgreSql:
                                 db.Database.ExecuteSqlRaw("UPDATE gf.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
                                 break;
@@ -160,7 +165,97 @@ namespace TheGodfather.Services
                     Log.Error(e, "An error occured during misc timer callback");
                 }
             } else {
-                Log.Error("MiscellaneousActionsCallback failed to cast sender to TheGodfatherShard");
+                Log.Error("MiscellaneousActionsCallback failed to cast sender");
+            }
+        }
+        private static void StarboardUpdateCallback(object? _)
+        {
+            if (_ is TheGodfatherBot bot) {
+                if (bot.Client is null) {
+                    Log.Error("StarboardUpdate detected null client - this should not happen");
+                    return;
+                }
+
+                try {
+                    LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
+                    StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
+
+                    foreach ((ulong gid, List<StarboardModificationResult> toUpdate) in ss.GetPendingUpdates()) {
+                        if (!ss.IsStarboardEnabled(gid, out string? emoji))
+                            continue;
+
+                        ulong starChannelId = _async.Execute(ss.GetStarboardChannelAsync(gid));
+                        DiscordEmoji? starEmoji = null;
+                        DiscordChannel? starChannel = null;
+                        try {
+                            starChannel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(starChannelId));
+                            starEmoji = DiscordEmoji.FromName(bot.Client.GetShard(gid), emoji);
+                        } catch (NotFoundException) {
+                            LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard config {ChannelId} for guild {GuildId}", starChannelId, gid);
+                        }
+
+                        if (starChannel is { } && starEmoji is { }) {
+                            foreach (StarboardModificationResult res in toUpdate) {
+                                if (res.ActionType == StarboardActionType.None || res.Entry.ChannelId == starChannelId)
+                                    continue;
+
+                                DiscordChannel? channel = null;
+                                DiscordMessage? message = null;
+                                try {
+                                    channel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(res.Entry.ChannelId));
+                                    message = _async.Execute(channel.GetMessageAsync(res.Entry.MessageId));
+                                } catch (NotFoundException) {
+                                    LogExt.Debug(bot.GetId(gid), "Failed to fetch message {MessageId} in channel {ChannelId} for guild {GuildId}",
+                                        res.Entry.MessageId, res.Entry.ChannelId, gid
+                                    );
+                                    continue;
+                                }
+
+                                DiscordMessage? starMessage = null;
+                                if (res.ActionType != StarboardActionType.Add) {
+                                    try {
+                                        starMessage = _async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
+                                    } catch (NotFoundException) {
+                                        LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard message {MessageId} in channel {ChannelId} for guild {GuildId}",
+                                            res.Entry.StarMessageId, starChannelId, gid
+                                        );
+                                    }
+                                }
+
+                                try {
+                                    switch (res.ActionType) {
+                                        case StarboardActionType.Add:
+                                            DiscordMessage sm = _async.Execute(
+                                                starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars))
+                                            );
+                                            _async.Execute(ss.AddStarboardLinkAsync(gid, channel.Id, message.Id, sm.Id));
+                                            break;
+                                        case StarboardActionType.Remove:
+                                            if (starMessage is { })
+                                                _async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
+                                            break;
+                                        case StarboardActionType.Update:
+                                            if (starMessage is null)
+                                                _async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars)));
+                                            else
+                                                _async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, res.Entry.Stars)));
+                                            break;
+                                    }
+                                } catch {
+                                    // TODO
+                                }
+                            }
+                        } else {
+                            // TODO disable starboard and clear all starboard messages from db
+                        }
+                    }
+
+                    Log.Debug("Starboards updated for all guilds");
+                } catch (Exception e) {
+                    Log.Error(e, "An error occured during starboard timer callback");
+                }
+            } else {
+                Log.Error("StarboardUpdate failed to cast sender");
             }
         }
         #endregion
@@ -170,15 +265,17 @@ namespace TheGodfather.Services
         private Timer DatabaseSyncTimer { get; set; }
         private Timer FeedCheckTimer { get; set; }
         private Timer MiscActionsTimer { get; set; }
+        private Timer StarboardTimer { get; set; }
         #endregion
 
 
-        public PeriodicTasksService(TheGodfatherBot shard, BotConfig cfg)
+        public PeriodicTasksService(TheGodfatherBot bot, BotConfig cfg)
         {
-            this.BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, shard, TimeSpan.FromSeconds(25), TimeSpan.FromMinutes(10));
-            this.DatabaseSyncTimer = new Timer(DatabaseSyncCallback, shard, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DatabaseSyncInterval));
-            this.FeedCheckTimer = new Timer(FeedCheckCallback, shard, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
-            this.MiscActionsTimer = new Timer(MiscellaneousActionsCallback, shard, TimeSpan.FromSeconds(35), TimeSpan.FromHours(12));
+            this.BotStatusUpdateTimer = new Timer(BotActivityChangeCallback, bot, TimeSpan.FromSeconds(25), TimeSpan.FromMinutes(10));
+            this.DatabaseSyncTimer = new Timer(XpSyncCallback, bot, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DatabaseSyncInterval));
+            this.FeedCheckTimer = new Timer(FeedCheckCallback, bot, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
+            this.MiscActionsTimer = new Timer(MiscellaneousActionsCallback, bot, TimeSpan.FromSeconds(35), TimeSpan.FromHours(12));
+            this.StarboardTimer = new Timer(StarboardUpdateCallback, bot, TimeSpan.FromSeconds(45), TimeSpan.FromMinutes(1));
         }
 
 
@@ -188,6 +285,7 @@ namespace TheGodfather.Services
             this.DatabaseSyncTimer.Dispose();
             this.FeedCheckTimer.Dispose();
             this.MiscActionsTimer.Dispose();
+            this.StarboardTimer.Dispose();
         }
     }
 }
