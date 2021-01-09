@@ -20,6 +20,7 @@ namespace TheGodfather.Modules.Music.Services
 
         private readonly LavalinkConfig cfg;
         private readonly DiscordShardedClient client;
+        private int failedAttempts = 0;
 
         private readonly AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs> trackError;
 
@@ -49,15 +50,21 @@ namespace TheGodfather.Modules.Music.Services
 
         private Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
         {
-            if (this.LavalinkNode is null) {
+            if (this.LavalinkNode is null && this.failedAttempts < this.cfg.RetryAmount) {
                 _ = Task.Run(async () => {
-                    LavalinkExtension lava = client.GetLavalink();
-                    this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
-                        Password = this.cfg.Password,
-                        SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
-                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
-                    });
-                    this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
+                    try {
+                        LavalinkExtension lava = client.GetLavalink();
+                        this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
+                            Password = this.cfg.Password,
+                            SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
+                            RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                        });
+                        this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
+                        this.failedAttempts = 0;
+                    } catch {
+                        this.failedAttempts++;
+                        throw;
+                    }
                 });
             }
             return Task.CompletedTask;
