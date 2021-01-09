@@ -241,7 +241,21 @@
   },
   "starboard": {
     "usage": [
+      [],
+      [ "arg-bool", "arg-chn-text" ],
+      [ "arg-bool", "arg-chn-text", "arg-emoji" ],
+      [ "arg-bool", "arg-chn-text", "arg-emoji", "arg-five" ]
+    ]
+  },
+  "starboard channel": {
+    "usage": [
       []
+    ]
+  },
+  "starboard sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
     ]
   },
   "time": {

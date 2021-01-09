@@ -8,6 +8,10 @@ namespace TheGodfather.Services.Common
 {
     public sealed class BotConfig
     {
+        public const string DefaultLocale= "en-GB";
+        public const string DefaultPrefix = "!";
+
+
         [JsonProperty("db-config")]
         public DbConfig DatabaseConfig { get; set; } = new DbConfig();
 
@@ -17,8 +21,14 @@ namespace TheGodfather.Services.Common
         [JsonProperty("db_sync_interval")]
         public int DatabaseSyncInterval { get; set; } = 600;
 
+        [JsonProperty("token")]
+        public string? Token { get; set; }
+
         [JsonProperty("prefix")]
-        public string Prefix { get; set; } = "!";
+        public string Prefix { get; set; } = DefaultPrefix;
+
+        [JsonProperty("shard-count")]
+        public int ShardCount { get; set; } = 1;
 
         [JsonProperty("feed_check_interval")]
         public int FeedCheckInterval { get; set; } = 300;
@@ -26,17 +36,8 @@ namespace TheGodfather.Services.Common
         [JsonProperty("feed_check_start_delay")]
         public int FeedCheckStartDelay { get; set; } = 30;
 
-        [JsonProperty("key-giphy")]
-        public string GiphyKey { get; set; } = "";
-
-        [JsonProperty("key-goodreads")]
-        public string GoodreadsKey { get; set; } = "";
-
-        [JsonProperty("key-imgur")]
-        public string ImgurKey { get; set; } = "";
-
         [JsonProperty("locale")]
-        public string Locale { get; set; } = "en-GB";
+        public string Locale { get; set; } = DefaultLocale;
 
         [JsonProperty("log-level")]
         public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
@@ -60,22 +61,25 @@ namespace TheGodfather.Services.Common
         public string? CustomLogTemplate { get; set; }
 
         [JsonProperty("key-omdb")]
-        public string OMDbKey { get; set; } = "";
-
-        [JsonProperty("shard-count")]
-        public int ShardCount { get; set; } = 1;
+        public string? OMDbKey { get; set; }
 
         [JsonProperty("key-steam")]
-        public string SteamKey { get; set; } = "";
+        public string? SteamKey { get; set; }
 
         [JsonProperty("key-weather")]
-        public string WeatherKey { get; set; } = "";
+        public string? WeatherKey { get; set; }
 
         [JsonProperty("key-youtube")]
-        public string YouTubeKey { get; set; } = "";
+        public string? YouTubeKey { get; set; }
 
-        [JsonProperty("token")]
-        public string Token { get; set; } = "";
+        [JsonProperty("key-giphy")]
+        public string? GiphyKey { get; set; }
+
+        [JsonProperty("key-goodreads")]
+        public string? GoodreadsKey { get; set; }
+
+        [JsonProperty("key-imgur")]
+        public string? ImgurKey { get; set; }
 
         [JsonProperty("logger-special-rules")]
         public List<SpecialLoggingRule> SpecialLoggerRules { get; set; } = new List<SpecialLoggingRule>();
@@ -84,7 +88,7 @@ namespace TheGodfather.Services.Common
         public sealed class SpecialLoggingRule
         {
             [JsonProperty("app")]
-            public string Application { get; set; } = "";
+            public string? Application { get; set; }
 
             [JsonProperty("level")]
             public LogEventLevel MinLevel { get; set; }

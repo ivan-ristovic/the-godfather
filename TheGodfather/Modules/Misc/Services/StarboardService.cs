@@ -27,18 +27,22 @@ namespace TheGodfather.Modules.Misc.Services
         }
 
 
-        public bool IsStarboardEnabled(ulong? gid, out string? emoji)
+        public bool IsStarboardEnabled(ulong gid, out ulong cid, out string emoji)
         {
-            emoji = null;
-
-            if (gid is null)
-                return false;
-
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid);
-            emoji = gcfg.StarboardEmoji;
+            emoji = gcfg.StarboardEmoji ?? CachedGuildConfig.DefaultStarboardEmoji;
+            cid = gcfg.StarboardChannelId;
             return gcfg.StarboardEnabled;
         }
 
+        public Task<GuildConfig> ModifySettingsAsync(ulong gid, ulong? cid, string? emoji = null, int? sens = null)
+        {
+            return this.gcs.ModifyConfigAsync(gid, gcfg => {
+                gcfg.StarboardChannelId = cid ?? 0;
+                gcfg.StarboardEmoji = emoji;
+                gcfg.StarboardSensitivity = sens ?? CachedGuildConfig.DefaultStarboardSensitivity;
+            });
+        }
 
         public async Task<StarboardModificationResult> UpdateStarCountAsync(ulong gid, ulong cid, ulong mid, int count)
         {
@@ -92,11 +96,11 @@ namespace TheGodfather.Modules.Misc.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task<ulong> GetStarboardChannelAsync(ulong gid)
-        {
-            GuildConfig gcfg = await gcs.GetConfigAsync(gid);
-            return gcfg.StarboardChannelId;
-        }
+        public ulong GetStarboardChannel(ulong gid)
+            => this.gcs.GetCachedConfig(gid).StarboardChannelId;
+
+        public int GetStarboardSensitivity(ulong gid)
+            => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
 
         public int GetMinimumStarCount(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;

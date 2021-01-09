@@ -181,10 +181,9 @@ namespace TheGodfather.Services
                     StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
 
                     foreach ((ulong gid, List<StarboardModificationResult> toUpdate) in ss.GetPendingUpdates()) {
-                        if (!ss.IsStarboardEnabled(gid, out string? emoji))
+                        if (!ss.IsStarboardEnabled(gid, out ulong starChannelId, out string emoji))
                             continue;
 
-                        ulong starChannelId = _async.Execute(ss.GetStarboardChannelAsync(gid));
                         DiscordEmoji? starEmoji = null;
                         DiscordChannel? starChannel = null;
                         try {

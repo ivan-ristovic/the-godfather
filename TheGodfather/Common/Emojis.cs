@@ -110,6 +110,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("U0001f311");
         public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
+        public static DiscordEmoji Star => DiscordEmoji.FromUnicode("\U00002b50");
         public static DiscordEmoji Tada => DiscordEmoji.FromUnicode("\U0001f389");
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
         public static DiscordEmoji Zap => DiscordEmoji.FromUnicode("\U000026a1");

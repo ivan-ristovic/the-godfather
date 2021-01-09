@@ -111,7 +111,7 @@ namespace TheGodfather.Database.Models
         [Column("starboard_emoji"), MaxLength(DiscordLimits.EmojiNameLimit)]
         public string? StarboardEmoji { get; set; }
         [NotMapped]
-        public bool StarboardEnabled => !string.IsNullOrWhiteSpace(this.StarboardEmoji);
+        public bool StarboardEnabled => this.StarboardChannelId != default;
 
         [Column("starboard_sens")]
         public int StarboardSensitivity { get; set; } = 5;
@@ -273,17 +273,18 @@ namespace TheGodfather.Database.Models
         public CachedGuildConfig CachedConfig {
             get => new CachedGuildConfig {
                 AntispamSettings = this.AntispamSettings,
-                Currency = this.Currency ?? "credits",
+                Currency = this.Currency ?? CachedGuildConfig.DefaultCurrency,
                 LinkfilterSettings = this.LinkfilterSettings,
-                Locale = this.Locale ?? "en-GB",
+                Locale = this.Locale ?? BotConfig.DefaultLocale,
                 LogChannelId = this.LogChannelId,
-                Prefix = this.Prefix ?? "!",
+                Prefix = this.Prefix ?? BotConfig.DefaultPrefix,
                 RatelimitSettings = this.RatelimitSettings,
                 ReactionResponse = this.ReactionResponse,
                 StarboardEmoji = this.StarboardEmoji,
                 StarboardSensitivity = this.StarboardSensitivity,
+                StarboardChannelId = this.StarboardChannelId,
                 SuggestionsEnabled = this.SuggestionsEnabled,
-                TimezoneId = this.TimezoneId ?? "Central Europe Standard Time",
+                TimezoneId = this.TimezoneId ?? CachedGuildConfig.DefaultTimezoneId,
             };
             set {
                 this.AntispamSettings = value.AntispamSettings;
@@ -296,6 +297,7 @@ namespace TheGodfather.Database.Models
                 this.ReactionResponse = value.ReactionResponse;
                 this.StarboardEmoji = value.StarboardEmoji;
                 this.StarboardSensitivity = value.StarboardSensitivity;
+                this.StarboardChannelId = value.StarboardChannelId;
                 this.SuggestionsEnabled = value.SuggestionsEnabled;
                 this.TimezoneId = value.TimezoneId;
             }

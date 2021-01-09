@@ -7,6 +7,7 @@ using DSharpPlus.Entities;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -91,7 +92,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-rl-action", gcfg.RatelimitAction.Humanize()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "evt-rl-action", gcfg.RatelimitAction.Humanize()));
                     return;
                 }
 
@@ -105,7 +106,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-rl-action", action.Value.Humanize());
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-rl-action", action.Value.Humanize());
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Information, "evt-rl-action", action.Value.Humanize());
             }
             #endregion
 
@@ -116,7 +117,7 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("desc-sens")] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-rl-sens", gcfg.RatelimitSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "evt-rl-sens", gcfg.RatelimitSensitivity));
                     return;
                 }
 
@@ -133,7 +134,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedDescription("evt-rl-sens", sens.Value);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-rl-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Information, "evt-rl-sens", sens.Value);
             }
             #endregion
 

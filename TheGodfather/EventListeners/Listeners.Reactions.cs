@@ -53,7 +53,7 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
                 return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 1);
 
             return Task.CompletedTask;
@@ -66,7 +66,7 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
                 return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, -1);
 
             return Task.CompletedTask;
@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out string? star) && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
                 return ss.UpdateStarCountAsync(e.Guild.Id, e.Channel.Id, e.Message.Id, 0);
 
             return Task.CompletedTask;

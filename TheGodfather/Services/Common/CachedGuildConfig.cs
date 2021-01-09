@@ -5,8 +5,13 @@ namespace TheGodfather.Services.Common
 {
     public sealed class CachedGuildConfig
     {
-        public string Currency { get; set; } = "credits";
-        public string Prefix { get; set; } = "!";
+        public const string DefaultCurrency = "credits";
+        public const string DefaultStarboardEmoji = ":star:";
+        public const int DefaultStarboardSensitivity = 5;
+        public const string DefaultTimezoneId = "Central Europe Standard Time";
+
+        public string Currency { get; set; } = DefaultCurrency;
+        public string Prefix { get; set; } = BotConfig.DefaultPrefix;
         public string Locale {
             get => this.locale;
             set {
@@ -14,9 +19,10 @@ namespace TheGodfather.Services.Common
                 this.culture = new CultureInfo(value, false);
             }
         }
-        public string TimezoneId { get; set; } = "Central Europe Standard Time";
+        public string TimezoneId { get; set; } = DefaultTimezoneId;
         public string? StarboardEmoji { get; set; }
-        public int StarboardSensitivity { get; set; } = 5;
+        public ulong StarboardChannelId { get; set; } = 0;
+        public int StarboardSensitivity { get; set; } = DefaultStarboardSensitivity;
         public ulong LogChannelId { get; set; } = 0;
         public bool SuggestionsEnabled { get; set; } = false;
         public bool ReactionResponse { get; set; } = false;
@@ -25,7 +31,7 @@ namespace TheGodfather.Services.Common
         public RatelimitSettings RatelimitSettings { get; set; } = new RatelimitSettings();
 
         public bool LoggingEnabled => this.LogChannelId != default;
-        public bool StarboardEnabled => !string.IsNullOrWhiteSpace(this.StarboardEmoji);
+        public bool StarboardEnabled => this.StarboardChannelId != default;
         public CultureInfo Culture {
             get {
                 if (this.culture is null)
@@ -36,6 +42,6 @@ namespace TheGodfather.Services.Common
 
 
         private CultureInfo? culture;
-        private string locale = "en-GB";
+        private string locale = BotConfig.DefaultLocale;
     }
 }
