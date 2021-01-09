@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithLocalizedTitle("str-starboard");
-                emb.AddLocalizedField("str-status", emoji is null ? "str-disabled" : "str-enabled", inline: true);
+                emb.AddLocalizedField("str-status", cid == 0 ? "str-disabled" : "str-enabled", inline: true);
                 emb.AddLocalizedTitleField("str-chn", starChn?.Mention, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-star", starEmoji, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-sensitivity", this.Service.GetStarboardSensitivity(ctx.Guild.Id), inline: true);
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Misc
         private async Task InternalStarboardAsync(CommandContext ctx, bool enable, DiscordChannel channel, DiscordEmoji? emoji = null, int? sens = null)
         {
             if (enable)
-                await this.Service.ModifySettingsAsync(ctx.Guild.Id, channel.Id, emoji, sens);
+                await this.Service.ModifySettingsAsync(ctx.Guild.Id, channel.Id, emoji?.GetDiscordName(), sens);
             else
                 await this.Service.ModifySettingsAsync(ctx.Guild.Id, null);
 
