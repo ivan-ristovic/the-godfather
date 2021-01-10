@@ -78,7 +78,11 @@ namespace TheGodfather.Modules.Misc.Services
         }
 
         public IReadOnlyDictionary<ulong, List<StarboardMessage>> GetUpdatedMessages()
-            => this.updated.GroupBy(sm => sm.GuildId).ToDictionary(g => g.Key, g => g.ToList());
+        {
+            var toUpdate = this.updated.GroupBy(sm => sm.GuildId).ToDictionary(g => g.Key, g => g.ToList());
+            toUpdate.Clear();
+            return toUpdate;
+        }
 
         public async Task AddStarboardLinkAsync(ulong gid, ulong cid, ulong mid, ulong smid)
         {

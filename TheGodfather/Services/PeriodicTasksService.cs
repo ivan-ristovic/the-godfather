@@ -171,6 +171,7 @@ namespace TheGodfather.Services
                 Log.Error("MiscellaneousActionsCallback failed to cast sender");
             }
         }
+
         private static void StarboardUpdateCallback(object? _)
         {
             if (_ is TheGodfatherBot bot) {
