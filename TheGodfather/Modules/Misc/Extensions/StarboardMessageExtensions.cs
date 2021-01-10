@@ -31,6 +31,7 @@ namespace TheGodfather.Modules.Misc.Extensions
             if (url is { })
                 emb.WithImageUrl(url);
 
+            emb.WithLocalizedTimestamp(msg.CreationTimestamp);
             return emb.Build();
         }
     }
