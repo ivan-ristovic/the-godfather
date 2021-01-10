@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using TheGodfather.Database.Models;
 using TheGodfather.Misc.Services;
 
@@ -13,7 +14,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new UserRanksService(TestDbProvider.Database);
+            this.Service = new UserRanksService(TestDbProvider.Database, false);
         }
 
 
@@ -74,7 +75,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
         }
 
         [Test]
-        public void BlankDatabaseSyncTests()
+        public async Task BlankDatabaseSyncTests()
         {
             this.Service.ChangeXp(MockData.Ids[0]);
             this.Service.ChangeXp(MockData.Ids[0]);
@@ -82,8 +83,8 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                 this.Service.ChangeXp(MockData.Ids[1]);
             this.Service.ChangeXp(MockData.Ids[2]);
 
-            TestDbProvider.AlterAndVerify(
-                alter: db => Assert.That(this.Service.Sync()),
+            await TestDbProvider.AlterAndVerifyAsync(
+                alter: db => this.Service.Sync(),
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
                     XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
@@ -96,17 +97,15 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     Assert.That(u1.Xp, Is.EqualTo(2));
                     Assert.That(u2.Xp, Is.EqualTo(9));
                     Assert.That(u3.Xp, Is.EqualTo(1));
+                    return Task.CompletedTask;
                 }
             );
         }
 
         [Test]
-        public void FilledDatabaseSyncTests()
+        public async Task FilledDatabaseSyncTests()
         {
-            this.Service.ChangeXp(MockData.Ids[1]);
-            this.Service.ChangeXp(MockData.Ids[2]);
-
-            TestDbProvider.SetupAlterAndVerify(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     var msgcount = new XpCount[] {
                         new XpCount() {
@@ -119,8 +118,15 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                         },
                     };
                     db.XpCounts.AddRange(msgcount);
+                    db.SaveChanges();
+                    this.Service.LoadData();
+                    return Task.CompletedTask;
                 },
-                alter: db => Assert.That(this.Service.Sync()),
+                alter: db => {
+                    this.Service.ChangeXp(MockData.Ids[1]);
+                    this.Service.ChangeXp(MockData.Ids[2]);
+                    return this.Service.Sync();
+                },
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
                     XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0]);
@@ -133,17 +139,18 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     Assert.That(u1.Xp, Is.EqualTo(5));
                     Assert.That(u2.Xp, Is.EqualTo(6));
                     Assert.That(u3.Xp, Is.EqualTo(1));
+                    Assert.That(this.Service.GetUserXp(u1.UserId), Is.EqualTo(5));
+                    Assert.That(this.Service.GetUserXp(u2.UserId), Is.EqualTo(6));
+                    Assert.That(this.Service.GetUserXp(u3.UserId), Is.EqualTo(1));
+                    return Task.CompletedTask;
                 }
             );
         }
 
         [Test]
-        public void RepetitiveSyncTests()
+        public async Task RepetitiveSyncTests()
         {
-            this.Service.ChangeXp(MockData.Ids[1]);
-            this.Service.ChangeXp(MockData.Ids[2]);
-
-            TestDbProvider.SetupAlterAndVerify(
+            await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     var msgcount = new XpCount[] {
                         new XpCount() {
@@ -156,17 +163,22 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                         },
                     };
                     db.XpCounts.AddRange(msgcount);
+                    db.SaveChanges();
+                    this.Service.LoadData();
+                    return Task.CompletedTask;
                 },
-                alter: db => {
-                    Assert.That(this.Service.Sync());
+                alter: async db => {
                     this.Service.ChangeXp(MockData.Ids[1]);
                     this.Service.ChangeXp(MockData.Ids[2]);
-                    Assert.That(this.Service.Sync());
+                    await this.Service.Sync();
                     this.Service.ChangeXp(MockData.Ids[1]);
                     this.Service.ChangeXp(MockData.Ids[2]);
-                    Assert.That(this.Service.Sync());
-                    Assert.That(this.Service.Sync());
-                    Assert.That(this.Service.Sync());
+                    await this.Service.Sync();
+                    this.Service.ChangeXp(MockData.Ids[1]);
+                    this.Service.ChangeXp(MockData.Ids[2]);
+                    await this.Service.Sync();
+                    await this.Service.Sync();
+                    await this.Service.Sync();
                 },
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
@@ -180,6 +192,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     Assert.That(u1.Xp, Is.EqualTo(5));
                     Assert.That(u2.Xp, Is.EqualTo(8));
                     Assert.That(u3.Xp, Is.EqualTo(3));
+                    return Task.CompletedTask;
                 }
             );
         }

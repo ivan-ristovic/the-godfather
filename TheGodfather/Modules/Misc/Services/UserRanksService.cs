@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Services;
@@ -12,20 +13,29 @@ namespace TheGodfather.Misc.Services
 {
     public sealed class UserRanksService : DbAbstractionServiceBase<XpCount, ulong>
     {
-        public override bool IsDisabled => throw new NotImplementedException();
+        public override bool IsDisabled => false;
 
-        private readonly ConcurrentDictionary<ulong, uint> xps;
+        private ConcurrentDictionary<ulong, uint> xps;
+        private readonly ConcurrentHashSet<ulong> modified;
 
 
-        public UserRanksService(DbContextBuilder dbb)
+        public UserRanksService(DbContextBuilder dbb, bool loadData = true)
             : base(dbb)
         {
-            this.xps = new ConcurrentDictionary<ulong, uint>();
+            this.xps = new();
+            this.modified = new();
+            if (loadData)
+                this.LoadData();
         }
 
 
-        public static short CalculateRankForXp(uint msgcount)
+        public void LoadData()
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            this.xps = new(db.XpCounts.ToDictionary(xp => xp.UserId, xp => xp.Xp));
+        }
 
+        public static short CalculateRankForXp(uint msgcount)
             => (short)Math.Floor(Math.Sqrt(msgcount / 10));
 
         public static uint CalculateXpNeededForRank(short index)
@@ -39,7 +49,8 @@ namespace TheGodfather.Misc.Services
 
         public short ChangeXp(ulong uid, uint change = 1)
         {
-            this.xps.AddOrUpdate(uid, 1, (k, v) => v + change);
+            this.xps.AddOrUpdate(uid, 1, (k, xp) => xp + change);
+            this.modified.Add(uid);
 
             short prev = CalculateRankForXp(this.xps[uid] - change);
             short curr = CalculateRankForXp(this.xps[uid]);
@@ -47,30 +58,22 @@ namespace TheGodfather.Misc.Services
             return curr != prev ? curr : 0;
         }
 
-        public bool Sync()
+        public async Task Sync()
         {
-            bool succ = false;
-            try {
+            if (this.modified.Any()) {
                 using TheGodfatherDbContext db = this.dbb.CreateContext();
-                foreach ((ulong uid, uint count) in this.xps) {
-                    XpCount uxp = db.XpCounts.Find((long)uid);
-                    if (uxp is null) {
-                        db.XpCounts.Add(new XpCount {
-                            Xp = count,
-                            UserId = uid
-                        });
+                foreach (ulong uid in this.modified) {
+                    XpCount? xpc = await db.XpCounts.FindAsync((long)uid);
+                    if (xpc is null) {
+                        db.XpCounts.Add(new XpCount { UserId = uid, Xp = this.xps.GetValueOrDefault(uid) });
                     } else {
-                        uxp.Xp += count;
-                        db.XpCounts.Update(uxp);
+                        xpc.Xp = this.xps.GetValueOrDefault(uid);
+                        db.XpCounts.Update(xpc);
                     }
                 }
-                db.SaveChanges();
-                succ = true;
-            } finally {
-                if (succ)
-                    this.xps.Clear();
+                await db.SaveChangesAsync();
+                this.modified.Clear();
             }
-            return succ;
         }
 
         public async Task<XpRank?> FindRankAsync(ulong gid)

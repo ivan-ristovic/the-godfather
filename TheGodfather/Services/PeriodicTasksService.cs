@@ -68,7 +68,7 @@ namespace TheGodfather.Services
                 }
 
                 try {
-                    bot.Services.GetRequiredService<UserRanksService>().Sync();
+                    _async.Execute(bot.Services.GetRequiredService<UserRanksService>().Sync());
                     Log.Debug("XP data synced with the database");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during database sync");
