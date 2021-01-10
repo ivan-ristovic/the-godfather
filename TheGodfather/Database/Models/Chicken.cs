@@ -76,7 +76,12 @@ namespace TheGodfather.Database.Models
 
 
         [NotMapped]
-        public ChickenStats Stats { get; set; }
+        public ChickenStats Stats => new ChickenStats {
+            BareStrength = this.BareStrength,
+            BareMaxVitality = this.BareMaxVitality,
+            BareVitality = this.Vitality,
+            Upgrades = this.Upgrades.ToList().AsReadOnly()
+        };
 
         [NotMapped]
         public DiscordUser? Owner { get; set; }
@@ -100,21 +105,14 @@ namespace TheGodfather.Database.Models
         public Chicken()
         {
             this.Upgrades = new HashSet<ChickenBoughtUpgrade>();
-            this.Stats = new ChickenStats {
-                BareStrength = this.BareStrength,
-                BareMaxVitality = this.BareMaxVitality,
-                BareVitality = this.Vitality,
-                Upgrades = this.Upgrades.ToList().AsReadOnly()
-            };
         }
 
         public Chicken(ChickenType type)
         {
             this.Upgrades = new HashSet<ChickenBoughtUpgrade>();
-            this.Stats = StartingStats[type];
-            this.BareMaxVitality = this.Stats.BareMaxVitality;
-            this.BareStrength = this.Stats.BareStrength;
-            this.Vitality = this.Stats.BareVitality;
+            this.BareMaxVitality = StartingStats[type].BareMaxVitality;
+            this.BareStrength = StartingStats[type].BareStrength;
+            this.Vitality = StartingStats[type].BareVitality;
         }
 
 

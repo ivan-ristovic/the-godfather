@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync("q-chicken-upg", args: new object[] { ctx.User.Mention, totalCost, gcfg.Currency, upgradeNames }))
                     return;
 
-                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, totalCost))
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, totalCost))
                     throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, totalCost);
 
                 await ctx.Services.GetRequiredService<ChickenBoughtUpgradeService>().AddAsync(
@@ -81,6 +81,9 @@ namespace TheGodfather.Modules.Chickens
             public async Task ListAsync(CommandContext ctx)
             {
                 IReadOnlyList<ChickenUpgrade> upgrades = await this.Service.GetAsync();
+                if (!upgrades.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-res-none");
+
                 await ctx.PaginateAsync(upgrades.OrderBy(u => u.Cost), (emb, u) => {
                     emb.WithTitle(u.Name);
                     emb.AddLocalizedTitleField("str-id", u.Id, inline: true);

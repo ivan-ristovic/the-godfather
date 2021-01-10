@@ -64,8 +64,8 @@ namespace TheGodfather.Modules.Chickens.Common
             await this.Channel.SendMessageAsync(embed: emb.Build());
             await Task.Delay(TimeSpan.FromSeconds(10));
 
-            var c1 = new Chicken { Stats = new ChickenStats { BareStrength = str1 } };
-            var c2 = new Chicken { Stats = new ChickenStats { BareStrength = str2 } };
+            var c1 = new Chicken { BareStrength = str1 };
+            var c2 = new Chicken { BareStrength = str2 };
             this.Result = ChickenFightResult.Fight(c1, c2);
             this.Team1Won = this.Result.Winner == c1;
             this.Team2Won = !this.Team1Won;

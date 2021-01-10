@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Chickens
 
                 emb.AddLocalizedTitleField("str-owner", chicken.Owner?.Mention ?? chicken.UserId.ToString(), inline: true);
                 emb.AddLocalizedTitleField("str-value", $"{chicken.SellPrice:n0}", inline: true);
-                emb.AddLocalizedField("str-stats", chicken.Stats.ToString(), inline: true);
+                emb.AddLocalizedTitleField("str-stats", chicken.Stats.ToString(), inline: true);
                 if (chicken.Stats.Upgrades?.Any() ?? false)
                     emb.AddField("str-upgrades", chicken.Stats.Upgrades.Select(u => u.Upgrade.Name).JoinWith(", "), inline: true);
 
@@ -274,7 +274,7 @@ namespace TheGodfather.Modules.Chickens
                 emb.WithLocalizedDescription("fmt-chicken-owned-by", c.Owner?.Mention ?? "?");
                 emb.AddLocalizedTitleField("str-chicken-str", $"{c.BareStrength} ({c.Stats.TotalStrength})", inline: true);
                 emb.AddLocalizedTitleField("str-chicken-vit", $"{c.Vitality}/{c.BareMaxVitality} ({c.Stats.TotalMaxVitality})", inline: true);
-                emb.AddLocalizedTitleField("str-chicken-stats", c.Upgrades.Select(u => u.Upgrade.Name).JoinWith(", "));
+                emb.AddLocalizedTitleField("str-chicken-upg", c.Upgrades.Select(u => u.Upgrade.Name).JoinWith(", "), unknown: false);
                 return emb;
             }, this.ModuleColor);
         }

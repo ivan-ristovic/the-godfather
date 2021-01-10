@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync("q-chicken-train", args: new object[] { ctx.User.Mention, stat, price, gcfg.Currency }))
                     return null;
 
-                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price))
                     throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
 
                 return chicken;

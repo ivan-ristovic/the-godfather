@@ -1133,7 +1133,7 @@
   "str-chicken-ambush-start": "The ambush will start in 1 minute. Use command `chicken ambush` to make your chicken join the ambush, or `chicken ambush help` to help the ambushed chicken.",
   "str-chicken-list": "All chickens in this guild:",
   "str-chickens": "Chickens will rule the world someday!",
-  "str-chicken-stats": "Vitality",
+  "str-chicken-stats": "Stats",
   "str-chicken-str": "Strength",
   "str-chicken-type-0": "Default ({0} {1})",
   "str-chicken-type-1": "Well-fed ({0} {1})",

@@ -9,7 +9,7 @@ namespace TheGodfather.Misc.Services
 {
     public sealed class GuildRanksService : DbAbstractionServiceBase<XpRank, ulong, short>
     {
-        public override bool IsDisabled => throw new NotImplementedException();
+        public override bool IsDisabled => false;
 
 
         public GuildRanksService(DbContextBuilder dbb)

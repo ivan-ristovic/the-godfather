@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Chickens.Services
                 .Include(c => c.Upgrades)
                     .ThenInclude(u => u.Upgrade)
                 .Where(c => c.GuildIdDb == (long)gid)
-                .AsEnumerable()
+                .ToList()
                 .FirstOrDefault(c => string.Compare(c.Name, name, true) == 0);
             return chicken;
         }
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Chickens.Services
                 chicken = await db.Chickens
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)
-                    .SingleOrDefaultAsync(c => c.GuildIdDb == (long)gid && c.UserIdDb == (long)uid);
+                    .FirstOrDefaultAsync(c => c.GuildIdDb == (long)gid && c.UserIdDb == (long)uid);
             }
             return chicken;
         }

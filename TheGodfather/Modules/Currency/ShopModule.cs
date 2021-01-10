@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.WaitForBoolReplyAsync("q-shop-buy", args: new object[] { item.Name, item.Price, currency }))
                 return;
 
-            if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
+            if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, item.Price))
                 throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
 
             await this.Service.Purchases.AddAsync(new PurchasedItem {
