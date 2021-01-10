@@ -85,7 +85,7 @@ namespace TheGodfather.EventListeners
         public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
             bot.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
-            LogExt.Debug(bot.GetId(e.Guild.Id), "Added channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Removed channel from backup service: {Channel}, {Guild}", e.Channel, e.Guild);
             return Task.CompletedTask;
         }
 
@@ -172,7 +172,22 @@ namespace TheGodfather.EventListeners
                 }
                 emb.AddInvocationFields(owentry.UserResponsible);
             } else {
-                Log.Warning("Channel update event details could not be found");
+                emb.AddLocalizedTitleField("str-chn", e.ChannelBefore.Mention, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-name", e.ChannelBefore.Name, e.ChannelAfter.Name, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", e.ChannelBefore.IsNSFW, e.ChannelAfter.IsNSFW, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", e.ChannelBefore.Bitrate, e.ChannelAfter.Bitrate, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", e.ChannelBefore.PerUserRateLimit, e.ChannelAfter.PerUserRateLimit, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-type", e.ChannelBefore.Type, e.ChannelAfter.Type, inline: true);
+                if (!e.ChannelBefore.Topic.Equals(e.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase)) {
+                    string before = Formatter.BlockCode(
+                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelBefore.Topic) ? " " : e.ChannelBefore.Topic).Truncate(450, "...")
+                    );
+                    string after = Formatter.BlockCode(
+                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelAfter.Topic) ? " " : e.ChannelAfter.Topic).Truncate(450, "...")
+                    );
+                    emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
+                }
+                emb.AddInsufficientAuditLogPermissionsField();
             }
 
             await logService.LogAsync(e.Guild, emb);
