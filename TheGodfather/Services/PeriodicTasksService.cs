@@ -25,8 +25,6 @@ namespace TheGodfather.Services
 {
     public class PeriodicTasksService : IDisposable
     {
-        private static readonly AsyncExecutionService _async = new AsyncExecutionService();
-
         #region Callbacks
         private static void BotActivityChangeCallback(object? _)
         {
@@ -49,7 +47,8 @@ namespace TheGodfather.Services
                         ? new DiscordActivity(status.Status, status.Activity)
                         : new DiscordActivity($"@{bot.Client?.CurrentUser.Username} help", ActivityType.Playing);
 
-                    _async.Execute(bot.Client!.UpdateStatusAsync(activity));
+                    AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
+                    async.Execute(bot.Client!.UpdateStatusAsync(activity));
                     Log.Debug("Changed bot status to {ActivityType} {ActivityName}", activity.ActivityType, activity.Name);
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during activity change");
@@ -68,7 +67,8 @@ namespace TheGodfather.Services
                 }
 
                 try {
-                    _async.Execute(bot.Services.GetRequiredService<UserRanksService>().Sync());
+                    AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
+                    async.Execute(bot.Services.GetRequiredService<UserRanksService>().Sync());
                     Log.Debug("XP data synced with the database");
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during database sync");
@@ -89,14 +89,16 @@ namespace TheGodfather.Services
                 Log.Debug("Feed check starting...");
                 try {
                     RssFeedsService rss = bot.Services.GetRequiredService<RssFeedsService>();
-                    IReadOnlyList<(RssFeed, SyndicationItem)>? updates = _async.Execute(rss.CheckAsync());
+                    AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
+
+                    IReadOnlyList<(RssFeed, SyndicationItem)>? updates = async.Execute(rss.CheckAsync());
 
                     var notFound = new List<RssSubscription>();
                     foreach ((RssFeed feed, SyndicationItem latest) in updates) {
                         foreach (RssSubscription sub in feed.Subscriptions) {
-                            if (!_async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(bot, sub, latest)))
+                            if (!async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(bot, sub, latest)))
                                 notFound.Add(sub);
-                            _async.Execute(Task.Delay(10));
+                            async.Execute(Task.Delay(10));
                         }
                     }
 
@@ -104,7 +106,7 @@ namespace TheGodfather.Services
 
                     if (notFound.Any()) {
                         Log.Information("404 subscriptions found. Removing {0} subscriptions", notFound.Count);
-                        _async.Execute(rss.Subscriptions.RemoveAsync(notFound));
+                        async.Execute(rss.Subscriptions.RemoveAsync(notFound));
                     }
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during periodic feed processing");
@@ -130,10 +132,11 @@ namespace TheGodfather.Services
                             .ToList();
                     }
 
+                    AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
                     foreach (Birthday birthday in todayBirthdays) {
-                        DiscordChannel channel = _async.Execute(bot.Client.GetShard(birthday.GuildId).GetChannelAsync(birthday.ChannelId));
-                        DiscordUser user = _async.Execute(bot.Client.GetShard(birthday.GuildId).GetUserAsync(birthday.UserId));
-                        _async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
+                        DiscordChannel channel = async.Execute(bot.Client.GetShard(birthday.GuildId).GetChannelAsync(birthday.ChannelId));
+                        DiscordUser user = async.Execute(bot.Client.GetShard(birthday.GuildId).GetUserAsync(birthday.UserId));
+                        async.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder {
                             Description = $"{Emojis.Tada} Happy birthday, {user.Mention}! {Emojis.Cake}",
                             Color = DiscordColor.Aquamarine
                         }));
@@ -179,6 +182,7 @@ namespace TheGodfather.Services
                 try {
                     LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
                     StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
+                    AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
 
                     foreach ((ulong gid, List<StarboardMessage> toUpdate) in ss.GetUpdatedMessages()) {
                         if (!ss.IsStarboardEnabled(gid, out ulong starChannelId, out string emoji))
@@ -187,7 +191,7 @@ namespace TheGodfather.Services
                         DiscordEmoji? starEmoji = null;
                         DiscordChannel? starChannel = null;
                         try {
-                            starChannel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(starChannelId));
+                            starChannel = async.Execute(bot.Client.GetShard(gid).GetChannelAsync(starChannelId));
                             starEmoji = DiscordEmoji.FromName(bot.Client.GetShard(gid), emoji);
                         } catch (NotFoundException) {
                             LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard config {ChannelId} for guild {GuildId}", starChannelId, gid);
@@ -206,8 +210,8 @@ namespace TheGodfather.Services
                             DiscordMessage? starMessage = null;
 
                             try {
-                                channel = _async.Execute(bot.Client.GetShard(gid).GetChannelAsync(updMsg.ChannelId));
-                                message = _async.Execute(channel.GetMessageAsync(updMsg.MessageId));
+                                channel = async.Execute(bot.Client.GetShard(gid).GetChannelAsync(updMsg.ChannelId));
+                                message = async.Execute(channel.GetMessageAsync(updMsg.MessageId));
                                 updMsg.Stars = message?.GetReactionsCount(starEmoji) ?? 0;
                             } catch (NotFoundException) {
                                 LogExt.Debug(bot.GetId(gid), "Failed to fetch message {MessageId} in channel {ChannelId} for guild {GuildId}",
@@ -218,10 +222,10 @@ namespace TheGodfather.Services
                             if (message is null)
                                 continue;
 
-                            StarboardModificationResult res = _async.Execute(ss.SyncWithDbAsync(updMsg));
+                            StarboardModificationResult res = async.Execute(ss.SyncWithDbAsync(updMsg));
                             if (res.Entry is { } && res.Entry.StarMessageId != 0) {
                                 try {
-                                    starMessage = _async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
+                                    starMessage = async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
                                 } catch (NotFoundException) {
                                     LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard message {MessageId} in channel {ChannelId} for guild {GuildId}",
                                         res.Entry.StarMessageId, starChannelId, gid
@@ -232,20 +236,20 @@ namespace TheGodfather.Services
                             try {
                                 switch (res.ActionType) {
                                     case StarboardActionType.Send:
-                                        starMessage = _async.Execute(
+                                        starMessage = async.Execute(
                                             starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars))
                                         );
-                                        _async.Execute(ss.AddStarboardLinkAsync(updMsg.GuildId, updMsg.ChannelId, updMsg.MessageId, starMessage.Id));
+                                        async.Execute(ss.AddStarboardLinkAsync(updMsg.GuildId, updMsg.ChannelId, updMsg.MessageId, starMessage.Id));
                                         break;
                                     case StarboardActionType.Delete:
                                         if (starMessage is { })
-                                            _async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
+                                            async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
                                         break;
                                     case StarboardActionType.Modify:
                                         if (starMessage is null)
-                                            _async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
+                                            async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
                                         else
-                                            _async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
+                                            async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
                                         break;
                                 }
                             } catch {
