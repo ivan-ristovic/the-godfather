@@ -67,15 +67,12 @@ namespace TheGodfather.EventListeners
                 return;
 
             if (!string.IsNullOrWhiteSpace(e.Message?.Content)) {
-                // TODO move to service
                 if (!e.Message.Content.StartsWith(bot.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
-                    short rank = bot.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Author.Id);
+                    short rank = bot.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Guild.Id, e.Author.Id);
                     if (rank != 0) {
                         LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-                        XpRank? rankInfo;
-                        using (TheGodfatherDbContext db = bot.Database.CreateContext())
-                            rankInfo = await db.XpRanks.FindAsync((long)e.Guild.Id, rank);
-                        string rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? " / ");
+                        XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
+                        string rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
                         await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                     }
                 }

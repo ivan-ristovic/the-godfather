@@ -154,7 +154,8 @@ namespace TheGodfather.Database
             mb.Entity<SelfRole>().HasKey(sr => new { sr.GuildIdDb, sr.RoleIdDb });
             mb.Entity<StarboardMessage>().HasKey(sm => new { sm.GuildIdDb, sm.ChannelIdDb, sm.MessageIdDb });
             mb.Entity<TextReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
-            mb.Entity<XpCount>().Property(xpc => xpc.XpDb).HasDefaultValue(1);
+            mb.Entity<XpCount>().HasKey(xpc => new { xpc.GuildIdDb, xpc.UserIdDb });
+            mb.Entity<XpCount>().Property(xpc => xpc.Xp).HasDefaultValue(1);
             mb.Entity<XpRank>().HasKey(xpr => new { xpr.GuildIdDb, xpr.Rank });
         }
     }

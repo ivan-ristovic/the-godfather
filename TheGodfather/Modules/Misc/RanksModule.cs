@@ -29,26 +29,27 @@ namespace TheGodfather.Modules.Misc
             => this.ExecuteGroupAsync(ctx, member as DiscordUser);
 
         [GroupCommand, Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("desc-user")] DiscordUser? user = null)
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-user")] DiscordUser? user = null)
         {
             user ??= ctx.User;
 
             UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
-            short rank = rs.CalculateRankForUser(user.Id);
-            XpRank? rankInfo = ctx.Guild is { } ? await rs.FindRankAsync(ctx.Guild.Id) : null;
-
-            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+            return ctx.RespondWithLocalizedEmbedAsync(async emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithThumbnail(user.AvatarUrl);
-                emb.AddLocalizedTitleField("str-rank", rank, inline: true);
-                emb.AddLocalizedTitleField("str-xp", rs.GetUserXp(user.Id), inline: true);
-                emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank(++rank), inline: true);
-                if (rankInfo is { })
-                    emb.AddLocalizedTitleField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
-                else
-                    emb.AddLocalizedField("str-rank", "str-rank-noname", inline: true);
+                emb.AddLocalizedTitleField("str-xp", rs.GetUserXp(ctx.Guild.Id, user.Id), inline: true);
+                if (ctx.Guild is { }) {
+                    short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
+                    XpRank? rankInfo = ctx.Guild is { } ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
+                    emb.AddLocalizedTitleField("str-rank", rank, inline: true);
+                    emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank(rank), inline: true);
+                    if (rankInfo is { })
+                        emb.AddLocalizedTitleField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
+                    else
+                        emb.AddLocalizedField("str-rank", "str-rank-noname", inline: true);
+                }
             });
         }
         #endregion
@@ -115,15 +116,28 @@ namespace TheGodfather.Modules.Misc
 
         #region rank top
         [Command("top")]
-        public async Task TopAsync(CommandContext ctx)
+        public Task TopAsync(CommandContext ctx)
+            => this.InternalTopAsync(ctx, global: false);
+        #endregion
+
+        #region rank top
+        [Command("topglobal")]
+        [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop", "globalbest", "bestglobal")]
+        public Task TopGlobalAsync(CommandContext ctx)
+            => this.InternalTopAsync(ctx, global: true);
+        #endregion
+
+
+        #region internals
+        private async Task InternalTopAsync(CommandContext ctx, bool global)
         {
             var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
-            emb.WithLocalizedTitle("str-rank-top");
+            emb.WithLocalizedTitle(global ? "str-rank-topg" : "str-rank-top");
             emb.WithColor(this.ModuleColor);
             string unknown = this.Localization.GetString(ctx.Guild.Id, "str-404");
 
             UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
-            IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync();
+            IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync(global ? null : ctx.Guild?.Id);
 
             var ranks = new Dictionary<short, string>();
             var notFoundUsers = new List<ulong>();
@@ -152,8 +166,8 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondAsync(embed: emb.Build());
 
             try {
-                int removed = await rs.RemoveAsync(notFoundUsers);
-                LogExt.Debug(ctx, "Removed {Count} not found users from XP count table", removed);
+                await rs.RemoveDeletedUsers(notFoundUsers);
+                LogExt.Debug(ctx, "Removed not found users from XP count table");
             } catch (Exception e) {
                 LogExt.Warning(ctx, e, "Failed to remove not found users from XP count table");
             }
