@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Misc.Common
                         if (arg.IsOptional) {
                             ab.Append(" (")
                               .Append(this.GetS("str-def"))
-                              .Append(": ")
+                              .Append(' ')
                               .Append(Formatter.InlineCode(arg.DefaultValue is null ? this.GetS("str-none") : arg.DefaultValue.ToString()))
                               .Append(')');
                         }

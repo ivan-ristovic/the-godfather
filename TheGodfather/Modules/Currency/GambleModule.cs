@@ -66,8 +66,8 @@ namespace TheGodfather.Modules.Currency
         [Command("dice")]
         [Aliases("roll", "die")]
         public async Task RollDiceAsync(CommandContext ctx,
-                                       [Description("desc-gamble-bid")] long bid,
-                                       [Description("desc-gamble-dice")] int bet = 5)
+                                       [Description("desc-gamble-dice")] int bet,
+                                       [Description("desc-gamble-bid")] long bid = 5)
         {
             if (bid is < 1 or > MaxBid)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-gamble-bid", MaxBid);
