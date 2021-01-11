@@ -4,8 +4,8 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Services.Extensions
 {

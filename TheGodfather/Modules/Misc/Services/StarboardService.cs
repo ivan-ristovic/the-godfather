@@ -36,9 +36,11 @@ namespace TheGodfather.Modules.Misc.Services
             return gcfg.StarboardEnabled;
         }
 
-        public Task<GuildConfig> ModifySettingsAsync(ulong gid, ulong? cid, string? emoji = null, int? sens = null)
+        public async Task<GuildConfig> ModifySettingsAsync(ulong gid, ulong? cid, string? emoji = null, int? sens = null)
         {
-            return this.gcs.ModifyConfigAsync(gid, gcfg => {
+            if (cid is null)
+                await this.ClearAsync(gid);
+            return await this.gcs.ModifyConfigAsync(gid, gcfg => {
                 gcfg.StarboardChannelId = cid ?? 0;
                 gcfg.StarboardEmoji = emoji;
                 gcfg.StarboardSensitivity = sens ?? CachedGuildConfig.DefaultStarboardSensitivity;
