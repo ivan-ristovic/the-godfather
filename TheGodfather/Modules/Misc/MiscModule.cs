@@ -116,6 +116,39 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region linux
+        [Command("linux")]
+        public Task LinuxAsync(CommandContext ctx,
+                              [Description("desc-replacement")] string? str1 = null,
+                              [Description("desc-replacement")] string? str2 = null)
+        {
+            if (string.IsNullOrWhiteSpace(str1))
+                str1 = "GNU";
+            
+            if (string.IsNullOrWhiteSpace(str2))
+                str2 = "Linux";
+
+            string interjection = 
+                $"I'd just like to interject for moment. What you're refering to as {str2}, " +
+                $"is in fact, {str1}/{str2}, or as I've recently taken to calling it, {str1} plus {str2}. " +
+                $"{str2} is not an operating system unto itself, but rather another free component of a fully " +
+                $"functioning {str1} system made useful by the {str1} corelibs, shell utilities and vital " +
+                $"system components comprising a full OS as defined by POSIX.\n\n" +
+                $"Many computer users run a modified version of the {str1} system every day, without realizing it. " +
+                $"Through a peculiar turn of events, the version of {str1} which is widely used today is often " +
+                $"called {str2}, and many of its users are not aware that it is basically the {str1} system, " +
+                $"developed by the {str1} Project.\n\n" +
+                $"There really is a {str2}, and these people are using it, but it is just a part of the system " +
+                $"they use. {str2} is the kernel: the program in the system that allocates the machine's " +
+                $"resources to the other programs that you run. The kernel is an essential part of an operating " +
+                $"system, but useless by itself; it can only function in the context of a complete operating system. " +
+                $"{str2} is normally used in combination with the {str1} operating system: the whole system is " +
+                $"basically {str1} with {str2} added, or {str1}/{str2}. All the so-called {str2} " +
+                $"distributions are really distributions of {str1}/{str2}.";
+            return ctx.Channel.EmbedAsync(interjection, color: this.ModuleColor);
+        }
+        #endregion
+
         #region penis
         [Command("penis"), Priority(1)]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]

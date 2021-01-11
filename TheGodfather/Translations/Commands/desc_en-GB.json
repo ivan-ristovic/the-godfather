@@ -288,6 +288,7 @@
   "levelroles delete": "Removes given level role(s) by rank or role.",
   "levelroles deleteall": "Removes all level roles.",
   "levelroles list": "Lists all level roles.",
+  "linux": "Prints a customizable GNU/Linux interjection.",
   "meme": "Manipulate guild memes. Group call retrieves a meme from this guild's meme list by it's name or a random one if the name isn't provided.",
   "meme add": "Adds a new guild meme with a given name and an image (provided via URL or attachment).",
   "meme create": "Creates a new meme from template and top/bottom text(s).",

@@ -29,6 +29,12 @@
       []
     ]
   },
+  "linux": {
+    "usage": [
+      [],
+      [ "arg-gnu", "arg-windows" ]
+    ]
+  },
   "birthday list": {
     "usage": [
       [ "arg-usr" ],
