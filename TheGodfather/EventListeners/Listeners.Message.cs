@@ -66,26 +66,27 @@ namespace TheGodfather.EventListeners
             if (bot.Services.GetRequiredService<BlockingService>().IsBlocked(e.Guild.Id, e.Channel.Id, e.Author.Id))
                 return;
 
-            if (!string.IsNullOrWhiteSpace(e.Message?.Content)) {
-                if (!e.Message.Content.StartsWith(bot.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
-                    short rank = bot.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Guild.Id, e.Author.Id);
-                    if (rank != 0) {
-                        LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-                        LevelRole? lr = await bot.Services.GetRequiredService<LevelRoleService>().GetAsync(e.Guild.Id, rank);
-                        DiscordRole? levelRole = lr is { } ? e.Guild.GetRole(lr.RoleId) : null;
-                        XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
-                        string rankupStr;
-                        if (levelRole is { }) {
-                            rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup-lr",
-                                e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention
-                            );
-                            DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
-                            await member.GrantRoleAsync(levelRole);
-                        } else {
-                            rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
-                        }
-                        await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
+            if (string.IsNullOrWhiteSpace(e.Message?.Content))
+                return;
+
+            if (!e.Message.Content.StartsWith(bot.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(e.Guild.Id))) {
+                short rank = bot.Services.GetRequiredService<UserRanksService>().ChangeXp(e.Guild.Id, e.Author.Id);
+                if (rank != 0) {
+                    LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+                    LevelRole? lr = await bot.Services.GetRequiredService<LevelRoleService>().GetAsync(e.Guild.Id, rank);
+                    DiscordRole? levelRole = lr is { } ? e.Guild.GetRole(lr.RoleId) : null;
+                    XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
+                    string rankupStr;
+                    if (levelRole is { }) {
+                        rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup-lr",
+                            e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention
+                        );
+                        DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
+                        await member.GrantRoleAsync(levelRole);
+                    } else {
+                        rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
                     }
+                    await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                 }
             }
         }

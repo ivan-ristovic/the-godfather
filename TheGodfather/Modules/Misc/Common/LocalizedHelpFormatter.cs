@@ -108,10 +108,10 @@ namespace TheGodfather.Modules.Misc.Common
                         if (arg.IsOptional)
                             ab.Append(this.GetS("str-optional")).Append(' ');
 
-                        ab.Append(Formatter.InlineCode($"[{this.CommandsNext.GetUserFriendlyTypeName(arg.Type)}"));
+                        ab.Append($"[`{this.CommandsNext.GetUserFriendlyTypeName(arg.Type)}"));
                         if (arg.IsCatchAll)
                             ab.Append("...");
-                        ab.Append("] ");
+                        ab.Append("`] ");
 
                         ab.Append(Formatter.Bold(this.GetS(string.IsNullOrWhiteSpace(arg.Description) ? "h-desc-none" : arg.Description)));
 

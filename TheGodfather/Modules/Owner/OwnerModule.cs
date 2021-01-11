@@ -27,7 +27,6 @@ using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Modules.Owner.Services;
@@ -374,15 +373,10 @@ namespace TheGodfather.Modules.Owner
                             if (arg.IsOptional)
                                 sb.Append("(optional) ");
 
-                            string type = $"[{ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
+                            sb.Append("[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
                             if (arg.IsCatchAll)
-                                type += "...";
-                            type += "]";
-
-                            sb.Append(Formatter.InlineCode(type));
-                            sb.Append(" : ");
-
-                            sb.Append('*');
+                                sb.Append("...");
+                            sb.Append("`]: *");
                             if (string.IsNullOrWhiteSpace(arg.Description))
                                 sb.Append("No description provided.");
                             else
