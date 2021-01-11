@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.PaginateAsync(
                 "str-lr",
                 roles.Where(kvp => !missingRoleRanks.Contains(kvp.LevelRole.Rank)).OrderBy(kvp => kvp.LevelRole.Rank),
-                kvp => $"{kvp.LevelRole.Rank:D3} | {kvp.Role.Mention}",
+                kvp => $"{Formatter.InlineCode($"{kvp.LevelRole.Rank:D3}")} | {kvp.Role.Mention}",
                 this.ModuleColor
             );
         }
