@@ -619,6 +619,7 @@
   "err-muterole-404": "Mute role set but I can't find it. Maybe deleted?",
   "err-punish-failed": "User punish attempt failed! Please check my permissions",
   "err-service-disabled": "This service has been disabled by the bot owner.",
+  "err-starboard-fail": "Failed to execute action on starboard channel. Please check my permissions.",
   "err-url-image": "URL has to point to an image!",
   "err-url-image-8mb": "URL has to point to an image smaller than 8MB in size!",
   "err-url-image-fail": "Failed to fetch the image!",

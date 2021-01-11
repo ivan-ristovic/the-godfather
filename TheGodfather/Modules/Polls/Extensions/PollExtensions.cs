@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using DSharpPlus.Entities;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Polls.Extensions
 {
@@ -15,9 +15,10 @@ namespace TheGodfather.Modules.Polls.Extensions
             emb.WithLocalizedDescription("str-vote-text");
             emb.WithColor(DiscordColor.Orange);
 
-            for (int i = 0; i < poll.Options.Count; i++)
+            for (int i = 0; i < poll.Options.Count; i++) {
                 if (!string.IsNullOrWhiteSpace(poll.Options[i]))
                     emb.AddField($"{i + 1} : {poll.Options[i]}", $"{poll.Results.Count(kvp => kvp.Value == i)}");
+            }
 
             if (poll.EndTime is { }) {
                 string localizedTime = lcs.GetLocalizedTimeString(poll.Channel.GuildId, poll.EndTime);

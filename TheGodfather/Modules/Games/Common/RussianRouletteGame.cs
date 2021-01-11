@@ -8,9 +8,9 @@ using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Games.Common
 {

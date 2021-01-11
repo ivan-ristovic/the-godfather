@@ -7,9 +7,8 @@ using Humanizer;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.EventListeners.Common;
-using TheGodfather.Services;
 
-namespace TheGodfather.Modules.Administration.Common
+namespace TheGodfather.Services.Common
 {
     public sealed class LocalizedEmbedBuilder
     {

@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Reminders
                                              [Description("desc-chn-list")] DiscordChannel? channel = null)
                 {
                     DayOfWeek currentDayOfWeek = this.Localization.GetLocalizedTime(ctx?.Guild.Id).DayOfWeek;
-                    return this.InternalListAsync(ctx, currentDayOfWeek.Until(dayOfWeek), channel);
+                    return this.InternalListAsync(ctx!, currentDayOfWeek.Until(dayOfWeek), channel);
                 }
                 #endregion
 
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Reminders
                 {
                     DayOfWeek currentDayOfWeek = this.Localization.GetLocalizedTime(ctx?.Guild.Id).DayOfWeek;
                     DayOfWeek firstDayOfWeek = this.Localization.GetGuildCulture(ctx?.Guild.Id).DateTimeFormat.FirstDayOfWeek;
-                    return this.InternalListAsync(ctx, currentDayOfWeek.Until(firstDayOfWeek), channel);
+                    return this.InternalListAsync(ctx!, currentDayOfWeek.Until(firstDayOfWeek), channel);
                 }
                 #endregion
             }

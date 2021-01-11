@@ -7,9 +7,9 @@ using DSharpPlus.Entities;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Search
 {

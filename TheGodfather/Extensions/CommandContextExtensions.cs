@@ -10,9 +10,9 @@ using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Extensions
 {

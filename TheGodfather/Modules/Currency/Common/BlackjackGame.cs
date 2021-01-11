@@ -10,9 +10,9 @@ using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Currency.Common
 {

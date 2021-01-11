@@ -10,9 +10,9 @@ using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration.Services
 {

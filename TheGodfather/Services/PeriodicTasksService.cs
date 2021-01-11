@@ -14,6 +14,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Misc.Services;
@@ -23,7 +24,7 @@ using TheGodfather.Services.Extensions;
 
 namespace TheGodfather.Services
 {
-    public class PeriodicTasksService : IDisposable
+    public sealed class PeriodicTasksService : IDisposable
     {
         #region Callbacks
         private static void BotActivityChangeCallback(object? _)
@@ -201,7 +202,7 @@ namespace TheGodfather.Services
                         int threshold = ss.GetMinimumStarCount(gid);
 
                         if (starChannel is null || starEmoji is null) {
-                            // TODO disable starboard and clear all starboard messages from db
+                            async.Execute(ss.ModifySettingsAsync(gid, null));
                             continue;
                         }
 
@@ -254,7 +255,11 @@ namespace TheGodfather.Services
                                         break;
                                 }
                             } catch {
-                                // TODO
+                                LoggingService ls = bot.Services.GetRequiredService<LoggingService>();
+                                if (ls.IsLogEnabledFor(gid, out LocalizedEmbedBuilder emb)) {
+                                    emb.WithLocalizedDescription("err-starboard-fail");
+                                    async.Execute(ls.LogAsync(message.Channel.Guild, emb));
+                                }
                             }
                         }
                     }

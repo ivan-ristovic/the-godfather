@@ -13,9 +13,9 @@ using TexasHoldem.Logic.Cards;
 using TexasHoldem.Logic.Helpers;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Currency.Common
 {

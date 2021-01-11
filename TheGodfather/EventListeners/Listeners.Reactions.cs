@@ -4,11 +4,11 @@ using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.EventListeners
 {

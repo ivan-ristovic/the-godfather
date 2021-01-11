@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {

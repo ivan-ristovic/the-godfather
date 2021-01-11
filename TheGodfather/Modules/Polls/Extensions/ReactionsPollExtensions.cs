@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity.EventHandling;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Polls.Extensions
 {

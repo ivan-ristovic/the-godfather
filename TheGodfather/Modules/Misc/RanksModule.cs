@@ -13,7 +13,7 @@ using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Misc.Services;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Misc
 {
