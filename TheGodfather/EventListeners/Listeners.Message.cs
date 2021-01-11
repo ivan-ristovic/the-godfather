@@ -74,9 +74,16 @@ namespace TheGodfather.EventListeners
                         LevelRole? lr = await bot.Services.GetRequiredService<LevelRoleService>().GetAsync(e.Guild.Id, rank);
                         DiscordRole? levelRole = lr is { } ? e.Guild.GetRole(lr.RoleId) : null;
                         XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
-                        string rankupStr = levelRole is { }
-                            ? ls.GetString(e.Guild.Id, "fmt-rankup-lr", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention)
-                            : ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
+                        string rankupStr;
+                        if (levelRole is { }) {
+                            rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup-lr",
+                                e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention
+                            );
+                            DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
+                            await member.GrantRoleAsync(levelRole);
+                        } else {
+                            rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
+                        }
                         await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                     }
                 }
@@ -104,8 +111,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static Task MessageCreateBackupHandlerAsync(TheGodfatherBot bot, MessageCreateEventArgs e)
         {
-            return e.Guild is null 
-                ? Task.CompletedTask 
+            return e.Guild is null
+                ? Task.CompletedTask
                 : bot.Services.GetRequiredService<BackupService>().BackupAsync(e.Message);
         }
 
