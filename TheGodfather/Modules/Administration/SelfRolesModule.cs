@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
 
             await this.Service.ClearAsync(ctx.Guild.Id);
             await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-sr-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "str-sr-clear");
+            await ctx.InfoAsync(this.ModuleColor, "evt-sr-clear");
         }
         #endregion
 

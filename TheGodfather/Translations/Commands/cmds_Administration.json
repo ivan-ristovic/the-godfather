@@ -21,6 +21,29 @@
   "automaticroles list": {
     "usage": [ [] ]
   },
+  "levelroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "levelroles add": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "levelroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ],
+      [ "arg-five", "arg-ten" ]
+    ]
+  },
+  "levelroles deleteall": {
+    "usage": [ [] ]
+  },
+  "levelroles list": {
+    "usage": [ [] ]
+  },
   "channel": {
     "usage": [
       [],

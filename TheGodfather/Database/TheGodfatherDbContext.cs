@@ -7,6 +7,7 @@ namespace TheGodfather.Database
 {
     public class TheGodfatherDbContext : DbContext
     {
+        #region db sets
         public virtual DbSet<AutoRole> AutoRoles { get; protected set; }
         public virtual DbSet<BankAccount> BankAccounts { get; protected set; }
         public virtual DbSet<Birthday> Birthdays { get; protected set; }
@@ -28,6 +29,7 @@ namespace TheGodfather.Database
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
         public virtual DbSet<GuildTask> GuildTasks { get; protected set; }
+        public virtual DbSet<LevelRole> LevelRoles { get; protected set; }
         public virtual DbSet<Meme> Memes { get; protected set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; protected set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; protected set; }
@@ -40,7 +42,7 @@ namespace TheGodfather.Database
         public virtual DbSet<TextReaction> TextReactions { get; protected set; }
         public virtual DbSet<XpCount> XpCounts { get; protected set; }
         public virtual DbSet<XpRank> XpRanks { get; protected set; }
-
+        #endregion
 
         private DbProvider Provider { get; }
         private string ConnectionString { get; }
@@ -146,6 +148,7 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.SuggestionsEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeChannelIdDb).HasDefaultValue(0);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
+            mb.Entity<LevelRole>().HasKey(lr => new { lr.GuildIdDb, lr.Rank });
             mb.Entity<Meme>().HasKey(m => new { m.GuildIdDb, m.Name });
             mb.Entity<PurchasedItem>().HasKey(i => new { i.ItemId, i.UserIdDb });
             mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
