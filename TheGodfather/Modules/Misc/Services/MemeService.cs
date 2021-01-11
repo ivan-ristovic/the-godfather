@@ -31,6 +31,6 @@ namespace TheGodfather.Modules.Misc.Services
             => entity.GuildId;
 
         public override object[] EntityPrimaryKeySelector(ulong grid, string name)
-            => new object[] { grid, name };
+            => new object[] { (long)grid, name };
     }
 }
