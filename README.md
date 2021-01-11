@@ -15,10 +15,10 @@ Just another general-purpose Discord bot developed with the goal to remove all o
 > *TheGodfather is powered by the community that uses it - I do not have any financial gain from it. For that reason, the bot is meant to be self-hosted, but that might change in future if there are enough contributions from the community.*
 
 Features:
-  - Categorized and intuitive command group system.
-  - Complete administration of the guild, channels, users, emojis, roles, integrations etc. via categorized commands.
+  - Categorized and intuitive command group system with over 500 commands.
+  - Complete administration of guilds, channels, users, emojis, roles, integrations etc. via categorized commands.
   - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
-  - Eases your pain with auto-assignable roles and self-assignable roles.
+  - Eases your pain with auto-assignable roles, self-assignable roles and roles granted upon reaching a certain level.
   - Real-time guild backup with exemptions of specified channels.
   - Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
   - Message filtering either by raw string matching or regular expression matching, automatic gore websites filter, IP logging websites filter, invite filter, etc.

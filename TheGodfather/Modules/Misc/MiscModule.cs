@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Misc
                 str2 = "Linux";
 
             string interjection = 
-                $"I'd just like to interject for moment. What you're refering to as {str2}, " +
+                $"I'd just like to interject for a moment. What you're refering to as {str2}, " +
                 $"is in fact, {str1}/{str2}, or as I've recently taken to calling it, {str1} plus {str2}. " +
                 $"{str2} is not an operating system unto itself, but rather another free component of a fully " +
                 $"functioning {str1} system made useful by the {str1} corelibs, shell utilities and vital " +
