@@ -11,19 +11,19 @@
 
 **Overload 2:**
 
-`[time span]` : *Time for the poll to run*
+[`time span`]: *Time for the poll to run*
 
-`[string...]` : *Poll question*
+[`string...`]: *Poll question*
 
 **Overload 1:**
 
-`[string]` : *Poll question*
+[`string`]: *Poll question*
 
-`[time span]` : *Time for the poll to run*
+[`time span`]: *Time for the poll to run*
 
 **Overload 0:**
 
-`[string...]` : *Poll question*
+[`string...`]: *Poll question*
 
 **Examples:**
 
@@ -65,19 +65,19 @@
 
 **Overload 2:**
 
-`[time span]` : *Time for the poll to run*
+[`time span`]: *Time for the poll to run*
 
-`[string...]` : *Poll question*
+[`string...`]: *Poll question*
 
 **Overload 1:**
 
-`[string]` : *Poll question*
+[`string`]: *Poll question*
 
-`[time span]` : *Time for the poll to run*
+[`time span`]: *Time for the poll to run*
 
 **Overload 0:**
 
-`[string...]` : *Poll question*
+[`string...`]: *Poll question*
 
 **Examples:**
 
@@ -119,7 +119,7 @@
 
 **Arguments:**
 
-`[int]` : *Option to vote for*
+[`int`]: *Option to vote for*
 
 **Examples:**
 

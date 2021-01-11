@@ -17,15 +17,15 @@
 
 **Overload 1:**
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
-`[string...]` : *Reaction triggers*
+[`string...`]: *Reaction triggers*
 
 **Overload 0:**
 
-`[string]` : *Reaction triggers*
+[`string`]: *Reaction triggers*
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
 **Examples:**
 
@@ -52,15 +52,15 @@
 
 **Overload 1:**
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
-`[string...]` : *Reaction triggers*
+[`string...`]: *Reaction triggers*
 
 **Overload 0:**
 
-`[string]` : *Reaction triggers*
+[`string`]: *Reaction triggers*
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
 **Examples:**
 
@@ -86,15 +86,15 @@
 
 **Overload 1:**
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
-`[string...]` : *Reaction triggers*
+[`string...`]: *Reaction triggers*
 
 **Overload 0:**
 
-`[string]` : *Reaction triggers*
+[`string`]: *Reaction triggers*
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
 **Examples:**
 
@@ -120,15 +120,15 @@
 
 **Overload 2:**
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
 **Overload 1:**
 
-`[int...]` : *Reaction IDs to remove*
+[`int...`]: *Reaction IDs to remove*
 
 **Overload 0:**
 
-`[string...]` : *Reaction triggers*
+[`string...`]: *Reaction triggers*
 
 **Examples:**
 
@@ -179,7 +179,7 @@
 
 **Arguments:**
 
-`[string...]` : *Reaction trigger*
+[`string...`]: *Reaction trigger*
 
 **Examples:**
 
@@ -226,9 +226,9 @@
 
 **Overload 0:**
 
-`[string]` : *Reaction trigger*
+[`string`]: *Reaction trigger*
 
-`[string...]` : *Response*
+[`string...`]: *Response*
 
 **Examples:**
 
@@ -254,9 +254,9 @@
 
 **Arguments:**
 
-`[string]` : *Reaction trigger*
+[`string`]: *Reaction trigger*
 
-`[string...]` : *Response*
+[`string...`]: *Response*
 
 **Examples:**
 
@@ -281,9 +281,9 @@
 
 **Arguments:**
 
-`[string]` : *Reaction trigger*
+[`string`]: *Reaction trigger*
 
-`[string...]` : *Response*
+[`string...`]: *Response*
 
 **Examples:**
 
@@ -308,11 +308,11 @@
 
 **Overload 1:**
 
-`[int...]` : *Reaction IDs to remove*
+[`int...`]: *Reaction IDs to remove*
 
 **Overload 0:**
 
-`[string...]` : *Reaction triggers*
+[`string...`]: *Reaction triggers*
 
 **Examples:**
 
@@ -359,7 +359,7 @@
 
 **Arguments:**
 
-`[string...]` : *Reaction trigger*
+[`string...`]: *Reaction trigger*
 
 **Examples:**
 

@@ -13,7 +13,7 @@
 
 **Arguments:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Examples:**
 
@@ -36,7 +36,7 @@
 
 **Arguments:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Examples:**
 
@@ -59,7 +59,7 @@
 
 **Overload 1:**
 
-`[string]` : *New currency*
+[`string`]: *New currency*
 
 **Examples:**
 
@@ -85,15 +85,15 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[long]` : *Amount*
+[`long`]: *Amount*
 
 **Overload 0:**
 
-`[long]` : *Amount*
+[`long`]: *Amount*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -170,15 +170,15 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[long]` : *Amount*
+[`long`]: *Amount*
 
 **Overload 0:**
 
-`[long]` : *Amount*
+[`long`]: *Amount*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -204,13 +204,13 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[boolean]` : *Globally?* (def: `False`)
+(optional) [`boolean`]: *Globally?* (def: `False`)
 
 **Overload 0:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -247,7 +247,7 @@
 `bj`
 **Arguments:**
 
-(optional) `[int]` : *Bid amount* (def: `5`)
+(optional) [`int`]: *Bid amount* (def: `5`)
 
 **Examples:**
 
@@ -267,7 +267,7 @@
 `+, compete, enter, j, <<, <`
 **Arguments:**
 
-(optional) `[int]` : *Bid amount* (def: `5`)
+(optional) [`int`]: *Bid amount* (def: `5`)
 
 **Examples:**
 
@@ -303,7 +303,7 @@
 `poker, texasholdem, texas`
 **Arguments:**
 
-(optional) `[int]` : *Total balance for each user* (def: `1000`)
+(optional) [`int`]: *Total balance for each user* (def: `1000`)
 
 **Examples:**
 
@@ -355,7 +355,7 @@
 `lotto, bingo`
 **Arguments:**
 
-`[int...]` : *3 numbers*
+[`int...`]: *3 numbers*
 
 **Examples:**
 
@@ -375,7 +375,7 @@
 `+, compete, enter, j, <<, <`
 **Arguments:**
 
-`[int...]` : *3 numbers*
+[`int...`]: *3 numbers*
 
 **Examples:**
 
@@ -411,11 +411,11 @@
 `slotmachine`
 **Overload 1:**
 
-(optional) `[long]` : *Bid* (def: `5`)
+(optional) [`long`]: *Bid* (def: `5`)
 
 **Overload 0:**
 
-`[string...]` : *Bid*
+[`string...`]: *Bid*
 
 **Examples:**
 
@@ -435,11 +435,11 @@
 `wof`
 **Overload 1:**
 
-(optional) `[long]` : *Bid* (def: `5`)
+(optional) [`long`]: *Bid* (def: `5`)
 
 **Overload 0:**
 
-`[string...]` : *Bid*
+[`string...`]: *Bid*
 
 **Examples:**
 
@@ -474,15 +474,15 @@
 
 **Overload 1:**
 
-`[long]` : *Bid amount*
+[`long`]: *Bid amount*
 
-`[string]` : *Heads/Tails*
+[`string`]: *Heads/Tails*
 
 **Overload 0:**
 
-`[string]` : *Heads/Tails*
+[`string`]: *Heads/Tails*
 
-(optional) `[long]` : *Bid amount* (def: `5`)
+(optional) [`long`]: *Bid amount* (def: `5`)
 
 **Examples:**
 
@@ -505,9 +505,9 @@
 
 **Arguments:**
 
-`[long]` : *Bid amount*
+[`int`]: *Dice outcome (1-6)*
 
-(optional) `[int]` : *Dice outcome (1-6)* (def: `5`)
+(optional) [`long`]: *Bid amount* (def: `5`)
 
 **Examples:**
 
@@ -550,15 +550,15 @@
 
 **Overload 1:**
 
-`[long]` : *Item price*
+[`long`]: *Item price*
 
-`[string...]` : *Item name*
+[`string...`]: *Item name*
 
 **Overload 0:**
 
-`[string]` : *Item name*
+[`string`]: *Item name*
 
-`[long]` : *Item price*
+[`long`]: *Item price*
 
 **Examples:**
 
@@ -581,11 +581,11 @@
 
 **Overload 1:**
 
-`[int...]` : *Item IDs*
+[`int...`]: *Item IDs*
 
 **Overload 1:**
 
-`[string]` : *Item name*
+[`string`]: *Item name*
 
 **Examples:**
 
@@ -611,7 +611,7 @@
 
 **Arguments:**
 
-`[int...]` : *Item IDs to remove*
+[`int...`]: *Item IDs to remove*
 
 **Examples:**
 
@@ -673,7 +673,7 @@
 
 **Arguments:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Examples:**
 
@@ -696,7 +696,7 @@
 
 **Arguments:**
 
-`[int...]` : *Item IDs*
+[`int...`]: *Item IDs*
 
 **Examples:**
 

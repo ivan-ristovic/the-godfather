@@ -11,7 +11,7 @@
 `giphy`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -47,7 +47,7 @@
 `t, tr, trend`
 **Arguments:**
 
-(optional) `[int]` : *Number of results* (def: `5`)
+(optional) [`int`]: *Number of results* (def: `5`)
 
 **Examples:**
 
@@ -68,7 +68,7 @@
 `gr`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -89,7 +89,7 @@
 `books, b`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -110,7 +110,7 @@
 `movies, series, serie, movie, film, cinema, omdb`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -128,7 +128,7 @@
 
 **Arguments:**
 
-`[string]` : *ID*
+[`string`]: *ID*
 
 **Examples:**
 
@@ -148,7 +148,7 @@
 `s, find`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -168,7 +168,7 @@
 `t, name, n`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -188,15 +188,15 @@
 `img, im, i`
 **Overload 1:**
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
-(optional) `[int]` : *Number of results* (def: `1`)
+(optional) [`int`]: *Number of results* (def: `1`)
 
 **Examples:**
 
@@ -217,15 +217,15 @@
 `l, new, newest`
 **Overload 1:**
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
 **Examples:**
 
@@ -246,33 +246,33 @@
 `t`
 **Overload 3:**
 
-`[TimeWindow]` : *Time window (day/month/week/year/all)*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit*
+[`string...`]: *Subreddit*
 
 **Overload 2:**
 
-`[TimeWindow]` : *Time window (day/month/week/year/all)*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
-(optional) `[int]` : *Number of results* (def: `1`)
+(optional) [`int`]: *Number of results* (def: `1`)
 
 **Overload 1:**
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
-`[TimeWindow]` : *Time window (day/month/week/year/all)*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[string...]` : *Subreddit*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[int]` : *Number of results*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit*
+[`string...`]: *Subreddit*
 
 **Examples:**
 
@@ -310,7 +310,7 @@
 `s`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -346,7 +346,7 @@
 `r`
 **Arguments:**
 
-(optional) `[string]` : *Subreddit* (def: `all`)
+(optional) [`string`]: *Subreddit* (def: `all`)
 
 **Examples:**
 
@@ -367,7 +367,7 @@
 `c`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -387,7 +387,7 @@
 `g`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -407,7 +407,7 @@
 `h`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -427,7 +427,7 @@
 `n, newest, latest`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -447,7 +447,7 @@
 `r`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -472,9 +472,9 @@
 
 **Arguments:**
 
-`[channel]` : *Channel*
+[`channel`]: *Channel*
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -495,7 +495,7 @@
 `t`
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -520,7 +520,7 @@
 
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -540,11 +540,11 @@
 `s, st`
 **Overload 1:**
 
-`[unsigned long]` : *ID*
+[`unsigned long`]: *ID*
 
 **Overload 0:**
 
-`[string...]` : *Username*
+[`string...`]: *Username*
 
 **Examples:**
 
@@ -565,11 +565,11 @@
 `g, gm, store`
 **Overload 1:**
 
-`[unsigned int]` : *ID*
+[`unsigned int`]: *ID*
 
 **Overload 0:**
 
-`[string...]` : *Game name*
+[`string...`]: *Game name*
 
 **Examples:**
 
@@ -590,11 +590,11 @@
 `id, user, info`
 **Overload 1:**
 
-`[unsigned long]` : *ID*
+[`unsigned long`]: *ID*
 
 **Overload 0:**
 
-`[string...]` : *Username*
+[`string...`]: *Username*
 
 **Examples:**
 
@@ -615,7 +615,7 @@
 `stickers`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -651,7 +651,7 @@
 `t, tr, trend`
 **Arguments:**
 
-(optional) `[int]` : *Number of results* (def: `5`)
+(optional) [`int`]: *Number of results* (def: `5`)
 
 **Examples:**
 
@@ -672,7 +672,7 @@
 `ud, urban, urbandictionary`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -692,7 +692,7 @@
 `w`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -712,13 +712,13 @@
 `f`
 **Overload 1:**
 
-`[int]` : *Amount of days*
+[`int`]: *Amount of days*
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Overload 0:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -738,7 +738,7 @@
 `wiki`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -758,7 +758,7 @@
 `s, find`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -778,7 +778,7 @@
 `x`
 **Overload 1:**
 
-`[int]` : *ID*
+[`int`]: *ID*
 
 **Examples:**
 
@@ -796,7 +796,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *ID* (def: `None`)
+(optional) [`int`]: *ID* (def: `None`)
 
 **Examples:**
 
@@ -848,7 +848,7 @@
 `y, yt, ytube`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -868,9 +868,9 @@
 `s`
 **Arguments:**
 
-`[int]` : *Amount of results to fetch*
+[`int`]: *Amount of results to fetch*
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -890,7 +890,7 @@
 `searchchannels, sc, searchc, channel`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -910,7 +910,7 @@
 `searchplaylists, sp, searchp, playlist`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -930,7 +930,7 @@
 `searchvideos, sv, searchv, video`
 **Arguments:**
 
-`[string...]` : *Query*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -953,47 +953,47 @@
 
 **Overload 5:**
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-`[URL]` : *YouTube channel/video URL*
+[`URL`]: *YouTube channel/video URL*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 4:**
 
-`[URL]` : *YouTube channel/video URL*
+[`URL`]: *YouTube channel/video URL*
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 3:**
 
-`[string]` : *YouTube username or channel ID*
+[`string`]: *YouTube username or channel ID*
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 2:**
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-`[string]` : *YouTube username or channel ID*
+[`string`]: *YouTube username or channel ID*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 1:**
 
-`[string]` : *YouTube username or channel ID*
+[`string`]: *YouTube username or channel ID*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 0:**
 
-`[URL]` : *YouTube username or channel ID*
+[`URL`]: *YouTube username or channel ID*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Examples:**
 
@@ -1018,7 +1018,7 @@
 
 **Arguments:**
 
-`[string]` : *YouTube channel URL or friendly name*
+[`string`]: *YouTube channel URL or friendly name*
 
 **Examples:**
 

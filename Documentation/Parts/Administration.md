@@ -18,7 +18,7 @@
 
 **Overload 0:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -44,7 +44,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -69,7 +69,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to remove*
+[`role...`]: *Roles to remove*
 
 **Examples:**
 
@@ -136,7 +136,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel to view* (def: `None`)
+(optional) [`channel`]: *Channel to view* (def: `None`)
 
 **Examples:**
 
@@ -178,7 +178,7 @@
 
 **Arguments:**
 
-`[string...]` : *Category name*
+[`string...`]: *Category name*
 
 **Examples:**
 
@@ -203,27 +203,27 @@
 
 **Overload 2:**
 
-`[string]` : *Channel name*
+[`string`]: *Channel name*
 
-(optional) `[channel]` : *Parent category* (def: `None`)
+(optional) [`channel`]: *Parent category* (def: `None`)
 
-(optional) `[boolean]` : *NSFW?* (def: `False`)
+(optional) [`boolean`]: *NSFW?* (def: `False`)
 
 **Overload 1:**
 
-`[string]` : *Channel name*
+[`string`]: *Channel name*
 
-(optional) `[boolean]` : *NSFW?* (def: `False`)
+(optional) [`boolean`]: *NSFW?* (def: `False`)
 
-(optional) `[channel]` : *Parent category* (def: `None`)
+(optional) [`channel`]: *Parent category* (def: `None`)
 
 **Overload 0:**
 
-`[channel]` : *Parent category*
+[`channel`]: *Parent category*
 
-`[string]` : *Channel name*
+[`string`]: *Channel name*
 
-(optional) `[boolean]` : *NSFW?* (def: `False`)
+(optional) [`boolean`]: *NSFW?* (def: `False`)
 
 **Examples:**
 
@@ -253,33 +253,33 @@
 
 **Overload 2:**
 
-`[string]` : *Voice channel name*
+[`string`]: *Voice channel name*
 
-(optional) `[channel]` : *Parent category* (def: `None`)
+(optional) [`channel`]: *Parent category* (def: `None`)
 
-(optional) `[int]` : *User limit* (def: `None`)
+(optional) [`int`]: *User limit* (def: `None`)
 
-(optional) `[int]` : *Channel bitrate [8-128]* (def: `None`)
+(optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
 
 **Overload 1:**
 
-`[string]` : *Voice channel name*
+[`string`]: *Voice channel name*
 
-(optional) `[int]` : *User limit* (def: `None`)
+(optional) [`int`]: *User limit* (def: `None`)
 
-(optional) `[int]` : *Channel bitrate [8-128]* (def: `None`)
+(optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
 
-(optional) `[channel]` : *Parent category* (def: `None`)
+(optional) [`channel`]: *Parent category* (def: `None`)
 
 **Overload 0:**
 
-`[channel]` : *Parent category*
+[`channel`]: *Parent category*
 
-`[string]` : *Voice channel name*
+[`string`]: *Voice channel name*
 
-(optional) `[int]` : *User limit* (def: `None`)
+(optional) [`int`]: *User limit* (def: `None`)
 
-(optional) `[int]` : *Channel bitrate [8-128]* (def: `None`)
+(optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
 
 **Examples:**
 
@@ -309,13 +309,13 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to clone*
+[`channel`]: *Channel to clone*
 
-(optional) `[string...]` : *Channel to clone* (def: `None`)
+(optional) [`string...`]: *Channel to clone* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[string...]` : *Channel to clone* (def: `None`)
+(optional) [`string...`]: *Channel to clone* (def: `None`)
 
 **Examples:**
 
@@ -343,13 +343,13 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to delete*
+[`channel`]: *Channel to delete*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[string...]` : *Reason for the action*
+[`string...`]: *Reason for the action*
 
 **Examples:**
 
@@ -376,7 +376,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel to view* (def: `None`)
+(optional) [`channel`]: *Channel to view* (def: `None`)
 
 **Examples:**
 
@@ -420,19 +420,19 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Bitrate*
+[`int`]: *Bitrate*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Bitrate*
+[`int`]: *Bitrate*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -458,29 +458,29 @@
 
 **Overload 3:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Name*
+[`string...`]: *Name*
 
 **Overload 1:**
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[string...]` : *Reason for the action*
+[`string...`]: *Reason for the action*
 
 **Examples:**
 
@@ -506,25 +506,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[boolean]` : *Name*
+[`boolean`]: *Name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[boolean]` : *Name*
+[`boolean`]: *Name*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[boolean]` : *Reason for the action*
+[`boolean`]: *Reason for the action*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -551,13 +551,13 @@
 
 **Overload 1:**
 
-`[channel...]` : *Channels to reorganize, including exactly one category to set as the parent*
+[`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
 
 **Overload 0:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[channel...]` : *Channels to reorganize, including exactly one category to set as the parent*
+[`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
 
 **Examples:**
 
@@ -582,25 +582,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -626,25 +626,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -670,21 +670,21 @@
 
 **Overload 2:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Overload 0:**
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Examples:**
 
@@ -711,19 +711,19 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *User limit*
+[`int`]: *User limit*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *User limit*
+[`int`]: *User limit*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -749,19 +749,19 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Bitrate*
+[`int`]: *Bitrate*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Bitrate*
+[`int`]: *Bitrate*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -787,29 +787,29 @@
 
 **Overload 3:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Name*
+[`string...`]: *Name*
 
 **Overload 0:**
 
-`[string...]` : *Reason for the action*
+[`string...`]: *Reason for the action*
 
 **Examples:**
 
@@ -837,25 +837,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[boolean]` : *Name*
+[`boolean`]: *Name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[boolean]` : *Name*
+[`boolean`]: *Name*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[boolean]` : *Reason for the action*
+[`boolean`]: *Reason for the action*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -882,13 +882,13 @@
 
 **Overload 1:**
 
-`[channel...]` : *Channels to reorganize, including exactly one category to set as the parent*
+[`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
 
 **Overload 0:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[channel...]` : *Channels to reorganize, including exactly one category to set as the parent*
+[`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
 
 **Examples:**
 
@@ -913,25 +913,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Position*
+[`int`]: *Position*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -957,25 +957,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+[`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -1001,21 +1001,21 @@
 
 **Overload 2:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Overload 0:**
 
-`[string...]` : *Channel topic*
+[`string...`]: *Channel topic*
 
 **Examples:**
 
@@ -1042,19 +1042,19 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[int]` : *User limit*
+[`int`]: *User limit*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *User limit*
+[`int`]: *User limit*
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -1083,27 +1083,27 @@
 
 **Overload 3:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
-(optional) `[channel]` : *Channel to modify* (def: `None`)
+(optional) [`channel`]: *Channel to modify* (def: `None`)
 
 **Overload 2:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 1:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[channel]` : *Channel to modify* (def: `None`)
+(optional) [`channel`]: *Channel to modify* (def: `None`)
 
 **Overload 0:**
 
-`[channel]` : *Channel to modify*
+[`channel`]: *Channel to modify*
 
-`[role]` : *Role*
+[`role`]: *Role*
 
 **Examples:**
 
@@ -1129,11 +1129,11 @@
 
 **Overload 1:**
 
-`[string...]` : *Command/Group full name*
+[`string...`]: *Command/Group full name*
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel in which to search for active rules* (def: `None`)
+(optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
 
 **Examples:**
 
@@ -1160,15 +1160,15 @@
 
 **Overload 1:**
 
-`[string]` : *Command or group to allow*
+[`string`]: *Command or group to allow*
 
-`[channel...]` : *Channel(s) affected by this action*
+[`channel...`]: *Channel(s) affected by this action*
 
 **Overload 0:**
 
-`[channel]` : *Channel(s) affected by this action*
+[`channel`]: *Channel(s) affected by this action*
 
-`[string]` : *Command or group to allow*
+[`string`]: *Command or group to allow*
 
 **Examples:**
 
@@ -1216,15 +1216,15 @@
 
 **Overload 0:**
 
-`[string]` : *Command or group to forbid*
+[`string`]: *Command or group to forbid*
 
-`[channel...]` : *Channel(s) affected by this action*
+[`channel...`]: *Channel(s) affected by this action*
 
 **Overload 0:**
 
-`[channel]` : *Channel(s) affected by this action*
+[`channel`]: *Channel(s) affected by this action*
 
-`[string]` : *Command or group to forbid*
+[`string`]: *Command or group to forbid*
 
 **Examples:**
 
@@ -1251,11 +1251,11 @@
 
 **Overload 1:**
 
-`[string...]` : *Command/Group full name*
+[`string...`]: *Command/Group full name*
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel in which to search for active rules* (def: `None`)
+(optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
 
 **Examples:**
 
@@ -1303,47 +1303,47 @@
 
 **Overload 5:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[short]` : *Sensitivity*
+[`short`]: *Sensitivity*
 
-(optional) `[PunishmentAction]` : *Punishment action* (def: `Kick`)
+(optional) [`PunishmentAction`]: *Punishment action* (def: `Kick`)
 
-(optional) `[time span]` : *Cooldown timespan* (def: `None`)
+(optional) [`time span`]: *Cooldown timespan* (def: `None`)
 
 **Overload 4:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[PunishmentAction]` : *Punishment action*
+[`PunishmentAction`]: *Punishment action*
 
-(optional) `[short]` : *Sensitivity* (def: `5`)
+(optional) [`short`]: *Sensitivity* (def: `5`)
 
-(optional) `[time span]` : *Cooldown timespan* (def: `None`)
+(optional) [`time span`]: *Cooldown timespan* (def: `None`)
 
 **Overload 3:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[PunishmentAction]` : *Punishment action*
+[`PunishmentAction`]: *Punishment action*
 
-(optional) `[time span]` : *Cooldown timespan* (def: `None`)
+(optional) [`time span`]: *Cooldown timespan* (def: `None`)
 
-(optional) `[short]` : *Sensitivity* (def: `5`)
+(optional) [`short`]: *Sensitivity* (def: `5`)
 
 **Overload 2:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[time span]` : *Cooldown timespan*
+[`time span`]: *Cooldown timespan*
 
-(optional) `[PunishmentAction]` : *Punishment action* (def: `Kick`)
+(optional) [`PunishmentAction`]: *Punishment action* (def: `Kick`)
 
-(optional) `[short]` : *Sensitivity* (def: `5`)
+(optional) [`short`]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1372,7 +1372,7 @@
 
 **Arguments:**
 
-(optional) `[Nullable`1]` : *Punishment action* (def: `None`)
+(optional) [`Nullable`1`]: *Punishment action* (def: `None`)
 
 **Examples:**
 
@@ -1398,7 +1398,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Cooldown timespan* (def: `None`)
+(optional) [`time span`]: *Cooldown timespan* (def: `None`)
 
 **Examples:**
 
@@ -1445,7 +1445,7 @@
 
 **Arguments:**
 
-(optional) `[short]` : *Sensitivity* (def: `None`)
+(optional) [`short`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -1471,23 +1471,23 @@
 
 **Overload 3:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[short]` : *Sensitivity*
+[`short`]: *Sensitivity*
 
-(optional) `[PunishmentAction]` : *Punishment action* (def: `TemporaryMute`)
+(optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
 
 **Overload 2:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[PunishmentAction]` : *Punishment action*
+[`PunishmentAction`]: *Punishment action*
 
-(optional) `[short]` : *Sensitivity* (def: `5`)
+(optional) [`short`]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1515,7 +1515,7 @@
 
 **Arguments:**
 
-(optional) `[Nullable`1]` : *Punishment action* (def: `None`)
+(optional) [`Nullable`1`]: *Punishment action* (def: `None`)
 
 **Examples:**
 
@@ -1541,15 +1541,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to exempt*
+[`member...`]: *User(s) to exempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to exempt*
+[`role...`]: *Role(s) to exempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to exempt*
+[`channel...`]: *Channel(s) to exempt*
 
 **Examples:**
 
@@ -1597,7 +1597,7 @@
 
 **Arguments:**
 
-(optional) `[short]` : *Sensitivity* (def: `None`)
+(optional) [`short`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -1623,15 +1623,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to unexempt*
+[`member...`]: *User(s) to unexempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to unexempt*
+[`role...`]: *Role(s) to unexempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to unexempt*
+[`channel...`]: *Channel(s) to unexempt*
 
 **Examples:**
 
@@ -1658,7 +1658,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1705,7 +1705,7 @@
 
 **Arguments:**
 
-`[channel...]` : *Channel(s) to exempt*
+[`channel...`]: *Channel(s) to exempt*
 
 **Examples:**
 
@@ -1730,7 +1730,7 @@
 
 **Arguments:**
 
-`[channel...]` : *Channel(s) to unexempt*
+[`channel...`]: *Channel(s) to unexempt*
 
 **Examples:**
 
@@ -1755,7 +1755,7 @@
 
 **Overload 1:**
 
-`[string]` : *New currency*
+[`string`]: *New currency*
 
 **Examples:**
 
@@ -1782,13 +1782,13 @@
 
 **Overload 2:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[short]` : *Sensitivity*
+[`short`]: *Sensitivity*
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1815,7 +1815,7 @@
 
 **Arguments:**
 
-(optional) `[short]` : *Sensitivity* (def: `None`)
+(optional) [`short`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -1862,9 +1862,9 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable leave messages?*
+[`boolean`]: *Enable leave messages?*
 
-(optional) `[channel]` : *Channel where to send leave messages* (def: `None`)
+(optional) [`channel`]: *Channel where to send leave messages* (def: `None`)
 
 **Examples:**
 
@@ -1890,7 +1890,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel where to send leave messages* (def: `None`)
+(optional) [`channel`]: *Channel where to send leave messages* (def: `None`)
 
 **Examples:**
 
@@ -1915,7 +1915,7 @@
 
 **Arguments:**
 
-`[string...]` : *Leave message*
+[`string...`]: *Leave message*
 
 **Examples:**
 
@@ -1940,7 +1940,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1965,7 +1965,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -1990,7 +1990,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2015,7 +2015,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2040,7 +2040,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2065,7 +2065,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2090,7 +2090,7 @@
 
 **Overload 1:**
 
-`[string]` : *New locale*
+[`string`]: *New locale*
 
 **Examples:**
 
@@ -2137,7 +2137,7 @@
 
 **Arguments:**
 
-`[string]` : *New locale*
+[`string`]: *New locale*
 
 **Examples:**
 
@@ -2162,17 +2162,17 @@
 
 **Overload 3:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[channel]` : *New locale*
+[`channel`]: *New locale*
 
 **Overload 2:**
 
-`[channel]` : *New locale*
+[`channel`]: *New locale*
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2199,15 +2199,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to exempt*
+[`member...`]: *User(s) to exempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to exempt*
+[`role...`]: *Role(s) to exempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to exempt*
+[`channel...`]: *Channel(s) to exempt*
 
 **Examples:**
 
@@ -2234,15 +2234,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to unexempt*
+[`member...`]: *User(s) to unexempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to unexempt*
+[`role...`]: *Role(s) to unexempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to unexempt*
+[`channel...`]: *Channel(s) to unexempt*
 
 **Examples:**
 
@@ -2269,7 +2269,7 @@
 
 **Arguments:**
 
-(optional) `[role]` : *New mute role* (def: `None`)
+(optional) [`role`]: *New mute role* (def: `None`)
 
 **Examples:**
 
@@ -2295,23 +2295,23 @@
 
 **Overload 3:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[short]` : *Sensitivity*
+[`short`]: *Sensitivity*
 
-(optional) `[PunishmentAction]` : *Punishment action* (def: `TemporaryMute`)
+(optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
 
 **Overload 2:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[PunishmentAction]` : *Punishment action*
+[`PunishmentAction`]: *Punishment action*
 
-(optional) `[short]` : *Sensitivity* (def: `5`)
+(optional) [`short`]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
 **Examples:**
 
@@ -2339,7 +2339,7 @@
 
 **Arguments:**
 
-(optional) `[Nullable`1]` : *Punishment action* (def: `None`)
+(optional) [`Nullable`1`]: *Punishment action* (def: `None`)
 
 **Examples:**
 
@@ -2365,15 +2365,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to exempt*
+[`member...`]: *User(s) to exempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to exempt*
+[`role...`]: *Role(s) to exempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to exempt*
+[`channel...`]: *Channel(s) to exempt*
 
 **Examples:**
 
@@ -2421,7 +2421,7 @@
 
 **Arguments:**
 
-(optional) `[short]` : *Sensitivity* (def: `None`)
+(optional) [`short`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -2447,15 +2447,15 @@
 
 **Overload 2:**
 
-`[member...]` : *User(s) to unexempt*
+[`member...`]: *User(s) to unexempt*
 
 **Overload 1:**
 
-`[role...]` : *Role(s) to unexempt*
+[`role...`]: *Role(s) to unexempt*
 
 **Overload 0:**
 
-`[channel...]` : *Channel(s) to unexempt*
+[`channel...`]: *Channel(s) to unexempt*
 
 **Examples:**
 
@@ -2503,7 +2503,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel where to execute the setup* (def: `None`)
+(optional) [`channel`]: *Channel where to execute the setup* (def: `None`)
 
 **Examples:**
 
@@ -2529,7 +2529,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable silent replies?*
+[`boolean`]: *Enable silent replies?*
 
 **Examples:**
 
@@ -2555,7 +2555,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable command suggestions?*
+[`boolean`]: *Enable command suggestions?*
 
 **Examples:**
 
@@ -2581,7 +2581,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable verbose replies?*
+[`boolean`]: *Enable verbose replies?*
 
 **Examples:**
 
@@ -2607,9 +2607,9 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable welcome messages?*
+[`boolean`]: *Enable welcome messages?*
 
-(optional) `[channel]` : *Channel where to send welcome messages* (def: `None`)
+(optional) [`channel`]: *Channel where to send welcome messages* (def: `None`)
 
 **Examples:**
 
@@ -2635,7 +2635,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel where to send welcome messages* (def: `None`)
+(optional) [`channel`]: *Channel where to send welcome messages* (def: `None`)
 
 **Examples:**
 
@@ -2660,7 +2660,7 @@
 
 **Arguments:**
 
-`[string...]` : *Welcome message*
+[`string...`]: *Welcome message*
 
 **Examples:**
 
@@ -2685,7 +2685,7 @@
 
 **Overload 0:**
 
-`[emoji]` : *Emoji to view*
+[`emoji`]: *Emoji to view*
 
 **Examples:**
 
@@ -2712,27 +2712,27 @@
 
 **Overload 3:**
 
-`[string]` : *Name for the emoji*
+[`string`]: *Name for the emoji*
 
-(optional) `[URL]` : *Emoji URL* (def: `None`)
+(optional) [`URL`]: *Emoji URL* (def: `None`)
 
 **Overload 2:**
 
-`[URL]` : *Emoji URL*
+[`URL`]: *Emoji URL*
 
-`[string]` : *Name for the emoji*
+[`string`]: *Name for the emoji*
 
 **Overload 1:**
 
-`[string]` : *Name for the emoji*
+[`string`]: *Name for the emoji*
 
-`[emoji]` : *Emoji from another guild*
+[`emoji`]: *Emoji from another guild*
 
 **Overload 0:**
 
-`[emoji]` : *Emoji from another guild*
+[`emoji`]: *Emoji from another guild*
 
-(optional) `[string]` : *Name for the emoji* (def: `None`)
+(optional) [`string`]: *Name for the emoji* (def: `None`)
 
 **Examples:**
 
@@ -2758,9 +2758,9 @@
 
 **Arguments:**
 
-`[emoji]` : *Emoji to delete*
+[`emoji`]: *Emoji to delete*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -2786,7 +2786,7 @@
 
 **Arguments:**
 
-`[emoji]` : *Emoji to view*
+[`emoji`]: *Emoji to view*
 
 **Examples:**
 
@@ -2829,19 +2829,19 @@
 
 **Overload 1:**
 
-`[emoji]` : *Emoji to modify*
+[`emoji`]: *Emoji to modify*
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[string]` : *Name*
+[`string`]: *Name*
 
-`[emoji]` : *Emoji to modify*
+[`emoji`]: *Emoji to modify*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -2866,7 +2866,7 @@
 
 **Overload 0:**
 
-`[string...]` : *Filter patterns (regular expressions, case insensitive)*
+[`string...`]: *Filter patterns (regular expressions, case insensitive)*
 
 **Examples:**
 
@@ -2892,7 +2892,7 @@
 
 **Arguments:**
 
-`[string...]` : *Filter patterns (regular expressions, case insensitive)*
+[`string...`]: *Filter patterns (regular expressions, case insensitive)*
 
 **Examples:**
 
@@ -2917,11 +2917,11 @@
 
 **Overload 1:**
 
-`[int...]` : *IDs of filters to remove*
+[`int...`]: *IDs of filters to remove*
 
 **Overload 0:**
 
-`[string...]` : *Filters to remove*
+[`string...`]: *Filters to remove*
 
 **Examples:**
 
@@ -2992,7 +2992,7 @@
 
 **Overload 0:**
 
-`[string...]` : *Forbidden name patterns (regular expressions, case insensitive)*
+[`string...`]: *Forbidden name patterns (regular expressions, case insensitive)*
 
 **Examples:**
 
@@ -3021,7 +3021,7 @@
 
 **Arguments:**
 
-`[string...]` : *Forbidden name patterns (regular expressions, case insensitive)*
+[`string...`]: *Forbidden name patterns (regular expressions, case insensitive)*
 
 **Examples:**
 
@@ -3049,11 +3049,11 @@
 
 **Overload 1:**
 
-`[int...]` : *IDs of forbidden names to remove*
+[`int...`]: *IDs of forbidden names to remove*
 
 **Overload 0:**
 
-`[string...]` : *Forbidden names to remove*
+[`string...`]: *Forbidden names to remove*
 
 **Examples:**
 
@@ -3166,7 +3166,7 @@
 
 **Overload 1:**
 
-`[URL]` : *Icon URL*
+[`URL`]: *Icon URL*
 
 **Examples:**
 
@@ -3210,9 +3210,9 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Amount of log entries to fetch* (def: `10`)
+(optional) [`int`]: *Amount of log entries to fetch* (def: `10`)
 
-(optional) `[member]` : *Filter by member* (def: `None`)
+(optional) [`member`]: *Filter by member* (def: `None`)
 
 **Examples:**
 
@@ -3259,45 +3259,45 @@
 
 **Overload 6:**
 
-`[int]` : *Days of inactivity*
+[`int`]: *Days of inactivity*
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[role...]` : *Additional roles to prune*
+[`role...`]: *Additional roles to prune*
 
 **Overload 5:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[int]` : *Days of inactivity*
+[`int`]: *Days of inactivity*
 
-`[role...]` : *Additional roles to prune*
+[`role...`]: *Additional roles to prune*
 
 **Overload 4:**
 
-`[string]` : *Reason for the action*
+[`string`]: *Reason for the action*
 
-`[role...]` : *Additional roles to prune*
+[`role...`]: *Additional roles to prune*
 
 **Overload 3:**
 
-`[int]` : *Days of inactivity*
+[`int`]: *Days of inactivity*
 
-`[role...]` : *Additional roles to prune*
+[`role...`]: *Additional roles to prune*
 
 **Overload 2:**
 
-`[int]` : *Days of inactivity*
+[`int`]: *Days of inactivity*
 
-`[role]` : *Additional roles to prune*
+[`role`]: *Additional roles to prune*
 
-`[string...]` : *Reason for the action*
+[`string...`]: *Reason for the action*
 
 **Overload 1:**
 
-`[int]` : *Days of inactivity*
+[`int`]: *Days of inactivity*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3324,12 +3324,151 @@
 
 **Arguments:**
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Examples:**
 
 ```xml
 !guild rename SampleName
+```
+</p></details>
+
+---
+
+## Group: levelroles
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Level roles management. Level roles are granted to a member of the guild upon gaining a specified XP rank. Group call lists all level roles for the guild. Group call with an arbitrary amount of roles will add those roles to the level roles list for the guild, effective immediately.*
+
+**Aliases:**
+`lr, levelrole, lvlroles, levelrl, lvlrole, lvlr, lvlrl, lrole`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 2:**
+
+[`short`]: *Rank*
+
+[`role`]: *Role to grant*
+
+**Overload 1:**
+
+[`role`]: *Role to grant*
+
+[`short`]: *Rank*
+
+**Examples:**
+
+```xml
+!levelroles
+!levelroles @Role RoleName
+```
+</p></details>
+
+---
+
+### levelroles add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Registers given role as a level role for the specified rank.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`role`]: *Role to grant*
+
+[`short`]: *Rank*
+
+**Overload 0:**
+
+[`short`]: *Rank*
+
+[`role`]: *Role to grant*
+
+**Examples:**
+
+```xml
+!levelroles add @Role RoleName
+```
+</p></details>
+
+---
+
+### levelroles delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes given level role(s) by rank or role.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`role...`]: *Roles to remove*
+
+**Overload 1:**
+
+[`short...`]: *Ranks*
+
+**Examples:**
+
+```xml
+!levelroles delete @Role RoleName
+!levelroles delete 5 10
+```
+</p></details>
+
+---
+
+### levelroles deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all level roles.*
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!levelroles deleteall
+```
+</p></details>
+
+---
+
+### levelroles list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all level roles.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!levelroles list
 ```
 </p></details>
 
@@ -3358,7 +3497,7 @@
 
 **Arguments:**
 
-(optional) `[message]` : *Discord message* (def: `None`)
+(optional) [`message`]: *Discord message* (def: `None`)
 
 **Examples:**
 
@@ -3385,9 +3524,9 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Amount of messages to delete* (def: `1`)
+(optional) [`int`]: *Amount of messages to delete* (def: `1`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3415,11 +3554,11 @@
 
 **Arguments:**
 
-`[message]` : *Discord message*
+[`message`]: *Discord message*
 
-(optional) `[int]` : *Amount of messages to delete* (def: `1`)
+(optional) [`int`]: *Amount of messages to delete* (def: `1`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3445,11 +3584,11 @@
 
 **Arguments:**
 
-`[message]` : *Discord message*
+[`message`]: *Discord message*
 
-(optional) `[int]` : *Amount of messages to delete* (def: `1`)
+(optional) [`int`]: *Amount of messages to delete* (def: `1`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3475,19 +3614,19 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[int]` : *Amount of messages to delete* (def: `1`)
+(optional) [`int`]: *Amount of messages to delete* (def: `1`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Amount of messages to delete*
+[`int`]: *Amount of messages to delete*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3514,9 +3653,9 @@
 
 **Arguments:**
 
-(optional) `[message]` : *Discord message* (def: `None`)
+(optional) [`message`]: *Discord message* (def: `None`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3542,19 +3681,19 @@
 
 **Overload 1:**
 
-`[string]` : *Pattern (regular expression)*
+[`string`]: *Pattern (regular expression)*
 
-(optional) `[int]` : *Amount of messages to delete* (def: `5`)
+(optional) [`int`]: *Amount of messages to delete* (def: `5`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[int]` : *Amount of messages to delete*
+[`int`]: *Amount of messages to delete*
 
-`[string]` : *Pattern (regular expression)*
+[`string`]: *Pattern (regular expression)*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3581,9 +3720,9 @@
 
 **Arguments:**
 
-(optional) `[message]` : *Discord message* (def: `None`)
+(optional) [`message`]: *Discord message* (def: `None`)
 
-(optional) `[time span]` : *Voting timespan* (def: `None`)
+(optional) [`time span`]: *Voting timespan* (def: `None`)
 
 **Examples:**
 
@@ -3604,7 +3743,7 @@
 `lp, listpins, listpin, pinned`
 **Arguments:**
 
-(optional) `[channel]` : *Channel which pins to view* (def: `None`)
+(optional) [`channel`]: *Channel which pins to view* (def: `None`)
 
 **Examples:**
 
@@ -3628,7 +3767,7 @@
 
 **Arguments:**
 
-(optional) `[message]` : *Discord message* (def: `None`)
+(optional) [`message`]: *Discord message* (def: `None`)
 
 **Examples:**
 
@@ -3652,11 +3791,11 @@
 
 **Overload 1:**
 
-`[message]` : *Discord message*
+[`message`]: *Discord message*
 
 **Overload 0:**
 
-(optional) `[int]` : *Index (starting from 1)* (def: `1`)
+(optional) [`int`]: *Index (starting from 1)* (def: `1`)
 
 **Examples:**
 
@@ -3680,7 +3819,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel which pins to remove* (def: `None`)
+(optional) [`channel`]: *Channel which pins to remove* (def: `None`)
 
 **Examples:**
 
@@ -3703,7 +3842,7 @@
 
 **Overload 1:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
 **Examples:**
 
@@ -3729,25 +3868,25 @@
 
 **Overload 2:**
 
-`[string]` : *New name*
+[`string`]: *New name*
 
-(optional) `[color]` : *Color (hex or RGB)* (def: `None`)
+(optional) [`color`]: *Color (hex or RGB)* (def: `None`)
 
-(optional) `[boolean]` : *Hoisted (visible in online list)?* (def: `False`)
+(optional) [`boolean`]: *Hoisted (visible in online list)?* (def: `False`)
 
-(optional) `[boolean]` : *Mentionable?* (def: `False`)
+(optional) [`boolean`]: *Mentionable?* (def: `False`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[color]` : *Color (hex or RGB)*
+[`color`]: *Color (hex or RGB)*
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Overload 0:**
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Examples:**
 
@@ -3772,9 +3911,9 @@
 
 **Arguments:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3799,7 +3938,7 @@
 
 **Arguments:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
 **Examples:**
 
@@ -3846,7 +3985,7 @@
 
 **Arguments:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
 **Examples:**
 
@@ -3871,19 +4010,19 @@
 
 **Overload 1:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-`[color]` : *Color (hex or RGB)*
+[`color`]: *Color (hex or RGB)*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[color]` : *Color (hex or RGB)*
+[`color`]: *Color (hex or RGB)*
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3909,19 +4048,19 @@
 
 **Overload 1:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[boolean]` : *Mentionable?* (def: `True`)
+(optional) [`boolean`]: *Mentionable?* (def: `True`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[boolean]` : *Mentionable?*
+[`boolean`]: *Mentionable?*
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -3947,17 +4086,17 @@
 
 **Overload 1:**
 
-`[string]` : *New name*
+[`string`]: *New name*
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Examples:**
 
@@ -3983,19 +4122,19 @@
 
 **Overload 1:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[boolean]` : *Hoisted (visible in online list)?* (def: `True`)
+(optional) [`boolean`]: *Hoisted (visible in online list)?* (def: `True`)
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[boolean]` : *Hoisted (visible in online list)?*
+[`boolean`]: *Hoisted (visible in online list)?*
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4021,7 +4160,7 @@
 
 **Overload 0:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -4047,7 +4186,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -4072,7 +4211,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to remove*
+[`role...`]: *Roles to remove*
 
 **Examples:**
 
@@ -4134,11 +4273,11 @@
 `users, u, usr, member, mem`
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -4158,7 +4297,7 @@
 `a, pic, profilepic`
 **Arguments:**
 
-`[user]` : *User*
+[`user`]: *User*
 
 **Examples:**
 
@@ -4183,31 +4322,31 @@
 
 **Overload 3:**
 
-`[user]` : *User*
+[`user`]: *User*
 
-`[int]` : *Delete messages in past number of days*
+[`int`]: *Delete messages in past number of days*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[int]` : *Delete messages in past number of days*
+[`int`]: *Delete messages in past number of days*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[user]` : *Member*
+[`user`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4234,9 +4373,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4261,15 +4400,15 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Overload 0:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -4290,11 +4429,11 @@
 `i, information`
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -4319,9 +4458,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4346,9 +4485,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4373,9 +4512,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4400,9 +4539,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4427,9 +4566,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4454,15 +4593,15 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[role...]` : *Roles to remove*
+[`role...`]: *Roles to remove*
 
 **Overload 0:**
 
-`[role]` : *Role*
+[`role`]: *Role*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -4488,9 +4627,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *New name* (def: `None`)
+(optional) [`string...`]: *New name* (def: `None`)
 
 **Examples:**
 
@@ -4515,17 +4654,17 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-`[int]` : *Delete messages in past number of days*
+[`int`]: *Delete messages in past number of days*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4551,35 +4690,35 @@
 
 **Overload 3:**
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-`[user]` : *User*
+[`user`]: *User*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
 
-`[member]` : *User*
+[`member`]: *User*
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[user]` : *User*
+[`user`]: *User*
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4605,19 +4744,19 @@
 
 **Overload 1:**
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
-`[member]` : *User*
+[`member`]: *User*
 
-`[time span]` : *Time span*
+[`time span`]: *Time span*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4643,9 +4782,9 @@
 
 **Arguments:**
 
-`[user]` : *User*
+[`user`]: *User*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4670,9 +4809,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4697,9 +4836,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4724,9 +4863,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
@@ -4749,9 +4888,9 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
-(optional) `[string...]` : *Warning message* (def: `None`)
+(optional) [`string...`]: *Warning message* (def: `None`)
 
 **Examples:**
 
@@ -4777,7 +4916,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel whose webhooks to show* (def: `None`)
+(optional) [`channel`]: *Channel whose webhooks to show* (def: `None`)
 
 **Examples:**
 
@@ -4803,69 +4942,69 @@
 
 **Overload 7:**
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-`[channel]` : *Channel where to add the webhook*
+[`channel`]: *Channel where to add the webhook*
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 6:**
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-`[channel]` : *Channel where to add the webhook*
+[`channel`]: *Channel where to add the webhook*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 5:**
 
-`[channel]` : *Channel where to add the webhook*
+[`channel`]: *Channel where to add the webhook*
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 4:**
 
-`[channel]` : *Channel where to add the webhook*
+[`channel`]: *Channel where to add the webhook*
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 3:**
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-(optional) `[string...]` : *Reason for the action* (def: `None`)
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
-`[URL]` : *Avatar URL*
+[`URL`]: *Avatar URL*
 
-`[string...]` : *Webhook name*
+[`string...`]: *Webhook name*
 
 **Overload 0:**
 
-`[string...]` : *Webhook name*
+[`string...`]: *Webhook name*
 
 **Examples:**
 
@@ -4891,31 +5030,31 @@
 
 **Overload 4:**
 
-`[channel]` : *Channel whose webhooks to delete*
+[`channel`]: *Channel whose webhooks to delete*
 
-`[string...]` : *Webhook name*
+[`string...`]: *Webhook name*
 
 **Overload 3:**
 
-`[channel]` : *Channel whose webhooks to delete*
+[`channel`]: *Channel whose webhooks to delete*
 
-`[unsigned long]` : *ID*
+[`unsigned long`]: *ID*
 
 **Overload 2:**
 
-`[string]` : *Webhook name*
+[`string`]: *Webhook name*
 
-(optional) `[channel]` : *Channel whose webhooks to delete* (def: `None`)
+(optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
 
 **Overload 1:**
 
-`[unsigned long]` : *ID*
+[`unsigned long`]: *ID*
 
-(optional) `[channel]` : *Channel whose webhooks to delete* (def: `None`)
+(optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
 
 **Overload 0:**
 
-`[string...]` : *Webhook name*
+[`string...`]: *Webhook name*
 
 **Examples:**
 
@@ -4943,11 +5082,11 @@
 
 **Overload 1:**
 
-(optional) `[channel]` : *Channel whose webhooks to delete* (def: `None`)
+(optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
 
 **Overload 0:**
 
-`[channel...]` : *Channel whose webhooks to delete*
+[`channel...`]: *Channel whose webhooks to delete*
 
 **Examples:**
 
@@ -4973,7 +5112,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel whose webhooks to show* (def: `None`)
+(optional) [`channel`]: *Channel whose webhooks to show* (def: `None`)
 
 **Examples:**
 

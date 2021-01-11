@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Misc.Common
                         if (arg.IsOptional)
                             ab.Append(this.GetS("str-optional")).Append(' ');
 
-                        ab.Append($"[`{this.CommandsNext.GetUserFriendlyTypeName(arg.Type)}"));
+                        ab.Append("[`").Append(this.CommandsNext.GetUserFriendlyTypeName(arg.Type));
                         if (arg.IsCatchAll)
                             ab.Append("...");
                         ab.Append("`] ");

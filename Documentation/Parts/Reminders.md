@@ -11,29 +11,29 @@
 `reminders, reminder, todo, todolist, note`
 **Overload 4:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 3:**
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 2:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 1:**
 
-`[channel]` : *Channel to list*
+[`channel`]: *Channel to list*
 
 **Examples:**
 
@@ -55,25 +55,25 @@
 `reminders, reminder, todo, todolist, note`
 **Overload 2:**
 
-`[date and time]` : *Localized due date*
+[`date and time`]: *Localized due date*
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 1:**
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[date and time]` : *Localized due date*
+[`date and time`]: *Localized due date*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 0:**
 
-`[date and time]` : *Localized due date*
+[`date and time`]: *Localized due date*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 
@@ -94,15 +94,15 @@
 `due, b`
 **Overload 1:**
 
-`[date and time]` : *Localized due date*
+[`date and time`]: *Localized due date*
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Overload 0:**
 
-`[time span]` : *Localized due time*
+[`time span`]: *Localized due time*
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Examples:**
 
@@ -124,9 +124,9 @@
 `nxt, n`
 **Arguments:**
 
-`[DayOfWeek]` : *Day of week*
+[`DayOfWeek`]: *Day of week*
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Examples:**
 
@@ -147,7 +147,7 @@
 `d`
 **Arguments:**
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Examples:**
 
@@ -168,7 +168,7 @@
 `w`
 **Arguments:**
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Examples:**
 
@@ -189,7 +189,7 @@
 `tmrw, t, tomo`
 **Arguments:**
 
-(optional) `[channel]` : *Channel to list* (def: `None`)
+(optional) [`channel`]: *Channel to list* (def: `None`)
 
 **Examples:**
 
@@ -210,7 +210,7 @@
 `-, remove, rm, del, -=, >, >>, unschedule`
 **Arguments:**
 
-`[int...]` : *ID(s)*
+[`int...`]: *ID(s)*
 
 **Examples:**
 
@@ -230,7 +230,7 @@
 `removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
 **Overload 1:**
 
-`[channel]` : *Channel whose reminders to remove*
+[`channel`]: *Channel whose reminders to remove*
 
 **Examples:**
 
@@ -253,9 +253,9 @@
 
 **Overload 1:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 
@@ -275,9 +275,9 @@
 
 **Arguments:**
 
-`[date and time]` : *Localized due date*
+[`date and time`]: *Localized due date*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 
@@ -297,9 +297,9 @@
 
 **Arguments:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 
@@ -319,25 +319,25 @@
 `reminders, reminder, todo, todolist, note`
 **Overload 2:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 1:**
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 0:**
 
-`[time span]` : *Timespan until reminder*
+[`time span`]: *Timespan until reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 
@@ -358,7 +358,7 @@
 `print, show, view, ls, l, p`
 **Overload 1:**
 
-`[channel]` : *Channel to list*
+[`channel`]: *Channel to list*
 
 **Examples:**
 
@@ -379,25 +379,25 @@
 `newrep, +r, ar, +=r, <r, <<r`
 **Overload 2:**
 
-`[time span]` : *Localized due date*
+[`time span`]: *Localized due date*
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 1:**
 
-`[channel]` : *Channel when to send the reminder*
+[`channel`]: *Channel when to send the reminder*
 
-`[time span]` : *Localized due date*
+[`time span`]: *Localized due date*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Overload 0:**
 
-`[time span]` : *Localized due date*
+[`time span`]: *Localized due date*
 
-`[string...]` : *Reminder contents*
+[`string...`]: *Reminder contents*
 
 **Examples:**
 

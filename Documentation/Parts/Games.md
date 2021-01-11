@@ -27,7 +27,7 @@
 `take`
 **Arguments:**
 
-(optional) `[int]` : *Amount of cards to draw* (def: `1`)
+(optional) [`int`]: *Amount of cards to draw* (def: `1`)
 
 **Examples:**
 
@@ -117,11 +117,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -162,7 +162,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Time for a move* (def: `None`)
+(optional) [`time span`]: *Time for a move* (def: `None`)
 
 **Examples:**
 
@@ -203,11 +203,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -248,7 +248,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Time for a move* (def: `None`)
+(optional) [`time span`]: *Time for a move* (def: `None`)
 
 **Examples:**
 
@@ -289,11 +289,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -334,7 +334,7 @@
 
 **Arguments:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Examples:**
 
@@ -375,11 +375,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -456,11 +456,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -571,11 +571,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -616,7 +616,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Time for a move* (def: `None`)
+(optional) [`time span`]: *Time for a move* (def: `None`)
 
 **Examples:**
 
@@ -657,11 +657,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -702,23 +702,23 @@
 
 **Overload 3:**
 
-`[int]` : *ID of the quiz category*
+[`int`]: *ID of the quiz category*
 
-(optional) `[int]` : *Amount of questions* (def: `10`)
+(optional) [`int`]: *Amount of questions* (def: `10`)
 
-(optional) `[int]` : *Difficulty (0, 1, 2)* (def: `0`)
+(optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 
 **Overload 2:**
 
-`[string]` : *ID of the quiz category*
+[`string`]: *ID of the quiz category*
 
-(optional) `[int]` : *Difficulty (0, 1, 2)* (def: `0`)
+(optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 
-(optional) `[int]` : *Amount of questions* (def: `10`)
+(optional) [`int`]: *Amount of questions* (def: `10`)
 
 **Overload 1:**
 
-`[string...]` : *ID of the quiz category*
+[`string...`]: *ID of the quiz category*
 
 **Examples:**
 
@@ -742,7 +742,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Amount of questions* (def: `10`)
+(optional) [`int`]: *Amount of questions* (def: `10`)
 
 **Examples:**
 
@@ -765,7 +765,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Amount of questions* (def: `10`)
+(optional) [`int`]: *Amount of questions* (def: `10`)
 
 **Examples:**
 
@@ -788,11 +788,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -901,11 +901,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -944,11 +944,11 @@
 `s, st`
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -971,7 +971,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Time for a move* (def: `None`)
+(optional) [`time span`]: *Time for a move* (def: `None`)
 
 **Examples:**
 
@@ -1012,11 +1012,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -1093,11 +1093,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 

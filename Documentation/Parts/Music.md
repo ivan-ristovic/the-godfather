@@ -31,7 +31,7 @@
 
 **Arguments:**
 
-`[time span...]` : *Forward amount*
+[`time span...`]: *Forward amount*
 
 **Examples:**
 
@@ -89,11 +89,11 @@
 
 **Overload 1:**
 
-`[URL]` : *Audio URL*
+[`URL`]: *Audio URL*
 
 **Overload 0:**
 
-`[string...]` : *Search query*
+[`string...`]: *Search query*
 
 **Examples:**
 
@@ -118,7 +118,7 @@
 
 **Arguments:**
 
-`[string...]` : *Audio URL*
+[`string...`]: *Audio URL*
 
 **Examples:**
 
@@ -158,7 +158,7 @@
 
 **Arguments:**
 
-`[int]` : *Index (starting from 1)*
+[`int`]: *Index (starting from 1)*
 
 **Examples:**
 
@@ -180,7 +180,7 @@
 
 **Arguments:**
 
-(optional) `[RepeatMode]` : *Repeat mode (0 - none, 1 - one, A - all)* (def: `Single`)
+(optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - one, A - all)* (def: `Single`)
 
 **Examples:**
 
@@ -254,7 +254,7 @@
 
 **Arguments:**
 
-`[time span...]` : *Backward amount*
+[`time span...`]: *Backward amount*
 
 **Examples:**
 
@@ -276,7 +276,7 @@
 
 **Arguments:**
 
-`[time span...]` : *Point to seek to*
+[`time span...`]: *Point to seek to*
 
 **Examples:**
 
@@ -350,7 +350,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Volume to set* (def: `100`)
+(optional) [`int`]: *Volume to set* (def: `100`)
 
 **Examples:**
 
@@ -393,7 +393,7 @@
 
 **Arguments:**
 
-(optional) `[channel...]` : *Voice channel* (def: `None`)
+(optional) [`channel...`]: *Voice channel* (def: `None`)
 
 **Examples:**
 

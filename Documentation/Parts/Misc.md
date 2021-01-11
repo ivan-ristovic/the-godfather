@@ -16,27 +16,27 @@
 
 **Overload 3:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
 **Overload 2:**
 
-(optional) `[channel]` : *Channel for birthday notifications* (def: `None`)
+(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 
 **Overload 1:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
-`[channel]` : *Channel for birthday notifications*
+[`channel`]: *Channel for birthday notifications*
 
-(optional) `[string]` : *Birthday date* (def: `None`)
+(optional) [`string`]: *Birthday date* (def: `None`)
 
 **Overload 0:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
-`[string]` : *Birthday date*
+[`string`]: *Birthday date*
 
-(optional) `[channel]` : *Channel for birthday notifications* (def: `None`)
+(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -63,19 +63,19 @@
 
 **Overload 1:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
-(optional) `[channel]` : *Channel for birthday notifications* (def: `None`)
+(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 
-(optional) `[string]` : *Birthday date* (def: `None`)
+(optional) [`string`]: *Birthday date* (def: `None`)
 
 **Overload 0:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
-`[string]` : *Birthday date*
+[`string`]: *Birthday date*
 
-(optional) `[channel]` : *Channel for birthday notifications* (def: `None`)
+(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -102,11 +102,11 @@
 
 **Overload 1:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
 **Overload 0:**
 
-`[channel]` : *Channel for birthday notifications*
+[`channel`]: *Channel for birthday notifications*
 
 **Examples:**
 
@@ -153,11 +153,11 @@
 
 **Overload 1:**
 
-`[user]` : *Birthday boy/girl*
+[`user`]: *Birthday boy/girl*
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel for birthday notifications* (def: `None`)
+(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -201,7 +201,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -227,7 +227,7 @@
 
 **Arguments:**
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Examples:**
 
@@ -252,7 +252,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to add*
+[`role...`]: *Roles to add*
 
 **Examples:**
 
@@ -272,11 +272,11 @@
 `h, ?, ??, ???`
 **Overload 1:**
 
-`[ModuleType]` : *Command module*
+[`ModuleType`]: *Command module*
 
 **Overload 0:**
 
-`[string...]` : *Command name*
+[`string...`]: *Command name*
 
 **Examples:**
 
@@ -298,11 +298,11 @@
 `burn, ins, roast`
 **Overload 1:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Overload 0:**
 
-`[string...]` : *Insult target*
+[`string...`]: *Insult target*
 
 **Examples:**
 
@@ -325,7 +325,7 @@
 
 **Overload 0:**
 
-`[string...]` : *Meme name*
+[`string...`]: *Meme name*
 
 **Examples:**
 
@@ -351,15 +351,15 @@
 
 **Overload 1:**
 
-`[string]` : *Meme name*
+[`string`]: *Meme name*
 
-(optional) `[URL]` : *Meme URL* (def: `None`)
+(optional) [`URL`]: *Meme URL* (def: `None`)
 
 **Overload 0:**
 
-`[URL]` : *Meme URL*
+[`URL`]: *Meme URL*
 
-`[string...]` : *Meme name*
+[`string...`]: *Meme name*
 
 **Examples:**
 
@@ -385,11 +385,11 @@
 
 **Arguments:**
 
-`[string]` : *Meme template*
+[`string`]: *Meme template*
 
-`[string]` : *Top text*
+[`string`]: *Top text*
 
-`[string]` : *Bottom text*
+[`string`]: *Bottom text*
 
 **Examples:**
 
@@ -414,7 +414,7 @@
 
 **Arguments:**
 
-`[string...]` : *Meme name*
+[`string...`]: *Meme name*
 
 **Examples:**
 
@@ -475,7 +475,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Meme template* (def: `None`)
+(optional) [`string...`]: *Meme template* (def: `None`)
 
 **Examples:**
 
@@ -507,7 +507,7 @@
 `select, choose`
 **Arguments:**
 
-`[string...]` : *Choice list (separated by comma)*
+[`string...`]: *Choice list (separated by comma)*
 
 **Examples:**
 
@@ -527,7 +527,7 @@
 `chooseuser`
 **Arguments:**
 
-(optional) `[role]` : *Role* (def: `None`)
+(optional) [`role`]: *Role* (def: `None`)
 
 **Examples:**
 
@@ -548,11 +548,11 @@
 `ranks, ranking, level`
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -576,9 +576,9 @@
 
 **Arguments:**
 
-`[short]` : *Rank*
+[`short`]: *Rank*
 
-`[string...]` : *Rank name*
+[`string...`]: *Rank name*
 
 **Examples:**
 
@@ -601,7 +601,7 @@
 
 **Arguments:**
 
-`[short]` : *Rank*
+[`short`]: *Rank*
 
 **Examples:**
 
@@ -631,12 +631,28 @@
 ### rank top
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Gets highest ranked users leaderboard*
+*Prints guild rank leaderboard*
 
 **Examples:**
 
 ```xml
 !rank top
+```
+</p></details>
+
+---
+
+### rank topglobal
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints global rank leaderboard*
+
+**Aliases:**
+`bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
+**Examples:**
+
+```xml
+!rank topglobal
 ```
 </p></details>
 
@@ -653,7 +669,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to remove*
+[`role...`]: *Roles to remove*
 
 **Examples:**
 
@@ -678,7 +694,7 @@
 
 **Arguments:**
 
-`[role...]` : *Roles to remove*
+[`role...`]: *Roles to remove*
 
 **Examples:**
 
@@ -703,23 +719,23 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[emoji]` : *Emoji*
+[`emoji`]: *Emoji*
 
-`[channel]` : *Channel*
+[`channel`]: *Channel*
 
-(optional) `[int]` : *Sensitivity* (def: `None`)
+(optional) [`int`]: *Sensitivity* (def: `None`)
 
 **Overload 1:**
 
-`[boolean]` : *Enable?*
+[`boolean`]: *Enable?*
 
-`[channel]` : *Emoji*
+[`channel`]: *Emoji*
 
-(optional) `[emoji]` : *Channel* (def: `None`)
+(optional) [`emoji`]: *Channel* (def: `None`)
 
-(optional) `[int]` : *Sensitivity* (def: `None`)
+(optional) [`int`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -747,7 +763,7 @@
 
 **Arguments:**
 
-`[channel]` : *Channel*
+[`channel`]: *Channel*
 
 **Examples:**
 
@@ -772,7 +788,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Sensitivity* (def: `None`)
+(optional) [`int`]: *Sensitivity* (def: `None`)
 
 **Examples:**
 

@@ -13,11 +13,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 1:**
 
-`[string]` : *Chicken name*
+[`string`]: *Chicken name*
 
 **Examples:**
 
@@ -41,11 +41,11 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Overload 0:**
 
-`[string]` : *Chicken name*
+[`string`]: *Chicken name*
 
 **Examples:**
 
@@ -104,7 +104,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -126,7 +126,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -148,7 +148,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -188,7 +188,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -210,7 +210,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -232,7 +232,7 @@
 
 **Arguments:**
 
-`[string...]` : *Chicken name*
+[`string...`]: *Chicken name*
 
 **Examples:**
 
@@ -254,11 +254,11 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Overload 0:**
 
-`[string]` : *Chicken name*
+[`string`]: *Chicken name*
 
 **Examples:**
 
@@ -299,11 +299,11 @@
 
 **Overload 1:**
 
-(optional) `[member]` : *Member* (def: `None`)
+(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 1:**
 
-`[string]` : *Chicken name*
+[`string`]: *Chicken name*
 
 **Examples:**
 
@@ -345,7 +345,7 @@
 
 **Arguments:**
 
-`[string...]` : *New name*
+[`string...`]: *New name*
 
 **Examples:**
 
@@ -475,7 +475,7 @@
 
 **Overload 0:**
 
-`[int...]` : *Chicken upgrade ID(s) to buy*
+[`int...`]: *Chicken upgrade ID(s) to buy*
 
 **Examples:**
 
@@ -515,9 +515,9 @@
 
 **Arguments:**
 
-(optional) `[string]` : *Team 1 name* (def: `None`)
+(optional) [`string`]: *Team 1 name* (def: `None`)
 
-(optional) `[string]` : *Team 2 name* (def: `None`)
+(optional) [`string`]: *Team 2 name* (def: `None`)
 
 **Examples:**
 
@@ -540,11 +540,11 @@
 
 **Overload 1:**
 
-`[int]` : *Team number to join*
+[`int`]: *Team number to join*
 
 **Overload 0:**
 
-`[string...]` : *Team name to join*
+[`string...`]: *Team name to join*
 
 **Examples:**
 

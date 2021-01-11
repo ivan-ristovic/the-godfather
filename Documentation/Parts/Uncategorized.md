@@ -11,7 +11,7 @@
 `8b`
 **Arguments:**
 
-`[string...]` : *A question for the Almighty 8Ball*
+[`string...`]: *A question for the Almighty 8Ball*
 
 **Examples:**
 
@@ -47,7 +47,7 @@
 `coin, flip`
 **Arguments:**
 
-(optional) `[int]` : *Reciprocal coinflip ratio* (def: `1`)
+(optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
 
 **Examples:**
 
@@ -68,7 +68,7 @@
 `die, roll`
 **Arguments:**
 
-(optional) `[int]` : *How many sides will the dice have?* (def: `6`)
+(optional) [`int`]: *How many sides will the dice have?* (def: `6`)
 
 **Examples:**
 
@@ -108,7 +108,7 @@
 
 **Arguments:**
 
-(optional) `[time span]` : *Invite expiry time* (def: `None`)
+(optional) [`time span`]: *Invite expiry time* (def: `None`)
 
 **Examples:**
 
@@ -129,7 +129,7 @@
 `ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
 **Arguments:**
 
-`[IPAddress]` : *IP address*
+[`IPAddress`]: *IP address*
 
 **Examples:**
 
@@ -166,7 +166,7 @@
 `l33t, 1337`
 **Arguments:**
 
-`[string...]` : *Text to repeat*
+[`string...`]: *Text to repeat*
 
 **Examples:**
 
@@ -186,7 +186,7 @@
 `worldnews`
 **Arguments:**
 
-(optional) `[string]` : *Topic* (def: `world`)
+(optional) [`string`]: *Topic* (def: `world`)
 
 **Examples:**
 
@@ -206,11 +206,11 @@
 `size, length, manhood, dick, dicksize`
 **Overload 1:**
 
-`[member...]` : *Member(s)*
+[`member...`]: *Member(s)*
 
 **Overload 0:**
 
-`[user...]` : *User(s)*
+[`user...`]: *User(s)*
 
 **Examples:**
 
@@ -234,11 +234,11 @@
 
 **Overload 1:**
 
-`[member]` : *Member*
+[`member`]: *Member*
 
 **Overload 0:**
 
-(optional) `[user]` : *User* (def: `None`)
+(optional) [`user`]: *User* (def: `None`)
 
 **Examples:**
 
@@ -278,7 +278,7 @@
 
 **Arguments:**
 
-(optional) `[string]` : *New command prefix* (def: `None`)
+(optional) [`string`]: *New command prefix* (def: `None`)
 
 **Examples:**
 
@@ -299,7 +299,7 @@
 `qotd, qod, quote, q`
 **Arguments:**
 
-(optional) `[string]` : *Topic* (def: `None`)
+(optional) [`string`]: *Topic* (def: `None`)
 
 **Examples:**
 
@@ -322,11 +322,11 @@
 
 **Overload 1:**
 
-`[member...]` : *Member(s)*
+[`member...`]: *Member(s)*
 
 **Overload 0:**
 
-`[user...]` : *User(s)*
+[`user...`]: *User(s)*
 
 **Examples:**
 
@@ -346,7 +346,7 @@
 
 **Arguments:**
 
-`[string...]` : *Issue to report*
+[`string...`]: *Issue to report*
 
 **Examples:**
 
@@ -366,7 +366,7 @@
 `feed`
 **Arguments:**
 
-`[URL]` : *RSS feed URL*
+[`URL`]: *RSS feed URL*
 
 **Examples:**
 
@@ -386,7 +386,7 @@
 `repeat, echo`
 **Arguments:**
 
-`[string...]` : *Text to repeat*
+[`string...`]: *Text to repeat*
 
 **Examples:**
 
@@ -411,23 +411,23 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-`[URL]` : *RSS feed URL*
+[`URL`]: *RSS feed URL*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 1:**
 
-`[URL]` : *RSS feed URL*
+[`URL`]: *RSS feed URL*
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 0:**
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -454,7 +454,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -480,15 +480,15 @@
 
 **Overload 1:**
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Overload 0:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -514,25 +514,25 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-`[URL]` : *Channel where to send updates*
+[`URL`]: *Channel where to send updates*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 1:**
 
-`[URL]` : *Channel where to send updates*
+[`URL`]: *Channel where to send updates*
 
-`[channel]` : *Channel for updates*
+[`channel`]: *Channel for updates*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 0:**
 
-`[URL]` : *Channel where to send updates*
+[`URL`]: *Channel where to send updates*
 
-(optional) `[string...]` : *Friendly name* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Examples:**
 
@@ -554,7 +554,7 @@
 `t`
 **Arguments:**
 
-(optional) `[string...]` : *IANA/Windows timezone ID* (def: `None`)
+(optional) [`string...`]: *IANA/Windows timezone ID* (def: `None`)
 
 **Examples:**
 
@@ -576,7 +576,7 @@
 
 **Arguments:**
 
-`[string...]` : *Text to repeat*
+[`string...`]: *Text to repeat*
 
 **Examples:**
 
@@ -596,7 +596,7 @@
 `unl33t`
 **Arguments:**
 
-`[string...]` : *Text to repeat*
+[`string...`]: *Text to repeat*
 
 **Examples:**
 
@@ -621,11 +621,11 @@
 
 **Overload 1:**
 
-`[int...]` : *ID(s)*
+[`int...`]: *ID(s)*
 
 **Overload 0:**
 
-`[string...]` : *Friendly name*
+[`string...`]: *Friendly name*
 
 **Examples:**
 
@@ -651,7 +651,7 @@
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel for updates* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -677,7 +677,7 @@
 
 **Arguments:**
 
-`[string]` : *Subreddit*
+[`string`]: *Subreddit*
 
 **Examples:**
 
@@ -702,7 +702,7 @@
 
 **Arguments:**
 
-`[string...]` : *YouTube channel URL or friendly name*
+[`string...`]: *YouTube channel URL or friendly name*
 
 **Examples:**
 
