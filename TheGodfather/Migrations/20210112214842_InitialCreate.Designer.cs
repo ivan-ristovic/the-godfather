@@ -10,8 +10,8 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20210111204927_LevelRoles")]
-    partial class LevelRoles
+    [Migration("20210112214842_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -868,6 +868,26 @@ namespace TheGodfather.Migrations
                     b.ToTable("purchased_items");
                 });
 
+            modelBuilder.Entity("TheGodfather.Database.Models.ReactionRole", b =>
+                {
+                    b.Property<long>("GuildIdDb")
+                        .HasColumnType("bigint")
+                        .HasColumnName("gid");
+
+                    b.Property<string>("Emoji")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("emoji");
+
+                    b.Property<long>("RoleIdDb")
+                        .HasColumnType("bigint")
+                        .HasColumnName("rid");
+
+                    b.HasKey("GuildIdDb", "Emoji");
+
+                    b.ToTable("reaction_roles");
+                });
+
             modelBuilder.Entity("TheGodfather.Database.Models.Reminder", b =>
                 {
                     b.Property<int>("Id")
@@ -1309,6 +1329,17 @@ namespace TheGodfather.Migrations
                         .IsRequired();
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("TheGodfather.Database.Models.ReactionRole", b =>
+                {
+                    b.HasOne("TheGodfather.Database.Models.GuildConfig", "GuildConfig")
+                        .WithMany()
+                        .HasForeignKey("GuildIdDb")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GuildConfig");
                 });
 
             modelBuilder.Entity("TheGodfather.Database.Models.RssSubscription", b =>

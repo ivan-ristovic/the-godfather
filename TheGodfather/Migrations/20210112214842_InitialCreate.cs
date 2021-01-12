@@ -125,6 +125,9 @@ namespace TheGodfather.Migrations
                     log_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     mute_rid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     silent_response_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    starboard_cid = table.Column<long>(type: "bigint", nullable: false),
+                    starboard_emoji = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: true),
+                    starboard_sens = table.Column<int>(type: "integer", nullable: false),
                     welcome_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     leave_cid = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     welcome_msg = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
@@ -205,11 +208,12 @@ namespace TheGodfather.Migrations
                 columns: table => new
                 {
                     uid = table.Column<long>(type: "bigint", nullable: false),
+                    gid = table.Column<long>(type: "bigint", nullable: false),
                     xp = table.Column<int>(type: "integer", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_xp_count", x => x.uid);
+                    table.PrimaryKey("PK_xp_count", x => new { x.gid, x.uid });
                 });
 
             migrationBuilder.CreateTable(
@@ -471,6 +475,27 @@ namespace TheGodfather.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "level_roles",
+                schema: "gf",
+                columns: table => new
+                {
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    rank = table.Column<short>(type: "smallint", nullable: false),
+                    rid = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_level_roles", x => new { x.gid, x.rank });
+                    table.ForeignKey(
+                        name: "FK_level_roles_guild_cfg_gid",
+                        column: x => x.gid,
+                        principalSchema: "gf",
+                        principalTable: "guild_cfg",
+                        principalColumn: "gid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "memes",
                 schema: "gf",
                 columns: table => new
@@ -507,6 +532,27 @@ namespace TheGodfather.Migrations
                     table.PrimaryKey("PK_purchasable_items", x => x.id);
                     table.ForeignKey(
                         name: "FK_purchasable_items_guild_cfg_gid",
+                        column: x => x.gid,
+                        principalSchema: "gf",
+                        principalTable: "guild_cfg",
+                        principalColumn: "gid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reaction_roles",
+                schema: "gf",
+                columns: table => new
+                {
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    emoji = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    rid = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_reaction_roles", x => new { x.gid, x.emoji });
+                    table.ForeignKey(
+                        name: "FK_reaction_roles_guild_cfg_gid",
                         column: x => x.gid,
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
@@ -596,6 +642,29 @@ namespace TheGodfather.Migrations
                     table.PrimaryKey("PK_self_roles", x => new { x.gid, x.rid });
                     table.ForeignKey(
                         name: "FK_self_roles_guild_cfg_gid",
+                        column: x => x.gid,
+                        principalSchema: "gf",
+                        principalTable: "guild_cfg",
+                        principalColumn: "gid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "starboard",
+                schema: "gf",
+                columns: table => new
+                {
+                    gid = table.Column<long>(type: "bigint", nullable: false),
+                    cid = table.Column<long>(type: "bigint", nullable: false),
+                    mid = table.Column<long>(type: "bigint", nullable: false),
+                    smid = table.Column<long>(type: "bigint", nullable: false),
+                    stars = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_starboard", x => new { x.gid, x.cid, x.mid });
+                    table.ForeignKey(
+                        name: "FK_starboard_guild_cfg_gid",
                         column: x => x.gid,
                         principalSchema: "gf",
                         principalTable: "guild_cfg",
@@ -865,6 +934,10 @@ namespace TheGodfather.Migrations
                 schema: "gf");
 
             migrationBuilder.DropTable(
+                name: "level_roles",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
                 name: "memes",
                 schema: "gf");
 
@@ -874,6 +947,10 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "purchased_items",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "reaction_roles",
                 schema: "gf");
 
             migrationBuilder.DropTable(
@@ -898,6 +975,10 @@ namespace TheGodfather.Migrations
 
             migrationBuilder.DropTable(
                 name: "self_roles",
+                schema: "gf");
+
+            migrationBuilder.DropTable(
+                name: "starboard",
                 schema: "gf");
 
             migrationBuilder.DropTable(
