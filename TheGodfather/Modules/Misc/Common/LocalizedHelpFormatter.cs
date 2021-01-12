@@ -130,13 +130,14 @@ namespace TheGodfather.Modules.Misc.Common
                     if (cmd.Overloads.Count > 1)
                         this.emb.AddLocalizedTitleField("str-overload", args, inline: true, titleArgs: overload.Priority);
                     else
-                        this.emb.AddLocalizedTitleField("str-args", args, inline: true, titleArgs: overload.Priority);
+                        this.emb.AddLocalizedTitleField("str-args", args, inline: true);
                 }
             }
 
-            if (cmd is CommandGroup { IsExecutableWithoutSubcommands: true })
-                this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
+            if (cmd is CommandGroup { IsExecutableWithoutSubcommands: false })
+                return this;
 
+            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
             return this;
         }
 

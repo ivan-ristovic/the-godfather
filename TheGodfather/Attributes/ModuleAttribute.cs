@@ -71,6 +71,7 @@ namespace TheGodfather.Attributes
         public static ModuleAttribute AttachedTo(Command cmd)
         {
             var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
+            mattr ??= cmd.Module.ModuleType.GetCustomAttributes(typeof(ModuleAttribute), true).FirstOrDefault() as ModuleAttribute;
             return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : AttachedTo(cmd.Parent));
         }
 
