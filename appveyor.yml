@@ -1,10 +1,10 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 branches:
   only:
   - master
 
-version: 4.1.{build}
+version: 5.0.{build}
 
 init:
   - cmd: git config --global core.autocrlf true
@@ -24,20 +24,6 @@ before_build:
   - cmd: dotnet --version
   - cmd: dotnet restore ./TheGodfather/TheGodfather.csproj --verbosity m
 
-build_script:
-  - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj -c Release /p:Version=%APPVEYOR_BUILD_VERSION%
-  - cmd: 7z a TheGodfather.zip "%APPVEYOR_BUILD_FOLDER%\TheGodfather\bin\Release\netcoreapp2.1\publish\*"
-  - cmd: 7z a TheGodfather.zip "%APPVEYOR_BUILD_FOLDER%\Scripts\*"
-  - cmd: 7z a TheGodfatherResources.zip "%APPVEYOR_BUILD_FOLDER%\TheGodfather\Resources\*"
-
-artifacts:
-  - path: TheGodfather.zip
-    name: TheGodfather Release Build
-  - path: TheGodfatherResources.zip
-    name: TheGodfather Release Resources
-
-after_build:
-
 clone_depth: 1
 
 test_script:
@@ -51,6 +37,5 @@ on_success:
 on_failure:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 failure $env:WEBHOOK_URL
-on_finish:
 
 deploy: off
