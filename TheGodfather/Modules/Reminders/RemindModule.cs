@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Reminders
                 if (channel.Type != ChannelType.Text)
                     throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
                 if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
-                    throw new CommandFailedException(ctx, "cmd-err-remind-perms");
+                    throw new CommandFailedException(ctx, "cmd-err-remind-perms", channel.Mention);
                 if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                     throw new CommandFailedException(ctx, "cmd-err-remind-permsb");
             }

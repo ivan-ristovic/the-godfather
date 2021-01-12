@@ -110,6 +110,9 @@ namespace TheGodfather.EventListeners
                 case NotFoundException nfe:
                     emb.WithLocalizedDescription("cmd-err-404", nfe.JsonMessage);
                     break;
+                case FormatException nfe:
+                    emb.WithLocalizedDescription("cmd-err-loc");
+                    break;
                 case LocalizedException lex:
                     emb.WithDescription(lex.LocalizedMessage);
                     break;

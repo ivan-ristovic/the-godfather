@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -63,8 +64,7 @@ namespace TheGodfather.Modules.Misc
 
         #region invite
         [Command("invite")]
-        [Aliases("getinvite")]
-        [RequirePermissions(Permissions.CreateInstantInvite)]
+        [Aliases("getinvite", "inv")]
         public async Task GetInstantInviteAsync(CommandContext ctx,
                                                [Description("desc-invite-expire")] TimeSpan? expiryTime = null)
         {
@@ -80,6 +80,9 @@ namespace TheGodfather.Modules.Misc
 
             if (invite is null || expiryTime is { }) {
                 expiryTime ??= TimeSpan.FromSeconds(86400);
+
+                if (!ctx.Guild.CurrentMember.PermissionsIn(ctx.Channel).HasPermission(Permissions.CreateInstantInvite))
+                    throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite) });
 
                 // TODO check timespan because only some values are allowed - 400 is thrown
                 invite = await ctx.Channel.CreateInviteAsync(max_age: (int)expiryTime.Value.TotalSeconds, temporary: true, reason: ctx.BuildInvocationDetailsString());

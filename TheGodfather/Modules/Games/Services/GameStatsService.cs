@@ -11,7 +11,7 @@ namespace TheGodfather.Modules.Games.Services
 {
     public sealed class GameStatsService : DbAbstractionServiceBase<GameStats, ulong>
     {
-        public override bool IsDisabled => throw new NotImplementedException();
+        public override bool IsDisabled => false;
 
 
         public GameStatsService(DbContextBuilder dbb)
