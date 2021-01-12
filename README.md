@@ -2,11 +2,13 @@
 
 [![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
 [![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
-[![Discord Server](https://img.shields.io/discord/794671727291531274.svg?label=discord)](https://discord.gg/z7KZGQQxRz)
+[![Discord Server](https://discord.com/api/guilds/794671727291531274/embed.png)](https://discord.gg/z7KZGQQxRz)
 [![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable)](https://github.com/ivan-ristovic/the-godfather/releases)
 [![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
 
-Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible but keeping the simplicity in mind.
+Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible but keeping the simplicity in mind. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
+
+[![TheGodfather](https://discord.com/api/guilds/794671727291531274/embed.png?style=banner2)](https://discord.gg/z7KZGQQxRz)
 
 > *Discord bots have grown very rapidly over the past few years and due to that growth it usually becomes hard to use them because of the unintuitive command system or due to performance issues. I have had a scenario where we had ten bots in the guild, because every bot did a unique job. Managing many bots and permissions for those bots quickly became overwhelming. Apart from that, only a handful of bots provided a customizable protection system against common destructive actions on Discord, yet it was still not enough - either the performance was poor due to it being a public bot instance, or the system was not customizable enough - that is if the system worked well to begin with. So, I have decided to create TheGodfather - one bot that will oversee and be in charge of everything.*
 > 
@@ -35,9 +37,6 @@ Features:
   - Starboard with customizable star emoji and reaction threshold.
   - Interactive text or reaction poll system.
   - Guild-specific culture setting (e.g. language, timezone). Currently supported languages/cultures: `en-UK` (default), `en-US`.
-
-
-Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
 ---
 
