@@ -1,4 +1,4 @@
-image: Visual Studio 2019
+image: Visual Studio 2019 Preview
 
 branches:
   only:
@@ -20,6 +20,7 @@ dotnet_csproj:
 
 before_build:
   - cmd: dotnet --version
+  - cmd: nuget restore "./TheGodfather.sln"
   - cmd: dotnet restore ./TheGodfather/TheGodfather.csproj --verbosity m
 
 clone_depth: 1
