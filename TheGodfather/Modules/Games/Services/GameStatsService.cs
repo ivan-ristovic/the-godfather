@@ -74,19 +74,18 @@ namespace TheGodfather.Modules.Games.Services
 
         private async Task<IReadOnlyList<GameStats>> GetOrderedInternalAsync<T>(int amount, Func<GameStats, T> orderBy, Func<GameStats, T>? thenBy = null)
         {
-            // FIXME inefficient - try to use IQueryable with LINQ Expressions
+            // FIXME inefficient - try to use IQueryable with LINQ Expressions ?
             List<GameStats> top;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                IOrderedEnumerable<GameStats> topOrderedStats = thenBy is null
-                    ? db.GameStats
-                        .OrderByDescending(orderBy)
-                    : db.GameStats
-                        .OrderByDescending(orderBy)
-                        .ThenByDescending(thenBy);
-                top = await topOrderedStats
-                    .AsQueryable()
+                List<GameStats> stats = await db.GameStats.ToListAsync();
+                IOrderedEnumerable<GameStats> orderedStats = stats
+                    .OrderByDescending(orderBy)
+                    ;
+                if (thenBy is { })
+                    orderedStats = orderedStats.ThenByDescending(thenBy);
+                top = orderedStats
                     .Take(amount)
-                    .ToListAsync();
+                    .ToList();
             }
 
             return top.AsReadOnly();
