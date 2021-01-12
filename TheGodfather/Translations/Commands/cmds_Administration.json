@@ -21,29 +21,6 @@
   "automaticroles list": {
     "usage": [ [] ]
   },
-  "levelroles": {
-    "usage": [
-      [],
-      [ "arg-role", "arg-role-raw" ]
-    ]
-  },
-  "levelroles add": {
-    "usage": [
-      [ "arg-role", "arg-role-raw" ]
-    ]
-  },
-  "levelroles delete": {
-    "usage": [
-      [ "arg-role", "arg-role-raw" ],
-      [ "arg-five", "arg-ten" ]
-    ]
-  },
-  "levelroles deleteall": {
-    "usage": [ [] ]
-  },
-  "levelroles list": {
-    "usage": [ [] ]
-  },
   "channel": {
     "usage": [
       [],
@@ -703,6 +680,31 @@
       [ "arg-name" ]
     ]
   },
+  "levelroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-five" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "levelroles add": {
+    "usage": [
+      [ "arg-role", "arg-five" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "levelroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ],
+      [ "arg-five", "arg-ten" ]
+    ]
+  },
+  "levelroles deleteall": {
+    "usage": [ [] ]
+  },
+  "levelroles list": {
+    "usage": [ [] ]
+  },
   "message attachments": {
     "usage": [
       [],
@@ -772,6 +774,31 @@
       [],
       [ "arg-chn-text" ]
     ]
+  },
+  "reactionroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-emoji" ],
+      [ "arg-emoji", "arg-role" ]
+    ]
+  },
+  "reactionroles add": {
+    "usage": [
+      [ "arg-role", "arg-emoji" ],
+      [ "arg-emoji", "arg-role" ]
+    ]
+  },
+  "reactionroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ],
+      [ "arg-emoji", "arg-emoji-name" ]
+    ]
+  },
+  "reactionroles deleteall": {
+    "usage": [ [] ]
+  },
+  "reactionroles list": {
+    "usage": [ [] ]
   },
   "role": {
     "usage": [

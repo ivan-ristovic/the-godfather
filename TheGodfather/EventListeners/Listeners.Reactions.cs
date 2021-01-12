@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Modules.Owner.Services;
@@ -42,16 +47,31 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionAdded)]
-        public static Task MessageReactionAddedEventHandlerAsync(TheGodfatherBot bot, MessageReactionAddEventArgs e)
+        public static async Task MessageReactionAddedEventHandlerAsync(TheGodfatherBot bot, MessageReactionAddEventArgs e)
         {
             if (e.Guild is null || e.Channel is null || e.Message is null)
-                return Task.CompletedTask;
+                return;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
             if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
 
-            return Task.CompletedTask;
+            ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
+            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName());
+            if (rr is { }) {
+                DiscordRole? role = e.Guild.GetRole(rr.RoleId);
+                if (role is { }) {
+                    try {
+                        DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
+                        await member.GrantRoleAsync(role, "_gf: Reaction role");
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Granted reaction {Role} to {Member} of {Guild}", role, member, e.Guild);
+                    } catch (Exception ex) when (ex is UnauthorizedException | ex is NotFoundException) {
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Failed to grant reaction role {Role} to {Member} of {Guild}", role, e.User, e.Guild);
+                    }
+                } else {
+                    LogExt.Debug(bot.GetId(e.Guild.Id), "Failed to find reaction role {Role} in {Guild}", rr.RoleId, e.Guild);
+                }
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionRemoved)]

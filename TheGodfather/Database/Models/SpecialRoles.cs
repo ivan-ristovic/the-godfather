@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheGodfather.Database.Models
@@ -47,35 +48,39 @@ namespace TheGodfather.Database.Models
     }
 
     [Table("level_roles")]
-    public class LevelRole : IEquatable<LevelRole>
+    public class LevelRole : SpecialRole, IEquatable<LevelRole>
     {
-        [ForeignKey("GuildConfig")]
-        [Column("gid")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long GuildIdDb { get; set; }
-        [NotMapped]
-        public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
-
-        [Column("rank")]
+        [Column("rank"), Required]
         public short Rank { get; set; }
-
-        [Column("rid")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long RoleIdDb { get; set; }
-        [NotMapped]
-        public ulong RoleId { get => (ulong)this.RoleIdDb; set => this.RoleIdDb = (long)value; }
-
-
-        public virtual GuildConfig GuildConfig { get; set; } = null!;
 
 
         public bool Equals(LevelRole? other)
-            => other is { } && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
+            => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
 
         public override bool Equals(object? other)
             => this.Equals(other as LevelRole);
 
         public override int GetHashCode()
-            => HashCode.Combine(this.GuildId, this.RoleId);
+            => HashCode.Combine(this.GuildId, this.Rank);
+    }
+
+    [Table("reaction_roles")]
+    public class ReactionRole : SpecialRole, IEquatable<ReactionRole>
+    {
+        public const int EmojiNameLimit = 32;
+
+
+        [Column("emoji"), Required, MaxLength(EmojiNameLimit)]
+        public string Emoji { get; set; } = null!;
+
+
+        public bool Equals(ReactionRole? other)
+            => other is { } && this.GuildId == other.GuildId && this.Emoji == other.Emoji;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as ReactionRole);
+
+        public override int GetHashCode()
+            => HashCode.Combine(this.GuildId, this.Emoji);
     }
 }
