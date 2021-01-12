@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Games
                 GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                 IReadOnlyList<GameStats> topStats = await gss.GetTopHangmanStatsAsync();
                 string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-hm-top", topStats);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-hm-top", top);
             }
             #endregion
         }
