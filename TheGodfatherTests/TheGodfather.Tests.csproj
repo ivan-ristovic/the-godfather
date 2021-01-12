@@ -26,7 +26,6 @@
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-rc1" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-rc1" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-rc1" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00653" />
     <PackageReference Include="EFCore.BulkExtensions" Version="3.2.7" />
     <PackageReference Include="GiphyDotNet" Version="2.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.49.0.2173" />
