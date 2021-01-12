@@ -2,6 +2,26 @@
 *This module contains miscellaneous commands which do not fall into any of the other categories but do not deserve their own group since they are unique or not extensible.*
 
 
+## 8ball
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Do you ponder the mysteries of our world? Ask the Almighty 8Ball whatever you want! But beware, because the truth can sometimes hurt...*
+
+**Aliases:**
+`8b`
+**Arguments:**
+
+[`string...`]: *A question for the Almighty 8Ball*
+
+**Examples:**
+
+```xml
+!8ball Some string here
+```
+</p></details>
+
+---
+
 ## Group: birthday
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -190,6 +210,48 @@
 
 ---
 
+## coinflip
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Flips a coin!*
+
+**Aliases:**
+`coin, flip`
+**Arguments:**
+
+(optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
+
+**Examples:**
+
+```xml
+!coinflip
+!coinflip 5
+```
+</p></details>
+
+---
+
+## dice
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Throws a dice!*
+
+**Aliases:**
+`die, roll`
+**Arguments:**
+
+(optional) [`int`]: *How many sides will the dice have?* (def: `6`)
+
+**Examples:**
+
+```xml
+!dice
+!dice 5
+```
+</p></details>
+
+---
+
 ## Group: grant
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -309,6 +371,85 @@
 ```xml
 !insult @User
 !insult Some string here
+```
+</p></details>
+
+---
+
+## invite
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get or create an instant invite link for the current guild.*
+
+**Aliases:**
+`getinvite, inv`
+**Arguments:**
+
+(optional) [`time span`]: *Invite expiry time* (def: `None`)
+
+**Examples:**
+
+```xml
+!invite
+!invite 1d
+```
+</p></details>
+
+---
+
+## leave
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Makes me leave the guild.*
+
+**Requires permissions:**
+`Administrator`
+
+**Examples:**
+
+```xml
+!leave
+```
+</p></details>
+
+---
+
+## leet
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.*
+
+**Aliases:**
+`l33t, 1337`
+**Arguments:**
+
+[`string...`]: *Text to repeat*
+
+**Examples:**
+
+```xml
+!leet Some string here
+```
+</p></details>
+
+---
+
+## linux
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints a customizable GNU/Linux interjection.*
+
+**Arguments:**
+
+(optional) [`string`]: *Replacement string* (def: `None`)
+
+(optional) [`string`]: *Replacement string* (def: `None`)
+
+**Examples:**
+
+```xml
+!linux
+!linux GNU Windows
 ```
 </p></details>
 
@@ -487,6 +628,99 @@
 
 ---
 
+## penis
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*An accurate measurement.*
+
+**Aliases:**
+`size, length, manhood, dick, dicksize`
+**Overload 1:**
+
+[`member...`]: *Member(s)*
+
+**Overload 0:**
+
+[`user...`]: *User(s)*
+
+**Examples:**
+
+```xml
+!penis
+!penis @User
+!penis @User @User @User
+```
+</p></details>
+
+---
+
+## penisbros
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Finds members with same `penis` command result as the given user.*
+
+**Aliases:**
+`sizebros, lengthbros, manhoodbros, dickbros, cockbros`
+**Guild only.**
+
+**Overload 1:**
+
+[`member`]: *Member*
+
+**Overload 0:**
+
+(optional) [`user`]: *User* (def: `None`)
+
+**Examples:**
+
+```xml
+!penisbros
+!penisbros @User
+```
+</p></details>
+
+---
+
+## ping
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Pings the bot.*
+
+**Examples:**
+
+```xml
+!ping
+```
+</p></details>
+
+---
+
+## prefix
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets command prefix.*
+
+**Aliases:**
+`setprefix, pref, setpref`
+**Guild only.**
+
+**Requires permissions:**
+`Administrator`
+
+**Arguments:**
+
+(optional) [`string`]: *New command prefix* (def: `None`)
+
+**Examples:**
+
+```xml
+!prefix
+!prefix .
+```
+</p></details>
+
+---
+
 ## Group: random
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -658,6 +892,53 @@
 
 ---
 
+## rate
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*A very accurate personality measurement.*
+
+**Aliases:**
+`score, graph, rating`
+**Requires bot permissions:**
+`Attach files`
+
+**Overload 1:**
+
+[`member...`]: *Member(s)*
+
+**Overload 0:**
+
+[`user...`]: *User(s)*
+
+**Examples:**
+
+```xml
+!rate
+!rate @User
+!rate @User @User @User
+```
+</p></details>
+
+---
+
+## report
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Report an issue with the bot.*
+
+**Arguments:**
+
+[`string...`]: *Issue to report*
+
+**Examples:**
+
+```xml
+!report Report message containing the detailed issue description
+```
+</p></details>
+
+---
+
 ## Group: revoke
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -700,6 +981,26 @@
 
 ```xml
 !revoke role @Role
+```
+</p></details>
+
+---
+
+## say
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Echo! Echo! Echo!*
+
+**Aliases:**
+`repeat, echo`
+**Arguments:**
+
+[`string...`]: *Text to repeat*
+
+**Examples:**
+
+```xml
+!say Some string here
 ```
 </p></details>
 
@@ -795,6 +1096,68 @@
 ```xml
 !starboard sensitivity
 !starboard sensitivity 5
+```
+</p></details>
+
+---
+
+## time
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Shows time in a given timezone or localized guild time if timezone is not provided.*
+
+**Aliases:**
+`t`
+**Arguments:**
+
+(optional) [`string...`]: *IANA/Windows timezone ID* (def: `None`)
+
+**Examples:**
+
+```xml
+!time
+!time CET
+```
+</p></details>
+
+---
+
+## tts
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Sends a TTS message.*
+
+**Requires permissions:**
+`Send TTS messages`
+
+**Arguments:**
+
+[`string...`]: *Text to repeat*
+
+**Examples:**
+
+```xml
+!tts Some string here
+```
+</p></details>
+
+---
+
+## unleet
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Attempts to translate message from leetspeak.*
+
+**Aliases:**
+`unl33t`
+**Arguments:**
+
+[`string...`]: *Text to repeat*
+
+**Examples:**
+
+```xml
+!unleet Some string here
 ```
 </p></details>
 

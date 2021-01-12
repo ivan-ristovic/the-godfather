@@ -2,6 +2,38 @@
 *This module contains internet search commands such as YouTube, Imgur, Giphy, Steam searches/subscriptions and many more.*
 
 
+## cat
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random cat image.*
+
+**Aliases:**
+`kitty, kitten`
+**Examples:**
+
+```xml
+!cat
+```
+</p></details>
+
+---
+
+## dog
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random dog image.*
+
+**Aliases:**
+`doge, puppy, pup`
+**Examples:**
+
+```xml
+!dog
+```
+</p></details>
+
+---
+
 ## Group: gif
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -285,6 +317,26 @@
 
 ---
 
+## ip
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves geolocation data for given IP.*
+
+**Aliases:**
+`ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
+**Arguments:**
+
+[`IPAddress`]: *IP address*
+
+**Examples:**
+
+```xml
+!ip 123.123.123.123
+```
+</p></details>
+
+---
+
 ## Group: joke
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -332,6 +384,46 @@
 
 ```xml
 !joke yourmom
+```
+</p></details>
+
+---
+
+## news
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves latest world news.*
+
+**Aliases:**
+`worldnews`
+**Arguments:**
+
+(optional) [`string`]: *Topic* (def: `world`)
+
+**Examples:**
+
+```xml
+!news
+```
+</p></details>
+
+---
+
+## quoteoftheday
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves the quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
+
+**Aliases:**
+`qotd, qod, quote, q`
+**Arguments:**
+
+(optional) [`string`]: *Topic* (def: `None`)
+
+**Examples:**
+
+```xml
+!quoteoftheday
 ```
 </p></details>
 
@@ -526,6 +618,26 @@
 
 ```xml
 !reddit unsubscribe awww
+```
+</p></details>
+
+---
+
+## rss
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves latest topics from given RSS feed URL.*
+
+**Aliases:**
+`feed`
+**Arguments:**
+
+[`URL`]: *RSS feed URL*
+
+**Examples:**
+
+```xml
+!rss http://some.rss.feed.url/.rss
 ```
 </p></details>
 

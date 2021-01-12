@@ -3338,7 +3338,7 @@
 ## Group: levelroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Level roles management. Level roles are granted to a member of the guild upon gaining a specified XP rank. Group call lists all level roles for the guild. Group call with an arbitrary amount of roles will add those roles to the level roles list for the guild, effective immediately.*
+*Level roles management. Level roles are granted to a member of the guild upon gaining a specified XP rank. Group call lists all level roles for the guild. Group call adds a role to the level roles list for the specific rank, effective immediately.*
 
 **Aliases:**
 `lr, levelrole, lvlroles, levelrl, lvlrole, lvlr, lvlrl, lrole`
@@ -3346,6 +3346,9 @@
 
 **Requires user permissions:**
 `Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
 
 **Overload 2:**
 
@@ -3363,7 +3366,8 @@
 
 ```xml
 !levelroles
-!levelroles @Role RoleName
+!levelroles @Role 5
+!levelroles 5 @Role
 ```
 </p></details>
 
@@ -3381,6 +3385,9 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Requires bot permissions:**
+`Manage roles`
+
 **Overload 1:**
 
 [`role`]: *Role to grant*
@@ -3396,7 +3403,8 @@
 **Examples:**
 
 ```xml
-!levelroles add @Role RoleName
+!levelroles add @Role 5
+!levelroles add 5 @Role
 ```
 </p></details>
 
@@ -3413,6 +3421,9 @@
 
 **Requires user permissions:**
 `Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
 
 **Overload 1:**
 
@@ -3444,6 +3455,9 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Requires bot permissions:**
+`Manage roles`
+
 **Examples:**
 
 ```xml
@@ -3464,6 +3478,9 @@
 
 **Requires user permissions:**
 `Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
 
 **Examples:**
 
@@ -3826,6 +3843,162 @@
 ```xml
 !message unpinall
 !message unpinall #my-text-channel
+```
+</p></details>
+
+---
+
+## Group: reactionroles
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Reaction roles management. Reaction roles are granted to a member of the guild when the member reacts to a message with the special emoji. Group call lists all reaction roles for the guild. Group call adds a role to the reaction roles list triggered by given emoji, effective immediately.*
+
+**Aliases:**
+`rr, reactionrole, reactroles, reactionrl, reactrole, reactr, reactrl, rrole`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Overload 2:**
+
+[`emoji`]: *Emoji*
+
+[`role`]: *Role to grant*
+
+**Overload 1:**
+
+[`role`]: *Role to grant*
+
+[`emoji`]: *Emoji*
+
+**Examples:**
+
+```xml
+!reactionroles
+!reactionroles @Role :emoji:
+!reactionroles :emoji: @Role
+```
+</p></details>
+
+---
+
+### reactionroles add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Registers given role as a reaction role for the specified emoji.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Overload 1:**
+
+[`role`]: *Role to grant*
+
+[`emoji`]: *Emoji*
+
+**Overload 0:**
+
+[`emoji`]: *Emoji*
+
+[`role`]: *Role to grant*
+
+**Examples:**
+
+```xml
+!reactionroles add @Role :emoji:
+!reactionroles add :emoji: @Role
+```
+</p></details>
+
+---
+
+### reactionroles delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes given reaction role(s) by emoji or role.*
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Overload 1:**
+
+[`role...`]: *Roles to remove*
+
+**Overload 1:**
+
+[`emoji...`]: *Ranks*
+
+**Examples:**
+
+```xml
+!reactionroles delete @Role RoleName
+!reactionroles delete :emoji: emoji_name
+```
+</p></details>
+
+---
+
+### reactionroles deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all reaction roles.*
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Examples:**
+
+```xml
+!reactionroles deleteall
+```
+</p></details>
+
+---
+
+### reactionroles list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all reaction roles.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Examples:**
+
+```xml
+!reactionroles list
 ```
 </p></details>
 

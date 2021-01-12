@@ -18,7 +18,7 @@ Features:
   - Categorized and intuitive command group system with over 500 commands.
   - Complete administration of guilds, channels, users, emojis, roles, integrations etc. via categorized commands.
   - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
-  - Eases your pain with auto-assignable roles, self-assignable roles and roles granted upon reaching a certain level.
+  - Eases your pain with auto-assignable roles, self-assignable roles, roles granted upon reaching a certain level or reacting with certain emojis.
   - Real-time guild backup with exemptions of specified channels.
   - Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
   - Message filtering either by raw string matching or regular expression matching, automatic gore websites filter, IP logging websites filter, invite filter, etc.
@@ -26,14 +26,14 @@ Features:
   - Customizable guild content: memes (along with meme generator), ranks, birthdays, currency, currency items and many more!
   - Searches of online services: YouTube, Wikipedia, Imgur, reddit, Steam, IMDb, OpenWeather etc.
   - RSS feed subscriptions (includes YouTube, reddit and many more) - automatic notifications when new content is released.
-  - Many games to pass your time: Quiz, Tic-Tac-Toe, Hangman, Connect4, Othello, Caro and many more! 
   - Ranking/Experience system with guild-specific rank names.
-  - Currency management and gambling games: Poker, BlackJack, Slots etc.
-  - Interactive text or reaction polls.
-  - Reminders in DM and guild channels.
+  - Many singleplayer and multiplayer games to pass your time: Quiz, Tic-Tac-Toe, Hangman, Connect4, Othello, Caro and more with stat tracking! 
+  - Currency management and multiplayer gambling games: Poker, BlackJack, Slots etc.
+  - Speaking of games, adventurers may wish to train their own chickens, upgrade them using guild currency, make them fight other chickens and even start ambushes or wars!
+  - Todo list which can be private (via DM) or public (guild channels). Reminders can be scheduled using absolute or relative time and can be listed in various ways.
   - Music playback and queue management commands supporting YouTube, Twitch, Soundcloud and many more.
   - Starboard with customizable star emoji and reaction threshold.
-  - Chicken training, battles and wars!
+  - Interactive text or reaction poll system.
   - Guild-specific culture setting (e.g. language, timezone). Currently supported languages/cultures: `en-UK` (default), `en-US`.
 
 
