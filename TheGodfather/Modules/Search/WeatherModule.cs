@@ -1,80 +1,97 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
-#endregion
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Search
 {
     [Group("weather"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Weather search commands. Group call returns weather information for given query.")]
     [Aliases("w")]
-    [UsageExampleArgs("london")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class WeatherModule : TheGodfatherServiceModule<WeatherService>
+    public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
-
-        public WeatherModule(WeatherService weather, SharedData shared, DatabaseContextBuilder db)
-            : base(weather, shared, db)
-        {
-            this.ModuleColor = DiscordColor.Aquamarine;
-        }
-
-
+        #region weather
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Query.")] string query)
+                                           [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled())
-                throw new ServiceDisabledException();
-
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("You need to specify a query (city usually).");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
-            DiscordEmbed em = await this.Service.GetEmbeddedCurrentWeatherDataAsync(query);
-            if (em is null)
-                throw new CommandFailedException("Cannot find weather data for given query.");
+            CompleteWeatherData? data = await this.Service.GetCurrentDataAsync(query);
+            if (data is null) {
+                await ctx.FailAsync("cmd-err-weather");
+                return;
+            }
 
-            await ctx.RespondAsync(embed: em);
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                string locationStr = $"[{data.Name + ", " + data.Sys.Country}]({WeatherService.GetCityUrl(data.Id)})";
+                emb.AddLocalizedTitleField("str-w-location", locationStr, inline: true, titleArgs: Emojis.Globe);
+                emb.AddLocalizedTitleField("str-w-coordinates", $"{data.Coord.Lat}, {data.Coord.Lon}", inline: true, titleArgs: Emojis.Ruler);
+                this.AddDataToEmbed(emb, data);
+            });
         }
+        #endregion
 
-
-        #region COMMAND_WEATHER_FORECAST
+        #region weather forecast
         [Command("forecast"), Priority(1)]
-        [Description("Get weather forecast for the following days (def: 7).")]
         [Aliases("f")]
-        [UsageExampleArgs("london", "5 london")]
         public async Task ForecastAsync(CommandContext ctx,
-                                       [Description("Amount of days to fetch the forecast for.")] int amount,
-                                       [RemainingText, Description("Query.")] string query)
+                                       [Description("desc-amount-days")] int amount,
+                                       [RemainingText, Description("desc-query")] string query)
         {
-            if (this.Service.IsDisabled())
-                throw new ServiceDisabledException();
-
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("You need to specify a query (city usually).");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
 
-            IReadOnlyList<DiscordEmbedBuilder> ems = await this.Service.GetEmbeddedWeatherForecastAsync(query, amount);
-            if (ems is null || !ems.Any())
-                throw new CommandFailedException("Cannot find weather data for given query.");
+            if (amount is < 1 or > 31)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-weather", 1, 31);
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, ems.Select(e => new Page(embed: e)));
+            Forecast? data = await this.Service.GetForecastAsync(query);
+            if (data is null || !data.WeatherDataList.Any()) {
+                await ctx.FailAsync("cmd-err-weather");
+                return;
+            }
+
+            await ctx.PaginateAsync(data.WeatherDataList.Select((d, i) => (d, i)).Take(amount), (emb, r) => {
+                DateTime date = DateTime.Now.AddDays(r.i + 1);
+                emb.WithLocalizedTitle("fmt-weather-f", date.DayOfWeek, date.Date.ToShortDateString());
+                string locationStr = $"[{data.City.Name + ", " + data.City.Country}]({WeatherService.GetCityUrl(data.City)})";
+                emb.AddLocalizedTitleField("str-w-location", locationStr, inline: true, titleArgs: Emojis.Globe);
+                emb.AddLocalizedTitleField("str-w-coordinates", $"{data.City.Coord.Lat}, {data.City.Coord.Lon}", inline: true, titleArgs: Emojis.Ruler);
+                this.AddDataToEmbed(emb, r.d);
+                return emb;
+            }, this.ModuleColor);
         }
 
         [Command("forecast"), Priority(0)]
         public Task ForecastAsync(CommandContext ctx,
-                                 [RemainingText, Description("Query.")] string query)
+                                 [RemainingText, Description("desc-query")] string query)
             => this.ForecastAsync(ctx, 7, query);
+        #endregion
+
+
+        #region internals
+        private LocalizedEmbedBuilder AddDataToEmbed(LocalizedEmbedBuilder emb, PartialWeatherData data)
+        {
+            emb.WithColor(this.ModuleColor);
+            emb.AddLocalizedTitleField("str-w-condition", data.Weather.Select(w => w.Main).JoinWith(", "), inline: true, titleArgs: Emojis.Cloud);
+            emb.AddLocalizedTitleField("str-w-humidity", $"{data.Main.Humidity}%", inline: true, titleArgs: Emojis.Drops);
+            emb.AddLocalizedTitleField("str-w-temp", $"{data.Main.Temp:F1}°C", inline: true, titleArgs: Emojis.Thermometer);
+            emb.AddLocalizedTitleField("str-w-temp-minmax", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true, titleArgs: Emojis.Thermometer);
+            emb.AddLocalizedTitleField("str-w-wind", $"{data.Wind.Speed} m/s", inline: true, titleArgs: Emojis.Wind);
+            emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
+            emb.WithLocalizedFooter("fmt-powered-by", null, "openweathermap.org");
+            return emb;
+        }
         #endregion
     }
 }

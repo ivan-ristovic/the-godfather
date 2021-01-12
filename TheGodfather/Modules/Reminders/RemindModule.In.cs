@@ -1,51 +1,37 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-#endregion
 
 namespace TheGodfather.Modules.Reminders
 {
     public partial class RemindModule
     {
         [Group("in")]
-        [Description("Send a reminder after specific time span.")]
-        [UsageExampleArgs("3h Drink water!", "3h5m Drink water!")]
-        public class RemindInModule : RemindModule
+        public sealed class RemindInModule : RemindModule
         {
-
-            public RemindInModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.NotQuiteBlack;
-            }
-
-
+            #region remind in
             [GroupCommand, Priority(2)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Time span until reminder.")] TimeSpan timespan,
-                                             [Description("Channel to send message to.")] DiscordChannel channel,
-                                             [RemainingText, Description("What to send?")] string message)
+            public new Task ExecuteGroupAsync(CommandContext ctx,
+                                             [Description("desc-remind-t")] TimeSpan timespan,
+                                             [Description("desc-remind-chn")] DiscordChannel channel,
+                                             [RemainingText, Description("desc-remind-text")] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(1)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Channel to send message to.")] DiscordChannel channel,
-                                             [Description("Time span until reminder.")] TimeSpan timespan,
-                                             [RemainingText, Description("What to send?")] string message)
+            public new Task ExecuteGroupAsync(CommandContext ctx,
+                                             [Description("desc-remind-chn")] DiscordChannel channel,
+                                             [Description("desc-remind-t")] TimeSpan timespan,
+                                             [RemainingText, Description("desc-remind-text")] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(0)]
-            new public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("Time span until reminder.")] TimeSpan timespan,
-                                             [RemainingText, Description("What to send?")] string message)
+            public new Task ExecuteGroupAsync(CommandContext ctx,
+                                             [Description("desc-remind-t")] TimeSpan timespan,
+                                             [RemainingText, Description("desc-remind-text")] string message)
                 => this.AddReminderAsync(ctx, timespan, null, message);
+            #endregion
         }
     }
 }

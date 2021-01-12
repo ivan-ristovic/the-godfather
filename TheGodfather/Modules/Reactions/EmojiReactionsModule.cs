@@ -1,434 +1,288 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
+using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Reactions.Common;
-#endregion
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Reactions.Extensions;
+using TheGodfather.Modules.Reactions.Services;
 
 namespace TheGodfather.Modules.Reactions
 {
     [Group("emojireaction"), Module(ModuleType.Reactions), NotBlocked]
-    [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
-    [UsageExampleArgs(":smile: haha laughing")]
-    [RequirePermissions(Permissions.ManageGuild)]
+    [RequireGuild, RequirePermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class EmojiReactionsModule : TheGodfatherModule
+    public sealed class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
-
-        public EmojiReactionsModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.VeryDarkGray;
-        }
-
-
+        #region emojireaction
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Emoji to send.")] DiscordEmoji emoji,
-                                     [RemainingText, Description("Trigger word list.")] params string[] triggers)
+                                     [Description("desc-emoji")] DiscordEmoji emoji,
+                                     [RemainingText, Description("desc-triggers")] params string[] triggers)
             => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Trigger word (case-insensitive).")] string trigger,
-                                     [Description("Emoji to send.")] DiscordEmoji emoji)
+                                     [Description("desc-triggers")] string trigger,
+                                     [Description("desc-emoji")] DiscordEmoji emoji)
             => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
+        #endregion
 
-
-        #region COMMAND_EMOJI_REACTIONS_ADD
+        #region emojireaction add
         [Command("add"), Priority(1)]
-        [Description("Add emoji reaction to guild reaction list.")]
-        [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExampleArgs(":smile: haha", "haha :smile:")]
+        [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Emoji to send.")] DiscordEmoji emoji,
-                            [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
+                            [Description("desc-emoji")] DiscordEmoji emoji,
+                            [RemainingText, Description("desc-triggers")] params string[] triggers)
             => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Trigger word (case-insensitive).")] string trigger,
-                            [Description("Emoji to send.")] DiscordEmoji emoji)
+                            [Description("desc-triggers")] string trigger,
+                            [Description("desc-emoji")] DiscordEmoji emoji)
             => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_ADDREGEX
+        #region emojireaction addregex
         [Command("addregex"), Priority(1)]
-        [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
-        [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExampleArgs(":smile: (ha)+", "(ha)+ :smile:")]
+        [Aliases("registerregex", "regex", "newregex", "ar", "+r", "+=r", "<<r", "<r", "<-r", "<=r", "+regex", "+regexp", "+rgx")]
         public Task AddRegexAsync(CommandContext ctx,
-                                 [Description("Emoji to send.")] DiscordEmoji emoji,
-                                 [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
+                                 [Description("desc-emoji")] DiscordEmoji emoji,
+                                 [RemainingText, Description("desc-triggers")] params string[] triggers)
             => this.AddEmojiReactionAsync(ctx, emoji, true, triggers);
 
         [Command("addregex"), Priority(0)]
         public Task AddRegexAsync(CommandContext ctx,
-                                 [Description("Trigger word (case-insensitive).")] string trigger,
-                                 [Description("Emoji to send.")] DiscordEmoji emoji)
+                                 [Description("desc-triggers")] string trigger,
+                                 [Description("desc-emoji")] DiscordEmoji emoji)
             => this.AddEmojiReactionAsync(ctx, emoji, true, trigger);
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_DELETE
+        #region emojireaction delete
         [Command("delete"), Priority(2)]
-        [Description("Remove emoji reactions for given trigger words.")]
-        [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExampleArgs("haha sometrigger", "5", "5 4", ":joy:")]
+        [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
+                                     [Description("desc-emoji")] DiscordEmoji emoji)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
-                throw new CommandFailedException("This guild has no emoji reactions registered.");
+            if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
+                throw new CommandFailedException(ctx, "cmd-err-er-none");
 
-            string ename = emoji.GetDiscordName();
-            if (ereactions.RemoveWhere(er => er.Response == ename) == 0)
-                throw new CommandFailedException("No such reactions found!");
+            int removed = await this.Service.RemoveEmojiReactionsEAsync(ctx.Guild.Id, emoji);
+            if (removed == 0)
+                throw new CommandFailedException(ctx, "cmd-err-er-404");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id && er.Reaction == ename));
-                await db.SaveChangesAsync();
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-er-del", removed);
+
+            if (removed > 0) {
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-er-del");
+                    emb.WithColor(this.ModuleColor);
+                    emb.AddLocalizedTitleField("str-emoji", emoji, inline: true);
+                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                });
             }
-            
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Several emoji reactions have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Removed reaction for emoji", emoji, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            await this.InformAsync(ctx, $"Removed reactions that contain emoji: {emoji}", important: false);
         }
 
         [Command("delete"), Priority(1)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("IDs of the reactions to remove.")] params int[] ids)
+                                     [Description("desc-r-del-ids")] params int[] ids)
         {
             if (ids is null || !ids.Any())
-                throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
-                throw new CommandFailedException("This guild has no emoji reactions registered.");
+            if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
+                throw new CommandFailedException(ctx, "cmd-err-er-none");
 
-            var eb = new StringBuilder();
+            int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids);
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                foreach (int id in ids) {
-                    if (!ereactions.Any(er => er.Id == id)) {
-                        eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
-                        continue;
-                    } else {
-                        db.EmojiReactions.Remove(new DatabaseEmojiReaction { Id = id, GuildId = ctx.Guild.Id });
-                    }
-                }
-                await db.SaveChangesAsync();
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-er-del", removed);
+
+            if (removed > 0) {
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-er-del");
+                    emb.WithColor(this.ModuleColor);
+                    emb.AddLocalizedTitleField("str-ids", ids.JoinWith(", "), inline: true);
+                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                });
             }
-
-            int count = ereactions.RemoveWhere(er => ids.Contains(er.Id));
-            
-            if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder {
-                        Title = "Several emoji reactions have been deleted",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Removed successfully", $"{count} reactions", inline: true);
-                    emb.AddField("IDs attempted to be removed", string.Join(", ", ids));
-                    if (eb.Length > 0)
-                        emb.AddField("With errors", eb.ToString());
-                    await logchn.SendMessageAsync(embed: emb.Build())
-                        .ConfigureAwait(false);
-                }
-            }
-
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
-            else
-                await this.InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
         }
 
         [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
+                                     [RemainingText, Description("desc-triggers")] params string[] triggers)
         {
             if (triggers is null || !triggers.Any())
-                throw new InvalidCommandUsageException("Missing trigger words!");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-trig-none");
 
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
-                throw new CommandFailedException("This guild has no emoji reactions registered.");
-
-            var erIds = new List<int>();
+            IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(ctx.Guild.Id);
+            if (!ers.Any())
+                throw new CommandFailedException(ctx, "cmd-err-er-none");
 
             var eb = new StringBuilder();
-            triggers = triggers.Select(t => t.ToLowerInvariant()).ToArray();
-            foreach (string trigger in triggers) {
-                if (!trigger.IsValidRegex()) {
-                    eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+            var validTriggers = new HashSet<string>();
+            var foundReactions = new HashSet<EmojiReaction>();
+            foreach (string trigger in triggers.Select(t => t.ToLowerInvariant()).Distinct()) {
+                if (!trigger.TryParseRegex(out _)) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 
-                IEnumerable<EmojiReaction> found = ereactions.Where(er => er.ContainsTriggerPattern(trigger));
+                IEnumerable<EmojiReaction> found = ers.Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
-                    eb.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
                     continue;
                 }
 
-                bool success = true;
-                foreach (EmojiReaction er in found) {
-                    success |= er.RemoveTrigger(trigger);
-                    erIds.Add(er.Id);
-                }
-
-                if (!success) {
-                    eb.AppendLine($"Warning: Failed to remove some emoji reactions for trigger {Formatter.Bold(trigger)}.");
-                    continue;
-                }
+                validTriggers.Add(trigger);
+                foreach (EmojiReaction er in found)
+                    foundReactions.Add(er);
             }
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                var toUpdate = db.EmojiReactions
-                   .Include(t => t.DbTriggers)
-                   .AsEnumerable()
-                   .Where(tr => tr.GuildId == ctx.Guild.Id && erIds.Contains(tr.Id))
-                   .ToList();
-                foreach (DatabaseEmojiReaction er in toUpdate) {
-                    foreach (string trigger in triggers)
-                        er.DbTriggers.Remove(new DatabaseEmojiReactionTrigger { ReactionId = er.Id, Trigger = trigger });
-                    await db.SaveChangesAsync();
-
-                    if (er.DbTriggers.Any()) {
-                        db.EmojiReactions.Remove(er);
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-
-            int count = ereactions.RemoveWhere(er => er.RegexCount == 0);
-            
-            if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder {
-                        Title = "Several emoji reactions have been deleted",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Removed successfully", $"{count} reactions", inline: true);
-                    emb.AddField("Triggers attempted to be removed", string.Join("\n", triggers));
-                    if (eb.Length > 0)
-                        emb.AddField("With errors", eb.ToString());
-                    await logchn.SendMessageAsync(embed: emb.Build());
-                }
-            }
+            int removed = await this.Service.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-action-err", eb);
             else
-                await this.InformAsync(ctx, $"Done! {count} reactions were removed completely.", important: false);
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-er-del", removed);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-er-del");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith(), inline: true);
+                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+            });
         }
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_DELETEALL
+        #region emojireaction deleteall
         [Command("deleteall"), UsesInteractivity]
-        [Description("Delete all reactions for the current guild.")]
-        [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all emoji reactions for this guild?"))
+            if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
+                throw new CommandFailedException(ctx, "cmd-err-er-none");
+
+            if (!await ctx.WaitForBoolReplyAsync("q-er-rem-all"))
                 return;
 
-            if (this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
-                if (!this.Shared.EmojiReactions.TryRemove(ctx.Guild.Id, out _))
-                    throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
+            int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id);
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id));
-                await db.SaveChangesAsync();
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-er-del", removed);
+
+            if (removed > 0) {
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-er-del");
+                    emb.WithColor(this.ModuleColor);
+                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                });
             }
-
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "All emoji reactions have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            await this.InformAsync(ctx, "Removed all emoji reactions!", important: false);
         }
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_FIND
+        #region emojireaction find
         [Command("find")]
-        [Description("Show all emoji reactions that matches the specified trigger.")]
-        [Aliases("f")]
-        [UsageExampleArgs("hello")]
-        public Task ListAsync(CommandContext ctx,
-                             [RemainingText, Description("Specific trigger.")] string trigger)
+        [Aliases("f", "test")]
+        public Task FindAsync(CommandContext ctx,
+                             [RemainingText, Description("desc-trigger")] string trigger)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions) || !ereactions.Any())
-                throw new CommandFailedException("This guild has no text reactions registered.");
-
-            IEnumerable<EmojiReaction> ers = ereactions.Where(t => t.IsMatch(trigger));
+            IReadOnlyCollection<EmojiReaction> ers = this.Service.FindMatchingEmojiReactions(ctx.Guild.Id, trigger);
             if (!ers.Any())
-                throw new CommandFailedException("None of the reactions respond to such trigger.");
+                throw new CommandFailedException(ctx, "cmd-err-er-404");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = "Text reaction that matches the trigger",
-                Description = string.Join("\n", ers.Select(er => $"{Formatter.InlineCode(er.Id.ToString())} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {Formatter.InlineCode(string.Join(", ", er.TriggerStrings))}")),
-                Color = this.ModuleColor
-            }.Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle("str-er-matching");
+                emb.WithDescription(ers.Select(er => FormatEmojiReaction(ctx.Client, er).JoinWith()));
+                emb.WithColor(this.ModuleColor);
+            });
         }
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_LIST
+        #region emojireaction list
         [Command("list")]
-        [Description("Show all emoji reactions for this guild.")]
-        [Aliases("ls", "l", "print")]
-        public async Task ListAsync(CommandContext ctx)
+        [Aliases("print", "show", "view", "ls", "l", "p")]
+        public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.EmojiReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<EmojiReaction> ereactions))
-                throw new CommandFailedException("No emoji reactions registered for this guild.");
+            IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(ctx.Guild.Id);
+            if (!ers.Any())
+                throw new CommandFailedException(ctx, "cmd-err-er-none");
 
-            foreach (EmojiReaction reaction in ereactions) {
-                try {
-                    var emoji = DiscordEmoji.FromName(ctx.Client, reaction.Response);
-                } catch (ArgumentException) {
-                    ereactions.RemoveWhere(er => er.Response == reaction.Response);
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildId == ctx.Guild.Id && er.Reaction == reaction.Response));
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-
-            // In case some of the reactions are deleted above, this check comes after
-            if (!ereactions.Any())
-                throw new CommandFailedException("No emoji reactions registered for this guild.");
-
-            await ctx.SendCollectionInPagesAsync(
-                "Emoji reactions for this guild",
-                ereactions.OrderBy(er => er.Id),
-                er => $"{Formatter.InlineCode($"{er.Id:D4}")} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {string.Join(", ", er.TriggerStrings)}",
+            return ctx.PaginateAsync(
+                "str-er",
+                ers.OrderBy(er => er.Id),
+                er => FormatEmojiReaction(ctx.Client, er),
                 this.ModuleColor
             );
         }
         #endregion
 
 
-        #region HELPER_FUNCTIONS
+        #region internals
+        private static string FormatEmojiReaction(DiscordClient client, EmojiReaction er)
+        {
+            string emoji;
+            try {
+                emoji = DiscordEmoji.FromName(client, er.Response);
+            } catch (ArgumentException) {
+                emoji = "404";
+            }
+
+            return $"{Formatter.InlineCode($"{er.Id:D4}")} | {emoji} | {Formatter.InlineCode(er.Triggers.JoinWith(", "))}";
+        }
+
         private async Task AddEmojiReactionAsync(CommandContext ctx, DiscordEmoji emoji, bool regex, params string[] triggers)
         {
-            if (emoji is DiscordGuildEmoji && !ctx.Guild.Emojis.Values.Contains(emoji))
-                throw new CommandFailedException("The reaction has to be an emoji from this guild.");
+            if (emoji is DiscordGuildEmoji && !ctx.Guild.Emojis.Select(kvp => kvp.Value).Contains(emoji))
+                throw new CommandFailedException(ctx, "cmd-err-er-emoji-404");
 
             if (triggers is null || !triggers.Any())
-                throw new InvalidCommandUsageException("Missing trigger words!");
-
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
-                if (!this.Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>()))
-                    throw new ConcurrentOperationException("Failed to create emoji reaction data structure");
-
-            int id;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseEmojiReaction dber = db.EmojiReactions.FirstOrDefault(er => er.GuildId == ctx.Guild.Id && er.Reaction == emoji.GetDiscordName());
-                if (dber is null) {
-                    dber = new DatabaseEmojiReaction {
-                        GuildId = ctx.Guild.Id,
-                        Reaction = emoji.GetDiscordName()
-                    };
-                    db.EmojiReactions.Add(dber);
-                    await db.SaveChangesAsync();
-                }
-
-                foreach (string trigger in triggers)
-                    dber.DbTriggers.Add(new DatabaseEmojiReactionTrigger { ReactionId = dber.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
-
-                await db.SaveChangesAsync();
-                id = dber.Id;
-            }
+                throw new InvalidCommandUsageException(ctx, "cmd-err-trig-none");
 
             var eb = new StringBuilder();
+            var validTriggers = new HashSet<string>();
             foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                if (trigger.Length > 120) {
-                    eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is too long (120 chars max).");
+                if (trigger.Length > ReactionTrigger.TriggerLimit) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-len", trigger, ReactionTrigger.TriggerLimit));
                     continue;
                 }
 
-                if (regex && !trigger.IsValidRegex()) {
-                    eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+                if (regex && !trigger.TryParseRegex(out _)) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 
-                ConcurrentHashSet<EmojiReaction> ereactions = this.Shared.EmojiReactions[ctx.Guild.Id];
-
-                string ename = emoji.GetDiscordName();
-                if (ereactions.Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {
-                    eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} already exists for this emoji.");
-                    continue;
-                }
-
-                EmojiReaction reaction = ereactions.FirstOrDefault(tr => tr.Response == ename);
-                if (reaction is null) {
-                    if (!ereactions.Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
-                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                } else {
-                    if (!reaction.AddTrigger(trigger, isRegex: regex))
-                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                }
+                validTriggers.Add(trigger);
             }
-            
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "New emoji reactions added",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Reaction", emoji, inline: true);
-                emb.AddField("Triggers", string.Join("\n", triggers));
-                if (eb.Length > 0)
-                    emb.AddField("With errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+
+            int added = await this.Service.AddEmojiReactionEAsync(ctx.Guild.Id, emoji, validTriggers, regex);
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-action-err", eb);
             else
-                await this.InformAsync(ctx, "Successfully added all given emoji reactions.", important: false);
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-er-add", added);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-er-add");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-reaction", emoji, inline: true);
+                emb.AddLocalizedTitleField("str-count", added, inline: true);
+                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith());
+            });
         }
         #endregion
     }

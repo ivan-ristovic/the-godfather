@@ -1,17 +1,13 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
-
-using TheGodfather.Common;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public abstract class BoardGame : ChannelEvent
+    public abstract class BaseBoardGame : BaseChannelGame
     {
         protected readonly int SizeY;
         protected readonly int SizeX;
@@ -19,12 +15,12 @@ namespace TheGodfather.Modules.Games.Common
         protected bool deleteErrored;
         protected int move;
         protected TimeSpan moveTime;
-        protected DiscordMessage msgHandle;
+        protected DiscordMessage? msgHandle;
         protected DiscordUser player1;
         protected DiscordUser player2;
 
 
-        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1,
+        protected BaseBoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1,
             DiscordUser p2, int sizeX, int sizeY, TimeSpan? movetime = null)
             : base(interactivity, channel)
         {
@@ -41,19 +37,19 @@ namespace TheGodfather.Modules.Games.Common
             => (col >= 0 && col < this.SizeY && row >= 0 && row < this.SizeX) ? this.board[row, col] : -1;
 
 
-        public sealed override async Task RunAsync()
+        public sealed override async Task RunAsync(LocalizationService lcs)
         {
             this.msgHandle = await this.Channel.SendMessageAsync($"{this.player1.Mention} vs {this.player2.Mention}");
 
             while (!this.IsTimeoutReached && this.move < this.SizeY * this.SizeX && !this.IsGameOver()) {
-                await this.UpdateBoardAsync();
-                await this.AdvanceAsync();
+                this.msgHandle = await this.UpdateBoardAsync(lcs);
+                await this.AdvanceAsync(lcs);
             }
 
             if (this.IsGameOver())
                 this.ResolveGameWinner();
 
-            await this.UpdateBoardAsync();
+           this.msgHandle = await this.UpdateBoardAsync(lcs);
         }
 
 
@@ -65,7 +61,7 @@ namespace TheGodfather.Modules.Games.Common
             return true;
         }
 
-        protected virtual async Task AdvanceAsync()
+        protected virtual async Task AdvanceAsync(LocalizationService lcs)
         {
             int row = 0, col = 0;
             bool player1plays = (this.move % 2 == 0);
@@ -94,12 +90,12 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Result.DeleteAsync();
                     } catch {
-                        await this.Channel.InformFailureAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.");
+                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-perms"));
                         this.deleteErrored = true;
                     }
                 }
             } else {
-                await this.Channel.InformFailureAsync($"Move [{row} {col}] is invalid.");
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", $"({row},{col})"));
             }
         }
 
@@ -108,6 +104,6 @@ namespace TheGodfather.Modules.Games.Common
 
 
         protected abstract bool IsGameOver();
-        protected abstract Task UpdateBoardAsync();
+        protected abstract Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs);
     }
 }

@@ -1,25 +1,18 @@
-﻿#region USING_DIRECTIVES
-using Newtonsoft.Json;
-
-using System;
+﻿#nullable disable
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-#endregion
 
 namespace TheGodfather.Modules.Search.Common
 {
-    public class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
+    public sealed class WikiSearchResponse : IReadOnlyList<WikiSearchResult>
     {
-        private readonly string query;
         private readonly IReadOnlyList<string> hits;
         private readonly IReadOnlyList<string> snippets;
         private readonly IReadOnlyList<string> urls;
 
 
-        public WikiSearchResponse(string query, IReadOnlyList<string> hits, IReadOnlyList<string> snippets, IReadOnlyList<string> urls)
+        public WikiSearchResponse(IReadOnlyList<string> hits, IReadOnlyList<string> snippets, IReadOnlyList<string> urls)
         {
-            this.query = query;
             this.hits = hits;
             this.snippets = snippets;
             this.urls = urls;
@@ -39,7 +32,7 @@ namespace TheGodfather.Modules.Search.Common
         public WikiSearchResult this[int index] => new WikiSearchResult(this.hits[index], this.snippets[index], this.urls[index]);
     }
 
-    public class WikiSearchResult
+    public sealed class WikiSearchResult
     {
         public string Title { get; }
         public string Snippet { get; }

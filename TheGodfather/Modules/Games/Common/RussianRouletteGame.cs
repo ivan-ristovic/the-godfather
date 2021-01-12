@@ -1,21 +1,23 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-#endregion
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class RussianRouletteGame : ChannelEvent
+    public sealed class RussianRouletteGame : BaseChannelGame
     {
+        public const int MaxParticipants = 10;
+
         public int ParticipantCount => this.participants.Count;
         public bool Started { get; private set; }
         public IReadOnlyList<DiscordUser> Survivors { get; private set; }
@@ -27,34 +29,34 @@ namespace TheGodfather.Modules.Games.Common
             : base(interactivity, channel)
         {
             this.Started = false;
+            this.Survivors = new List<DiscordUser>();
             this.participants = new ConcurrentHashSet<DiscordUser>();
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
 
-            for (int round = 1; round < 5 && this.ParticipantCount > 1; round++) {
-                DiscordMessage msg = await this.Channel.SendMessageAsync($"Round #{round} starts in 5s!");
-
+            var rng = new SecureRandom();
+            for (int round = 1; round <= 5 && this.ParticipantCount > 1; round++) {
+                DiscordMessage msg = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Gun, DiscordColor.DarkRed, "fmt-game-rr-starting", round);
                 await Task.Delay(TimeSpan.FromSeconds(5));
 
-                var participants = this.participants.ToList();
                 var eb = new StringBuilder();
-                foreach (DiscordUser participant in participants) {
-                    if (GFRandom.Generator.Next(6) < round) {
-                        eb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Dead} {StaticDiscordEmoji.Blast} {StaticDiscordEmoji.Gun}");
+                foreach (DiscordUser participant in this.participants) {
+                    if (rng.NextBool(round)) {
+                        eb.AppendLine($"{participant.Mention} {Emojis.Dead} {Emojis.Blast} {Emojis.Gun}");
                         this.participants.TryRemove(participant);
                     } else {
-                        eb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Relieved} {StaticDiscordEmoji.Gun}");
+                        eb.AppendLine($"{participant.Mention} {Emojis.Relieved} {Emojis.Gun}");
                     }
-                    
-                    msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder {
-                        Title = $"ROUND #{round}",
-                        Description = eb.ToString(),
-                        Color = DiscordColor.DarkRed
-                    }.Build());
+
+                    var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
+                    emb.WithLocalizedTitle("fmt-game-rr-round", round);
+                    emb.WithDescription(eb.ToString());
+                    emb.WithColor(DiscordColor.DarkRed);
+                    msg = await msg.ModifyOrResendAsync(this.Channel, emb.Build());
 
                     await Task.Delay(TimeSpan.FromSeconds(2));
                 }
@@ -63,11 +65,7 @@ namespace TheGodfather.Modules.Games.Common
             this.Survivors = this.participants.ToList().AsReadOnly();
         }
 
-        public bool AddParticipant(DiscordUser user)
-        {
-            if (this.participants.Any(u => user.Id == u.Id))
-                return false;
-            return this.participants.Add(user);
-        }
+        public bool AddParticipant(DiscordUser user) 
+            => this.participants.Add(user);
     }
 }

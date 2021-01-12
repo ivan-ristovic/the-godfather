@@ -1,20 +1,19 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-#endregion
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public sealed class OthelloGame : BoardGame
+    public sealed class OthelloGame : BaseBoardGame
     {
-        private static readonly string _Header = StaticDiscordEmoji.ArrowUp + string.Join("", StaticDiscordEmoji.Numbers.Take(8));
+        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.Take(8).JoinWith("");
 
 
         public OthelloGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
@@ -27,10 +26,12 @@ namespace TheGodfather.Modules.Games.Common
 
         protected override bool IsGameOver()
         {
-            for (int i = 0; i < this.SizeX; i++)
-                for (int j = 0; j < this.SizeY; j++)
+            for (int i = 0; i < this.SizeX; i++) {
+                for (int j = 0; j < this.SizeY; j++) {
                     if (this.board[i, j] == 0)
                         return false;
+                }
+            }
             return true;
         }
 
@@ -48,10 +49,10 @@ namespace TheGodfather.Modules.Games.Common
                     int posY = row + y;
                     bool found = false;
                     int current = this.BoardElementAt(posY, posX);
-                    
+
                     if (current == -1 || current == 0 || current == val)
                         continue;
-                    
+
                     while (!found) {
                         posX += x;
                         posY += y;
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.Games.Common
                                 posY -= y;
                                 current = this.board[posY, posX];
                             }
-                        } else if (current == -1 || current == 0) {
+                        } else if (current is (-1) or 0) {
                             found = true;
                         }
                     }
@@ -83,25 +84,27 @@ namespace TheGodfather.Modules.Games.Common
             return legal;
         }
 
-        protected override Task UpdateBoardAsync()
+        protected override Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(_Header);
+            sb.AppendLine(_header);
 
             for (int i = 0; i < this.SizeX; i++) {
-                sb.Append(StaticDiscordEmoji.Numbers[i]);
+                sb.Append(Emojis.Numbers.Get(i));
                 for (int j = 0; j < this.SizeY; j++)
                     switch (this.board[i, j]) {
-                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
-                        case 1: sb.Append(StaticDiscordEmoji.BoardPieceBlueCircle); break;
-                        case 2: sb.Append(StaticDiscordEmoji.BoardPieceRedCircle); break;
+                        case 0: sb.Append(Emojis.BoardSquare); break;
+                        case 1: sb.Append(Emojis.BoardPieceBlueCircle); break;
+                        case 2: sb.Append(Emojis.BoardPieceRedCircle); break;
                     }
                 sb.AppendLine();
             }
 
-            sb.AppendLine().Append("User to move: ").AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
+            sb.AppendLine()
+              .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
+              .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder {
+            return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }
@@ -118,10 +121,7 @@ namespace TheGodfather.Modules.Games.Common
                 }
             }
 
-            if (p1count == p2count)
-                this.Winner = null;
-            else
-                this.Winner = (p1count > p2count) ? this.player1 : this.player2;
+            this.Winner = p1count == p2count ? null : (p1count > p2count) ? this.player1 : this.player2;
         }
     }
 }

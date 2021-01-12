@@ -1,160 +1,164 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Humanizer;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
+using Humanizer;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
 using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Owner.Common;
-#endregion
+using TheGodfather.Modules.Owner.Extensions;
+using TheGodfather.Modules.Owner.Services;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Owner
 {
     [Group("owner"), Module(ModuleType.Owner), Hidden]
-    [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
-    [Cooldown(3, 5, CooldownBucketType.Global)]
-    public partial class OwnerModule : TheGodfatherModule
+    public sealed class OwnerModule : TheGodfatherModule
     {
-
-        public OwnerModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.NotQuiteBlack;
-        }
-
-
-        #region COMMAND_ANNOUNCE
-        [Command("announce"), NotBlocked, UsesInteractivity]
-        [Description("Send a message to all guilds the bot is in.")]
-        [Aliases("a", "ann")]
-        [UsageExampleArgs("SPAM SPAM")]
+        #region announce
+        [Command("announce"), UsesInteractivity]
+        [Aliases("ann")]
         [RequireOwner]
         public async Task AnnounceAsync(CommandContext ctx,
-                                       [RemainingText, Description("Message to send.")] string message)
+                                       [RemainingText, Description("desc-announcement")] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the message:\n\n{Formatter.BlockCode(FormatterExtensions.StripMarkdown(message))}"))
+            if (!await ctx.WaitForBoolReplyAsync("q-announcement", args: Formatter.Strip(message)))
                 return;
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "An announcement from my owner",
-                Description = message,
-                Color = DiscordColor.Red
-            };
+            var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
+            emb.WithLocalizedTitle("str-announcement");
+            emb.WithDescription(message);
+            emb.WithColor(DiscordColor.Red);
 
             var eb = new StringBuilder();
-            foreach (TheGodfatherShard shard in TheGodfather.ActiveShards) {
-                foreach (DiscordGuild guild in shard.Client.Guilds.Values) {
+            IEnumerable<(int, IEnumerable<DiscordGuild>)> shardGuilds = TheGodfather.Bot!.Client.ShardClients
+                .Select(kvp => (kvp.Key, kvp.Value.Guilds.Values));
+            foreach ((int shardId, IEnumerable<DiscordGuild> guilds) in shardGuilds) {
+                foreach (DiscordGuild guild in guilds) {
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {
-                        eb.AppendLine($"Warning: Failed to send a message to {guild.ToString()}");
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-announce", shardId, guild.Name, guild.Id));
                     }
                 }
             }
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-err", eb.ToString());
             else
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Sent the message to all guilds!", important: false);
+                await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_BOTAVATAR
-        [Command("botavatar"), NotBlocked]
-        [Description("Set bot avatar.")]
-        [Aliases("setbotavatar", "setavatar")]
-        [UsageExampleArgs("http://someimage.png")]
+        #region avatar
+        [Command("avatar")]
+        [Aliases("setavatar", "setbotavatar", "profilepic", "a")]
         [RequireOwner]
         public async Task SetBotAvatarAsync(CommandContext ctx,
-                                           [Description("URL.")] Uri url)
+                                           [Description("desc-image-url")] Uri url)
         {
-            if (!await this.IsValidImageUriAsync(url))
-                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+            if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.AvatarSizeLimit))
+                throw new CommandFailedException(ctx, "cmd-err-image-url-fail", DiscordLimits.AvatarSizeLimit);
 
             try {
-                using (Stream stream = await _http.GetStreamAsync(url))
-                using (var ms = new MemoryStream()) {
-                    await stream.CopyToAsync(ms);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
-                }
+                using MemoryStream ms = await HttpService.GetMemoryStreamAsync(url);
+                await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
             } catch (WebException e) {
-                throw new CommandFailedException("Web exception thrown while fetching the image.", e);
+                throw new CommandFailedException(ctx, e, "err-url-image-fail");
             }
 
-            await this.InformAsync(ctx, "Successfully changed the bot avatar!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_BOTNAME
-        [Command("botname"), NotBlocked]
-        [Description("Set bot name.")]
-        [Aliases("setbotname", "setname")]
-        [UsageExampleArgs("TheBotfather")]
+        #region name
+        [Command("name")]
+        [Aliases("botname", "setbotname", "setname")]
         [RequireOwner]
         public async Task SetBotNameAsync(CommandContext ctx,
-                                         [RemainingText, Description("New name.")] string name)
+                                         [RemainingText, Description("desc-name")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Name missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+
+            if (name.Length > DiscordLimits.NameLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-name", DiscordLimits.NameLimit);
 
             await ctx.Client.UpdateCurrentUserAsync(username: name);
-            await this.InformAsync(ctx, $"Renamed the current bot user to {Formatter.Bold(ctx.Client.CurrentUser.Username)}");
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_DBQUERY
-        [Command("dbquery"), NotBlocked, Priority(0)]
-        [Description("Execute SQL query on the bot database.")]
-        [Aliases("sql", "dbq", "q")]
-        [UsageExampleArgs("SELECT * FROM gf.msgcount;")]
+        #region dbquery
+        [Command("dbquery"), Priority(1)]
+        [Aliases("sql", "dbq", "q", "query")]
         [RequireOwner]
+        public async Task DatabaseQuery(CommandContext ctx)
+        {
+            if (!ctx.Message.Attachments.Any())
+                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att");
+
+            DiscordAttachment? attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
+            if (attachment is null)
+                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att-none");
+
+            string query;
+            try {
+                query = await HttpService.GetStringAsync(attachment.Url).ConfigureAwait(false);
+            } catch (Exception e) {
+                throw new CommandFailedException(ctx, e, "err-attachment");
+            }
+
+            await this.DatabaseQuery(ctx, query);
+        }
+
+        [Command("dbquery"), Priority(0)]
         public async Task DatabaseQuery(CommandContext ctx,
-                                       [RemainingText, Description("SQL Query.")] string query)
+                                       [RemainingText, Description("desc-sql")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Query missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-dbq-sql-none");
 
             var res = new List<IReadOnlyDictionary<string, string>>();
-            using (DatabaseContext db = this.Database.CreateContext())
-            using (Microsoft.EntityFrameworkCore.Storage.RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query)) {
+            using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
+            using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
                 DbDataReader reader = dr.DbDataReader;
                 while (await reader.ReadAsync()) {
                     var dict = new Dictionary<string, string>();
 
                     for (int i = 0; i < reader.FieldCount; i++)
-                        dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
+                        dict[reader.GetName(i)] = reader[i] is DBNull ? "NULL" : reader[i]?.ToString() ?? "NULL";
 
                     res.Add(new ReadOnlyDictionary<string, string>(dict));
                 }
             }
 
             if (!res.Any() || !res.First().Any()) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Information, "str-dbq-none");
                 return;
             }
 
@@ -165,8 +169,8 @@ namespace TheGodfather.Modules.Owner
                 .First()
                 .Length;
 
-            await ctx.SendCollectionInPagesAsync(
-                "Query results",
+            await ctx.PaginateAsync(
+                "str-dbq-res",
                 res.Take(25),
                 row => {
                     var sb = new StringBuilder();
@@ -178,138 +182,90 @@ namespace TheGodfather.Modules.Owner
                 1
             );
         }
-
-        [Command("dbquery"), Priority(1)]
-        public async Task DatabaseQuery(CommandContext ctx)
-        {
-            if (!ctx.Message.Attachments.Any())
-                throw new CommandFailedException("Either write a query or attach a .sql file containing it!");
-
-            DiscordAttachment attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
-            if (attachment is null)
-                throw new CommandFailedException("No .sql files attached!");
-
-            string query;
-            try {
-                query = await _http.GetStringAsync(attachment.Url).ConfigureAwait(false);
-            } catch (Exception e) {
-                Log.Error(e, "Error");
-                throw new CommandFailedException("An error occured while getting the file.", e);
-            }
-
-            await this.DatabaseQuery(ctx, query);
-        }
         #endregion
 
-        #region COMMAND_EVAL
-        [Command("eval"), NotBlocked]
-        [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
-        [Aliases("compile", "run", "e", "c", "r")]
-        [UsageExampleArgs("\\`\\`\\`await Context.RespondAsync(\"Hello!\");\\`\\`\\`")]
+        #region eval
+        [Command("eval")]
+        [Aliases("evaluate", "compile", "run", "e", "c", "r")]
         [RequireOwner]
         public async Task EvaluateAsync(CommandContext ctx,
-                                       [RemainingText, Description("Code to evaluate.")] string code)
+                                       [RemainingText, Description("desc-code")] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new InvalidCommandUsageException("Code missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
 
-            int cs1 = code.IndexOf("```") + 3;
-            int cs2 = code.LastIndexOf("```");
-            if (cs1 == -1 || cs2 == -1)
-                throw new InvalidCommandUsageException("You need to wrap the code into a code block.");
-            code = code.Substring(cs1, cs2 - cs1);
+            DiscordMessage msg = await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-eval");
+                emb.WithColor(this.ModuleColor);
+            });
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "Evaluating...",
-                Color = this.ModuleColor
-            };
+            Script<object>? snippet = CSharpCompilationService.Compile(code, out ImmutableArray<Diagnostic> diag, out Stopwatch compileTime);
+            if (snippet is null) {
+                await msg.DeleteAsync();
+                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+            }
 
-            DiscordMessage msg = await ctx.RespondAsync(embed: emb.Build());
-
-            var globals = new EvaluationEnvironment(ctx);
-            ScriptOptions sopts = ScriptOptions.Default
-                .WithImports("System", "System.Collections.Generic", "System.Linq", "System.Net.Http",
-                    "System.Net.Http.Headers", "System.Reflection", "System.Text", "System.Text.RegularExpressions",
-                    "System.Threading.Tasks", "DSharpPlus", "DSharpPlus.CommandsNext", "DSharpPlus.Entities",
-                    "DSharpPlus.Interactivity")
-                .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
-
-            var sw1 = Stopwatch.StartNew();
-            Script<object> snippet = CSharpScript.Create(code, sopts, typeof(EvaluationEnvironment));
-            System.Collections.Immutable.ImmutableArray<Diagnostic> diag = snippet.Compile();
-            sw1.Stop();
+            var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
 
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
-                emb = new DiscordEmbedBuilder {
-                    Title = "Compilation failed",
-                    Description = $"Compilation failed after {sw1.ElapsedMilliseconds.ToString("#,##0")}ms with {diag.Length} errors.",
-                    Color = DiscordColor.Red
-                };
+                emb.WithLocalizedTitle("str-eval-fail-compile");
+                emb.WithLocalizedDescription("fmt-eval-fail-compile", compileTime.ElapsedMilliseconds, diag.Length);
+                emb.WithColor(DiscordColor.Red);
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddField($"Error at line: {ls.StartLinePosition.Line}, {ls.StartLinePosition.Character}", Formatter.InlineCode(d.GetMessage()));
+                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.InlineCode(d.GetMessage()), titleArgs: new[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character });
                 }
 
-                if (diag.Length > 3) {
-                    emb.AddField("Some errors were omitted", $"{diag.Length - 3} errors not displayed");
-                }
+                if (diag.Length > 3)
+                    emb.AddLocalizedField("str-eval-omit", "fmt-eval-omit", contentArgs: new object[] { diag.Length - 3 });
 
-                if (!(msg is null))
-                    msg = await msg.ModifyAsync(embed: emb.Build());
+                await UpdateOrRespondAsync();
                 return;
             }
 
-            Exception exc = null;
-            ScriptState<object> css = null;
-            var sw2 = Stopwatch.StartNew();
+            Exception? exc = null;
+            ScriptState<object>? res = null;
+            var runTime = Stopwatch.StartNew();
             try {
-                css = await snippet.RunAsync(globals);
-                exc = css.Exception;
+                res = await snippet.RunAsync(new EvaluationEnvironment(ctx));
             } catch (Exception e) {
                 exc = e;
             }
-            sw2.Stop();
+            runTime.Stop();
 
-            if (!(exc is null)) {
-                emb = new DiscordEmbedBuilder {
-                    Title = "Execution failed",
-                    Description = $"Execution failed after {sw2.ElapsedMilliseconds.ToString("#,##0")}ms with {Formatter.InlineCode($"{exc.GetType()} : {exc.Message}")}.",
-                    Color = this.ModuleColor
-                };
-
-                if (!(msg is null))
-                    msg = await msg.ModifyAsync(embed: emb.Build());
-                return;
+            if (exc is { } || res is null) {
+                emb.WithLocalizedTitle("str-eval-fail-run");
+                emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message);
+                emb.WithColor(DiscordColor.Red);
+                await UpdateOrRespondAsync();
+            } else {
+                emb.WithLocalizedTitle("str-eval-succ");
+                emb.WithColor(this.ModuleColor);
+                if (res.ReturnValue is { }) {
+                    emb.AddLocalizedTitleField("str-result", res.ReturnValue, false);
+                    emb.AddLocalizedTitleField("str-result-type", res.ReturnValue.GetType(), true);
+                } else {
+                    emb.AddLocalizedField("str-result", "str-eval-value-none", inline: true);
+                }
+                emb.AddLocalizedTitleField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedTitleField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
+                if (res.ReturnValue is { })
+                    await UpdateOrRespondAsync();
             }
 
-            emb = new DiscordEmbedBuilder {
-                Title = "Evaluation successful",
-                Color = DiscordColor.Aquamarine
-            };
 
-            emb.AddField("Result", css.ReturnValue is null ? "No value returned" : css.ReturnValue.ToString(), false);
-            emb.AddField("Compilation time", string.Concat(sw1.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
-            emb.AddField("Execution time", string.Concat(sw2.ElapsedMilliseconds.ToString("#,##0"), "ms"), true);
-
-            if (!(css.ReturnValue is null))
-                emb.AddField("Return type", css.ReturnValue.GetType().ToString(), true);
-
-            if (!(msg is null))
-                await msg.ModifyAsync(embed: emb.Build());
-            else
-                await ctx.RespondAsync(embed: emb.Build());
+            Task UpdateOrRespondAsync()
+                => msg is { } ? msg.ModifyAsync(embed: emb.Build()) : ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
-        #region COMMAND_GENERATECOMMANDS
-        [Command("generatecommandlist"), NotBlocked]
-        [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
-        [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
-        [UsageExampleArgs("Temp/blabla.md")]
+        #region generatecommandlist
+        [Command("generatecommandlist")]
+        [Aliases("gendocs", "generatecommandslist", "docs", "cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
         [RequireOwner]
         public async Task GenerateCommandListAsync(CommandContext ctx,
-                                                  [RemainingText, Description("File path.")] string path = null)
+                                                  [RemainingText, Description("desc-folder")] string? path = null)
         {
             if (string.IsNullOrWhiteSpace(path))
                 path = "Documentation";
@@ -322,21 +278,26 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(path);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (IOException e) {
-                throw new CommandFailedException("Failed to create the directories!", e);
+                LogExt.Error(ctx, e, "Failed to delete/create documentation directory");
+                throw new CommandFailedException(ctx, "cmd-err-doc-clean");
             }
+
+            CommandService cs = ctx.Services.GetRequiredService<CommandService>();
 
             var sb = new StringBuilder();
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            IReadOnlyList<Command> commands = ctx.CommandsNext.GetAllRegisteredCommands();
+            IReadOnlyList<Command> commands = ctx.CommandsNext.GetRegisteredCommands();
             var modules = commands
-                .GroupBy(c => ModuleAttribute.ForCommand(c))
+                .GroupBy(c => ModuleAttribute.AttachedTo(c))
                 .OrderBy(g => g.Key.Module)
                 .ToDictionary(g => g.Key, g => g.OrderBy(c => c.QualifiedName).ToList());
 
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
-                sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine().AppendLine();
+                sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine();
+                sb.AppendLine(Formatter.Italic(this.Localization.GetString(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
+                sb.AppendLine().AppendLine();
 
                 foreach (Command cmd in cmdlist) {
                     if (cmd is CommandGroup || cmd.Parent is null)
@@ -349,93 +310,106 @@ namespace TheGodfather.Modules.Owner
                     if (cmd.IsHidden)
                         sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                    sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
+                    sb.AppendLine(Formatter.Italic(this.Localization.GetCommandDescription(null, cmd.QualifiedName))).AppendLine();
+
+                    if (cmd.Aliases.Any()) {
+                        sb.AppendLine(Formatter.Bold("Aliases:"));
+                        sb.Append('`').AppendJoin(", ", cmd.Aliases).Append('`').AppendLine();
+                    }
 
                     IEnumerable<CheckBaseAttribute> execChecks = cmd.ExecutionChecks.AsEnumerable();
-                    CommandGroup parent = cmd.Parent;
-                    while (!(parent is null)) {
+                    CommandGroup? parent = cmd.Parent;
+                    while (parent is { }) {
                         execChecks = execChecks.Union(parent.ExecutionChecks);
                         parent = parent.Parent;
                     }
 
                     IEnumerable<string> perms = execChecks
                         .Where(chk => chk is RequirePermissionsAttribute)
-                        .Select(chk => chk as RequirePermissionsAttribute)
+                        .Cast<RequirePermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString())
                         .Union(execChecks
                             .Where(chk => chk is RequireOwnerOrPermissionsAttribute)
-                            .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
+                            .Cast<RequireOwnerOrPermissionsAttribute>()
                             .Select(chk => chk.Permissions.ToPermissionString())
                         );
                     IEnumerable<string> uperms = execChecks
                         .Where(chk => chk is RequireUserPermissionsAttribute)
-                        .Select(chk => chk as RequireUserPermissionsAttribute)
+                        .Cast<RequireUserPermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString());
                     IEnumerable<string> bperms = execChecks
                         .Where(chk => chk is RequireBotPermissionsAttribute)
-                        .Select(chk => chk as RequireBotPermissionsAttribute)
+                        .Cast<RequireBotPermissionsAttribute>()
                         .Select(chk => chk.Permissions.ToPermissionString());
 
+                    if (execChecks.Any(chk => chk is RequireGuildAttribute))
+                        sb.AppendLine(Formatter.Bold("Guild only.")).AppendLine();
+                    if (execChecks.Any(chk => chk is RequireDirectMessageAttribute))
+                        sb.AppendLine(Formatter.Bold("DM only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequireOwnerAttribute))
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
-                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine();
+                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine().AppendLine();
 
                     if (perms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", perms))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", perms).Append('`').AppendLine().AppendLine();
                     }
                     if (uperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", uperms))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", uperms).Append('`').AppendLine().AppendLine();
                     }
                     if (bperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", bperms))).AppendLine();
-                    }
-
-                    if (cmd.Aliases.Any()) {
-                        sb.AppendLine(Formatter.Bold("Aliases:"));
-                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
+                        sb.Append('`').AppendJoin(", ", bperms).Append('`').AppendLine().AppendLine();
                     }
 
                     foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
                         if (!overload.Arguments.Any())
                             continue;
 
-                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
+                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority}:" : "Arguments:")).AppendLine();
                         foreach (CommandArgument arg in overload.Arguments) {
                             if (arg.IsOptional)
                                 sb.Append("(optional) ");
 
-                            string type = $"[{ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
+                            sb.Append("[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
                             if (arg.IsCatchAll)
-                                type += "...";
-                            type += "]";
+                                sb.Append("...");
+                            sb.Append("`]: *");
+                            if (string.IsNullOrWhiteSpace(arg.Description))
+                                sb.Append("No description provided.");
+                            else
+                                sb.Append(this.Localization.GetString(null, arg.Description));
+                            sb.Append('*');
 
-                            sb.Append(Formatter.InlineCode(type));
-                            sb.Append(" : ");
-
-                            sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
-
-                            if (arg.IsOptional)
-                                sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue is null ? "None" : arg.DefaultValue.ToString())).Append(")");
+                            if (arg.IsOptional) {
+                                sb.Append(" (def: `");
+                                if (arg.DefaultValue is null)
+                                    sb.Append("None`)");
+                                else
+                                    sb.Append(arg.DefaultValue).Append("`)");
+                            }
 
                             sb.AppendLine().AppendLine();
                         }
                     }
 
-                    if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExampleArgsAttribute) is UsageExampleArgsAttribute examples)
-                        sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine(Formatter.BlockCode(examples.JoinExamples(cmd, ctx), "xml"));
+                    if (cmd is not CommandGroup || (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)) {
+                        IReadOnlyList<string> examples = cs.GetCommandUsageExamples(null, cmd.QualifiedName);
+                        if (examples.Any())
+                            sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine(Formatter.BlockCode(examples.JoinWith(), "xml"));
+                    }
 
                     sb.AppendLine("</p></details>").AppendLine().AppendLine("---").AppendLine();
                 }
 
-                string filename = Path.Combine(parts.FullName, $"{mattr.Module.ToString()}.md");
+                string filename = Path.Combine(parts.FullName, $"{mattr.Module}.md");
                 try {
                     File.WriteAllText(filename, sb.ToString());
                 } catch (IOException e) {
-                    throw new CommandFailedException($"IO Exception occured while saving {filename}!", e);
+                    LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", filename);
+                    throw new CommandFailedException(ctx, "cmd-err-doc-save", filename);
                 }
 
                 sb.Clear();
@@ -444,190 +418,213 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command modules:");
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 string mname = mattr.Module.ToString();
-                sb.Append("  - ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
+                sb.Append("  - ").Append('[').Append(mname).Append(']').Append('(').Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
             }
 
+            string mainDocFilename = Path.Combine(current.FullName, $"README.md");
             try {
-                File.WriteAllText(Path.Combine(current.FullName, $"README.md"), sb.ToString());
+                File.WriteAllText(mainDocFilename, sb.ToString());
             } catch (IOException e) {
-                throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
+                LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", mainDocFilename);
+                throw new CommandFailedException(ctx, "cmd-err-doc-save", mainDocFilename);
             }
 
-            await this.InformAsync(ctx, $"Command list created at: {Formatter.InlineCode(current.FullName)}!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_LEAVEGUILDS
-        [Command("leaveguilds"), NotBlocked]
-        [Description("Leaves the given guilds.")]
+        #region leaveguilds
+        [Command("leaveguilds"), Priority(1)]
         [Aliases("leave", "gtfo")]
-        [UsageExampleArgs("337570344149975050", "337570344149975050 201315884709576708")]
         [RequireOwner]
+        public Task LeaveGuildsAsync(CommandContext ctx,
+                                    [Description("desc-guilds")] params DiscordGuild[] guilds)
+            => this.LeaveGuildsAsync(ctx, guilds.Select(g => g.Id).ToArray());
+
+        [Command("leaveguilds"), Priority(0)]
         public async Task LeaveGuildsAsync(CommandContext ctx,
-                                          [Description("Guild ID list.")] params ulong[] gids)
+                                          [Description("desc-guilds")] params ulong[] gids)
         {
             if (gids is null || !gids.Any())
-                throw new InvalidCommandUsageException("IDs missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
             var eb = new StringBuilder();
             foreach (ulong gid in gids) {
                 try {
-                    if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild guild))
+                    if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild? guild))
                         await guild.LeaveAsync();
                     else
-                        eb.AppendLine($"Warning: I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave", gid));
                 } catch {
-                    eb.AppendLine($"Error: Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave-fail", gid));
                 }
             }
 
-            if (gids.All(gid => gid != ctx.Guild.Id)) {
+            if (ctx.Guild is { } && !gids.Contains(ctx.Guild.Id)) {
                 if (eb.Length > 0)
-                    await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                    await ctx.FailAsync("fmt-err", eb);
                 else
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Successfully left all given guilds!", important: false);
+                    await ctx.InfoAsync(this.ModuleColor);
+            } else {
+                await ctx.InfoAsync(this.ModuleColor);
             }
         }
         #endregion
 
-        #region COMMAND_LOG
-        [Command("log"), NotBlocked, Priority(1)]
-        [Description("Upload the bot log file or add a remark to it.")]
+        #region log
+        [Command("log"), Priority(1), UsesInteractivity]
         [Aliases("getlog", "remark", "rem")]
-        [UsageExampleArgs("debug Hello world!")]
         [RequireOwner]
-        public async Task LogAsync(CommandContext ctx, 
-                                  [Description("Bypass current configuration and search file anyway?")] bool bypassConfig = false)
+        public async Task LogAsync(CommandContext ctx,
+                                  [Description("desc-log-bp")] bool bypassConfig = false)
         {
-            if (!bypassConfig && !this.Shared.BotConfiguration.LogToFile)
-                throw new CommandFailedException("Logs aren't dumped to any files.");
-            var fi = new FileInfo(this.Shared.BotConfiguration.LogPath);
-            if (fi.Exists && fi.Length > 8 * 1024 * 1024)
-                throw new CommandFailedException("The file is too big to upload!");
-            using (var fs = new FileStream(this.Shared.BotConfiguration.LogPath, FileMode.Open))
-                await ctx.RespondWithFileAsync(fs);
+            BotConfig cfg = ctx.Services.GetRequiredService<BotConfigService>().CurrentConfiguration;
+
+            if (!bypassConfig && !cfg.LogToFile)
+                throw new CommandFailedException(ctx, "cmd-err-log-off");
+
+            var fi = new FileInfo(cfg.LogPath);
+            if (fi.Exists) {
+                fi = new FileInfo(cfg.LogPath);
+                if (fi.Length > DiscordLimits.AttachmentLimit)
+                    throw new CommandFailedException(ctx, "cmd-err-log-size", fi.Name, fi.Length.Megabytes().Humanize());
+            } else {
+                DirectoryInfo? di = fi.Directory;
+                if (di?.Exists ?? false) {
+                    var fis = di.GetFiles()
+                        .OrderByDescending(fi => fi.CreationTime)
+                        .Select((fi, i) => (fi, i))
+                        .ToDictionary(tup => tup.i, tup => tup.fi)
+                        ;
+                    if (!fis.Any())
+                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+
+                    await ctx.PaginateAsync(
+                        "q-log-select",
+                        fis,
+                        kvp => Formatter.InlineCode($"{kvp.Key:D3}: {kvp.Value.Name}"),
+                        this.ModuleColor
+                    );
+
+                    int? index = await ctx.Client.GetInteractivity().WaitForOptionReplyAsync(ctx, fis.Count);
+                    if (index is null)
+                        return;
+
+                    if (!fis.TryGetValue(index.Value, out fi))
+                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                } else {
+                    throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                }
+            }
+
+            using FileStream? fs = fi.OpenRead();
+            await ctx.RespondWithFileAsync(fs);
         }
 
-        [Command("log"), NotBlocked, Priority(0)]
+        [Command("log"), Priority(0)]
         public Task LogAsync(CommandContext ctx,
-                            [Description("Log level.")] string level,
-                            [RemainingText, Description("Remark.")] string text)
+                            [Description("desc-log-lvl")] LogEventLevel level,
+                            [RemainingText, Description("desc-log-msg")] string text)
         {
-            if (!Enum.TryParse(level.Titleize(), out LogEventLevel logLevel))
-                throw new CommandFailedException($"Invalid log level!");
-            Log.Write(logLevel, text);
-            return this.InformAsync(ctx, "Done!", important: false);
+            Log.Write(level, "{LogRemark}", text);
+            return ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_SENDMESSAGE
-        [Command("sendmessage"), NotBlocked]
-        [Description("Sends a message to a user or channel.")]
+        #region sendmessage
+        [Command("sendmessage")]
         [Aliases("send", "s")]
-        [UsageExampleArgs("u 303463460233150464 Hi to user!", "c 120233460278590414 Hi to channel!")]
         [RequirePrivilegedUser]
         public async Task SendAsync(CommandContext ctx,
-                                   [Description("u/c (for user or channel.)")] string desc,
-                                   [Description("User/Channel ID.")] ulong xid,
-                                   [RemainingText, Description("Message.")] string message)
+                                   [Description("desc-send")] string desc,
+                                   [Description("desc-id")] ulong xid,
+                                   [RemainingText, Description("desc-send-msg")] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new InvalidCommandUsageException();
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (desc == "u") {
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(xid);
+            if (string.Equals(desc, "u", StringComparison.InvariantCultureIgnoreCase)) {
+                DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(xid);
                 if (dm is null)
-                    throw new CommandFailedException("I can't talk to that user...");
+                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
                 await dm.SendMessageAsync(message);
-            } else if (desc == "c") {
+            } else if (string.Equals(desc, "c", StringComparison.InvariantCultureIgnoreCase)) {
                 DiscordChannel channel = await ctx.Client.GetChannelAsync(xid);
                 await channel.SendMessageAsync(message);
             } else {
-                throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
+                throw new InvalidCommandUsageException(ctx);
             }
 
-            await this.InformAsync(ctx, $"Successfully sent the given message!", important: false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_SHUTDOWN
-        [Command("shutdown"), Priority(1), NotBlocked]
-        [Description("Triggers the dying in the vineyard scene (power off the bot).")]
+        #region shutdown
+        [Command("shutdown"), Priority(1)]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [UsageExampleArgs("10s")]
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
-                             [Description("Time until shutdown.")] TimeSpan timespan,
-                             [Description("Exit code.")] int exitCode = 0)
+                             [Description("desc-exit-time")] TimeSpan timespan,
+                             [Description("desc-exit-code")] int exitCode = 0)
             => TheGodfather.Stop(exitCode, timespan);
 
         [Command("shutdown"), Priority(0)]
         public Task ExitAsync(CommandContext _,
-                             [Description("Exit code.")] int exitCode = 0)
+                             [Description("desc-exit-code")] int exitCode = 0)
             => TheGodfather.Stop(exitCode);
         #endregion
 
-        #region COMMAND_SUDO
-        [Command("sudo"), NotBlocked]
-        [Description("Executes a command as another user.")]
+        #region sudo
+        [Command("sudo")]
         [Aliases("execas", "as")]
-        [UsageExampleArgs("@Someone rate")]
-        [RequireOwner]
-        public Task SudoAsync(CommandContext ctx,
-                             [Description("Member to execute as.")] DiscordMember member,
-                             [RemainingText, Description("Command text to execute.")] string command)
+        [RequireGuild, RequirePrivilegedUser]
+        public async Task SudoAsync(CommandContext ctx,
+                                   [Description("desc-member")] DiscordMember member,
+                                   [RemainingText, Description("desc-cmd-full")] string command)
         {
             if (string.IsNullOrWhiteSpace(command))
-                throw new InvalidCommandUsageException("Missing command to execute.");
+                throw new InvalidCommandUsageException(ctx);
 
             Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute or RequirePrivilegedUserAttribute))
+                throw new CommandFailedException(ctx, "cmd-err-sudo");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
-            return cmd is null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
+            if ((await cmd.RunChecksAsync(fctx, false)).Any())
+                throw new CommandFailedException(ctx, "cmd-err-sudo-chk");
+
+            await ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 
-        #region COMMAND_TOGGLEIGNORE
+        #region toggleignore
         [Command("toggleignore")]
-        [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
         [RequirePrivilegedUser]
         public Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            this.Shared.ListeningStatus = !this.Shared.ListeningStatus;
-            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}", important: false);
+            BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
+            bool ignoreEnabled = bas.ToggleListeningStatus();
+            return ctx.InfoAsync(this.ModuleColor, ignoreEnabled ? "str-off" : "str-on");
         }
         #endregion
 
-        #region COMMAND_UPDATE
-        [Command("update"), NotBlocked]
-        [Description("Update and restart the bot.")]
-        [Aliases("upd", "u")]
-        [RequireOwner]
-        public Task UpdateAsync(CommandContext ctx)
+        #region uptime
+        [Command("uptime")]
+        [RequirePrivilegedUser]
+        public Task UptimeAsync(CommandContext ctx)
         {
-            ProcessStartInfo psi;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                psi = new ProcessStartInfo {
-                    FileName = "bash",
-                    Arguments = $"install.sh {Process.GetCurrentProcess().Id}",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = false,
-                    CreateNoWindow = true
-                };
-            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                psi = new ProcessStartInfo {
-                    FileName = "install.bat",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = false,
-                    CreateNoWindow = true
-                };
-            } else {
-                throw new CommandFailedException("Cannot determine host OS (OSX is not supported)!");
-            }
+            BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
+            TimeSpan processUptime = bas.UptimeInformation.ProgramUptime;
+            TimeSpan socketUptime = bas.UptimeInformation.SocketUptime;
 
-            var proc = new Process { StartInfo = psi };
-            proc.Start();
-            return this.ExitAsync(ctx);
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-uptime-info");
+                emb.WithDescription($"{TheGodfather.ApplicationName} {TheGodfather.ApplicationVersion}");
+                emb.AddLocalizedTitleField("str-shard", $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
+                emb.AddLocalizedTitleField("str-uptime-bot", processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedTitleField("str-uptime-socket", socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.WithColor(this.ModuleColor);
+            });
         }
         #endregion
     }

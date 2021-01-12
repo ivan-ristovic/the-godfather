@@ -1,98 +1,108 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("duel")]
-        [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        [UsageExampleArgs("@Someone")]
-        public class DuelModule : TheGodfatherModule
+        [RequireGuild]
+        public sealed class DuelModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public DuelModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Teal;
-            }
-
-
+            #region game duel
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Who to fight with?")] DiscordUser opponent)
+                                               [Description("desc-member")] DiscordMember opponent)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel!");
+                if (opponent == ctx.User)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-self-action");
+                
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
 
-                if (opponent.Id == ctx.User.Id)
-                    throw new CommandFailedException("You can't duel yourself...");
-
-                if (opponent.Id == ctx.Client.CurrentUser.Id) {
-                    await ctx.RespondAsync(
-                        $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
-                        $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {opponent.Mention}" +
-                        $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
-                    );
-                    await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{ctx.Client.CurrentUser.Mention} wins!");
+                if (opponent == ctx.Client.CurrentUser) {
+                    await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                        emb.WithDescription(DuelGame.AgainstBot(ctx.User.Mention, opponent.Mention));
+                        emb.WithColor(this.ModuleColor);
+                    });
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.DuelSwords, "fmt-winners", opponent.Mention);
                     return;
                 }
 
-                var duel = new DuelGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-                this.Shared.RegisterEventInChannel(duel, ctx.Channel.Id);
-
+                var game = new DuelGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await duel.RunAsync();
-                    await this.Database.UpdateStatsAsync(duel.Winner.Id, s => s.DuelsWon++);
-                    if (duel.Winner.Id == ctx.User.Id)
-                        await this.Database.UpdateStatsAsync(opponent.Id, s => s.DuelsLost++);
-                    else
-                        await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.DuelsLost++);
+                    await game.RunAsync(this.Localization);
+                    if (game.Winner is { }) {
+                        GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.DuelsWon++);
+                        await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.DuelsLost++);
+                    } else {
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
+                    }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
-            }
-
-
-            #region COMMAND_DUEL_RULES
-            [Command("rules")]
-            [Description("Explain the Duel game rules.")]
-            [Aliases("help", "h", "ruling", "rule")]
-            public Task RulesAsync(CommandContext ctx)
-            {
-                return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
-                    "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you " +
-                    "an extra boost during the duel..."
-                );
             }
             #endregion
 
-            #region COMMAND_DUEL_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
+            #region game duel rules
+            [Command("rules")]
+            [Aliases("help", "h", "ruling", "rule")]
+            public Task RulesAsync(CommandContext ctx)
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-duel");
+            #endregion
+
+            #region game duel stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildDuelStatsString());
+                });
+            }
+            #endregion
+
+            #region game duel top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
+            {
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopDuelStatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-duel-top", top);
             }
             #endregion
         }

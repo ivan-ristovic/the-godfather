@@ -1,6 +1,4 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-#endregion
+﻿using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {

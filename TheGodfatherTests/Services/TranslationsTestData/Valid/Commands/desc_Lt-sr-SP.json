@@ -1,0 +1,8 @@
+{
+  // "cmd1": "jedan",
+  "cmd1 subcommand": "jedan pod",
+  "cmd2": "dva",
+  "cmd3": "tri",
+  // "cmd4": "cetiri",
+  "cmd3 sub subcommand": "tri pod pod"
+}

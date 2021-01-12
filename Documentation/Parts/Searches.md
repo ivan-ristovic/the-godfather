@@ -1,21 +1,54 @@
 # Module: Searches
+*This module contains internet search commands such as YouTube, Imgur, Giphy, Steam searches/subscriptions and many more.*
+
+
+## cat
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random cat image.*
+
+**Aliases:**
+`kitty, kitten`
+**Examples:**
+
+```xml
+!cat
+```
+</p></details>
+
+---
+
+## dog
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random dog image.*
+
+**Aliases:**
+`doge, puppy, pup`
+**Examples:**
+
+```xml
+!dog
+```
+</p></details>
+
+---
 
 ## Group: gif
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.*
+*GIPHY search commands. Group call searches GIPHY with given query and prints first result.*
 
 **Aliases:**
 `giphy`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!gif wat
+!gif Search query
 ```
 </p></details>
 
@@ -24,11 +57,15 @@
 ### gif random
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Return a random GIF.*
+*Prints a random GIF.*
 
 **Aliases:**
-`r, rand, rnd`
+`r, rand, rnd, rng`
+**Examples:**
 
+```xml
+!gif random
+```
 </p></details>
 
 ---
@@ -36,20 +73,19 @@
 ### gif trending
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Return an amount of trending GIFs.*
+*Prints a given amount of trending GIFs.*
 
 **Aliases:**
 `t, tr, trend`
-
 **Arguments:**
 
-(optional) `[int]` : *Number of results (1-10).* (def: `5`)
+(optional) [`int`]: *Number of results* (def: `5`)
 
 **Examples:**
 
 ```xml
-!gif trending 
-!gif trending 3
+!gif trending
+!gif trending 10
 ```
 </p></details>
 
@@ -58,19 +94,19 @@
 ## Group: goodreads
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Goodreads commands. Group call searches Goodreads books with given query.*
+*Goodreads search commands. Group call searches books by title, author or ISBN.*
 
 **Aliases:**
 `gr`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!goodreads Ender's Game
+!goodreads
+!goodreads Search query
 ```
 </p></details>
 
@@ -79,19 +115,19 @@
 ### goodreads book
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search Goodreads books by title, author, or ISBN.*
+*Search Goodreads books by title, author or ISBN.*
 
 **Aliases:**
 `books, b`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!goodreads book Ender's Game
+!goodreads book
+!goodreads book Search query
 ```
 </p></details>
 
@@ -100,19 +136,18 @@
 ## Group: imdb
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search Open Movie Database. Group call searches by title.*
+*Open Movie Database (IMDB) search commands. Group call searches the database using the provided query as title or ID.*
 
 **Aliases:**
 `movies, series, serie, movie, film, cinema, omdb`
-
 **Arguments:**
 
-`[string...]` : *Title.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!imdb Airplane
+!imdb Sharknado
 ```
 </p></details>
 
@@ -121,16 +156,16 @@
 ### imdb id
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search by IMDb ID.*
+*Searches the database using the provided query as ID.*
 
 **Arguments:**
 
-`[string]` : *ID.*
+[`string`]: *ID*
 
 **Examples:**
 
 ```xml
-!imdb id tt4158110
+!imdb id tt1190634
 ```
 </p></details>
 
@@ -139,14 +174,13 @@
 ### imdb search
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Searches IMDb for given query and returns paginated results.*
+*Searches the database using the provided query as title or ID.*
 
 **Aliases:**
 `s, find`
-
 **Arguments:**
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
@@ -160,19 +194,18 @@
 ### imdb title
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search by title.*
+*Searches the database using the provided query as a title.*
 
 **Aliases:**
 `t, name, n`
-
 **Arguments:**
 
-`[string...]` : *Title.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!imdb title Airplane
+!imdb title Sharknado
 ```
 </p></details>
 
@@ -181,29 +214,27 @@
 ## Group: imgur
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search imgur. Group call retrieves top ranked images from given subreddit.*
+*Imgur search commands. Group call retrieves top ranked images from given subreddit for this day.*
 
 **Aliases:**
 `img, im, i`
-
 **Overload 1:**
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit.*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
-(optional) `[int]` : *Number of images to print [1-10].* (def: `1`)
+(optional) [`int`]: *Number of results* (def: `1`)
 
 **Examples:**
 
 ```xml
-!imgur aww
-!imgur 10 aww
-!imgur aww 10
+!imgur 10 awww
+!imgur awww
 ```
 </p></details>
 
@@ -212,29 +243,27 @@
 ### imgur latest
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Return latest images from given subreddit.*
+*Retrieves latest images from the given subreddit.*
 
 **Aliases:**
 `l, new, newest`
-
 **Overload 1:**
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit.*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
 **Examples:**
 
 ```xml
-!imgur latest aww
-!imgur latest 10 aww
-!imgur latest aww 10
+!imgur latest 10 awww
+!imgur latest awww
 ```
 </p></details>
 
@@ -243,48 +272,66 @@
 ### imgur top
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Return amount of top rated images in the given subreddit for given timespan.*
+*Retrieves top rated images from the given subreddit in the given timespan.*
 
 **Aliases:**
 `t`
-
 **Overload 3:**
 
-`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit.*
+[`string...`]: *Subreddit*
 
 **Overload 2:**
 
-`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
-(optional) `[int]` : *Number of images to print [1-10].* (def: `1`)
+(optional) [`int`]: *Number of results* (def: `1`)
 
 **Overload 1:**
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
-`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+[`TimeWindow`]: *Time window (day/month/week/year/all)*
 
-`[string...]` : *Subreddit.*
+[`string...`]: *Subreddit*
 
 **Overload 0:**
 
-`[int]` : *Number of images to print [1-10].*
+[`int`]: *Number of results*
 
-`[string...]` : *Subreddit.*
+[`string...`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!imgur top day 10 aww
-!imgur top 10 day aww
-!imgur top 5 aww
-!imgur top day aww
+!imgur top 10 awww week
+!imgur top 10 week awww
+!imgur top week 10 awww
+```
+</p></details>
+
+---
+
+## ip
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves geolocation data for given IP.*
+
+**Aliases:**
+`ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
+**Arguments:**
+
+[`IPAddress`]: *IP address*
+
+**Examples:**
+
+```xml
+!ip 123.123.123.123
 ```
 </p></details>
 
@@ -293,11 +340,15 @@
 ## Group: joke
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Group for searching jokes. Group call returns a random joke.*
+*Joke searching commands. Group call returns a random joke.*
 
 **Aliases:**
 `jokes, j`
+**Examples:**
 
+```xml
+!joke
+```
 </p></details>
 
 ---
@@ -305,19 +356,18 @@
 ### joke search
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search for the joke containing the given query.*
+*Searches for the joke containing the given query.*
 
 **Aliases:**
 `s`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!joke search blonde
+!joke search Search query
 ```
 </p></details>
 
@@ -330,7 +380,51 @@
 
 **Aliases:**
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
+**Examples:**
 
+```xml
+!joke yourmom
+```
+</p></details>
+
+---
+
+## news
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves latest world news.*
+
+**Aliases:**
+`worldnews`
+**Arguments:**
+
+(optional) [`string`]: *Topic* (def: `world`)
+
+**Examples:**
+
+```xml
+!news
+```
+</p></details>
+
+---
+
+## quoteoftheday
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves the quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
+
+**Aliases:**
+`qotd, qod, quote, q`
+**Arguments:**
+
+(optional) [`string`]: *Topic* (def: `None`)
+
+**Examples:**
+
+```xml
+!quoteoftheday
+```
 </p></details>
 
 ---
@@ -338,20 +432,19 @@
 ## Group: reddit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Reddit commands. Group call prints hottest posts from given sub.*
+*Reddit search commands. Group call retrieves hottest posts from given sub.*
 
 **Aliases:**
 `r`
-
 **Arguments:**
 
-(optional) `[string]` : *Subreddit.* (def: `all`)
+(optional) [`string`]: *Subreddit* (def: `all`)
 
 **Examples:**
 
 ```xml
-!reddit 
-!reddit aww
+!reddit
+!reddit awww
 ```
 </p></details>
 
@@ -360,16 +453,18 @@
 ### reddit controversial
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get newest controversial posts for a subreddit.*
+*Retrieves controversial posts from given sub.*
 
+**Aliases:**
+`c`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit controversial aww
+!reddit controversial awww
 ```
 </p></details>
 
@@ -378,16 +473,18 @@
 ### reddit gilded
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get newest gilded posts for a subreddit.*
+*Retrieves gilded posts from given sub.*
 
+**Aliases:**
+`g`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit gilded aww
+!reddit gilded awww
 ```
 </p></details>
 
@@ -396,16 +493,18 @@
 ### reddit hot
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get newest hot posts for a subreddit.*
+*Retrieves hot posts from given sub.*
 
+**Aliases:**
+`h`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit hot aww
+!reddit hot awww
 ```
 </p></details>
 
@@ -414,19 +513,18 @@
 ### reddit new
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get newest posts for a subreddit.*
+*Retrieves newest posts from given sub.*
 
 **Aliases:**
-`newest, latest`
-
+`n, newest, latest`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit new aww
+!reddit new awww
 ```
 </p></details>
 
@@ -435,16 +533,18 @@
 ### reddit rising
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get newest rising posts for a subreddit.*
+*Retrieves rising posts from given sub.*
 
+**Aliases:**
+`r`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit rising aww
+!reddit rising awww
 ```
 </p></details>
 
@@ -453,22 +553,26 @@
 ### reddit subscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add new feed for a subreddit.*
+*Subscribes to a given subreddit.*
+
+**Aliases:**
+`sub, follow`
+**Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
 
-**Aliases:**
-`add, a, +, sub`
-
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`channel`]: *Channel*
+
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit subscribe aww
+!reddit subscribe awww
+!reddit subscribe awww #my-text-channel
 ```
 </p></details>
 
@@ -477,16 +581,18 @@
 ### reddit top
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get top posts for a subreddit.*
+*Retrieves top posts from given sub.*
 
+**Aliases:**
+`t`
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit top aww
+!reddit top awww
 ```
 </p></details>
 
@@ -495,27 +601,43 @@
 ### reddit unsubscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).*
+*Removes a subscription for given subreddit.*
+
+**Aliases:**
+`unfollow, unsub`
+**Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
 
-**Aliases:**
-`del, d, rm, -, unsub`
+**Arguments:**
 
-**Overload 1:**
-
-`[string]` : *Subreddit.*
-
-**Overload 0:**
-
-`[int]` : *Subscription ID.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!reddit unsubscribe aww
-!reddit unsubscribe 12
+!reddit unsubscribe awww
+```
+</p></details>
+
+---
+
+## rss
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves latest topics from given RSS feed URL.*
+
+**Aliases:**
+`feed`
+**Arguments:**
+
+[`URL`]: *RSS feed URL*
+
+**Examples:**
+
+```xml
+!rss http://some.rss.feed.url/.rss
 ```
 </p></details>
 
@@ -524,15 +646,48 @@
 ## Group: steam
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Steam commands. Group call searches steam profiles for a given ID.*
+*Steam community commands. Group call searches Steam community profiles by ID or username (vanity URL).*
 
 **Aliases:**
 `s, st`
+**Overload 1:**
+
+[`unsigned long`]: *ID*
+
+**Overload 0:**
+
+[`string...`]: *Username*
 
 **Examples:**
 
 ```xml
-!steam 123456123
+!steam 361119455792594954
+!steam SampleName
+```
+</p></details>
+
+---
+
+### steam game
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Searches Steam store by game ID or name.*
+
+**Aliases:**
+`g, gm, store`
+**Overload 1:**
+
+[`unsigned int`]: *ID*
+
+**Overload 0:**
+
+[`string...`]: *Game name*
+
+**Examples:**
+
+```xml
+!steam game 12345
+!steam game SampleName
 ```
 </p></details>
 
@@ -541,19 +696,80 @@
 ### steam profile
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get Steam user information for user based on his ID.*
+*Searches Steam community profiles by ID or username (vanity URL).*
 
 **Aliases:**
-`id, user`
+`id, user, info`
+**Overload 1:**
 
-**Arguments:**
+[`unsigned long`]: *ID*
 
-`[unsigned long]` : *ID.*
+**Overload 0:**
+
+[`string...`]: *Username*
 
 **Examples:**
 
 ```xml
-!steam profile 123456123
+!steam profile 361119455792594954
+!steam profile SampleName
+```
+</p></details>
+
+---
+
+## Group: sticker
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*GIPHY sticker search commands. Group call searches GIPHY with given query and prints first stricker result.*
+
+**Aliases:**
+`stickers`
+**Arguments:**
+
+[`string...`]: *Query*
+
+**Examples:**
+
+```xml
+!sticker Search query
+```
+</p></details>
+
+---
+
+### sticker random
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints a random sticker.*
+
+**Aliases:**
+`r, rand, rnd, rng`
+**Examples:**
+
+```xml
+!sticker random
+```
+</p></details>
+
+---
+
+### sticker trending
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints a given amount of trending stickers.*
+
+**Aliases:**
+`t, tr, trend`
+**Arguments:**
+
+(optional) [`int`]: *Number of results* (def: `5`)
+
+**Examples:**
+
+```xml
+!sticker trending
+!sticker trending 10
 ```
 </p></details>
 
@@ -565,16 +781,15 @@
 *Urban Dictionary commands. Group call searches Urban Dictionary for a given query.*
 
 **Aliases:**
-`ud, urban`
-
+`ud, urban, urbandictionary`
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!urbandict blonde
+!urbandict Search query
 ```
 </p></details>
 
@@ -587,15 +802,14 @@
 
 **Aliases:**
 `w`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!weather london
+!weather London
 ```
 </p></details>
 
@@ -604,26 +818,24 @@
 ### weather forecast
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get weather forecast for the following days (def: 7).*
+*Returns weather forecast for the given city and amount of days in advance.*
 
 **Aliases:**
 `f`
-
 **Overload 1:**
 
-`[int]` : *Amount of days to fetch the forecast for.*
+[`int`]: *Amount of days*
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Overload 0:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!weather forecast london
-!weather forecast 5 london
+!weather forecast 5 London
 ```
 </p></details>
 
@@ -632,19 +844,18 @@
 ## Group: wikipedia
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.*
+*Wikipedia search commands. Group call searches Wikipedia with given query.*
 
 **Aliases:**
 `wiki`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!wikipedia Linux
+!wikipedia Search query
 ```
 </p></details>
 
@@ -653,19 +864,18 @@
 ### wikipedia search
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search Wikipedia for a given query.*
+*Searches Wikipedia with given query.*
 
 **Aliases:**
 `s, find`
-
 **Arguments:**
 
-`[string...]` : *Query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!wikipedia search Linux
+!wikipedia search Search query
 ```
 </p></details>
 
@@ -674,20 +884,18 @@
 ## Group: xkcd
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search xkcd. Group call returns random comic or, if an ID is provided, a comic with given ID.*
+*xkcd search commands. Group call returns a random comic or, if an ID is provided, a comic with given ID.*
 
 **Aliases:**
 `x`
-
 **Overload 1:**
 
-`[int]` : *Comic ID.*
+[`int`]: *ID*
 
 **Examples:**
 
 ```xml
-!xkcd 
-!xkcd 650
+!xkcd
 ```
 </p></details>
 
@@ -696,17 +904,16 @@
 ### xkcd id
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Retrieves comic with given ID from xkcd.*
+*Returns a xkcd comic with given ID.*
 
 **Arguments:**
 
-(optional) `[int]` : *Comic ID.* (def: `None`)
+(optional) [`int`]: *ID* (def: `None`)
 
 **Examples:**
 
 ```xml
-!xkcd id 
-!xkcd id 650
+!xkcd id 5
 ```
 </p></details>
 
@@ -715,11 +922,15 @@
 ### xkcd latest
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Retrieves latest comic from xkcd.*
+*Returns latest xkcd comic.*
 
 **Aliases:**
 `fresh, newest, l`
+**Examples:**
 
+```xml
+!xkcd latest
+```
 </p></details>
 
 ---
@@ -727,11 +938,15 @@
 ### xkcd random
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Retrieves a random comic.*
+*Returns random xkcd comic.*
 
 **Aliases:**
 `rnd, r, rand`
+**Examples:**
 
+```xml
+!xkcd random
+```
 </p></details>
 
 ---
@@ -743,15 +958,14 @@
 
 **Aliases:**
 `y, yt, ytube`
-
 **Arguments:**
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!youtube never gonna give you up
+!youtube Search query
 ```
 </p></details>
 
@@ -760,21 +974,20 @@
 ### youtube search
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Advanced youtube search.*
+*Searches YouTube for given query and returns given amount of results at most.*
 
 **Aliases:**
 `s`
-
 **Arguments:**
 
-`[int]` : *Amount of results. [1-20]*
+[`int`]: *Amount of results to fetch*
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!youtube search 5 rick astley
+!youtube search 5 Search query
 ```
 </p></details>
 
@@ -783,40 +996,38 @@
 ### youtube searchchannel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Advanced youtube search for channels only.*
+*Searches YouTube for given query and returns given amount of YouTube channels at most.*
 
 **Aliases:**
-`sc, searchc, channel`
-
+`searchchannels, sc, searchc, channel`
 **Arguments:**
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!youtube searchchannel rick astley
+!youtube searchchannel Search query
 ```
 </p></details>
 
 ---
 
-### youtube searchp
+### youtube searchplaylist
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Advanced youtube search for playlists only.*
+*Searches YouTube for given query and returns given amount of YouTube playlists at most.*
 
 **Aliases:**
-`sp, searchplaylist, playlist`
-
+`searchplaylists, sp, searchp, playlist`
 **Arguments:**
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!youtube searchp rick astley
+!youtube searchplaylist Search query
 ```
 </p></details>
 
@@ -825,19 +1036,18 @@
 ### youtube searchvideo
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Advanced youtube search for videos only.*
+*Searches YouTube for given query and returns given amount of YouTube videos at most.*
 
 **Aliases:**
-`sv, searchv, video`
-
+`searchvideos, sv, searchv, video`
 **Arguments:**
 
-`[string...]` : *Search query.*
+[`string...`]: *Query*
 
 **Examples:**
 
 ```xml
-!youtube searchvideo rick astley
+!youtube searchvideo Search query
 ```
 </p></details>
 
@@ -846,25 +1056,63 @@
 ### youtube subscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add a new subscription for a YouTube channel.*
+*Subscribes to a YouTube channel.*
 
+**Aliases:**
+`sub, follow`
 **Requires user permissions:**
 `Manage guild`
 
-**Aliases:**
-`add, a, +, sub`
+**Overload 5:**
 
-**Arguments:**
+[`channel`]: *Channel for updates*
 
-`[string]` : *Channel URL.*
+[`URL`]: *YouTube channel/video URL*
 
-(optional) `[string]` : *Friendly name.* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 4:**
+
+[`URL`]: *YouTube channel/video URL*
+
+[`channel`]: *Channel for updates*
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 3:**
+
+[`string`]: *YouTube username or channel ID*
+
+(optional) [`channel`]: *Channel for updates* (def: `None`)
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 2:**
+
+[`channel`]: *Channel for updates*
+
+[`string`]: *YouTube username or channel ID*
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 1:**
+
+[`string`]: *YouTube username or channel ID*
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 0:**
+
+[`URL`]: *YouTube username or channel ID*
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Examples:**
 
 ```xml
-!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO
-!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick
+!youtube subscribe https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg
+!youtube subscribe UCA5u8UquvO44Jcd3wZApyDg
+!youtube subscribe https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg SubscriptionName
 ```
 </p></details>
 
@@ -873,23 +1121,23 @@
 ### youtube unsubscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove a YouTube channel subscription.*
+*Removes registered YouTube subscription.*
 
+**Aliases:**
+`unfollow, unsub`
 **Requires user permissions:**
 `Manage guild`
 
-**Aliases:**
-`del, d, rm, -, unsub`
-
 **Arguments:**
 
-`[string]` : *Channel URL or subscription name.*
+[`string`]: *YouTube channel URL or friendly name*
 
 **Examples:**
 
 ```xml
-!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
-!youtube unsubscribe rick
+!youtube unsubscribe https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg
+!youtube unsubscribe UCA5u8UquvO44Jcd3wZApyDg
+!youtube unsubscribe SubscriptionName
 ```
 </p></details>
 

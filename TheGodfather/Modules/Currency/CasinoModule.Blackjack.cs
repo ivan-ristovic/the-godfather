@@ -1,141 +1,111 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Modules.Currency.Extensions;
-#endregion
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
         [Group("blackjack")]
-        [Description("Play a blackjack game.")]
         [Aliases("bj")]
-        [UsageExampleArgs("100")]
-        public class BlackjackModule : TheGodfatherModule
+        public sealed class BlackjackModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public BlackjackModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.SapGreen;
-            }
-
-
+            #region casino blackjack
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Bid amount.")] int bid = 5)
+                                               [Description("desc-gamble-bid")] int bid = BlackjackGame.InitialBid)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
                         await this.JoinAsync(ctx);
                     else
-                        throw new CommandFailedException("Another event is already running in the current channel.");
+                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
                     return;
                 }
-                
+
+                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-blackjack-start", 
+                        BlackjackGame.MaxParticipants, BlackjackGame.InitialBid, currency
+                    );
                     await this.JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
+                    BankAccountService bas = ctx.Services.GetRequiredService<BankAccountService>();
                     if (game.ParticipantCount > 0) {
-                        await game.RunAsync();
-
+                        await game.RunAsync(this.Localization);
                         if (game.Winners.Any()) {
                             if (game.Winner is null) {
-                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
-
-                                using (DatabaseContext db = this.Database.CreateContext()) {
-                                    foreach (BlackjackParticipant winner in game.Winners)
-                                        await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + winner.Bid * 2);
-                                    await db.SaveChangesAsync();
-                                }
+                                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winners",
+                                    game.Winners.Select(w => w.User.Mention).JoinWith(", ")
+                                );
+                                foreach (BlackjackGame.Participant winner in game.Winners)
+                                    await bas.IncreaseBankAccountAsync(ctx.Guild.Id, winner.Id, winner.Bid * 2);
                             } else {
-                                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
-                                using (DatabaseContext db = this.Database.CreateContext()) {
-                                    await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + game.Winners.First(p => p.Id == game.Winner.Id).Bid * 2);
-                                    await db.SaveChangesAsync();
-                                }
+                                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-blackjack-win", game.Winner.Mention);
+                                await bas.IncreaseBankAccountAsync(ctx.Guild.Id, game.Winner.Id, game.Winners.Single(p => p.Id == game.Winner.Id).Bid * 2);
                             }
                         } else {
-                            await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-blackjack-lose");
                         }
                     } else {
-                        if (game.IsParticipating(ctx.User)) {
-                            using (DatabaseContext db = this.Database.CreateContext()) {
-                                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + bid);
-                                await db.SaveChangesAsync();
-                            }
-                        }
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Blackjack game.");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-blackjack-none");
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
-            }
-
-
-            #region COMMAND_BLACKJACK_JOIN
-            [Command("join")]
-            [Description("Join a pending Blackjack game.")]
-            [Aliases("+", "compete", "enter", "j", "<<", "<")]
-            [UsageExampleArgs("100")]
-            public async Task JoinAsync(CommandContext ctx,
-                                       [Description("Bid amount.")] int bid = 5)
-            {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame game))
-                    throw new CommandFailedException("There are no Blackjack games running in this channel.");
-
-                if (game.Started)
-                    throw new CommandFailedException("Blackjack game has already started, you can't join it.");
-
-                if (game.ParticipantCount >= 5)
-                    throw new CommandFailedException("Blackjack slots are full (max 5 participants), kthxbye.");
-
-                if (game.IsParticipating(ctx.User))
-                    throw new CommandFailedException("You are already participating in the Blackjack game!");
-
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    if (bid <= 0 || !await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
-                    await db.SaveChangesAsync();
-                }
-
-                game.AddParticipant(ctx.User, bid);
-                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.");
             }
             #endregion
 
-            #region COMMAND_BLACKJACK_RULES
-            [Command("rules")]
-            [Description("Explain the Blackjack rules.")]
-            [Aliases("help", "h", "ruling", "rule")]
-            public Task RulesAsync(CommandContext ctx)
+            #region casino blackjack join
+            [Command("join")]
+            [Aliases("+", "compete", "enter", "j", "<<", "<")]
+            public async Task JoinAsync(CommandContext ctx,
+                                       [Description("desc-gamble-bid")] int bid = BlackjackGame.InitialBid)
             {
-                return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
-                    "Each participant attempts to beat the dealer by getting a card value sum as close to 21 as possible, without going over 21. " +
-                    "It is up to each individual player if an ace is worth 1 or 11. Face cards are valued as 10 and any other card is its pip value. " +
-                    "Each player is dealt two cards in the begining and in turns they decide whether to hit (get one more card dealt) or stand. " +
-                    "After all players with sums smaller or equal to 21 decide to stand, the House does the same. Whoever beats the house gets the reward."
-                );
+                if (bid is < 1 or > (int)MaxBid)
+                    throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
+                
+                if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame? game) || game is null)
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-none");
+
+                if (game.Started)
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-started");
+
+                if (game.ParticipantCount >= BlackjackGame.MaxParticipants)
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-full", BlackjackGame.MaxParticipants);
+
+                if (game.IsParticipating(ctx.User))
+                    throw new CommandFailedException(ctx, "cmd-err-casino-blackjack-dup");
+
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, bid))
+                    throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+
+                game.AddParticipant(ctx.User, bid);
+
+                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-casino-blackjack-join", ctx.User.Mention, bid, currency);
             }
+            #endregion
+
+            #region casino blackjack rules
+            [Command("rules")]
+            [Aliases("help", "h", "ruling", "rule", "info")]
+            public Task RulesAsync(CommandContext ctx)
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-casino-blackjack");
             #endregion
         }
     }

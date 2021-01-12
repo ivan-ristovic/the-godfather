@@ -1,366 +1,232 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Reactions.Common;
-#endregion
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Reactions.Services;
 
 namespace TheGodfather.Modules.Reactions
 {
     [Group("textreaction"), Module(ModuleType.Reactions), NotBlocked]
-    [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
-    [UsageExampleArgs("hello", "\"hi\" \"Hello, %user%!\"")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class TextReactionsModule : TheGodfatherModule
+    public sealed class TextReactionsModule : TheGodfatherServiceModule<ReactionsService>
     {
-
-        public TextReactionsModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.DarkGray;
-        }
-
-
+        #region textreactions
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Trigger string (case insensitive).")] string trigger,
-                                     [RemainingText, Description("Response.")] string response)
+                                     [Description("desc-trigger")] string trigger,
+                                     [RemainingText, Description("desc-response")] string response)
             => this.AddAsync(ctx, trigger, response);
+        #endregion
 
-
-        #region COMMAND_TEXT_REACTIONS_ADD
+        #region textreactions add
         [Command("add")]
-        [Description("Add a new text reaction to guild text reaction list.")]
-        [Aliases("+", "new", "a", "+=", "<", "<<")]
-        [UsageExampleArgs("\"hi\" \"Hello, %user%!\"")]
+        [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Trigger string (case insensitive).")] string trigger,
-                            [RemainingText, Description("Response.")] string response)
+                            [Description("desc-trigger")] string trigger,
+                            [RemainingText, Description("desc-response")] string response)
             => this.AddTextReactionAsync(ctx, trigger, response, false);
         #endregion
 
-        #region COMMAND_TEXT_REACTIONS_ADDREGEX
+        #region textreactions addregex
         [Command("addregex")]
-        [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
-        [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx", "+=r", "<r", "<<r")]
-        [UsageExampleArgs("\"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
+        [Aliases("registerregex", "regex", "newregex", "ar", "+r", "+=r", "<<r", "<r", "<-r", "<=r", "+regex", "+regexp", "+rgx")]
         public Task AddRegexAsync(CommandContext ctx,
-                                 [Description("Regex (case insensitive).")] string trigger,
-                                 [RemainingText, Description("Response.")] string response)
+                                 [Description("desc-trigger")] string trigger,
+                                 [RemainingText, Description("desc-response")] string response)
             => this.AddTextReactionAsync(ctx, trigger, response, true);
         #endregion
 
-        #region COMMAND_TEXT_REACTIONS_DELETE
+        #region textreactions delete
         [Command("delete"), Priority(1)]
-        [Description("Remove text reaction from guild text reaction list.")]
-        [Aliases("-", "remove", "del", "rm", "d", "-=", ">", ">>")]
-        [UsageExampleArgs("5", "5 8", "hi")]
+        [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("IDs of the reactions to remove.")] params int[] ids)
+                                     [Description("desc-r-del-ids")] params int[] ids)
         {
             if (ids is null || !ids.Any())
-                throw new InvalidCommandUsageException("You need to specify atleast one ID to remove.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
-                throw new CommandFailedException("This guild has no text reactions registered.");
+            if (!this.Service.GetGuildTextReactions(ctx.Guild.Id).Any())
+                throw new CommandFailedException(ctx, "cmd-err-tr-none");
 
-            var eb = new StringBuilder();
-            foreach (int id in ids) {
-                if (!treactions.Any(tr => tr.Id == id)) {
-                    eb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
-                    continue;
-                }
+            int removed = await this.Service.RemoveTextReactionsAsync(ctx.Guild.Id, ids);
+
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-tr-del", removed);
+
+            if (removed > 0) {
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-tr-del");
+                    emb.WithColor(this.ModuleColor);
+                    emb.AddLocalizedTitleField("str-ids", ids.JoinWith(", "), inline: true);
+                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                });
             }
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id && ids.Contains(tr.Id)));
-                await db.SaveChangesAsync();
-            }
-
-            int count = treactions.RemoveWhere(tr => ids.Contains(tr.Id));
-
-            if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder {
-                        Title = "Several text reactions have been deleted",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Removed successfully", $"{count} reactions", inline: true);
-                    emb.AddField("IDs attempted to be removed", string.Join(", ", ids));
-                    if (eb.Length > 0)
-                        emb.AddField("With errors", eb.ToString());
-                    await logchn.SendMessageAsync(embed: emb.Build());
-                }
-            }
-
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
-            else
-                await this.InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
         }
 
         [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
+                                     [RemainingText, Description("desc-triggers")] params string[] triggers)
         {
             if (triggers is null || !triggers.Any())
-                throw new InvalidCommandUsageException("Triggers missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-trig-none");
 
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions))
-                throw new CommandFailedException("This guild has no text reactions registered.");
-
-            var trIds = new List<int>();
+            IReadOnlyCollection<TextReaction> ers = this.Service.GetGuildTextReactions(ctx.Guild.Id);
+            if (!ers.Any())
+                throw new CommandFailedException(ctx, "cmd-err-tr-none");
 
             var eb = new StringBuilder();
-            triggers = triggers.Select(t => t.ToLowerInvariant()).ToArray();
-            foreach (string trigger in triggers) {
-                if (string.IsNullOrWhiteSpace(trigger))
-                    continue;
-
-                if (!trigger.IsValidRegex()) {
-                    eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+            var validTriggers = new HashSet<string>();
+            var foundReactions = new HashSet<TextReaction>();
+            foreach (string trigger in triggers.Select(t => t.ToLowerInvariant()).Distinct()) {
+                if (!trigger.TryParseRegex(out _)) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-regex", trigger));
                     continue;
                 }
 
-                IEnumerable<TextReaction> found = treactions.Where(tr => tr.ContainsTriggerPattern(trigger));
+                IEnumerable<TextReaction> found = ers.Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
-                    eb.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-trig-404", trigger));
                     continue;
                 }
 
-                bool success = true;
-                foreach (TextReaction tr in found) {
-                    success |= tr.RemoveTrigger(trigger);
-                    trIds.Add(tr.Id);
-                }
-
-                if (!success) {
-                    eb.AppendLine($"Warning: Failed to remove some text reactions for trigger {Formatter.Bold(trigger)}.");
-                    continue;
-                }
+                validTriggers.Add(trigger);
+                foreach (TextReaction er in found)
+                    foundReactions.Add(er);
             }
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                var toUpdate = db.TextReactions
-                    .Include(t => t.DbTriggers)
-                    .AsEnumerable()
-                    .Where(tr => tr.GuildId == ctx.Guild.Id && trIds.Contains(tr.Id))
-                    .ToList();
-                foreach (DatabaseTextReaction tr in toUpdate) {
-                    foreach (string trigger in triggers)
-                        tr.DbTriggers.Remove(new DatabaseTextReactionTrigger { ReactionId = tr.Id, Trigger = trigger });
-                    await db.SaveChangesAsync();
-
-                    if (tr.DbTriggers.Any()) {
-                        db.TextReactions.Remove(tr);
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-
-            int count = treactions.RemoveWhere(tr => tr.RegexCount == 0);
-
-            if (count > 0) {
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (!(logchn is null)) {
-                    var emb = new DiscordEmbedBuilder {
-                        Title = "Several text reactions have been deleted",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Removed successfully", $"{count} reactions", inline: true);
-                    emb.AddField("Triggers attempted to be removed", string.Join("\n", triggers));
-                    if (eb.Length > 0)
-                        emb.AddField("With errors", eb.ToString());
-                    await logchn.SendMessageAsync(embed: emb.Build())
-                        .ConfigureAwait(false);
-                }
-            }
+            int removed = await this.Service.RemoveTextReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-action-err", eb);
             else
-                await this.InformAsync(ctx, $"Done! {count} reactions were removed completely.", important: false);
+                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-tr-del", removed);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-tr-del");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith(), inline: true);
+                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+            });
         }
         #endregion
 
-        #region COMMAND_TEXT_REACTIONS_DELETEALL
+        #region textreactions deleteall
         [Command("deleteall"), UsesInteractivity]
-        [Description("Delete all text reactions for the current guild.")]
-        [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
+            if (!this.Service.GetGuildTextReactions(ctx.Guild.Id).Any())
+                throw new CommandFailedException(ctx, "cmd-err-tr-none");
+
+            if (!await ctx.WaitForBoolReplyAsync("q-tr-rem-all"))
                 return;
 
-            if (this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
-                if (!this.Shared.TextReactions.TryRemove(ctx.Guild.Id, out _))
-                    throw new ConcurrentOperationException("Failed to remove text reaction collection!");
+            int removed = await this.Service.RemoveTextReactionsAsync(ctx.Guild.Id);
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildId == ctx.Guild.Id));
-                await db.SaveChangesAsync();
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-tr-del", removed);
+
+            if (removed > 0) {
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle("evt-tr-del");
+                    emb.WithColor(this.ModuleColor);
+                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                });
             }
-
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "All text reactions have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            await this.InformAsync(ctx, "Removed all text reactions!", important: false);
         }
         #endregion
 
-        #region COMMAND_TEXT_REACTIONS_FIND
+        #region textreactions find
         [Command("find")]
-        [Description("Show a text reactions that matches the specified trigger.")]
-        [Aliases("f")]
-        [UsageExampleArgs("hello")]
-        public Task ListAsync(CommandContext ctx, 
-                             [RemainingText, Description("Specific trigger.")] string trigger)
+        [Aliases("f", "test")]
+        public Task FindAsync(CommandContext ctx,
+                             [RemainingText, Description("desc-trigger")] string trigger)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
-                throw new CommandFailedException("This guild has no text reactions registered.");
-
-            TextReaction tr = treactions.SingleOrDefault(t => t.IsMatch(trigger));
+            TextReaction? tr = this.Service.FindMatchingTextReaction(ctx.Guild.Id, trigger);
             if (tr is null)
-                throw new CommandFailedException("None of the reactions respond to such trigger.");
+                throw new CommandFailedException(ctx, "cmd-err-tr-404");
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "Text reaction that matches the trigger",
-                Description = string.Join(" | ", tr.TriggerStrings),
-                Color = this.ModuleColor
-            };
-            emb.AddField("ID", tr.Id.ToString(), inline: true);
-            emb.AddField("Response", tr.Response, inline: true);
-            return ctx.RespondAsync(embed: emb.Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle("str-tr-matching");
+                emb.WithDescription(Formatter.InlineCode(tr.Triggers.JoinWith(" | ")));
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-id", tr.Id, inline: true);
+                emb.AddLocalizedTitleField("str-response", tr.Response, inline: true);
+            });
         }
         #endregion
 
-        #region COMMAND_TEXT_REACTIONS_LIST
+        #region textreactions list
         [Command("list")]
-        [Description("Show all text reactions for the guild.")]
-        [Aliases("ls", "l", "print")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.TextReactions.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<TextReaction> treactions) || !treactions.Any())
-                throw new CommandFailedException("This guild has no text reactions registered.");
-            
-            return ctx.SendCollectionInPagesAsync(
-                "Text reactions for this guild",
-                treactions.OrderBy(tr => tr.OrderedTriggerStrings.First()),
-                tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
+            IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(ctx.Guild.Id);
+            if (!trs.Any())
+                throw new CommandFailedException(ctx, "cmd-err-tr-none");
+
+            return ctx.PaginateAsync(
+                "str-tr",
+                trs.OrderBy(er => er.Id),
+                tr => $"{Formatter.InlineCode($"{tr.Id:D4}")} : {tr.Response} | Triggers: {Formatter.InlineCode(string.Join(" | ", tr.Triggers))}",
                 this.ModuleColor
             );
         }
         #endregion
 
 
-        #region HELPER_FUNCTIONS
+        #region internals
         private async Task AddTextReactionAsync(CommandContext ctx, string trigger, string response, bool regex)
         {
             if (string.IsNullOrWhiteSpace(response))
-                throw new InvalidCommandUsageException("Response missing or invalid.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-tr-resp");
 
             if (trigger.Length < 2 || response.Length < 2)
-                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
+                throw new CommandFailedException(ctx, "cmd-err-trig-len-min", 2);
 
-            if (trigger.Length > 120 || response.Length > 120)
-                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
+            if (trigger.Length > ReactionTrigger.TriggerLimit)
+                throw new CommandFailedException(ctx, "cmd-err-trig-len", ReactionTrigger.TriggerLimit);
 
-            if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id))
-                this.Shared.TextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
+            if (response.Length > Reaction.ResponseLimit)
+                throw new CommandFailedException(ctx, "cmd-err-resp-len", ReactionTrigger.TriggerLimit);
 
-            if (regex && !trigger.IsValidRegex())
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+            if (regex && !trigger.TryParseRegex(out _))
+                throw new CommandFailedException(ctx, "cmd-err-trig-regex", trigger);
 
-            if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
+            if (this.Service.GuildHasTextReaction(ctx.Guild.Id, trigger))
+                throw new CommandFailedException(ctx, "cmd-err-trig-exists", trigger);
 
-            if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Administration.Common.Filter> filters) && filters.Any(f => f.Trigger.IsMatch(trigger)))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
+            if (ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, trigger, out _))
+                throw new CommandFailedException(ctx, "cmd-err-trig-coll", trigger);
 
-            int id;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseTextReaction dbtr = db.TextReactions.FirstOrDefault(tr => tr.GuildId == ctx.Guild.Id && tr.Response == response);
-                if (dbtr is null) {
-                    dbtr = new DatabaseTextReaction {
-                        GuildId = ctx.Guild.Id,
-                        Response = response,
-                    };
-                    db.TextReactions.Add(dbtr);
-                    await db.SaveChangesAsync();
-                }
+            if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))
+                throw new CommandFailedException(ctx, "cmd-err-trig-fail", trigger);
 
-                dbtr.DbTriggers.Add(new DatabaseTextReactionTrigger { ReactionId = dbtr.Id, Trigger = regex ? trigger : Regex.Escape(trigger) });
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-tr-add", 1);
 
-                await db.SaveChangesAsync();
-                id = dbtr.Id;
-            }
-
-            var eb = new StringBuilder();
-
-            ConcurrentHashSet<TextReaction> treactions = this.Shared.TextReactions[ctx.Guild.Id];
-            TextReaction reaction = treactions.FirstOrDefault(tr => tr.Response == response);
-            if (reaction is null) {
-                if (!treactions.Add(new TextReaction(id, trigger, response, regex)))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            } else {
-                if (!reaction.AddTrigger(trigger, regex))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            }
-
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "New text reaction added",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Response", response, inline: true);
-                emb.AddField("Trigger", trigger);
-                if (eb.Length > 0)
-                    emb.AddField("With errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-            
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, eb.ToString());
-            else
-                await this.InformAsync(ctx, "Successfully added given text reaction.", important: false);
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-tr-add");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedTitleField("str-response", response, inline: true);
+                emb.AddLocalizedTitleField("str-count", 1, inline: true);
+                emb.AddLocalizedTitleField("str-trigger", trigger);
+            });
         }
         #endregion
     }

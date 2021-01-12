@@ -1,0 +1,298 @@
+{
+  "deck": {
+    "usage": [
+      []
+    ]
+  },
+  "deck draw": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "deck reset": {
+    "usage": [
+      []
+    ]
+  },
+  "game": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game animalrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game animalrace top": {
+    "usage": [
+      []
+    ]
+  },
+  "game caro": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game caro rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game caro stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game caro top": {
+    "usage": [
+      []
+    ]
+  },
+  "game connect4": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game connect4 rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game connect4 stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game connect4 top": {
+    "usage": [
+      []
+    ]
+  },
+  "game duel": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "game duel rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game duel stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game duel top": {
+    "usage": [
+      []
+    ]
+  },
+  "game hangman": {
+    "usage": [
+      []
+    ]
+  },
+  "game hangman rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game hangman stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game hangman top": {
+    "usage": [
+      []
+    ]
+  },
+  "game leaderboard": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game numberrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game numberrace top": {
+    "usage": [
+      []
+    ]
+  },
+  "game othello": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game othello rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game othello stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game othello top": {
+    "usage": [
+      []
+    ]
+  },
+  "game quiz": {
+    "usage": [
+      [],
+      [ "arg-ten" ],
+      [ "arg-ten", "arg-ten" ]
+    ]
+  },
+  "game quiz capitals": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "game quiz countries": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "game quiz stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game quiz top": {
+    "usage": [
+      []
+    ]
+  },
+  "game rps": {
+    "usage": [
+      []
+    ]
+  },
+  "game rps rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette join": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game russianroulette stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game russianroulette top": {
+    "usage": [
+      []
+    ]
+  },
+  "game stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game tictactoe": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "game tictactoe rules": {
+    "usage": [
+      []
+    ]
+  },
+  "game tictactoe stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game tictactoe top": {
+    "usage": [
+      []
+    ]
+  },
+  "game typingrace": {
+    "usage": [
+      []
+    ]
+  },
+  "game typingrace join": {
+    "usage": [
+      []
+    ]
+  },
+  "game typingrace stats": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "game typingrace top": {
+    "usage": [
+      []
+    ]
+  }
+}

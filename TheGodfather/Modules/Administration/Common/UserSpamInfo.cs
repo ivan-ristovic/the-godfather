@@ -1,10 +1,6 @@
-﻿#region USING_DIRECTIVES
-
-using System;
+﻿using System;
 using System.Threading;
-
 using TheGodfather.Extensions;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Common
 {
@@ -38,7 +34,7 @@ namespace TheGodfather.Modules.Administration.Common
 
             lock (this.decrementLock) {
                 DateTimeOffset now = DateTimeOffset.UtcNow;
-                if (now >= this.resetsAt || (!string.IsNullOrWhiteSpace(newContent) && this.lastContent.LevenshteinDistance(newContent) > 2)) {
+                if (now >= this.resetsAt || (!string.IsNullOrWhiteSpace(newContent) && this.lastContent.LevenshteinDistanceTo(newContent) > 2)) {
                     Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
                     this.resetsAt = now + _resetAfter;
                     this.lastContent = newContent;

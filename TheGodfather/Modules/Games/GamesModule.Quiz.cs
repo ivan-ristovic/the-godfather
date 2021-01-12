@@ -1,218 +1,188 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
 using TheGodfather.Modules.Games.Services;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("quiz")]
-        [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExampleArgs("countries", "9", "history", "history hard", "history hard 15", "9 hard", "9 hard 15")]
-        public class QuizModule : TheGodfatherModule
+        [RequireGuild]
+        public sealed class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public QuizModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Teal;
-            }
-
-
-            [GroupCommand, Priority(4)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("ID of the quiz category.")] int id,
-                                               [Description("Amount of questions.")] int amount = 10,
-                                               [Description("Difficulty. (easy/medium/hard)")] string diff = "easy")
-            {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel.");
-
-                if (amount < 1 || amount > 20)
-                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [1, 20]!");
-
-                QuestionDifficulty difficulty = QuestionDifficulty.Easy;
-                switch (diff.ToLowerInvariant()) {
-                    case "medium": difficulty = QuestionDifficulty.Medium; break;
-                    case "hard": difficulty = QuestionDifficulty.Hard; break;
-                }
-
-                IReadOnlyList<QuizQuestion> questions = await QuizService.GetQuestionsAsync(id, amount, difficulty);
-                if (questions is null || !questions.Any())
-                    throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
-
-                var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
-                try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
-                    await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
-
-                    if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
-                        return;
-                    }
-
-                    await this.HandleQuizResultsAsync(ctx, quiz.Results);
-                } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
-                }
-            }
-
+            #region game quiz
             [GroupCommand, Priority(3)]
-            public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("ID of the quiz category.")] int id,
-                                         [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
-                                         [Description("Amount of questions.")] int amount = 10)
-                => this.ExecuteGroupAsync(ctx, id, amount, diff);
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("desc-game-quiz-cat-id")] int id,
+                                               [Description("desc-game-quiz-amount")] int amount = 10,
+                                               [Description("desc-game-quiz-diff")] int diff = 0)
+            {
+                if (amount is < 5 or > 20)
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-amount", 5, 20);
 
+                if (diff is < 0 or > 2)
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-diff");
+
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+
+                IReadOnlyList<QuizQuestion>? questions = await QuizService.GetQuestionsAsync(id, amount, (QuestionDifficulty)diff);
+                if (questions is null || !questions.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-cat");
+
+                var quiz = new QuizGame(ctx.Client.GetInteractivity(), ctx.Channel, questions);
+                await this.RunQuizAsync(ctx, quiz);
+            }
             [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Quiz category.")] string category,
-                                               [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
-                                               [Description("Amount of questions.")] int amount = 10)
+                                               [Description("desc-game-quiz-cat-id")] string category,
+                                               [Description("desc-game-quiz-diff")] int diff = 0,
+                                               [Description("desc-game-quiz-amount")] int amount = 10)
             {
-                try {
-                    int? id = await QuizService.GetCategoryIdAsync(category);
-                    if (!id.HasValue)
-                        throw new CommandFailedException("Category with that name doesn't exist!");
-                    await this.ExecuteGroupAsync(ctx, id.Value, amount, diff);
-                } catch (ArgumentException e) {
-                    throw new CommandFailedException("Fetching category failed!", e);
-                }
+                int? id = await QuizService.GetCategoryIdAsync(category);
+                if (id is null)
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-cat");
+                await this.ExecuteGroupAsync(ctx, id.Value, amount, diff);
             }
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("Quiz category.")] string category)
+                                         [RemainingText, Description("desc-game-quiz-cat-id")] string category)
                 => string.IsNullOrWhiteSpace(category) ? this.ExecuteGroupAsync(ctx) : this.ExecuteGroupAsync(ctx, category, amount: 10);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                IReadOnlyList<QuizCategory> categories = await QuizService.GetCategoriesAsync();
-                await this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
-                    $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
-                    $"- Custom quiz type (command): {Formatter.Bold("Capitals")}\n" +
-                    $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" +
-                    string.Join("\n", categories.Select(c => $"{Formatter.Bold(c.Name)} (ID: {c.Id})"))
-                );
+                IReadOnlyList<QuizCategory>? categories = await QuizService.GetCategoriesAsync();
+                string catStr = categories?.Select(c => $"- {Formatter.Bold(c.Name)} (ID: {c.Id})").JoinWith() ?? "";
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, "fmt-game-quiz-cat", catStr);
             }
+            #endregion
 
-
-            #region COMMAND_QUIZ_CAPITALS
+            #region game quiz capitals
             [Command("capitals")]
-            [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            [UsageExampleArgs("15")]
-            public async Task CapitalsQuizAsync(CommandContext ctx,
-                                               [Description("Number of questions.")] int qnum = 10)
+            public Task CapitalsQuizAsync(CommandContext ctx,
+                                         [Description("desc-game-quiz-amount")] int amount = 10)
             {
-                if (qnum < 5 || qnum > 50)
-                    throw new InvalidCommandUsageException("Number of questions must be in range [5, 50]");
+                if (amount is < 5 or > 20)
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-amount", 5, 20);
 
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel.");
-                
-                var quiz = new CapitalsQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
-                try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
-                    await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
 
-                    if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
-                        return;
-                    }
-
-                    await this.HandleQuizResultsAsync(ctx, quiz.Results);
-                } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
-                }
+                var quiz = new CapitalsQuizGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
+                return this.RunQuizAsync(ctx, quiz);
             }
-            #endregion
+            #endregion 
 
-            #region COMMAND_QUIZ_COUNTRIES
+            #region game quiz countries
             [Command("countries")]
-            [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            [UsageExampleArgs("15")]
-            public async Task CountriesQuizAsync(CommandContext ctx,
-                                                [Description("Number of questions.")] int qnum = 10)
+            public Task CountriesQuizAsync(CommandContext ctx,
+                                          [Description("desc-game-quiz-amount")] int amount = 10)
             {
-                if (qnum < 5 || qnum > 50)
-                    throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
+                if (amount is < 5 or > 20)
+                    throw new CommandFailedException(ctx, "cmd-err-game-quiz-amount", 5, 20);
 
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel.");
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
 
-                var quiz = new CountriesQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                var quiz = new CountriesQuizGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
+                return this.RunQuizAsync(ctx, quiz);
+            }
+            #endregion
+
+            #region game quiz stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
+            {
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildQuizStatsString());
+                });
+            }
+            #endregion
+
+            #region game quiz top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
+            {
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopQuizStatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-quiz-top", top);
+            }
+            #endregion
+
+
+            #region internals
+            private async Task RunQuizAsync(CommandContext ctx, IQuiz quiz)
+            {
+                this.Service.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-quiz-start");
                     await Task.Delay(TimeSpan.FromSeconds(10));
-                    await quiz.RunAsync();
+                    await quiz.RunAsync(this.Localization);
 
-                    if (quiz.IsTimeoutReached) {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
-                        return;
-                    }
-
-                    await this.HandleQuizResultsAsync(ctx, quiz.Results);
+                    if (quiz.IsTimeoutReached)
+                        await ctx.FailAsync("cmd-err-game-timeout");
+                    else
+                        await this.HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
-            #endregion
 
-            #region COMMAND_QUIZ_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
-            {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopQuizStatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}");
-            }
-            #endregion
-
-
-            #region HELPER_FUNCTIONS
-            private async Task HandleQuizResultsAsync(CommandContext ctx, ConcurrentDictionary<DiscordUser, int> results)
+            private async Task HandleQuizResultsAsync(CommandContext ctx, IReadOnlyDictionary<DiscordUser, int> results)
             {
                 if (results.Any()) {
-                    IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = results.OrderByDescending(kvp => kvp.Value);
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                        Title = "Results",
-                        Description = string.Join("\n", ordered.Select(kvp => $"{kvp.Key.Mention} : {kvp.Value}")),
-                        Color = this.ModuleColor
-                    }.Build());
+                    var ordered = results.OrderByDescending(kvp => kvp.Value).ToList();
 
-                    if (results.Count > 1)
-                        await this.Database.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizesWon++);
+                    if (results.Count > 0) {
+                        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                            emb.WithLocalizedTitle("str-results");
+                            emb.WithDescription(ordered.Take(10).Select(kvp => $"{kvp.Key.Mention} : {kvp.Value}").JoinWith());
+                            emb.WithColor(this.ModuleColor);
+                        });
+                        if (results.Count > 1) {
+                            GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                            await gss.UpdateStatsAsync(ordered.First().Key.Id, s => s.QuizWon++);
+                        }
+                    }
                 }
             }
             #endregion

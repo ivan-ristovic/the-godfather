@@ -1,121 +1,235 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Music.Common;
-using TheGodfather.Modules.Search.Services;
-#endregion
+using TheGodfather.Modules.Music.Services;
+using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Modules.Music
 {
-    [Module(ModuleType.Music), NotBlocked]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [RequireBotPermissions(Permissions.UseVoice)]
-    // TODO unlock when finished
-    [RequireOwner]
-    public partial class MusicModule : TheGodfatherServiceModule<YtService>
+    [Group("music"), Module(ModuleType.Music), NotBlocked]
+    [Aliases("songs", "song", "tracks", "track", "audio", "mu")]
+    [RequireGuild]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
+    [ModuleLifespan(ModuleLifespan.Transient)]
+    public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService>
     {
-        // TODO move to shared or even better create a transient module ?
-        public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        private GuildMusicPlayer Player { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 
-        public MusicModule(YtService yt, SharedData shared, DatabaseContextBuilder db) 
-            : base(yt, shared, db)
+        #region pre-execution
+        public override async Task BeforeExecutionAsync(CommandContext ctx)
         {
-            this.ModuleColor = DiscordColor.Grayple;
-        }
+            if (this.Service.IsDisabled)
+                throw new ServiceDisabledException(ctx);
 
+            if (!ctx.Client.IsOwnedBy(ctx.User) && !await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id)) {
+                DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
+                DiscordChannel? chn = memberVoiceState?.Channel;
+                if (chn is null)
+                    throw new CommandFailedException(ctx, "cmd-err-music-vc");
 
-        #region COMMAND_CONNECT
-        [Command("connect")]
-        [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
-        [Aliases("con", "conn", "enter")]
-        [UsageExampleArgs("Music")]
-        public async Task ConnectAsync(CommandContext ctx, 
-                                      [Description("Channel.")] DiscordChannel channel = null)
-        {
-            VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-            if (vnext is null)
-                throw new CommandFailedException("VNext is not enabled or configured.");
+                DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
+                if (botVoiceState is { } && chn != botVoiceState)
+                    throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
 
-            VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-            if (!(vnc is null))
-                throw new CommandFailedException("Already connected in this guild.");
-
-            DiscordVoiceState vstat = ctx.Member?.VoiceState;
-            if ((vstat is null || vstat.Channel is null) && channel is null)
-                throw new CommandFailedException("You are not in a voice channel.");
-
-            if (channel is null)
-                channel = vstat.Channel;
-
-            vnc = await vnext.ConnectAsync(channel);
-
-            await this.InformAsync(ctx, StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(channel.Name)}.", important: false);
-        }
-        #endregion
-
-        #region COMMAND_DISCONNECT
-        [Command("disconnect")]
-        [Description("Disconnects the bot from the voice channel.")]
-        [Aliases("dcon", "dconn", "discon", "disconn", "dc")]
-        public Task DisconnectAsync(CommandContext ctx)
-        {
-            VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
-            if (vnext is null) 
-                throw new CommandFailedException("VNext is not enabled or configured.");
-
-            VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc is null)
-                throw new CommandFailedException("Not connected in this guild.");
-
-            if (MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player)) {
-                player.Stop();
-                MusicPlayers.TryRemove(ctx.Guild.Id, out _);
+                if (!chn.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
+                    throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
             }
 
-            // TODO check await Task.Delay(500);
-            vnc.Disconnect();
+            this.Player = await this.Service.GetOrCreateDataAsync(ctx.Guild);
+            this.Player.CommandChannel = ctx.Channel;
 
-            return this.InformAsync(ctx, StaticDiscordEmoji.Headphones, "Disconnected.", important: false);
+            await base.BeforeExecutionAsync(ctx);
         }
         #endregion
 
-        #region COMMAND_SKIP
-        [Command("skip")]
-        [Description("Skip current voice playback.")]
-        public Task SkipAsync(CommandContext ctx)
+
+        #region music
+        [GroupCommand]
+        public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            if (!MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player))
-                throw new CommandFailedException("Not playing in this guild");
+            Song song = this.Player.NowPlaying;
+            if (string.IsNullOrWhiteSpace(this.Player.NowPlaying.Track?.TrackString))
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-none");
 
-            player.Skip();
-            return Task.CompletedTask;
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-music-queue");
+                emb.WithColor(this.ModuleColor);
+                emb.WithDescription(Formatter.Bold(Formatter.Sanitize(song.Track.Title)));
+                emb.AddLocalizedTitleField("str-author", song.Track.Author, inline: true);
+                emb.AddLocalizedTitleField("str-duration", song.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedTitleField("str-requested-by", song.RequestedBy?.Mention, inline: true);
+            });
         }
         #endregion
 
-        #region COMMAND_STOP
+        #region music info
+        [Command("info")]
+        [Aliases("i", "player")]
+        public Task PlayerInfoAsync(CommandContext ctx)
+        {
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-music-player");
+                var totalQueueTime = TimeSpan.FromSeconds(this.Player.Queue.Sum(s => s.Track.Length.TotalSeconds));
+                emb.AddLocalizedTitleField("str-music-shuffled", this.Player.IsShuffled, inline: true);
+                emb.AddLocalizedTitleField("str-music-mode", this.Player.RepeatMode, inline: true);
+                emb.AddLocalizedTitleField("str-music-vol", $"{this.Player.Volume}%", inline: true);
+                emb.AddLocalizedTitleField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()}", inline: true);
+            });
+        }
+        #endregion
+
+        #region music pause
+        [Command("pause")]
+        [Aliases("ps")]
+        public async Task PauseAsync(CommandContext ctx)
+        {
+            if (!this.Player.IsPlaying) {
+                await this.ResumeAsync(ctx);
+                return;
+            }
+
+            await this.Player.PauseAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-pause");
+        }
+        #endregion
+
+        #region music stop
         [Command("stop")]
-        [Description("Stops current voice playback.")]
-        public Task StopAsync(CommandContext ctx)
+        public async Task StopAsync(CommandContext ctx)
         {
-            if (!MusicPlayers.TryGetValue(ctx.Guild.Id, out MusicPlayer player))
-                throw new CommandFailedException("Not playing in this guild");
+            int removed = this.Player.EmptyQueue();
+            await this.Player.StopAsync();
+            await this.Player.DestroyPlayerAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
+        }
+        #endregion
 
-            player.Stop();
-            return this.InformAsync(ctx, StaticDiscordEmoji.Headphones, "Stopped.", important: false);
+        #region music resume
+        [Command("resume")]
+        [Aliases("unpause", "up", "rs")]
+        public async Task ResumeAsync(CommandContext ctx)
+        {
+            await this.Player.ResumeAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-resume");
+        }
+        #endregion
+
+        #region music skip
+        [Command("skip")]
+        [Aliases("next", "n", "sk")]
+        public async Task SkipAsync(CommandContext ctx)
+        {
+            Song song = this.Player.NowPlaying;
+            await this.Player.StopAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-skip", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+        }
+        #endregion
+
+        #region music seek
+        [Command("seek")]
+        [Aliases("s")]
+        public async Task SeekAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-music-seek")] TimeSpan position)
+        {
+            await this.Player.SeekAsync(position, false);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music forward
+        [Command("forward")]
+        [Aliases("fw", "f", ">", ">>")]
+        public async Task ForwardAsync(CommandContext ctx,
+                                      [RemainingText, Description("desc-music-fw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music rewind
+        [Command("rewind")]
+        [Aliases("bw", "rw", "<", "<<")]
+        public async Task RewindAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-music-bw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(-offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music volume
+        [Command("volume")]
+        [Aliases("vol", "v")]
+        public async Task VolumeAsync(CommandContext ctx,
+                                     [Description("desc-music-vol")] int volume = 100)
+        {
+            if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-music-vol", GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume);
+
+            await this.Player.SetVolumeAsync(volume);
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-vol", volume);
+        }
+        #endregion
+
+        #region music restart
+        [Command("restart")]
+        [Aliases("res", "replay")]
+        public async Task RestartAsync(CommandContext ctx)
+        {
+            Song song = this.Player.NowPlaying;
+            await this.Player.RestartAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-replay", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+        }
+        #endregion
+
+        #region music repeat
+        [Command("repeat")]
+        [Aliases("loop", "l", "rep", "lp")]
+        public Task RepeatAsync(CommandContext ctx,
+                               [Description("desc-music-mode")] RepeatMode mode = RepeatMode.Single)
+        {
+            this.Player.SetRepeatMode(mode);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-mode", mode);
+        }
+        #endregion
+
+        #region music shuffle
+        [Command("shuffle")]
+        [Aliases("randomize", "rng", "sh")]
+        public Task ShuffleAsync(CommandContext ctx)
+        {
+            if (this.Player.IsShuffled) {
+                this.Player.StopShuffle();
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-unshuffle");
+            } else {
+                this.Player.Shuffle();
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-shuffle");
+            }
+        }
+        #endregion
+
+        #region music reshuffle
+        [Command("reshuffle")]
+        public Task ReshuffleAsync(CommandContext ctx)
+        {
+            this.Player.Reshuffle();
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-reshuffle");
         }
         #endregion
     }
 }
-

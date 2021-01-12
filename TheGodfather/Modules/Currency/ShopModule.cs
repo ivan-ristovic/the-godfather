@@ -1,236 +1,235 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Extensions;
-#endregion
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Currency.Services;
 
 namespace TheGodfather.Modules.Currency
 {
     [Group("shop"), Module(ModuleType.Currency), NotBlocked]
-    [Description("Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.")]
-    [Aliases("store")]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class ShopModule : TheGodfatherModule
+    [Aliases("store", "mall")]
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Guild)]
+    public sealed class ShopModule : TheGodfatherServiceModule<ShopService>
     {
-
-        public ShopModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.SpringGreen;
-        }
-
-
+        #region shop
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
+        #endregion
 
-
-        #region COMMAND_SHOP_ADD
-        [Command("add"), Priority(1)]
-        [Description("Add a new item to guild purchasable items list.")]
-        [Aliases("+", "a", "+=", "<", "<<", "additem")]
-        [UsageExampleArgs("Barbie 500", "\"New Barbie\" 500", "500 Newest Barbie")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Item price.")] long price,
-                                  [RemainingText, Description("Item name.")] string name)
+        #region shop purchases
+        [Command("purchases")]
+        [Aliases("myitems", "purchased", "bought")]
+        public async Task GetPurchasedItemsAsync(CommandContext ctx,
+                                                [Description("desc-member")] DiscordMember? member = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("The name  for the item is missing.");
+            member ??= ctx.Member;
 
-            if (name.Length >= 60)
-                throw new InvalidCommandUsageException("Item name cannot exceed 60 characters");
-
-            if (price <1  || price > 100_000_000_000)
-                throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.PurchasableItems.Add(new DatabasePurchasableItem {
-                    GuildId = ctx.Guild.Id,
-                    Name = name,
-                    Price = price
-                });
-                await db.SaveChangesAsync();
+            IReadOnlyList<PurchasedItem> purchased = await this.Service.Purchases.GetAllCompleteAsync(member.Id);
+            if (!purchased.Any()) {
+                await ctx.FailAsync("cmd-err-shop-purchased-none", member.Mention);
+                return;
             }
 
-            await this.InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
+            await ctx.PaginateAsync(
+                "fmt-shop-purchased",
+                purchased.OrderBy(i => i.Item.Price),
+                i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
+                this.ModuleColor,
+                5,
+                member.Mention
+            );
+        }
+        #endregion
+
+        #region shop add
+        [Command("add"), Priority(1)]
+        [Aliases("register", "reg", "additem", "a", "+", "+=", "<<", "<", "<-", "<=")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("desc-shop-price")] long price,
+                                  [RemainingText, Description("desc-shop-name")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-name-404");
+
+            if (name.Length >= PurchasableItem.NameLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-name", PurchasableItem.NameLimit);
+
+            if (price is < 1 or > PurchasableItem.PriceLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-shop-price", PurchasableItem.PriceLimit);
+
+            await this.Service.AddAsync(new PurchasableItem {
+                GuildId = ctx.Guild.Id,
+                Price = price,
+                Name = name,
+            });
+
+            await ctx.InfoAsync(this.ModuleColor);
         }
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Item name.")] string name,
-                            [Description("Item price.")] long price)
+                            [Description("desc-shop-name")] string name,
+                            [Description("desc-shop-price")] long price)
             => this.AddAsync(ctx, price, name);
         #endregion
 
-        #region COMMAND_SHOP_BUY
+        #region shop buy
         [Command("buy"), UsesInteractivity, Priority(1)]
-        [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
-        [UsageExampleArgs("3")]
         public async Task BuyAsync(CommandContext ctx,
-                                  [Description("Item ID.")] int id)
+                                  [Description("desc-shop-ids")] params int[] ids)
         {
-            DatabasePurchasableItem item;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                item = await db.PurchasableItems.FindAsync(id);
-                if (item is null || item.GuildId != ctx.Guild.Id)
-                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
-
-                if (db.PurchasedItems.Any(i => i.ItemId == id && i.UserId == ctx.User.Id))
-                    throw new CommandFailedException("You have already purchased this item!");
+            await foreach (PurchasableItem? item in this.FetchItemsAsync(ctx, ids)) {
+                if (item is null)
+                    throw new CommandFailedException(ctx, "cmd-err-shop-404");
+                await this.InternalPurchaseAsync(ctx, item);
             }
-
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
-                return;
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
-                    throw new CommandFailedException("You do not have enough money to purchase that item!");
-
-                db.PurchasedItems.Add(new DatabasePurchasedItem {
-                    ItemId = item.Id,
-                    UserId = ctx.User.Id
-                });
-
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
 
         [Command("buy"), UsesInteractivity, Priority(1)]
         public async Task BuyAsync(CommandContext ctx,
-                                  [Description("Item name.")] string name)
+                                  [Description("desc-shop-name")] string name)
         {
-            DatabasePurchasableItem item;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                item = db.PurchasableItems.FirstOrDefault(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (item is null || item.GuildId != ctx.Guild.Id)
-                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+            IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
+            PurchasableItem? item = items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            if (item is null)
+                throw new CommandFailedException(ctx, "cmd-err-shop-404");
 
-                if (db.PurchasedItems.Any(i => item.Id == i.ItemId && i.UserId == ctx.User.Id))
-                    throw new CommandFailedException("You have already purchased this item!");
-            }
-
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
-                return;
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
-                    throw new CommandFailedException("You do not have enough money to purchase that item!");
-
-                db.PurchasedItems.Add(new DatabasePurchasedItem {
-                    ItemId = item.Id,
-                    UserId = ctx.User.Id
-                });
-
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InternalPurchaseAsync(ctx, item);
         }
 
 
         #endregion
 
-        #region COMMAND_SHOP_SELL
+        #region shop sell
         [Command("sell"), UsesInteractivity]
-        [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
-        [UsageExampleArgs("3")]
         public async Task SellAsync(CommandContext ctx,
-                                   [Description("Item ID.")] int id)
+                                   [Description("desc-shop-ids")] params int[] ids)
         {
-            DatabasePurchasableItem item;
-            DatabasePurchasedItem purchased;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                item = await db.PurchasableItems.FindAsync(id);
+            await foreach (PurchasableItem? item in this.FetchItemsAsync(ctx, ids)) {
                 if (item is null)
-                    throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+                    throw new CommandFailedException(ctx, "cmd-err-shop-404");
 
-                purchased = await db.PurchasedItems.FindAsync(item.Id, (long)ctx.User.Id);
-                if (purchased == null)
-                    throw new CommandFailedException("You did not purchase this item!");
+                if (!await this.Service.Purchases.ContainsAsync(ctx.Guild.Id, item.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-shop-sell", item.Name);
+
+                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+                long sellPrice = item.Price / 2;
+                if (!await ctx.WaitForBoolReplyAsync("q-shop-sell", args: new object[] { item.Name, item.Price, currency }))
+                    return;
+
+                await this.Service.Purchases.RemoveAsync(new PurchasedItem {
+                    ItemId = item.Id,
+                    UserId = ctx.User.Id,
+                });
+                await ctx.Services.GetRequiredService<BankAccountService>().IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, sellPrice);
+
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-shop-sell", ctx.User.Mention, item.Name, item.Price, currency);
             }
 
-            long retval = item.Price / 2;
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
-                return;
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.PurchasedItems.Remove(purchased);
-                await db.ModifyBankAccountAsync(ctx.User.Id, ctx.Guild.Id, v => v + retval);
-                await db.SaveChangesAsync();
-            }
-            
-            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
         #endregion
 
-        #region COMMAND_SHOP_DELETE
+        #region shop delete
         [Command("delete"), Priority(1)]
-        [Description("Remove purchasable item from this guild item list. You can remove an item by ID or by name.")]
-        [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        [UsageExampleArgs("Barbie", "5", "1 2 3 4 5")]
+        [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("ID list of items to remove.")] params int[] ids)
+                                     [Description("desc-shop-del-ids")] params int[] ids)
         {
             if (ids is null || !ids.Any())
-                throw new InvalidCommandUsageException("Missing item IDs.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                foreach (int id in ids.Distinct()) {
-                    var item = new DatabasePurchasableItem { Id = id, GuildId = ctx.Guild.Id };
-                    if (db.PurchasableItems.Contains(item))
-                        db.PurchasableItems.Remove(item);
-                }
-                await db.SaveChangesAsync();
-            }
-            
-            await this.InformAsync(ctx, $"Removed items with the following IDs: {string.Join(", ", ids)}", important: false);
+            int removed = await this.Service.RemoveAsync(ctx.Guild.Id, ids);
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-shop-delete", removed);
+        }
+
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-shop-item-ids")] string name)
+        {
+            IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
+            int removed = await this.Service.RemoveAsync(items.Where(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
+            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-shop-delete", removed);
+        }
+
+        #endregion
+
+        #region shop deleteall
+        [Command("deleteall"), UsesInteractivity]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task RemoveAllAsync(CommandContext ctx)
+        {
+            if (!await ctx.WaitForBoolReplyAsync("q-shop-clear"))
+                return;
+
+            IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
+            await this.Service.RemoveAsync(items);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_SHOP_LIST
+        #region shop list
         [Command("list")]
-        [Description("List all purchasable items for this guild.")]
-        [Aliases("ls")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
-            List<DatabasePurchasableItem> items;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                items = await db.PurchasableItems
-                    .Where(i => i.GuildId == ctx.Guild.Id)
-                    .OrderBy(i => i.Price)
-                    .ToListAsync();
-            }
-
+            IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!items.Any())
-                throw new CommandFailedException("No items in shop!");
+                throw new CommandFailedException(ctx, "cmd-err-shop-none");
 
-            await ctx.SendCollectionInPagesAsync(
-                $"Items for guild {ctx.Guild.Name}",
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            await ctx.PaginateAsync(
+                "fmt-shop",
                 items,
-                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}",
+                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {currency}",
                 this.ModuleColor,
-                5
+                5,
+                ctx.Guild.Name
             );
+        }
+        #endregion
+
+
+        #region internals
+        private async Task InternalPurchaseAsync(CommandContext ctx, PurchasableItem item)
+        {
+            if (await this.Service.Purchases.ContainsAsync(ctx.User.Id, item.Id))
+                throw new CommandFailedException(ctx, "cmd-err-shop-purchased", item.Name);
+
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            if (!await ctx.WaitForBoolReplyAsync("q-shop-buy", args: new object[] { item.Name, item.Price, currency }))
+                return;
+
+            if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, item.Price))
+                throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+
+            await this.Service.Purchases.AddAsync(new PurchasedItem {
+                ItemId = item.Id,
+                UserId = ctx.User.Id,
+            });
+
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-shop-buy", ctx.User.Mention, item.Name, item.Price, currency);
+        }
+
+        private async IAsyncEnumerable<PurchasableItem?> FetchItemsAsync(CommandContext ctx, params int[] ids)
+        {
+            foreach (int id in ids.Distinct())
+                yield return await this.Service.GetAsync(ctx.Guild.Id, id);
         }
         #endregion
     }

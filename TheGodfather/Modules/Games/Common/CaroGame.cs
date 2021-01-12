@@ -1,27 +1,23 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-#endregion
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public sealed class CaroGame : BoardGame
+    public sealed class CaroGame : BaseBoardGame
     {
-        private static readonly string _Header = StaticDiscordEmoji.ArrowUp + string.Join("", StaticDiscordEmoji.Numbers);
+        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.JoinWith("");
 
 
         public CaroGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
-            : base(interactivity, channel, player1, player2, sizeX: 10, sizeY: 10, movetime)
-        {
+            : base(interactivity, channel, player1, player2, sizeX: 10, sizeY: 10, movetime) { }
 
-        }
-        
 
         protected override bool IsGameOver()
         {
@@ -30,7 +26,8 @@ namespace TheGodfather.Modules.Games.Common
                 for (int j = 0; j < this.SizeY - 4; j++) {
                     if (this.board[i, j] == 0)
                         continue;
-                    if (this.board[i, j] == this.board[i, j + 1] && this.board[i, j] == this.board[i, j + 2] && this.board[i, j] == this.board[i, j + 3] && this.board[i, j] == this.board[i, j + 4])
+                    if (this.board[i, j] == this.board[i, j + 1] && this.board[i, j] == this.board[i, j + 2] 
+                     && this.board[i, j] == this.board[i, j + 3] && this.board[i, j] == this.board[i, j + 4])
                         return true;
                 }
             }
@@ -40,7 +37,8 @@ namespace TheGodfather.Modules.Games.Common
                 for (int j = 0; j < this.SizeY; j++) {
                     if (this.board[i, j] == 0)
                         continue;
-                    if (this.board[i, j] == this.board[i + 1, j] && this.board[i, j] == this.board[i + 2, j] && this.board[i, j] == this.board[i + 3, j] && this.board[i, j] == this.board[i + 4, j])
+                    if (this.board[i, j] == this.board[i + 1, j] && this.board[i, j] == this.board[i + 2, j] 
+                     && this.board[i, j] == this.board[i + 3, j] && this.board[i, j] == this.board[i + 4, j])
                         return true;
                 }
             }
@@ -50,7 +48,8 @@ namespace TheGodfather.Modules.Games.Common
                 for (int j = 0; j < this.SizeY - 4; j++) {
                     if (this.board[i, j] == 0)
                         continue;
-                    if (this.board[i, j] == this.board[i + 1, j + 1] && this.board[i, j] == this.board[i + 2, j + 2] && this.board[i, j] == this.board[i + 3, j + 3] && this.board[i, j] == this.board[i + 4, j + 4])
+                    if (this.board[i, j] == this.board[i + 1, j + 1] && this.board[i, j] == this.board[i + 2, j + 2] 
+                     && this.board[i, j] == this.board[i + 3, j + 3] && this.board[i, j] == this.board[i + 4, j + 4])
                         return true;
                 }
             }
@@ -60,7 +59,8 @@ namespace TheGodfather.Modules.Games.Common
                 for (int j = 4; j < this.SizeY; j++) {
                     if (this.board[i, j] == 0)
                         continue;
-                    if (this.board[i, j] == this.board[i + 1, j - 1] && this.board[i, j] == this.board[i + 2, j - 2] && this.board[i, j] == this.board[i + 3, j - 3] && this.board[i, j] == this.board[i + 4, j - 4])
+                    if (this.board[i, j] == this.board[i + 1, j - 1] && this.board[i, j] == this.board[i + 2, j - 2] 
+                     && this.board[i, j] == this.board[i + 3, j - 3] && this.board[i, j] == this.board[i + 4, j - 4])
                         return true;
                 }
             }
@@ -68,25 +68,27 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        protected override Task UpdateBoardAsync()
+        protected override Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(_Header);
+            sb.AppendLine(_header);
 
             for (int i = 0; i < this.SizeX; i++) {
-                sb.Append(StaticDiscordEmoji.Numbers[i]);
+                sb.Append(Emojis.Numbers.Get(i));
                 for (int j = 0; j < this.SizeY; j++)
                     switch (this.board[i, j]) {
-                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
-                        case 1: sb.Append(StaticDiscordEmoji.X); break;
-                        case 2: sb.Append(StaticDiscordEmoji.O); break;
+                        case 0: sb.Append(Emojis.BoardSquare); break;
+                        case 1: sb.Append(Emojis.X); break;
+                        case 2: sb.Append(Emojis.O); break;
                     }
                 sb.AppendLine();
             }
 
-            sb.AppendLine().Append("User to move: ").AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
+            sb.AppendLine()
+              .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
+              .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder {
+            return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }

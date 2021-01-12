@@ -1,56 +1,93 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
-
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
-#endregion
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Services;
 
 namespace TheGodfather.Extensions
 {
     internal static class InteractivityExtensions
     {
-        public static Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx, ulong uid = 0)
-            => interactivity.WaitForBoolReplyAsync(ctx.Channel.Id, uid != 0 ? uid : ctx.User.Id, ctx.Services.GetService<SharedData>());
-
-        public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, ulong cid, ulong uid, SharedData shared = null)
+        public static async Task<int?> WaitForOptionReplyAsync(this InteractivityExtension interactivity, CommandContext ctx, int max, int min = 0)
         {
-            if (!(shared is null))
-                shared.AddPendingResponse(cid, uid);
+            InteractivityService ins = ctx.Services.GetRequiredService<InteractivityService>();
 
-            bool response = false;
-            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
-                m => {
-                    if (m.ChannelId != cid || m.Author.Id != uid)
-                        return false;
-                    bool? b = CustomBoolConverter.TryConvert(m.Content);
-                    response = b ?? false;
-                    return b.HasValue;
-                }
-            );
+            ins.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
-            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
-                throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
+            int? response = await WaitForOptionReplyAsync(interactivity, ctx.Channel, ctx.User, max, min);
+
+            if (!ins.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
 
             return response;
         }
 
-        public static async Task<InteractivityResult<DiscordMessage>> WaitForDmReplyAsync(this InteractivityExtension interactivity, DiscordDmChannel dm, ulong cid, ulong uid, SharedData shared = null)
+        public static async Task<int?> WaitForOptionReplyAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, int max, int min = 0)
         {
-            if (!(shared is null))
-                shared.AddPendingResponse(cid, uid);
-            
-            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(xm => xm.Channel == dm && xm.Author.Id == uid, TimeSpan.FromMinutes(1));
-
-            if (!(shared is null) && !shared.TryRemovePendingResponse(cid, uid))
-                throw new ConcurrentOperationException("Failed to remove user from waiting list. This is bad!");
-
-            return mctx;
+            int index = 0;
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
+                m => m.Channel == channel && m.Author == user && int.TryParse(m.Content, out index) && index < max && index >= min
+            );
+            return mctx.TimedOut ? null : index;
         }
+
+        public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx)
+        {
+            InteractivityService ins = ctx.Services.GetRequiredService<InteractivityService>();
+
+            ins.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
+
+            bool response = await WaitForBoolReplyAsync(interactivity, ctx.Channel, ctx.User);
+
+            if (!ins.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
+                throw new ConcurrentOperationException("Failed to remove user from pending list");
+
+            return response;
+        }
+
+        public static async Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
+        {
+            var conv = new BoolConverter();
+
+            bool response = false;
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
+                m => m.Channel == channel && m.Author == user && conv.TryConvert(m.Content, out response)
+            );
+            return !mctx.TimedOut && response;
+        }
+
+        public static async Task<DiscordChannel?> WaitForChannelMentionAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
+        {
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
+                m => m.Channel == channel && m.Author == user && m.MentionedChannels.Count == 1
+            );
+            return mctx.TimedOut ? null : mctx.Result.MentionedChannels.FirstOrDefault() ?? null;
+        }
+
+        public static async Task<PunishmentAction?> WaitForPunishmentActionAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
+        {
+            var converter = new PunishmentActionConverter();
+            InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
+                m => m.Channel == channel && m.Author == user && converter.TryConvert(m.Content, out _)
+            );
+
+            if (!mctx.TimedOut) {
+                new PunishmentActionConverter().TryConvert(mctx.Result.Content, out PunishmentAction action);
+                return action;
+            }
+
+            return null;
+        }
+
+        public static Task<InteractivityResult<DiscordMessage>> GetNextMessageAsync(this DiscordChannel channel, DiscordUser user,
+                                                                                    Func<DiscordMessage, bool> predicate)
+            => channel.GetNextMessageAsync(m => m.Author == user && predicate(m));
     }
 }

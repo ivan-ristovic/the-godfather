@@ -1,79 +1,79 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
+using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("xkcd"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Search xkcd. Group call returns random comic or, if an ID is provided, a comic with given ID.")]
     [Aliases("x")]
-    [UsageExampleArgs("650")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class XkcdModule : TheGodfatherModule
+    public sealed class XkcdModule : TheGodfatherModule
     {
-
-        public XkcdModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.Blue;
-        }
-
-
+        #region xkcd
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Comic ID.")] int id)
+                                     [Description("desc-id")] int id)
             => this.ByIdAsync(ctx, id);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.RandomAsync(ctx);
+        #endregion
 
-
-        #region COMMAND_XKCD_ID
+        #region xkcd id
         [Command("id")]
-        [Description("Retrieves comic with given ID from xkcd.")]
-        [UsageExampleArgs("650")]
         public async Task ByIdAsync(CommandContext ctx,
-                                 [Description("Comic ID.")] int? id = null)
+                                   [Description("desc-id")] int? id = null)
         {
-            XkcdComic comic = await XkcdService.GetComicAsync(id);
-            if (comic is null)
-                throw new CommandFailedException("Failed to retrieve comic from xkcd.");
+            if (id < 0 || id > XkcdService.TotalComics)
+                throw new CommandFailedException(ctx, "cmd-err-xkcd");
 
-            await ctx.RespondAsync(embed: comic.ToDiscordEmbedBuilder(this.ModuleColor));
+            XkcdComic? comic = await XkcdService.GetComicAsync(id);
+            if (comic is null)
+                throw new CommandFailedException(ctx, "cmd-err-xkcd");
+
+            await this.PrintComicAsync(ctx, comic);
         }
         #endregion
 
-        #region COMMAND_XKCD_LATEST
+        #region xkcd latest
         [Command("latest")]
-        [Description("Retrieves latest comic from xkcd.")]
         [Aliases("fresh", "newest", "l")]
         public Task LatestAsync(CommandContext ctx)
             => this.ByIdAsync(ctx);
         #endregion
 
-        #region COMMAND_XKCD_RANDOM
+        #region xkcd random
         [Command("random")]
-        [Description("Retrieves a random comic.")]
         [Aliases("rnd", "r", "rand")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            XkcdComic comic = await XkcdService.GetRandomComicAsync();
+            XkcdComic? comic = await XkcdService.GetRandomComicAsync();
             if (comic is null)
-                throw new CommandFailedException("Failed to retrieve comic from xkcd.");
+                throw new CommandFailedException(ctx, "cmd-err-xkcd");
 
-            await ctx.RespondAsync(embed: comic.ToDiscordEmbedBuilder(this.ModuleColor));
+            await this.PrintComicAsync(ctx, comic);
+        }
+        #endregion
+
+
+        #region internals
+        private Task PrintComicAsync(CommandContext ctx, XkcdComic comic)
+        {
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle($"xkcd #{comic.Id} - {comic.Title}");
+                emb.WithImageUrl(comic.ImageUrl);
+                string? url = XkcdService.CreateUrlForComic(comic.Id);
+                if (url is { })
+                    emb.WithUrl(url);
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedFooter("fmt-xkcd", null, $"{comic.Month}/{comic.Year}");
+            });
         }
         #endregion
     }

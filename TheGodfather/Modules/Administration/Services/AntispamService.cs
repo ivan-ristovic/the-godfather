@@ -1,18 +1,19 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -23,9 +24,9 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly Timer refreshTimer;
 
 
-        private static void RefreshCallback(object _)
+        private static void RefreshCallback(object? _)
         {
-            var service = _ as AntispamService;
+            AntispamService service = _ as AntispamService ?? throw new ArgumentException("Failed to cast provided argument in timer callback");
 
             foreach (ulong gid in service.guildSpamInfo.Keys) {
                 IEnumerable<ulong> toRemove = service.guildSpamInfo[gid]
@@ -38,13 +39,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public AntispamService(TheGodfatherShard shard)
-            : base(shard)
+        public AntispamService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Antispam")
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildSpamInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserSpamInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromMinutes(3), TimeSpan.FromMinutes(3));
-            this.reason = "_gf: Antispam";
         }
 
 
@@ -59,16 +59,40 @@ namespace TheGodfather.Modules.Administration.Services
             return success;
         }
 
+        public async Task<IReadOnlyList<ExemptedAntispamEntity>> GetExemptsAsync(ulong gid)
+        {
+            List<ExemptedAntispamEntity> exempts;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            exempts = await db.ExemptsAntispam.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            return exempts.AsReadOnly();
+        }
+
+        public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsAntispam.AddExemptions(gid, type, ids);
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
+
+        public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsAntispam.RemoveRange(
+                db.ExemptsAntispam.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+            );
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using (DatabaseContext db = this.shard.Database.CreateContext()) {
-                this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                    db.AntispamExempts
-                        .Where(ee => ee.GuildId == gid)
-                        .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
-                );
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
+                db.ExemptsAntispam
+                    .Where(ee => ee.GuildId == gid)
+                    .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+            );
         }
 
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, AntispamSettings settings)
@@ -79,9 +103,9 @@ namespace TheGodfather.Modules.Administration.Services
                 this.UpdateExemptsForGuildAsync(e.Guild.Id);
             }
 
-            var member = e.Author as DiscordMember;
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity> exempts)) {
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
+            DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
+                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && (ee.Id == e.Channel.Id || ee.Id == e.Channel.ParentId)))
                     return;
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
                     return;
@@ -96,10 +120,15 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
             }
 
-            if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
+            if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo? spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 spamInfo.Reset();
             }
+        }
+
+        public override void Dispose()
+        {
+            this.refreshTimer.Dispose();
         }
     }
 }

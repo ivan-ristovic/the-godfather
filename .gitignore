@@ -289,3 +289,4 @@ __pycache__/
 *.mp3
 /Database/data.sql
 /TheGodfather/Resources/config.json
+*.db

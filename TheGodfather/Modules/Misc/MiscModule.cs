@@ -1,530 +1,383 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
+using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Misc.Common;
-#endregion
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Misc.Extensions;
+using TheGodfather.Modules.Misc.Services;
+using TimeZoneConverter;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Module(ModuleType.Miscellaneous)]
+    [Module(ModuleType.Misc)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
-    public class MiscModule : TheGodfatherModule
+    public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     {
-
-        public MiscModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.LightGray;
-        }
-
-
-        #region COMMAND_8BALL
+        #region 8ball
         [Command("8ball")]
-        [Description("An almighty ball which knows the answer to any question you ask. Alright, the answer is random, so what?")]
         [Aliases("8b")]
-        [UsageExampleArgs("Am I gay?")]
         public Task EightBallAsync(CommandContext ctx,
-                                  [RemainingText, Description("A question for the almighty ball.")] string question)
+                                  [RemainingText, Description("desc-8b-question")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException("The almighty ball requires a question.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-8b");
 
-            return this.InformAsync(ctx, $"{ctx.User.Mention} {EightBall.GenerateAnswer(question, ctx.Channel.Users)}", ":8ball:");
+            return this.Service.EightBall(ctx.Channel, question, out string answer)
+                ? ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, answer)
+                : ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Description = $"{Emojis.EightBall} {answer}",
+                    Color = this.ModuleColor
+                });
         }
         #endregion
 
-        #region COMMAND_COINFLIP
+        #region coinflip
         [Command("coinflip")]
-        [Description("Flip a coin.")]
         [Aliases("coin", "flip")]
-        public Task CoinflipAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.NextBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
+        public Task CoinflipAsync(CommandContext ctx,
+                                 [Description("desc-coinflip-ratio")] int ratio = 1)
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.NewMoon, this.Service.Coinflip(ratio) ? "fmt-coin-heads" : "fmt-coin-tails", ctx.User.Mention);
         #endregion
 
-        #region COMMAND_DICE
+        #region dice
         [Command("dice")]
-        [Description("Roll a dice.")]
         [Aliases("die", "roll")]
-        public Task DiceAsync(CommandContext ctx)
-            => this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
+        public Task DiceAsync(CommandContext ctx,
+                             [Description("desc-dice-sides")] int sides = 6)
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-dice", ctx.User.Mention, this.Service.Dice(sides));
         #endregion
 
-        #region COMMAND_INVITE
+        #region invite
         [Command("invite")]
-        [Description("Get an instant invite link for the current guild.")]
-        [Aliases("getinvite")]
-        [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task GetInstantInviteAsync(CommandContext ctx)
+        [Aliases("getinvite", "inv")]
+        public async Task GetInstantInviteAsync(CommandContext ctx,
+                                               [Description("desc-invite-expire")] TimeSpan? expiryTime = null)
         {
-            IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
-            IEnumerable<DiscordInvite> permanent = invites.Where(inv => !inv.IsTemporary);
-            if (permanent.Any()) {
-                await ctx.RespondAsync(permanent.First().ToString());
-            } else {
-                DiscordInvite invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: ctx.BuildInvocationDetailsString());
-                await ctx.RespondAsync($"{invite} {Formatter.Italic("(This invite will expire in one hour!)")}");
+            DiscordInvite? invite = null;
+            if (expiryTime is null) {
+                if (ctx.Guild.VanityUrlCode is { }) {
+                    invite = await ctx.Guild.GetVanityInviteAsync();
+                } else {
+                    IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
+                    invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
+                }
             }
+
+            if (invite is null || expiryTime is { }) {
+                expiryTime ??= TimeSpan.FromSeconds(86400);
+
+                if (!ctx.Guild.CurrentMember.PermissionsIn(ctx.Channel).HasPermission(Permissions.CreateInstantInvite))
+                    throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite) });
+
+                // TODO check timespan because only some values are allowed - 400 is thrown
+                invite = await ctx.Channel.CreateInviteAsync(max_age: (int)expiryTime.Value.TotalSeconds, temporary: true, reason: ctx.BuildInvocationDetailsString());
+            }
+
+            await ctx.RespondAsync(invite.ToString());
         }
         #endregion
 
-        #region COMMAND_ITEMS
-        [Command("items")]
-        [Description("View user's purchased items (see ``bank`` and ``shop``).")]
-        [Aliases("myitems", "purchases")]
-        [UsageExampleArgs("@Someone")]
-        [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task GetPurchasedItemsAsync(CommandContext ctx,
-                                                [Description("User.")] DiscordUser user = null)
-        {
-            user = user ?? ctx.User;
-
-            List<DatabasePurchasedItem> items;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                items = await db.PurchasedItems
-                        .Include(i => i.DbPurchasableItem)
-                    .Where(i => i.UserId == ctx.User.Id && i.DbPurchasableItem.GuildId == ctx.Guild.Id)
-                    .OrderBy(i => i.DbPurchasableItem.Price)
-                    .ToListAsync();
-            }
-            
-            if (!items.Any())
-                throw new CommandFailedException("No items purchased!");
-
-            await ctx.SendCollectionInPagesAsync(
-                $"Items owned by {user.Username}",
-                items,
-                item => $"{Formatter.Bold(item.DbPurchasableItem.Name)} | {item.DbPurchasableItem.Price}",
-                this.ModuleColor,
-                5
-            );
-        }
-        #endregion
-
-        #region COMMAND_LEAVE
+        #region leave
         [Command("leave"), UsesInteractivity]
-        [Description("Makes Godfather leave the guild.")]
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            if (await ctx.WaitForBoolReplyAsync("Are you sure you want me to leave this guild?")) {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Wave, "Go find a new bot, since this one is leaving!");
+            if (await ctx.WaitForBoolReplyAsync("q-leave"))
                 await ctx.Guild.LeaveAsync();
-            } else {
-                await this.InformAsync(ctx, "Guess I'll stay then.", ":no_mouth:");
-            }
         }
         #endregion
 
-        #region COMMAND_LEET
+        #region leet
         [Command("leet")]
-        [Description("Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.")]
-        [Aliases("l33t")]
-        [UsageExampleArgs("Some sentence")]
+        [Aliases("l33t", "1337")]
         public Task L33tAsync(CommandContext ctx,
-                             [RemainingText, Description("Text.")] string text)
+                             [RemainingText, Description("desc-say")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
 
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                char add;
-                bool r = GFRandom.Generator.NextBool();
-                switch (c) {
-                    case 'i': add = r ? 'i' : '1'; break;
-                    case 'l': add = r ? 'l' : '1'; break;
-                    case 'e': add = r ? 'e' : '3'; break;
-                    case 'a': add = r ? '@' : '4'; break;
-                    case 't': add = r ? 't' : '7'; break;
-                    case 'o': add = r ? 'o' : '0'; break;
-                    case 's': add = r ? 's' : '5'; break;
-                    default: add = c; break;
-                }
-                sb.Append(GFRandom.Generator.NextBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
-            }
-
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
+            string leet = this.Service.ToLeet(text);
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Color = this.ModuleColor,
+                Description = $"{Emojis.Information} {leet}",
+            });
         }
         #endregion
 
-        #region COMMAND_NSFW
-        [Command("nsfw")]
-        [Description("Wraps the URL into a special NSFW block.")]
-        [UsageExampleArgs("http://unsafe.to.view", "http://unsafe.to.view message")]
-        [RequireBotPermissions(Permissions.ManageMessages)]
-        public async Task NsfwAsync(CommandContext ctx,
-                                   [Description("URL to wrap.")] Uri url,
-                                   [RemainingText, Description("Additional info")] string info = null)
+        #region linux
+        [Command("linux")]
+        public Task LinuxAsync(CommandContext ctx,
+                              [Description("desc-replacement")] string? str1 = null,
+                              [Description("desc-replacement")] string? str2 = null)
         {
-            await ctx.Message.DeleteAsync();
+            if (string.IsNullOrWhiteSpace(str1))
+                str1 = "GNU";
+            
+            if (string.IsNullOrWhiteSpace(str2))
+                str2 = "Linux";
 
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.NoEntry} NSFW link from {ctx.Member.DisplayName} {StaticDiscordEmoji.NoEntry}",
-                Description = FormatterExtensions.Spoiler(url.ToString()),
-                Color = DiscordColor.Red
-            };
-            if (!string.IsNullOrWhiteSpace(info))
-                emb.AddField("Additional info", Formatter.BlockCode(FormatterExtensions.StripMarkdown(info)));
-
-            await ctx.RespondAsync(embed: emb.Build());
+            string interjection = 
+                $"I'd just like to interject for a moment. What you're refering to as {str2}, " +
+                $"is in fact, {str1}/{str2}, or as I've recently taken to calling it, {str1} plus {str2}. " +
+                $"{str2} is not an operating system unto itself, but rather another free component of a fully " +
+                $"functioning {str1} system made useful by the {str1} corelibs, shell utilities and vital " +
+                $"system components comprising a full OS as defined by POSIX.\n\n" +
+                $"Many computer users run a modified version of the {str1} system every day, without realizing it. " +
+                $"Through a peculiar turn of events, the version of {str1} which is widely used today is often " +
+                $"called {str2}, and many of its users are not aware that it is basically the {str1} system, " +
+                $"developed by the {str1} Project.\n\n" +
+                $"There really is a {str2}, and these people are using it, but it is just a part of the system " +
+                $"they use. {str2} is the kernel: the program in the system that allocates the machine's " +
+                $"resources to the other programs that you run. The kernel is an essential part of an operating " +
+                $"system, but useless by itself; it can only function in the context of a complete operating system. " +
+                $"{str2} is normally used in combination with the {str1} operating system: the whole system is " +
+                $"basically {str1} with {str2} added, or {str1}/{str2}. All the so-called {str2} " +
+                $"distributions are really distributions of {str1}/{str2}.";
+            return ctx.Channel.EmbedAsync(interjection, color: this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_PENIS
+        #region penis
         [Command("penis"), Priority(1)]
-        [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]
-        [UsageExampleArgs("@Someone")]
         public Task PenisAsync(CommandContext ctx,
-                              [Description("Who to measure.")] DiscordMember member = null)
-            => this.PenisAsync(ctx, member as DiscordUser);
+                              [Description("desc-members")] params DiscordMember[] members)
+            => this.InternalPenisAsync(ctx, members);
 
         [Command("penis"), Priority(0)]
         public Task PenisAsync(CommandContext ctx,
-                              [Description("Who to measure.")] DiscordUser user = null)
+                              [Description("desc-users")] params DiscordUser[] users)
+            => this.InternalPenisAsync(ctx, users);
+        #endregion
+
+        #region penisbros
+        [Command("penisbros"), Priority(1)]
+        [Aliases("sizebros", "lengthbros", "manhoodbros", "dickbros", "cockbros")]
+        [RequireGuild]
+        public Task PenisBrosAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember member)
+            => this.PenisBrosAsync(ctx, member as DiscordUser);
+
+        [Command("penisbros"), Priority(0)]
+        public Task PenisBrosAsync(CommandContext ctx,
+                                  [Description("desc-user")] DiscordUser? user = null)
         {
-            user = user ?? ctx.User;
+            user ??= ctx.User;
+            if (user.IsCurrent)
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
 
-            StringBuilder sb = new StringBuilder($"{user.Mention}'s size:").AppendLine().AppendLine();
+            int size = this.Service.Size(user.Id).Length;
+            IEnumerable<DiscordMember> cockbros = ctx.Guild.Members
+                .Select(kvp => kvp.Value)
+                .Where(m => m != user && m != ctx.Client.CurrentUser && this.Service.Size(m.Id).Length == size)
+                ;
 
-            if (user.IsCurrent) {
-                sb.AppendLine(Formatter.Bold($"8{new string('=', 45)}"));
-                sb.Append(Formatter.Italic("(Please plug in a second monitor for the entire display)"));
-                return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
-            }
-
-            sb.Append(Formatter.Bold($"8{new string('=', (int)(user.Id % 40))}D"));
-
-            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
+            return cockbros.Any()
+                ? ctx.PaginateAsync("fmt-penisbros", cockbros, m => m.Mention, this.ModuleColor, args: user.ToDiscriminatorString())
+                : ctx.FailAsync("cmd-err-penisbros-none", user.Mention);
         }
         #endregion
 
-        #region COMMAND_PENISCOMPARE
-        [Command("peniscompare"), Priority(1)]
-        [Description("Comparison of the results given by ``penis`` command.")]
-        [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
-        [UsageExampleArgs("@Someone", "@Someone @SomeoneElse")]
-        public Task PenisCompareAsync(CommandContext ctx,
-                                     [Description("User1.")] params DiscordMember[] members)
-            => this.PenisCompareAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
-
-        [Command("peniscompare"), Priority(0)]
-        public Task PenisCompareAsync(CommandContext ctx,
-                                     [Description("User1.")] params DiscordUser[] users)
-        {
-            if (users is null || users.Length < 2 || users.Length >= 10)
-                throw new InvalidCommandUsageException("You must provide atleast two and less than 10 users to compare.");
-
-            var sb = new StringBuilder();
-            foreach (DiscordUser u in users.Distinct()) {
-                if (u.IsCurrent)
-                    return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
-                sb.Append('8').Append('=', (int)(u.Id % 40)).Append("D ").AppendLine(u.Mention);
-            }
-
-            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
-        }
-        #endregion
-
-        #region COMMAND_PING
+        #region ping
         [Command("ping")]
-        [Description("Ping the bot.")]
         public Task PingAsync(CommandContext ctx)
-            => this.InformAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:");
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Heartbeat, "fmt-ping", ctx.Client.Ping);
         #endregion
 
-        #region COMMAND_PREFIX
+        #region prefix
         [Command("prefix")]
-        [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix", "pref", "setpref")]
-        [UsageExampleArgs(";")]
-        [RequireOwnerOrPermissions(Permissions.Administrator)]
+        [RequireGuild, RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
-                                             [Description("Prefix to set.")] string prefix = null)
+                                             [Description("desc-prefix")] string? prefix = null)
         {
+            GuildConfigService gcs = ctx.Services.GetRequiredService<GuildConfigService>();
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = this.Shared.GetGuildPrefix(ctx.Guild.Id);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
+                string p = gcs.GetGuildPrefix(ctx.Guild.Id);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "fmt-prefix", p);
                 return;
             }
 
-            if (prefix.Length > 12)
-                throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
+            if (prefix.Length > GuildConfig.PrefixLimit)
+                throw new CommandFailedException(ctx, "cmd-err-prefix", GuildConfig.PrefixLimit);
 
-            DatabaseGuildConfig gcfg = await this.ModifyGuildConfigAsync(ctx.Guild.Id, cfg => {
-                cfg.Prefix = (prefix == this.Shared.BotConfiguration.DefaultPrefix) ? null : prefix;
-            });
-
-            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix)}", important: false);
+            GuildConfig gcfg = await gcs.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Prefix = prefix);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_RATE
+        #region rate
         [Command("rate"), Priority(1)]
-        [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
-        [UsageExampleArgs("@Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("Who to measure.")] params DiscordMember[] members)
-            => this.RateAsync(ctx, members.Select(u => u as DiscordUser).ToArray());
+                             [Description("desc-members")] params DiscordMember[] members)
+            => this.InternalRateAsync(ctx, members);
 
-        [Command("rate"), Priority(1)]
-        public async Task RateAsync(CommandContext ctx,
-                                   [Description("Who to measure.")] params DiscordUser[] users)
-        {
-            users = users?.Distinct().ToArray() ?? null;
-            if (users is null || !users.Any() || users.Length > 8)
-                throw new InvalidCommandUsageException("You must provide atleast 1 and at most 8 users to rate.");
-
-            try {
-                using (var chart = new Bitmap("Resources/graph.png"))
-                using (var g = Graphics.FromImage(chart)) {
-                    Brush[] colors = new[] { Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan };
-
-                    int position = 0;
-                    foreach (DiscordUser user in users)
-                        DrawUserRating(g, user, position++);
-
-                    using (var ms = new MemoryStream()) {
-                        chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        ms.Position = 0;
-                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                            Description = Formatter.Bold($"Rating for: {string.Join(", ", users.Select(u => u.Mention))}"),
-                            Color = this.ModuleColor
-                        });
-                    }
-
-                    void DrawUserRating(Graphics graphics, DiscordUser user, int pos)
-                    {
-                        int start_x, start_y;
-                        if (user.Id == ctx.Client.CurrentUser.Id) {
-                            start_x = chart.Width - 10;
-                            start_y = 0;
-                        } else {
-                            start_x = (int)(user.Id % (ulong)(chart.Width - 280)) + 110;
-                            start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
-                        }
-                        graphics.FillEllipse(colors[pos], start_x, start_y, 10, 10);
-                        graphics.DrawString(user.Username, new Font("Arial", 13), colors[pos], 750, pos * 30 + 20);
-                        graphics.Flush();
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                Log.Error($"graph.png load failed! Details: {e.ToString()}", DateTime.Now);
-                throw new CommandFailedException("I can't find the graph image on server machine, please contact owner and tell him.");
-            }
-        }
+        [Command("rate"), Priority(0)]
+        public Task RateAsync(CommandContext ctx,
+                             [Description("desc-users")] params DiscordUser[] users)
+            => this.InternalRateAsync(ctx, users);
         #endregion
 
-        #region COMMAND_REPORT
+        #region report
         [Command("report"), UsesInteractivity]
-        [Description("Send a report message to owner about a bug (please don't abuse... please).")]
-        [UsageExampleArgs("Your bot sucks!")]
+        [Cooldown(1, 3600, CooldownBucketType.User)]
         public async Task SendErrorReportAsync(CommandContext ctx,
-                                              [RemainingText, Description("Issue text.")] string issue)
+                                              [RemainingText, Description("desc-issue")] string issue)
         {
             if (string.IsNullOrWhiteSpace(issue))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-issue-none");
 
-            if (await ctx.WaitForBoolReplyAsync("Are you okay with your user and guild info being sent for further inspection?")) {
-                Log.Information($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owners.First().Id);
-                if (dm is null)
-                    throw new CommandFailedException("Owner has disabled DMs.");
+            DiscordDmChannel? dm = await ctx.Client.CreateOwnerDmChannel();
+            if (dm is null)
+                throw new CommandFailedException(ctx, "cmd-err-issue-fail");
+
+            if (await ctx.WaitForBoolReplyAsync("q-issue")) {
+                Log.Warning($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}");
                 var emb = new DiscordEmbedBuilder {
-                    Title = "Issue",
+                    Title = "Issue reported",
                     Description = issue
                 };
                 emb.WithAuthor(ctx.User.ToString(), iconUrl: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl);
-                emb.AddField("Guild", $"{ctx.Guild.ToString()} owned by {ctx.Guild.Owner.ToString()}");
+                if (ctx.Guild is { })
+                    emb.AddField("Guild", $"{ctx.Guild} owned by {ctx.Guild.Owner}");
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build());
-                await this.InformAsync(ctx, "Your issue has been reported.", important: false);
+                await ctx.InfoAsync(this.ModuleColor, "str-reported");
             }
         }
         #endregion
 
-        #region COMMAND_SAY
+        #region say
         [Command("say")]
-        [Description("Echo echo echo.")]
-        [Aliases("repeat")]
-        [UsageExampleArgs("I am gay.")]
+        [Aliases("repeat", "echo")]
         public Task SayAsync(CommandContext ctx,
-                            [RemainingText, Description("Text to say.")] string text)
+                            [RemainingText, Description("desc-say")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
-                throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
-
-            return this.InformAsync(ctx, Formatter.Strip(text), ":loudspeaker:");
+            return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
+                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                : ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithDescription($"{Emojis.Loudspeaker} {Formatter.Strip(text)}");
+                });
         }
         #endregion
 
-        #region COMMAND_SIMULATE
-        [Command("simulate")]
-        [Description("Simulate another user.")]
-        [Aliases("sim")]
-        [UsageExampleArgs("@Someone")]
-        public async Task SimulateAsync(CommandContext ctx,
-                                       [Description("Member to simulate.")] DiscordMember member)
-        {
-            IReadOnlyList<DiscordMessage> messages = await ctx.Channel.GetMessagesFromAsync(member, 10);
-            string[] parts = messages
-                .Where(m => !string.IsNullOrWhiteSpace(m.Content) && !m.Content.StartsWith(this.Shared.GetGuildPrefix(ctx.Guild.Id)))
-                .Select(m => SplitMessage(m.Content))
-                .Distinct()
-                .Shuffle()
-                .Take(1 + GFRandom.Generator.Next(10))
-                .ToArray();
-
-            if (!parts.Any())
-                throw new CommandFailedException("Not enough messages were sent from that user recently!");
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.Information} {string.Join(" ", parts)}",
-                Color = this.ModuleColor,
-            }.WithFooter($"{member.DisplayName} simulation", member.AvatarUrl).Build());
-
-            string SplitMessage(string data)
-            {
-                string[] words = new Regex("\\b").Split(data);
-                if (words.Length == 1)
-                    return words[0];
-                int start = GFRandom.Generator.Next(words.Length);
-                int count = GFRandom.Generator.Next(0, words.Length - start);
-                return string.Join(" ", words.Skip(start).Take(count));
-            }
-        }
-        #endregion
-
-        #region COMMAND_TTS
+        #region tts
         [Command("tts")]
-        [Description("Sends a tts message.")]
-        [UsageExampleArgs("I am gay.")]
         [RequirePermissions(Permissions.SendTtsMessages)]
         public Task TtsAsync(CommandContext ctx,
-                            [RemainingText, Description("Text.")] string text)
+                            [RemainingText, Description("desc-say")] string text)
         {
+
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
 
-            if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
-                throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
-
-            return ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
+            return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
+                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                : ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
         }
         #endregion
 
-        #region COMMAND_UNLEET
+        #region time
+        [Command("time")]
+        [Aliases("t")]
+        public Task TimeAsync(CommandContext ctx,
+                             [RemainingText, Description("desc-tz")] string? timezone = null)
+        {
+            if (string.IsNullOrWhiteSpace(timezone)) {
+                string time = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, DateTimeOffset.Now);
+                string tz = this.Localization.GetGuildTimeZone(ctx.Guild?.Id).DisplayName;
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", tz, time);
+            }
+
+            if (!TZConvert.TryGetTimeZoneInfo(timezone, out TimeZoneInfo info))
+                throw new CommandFailedException(ctx, "cmd-err-tz");
+
+            CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
+            string timeStr = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, info).ToString("G", culture);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", info.DisplayName, timeStr);
+        }
+        #endregion
+
+        #region unleet
         [Command("unleet")]
-        [Description("Translates a message from leetspeak (expecting only letters in translated output).")]
         [Aliases("unl33t")]
-        [UsageExampleArgs("w0W 5uCh C0oL")]
         public Task Unl33tAsync(CommandContext ctx,
-                               [RemainingText, Description("Text to unleet.")] string text)
+                               [RemainingText, Description("desc-say")] string leet)
         {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+            if (string.IsNullOrWhiteSpace(leet))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
 
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                char add = char.ToLowerInvariant(c);
-                switch (add) {
-                    case '1': add = 'i'; break;
-                    case '@': add = 'a'; break;
-                    case '4': add = 'a'; break;
-                    case '3': add = 'e'; break;
-                    case '5': add = 's'; break;
-                    case '7': add = 't'; break;
-                    case '0': add = 'o'; break;
-                    default: break;
-                }
-                sb.Append(add);
-            }
-
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
-        }
-        #endregion
-
-        #region COMMAND_UPTIME
-        [Command("uptime")]
-        [Description("Prints out bot runtime information.")]
-        public Task UptimeAsync(CommandContext ctx)
-        {
-            TimeSpan processUptime = this.Shared.UptimeInformation.ProgramUptime;
-            TimeSpan socketUptime = this.Shared.UptimeInformation.SocketUptime;
-
-            return this.InformAsync(ctx, StaticDiscordEmoji.Information,
-                Formatter.Bold($"Uptime information:") +
-                $"\n\n{Formatter.Bold("Shard:")} {ctx.Services.GetService<TheGodfatherShard>().Id}\n" +
-                $"{Formatter.Bold("Bot uptime:")} {processUptime.Days} days, {processUptime.ToString(@"hh\:mm\:ss")}\n" +
-                $"{Formatter.Bold("Socket uptime:")} {socketUptime.Days} days, {socketUptime.ToString(@"hh\:mm\:ss")}"
-            );
-        }
-        #endregion
-
-        #region COMMAND_ZUGIFY
-        [Command("zugify")]
-        [Description("I don't even...")]
-        [Aliases("z")]
-        [UsageExampleArgs("Some random text")]
-        public Task ZugifyAsync(CommandContext ctx,
-                               [RemainingText, Description("Text.")] string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Text missing.");
-
-            text = text.ToLowerInvariant();
-            var sb = new StringBuilder();
-            foreach (char c in text) {
-                if (char.IsLetter(c)) {
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{c}:"));
-                } else if (char.IsDigit(c)) {
-                    if (c == '0')
-                        sb.Append(DiscordEmoji.FromName(ctx.Client, ":zero:"));
-                    else
-                        sb.Append(StaticDiscordEmoji.Numbers[c - '0' - 1]);
-                } else if (char.IsWhiteSpace(c)) {
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:"));
-                } else if (c == '?')
-                    sb.Append(StaticDiscordEmoji.Question);
-                else if (c == '!')
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":exclamation:"));
-                else if (c == '.')
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":stop_button:"));
-                else
-                    sb.Append(c);
-                sb.Append(' ');
-            }
-
+            string text = this.Service.FromLeet(leet);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = sb.ToString()
-            }.Build());
+                Color = this.ModuleColor,
+                Description = $"{Emojis.Information} {text}",
+            });
+        }
+        #endregion
+
+
+        #region internals
+        private Task InternalPenisAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+        {
+            users = users.Distinct().ToList();
+            if (!users.Any())
+                users = new[] { ctx.User };
+            if (users.Count >= 10)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-size");
+
+            var sb = new StringBuilder();
+            foreach (DiscordUser user in users) {
+                if (user.IsCurrent)
+                    return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                sb.Append(Formatter.Bold(this.Service.Size(user.Id))).Append(' ').AppendLine(user.Mention);
+            }
+
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedDescription("fmt-size", Emojis.Ruler, sb.ToString());
+            });
+        }
+
+
+        public async Task InternalRateAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+        {
+            users = users.Distinct().ToList();
+            if (!users.Any())
+                users = new[] { ctx.User };
+            if (users.Count > 8)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-rate");
+
+            if (users.Any(u => u.IsCurrent)) {
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                return;
+            }
+
+            using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
+            await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
+                Description = this.Localization.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
+                Color = this.ModuleColor,
+            });
         }
         #endregion
     }

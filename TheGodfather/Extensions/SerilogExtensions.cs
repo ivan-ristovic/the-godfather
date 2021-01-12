@@ -7,7 +7,7 @@ using Serilog;
 using Serilog.Context;
 using Serilog.Core;
 using Serilog.Events;
-using TheGodfather.Common;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Extensions
 {
@@ -15,7 +15,8 @@ namespace TheGodfather.Extensions
     {
         public static Logger CreateLogger(BotConfig cfg)
         {
-            string template = "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
+            string template = cfg.CustomLogTemplate
+                ?? "[{Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [{Application}] [{Level:u3}] [T{ThreadId:d2}] ({ShardId}) {Message:l}{NewLine}{Exception}";
 
             LoggerConfiguration lcfg = new LoggerConfiguration()
                 .Enrich.FromLogContext()
@@ -31,7 +32,10 @@ namespace TheGodfather.Extensions
                     cfg.LogPath,
                     cfg.LogLevel,
                     outputTemplate: template,
-                    rollingInterval: RollingInterval.Day
+                    rollingInterval: cfg.RollingInterval,
+                    buffered: cfg.UseBufferedFileLogger,
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: cfg.MaxLogFiles
                 );
             }
 
@@ -156,9 +160,9 @@ namespace TheGodfather.Extensions
 
         private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception? ex, string template, params object[] propertyValues)
         {
-            object[] allPropertyValues = !(ctx.Guild is null)
+            object[] allPropertyValues = ctx.Guild is { }
                 ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
-                : new object[] { ctx.User, ctx.Channel };
+                : new object[] { ctx.User, "DM", ctx.Channel };
             if (propertyValues?.Any() ?? false)
                 allPropertyValues = propertyValues.Concat(allPropertyValues).ToArray();
             InternalLogMany(level, ctx.Client.ShardId, new[] { template, "{User}", "{Guild}", "{Channel}" }, ex, allPropertyValues);
@@ -166,18 +170,14 @@ namespace TheGodfather.Extensions
 
         private static void InternalLog(LogEventLevel level, int shardId, string template, Exception? ex = null, object[]? propertyValues = null)
         {
-#pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
                 Log.Write(level, ex, template, propertyValues);
-#pragma warning restore Serilog004 // Constant MessageTemplate verifier
         }
 
         private static void InternalLogMany(LogEventLevel level, int shardId, string[] templates, Exception? ex = null, object[]? propertyValues = null)
         {
-#pragma warning disable Serilog004 // Constant MessageTemplate verifier
             using (LogContext.PushProperty("ShardId", shardId))
-                Log.Write(level, ex, string.Join(Environment.NewLine, templates), propertyValues);
-#pragma warning restore Serilog004 // Constant MessageTemplate verifier
+                Log.Write(level, ex, string.Join($"{Environment.NewLine}| ", templates), propertyValues);
         }
     }
 

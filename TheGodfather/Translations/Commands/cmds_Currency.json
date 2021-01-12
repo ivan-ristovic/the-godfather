@@ -1,0 +1,183 @@
+{
+  "bank": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "bank balance": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "bank currency": {
+    "usage": [
+      [],
+      [ "arg-string" ]
+    ]
+  },
+  "bank grant": {
+    "usage": [
+      [ "arg-mem", "arg-amount" ],
+      [ "arg-amount", "arg-mem" ]
+    ]
+  },
+  "bank register": {
+    "usage": [
+      []
+    ]
+  },
+  "bank top": {
+    "usage": [
+      []
+    ]
+  },
+  "bank topglobal": {
+    "usage": [
+      []
+    ]
+  },
+  "bank transfer": {
+    "usage": [
+      [ "arg-mem", "arg-amount" ],
+      [ "arg-amount", "arg-mem" ]
+    ]
+  },
+  "bank unregister": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-usr", "arg-bool" ]
+    ]
+  },
+  "casino": {
+    "usage": [
+      []
+    ]
+  },
+  "casino blackjack": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino blackjack join": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino blackjack rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino holdem": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino holdem join": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino holdem rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino lottery": {
+    "usage": [
+      [ "arg-one", "arg-five", "arg-ten" ]
+    ]
+  },
+  "casino lottery join": {
+    "usage": [
+      [ "arg-one", "arg-five", "arg-ten" ]
+    ]
+  },
+  "casino lottery rules": {
+    "usage": [
+      []
+    ]
+  },
+  "casino slot": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "casino wheeloffortune": {
+    "usage": [
+      [ "arg-amount" ]
+    ]
+  },
+  "gamble coinflip": {
+    "usage": [
+      [ "arg-amount", "arg-coin" ],
+      [ "arg-coin", "arg-amount" ]
+    ]
+  },
+  "gamble dice": {
+    "usage": [
+      [ "arg-amount", "arg-five" ]
+    ]
+  },
+  "shop": {
+    "usage": [
+      []
+    ]
+  },
+  "shop add": {
+    "usage": [
+      [ "arg-name", "arg-amount" ],
+      [ "arg-amount", "arg-name" ]
+    ]
+  },
+  "shop buy": {
+    "usage": [
+      [ "arg-name" ],
+      [ "arg-one", "arg-five" ]
+    ]
+  },
+  "shop delete": {
+    "usage": [
+      [ "arg-name" ],
+      [ "arg-one", "arg-five" ]
+    ]
+  },
+  "shop deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "shop list": {
+    "usage": [
+      []
+    ]
+  },
+  "shop purchases": {
+    "usage": [
+      [],
+      [ "arg-mem" ]
+    ]
+  },
+  "shop sell": {
+    "usage": [
+      [ "arg-one", "arg-five" ]
+    ]
+  },
+  "work": {
+    "usage": [
+      []
+    ]
+  },
+  "work crime": {
+    "usage": [
+      []
+    ]
+  },
+  "work streets": {
+    "usage": [
+      []
+    ]
+  }
+}

@@ -1,107 +1,93 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
-
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public sealed class BlackjackParticipant
+    public sealed class BlackjackGame : BaseChannelGame
     {
-        public int Bid { get; set; }
-        public List<Card> Hand { get; internal set; } = new List<Card>();
-        public DiscordUser User { get; internal set; }
-        public bool Standing { get; set; } = false;
-        public ulong Id => this.User.Id;
-    }
+        public const int InitialBid = 5;
+        public const int MaxParticipants = 5;
 
-    public sealed class BlackjackGame : ChannelEvent
-    {
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
-        public IReadOnlyList<BlackjackParticipant> Winners
-        {
+        public IReadOnlyList<Participant> Winners {
             get {
                 int hvalue = this.HandValue(this.hand);
                 if (hvalue > 21)
                     return this.participants.Where(p => this.HandValue(p.Hand) <= 21).ToList().AsReadOnly();
                 return this.participants.Where(p => {
                     int value = this.HandValue(p.Hand);
-                    if (value > 21)
-                        return false;
-                    return value > hvalue;
+                    return value <= 21 && value > hvalue;
                 }).ToList().AsReadOnly();
             }
         }
 
-        private bool GameOver;
+        private bool gameOver;
         private readonly Deck deck;
         private readonly List<Card> hand;
-        private readonly ConcurrentQueue<BlackjackParticipant> participants;
+        private readonly ConcurrentQueue<Participant> participants;
 
 
         public BlackjackGame(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
         {
             this.Started = false;
-            this.GameOver = false;
+            this.gameOver = false;
             this.deck = new Deck();
             this.hand = new List<Card>();
-            this.participants = new ConcurrentQueue<BlackjackParticipant>();
+            this.participants = new ConcurrentQueue<Participant>();
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync("Starting blackjack game...");
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-blackjack-starting"));
 
-            foreach (BlackjackParticipant participant in this.participants) {
+            foreach (Participant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
                 participant.Hand.Add(this.deck.GetNextCard());
                 if (this.HandValue(participant.Hand) == 21) {
-                    this.GameOver = true;
+                    this.gameOver = true;
                     this.Winner = participant.User;
                     break;
                 }
             }
 
-            if (this.GameOver) {
-                await this.PrintGameAsync(msg);
+            if (this.gameOver) {
+                await this.PrintGameAsync(lcs, msg);
                 return;
             }
-            
-            while (this.participants.Any(p => !p.Standing)) {
-                foreach (BlackjackParticipant participant in this.participants) {
-                    if (participant.Standing)
-                        continue;
 
-                    await this.PrintGameAsync(msg, participant);
+            while (this.participants.Any(p => !p.IsStanding)) {
+                foreach (Participant participant in this.participants.Where(p => !p.IsStanding)) {
+                    await this.PrintGameAsync(lcs, msg, participant);
 
-                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) 
+                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel, participant.User))
                         participant.Hand.Add(this.deck.GetNextCard());
-                    else 
-                        participant.Standing = true;
+                    else
+                        participant.IsStanding = true;
 
                     if (this.HandValue(participant.Hand) > 21)
-                        participant.Standing = true;
+                        participant.IsStanding = true;
                 }
             }
 
-            await this.PrintGameAsync(msg);
+            await this.PrintGameAsync(lcs, msg);
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             while (this.HandValue(this.hand) <= 17)
@@ -110,8 +96,8 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.hand.Count == 2 && this.HandValue(this.hand) == 21)
                 await this.Channel.EmbedAsync("BLACKJACK!");
 
-            this.GameOver = true;
-            await this.PrintGameAsync(msg);
+            this.gameOver = true;
+            await this.PrintGameAsync(lcs, msg);
         }
 
         public void AddParticipant(DiscordUser user, int bid)
@@ -119,13 +105,10 @@ namespace TheGodfather.Modules.Currency.Common
             if (this.IsParticipating(user))
                 return;
 
-            this.participants.Enqueue(new BlackjackParticipant {
-                User = user,
-                Bid = bid
-            });
+            this.participants.Enqueue(new Participant(user, bid));
         }
 
-        public bool IsParticipating(DiscordUser user) 
+        public bool IsParticipating(DiscordUser user)
             => this.participants.Any(p => p.Id == user.Id);
 
         private int HandValue(List<Card> hand)
@@ -149,35 +132,50 @@ namespace TheGodfather.Modules.Currency.Common
             return value;
         }
 
-        private Task PrintGameAsync(DiscordMessage msg, BlackjackParticipant tomove = null)
+
+        private Task PrintGameAsync(LocalizationService lcs, DiscordMessage msg, Participant? toMove = null)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"House hand: (value: {this.HandValue(this.hand)})")).AppendLine();
+            sb.AppendLine(Formatter.Bold($"{lcs.GetString(this.Channel.GuildId, "str-house")}: {this.HandValue(this.hand)}"));
             if (this.hand.Any())
                 sb.AppendJoin(" | ", this.hand).AppendLine();
             else
-                sb.AppendLine(StaticDiscordEmoji.Question).AppendLine();
+                sb.AppendLine(Emojis.Question).AppendLine();
 
-            foreach (BlackjackParticipant participant in this.participants) {
-                sb.Append(participant.User.Mention);
-                sb.Append(" (value: ");
-                sb.Append(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
-                sb.AppendLine(")").AppendLine();
+            foreach (Participant participant in this.participants) {
+                sb.Append(participant.User.Mention).Append(": ");
+                sb.AppendLine(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
                 sb.AppendJoin(" | ", participant.Hand);
-                sb.AppendLine();
+                sb.AppendLine().AppendLine();
             }
 
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.CardSuits[0]} BLACKJACK GAME STATE {StaticDiscordEmoji.CardSuits[0]}",
-                Description = sb.ToString(),
-                Color = DiscordColor.DarkGreen
-            };
+            var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
+            emb.WithLocalizedTitle("fmt-casino-blackjack", Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]);
+            emb.WithColor(DiscordColor.DarkGreen);
+            emb.WithDescription(sb);
 
-            if (!this.GameOver)
-                emb.AddField("Deciding whether to hit a card (type yes/no):", tomove?.User.Mention ?? "House");
+            if (!this.gameOver)
+                emb.AddLocalizedTitleField("str-casino-blackjack-hit", toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, "str-house"));
 
             return msg.ModifyAsync(embed: emb.Build());
+        }
+
+
+        public sealed class Participant
+        {
+            public DiscordUser User { get; }
+            public int Bid { get; }
+            public List<Card> Hand { get; }
+            public bool IsStanding { get; set; }
+            public ulong Id => this.User.Id;
+
+            public Participant(DiscordUser user, int bid)
+            {
+                this.User = user;
+                this.Bid = bid;
+                this.Hand = new List<Card>();
+            }
         }
     }
 }

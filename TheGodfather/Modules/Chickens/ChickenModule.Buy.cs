@@ -1,153 +1,122 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Currency.Extensions;
-#endregion
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Chickens.Services;
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
         [Group("buy"), UsesInteractivity]
-        [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
-        [UsageExampleArgs("My Chicken Name")]
-        public class BuyModule : TheGodfatherModule
+        public sealed class BuyModule : TheGodfatherServiceModule<ChickenService>
         {
-
-            public BuyModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Yellow;
-            }
-
-
+            #region chicken buy
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("Chicken name.")] string name)
-                => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
-
-
-            #region COMMAND_CHICKEN_BUY_DEFAULT
-            [Command("default")]
-            [Description("Buy a chicken of default strength (cheapest).")]
-            [Aliases("d", "def")]
-            [UsageExampleArgs("My Chicken Name")]
-            public Task DefaultAsync(CommandContext ctx,
-                                    [RemainingText, Description("Chicken name.")] string name)
+                                         [RemainingText, Description("desc-chicken-name")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
             #endregion
 
-            #region COMMAND_CHICKEN_BUY_WELLFED
+            #region chicken buy default
+            [Command("default")]
+            [Aliases("d", "def")]
+            public Task DefaultAsync(CommandContext ctx,
+                                    [RemainingText, Description("desc-chicken-name")] string name)
+                => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
+            #endregion
+
+            #region chicken buy wellfed
             [Command("wellfed")]
-            [Description("Buy a well-fed chicken.")]
             [Aliases("wf", "fed")]
-            [UsageExampleArgs("My Chicken Name")]
             public Task WellFedAsync(CommandContext ctx,
-                                    [RemainingText, Description("Chicken name.")] string name)
+                                    [RemainingText, Description("desc-chicken-name")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
             #endregion
 
-            #region COMMAND_CHICKEN_BUY_TRAINED
+            #region chicken buy trained
             [Command("trained")]
-            [Description("Buy a trained chicken.")]
             [Aliases("tr", "train")]
-            [UsageExampleArgs("My Chicken Name")]
             public Task TrainedAsync(CommandContext ctx,
-                                    [RemainingText, Description("Chicken name.")] string name)
+                                    [RemainingText, Description("desc-chicken-name")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
             #endregion
 
-            #region COMMAND_CHICKEN_BUY_EMPOWERED
+            #region chicken buy steroidempowered
             [Command("steroidempowered")]
-            [Description("Buy a steroid-empowered chicken.")]
-            [Aliases("steroid", "empowered")]
-            [UsageExampleArgs("My Chicken Name")]
+            [Aliases("s", "steroid", "empowered")]
+
             public Task EmpoweredAsync(CommandContext ctx,
-                                      [RemainingText, Description("Chicken name.")] string name)
+                                      [RemainingText, Description("desc-chicken-name")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
             #endregion
 
-            #region COMMAND_CHICKEN_BUY_ALIEN
+            #region chicken buy alien
             [Command("alien")]
-            [Description("Buy an alien chicken.")]
             [Aliases("a", "extraterrestrial")]
-            [UsageExampleArgs("My Chicken Name")]
             public Task AlienAsync(CommandContext ctx,
-                                  [RemainingText, Description("Chicken name.")] string name)
+                                  [RemainingText, Description("desc-chicken-name")] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);
             #endregion
 
-            #region COMMAND_CHICKEN_BUY_LIST
+            #region chicken buy list
             [Command("list")]
-            [Description("List all available chicken types.")]
             [Aliases("ls", "view")]
             public Task ListAsync(CommandContext ctx)
             {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Available chicken types",
-                    Color = this.ModuleColor
-                };
-
-                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Default].ToString());
-                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.WellFed].ToString());
-                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Trained].ToString());
-                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
-                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Alien].ToString());
-
-                return ctx.RespondAsync(embed: emb.Build());
+                CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("str-chicken-types");
+                    emb.WithColor(this.ModuleColor);
+                    foreach (((ChickenType type, ChickenStats stats), int i) in Chicken.StartingStats.Select((kvp, i) => (kvp, i)))
+                        emb.AddLocalizedTitleField($"str-chicken-type-{i}", stats, titleArgs: new object[] { Chicken.Price(type), gcfg.Currency });
+                });
             }
             #endregion
 
 
-            #region HELPER_FUNCTIONS
+            #region internals
             private async Task TryBuyInternalAsync(CommandContext ctx, ChickenType type, string name)
             {
                 if (string.IsNullOrWhiteSpace(name))
-                    throw new InvalidCommandUsageException("Name for your chicken is missing.");
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
 
-                if (name.Length < 2 || name.Length > 30)
-                    throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
+                if (name.Length > Chicken.NameLimit)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-name", Chicken.NameLimit);
 
                 if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
-                    throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
-                
-                if (!(Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id) is null))
-                    throw new CommandFailedException("You already own a chicken!");
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-name-alnum");
 
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
+                if (await this.Service.ContainsAsync(ctx.Guild.Id, ctx.User.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-dup");
+
+                CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+
+                long price = Chicken.Price(type);
+                if (!await ctx.WaitForBoolReplyAsync("q-chicken-buy", args: new object[] { ctx.User.Mention, price, gcfg.Currency }))
                     return;
-                
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type))) 
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 
-                    ChickenStats stats = Chicken.StartingStats[type];
-                    db.Chickens.Add(new DatabaseChicken {
-                        GuildId = ctx.Guild.Id,
-                        MaxVitality = stats.BareMaxVitality,
-                        Name = name,
-                        Strength = stats.BareStrength,
-                        UserId = ctx.User.Id,
-                        Vitality = stats.BareVitality
-                    });
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price))
+                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
 
-                    await db.SaveChangesAsync();
-                }
-                    
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
+                await this.Service.AddAsync(new Chicken(type) {
+                    GuildId = ctx.Guild.Id,
+                    Name = name,
+                    UserId = ctx.User.Id,
+                });
+
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-buy", ctx.User.Mention, type.Humanize(LetterCasing.LowerCase), name);
             }
             #endregion
         }

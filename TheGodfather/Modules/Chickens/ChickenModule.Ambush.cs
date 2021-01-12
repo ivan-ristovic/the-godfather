@@ -1,172 +1,162 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-#endregion
+using TheGodfather.Modules.Chickens.Extensions;
+using TheGodfather.Modules.Chickens.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
         [Group("ambush")]
-        [Description("Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.")]
         [Aliases("gangattack")]
-        [UsageExampleArgs("@Someone", "chicken")]
-        public class AmbushModule : TheGodfatherModule
+        public sealed class AmbushModule : TheGodfatherServiceModule<ChickenService>
         {
-
-            public AmbushModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Yellow;
-            }
-
-
+            #region chicken ambush
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Whose chicken to ambush?")] DiscordMember member)
+                                               [Description("desc-member")] DiscordMember member)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
-                        await this.JoinAsync(ctx);
-                    else
-                        throw new CommandFailedException("Another event is already running in the current channel.");
+                ChannelEventService evs = ctx.Services.GetRequiredService<ChannelEventService>();
+                if (evs.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (evs.GetEventInChannel<ChickenWar>(ctx.Channel.Id) is null)
+                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+                    await this.JoinAsync(ctx);
                     return;
                 }
 
-                var ambushed = Chicken.FromDatabase(this.Database, ctx.Guild.Id, member.Id);
-                if (ambushed is null)
-                    throw new CommandFailedException("Given user does not have a chicken in this guild!");
+                if (member == ctx.User)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-self");
 
-                var ambusher = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
+                Chicken? ambusher = await this.Service.GetAsync(member.Id, ctx.User.Id);
                 if (ambusher is null)
-                    throw new CommandFailedException("You do not own a chicken!");
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                ambusher.Owner = ctx.User;
 
-                if (ambusher.Stats.TotalStrength > ambushed.Stats.TotalStrength)
-                    throw new CommandFailedException("You cannot start an ambush against a weaker chicken!");
+                Chicken? ambushed = await this.Service.GetAndSetOwnerAsync(ctx.Client, ctx.Guild.Id, member.Id);
+                if (ambushed is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-404", member.Mention);
+                ambushed.Owner = member;
+
+                if (ambusher.IsTooStrongFor(ambushed))
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-strdiff", Chicken.MaxFightStrDiff);
 
                 var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
-                this.Shared.RegisterEventInChannel(ambush, ctx.Channel.Id);
+                evs.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
                     ambush.AddParticipant(ambushed, member, team1: true);
                     await this.JoinAsync(ctx);
-                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-chicken-ambush-start");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
-                        await ambush.RunAsync();
+                        await ambush.RunAsync(this.Localization);
+
+                        ChickenFightResult? res = ambush.Result;
+                        if (res is null)
+                            return;
 
                         var sb = new StringBuilder();
-
-                        using (DatabaseContext db = this.Database.CreateContext()) {
-                            foreach (Chicken chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
-                                chicken.Stats.BareStrength += 5;
-                                chicken.Stats.BareVitality -= 10;
-                                db.Chickens.Update(chicken.ToDatabaseChicken());
-                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 5 STR and lost 10 HP!");
-                            }
-
-                            foreach (Chicken chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
-                                chicken.Stats.BareVitality -= 50;
-                                if (chicken.Stats.TotalVitality > 0) {
-                                    db.Chickens.Update(chicken.ToDatabaseChicken());
-                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
-                                } else {
-                                    db.Chickens.Remove(new DatabaseChicken {
-                                        GuildId = ctx.Guild.Id,
-                                        UserId = chicken.OwnerId
-                                    });
-                                    sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
-                                }
-                            }
-
-                            await db.SaveChangesAsync();
+                        int gain = (int)Math.Floor((double)res.StrGain / ambush.WinningTeam.Count);
+                        foreach (Chicken chicken in ambush.WinningTeam) {
+                            chicken.Stats.BareStrength += gain;
+                            chicken.Stats.BareVitality -= 10;
+                            sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-gain-loss", chicken.Name, gain, 10));
                         }
+                        await this.Service.UpdateAsync(ambush.WinningTeam);
 
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
+                        foreach (Chicken chicken in ambush.LosingTeam) {
+                            chicken.Stats.BareVitality -= 50;
+                            if (chicken.Stats.TotalVitality > 0)
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-d", chicken.Name));
+                            else
+                                sb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "fmt-chicken-fight-loss", chicken.Name, ChickenFightResult.VitLoss));
+                        }
+                        await this.Service.RemoveAsync(ambush.LosingTeam.Where(c => c.Stats.TotalVitality <= 0));
+                        await this.Service.UpdateAsync(ambush.LosingTeam.Where(c => c.Stats.TotalVitality > 0));
+
+                        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                            emb.WithLocalizedTitle("fmt-chicken-war-won", Emojis.Chicken, ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name);
+                            emb.WithDescription(sb.ToString());
+                            emb.WithColor(this.ModuleColor);
+                        });
                     }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    evs.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Name of the chicken to fight.")] string chickenName)
+                                               [Description("desc-chicken-name")] string chickenName)
             {
-                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, chickenName);
+                Chicken? chicken = this.Service.GetByName(ctx.Guild.Id, chickenName);
                 if (chicken is null)
-                    throw new CommandFailedException("Couldn't find any chickens with that name!");
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-name-404");
 
                 try {
-                    await this.ExecuteGroupAsync(ctx, await ctx.Guild.GetMemberAsync(chicken.OwnerId));
+                    DiscordMember member = await ctx.Guild.GetMemberAsync(chicken.UserId);
+                    await this.ExecuteGroupAsync(ctx, member);
                 } catch (NotFoundException) {
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.Chickens.Remove(chicken.ToDatabaseChicken());
-                        await db.SaveChangesAsync();
-                    }
-                    throw new CommandFailedException("The user whose chicken you tried to ambush is not currently in this guild. The chicken has been put to sleep.");
+                    await this.Service.RemoveAsync(chicken);
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-owner");
                 }
             }
+            #endregion
 
-
-            #region COMMAND_CHICKEN_AMBUSH_JOIN
+            #region chicken ambush join
             [Command("join")]
-            [Description("Join a pending chicken ambush as one of the ambushers.")]
             [Aliases("+", "compete", "enter", "j", "<", "<<")]
-            public Task JoinAsync(CommandContext ctx)
+            public async Task JoinAsync(CommandContext ctx)
             {
-                Chicken chicken = this.TryJoinInternal(ctx, team2: true);
-                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
+                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: true);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-ambush-join", chicken.Name);
             }
             #endregion
 
-            #region COMMAND_CHICKEN_AMBUSH_HELP
+            #region chicken ambush help
             [Command("help")]
-            [Description("Join a pending chicken ambush and help the ambushed chicken.")]
             [Aliases("h", "halp", "hlp", "ha")]
-            public Task HelpAsync(CommandContext ctx)
+            public async Task HelpAsync(CommandContext ctx)
             {
-                Chicken chicken = this.TryJoinInternal(ctx, team2: false);
-                return this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
+                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: false);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-ambush-help", chicken.Name);
             }
             #endregion
 
 
-            #region HELPER_FUNCTIONS
-            private Chicken TryJoinInternal(CommandContext ctx, bool team2 = true)
+            #region internals
+            private async Task<Chicken> TryJoinInternalAsync(CommandContext ctx, bool team2 = true)
             {
-                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
-                    throw new CommandFailedException("There are no ambushes running in this channel.");
+                if (!ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar? ambush) || ambush is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-ambush-none");
 
-                var chicken = Chicken.FromDatabase(this.Database, ctx.Guild.Id, ctx.User.Id);
-
+                Chicken? chicken = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
-                    throw new CommandFailedException("You do not own a chicken!");
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                chicken.Owner = ctx.User;
 
-                if (chicken.Stats.TotalVitality < 25)
-                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.InlineCode("chicken heal")} command.");
+                if (chicken.Stats.TotalVitality < Chicken.MinVitalityToFight)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
 
-                if (ambush.Started)
-                    throw new CommandFailedException("Ambush has already started, you can't join it.");
+                if (ambush.IsRunning)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-ambush-started");
 
                 if (!ambush.AddParticipant(chicken, ctx.User, team2: team2))
-                    throw new CommandFailedException("Your chicken is already participating in the ambush.");
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-ambush-dup");
 
                 return chicken;
             }

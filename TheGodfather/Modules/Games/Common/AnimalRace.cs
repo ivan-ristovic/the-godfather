@@ -1,34 +1,26 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class AnimalRace : ChannelEvent
+    public sealed class AnimalRace : BaseChannelGame
     {
-        private sealed class AnimalRaceParticipant
-        {
-            public DiscordEmoji Emoji { get; internal set; }
-            public DiscordUser User { get; internal set; }
-            public int Progress { get; internal set; }
-            public ulong Id => this.User.Id;
-        }
+        public const int MaxParticipants = 10;
+        private const int TrackSize = 50;
+        private const int StepDelay = 2;
 
-        private static readonly int _TrackSize = 50;
-        
         public bool Started { get; private set; }
-        public IReadOnlyList<ulong> WinnerIds { get; private set; }
+        public IReadOnlyList<ulong>? WinnerIds { get; private set; }
         public int ParticipantCount => this.participants.Count;
 
         private readonly ConcurrentQueue<AnimalRaceParticipant> participants;
@@ -40,71 +32,84 @@ namespace TheGodfather.Modules.Games.Common
         {
             this.Started = false;
             this.participants = new ConcurrentQueue<AnimalRaceParticipant>();
-            this.animals = new ConcurrentBag<DiscordEmoji>(StaticDiscordEmoji.Animals);
+            this.animals = new ConcurrentBag<DiscordEmoji>(Emojis.Animals.All);
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-game-animalrace-starting"));
 
-            DiscordMessage msg = await this.Channel.EmbedAsync("Race starting...");
-            while (this.participants.All(p => p.Progress < _TrackSize)) {
+            var rng = new SecureRandom();
+            while (this.participants.All(p => p.Progress < TrackSize)) {
                 await this.PrintRaceAsync(msg);
 
                 foreach (AnimalRaceParticipant participant in this.participants) {
-                    participant.Progress += GFRandom.Generator.Next(2, 7);
-                    if (participant.Progress > _TrackSize)
-                        participant.Progress = _TrackSize;
+                    participant.Progress += rng.Next(2, 7);
+                    if (participant.Progress > TrackSize)
+                        participant.Progress = TrackSize;
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(2));
+                await Task.Delay(TimeSpan.FromSeconds(StepDelay));
             }
 
             await this.PrintRaceAsync(msg);
 
             this.WinnerIds = this.participants
-                .Where(p => p.Progress >= _TrackSize)
+                .Where(p => p.Progress >= TrackSize)
                 .Select(p => p.Id)
                 .ToList()
                 .AsReadOnly();
         }
 
-        public bool AddParticipant(DiscordUser user, out DiscordEmoji emoji)
+        public bool AddParticipant(DiscordUser user, out DiscordEmoji? emoji)
         {
             emoji = null;
-            if (this.participants.Any(p => p.Id == user.Id))
+            if (this.participants.Count >= MaxParticipants || this.participants.Any(p => p.Id == user.Id))
                 return false;
 
             if (!this.animals.TryTake(out emoji))
                 return false;
 
-            this.participants.Enqueue(new AnimalRaceParticipant {
-                User = user,
-                Emoji = emoji,
-                Progress = 0
-            });
+            this.participants.Enqueue(new AnimalRaceParticipant(user, emoji));
             return true;
         }
 
+
         private Task PrintRaceAsync(DiscordMessage msg)
         {
-            var sb = new StringBuilder("🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
+            var sb = new StringBuilder("⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩⏩🏁\n");
             foreach (AnimalRaceParticipant participant in this.participants) {
-                sb.Append("|");
+                sb.Append('|');
                 sb.Append('‣', participant.Progress);
                 sb.Append(participant.Emoji);
-                sb.Append('‣', _TrackSize - participant.Progress);
+                sb.Append('‣', TrackSize - participant.Progress);
                 sb.Append("| " + participant.User.Mention);
-                if (participant.Progress == _TrackSize)
-                    sb.Append(" " + StaticDiscordEmoji.Trophy);
+                if (participant.Progress == TrackSize)
+                    sb.Append(" " + Emojis.Trophy);
                 sb.AppendLine();
             }
 
-            return msg.ModifyAsync(embed: new DiscordEmbedBuilder {
-                Title = "LIVE RACING BROADCAST",
+            return msg.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
+        }
+
+
+        private sealed class AnimalRaceParticipant
+        {
+            public DiscordEmoji Emoji { get; }
+            public DiscordUser User { get; }
+            public int Progress { get; internal set; }
+            public ulong Id => this.User.Id;
+
+
+            public AnimalRaceParticipant(DiscordUser user, DiscordEmoji emoji)
+            {
+                this.User = user;
+                this.Emoji = emoji;
+            }
         }
     }
 }

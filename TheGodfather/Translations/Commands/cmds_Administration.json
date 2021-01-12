@@ -1,0 +1,1029 @@
+{
+  "automaticroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "automaticroles add": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "automaticroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "automaticroles deleteall": {
+    "usage": [ [] ]
+  },
+  "automaticroles list": {
+    "usage": [ [] ]
+  },
+  "channel": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "channel add category": {
+    "usage": [
+      [ "arg-chn-cat" ]
+    ]
+  },
+  "channel add text": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-cat" ],
+      [ "arg-chn-cat", "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-cat", "arg-bool" ],
+      [ "arg-chn-cat", "arg-chn-text", "arg-bool" ],
+      [ "arg-chn-text", "arg-chn-cat", "arg-bool" ]
+    ]
+  },
+  "channel add voice": {
+    "usage": [
+      [ "arg-chn-voice" ],
+      [ "arg-chn-voice", "arg-chn-cat" ],
+      [ "arg-chn-cat", "arg-chn-voice" ],
+      [ "arg-chn-voice", "arg-chn-cat", "arg-ten" ],
+      [ "arg-chn-cat", "arg-chn-voice", "arg-ten" ],
+      [ "arg-chn-voice", "arg-chn-cat", "arg-ten", "arg-sbyte-max" ]
+    ]
+  },
+  "channel clone": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-chn-text" ],
+      [ "arg-chn-text", "arg-chn-voice" ]
+    ]
+  },
+  "channel delete": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel info": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ],
+      [ "arg-chn-voice" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify bitrate": {
+    "usage": [
+      [ "arg-chn-voice", "arg-sbyte-max" ],
+      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel modify name": {
+    "usage": [
+      [ "arg-name-small" ],
+      [ "arg-chn-text", "arg-name-small" ],
+      [ "arg-chn-voice", "arg-name" ],
+      [ "arg-name-small", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify nsfw": {
+    "usage": [
+      [ "arg-bool" ],
+      [ "arg-chn-text", "arg-bool" ],
+      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify parent": {
+    "usage": [
+      [ "arg-chn-text", "arg-chn-cat" ]
+    ]
+  },
+  "channel modify position": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel modify slowmode": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify topic": {
+    "usage": [
+      [ "arg-topic" ],
+      [ "arg-chn-text", "arg-topic" ],
+      [ "arg-topic", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel modify userlimit": {
+    "usage": [
+      [ "arg-chn-voice", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setbitrate": {
+    "usage": [
+      [ "arg-chn-voice", "arg-sbyte-max" ],
+      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setname": {
+    "usage": [
+      [ "arg-name-small" ],
+      [ "arg-chn-text", "arg-name-small" ],
+      [ "arg-chn-voice", "arg-name" ],
+      [ "arg-name-small", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setnsfw": {
+    "usage": [
+      [ "arg-bool" ],
+      [ "arg-chn-text", "arg-bool" ],
+      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setparent": {
+    "usage": [
+      [ "arg-chn-text", "arg-chn-cat" ]
+    ]
+  },
+  "channel setposition": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel setslowmode": {
+    "usage": [
+      [ "arg-chn-text", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel settopic": {
+    "usage": [
+      [ "arg-topic" ],
+      [ "arg-chn-text", "arg-topic" ],
+      [ "arg-topic", "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "channel setuserlimit": {
+    "usage": [
+      [ "arg-chn-voice", "arg-ten" ],
+      [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
+  "channel viewperms": {
+    "usage": [
+      [ "arg-chn-text", "arg-mem" ],
+      [ "arg-role", "arg-chn-text" ]
+    ]
+  },
+  "commandrules": {
+    "usage": [
+      [],
+      [ "arg-cmd" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "commandrules allow": {
+    "usage": [
+      [ "arg-cmd" ],
+      [ "arg-chn-text", "arg-cmd" ],
+      [ "arg-cmd", "arg-chn-text", "arg-chn-text2" ]
+    ]
+  },
+  "commandrules deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "commandrules forbid": {
+    "usage": [
+      [ "arg-cmd" ],
+      [ "arg-chn-text", "arg-cmd" ],
+      [ "arg-cmd", "arg-chn-text", "arg-chn-text2" ]
+    ]
+  },
+  "commandrules list": {
+    "usage": [
+      [],
+      [ "arg-cmd" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config": {
+    "usage": [
+      []
+    ]
+  },
+  "config antiflood": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action", "arg-timespan" ],
+      [ "arg-bool", "arg-punish-action", "arg-five", "arg-timespan" ],
+      [ "arg-bool", "arg-timespan", "arg-five", "arg-punish-action" ]
+    ]
+  },
+  "config antiflood action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antiflood cooldown": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "config antiflood reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config antiflood sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config antispam": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config antispam action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antispam exempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config antispam reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config antispam sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config antispam unexempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config backup": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config backup download": {
+    "usage": [
+      []
+    ]
+  },
+  "config backup exempt": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config backup unexempt": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config currency": {
+    "usage": [
+      [],
+      [ "arg-string" ],
+      [ "arg-emoji" ]
+    ]
+  },
+  "config instantleave": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five" ]
+    ]
+  },
+  "config instantleave cooldown": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "config instantleave reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config leave": {
+    "usage": [
+      [],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config leave channel": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config leave message": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config linkfilter": {
+    "usage": [
+      []
+    ]
+  },
+  "config linkfilter booters": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter invites": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter iploggers": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter shocksites": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config linkfilter shorteners": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  },
+  "config localization": {
+    "usage": [
+      [],
+      [ "arg-locale" ]
+    ]
+  },
+  "config localization list": {
+    "usage": [
+      []
+    ]
+  },
+  "config localization set": {
+    "usage": [
+      [ "arg-locale" ]
+    ]
+  },
+  "config logging": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config logging exempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config logging unexempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config muterole": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
+  "config ratelimit": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config ratelimit action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config ratelimit exempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config ratelimit reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config ratelimit sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config ratelimit unexempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config setup": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config silent": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config suggestions": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config verbose": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
+  "config welcome": {
+    "usage": [
+      [],
+      [ "arg-bool", "arg-chn-text" ]
+    ]
+  },
+  "config welcome channel": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config welcome message": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "emoji": {
+    "usage": [
+      [],
+      [ "arg-emoji" ],
+      [ "arg-emoji-name" ]
+    ]
+  },
+  "emoji add": {
+    "usage": [
+      [ "arg-emoji-name" ],
+      [ "arg-emoji-name", "arg-emoji-url" ]
+    ]
+  },
+  "emoji delete": {
+    "usage": [
+      [ "arg-emoji-name" ],
+      [ "arg-emoji-name", "arg-rsn" ]
+    ]
+  },
+  "emoji info": {
+    "usage": [
+      [],
+      [ "arg-emoji" ],
+      [ "arg-emoji-name" ]
+    ]
+  },
+  "emoji list": {
+    "usage": []
+  },
+  "emoji modify": {
+    "usage": [
+      [ "arg-emoji", "arg-name-small" ]
+    ]
+  },
+  "filter": {
+    "usage": [
+      [],
+      [ "arg-regex" ]
+    ]
+  },
+  "filter add": {
+    "usage": [
+      [ "arg-regex" ]
+    ]
+  },
+  "filter delete": {
+    "usage": [
+      [ "arg-id" ],
+      [ "arg-regex" ]
+    ]
+  },
+  "filter delete id": {
+    "usage": [
+      [ "arg-id" ]
+    ]
+  },
+  "filter delete matching": {
+    "usage": [
+      [ "arg-string-match" ]
+    ]
+  },
+  "filter delete pattern": {
+    "usage": [
+      [ "arg-regex" ]
+    ]
+  },
+  "filter deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "filter list": {
+    "usage": [
+      []
+    ]
+  },
+  "forbiddennames": {
+    "usage": [
+      [],
+      [ "arg-regex" ]
+    ]
+  },
+  "forbiddennames add": {
+    "usage": [
+      [ "arg-regex" ]
+    ]
+  },
+  "forbiddennames delete": {
+    "usage": [
+      [ "arg-id" ],
+      [ "arg-regex" ]
+    ]
+  },
+  "forbiddennames delete id": {
+    "usage": [
+      [ "arg-id" ]
+    ]
+  },
+  "forbiddennames delete matching": {
+    "usage": [
+      [ "arg-string-match" ]
+    ]
+  },
+  "forbiddennames delete pattern": {
+    "usage": [
+      [ "arg-regex" ]
+    ]
+  },
+  "forbiddennames deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "forbiddennames list": {
+    "usage": [
+      []
+    ]
+  },
+  "guild": {
+    "usage": [
+      []
+    ]
+  },
+  "guild bans": {
+    "usage": [
+      []
+    ]
+  },
+  "guild icon": {
+    "usage": [
+      [],
+      [ "arg-url-image" ]
+    ]
+  },
+  "guild info": {
+    "usage": [
+      []
+    ]
+  },
+  "guild log": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
+    ]
+  },
+  "guild memberlist": {
+    "usage": [
+      []
+    ]
+  },
+  "guild prune": {
+    "usage": [
+      [],
+      [ "arg-five", "arg-rsn" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "guild rename": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "levelroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-five" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "levelroles add": {
+    "usage": [
+      [ "arg-role", "arg-five" ],
+      [ "arg-five", "arg-role" ]
+    ]
+  },
+  "levelroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ],
+      [ "arg-five", "arg-ten" ]
+    ]
+  },
+  "levelroles deleteall": {
+    "usage": [ [] ]
+  },
+  "levelroles list": {
+    "usage": [ [] ]
+  },
+  "message attachments": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message delete": {
+    "usage": [
+      [],
+      [ "arg-ten" ],
+      [ "arg-ten", "arg-rsn" ]
+    ]
+  },
+  "message delete after": {
+    "usage": [
+      [ "arg-ulong", "arg-ten" ]
+    ]
+  },
+  "message delete before": {
+    "usage": [
+      [ "arg-ulong", "arg-ten" ]
+    ]
+  },
+  "message delete from": {
+    "usage": [
+      [ "arg-usr", "arg-ten" ],
+      [ "arg-ten", "arg-usr" ]
+    ]
+  },
+  "message delete reactions": {
+    "usage": [
+      [ "arg-ulong" ]
+    ]
+  },
+  "message delete regex": {
+    "usage": [
+      [ "arg-regex" ],
+      [ "arg-regex", "arg-ten" ]
+    ]
+  },
+  "message flag": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message listpinned": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "message pin": {
+    "usage": [
+      [],
+      [ "arg-ulong" ]
+    ]
+  },
+  "message unpin": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-five" ]
+    ]
+  },
+  "message unpinall": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "reactionroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-emoji" ],
+      [ "arg-emoji", "arg-role" ]
+    ]
+  },
+  "reactionroles add": {
+    "usage": [
+      [ "arg-role", "arg-emoji" ],
+      [ "arg-emoji", "arg-role" ]
+    ]
+  },
+  "reactionroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ],
+      [ "arg-emoji", "arg-emoji-name" ]
+    ]
+  },
+  "reactionroles deleteall": {
+    "usage": [ [] ]
+  },
+  "reactionroles list": {
+    "usage": [ [] ]
+  },
+  "role": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
+  "role create": {
+    "usage": [
+      [ "arg-role-raw" ],
+      [ "arg-role-raw", "arg-color" ],
+      [ "arg-role-raw", "arg-color", "arg-bool" ]
+    ]
+  },
+  "role delete": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role info": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role list": {
+    "usage": [
+      [],
+      [ "arg-role" ]
+    ]
+  },
+  "role mention": {
+    "usage": [
+      [ "arg-role" ]
+    ]
+  },
+  "role setcolor": {
+    "usage": [
+      [ "arg-role", "arg-color" ],
+      [ "arg-color", "arg-role" ]
+    ]
+  },
+  "role setmentionable": {
+    "usage": [
+      [ "arg-role" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "role setname": {
+    "usage": [
+      [ "arg-role", "arg-name" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "role setvisibility": {
+    "usage": [
+      [ "arg-role" ],
+      [ "arg-name", "arg-role" ]
+    ]
+  },
+  "selfassignableroles": {
+    "usage": [
+      [],
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "selfassignableroles add": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "selfassignableroles delete": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "selfassignableroles deleteall": {
+    "usage": [ [] ]
+  },
+  "selfassignableroles list": {
+    "usage": [ [] ]
+  },
+  "selfassignableroles remove": {
+    "usage": [
+      [ "arg-role", "arg-role-raw" ]
+    ]
+  },
+  "user": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user avatar": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user ban": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ],
+      [ "arg-usr", "arg-five", "arg-rsn" ]
+    ]
+  },
+  "user deafen": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user grantrole": {
+    "usage": [
+      [ "arg-usr", "arg-role" ],
+      [ "arg-role", "arg-usr" ]
+    ]
+  },
+  "user info": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user kick": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user kickvoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user mute": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user mutevoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user revokeallroles": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user revokerole": {
+    "usage": [
+      [ "arg-usr", "arg-role" ],
+      [ "arg-role", "arg-usr" ]
+    ]
+  },
+  "user setname": {
+    "usage": [
+      [ "arg-usr", "arg-name" ]
+    ]
+  },
+  "user softban": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ]
+    ]
+  },
+  "user tempban": {
+    "usage": [
+      [ "arg-usr", "arg-timespan-day" ],
+      [ "arg-timespan-day", "arg-usr" ]
+    ]
+  },
+  "user tempmute": {
+    "usage": [
+      [ "arg-usr", "arg-timespan-day" ],
+      [ "arg-timespan-day", "arg-usr" ]
+    ]
+  },
+  "user unban": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user undeafen": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user unmute": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user unmutevoice": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "user warn": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-warn" ]
+    ]
+  },
+  "webhook": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook add": {
+    "usage": [
+      [],
+      [ "arg-url-image", "arg-chn-text", "arg-name" ]
+    ]
+  },
+  "webhook delete": {
+    "usage": [
+      [ "arg-ulong" ],
+      [ "arg-wh-name" ],
+      [ "arg-chn-text", "arg-wh-name" ],
+      [ "arg-chn-text", "arg-ulong" ]
+    ]
+  },
+  "webhook deleteall": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook list": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "webhook listall": {
+    "usage": [ [] ]
+  }
+}

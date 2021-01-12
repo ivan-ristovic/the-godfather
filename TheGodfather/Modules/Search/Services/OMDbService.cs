@@ -1,68 +1,57 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using Newtonsoft.Json;
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 using TheGodfather.Modules.Search.Common;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search.Services
 {
     public class OMDbService : TheGodfatherHttpService
     {
-        private static readonly string _url = "http://www.omdbapi.com/";
+        private const string Endpoint = "http://www.omdbapi.com/";
+        private const string ImdbUrl = "http://www.imdb.com/";
 
-        private readonly string key;
+        public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
+
+        private readonly string? key;
 
 
-        public OMDbService(string key)
+        public OMDbService(BotConfigService cfg)
         {
-            this.key = key;
+            this.key = cfg.CurrentConfiguration.OMDbKey;
         }
 
 
-        public override bool IsDisabled() 
-            => string.IsNullOrWhiteSpace(this.key);
-
-
-        public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query)
+        public async Task<IReadOnlyList<MovieInfo>?> SearchAsync(string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", nameof(query));
-            
-            string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&s={query}").ConfigureAwait(false);
+            string url = $"{Endpoint}?apikey={this.key}&s={WebUtility.UrlEncode(query)}";
+            string response = await _http.GetStringAsync(url).ConfigureAwait(false);
             OMDbResponse data = JsonConvert.DeserializeObject<OMDbResponse>(response);
-            IReadOnlyList<MovieInfo> results = data.Success ? data.Results?.AsReadOnly() : null;
+            IReadOnlyList<MovieInfo>? results = data.Success ? data.Results?.AsReadOnly() : null;
             if (results is null || !results.Any())
                 return null;
 
             return results
-                .Select(info => info.ToDiscordPage())
                 .ToList()
                 .AsReadOnly();
         }
 
-        public async Task<MovieInfo> GetSingleResultAsync(OMDbQueryType type, string query)
+        public async Task<MovieInfo?> SearchSingleAsync(OMDbQueryType type, string query)
         {
-            if (this.IsDisabled())
+            if (this.IsDisabled)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", nameof(query));
-
-            string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&{type.ToApiString()}={query}").ConfigureAwait(false);
+            string url = $"{Endpoint}?apikey={this.key}&{type.ToApiString()}={WebUtility.UrlEncode(query)}";
+            string response = await _http.GetStringAsync(url).ConfigureAwait(false);
             MovieInfo data = JsonConvert.DeserializeObject<MovieInfo>(response);
             return data.Success ? data : null;
         }
+
+        public string GetUrl(string id) => $"{ImdbUrl}title/{id}";
     }
 }

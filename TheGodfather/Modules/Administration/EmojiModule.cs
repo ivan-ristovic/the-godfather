@@ -1,197 +1,177 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
+using Humanizer;
+using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.")]
     [Aliases("emojis", "e")]
-    [UsageExampleArgs(":some_emoji:")]
+    [RequireGuild, RequirePermissions(Permissions.ManageEmojis)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class EmojiModule : TheGodfatherModule
+    public sealed class EmojiModule : TheGodfatherModule
     {
-
-        public EmojiModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.Orange;
-        }
-
-
+        #region emoji
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Emoji to print information about.")] DiscordEmoji emoji)
+                                     [Description("desc-emoji-info")] DiscordEmoji emoji)
             => this.InfoAsync(ctx, emoji);
+        #endregion
 
-
-        #region COMMAND_EMOJI_ADD
+        #region emoji add
         [Command("add"), Priority(3)]
-        [Description("Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can " +
-                     "also pass emojis from another guild as arguments instead of their URLs.")]
-        [Aliases("addnew", "create", "install", "a", "+", "+=", "<", "<<")]
-        [UsageExampleArgs("pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg", "pepe [ATTACHED IMAGE]", "pepe :pepe_from_other_server:")]
-        [RequirePermissions(Permissions.ManageEmojis)]
+        [Aliases("create", "install", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Name for the emoji.")] string name,
-                                  [Description("Image URL.")] Uri url = null)
+                                  [Description("desc-emoji-name")] string name,
+                                  [Description("desc-emoji-url")] Uri? url = null)
         {
-            if (name.Length < 2 || name.Length > 50)
-                throw new InvalidCommandUsageException("Emoji name length must be between 2 and 50 characters.");
+            if (string.IsNullOrWhiteSpace(name) || name.Length < 2 || name.Length > DiscordLimits.EmojiNameLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-name", 2, DiscordLimits.EmojiNameLimit);
 
             if (url is null) {
-                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
-                    throw new InvalidCommandUsageException("Please specify a name and URL pointing to an emoji image or attach an image.");
+                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments[0].Url, UriKind.Absolute, out url))
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-image-url");
             }
 
-            if (!await this.IsValidImageUriAsync(url))
-                throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
+            if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.EmojiSizeLimit))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail", DiscordLimits.EmojiSizeLimit.ToMetric());
 
             try {
-                using (System.Net.Http.HttpResponseMessage response = await _http.GetAsync(url))
-                using (System.IO.Stream stream = await response.Content.ReadAsStreamAsync()) {
-                    if (stream.Length >= 256000)
-                        throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
-                    DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
-                    await this.InformAsync(ctx, $"Successfully added emoji: {emoji}", important: false);
-                }
+                using Stream stream = await HttpService.GetStreamAsync(url);
+                DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
+                await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-add", emoji.GetDiscordName());
             } catch (WebException e) {
-                throw new CommandFailedException("An error occured while fetching the image.", e);
-            } catch (BadRequestException e) {
-                throw new CommandFailedException("Discord prevented the emoji from being added. Possibly emoji slots are full for this guild or the image format is not supported?", e);
+                throw new CommandFailedException(ctx, e, "err-url-image-fail");
             }
-
         }
 
         [Command("add"), Priority(2)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Image URL.")] Uri url,
-                            [Description("Name for the emoji.")] string name)
+                            [Description("desc-emoji-url")] Uri url,
+                            [Description("desc-emoji-name")] string name)
             => this.AddAsync(ctx, name, url);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Name for the emoji.")] string name,
-                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
+                            [Description("desc-emoji-name")] string name,
+                            [Description("desc-emoji-steal")] DiscordEmoji emoji)
         {
-            if (emoji.Id == 0)
-                throw new InvalidCommandUsageException("Cannot add a unicode emoji.");
-
-            return this.AddAsync(ctx, name, new Uri(emoji.Url));
+            return emoji.Id == 0
+                ? throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-add-unicode")
+                : this.AddAsync(ctx, name, new Uri(emoji.Url));
         }
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji,
-                            [Description("Name.")] string name)
-            => this.AddAsync(ctx, name, emoji);
+                            [Description("desc-emoji-steal")] DiscordEmoji emoji,
+                            [Description("desc-emoji-name")] string? name = null)
+            => this.AddAsync(ctx, name ?? emoji.Name, new Uri(emoji.Url));
         #endregion
 
-        #region COMMAND_EMOJI_DELETE
+        #region emoji delete
         [Command("delete")]
-        [Description("Remove guild emoji. Note: Bots can only delete emojis they created!")]
-        [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("pepe")]
-        [RequirePermissions(Permissions.ManageEmojis)]
+        [Aliases("unregister", "uninstall", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Emoji to delete.")] DiscordEmoji emoji)
+                                     [Description("desc-emoji-del")] DiscordEmoji emoji,
+                                     [RemainingText, Description("desc-rsn")] string? reason = null)
         {
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 string name = gemoji.Name;
-                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildInvocationDetailsString());
-                await this.InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}", important: false);
+                await gemoji.DeleteAsync(ctx.BuildInvocationDetailsString(reason));
+                await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-del", Formatter.Bold(name));
             } catch (NotFoundException) {
-                throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
+                throw new CommandFailedException(ctx, "cmd-err-emoji-del-404");
             }
         }
         #endregion
 
-        #region COMMAND_EMOJI_INFO
+        #region emoji info
         [Command("info")]
-        [Description("Prints information for given guild emoji.")]
-        [Aliases("details", "information", "i")]
-        [UsageExampleArgs(":pepe:")]
+        [Aliases("information", "details", "about", "i")]
         public async Task InfoAsync(CommandContext ctx,
-                                   [Description("Emoji.")] DiscordEmoji emoji)
+                                   [Description("desc-emoji-info")] DiscordEmoji emoji)
         {
-            DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
+            try {
+                DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
 
-            var emb = new DiscordEmbedBuilder {
-                Title = "Emoji details:",
-                Description = gemoji,
-                Color = this.ModuleColor,
-                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = gemoji.Url }
-            };
+                var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedTitle("str-emoji-details");
+                emb.WithDescription($"{gemoji.GetDiscordName()} ({gemoji.Id})");
+                emb.WithThumbnail(gemoji.Url);
 
-            emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
-            emb.AddField("Created by", gemoji.User is null ? "<unknown>" : gemoji.User.Username, inline: true);
-            emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
+                emb.AddLocalizedTitleField("str-created-by", gemoji.User?.ToDiscriminatorString(), inline: true);
+                emb.AddLocalizedTitleField("str-animated", gemoji.IsAnimated, inline: true);
+                emb.AddLocalizedTitleField("str-managed", gemoji.IsManaged, inline: true);
+                emb.AddLocalizedTitleField("str-url", gemoji.Url);
+                emb.AddLocalizedTimestampField("str-created-at", gemoji.CreationTimestamp);
 
-            await ctx.RespondAsync(embed: emb.Build());
+                await ctx.RespondAsync(embed: emb.Build());
+            } catch (NotFoundException) {
+                throw new CommandFailedException(ctx, "cmd-err-emoji-404");
+            }
         }
         #endregion
 
-        #region COMMAND_EMOJI_LIST
+        #region emoji list
         [Command("list")]
-        [Description("List all emojis for this guild.")]
-        [Aliases("print", "show", "l", "p", "ls")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
-            return ctx.SendCollectionInPagesAsync(
-                $"Emoji available for guild {ctx.Guild.Name}:",
-                ctx.Guild.Emojis.Values.OrderBy(e => e.Name),
-                emoji => $"{emoji} | {Formatter.InlineCode(emoji.Id.ToString())} | {Formatter.InlineCode(emoji.Name)}",
+            return ctx.PaginateAsync(
+                "str-emojis",
+                ctx.Guild.Emojis.Select(kvp => kvp.Value).OrderBy(e => e.Name),
+                e => $"{e} | {Formatter.InlineCode(e.Id.ToString())} | {Formatter.InlineCode(e.Name)}",
                 this.ModuleColor
             );
         }
         #endregion
 
-        #region COMMAND_EMOJI_MODIFY
+        #region emoji modify
         [Command("modify"), Priority(1)]
-        [Description("Edit name of an existing guild emoji.")]
-        [Aliases("edit", "mod", "e", "m", "rename")]
-        [UsageExampleArgs(":pepe: newname", "newname :pepe:")]
-        [RequirePermissions(Permissions.ManageEmojis)]
+        [Aliases("edit", "mod", "e", "m", "rename", "mv", "setname")]
         public async Task ModifyAsync(CommandContext ctx,
-                                     [Description("Emoji to rename.")] DiscordEmoji emoji,
-                                     [Description("New name.")] string newname)
+                                     [Description("desc-emoji-edit")] DiscordEmoji emoji,
+                                     [Description("str-name")] string newname,
+                                     [RemainingText, Description("desc-rsn")] string? reason = null)
         {
-            if (string.IsNullOrWhiteSpace(newname))
-                throw new InvalidCommandUsageException("Name missing.");
+            if (string.IsNullOrWhiteSpace(newname) || newname.Length < 2 || newname.Length > DiscordLimits.EmojiNameLimit)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-emoji-name", 2, DiscordLimits.EmojiNameLimit);
 
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
-                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildInvocationDetailsString());
-                await this.InformAsync(ctx, $"Successfully modified emoji: {gemoji}", important: false);
+                string name = gemoji.GetDiscordName();
+                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildInvocationDetailsString(reason));
+                await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-edit", Formatter.Bold(name));
             } catch (NotFoundException) {
-                throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
+                throw new CommandFailedException(ctx, "cmd-err-emoji-del-404");
             }
         }
 
         [Command("modify"), Priority(0)]
         public Task ModifyAsync(CommandContext ctx,
-                               [Description("New name.")] string newname,
-                               [Description("Emoji to rename.")] DiscordEmoji emoji)
-            => this.ModifyAsync(ctx, emoji, newname);
+                               [Description("str-name")] string newname,
+                               [Description("desc-emoji-edit")] DiscordEmoji emoji,
+                               [RemainingText, Description("desc-rsn")] string? reason = null)
+            => this.ModifyAsync(ctx, emoji, newname, reason);
         #endregion
     }
 }

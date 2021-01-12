@@ -1,27 +1,22 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-#endregion
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class TicTacToeGame : BoardGame
+    public sealed class TicTacToeGame : BaseBoardGame
     {
-
         public TicTacToeGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, TimeSpan? movetime = null)
-            : base(interactivity, channel, p1, p2, sizeX: 3, sizeY: 3, movetime)
-        {
-
-        }
+            : base(interactivity, channel, p1, p2, sizeX: 3, sizeY: 3, movetime) { }
 
 
-        protected override async Task AdvanceAsync()
+        protected override async Task AdvanceAsync(LocalizationService lcs)
         {
             int field = 0;
             bool player1plays = (this.move % 2 == 0);
@@ -31,7 +26,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (player1plays && (xm.Author.Id != this.player1.Id)) return false;
                     if (!player1plays && (xm.Author.Id != this.player2.Id)) return false;
                     if (!int.TryParse(xm.Content, out field)) return false;
-                    return field > 0 && field < 10;
+                    return field is > 0 and < 10;
                 },
                 this.moveTime
             );
@@ -47,12 +42,12 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Result.DeleteAsync();
                     } catch {
-                        await this.Channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts and keep the board at the bottom.");
+                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-perms"));
                         this.deleteErrored = true;
                     }
                 }
             } else {
-                await this.Channel.SendMessageAsync("Invalid move.");
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", field));
             }
         }
 
@@ -73,27 +68,28 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        protected override Task UpdateBoardAsync()
+        protected override Task<DiscordMessage> UpdateBoardAsync(LocalizationService lcs)
         {
             var sb = new StringBuilder();
 
             for (int i = 0; i < this.SizeX; i++) {
-                for (int j = 0; j < this.SizeY; j++)
+                for (int j = 0; j < this.SizeY; j++) {
                     switch (this.board[i, j]) {
-                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
-                        case 1: sb.Append(StaticDiscordEmoji.X); break;
-                        case 2: sb.Append(StaticDiscordEmoji.O); break;
+                        case 0: sb.Append(Emojis.BoardSquare); break;
+                        case 1: sb.Append(Emojis.X); break;
+                        case 2: sb.Append(Emojis.O); break;
                     }
+                }
                 sb.AppendLine();
             }
 
-            sb.AppendLine().Append("User to move: ").AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
+            sb.AppendLine()
+              .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
+              .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
-            return this.msgHandle.ModifyAsync(embed: new DiscordEmbedBuilder {
+            return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {
                 Description = sb.ToString()
             }.Build());
         }
     }
 }
-
-

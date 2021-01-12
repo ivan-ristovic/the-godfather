@@ -1,7 +1,5 @@
-﻿#region USING_DIRECTIVES
-using System;
+﻿using System;
 using System.Threading;
-#endregion
 
 namespace TheGodfather.Modules.Administration.Common
 {

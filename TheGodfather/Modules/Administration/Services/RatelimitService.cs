@@ -1,18 +1,19 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using Microsoft.EntityFrameworkCore;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -23,9 +24,9 @@ namespace TheGodfather.Modules.Administration.Services
         private readonly Timer refreshTimer;
 
 
-        private static void RefreshCallback(object _)
+        private static void RefreshCallback(object? _)
         {
-            var service = _ as RatelimitService;
+            RatelimitService service = _ as RatelimitService ?? throw new ArgumentException("Failed to cast provided argument in timer callback");
 
             foreach (ulong gid in service.guildRatelimitInfo.Keys) {
                 IEnumerable<ulong> toRemove = service.guildRatelimitInfo[gid]
@@ -38,13 +39,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public RatelimitService(TheGodfatherShard shard)
-            : base(shard)
+        public RatelimitService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Ratelimit hit")
         {
             this.guildExempts = new ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>>();
             this.guildRatelimitInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
-            this.reason = "_gf: Ratelimit hit";
         }
 
 
@@ -54,16 +54,40 @@ namespace TheGodfather.Modules.Administration.Services
         public override bool TryRemoveGuildFromWatch(ulong gid)
             => this.guildRatelimitInfo.TryRemove(gid, out _);
 
+        public async Task<IReadOnlyList<ExemptedRatelimitEntity>> GetExemptsAsync(ulong gid)
+        {
+            List<ExemptedRatelimitEntity> exempts;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            exempts = await db.ExemptsRatelimit.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            return exempts.AsReadOnly();
+        }
+
+        public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsRatelimit.AddExemptions(gid, type, ids);
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
+
+        public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.ExemptsRatelimit.RemoveRange(
+                db.ExemptsRatelimit.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+            );
+            await db.SaveChangesAsync();
+            this.UpdateExemptsForGuildAsync(gid);
+        }
 
         public void UpdateExemptsForGuildAsync(ulong gid)
         {
-            using (DatabaseContext db = this.shard.Database.CreateContext()) {
-                this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                    db.RatelimitExempts
-                        .Where(ee => ee.GuildId == gid)
-                        .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
-                );
-            }
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
+                db.ExemptsRatelimit
+                    .Where(ee => ee.GuildId == gid)
+                    .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+            );
         }
 
         public async Task HandleNewMessageAsync(MessageCreateEventArgs e, RatelimitSettings settings)
@@ -74,8 +98,8 @@ namespace TheGodfather.Modules.Administration.Services
                 this.UpdateExemptsForGuildAsync(e.Guild.Id);
             }
 
-            var member = e.Author as DiscordMember;
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity> exempts)) {
+            DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
                     return;
                 if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
@@ -91,10 +115,15 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
             }
 
-            if (gRateInfo.TryGetValue(e.Author.Id, out UserRatelimitInfo rateInfo) && !rateInfo.TryDecrementAllowedMessageCount()) {
+            if (gRateInfo.TryGetValue(e.Author.Id, out UserRatelimitInfo? rateInfo) && !rateInfo.TryDecrementAllowedMessageCount()) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 rateInfo.Reset();
             }
+        }
+
+        public override void Dispose()
+        {
+            this.refreshTimer.Dispose();
         }
     }
 }

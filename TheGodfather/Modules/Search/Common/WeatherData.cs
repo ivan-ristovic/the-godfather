@@ -1,9 +1,6 @@
-﻿#region USING_DIRECTIVES
-
-using Newtonsoft.Json;
-
+﻿#nullable disable
 using System.Collections.Generic;
-#endregion
+using Newtonsoft.Json;
 
 namespace TheGodfather.Modules.Search.Common
 {
@@ -63,19 +60,10 @@ namespace TheGodfather.Modules.Search.Common
         public double Sunset { get; set; }
     }
 
-    public class WeatherData
+    public class CompleteWeatherData : PartialWeatherData
     {
         public Coord Coord { get; set; }
-        public List<Weather> Weather { get; set; }
-        public Main Main { get; set; }
-        public int Visibility { get; set; }
-        public Wind Wind { get; set; }
-        public Clouds Clouds { get; set; }
-        public int Dt { get; set; }
-        public Sys Sys { get; set; }
-        public int Id { get; set; }
         public string Name { get; set; }
-        public int Cod { get; set; }
     }
 
     public class PartialWeatherData

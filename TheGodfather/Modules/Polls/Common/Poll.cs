@@ -1,40 +1,44 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using TheGodfather.Extensions;
-#endregion
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using TheGodfather.Common;
+using TheGodfather.Modules.Polls.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Polls.Common
 {
-    public class Poll
+    public class Poll : IChannelEvent
     {
+        public const int MinTimeSeconds = 10;
+        public const int MaxTimeDays = 1;
+        public const int MaxTimeSeconds = MaxTimeDays * 3600 * 24;
+        public const int MaxPollOptions = 10;
+
         public string Question { get; }
         public bool IsRunning { get; protected set; }
         public List<string> Options { get; set; }
-        public TimeSpan TimeUntilEnd => this.endTime != null ? this.endTime - DateTime.Now : TimeSpan.Zero;
+        public DateTimeOffset? EndTime { get; }
+        public TimeSpan TimeUntilEnd => this.EndTime is null ? TimeSpan.Zero : this.EndTime.Value - DateTimeOffset.UtcNow;
         public DiscordMember Initiator { get; set; }
+        public DiscordChannel Channel { get; protected set; }
+        public IReadOnlyDictionary<ulong, int> Results => this.votes;
 
-        protected DateTime endTime;
+        public InteractivityExtension Interactivity { get; protected set; }
+
         protected readonly ConcurrentDictionary<ulong, int> votes;
-        protected readonly DiscordChannel channel;
-        protected readonly InteractivityExtension interactivity;
         protected readonly CancellationTokenSource cts;
 
 
-        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
+        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question, TimeSpan runFor)
         {
+            this.EndTime = DateTimeOffset.UtcNow + runFor;
+            this.Channel = channel;
+            this.Interactivity = interactivity;
             this.Question = question;
-            this.channel = channel;
-            this.interactivity = interactivity;
             this.Options = new List<string>();
             this.Initiator = sender;
             this.votes = new ConcurrentDictionary<ulong, int>();
@@ -42,73 +46,35 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
 
-        public virtual async Task RunAsync(TimeSpan timespan)
+        public virtual async Task RunAsync(LocalizationService lcs)
         {
             this.IsRunning = true;
-            DiscordMessage msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+            DiscordMessage msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed(lcs));
 
-            this.endTime = DateTime.Now + timespan;
             while (!this.cts.IsCancellationRequested) {
                 try {
-                    if (this.channel.LastMessageId != msgHandle.Id) {
+                    if (this.Channel.LastMessageId != msgHandle.Id) {
                         await msgHandle.DeleteAsync();
-                        msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+                        msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed(lcs));
                     } else {
-                        await msgHandle.ModifyAsync(embed: this.ToDiscordEmbed());
+                        await msgHandle.ModifyAsync(embed: this.ToDiscordEmbed(lcs));
                     }
                 } catch {
-                    msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
+                    msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed(lcs));
                 }
 
                 if (this.TimeUntilEnd.TotalSeconds < 1)
                     break;
 
-                try {
-                    await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(10) ? this.TimeUntilEnd : TimeSpan.FromSeconds(10), this.cts.Token);
-                } catch (TaskCanceledException) {
-                    await this.channel.InformFailureAsync("The poll has been cancelled!");
-                }
+                await Task.Delay(
+                    this.TimeUntilEnd <= TimeSpan.FromSeconds(MinTimeSeconds) ? this.TimeUntilEnd : TimeSpan.FromSeconds(MinTimeSeconds),
+                    this.cts.Token
+                );
             }
 
             this.IsRunning = false;
 
-            await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
-        }
-
-        public virtual DiscordEmbed ToDiscordEmbed()
-        {
-            var emb = new DiscordEmbedBuilder {
-                Title = Question,
-                Description = $"Vote by using command {Formatter.InlineCode("vote <number>")}",
-                Color = DiscordColor.Orange
-            };
-
-            for (int i = 0; i < this.Options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(this.Options[i]))
-                    emb.AddField($"{i + 1} : {this.Options[i]}", $"{this.votes.Count(kvp => kvp.Value == i)} vote(s)");
-
-            if (this.endTime != null) {
-                if (this.TimeUntilEnd.TotalSeconds > 1)
-                    emb.WithFooter($"Poll ends {this.endTime.ToUtcTimestamp()} (in {this.TimeUntilEnd:hh\\:mm\\:ss})", this.Initiator.AvatarUrl);
-                else
-                    emb.WithFooter($"Poll ended.", this.Initiator.AvatarUrl);
-            }
-
-            return emb.Build();
-        }
-
-        public virtual DiscordEmbed ResultsToDiscordEmbed()
-        {
-            var emb = new DiscordEmbedBuilder {
-                Title = this.Question + " (results)",
-                Color = DiscordColor.Orange
-            };
-
-            for (int i = 0; i < this.Options.Count; i++)
-                emb.AddField(this.Options[i], this.votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
-
-            emb.WithFooter($"Poll by {this.Initiator.DisplayName}", this.Initiator.AvatarUrl);
-            return emb.Build();
+            await this.Channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed(lcs));
         }
 
         public bool CancelVote(ulong uid)
@@ -117,7 +83,7 @@ namespace TheGodfather.Modules.Polls.Common
         public bool IsValidVote(int vote)
             => vote >= 0 && vote < this.Options.Count;
 
-        public string OptionWithId(int id)
+        public string? OptionWithId(int id)
             => (id >= 0 && id < this.Options.Count) ? this.Options[id] : null;
 
         public void Stop()

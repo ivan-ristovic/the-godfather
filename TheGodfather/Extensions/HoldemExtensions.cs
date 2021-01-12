@@ -1,10 +1,6 @@
-﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
 using TexasHoldem.Logic.Cards;
-
 using TheGodfather.Common;
-#endregion
 
 namespace TheGodfather.Extensions
 {
@@ -24,10 +20,9 @@ namespace TheGodfather.Extensions
 
         public static string ToUserFriendlyString(this Card card)
         {
-            if (card.Type >= CardType.Two && card.Type <= CardType.Ace)
-                return StaticDiscordEmoji.CardValues[(int)(card.Type - 1)] + card.Suit.ToFriendlyString();
-            else
-                return StaticDiscordEmoji.Question + card.Suit.ToFriendlyString();
+            return card.Type is >= CardType.Two and <= CardType.Ace
+                ? Emojis.Cards.Values[(int)(card.Type - 1)] + card.Suit.ToFriendlyString()
+                : Emojis.Question + card.Suit.ToFriendlyString();
         }
     }
 }

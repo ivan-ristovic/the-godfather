@@ -1,178 +1,218 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-
 using Humanizer;
-
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.EventListeners.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using TheGodfather.EventListeners.Attributes;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.EventListeners
 {
     internal static partial class Listeners
     {
-        [AsyncEventListener(DiscordEventType.ChannelCreated)]
-        public static async Task ChannelCreateEventHandlerAsync(TheGodfatherShard shard, ChannelCreateEventArgs e)
+        [AsyncEventListener(DiscordEventType.DmChannelCreated)]
+        public static Task DmChannelCreateEventHandlerAsync(TheGodfatherBot bot, DmChannelCreateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null)
+            LogExt.Debug(
+                bot.GetId(null),
+                new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
+                e.Channel,
+                e.Channel.Recipients.Humanize(Environment.NewLine)
+            );
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.DmChannelDeleted)]
+        public static Task DmChannelDeleteEventHandlerAsync(TheGodfatherBot bot, DmChannelDeleteEventArgs e)
+        {
+            LogExt.Debug(
+                bot.GetId(null),
+                new[] { "Delete: DM {Channel}, recipients:", "{Recipients}" },
+                e.Channel,
+                e.Channel.Recipients.Humanize(Environment.NewLine)
+            );
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.ChannelCreated)]
+        public static async Task ChannelCreateEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
+        {
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Create: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel created", e.Channel.ToString());
+            emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create", e.Channel);
+            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelCreate);
-            if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
-                emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-            } else {
-                emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
-                emb.AddField("Channel type", centry.Target.Type.ToString(), inline: true);
-                if (!string.IsNullOrWhiteSpace(centry.Reason))
-                    emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(centry.CreationTimestamp.ToUtcTimestamp(), centry.UserResponsible.AvatarUrl);
-            }
+            DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelCreate);
+            emb.AddFieldsFromAuditLogEntry(entry);
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.ChannelCreated)]
+        public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
+        {
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            return bot.Services.GetRequiredService<BackupService>().AddChannel(e.Channel.GuildId, e.Channel.Id);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
-        public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherShard shard, ChannelDeleteEventArgs e)
+        public static async Task ChannelDeleteEventHandlerAsync(TheGodfatherBot bot, ChannelDeleteEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null || e.Channel.IsExempted(shard))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Delete: {Channel}, {Guild}", e.Channel, e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel deleted", e.Channel.ToString());
+            emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete", e.Channel);
+            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
 
-            emb.AddField("Channel type", e.Channel?.Type.ToString() ?? _unknown, inline: true);
+            DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelDelete);
+            emb.AddFieldsFromAuditLogEntry(entry);
 
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
-            if (entry is null || !(entry is DiscordAuditLogChannelEntry centry)) {
-                emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-            } else {
-                emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
-                if (!string.IsNullOrWhiteSpace(centry.Reason))
-                    emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(centry.CreationTimestamp.ToUtcTimestamp(), centry.UserResponsible.AvatarUrl);
-            }
+            await logService.LogAsync(e.Guild, emb);
+        }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+        [AsyncEventListener(DiscordEventType.ChannelDeleted)]
+        public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
+        {
+            bot.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Removed channel from backup service: {Channel}, {Guild}", e.Channel, e.Guild);
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.ChannelPinsUpdated)]
-        public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
+        public static async Task ChannelPinsUpdateEventHandlerAsync(TheGodfatherBot bot, ChannelPinsUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn is null || e.Channel.IsExempted(shard))
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Pins update: {Channel}, {Guild}", e.Channel, e.Guild);
+
+            if (e.Guild is null || LoggingService.IsChannelExempted(bot, e.Guild, e.Channel, out _))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
-            emb.AddField("Channel", e.Channel.Mention, inline: true);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
 
-            System.Collections.Generic.IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
+            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update");
+            emb.AddLocalizedTitleField("str-chn", e.Channel.Mention);
+
+            IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
-                emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
-                string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Top pin content", Formatter.BlockCode(FormatterExtensions.StripMarkdown(content.Truncate(900))));
+                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned[0].JumpLink));
+                string content = string.IsNullOrWhiteSpace(pinned[0].Content) ? "<embed>" : pinned[0].Content;
+                emb.AddLocalizedTitleField("str-top-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
             }
-            if (!(e.LastPinTimestamp is null))
-                emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp(), inline: true);
+            emb.AddLocalizedTimestampField("str-last-pin-timestamp", e.LastPinTimestamp);
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelUpdated)]
-        public static async Task ChannelUpdateEventHandlerAsync(TheGodfatherShard shard, ChannelUpdateEventArgs e)
+        public static async Task ChannelUpdateEventHandlerAsync(TheGodfatherBot bot, ChannelUpdateEventArgs e)
         {
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Channel update: {Channel}, {Guild}", e.ChannelBefore, e.Guild);
+
+            if (e.ChannelBefore.IsPrivate || LoggingService.IsChannelExempted(bot, e.Guild, e.ChannelBefore, out _))
+                return;
+
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn is null || e.ChannelBefore.IsExempted(shard))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel updated");
-            DiscordAuditLogEntry entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);            
-            if (!(entry is null) && entry is DiscordAuditLogChannelEntry centry) {     // Regular update
-                emb.WithDescription(centry.Target.ToString());
-                emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
-                if (!(centry.BitrateChange is null))
-                    emb.AddField("Bitrate changed to", centry.BitrateChange.After.ToString(), inline: true);
-                if (!(centry.NameChange is null))
-                    emb.AddField("Name changed to", centry.NameChange.After, inline: true);
-                if (!(centry.NsfwChange is null))
-                    emb.AddField("NSFW flag changed to", centry.NsfwChange.After.Value.ToString(), inline: true);
-                if (!(centry.OverwriteChange is null))
-                    emb.AddField("Permissions overwrites changed", $"{centry.OverwriteChange.After.Count} overwrites after changes");
-                if (!(centry.TopicChange is null)) {
-                    string ptopic = Formatter.BlockCode(FormatterExtensions.StripMarkdown(string.IsNullOrWhiteSpace(centry.TopicChange.Before) ? " " : centry.TopicChange.Before));
-                    string ctopic = Formatter.BlockCode(FormatterExtensions.StripMarkdown(string.IsNullOrWhiteSpace(centry.TopicChange.After) ? " " : centry.TopicChange.After));
-                    emb.AddField("Topic changed", $"From:{ptopic}\nTo:{ctopic}");
-                }
-                if (!(centry.TypeChange is null))
-                    emb.AddField("Type changed to", centry.TypeChange.After.Value.ToString());
-                if (!(centry.PerUserRateLimitChange is null))
-                    emb.AddField("Per-user rate limit changed to", centry.PerUserRateLimitChange.After.Value.ToString());
-                if (!string.IsNullOrWhiteSpace(centry.Reason))
-                    emb.AddField("Reason", centry.Reason);
-                emb.WithFooter($"At {centry.CreationTimestamp.ToUniversalTime().ToString()} UTC", centry.UserResponsible.AvatarUrl);
-            } else {    // Overwrite update
-                AuditLogActionType type;
-                if (e.ChannelBefore.PermissionOverwrites.Count > e.ChannelAfter.PermissionOverwrites.Count) {
-                    type = AuditLogActionType.OverwriteCreate;
-                    entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteCreate);
-                } else if (e.ChannelBefore.PermissionOverwrites.Count < e.ChannelAfter.PermissionOverwrites.Count) {
-                    type = AuditLogActionType.OverwriteDelete;
-                    entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteDelete);
-                } else {
-                    if (e.ChannelBefore.PermissionOverwrites.Zip(e.ChannelAfter.PermissionOverwrites, (o1, o2) => o1.Allowed != o1.Allowed && o2.Denied != o2.Denied).Any()) {
-                        type = AuditLogActionType.OverwriteUpdate;
-                        entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.OverwriteUpdate);
-                    } else {
-                        type = AuditLogActionType.ChannelUpdate;
-                        entry = await e.Guild.GetLatestAuditLogEntryAsync(AuditLogActionType.ChannelUpdate);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
+
+            DiscordAuditLogEntry? entry = await e.Guild.GetRecentAuditLogEntryAsync();
+            if (entry is DiscordAuditLogChannelEntry centry) {
+                Log.Verbose("Retrieved channel update information from audit log");
+                emb.WithDescription(centry?.Target?.ToString() ?? e.ChannelBefore.ToString());
+                emb.AddFieldsFromAuditLogEntry(centry, (emb, ent) => {
+                    emb.AddLocalizedPropertyChangeField("evt-upd-name", ent.NameChange, inline: false);
+                    emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", ent.NsfwChange);
+                    emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", ent.BitrateChange);
+                    emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", ent.PerUserRateLimitChange);
+                    emb.AddLocalizedPropertyChangeField("evt-upd-type", ent.TypeChange);
+                    emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange.After.Count, unknown: false);
+                    if (ent.TopicChange is { }) {
+                        string before = Formatter.BlockCode(
+                            Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
+                        );
+                        string after = Formatter.BlockCode(
+                            Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.After) ? " " : ent.TopicChange.After).Truncate(450, "...")
+                        );
+                        emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
                     }
+                });
+            } else if (entry is DiscordAuditLogOverwriteEntry owentry) {
+
+                // TODO use `deny_new` and `allow_new` once they are implemented by D#+
+
+                Log.Verbose("Retrieved permission overwrite update information from audit log");
+                emb.WithDescription($"{owentry.Channel} (Overwrite {owentry.ActionCategory.Humanize()})");
+
+                try {
+                    DiscordMember? member = owentry.Target.Type == OverwriteType.Member ? await owentry.Target.GetMemberAsync() : null;
+                    DiscordRole? role = owentry.Target.Type == OverwriteType.Role ? await owentry.Target.GetRoleAsync() : null;
+                    emb.AddLocalizedTitleField("evt-invoke-target", member?.Mention ?? role?.Mention, inline: true);
+                    if (owentry.AllowChange is { })
+                        emb.AddLocalizedTitleField("str-allowed", owentry.Target.Allowed.ToPermissionString(), inline: true);
+                    if (owentry.DenyChange is { })
+                        emb.AddLocalizedTitleField("str-denied", owentry.Target.Denied.ToPermissionString(), inline: true);
+                } catch {
+                    Log.Verbose("Failed to retrieve permission overwrite target");
+                    emb.AddLocalizedTitleField("evt-invoke-target", owentry.Target?.Id, inline: true);
                 }
-
-                if (!(entry is null) && entry is DiscordAuditLogOverwriteEntry owentry) {
-                    emb.WithDescription($"{owentry.Channel.ToString()} ({type})");
-                    emb.AddField("User responsible", owentry.UserResponsible?.Mention ?? _unknown, inline: true);
-
-                    DiscordUser member = null;
-                    DiscordRole role = null;
-
-                    try {
-                        bool isMemberUpdated = owentry.Target.Type.HasFlag(OverwriteType.Member);
-                        if (isMemberUpdated)
-                            member = await shard.Client.GetUserAsync(owentry.Target.Id);
-                        else
-                            role = e.Guild.GetRole(owentry.Target.Id);
-                        emb.AddField("Target", isMemberUpdated ? member.ToString() : role.ToString(), inline: true);
-                        if (!(owentry.AllowChange is null))
-                            emb.AddField("Allowed", $"{owentry.Target.Allowed.ToPermissionString() ?? _unknown}", inline: true);
-                        if (!(owentry.DenyChange is null))
-                            emb.AddField("Denied", $"{owentry.Target.Denied.ToPermissionString() ?? _unknown}", inline: true);
-                    } catch {
-                        emb.AddField("Target ID", owentry.Target.Id.ToString(), inline: true);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(owentry.Reason))
-                        emb.AddField("Reason", owentry.Reason);
-                    emb.WithFooter(owentry.CreationTimestamp.ToUtcTimestamp(), owentry.UserResponsible.AvatarUrl);
-                } else {
-                    return;
+                emb.AddInvocationFields(owentry.UserResponsible);
+            } else {
+                emb.AddLocalizedTitleField("str-chn", e.ChannelBefore.Mention, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-name", e.ChannelBefore.Name, e.ChannelAfter.Name, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", e.ChannelBefore.IsNSFW, e.ChannelAfter.IsNSFW, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", e.ChannelBefore.Bitrate, e.ChannelAfter.Bitrate, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", e.ChannelBefore.PerUserRateLimit, e.ChannelAfter.PerUserRateLimit, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-type", e.ChannelBefore.Type, e.ChannelAfter.Type, inline: true);
+                if (!e.ChannelBefore.Topic.Equals(e.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase)) {
+                    string before = Formatter.BlockCode(
+                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelBefore.Topic) ? " " : e.ChannelBefore.Topic).Truncate(450, "...")
+                    );
+                    string after = Formatter.BlockCode(
+                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelAfter.Topic) ? " " : e.ChannelAfter.Topic).Truncate(450, "...")
+                    );
+                    emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
                 }
+                emb.AddInsufficientAuditLogPermissionsField();
             }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+            await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
+        public static async Task WebhooksUpdateEventHandlerAsync(TheGodfatherBot bot, WebhooksUpdateEventArgs e)
+        {
+            LogExt.Debug(bot.GetId(e.Guild.Id), "Webhooks update: {Channel}, {Guild}", e.Channel, e.Guild);
+
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
+
+            emb.WithLocalizedTitle(DiscordEventType.WebhooksUpdated, "evt-gld-wh-upd", e.Channel);
+
+            DiscordAuditLogWebhookEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogWebhookEntry>(AuditLogActionType.WebhookUpdate);
+            emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
+                emb.WithDescription(ent.Target);
+                emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
+                emb.AddLocalizedPropertyChangeField("str-ahash", ent.AvatarHashChange);
+                emb.AddLocalizedPropertyChangeField("str-chn", ent.ChannelChange);
+                emb.AddLocalizedPropertyChangeField("str-type", ent.TypeChange);
+            });
+
+            await logService.LogAsync(e.Guild, emb);
         }
     }
 }

@@ -1,23 +1,20 @@
-﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
+﻿using System;
 using System.Text.RegularExpressions;
-#endregion
 
 namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
-        private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
-
-
-        public static bool IsValidRegex(this string pattern)
+        public static bool TryParseRegex(this string pattern, out Regex? regex, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
         {
+            regex = null;
+
             if (string.IsNullOrEmpty(pattern))
                 return false;
+            pattern = pattern.ToLowerInvariant();
 
             try {
-                Regex.Match("", pattern);
+                regex = new Regex(escape ? Regex.Escape(pattern) : pattern, options);
             } catch (ArgumentException) {
                 return false;
             }
@@ -26,7 +23,7 @@ namespace TheGodfather.Extensions
         }
 
         // http://www.dotnetperls.com/levenshtein
-        public static int LevenshteinDistance(this string s, string t)
+        public static int LevenshteinDistanceTo(this string s, string t)
         {
             int n = s.Length;
             int m = t.Length;
@@ -62,29 +59,11 @@ namespace TheGodfather.Extensions
             return d[n, m];
         }
 
-        public static bool TryParseRegex(this string pattern, out Regex result)
+        public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
         {
-            result = null;
-            if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
-                return false;
-
-            result = CreateWordBoundaryRegex(pattern, escape: false);
-            return true;
-        }
-
-        public static Regex CreateWordBoundaryRegex(this string pattern, bool escape = false)
-        {
-            string rstr = pattern.ToLowerInvariant();
-            char fst = pattern[0];
-            char lst = pattern[pattern.Length - 1];
-            rstr = $"{(char.IsLetterOrDigit(fst) ? @"\b" : @"(^|\s)")}({rstr}){(char.IsLetterOrDigit(lst) ? @"\b" : @"($|\s)")}";
-            return new Regex(escape ? Regex.Escape(pattern) : rstr, RegexOptions.IgnoreCase);
-        }
-
-        public static string RemoveWordBoundaryEscapes(this string str)
-        {
-            string unbounded = _wordBoundaryRegex.Replace(str, "");
-            return unbounded.Substring(1, unbounded.Length - 2);
+            return TryParseRegex(pattern, out Regex? regex, options, escape) && regex is { }
+                ? regex
+                : throw new ArgumentException($"Invalid regex string: {pattern}", nameof(pattern));
         }
     }
 }

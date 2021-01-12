@@ -1,73 +1,60 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
-#endregion
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("random"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Group("random"), Module(ModuleType.Misc), NotBlocked]
     [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class RandomModule : TheGodfatherModule
+    public sealed class RandomModule : TheGodfatherServiceModule<RandomService>
     {
-        
-        public RandomModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.HotPink;
-        }
-
-
-        #region COMMAND_CHOOSE
-        [Command("choose")]
-        [Description("Choose one of the provided options separated by comma.")]
-        [Aliases("select")]
-        [UsageExampleArgs("option 1, option 2, option 3...")]
+        #region random choose
+        [Command("choice")]
+        [Aliases("select", "choose")]
         public Task ChooseAsync(CommandContext ctx,
-                               [RemainingText, Description("Option list (comma separated).")] string list)
+                               [RemainingText, Description("desc-choice-list")] string list)
         {
             if (string.IsNullOrWhiteSpace(list))
-                throw new InvalidCommandUsageException("Missing list to choose from.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-choice");
 
-            IEnumerable<string> options = list.Split(',')
-                .Select(s => s.Trim())
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .Distinct();
-
-            return this.InformAsync(ctx, options.ElementAt(GFRandom.Generator.Next(options.Count())), ":arrow_right:");
+            string choice = this.Service.Choice(list);
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{Emojis.Dice} {Formatter.Strip(choice)}",
+                Color = this.ModuleColor,
+            });
         }
         #endregion
 
-        #region COMMAND_RAFFLE
+        #region random raffle
         [Command("raffle")]
-        [Description("Choose a user from the online members list optionally belonging to a given role.")]
         [Aliases("chooseuser")]
-        [UsageExampleArgs("Admins")]
         public Task RaffleAsync(CommandContext ctx,
-                               [Description("Role.")] DiscordRole role = null)
+                               [Description("desc-role")] DiscordRole? role = null)
         {
-            IEnumerable<DiscordMember> online = ctx.Guild.Members.Values
-                .Where(m => !(m.Presence is null) && m.Presence.Status != UserStatus.Offline);
+            IEnumerable<DiscordMember> members = ctx.Guild.Members.Values;
+            if (role is { })
+                members = members.Where(m => m.Roles.Contains(role));
 
-            if (!(role is null))
-                online = online.Where(m => m.Roles.Any(r => r.Id == role.Id));
+            if (!members.Any())
+                throw new InvalidCommandUsageException(ctx, "cmd-err-choice-none");
 
-            if (online.Count() == 0)
-                throw new CommandFailedException("There are no memebers that meet the given criteria.");
-
-            DiscordMember raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
-            return this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"Raffled: {raffled.Mention}");
+            DiscordMember raffled = new SecureRandom().ChooseRandomElement(members);
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedDescription("fmt-raffle", raffled.Mention);
+            });
         }
         #endregion
     }

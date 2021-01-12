@@ -1,574 +1,45 @@
 # Module: Uncategorized
+*Uncategorized commands.*
 
-## 8ball
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*An almighty ball which knows the answer to any question you ask. Alright, the answer is random, so what?*
-
-**Aliases:**
-`8b`
-
-**Arguments:**
-
-`[string...]` : *A question for the almighty ball.*
-
-**Examples:**
-
-```xml
-!8ball Am I gay?
-```
-</p></details>
-
----
-
-## cat
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get a random cat image.*
-
-**Aliases:**
-`kitty, kitten`
-
-</p></details>
-
----
-
-## coinflip
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Flip a coin.*
-
-**Aliases:**
-`coin, flip`
-
-</p></details>
-
----
-
-## connect
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.*
-
-**Owner-only.**
-
-**Requires bot permissions:**
-`Use voice chat`
-
-**Aliases:**
-`con, conn, enter`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```xml
-!connect 
-!connect Music
-```
-</p></details>
-
----
-
-## crime
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Commit a crime and hope to get away with large amounts of cash. You can attempt to commit a crime once every 10 minutes.*
-
-</p></details>
-
----
-
-## dice
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Roll a dice.*
-
-**Aliases:**
-`die, roll`
-
-</p></details>
-
----
-
-## disconnect
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disconnects the bot from the voice channel.*
-
-**Owner-only.**
-
-**Requires bot permissions:**
-`Use voice chat`
-
-**Aliases:**
-`dcon, dconn, discon, disconn, dc`
-
-</p></details>
-
----
-
-## dog
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get a random dog image.*
-
-**Aliases:**
-`doge, puppy, pup`
-
-</p></details>
-
----
-
-## help
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Displays command help.*
-
-**Arguments:**
-
-`[string...]` : *Command to provide help for.*
-
-</p></details>
-
----
-
-## invite
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get an instant invite link for the current guild.*
-
-**Requires permissions:**
-`Create instant invites`
-
-**Aliases:**
-`getinvite`
-
-</p></details>
-
----
-
-## ipstack
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Retrieve IP geolocation information.*
-
-**Aliases:**
-`ip, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
-
-**Arguments:**
-
-`[IPAddress]` : *IP.*
-
-**Examples:**
-
-```xml
-!ipstack 123.123.123.123
-```
-</p></details>
-
----
-
-## items
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*View user's purchased items (see ``bank`` and ``shop``).*
-
-**Requires permissions:**
-`Create instant invites`
-
-**Aliases:**
-`myitems, purchases`
-
-**Arguments:**
-
-(optional) `[user]` : *User.* (def: `None`)
-
-**Examples:**
-
-```xml
-!items 
-!items @Someone
-```
-</p></details>
-
----
-
-## leave
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Makes Godfather leave the guild.*
-
-**Requires permissions:**
-`Administrator`
-
-</p></details>
-
----
-
-## leet
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.*
-
-**Aliases:**
-`l33t`
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```xml
-!leet Some sentence
-```
-</p></details>
-
----
-
-## news
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get newest world news.*
-
-**Aliases:**
-`worldnews`
-
-</p></details>
-
----
-
-## nsfw
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Wraps the URL into a special NSFW block.*
-
-**Requires bot permissions:**
-`Manage messages`
-
-**Arguments:**
-
-`[URL]` : *URL to wrap.*
-
-(optional) `[string...]` : *Additional info* (def: `None`)
-
-**Examples:**
-
-```xml
-!nsfw http://unsafe.to.view
-!nsfw http://unsafe.to.view message
-```
-</p></details>
-
----
-
-## penis
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*An accurate measurement.*
-
-**Aliases:**
-`size, length, manhood, dick, dicksize`
-
-**Overload 1:**
-
-(optional) `[member]` : *Who to measure.* (def: `None`)
-
-**Overload 0:**
-
-(optional) `[user]` : *Who to measure.* (def: `None`)
-
-**Examples:**
-
-```xml
-!penis 
-!penis @Someone
-```
-</p></details>
-
----
-
-## peniscompare
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Comparison of the results given by ``penis`` command.*
-
-**Aliases:**
-`sizecompare, comparesize, comparepenis, cmppenis, peniscmp, comppenis`
-
-**Overload 1:**
-
-`[member...]` : *User1.*
-
-**Overload 0:**
-
-`[user...]` : *User1.*
-
-**Examples:**
-
-```xml
-!peniscompare @Someone
-!peniscompare @Someone @SomeoneElse
-```
-</p></details>
-
----
-
-## ping
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Ping the bot.*
-
-</p></details>
-
----
-
-## prefix
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get current guild prefix, or change it.*
-
-**Requires permissions:**
-`Administrator`
-
-**Aliases:**
-`setprefix, pref, setpref`
-
-**Arguments:**
-
-(optional) `[string]` : *Prefix to set.* (def: `None`)
-
-**Examples:**
-
-```xml
-!prefix 
-!prefix ;
-```
-</p></details>
-
----
-
-## quoteoftheday
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
-
-**Aliases:**
-`qotd, qod, quote, q`
-
-**Arguments:**
-
-(optional) `[string]` : *Category.* (def: `None`)
-
-**Examples:**
-
-```xml
-!quoteoftheday 
-!quoteoftheday life
-```
-</p></details>
-
----
-
-## rate
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gives a rating chart for the user. If the user is not provided, rates sender.*
-
-**Requires bot permissions:**
-`Attach files`
-
-**Aliases:**
-`score, graph, rating`
-
-**Overload 1:**
-
-`[member...]` : *Who to measure.*
-
-**Overload 1:**
-
-`[user...]` : *Who to measure.*
-
-**Examples:**
-
-```xml
-!rate @Someone
-```
-</p></details>
-
----
-
-## reactionspoll
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Starts a poll with reactions in the channel.*
-
-**Aliases:**
-`rpoll, pollr, voter`
-
-**Overload 1:**
-
-`[time span]` : *Time for poll to run.*
-
-`[string...]` : *Question.*
-
-**Overload 0:**
-
-`[string...]` : *Question.*
-
-**Examples:**
-
-```xml
-!reactionspoll :smile: :joy:
-```
-</p></details>
-
----
-
-## report
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Send a report message to owner about a bug (please don't abuse... please).*
-
-**Arguments:**
-
-`[string...]` : *Issue text.*
-
-**Examples:**
-
-```xml
-!report Your bot sucks!
-```
-</p></details>
-
----
-
-## rss
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get the latest topics from the given RSS feed URL.*
-
-**Aliases:**
-`feed`
-
-**Arguments:**
-
-`[URL]` : *RSS feed URL.*
-
-**Examples:**
-
-```xml
-!rss https://news.google.com/news/rss/
-```
-</p></details>
-
----
-
-## say
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Echo echo echo.*
-
-**Aliases:**
-`repeat`
-
-**Arguments:**
-
-`[string...]` : *Text to say.*
-
-**Examples:**
-
-```xml
-!say I am gay.
-```
-</p></details>
-
----
-
-## simulate
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Simulate another user.*
-
-**Aliases:**
-`sim`
-
-**Arguments:**
-
-`[member]` : *Member to simulate.*
-
-**Examples:**
-
-```xml
-!simulate @Someone
-```
-</p></details>
-
----
-
-## skip
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Skip current voice playback.*
-
-**Owner-only.**
-
-**Requires bot permissions:**
-`Use voice chat`
-
-</p></details>
-
----
-
-## slut
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Work the streets tonight hoping to gather some easy money but beware, there are many threats lurking at that hour. You can work the streets once per 5s.*
-
-</p></details>
-
----
-
-## stop
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Stops current voice playback.*
-
-**Owner-only.**
-
-**Requires bot permissions:**
-`Use voice chat`
-
-</p></details>
-
----
 
 ## Group: subscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands for managing feed subscriptions. The bot will send a message when the latest topic is changed. Group call subscribes the bot to the given RSS feed URL or lists active subs.*
+*Commands for adding feed subscriptions. The bot will send a message when the latest topic is changed. Group call subscribes the bot to the given RSS feed URL in given channel or lists active subscriptions for given channel. If channel is not provided, uses current channel.*
+
+**Aliases:**
+`sub, subscriptions, subscription`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`sub, subscriptions, subscription`
+**Overload 2:**
+
+[`channel`]: *Channel for updates*
+
+[`URL`]: *RSS feed URL*
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Overload 1:**
 
-`[URL]` : *URL.*
+[`URL`]: *RSS feed URL*
 
-(optional) `[string...]` : *Friendly name.* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
+
+(optional) [`string...`]: *Friendly name* (def: `None`)
+
+**Overload 0:**
+
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
 ```xml
-!subscribe 
-!subscribe https://news.google.com/news/rss/
-!subscribe https://news.google.com/news/rss/ news
+!subscribe http://some.rss.feed.url/.rss
+!subscribe http://some.rss.feed.url/.rss #my-text-channel SubscriptionName
+!subscribe #my-text-channel
 ```
 </p></details>
 
@@ -577,14 +48,25 @@
 ### subscribe list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get feed list for the current channel.*
+*Lists active subscriptions for current channel.*
+
+**Aliases:**
+`ls, listsubs, listfeeds`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`ls, listsubs, listfeeds`
+**Arguments:**
 
+(optional) [`channel`]: *Channel for updates* (def: `None`)
+
+**Examples:**
+
+```xml
+!subscribe list
+!subscribe list #my-text-channel
+```
 </p></details>
 
 ---
@@ -592,22 +74,32 @@
 ### subscribe reddit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add new subscription for a subreddit.*
+*Subscribes to a given subreddit.*
+
+**Aliases:**
+`r`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`r`
+**Overload 1:**
 
-**Arguments:**
+[`channel`]: *Channel for updates*
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
+
+**Overload 0:**
+
+[`string`]: *Subreddit*
+
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
 ```xml
-!subscribe reddit aww
+!subscribe reddit awww
+!subscribe reddit awww #my-text-channel
 ```
 </p></details>
 
@@ -616,67 +108,43 @@
 ### subscribe youtube
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add a new subscription for a YouTube channel.*
+*Subscribes to a given YouTube channel.*
+
+**Aliases:**
+`y, yt, ytube`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`y, yt, ytube`
+**Overload 2:**
 
-**Arguments:**
+[`channel`]: *Channel for updates*
 
-`[string]` : *Channel URL.*
+[`URL`]: *Channel where to send updates*
 
-(optional) `[string]` : *Friendly name.* (def: `None`)
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
-**Examples:**
+**Overload 1:**
 
-```xml
-!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO
-!subscribe youtube https://www.youtube.com/user/RickAstleyVEVO rick
-```
-</p></details>
+[`URL`]: *Channel where to send updates*
 
----
+[`channel`]: *Channel for updates*
 
-## tts
-<details><summary markdown='span'>Expand for additional information</summary><p>
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
-*Sends a tts message.*
+**Overload 0:**
 
-**Requires permissions:**
-`Send TTS messages`
+[`URL`]: *Channel where to send updates*
 
-**Arguments:**
-
-`[string...]` : *Text.*
+(optional) [`string...`]: *Friendly name* (def: `None`)
 
 **Examples:**
 
 ```xml
-!tts I am gay.
-```
-</p></details>
-
----
-
-## unleet
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Translates a message from leetspeak (expecting only letters in translated output).*
-
-**Aliases:**
-`unl33t`
-
-**Arguments:**
-
-`[string...]` : *Text to unleet.*
-
-**Examples:**
-
-```xml
-!unleet w0W 5uCh C0oL
+!subscribe youtube https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg
+!subscribe youtube https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg SubscriptionName
+!subscribe youtube UCA5u8UquvO44Jcd3wZApyDg #my-text-channel
 ```
 </p></details>
 
@@ -685,26 +153,28 @@
 ## Group: unsubscribe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove an existing feed subscription.*
+*Commands for removing feed subscriptions. Group call unsubscribes the bot from given feed by ID or friendly name.*
+
+**Aliases:**
+`unsub`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`unsub`
-
 **Overload 1:**
 
-`[int...]` : *ID of the subscriptions to remove.*
+[`int...`]: *ID(s)*
 
 **Overload 0:**
 
-`[string...]` : *Name of the subscription.*
+[`string...`]: *Friendly name*
 
 **Examples:**
 
 ```xml
-!unsubscribe 1
+!unsubscribe 12345
+!unsubscribe SubscriptionName
 ```
 </p></details>
 
@@ -713,18 +183,25 @@
 ### unsubscribe all
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove all subscriptions for the given channel.*
+*Removes all subscriptions in given channel.*
+
+**Aliases:**
+`a`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`a`
-
 **Arguments:**
 
-(optional) `[channel]` : *Channel.* (def: `None`)
+(optional) [`channel`]: *Channel for updates* (def: `None`)
 
+**Examples:**
+
+```xml
+!unsubscribe all
+!unsubscribe all #my-text-channel
+```
 </p></details>
 
 ---
@@ -732,22 +209,23 @@
 ### unsubscribe reddit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove a subscription using subreddit name or subscription ID (use command ``subscriptions list`` to see IDs).*
+*Unsubscribes from a reddit sub.*
+
+**Aliases:**
+`r`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`r`
-
 **Arguments:**
 
-`[string]` : *Subreddit.*
+[`string`]: *Subreddit*
 
 **Examples:**
 
 ```xml
-!unsubscribe reddit aww
+!unsubscribe reddit awww
 ```
 </p></details>
 
@@ -756,65 +234,24 @@
 ### unsubscribe youtube
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove a YouTube channel subscription.*
+*Unsubscribes from a YouTube channel.*
+
+**Aliases:**
+`y, yt, ytube`
+**Guild only.**
 
 **Requires permissions:**
 `Manage guild`
 
-**Aliases:**
-`y, yt, ytube`
-
 **Arguments:**
 
-`[string]` : *Channel URL or subscription name.*
+[`string...`]: *YouTube channel URL or friendly name*
 
 **Examples:**
 
 ```xml
-!unsubscribe youtube https://www.youtube.com/user/RickAstleyVEVO
-!unsubscribe youtube rick
-```
-</p></details>
-
----
-
-## uptime
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Prints out bot runtime information.*
-
-</p></details>
-
----
-
-## work
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Do something productive with your life. You can work once per minute.*
-
-**Aliases:**
-`job`
-
-</p></details>
-
----
-
-## zugify
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*I don't even...*
-
-**Aliases:**
-`z`
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```xml
-!zugify Some random text
+!unsubscribe youtube SubscriptionName
+!unsubscribe youtube https://www.youtube.com/channel/UCA5u8UquvO44Jcd3wZApyDg
 ```
 </p></details>
 

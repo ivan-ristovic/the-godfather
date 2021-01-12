@@ -1,31 +1,15 @@
-﻿#region USING_DIRECTIVES
-using Newtonsoft.Json;
-
+﻿#nullable disable
 using System.Collections.Generic;
-#endregion
+using Newtonsoft.Json;
 
 namespace TheGodfather.Modules.Games.Common
 {
     public enum QuestionDifficulty
     {
-        Easy,
-        Medium,
-        Hard
+        Easy = 0,
+        Medium = 1,
+        Hard = 2,
     }
-
-    public static class QuestionDifficultyExtensions
-    {
-        public static string ToAPIString(this QuestionDifficulty diff)
-        {
-            switch (diff) {
-                case QuestionDifficulty.Easy: return "easy";
-                case QuestionDifficulty.Medium: return "medium";
-                case QuestionDifficulty.Hard: return "hard";
-                default: return "unknown";
-            }
-        }
-    }
-
 
     public class QuizData
     {
@@ -79,5 +63,14 @@ namespace TheGodfather.Modules.Games.Common
 
         [JsonProperty("token")]
         public string Token { get; set; }
+    }
+
+    public class CapitalInfo
+    {
+        [JsonProperty("country")]
+        public string Country { get; set; }
+
+        [JsonProperty("capital")]
+        public string Capital { get; set; }
     }
 }

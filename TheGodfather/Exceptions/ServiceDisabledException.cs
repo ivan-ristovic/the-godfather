@@ -1,13 +1,11 @@
-﻿#region USING_DIRECTIVES
-using System;
-#endregion
+﻿using DSharpPlus.CommandsNext;
 
 namespace TheGodfather.Exceptions
 {
-    public class ServiceDisabledException : Exception
+    public class ServiceDisabledException : LocalizedException
     {
-        public ServiceDisabledException()
-            : base("This service has been disabled by the bot owner.")
+        public ServiceDisabledException(CommandContext ctx)
+            : base(ctx, "err-service-disabled")
         {
 
         }

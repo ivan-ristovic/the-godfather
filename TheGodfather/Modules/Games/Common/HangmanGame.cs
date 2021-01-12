@@ -1,21 +1,21 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
-    public class HangmanGame : ChannelEvent
+    public sealed class HangmanGame : BaseChannelGame
     {
-        private DiscordMessage msgHandle;
+        public const int StartingLives = 6;
+
+        private DiscordMessage? msgHandle;
         private int lives;
         private bool gameOver;
         private readonly DiscordUser initiator;
@@ -31,14 +31,14 @@ namespace TheGodfather.Modules.Games
             this.guesses = new SortedSet<char>();
             this.hidden = new string('?', word.Length).ToCharArray();
             this.initiator = initiator;
-            this.lives = 6;
+            this.lives = StartingLives;
             this.word = word.ToLowerInvariant();
         }
 
 
-        public override async Task RunAsync()
+        public override async Task RunAsync(LocalizationService lcs)
         {
-            this.msgHandle = await this.Channel.EmbedAsync("Game starts!", StaticDiscordEmoji.Joystick);
+            this.msgHandle = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "str-game-hm-starting");
 
             await this.UpdateHangmanAsync();
 
@@ -46,16 +46,18 @@ namespace TheGodfather.Modules.Games
                 await this.AdvanceAsync();
 
             if (this.IsTimeoutReached) {
-                this.Winner = null;
-                await this.Channel.EmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(this.word)}", StaticDiscordEmoji.Joystick);
+                this.Winner = this.initiator;
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "cmd-err-game-timeout-w", this.Winner.Mention);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-w", this.word);
                 return;
             }
 
-            if (this.lives > 0) {
-                await this.Channel.EmbedAsync($"{this.Winner.Mention} won the game!", StaticDiscordEmoji.Joystick);
+            if (this.lives > 0 && this.Winner is { }) {
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "fmt-winners", this.Winner.Mention);
             } else {
                 this.Winner = this.initiator;
-                await this.Channel.EmbedAsync($"Nobody guessed the word so {this.Winner.Mention} won the game! The word was: {Formatter.Bold(this.word)}", StaticDiscordEmoji.Joystick);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-win", this.Winner.Mention);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "fmt-game-hm-w", this.word);
             }
         }
 
@@ -65,7 +67,7 @@ namespace TheGodfather.Modules.Games
                 if (xm.Channel.Id != this.Channel.Id || xm.Author.IsBot) return false;
                 if (xm.Author.Id == this.initiator.Id) return false;
                 if (xm.Content.ToLowerInvariant() == this.word) return true;
-                if (xm.Content.Length != 1 || !char.IsLetterOrDigit(xm.Content[0])) return false;
+                if (xm.Content.Length != 1 || !char.IsLetter(xm.Content[0])) return false;
                 if (!this.guesses.Contains(char.ToLowerInvariant(xm.Content[0]))) return true;
                 return false;
             });
@@ -84,7 +86,7 @@ namespace TheGodfather.Modules.Games
             if (this.word.IndexOf(guess) != -1) {
                 for (int i = 0; i < this.word.Length; i++)
                     if (this.word[i] == guess)
-                        this.hidden[i] = char.ToUpper(this.word[i]);
+                        this.hidden[i] = char.ToUpperInvariant(this.word[i]);
                 if (Array.IndexOf(this.hidden, '?') == -1) {
                     this.Winner = mctx.Result.Author;
                     this.gameOver = true;
@@ -100,7 +102,7 @@ namespace TheGodfather.Modules.Games
         private Task UpdateHangmanAsync()
         {
             var emb = new DiscordEmbedBuilder {
-                Title = string.Join(" ", this.hidden),
+                Title = this.hidden.JoinWith(""),
                 Description = $@". ┌─────┐
 .┃...............┋
 .┃...............┋
@@ -111,7 +113,7 @@ namespace TheGodfather.Modules.Games
             };
             emb.WithFooter(string.Join(", ", this.guesses));
 
-            return this.msgHandle.ModifyAsync(embed: emb.Build());
+            return this.msgHandle.ModifyOrResendAsync(this.Channel, emb.Build());
         }
     }
 }

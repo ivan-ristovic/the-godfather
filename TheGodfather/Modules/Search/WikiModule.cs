@@ -1,64 +1,49 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
+using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
-#endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("wikipedia"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Wikipedia search. If invoked without a subcommand, searches Wikipedia with given query.")]
     [Aliases("wiki")]
-    [UsageExampleArgs("Linux")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class WikiModule : TheGodfatherModule
+    public sealed class WikiModule : TheGodfatherModule
     {
-
-        public WikiModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.White;
-        }
-
-
+        #region wikipedia
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Query.")] string query)
+                                     [RemainingText, Description("desc-query")] string query)
             => this.SearchAsync(ctx, query);
+        #endregion
 
-
-        #region COMMAND_WIKI_SEARCH
+        #region wiki search
         [Command("search")]
-        [Description("Search Wikipedia for a given query.")]
         [Aliases("s", "find")]
-        [UsageExampleArgs("Linux")]
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("Query.")] string query)
+                                     [RemainingText, Description("desc-query")] string query)
         {
-            WikiSearchResponse res = await WikiService.SearchAsync(query);
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+
+            WikiSearchResponse? res = await WikiService.SearchAsync(query);
             if (res is null || !res.Any()) {
-                await this.InformFailureAsync(ctx, "No results...");
+                await ctx.FailAsync("cmd-err-res-none");
                 return;
             }
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, res.Select(r => new Page(embed:
-                new DiscordEmbedBuilder {
-                    Title = r.Title,
-                    Description = string.IsNullOrWhiteSpace(r.Snippet) ? "No description provided" : r.Snippet,
-                    Url = r.Url,
-                    Color = this.ModuleColor
-                }.WithFooter("Powered by Wikipedia API", WikiService.WikipediaIconUrl)
-            )));
+            await ctx.PaginateAsync(res, (emb, r) => {
+                emb.WithTitle(r.Title);
+                emb.WithDescription(r.Snippet);
+                emb.WithUrl(r.Url);
+                emb.WithLocalizedFooter("fmt-powered-by", WikiService.WikipediaIconUrl, "Wikipedia API");
+                return emb;
+            }, this.ModuleColor);
         }
         #endregion
     }

@@ -1,126 +1,100 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Modules.Currency.Extensions;
-#endregion
+using TheGodfather.Modules.Chickens.Services;
+using TheGodfather.Modules.Currency.Services;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
         [Group("train"), UsesInteractivity]
-        [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
-        public class TrainModule : TheGodfatherModule
+        public sealed class TrainModule : TheGodfatherServiceModule<ChickenService>
         {
-
-            public TrainModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Yellow;
-            }
-
-
+            #region chicken train
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
                 => this.StrengthAsync(ctx);
+            #endregion
 
-
-            #region COMMAND_CHICKEN_TRAIN_STRENGTH
+            #region chicken train strength
             [Command("strength")]
-            [Description("Train your chicken's strength using your credits from WM bank.")]
             [Aliases("str", "st", "s")]
             public async Task StrengthAsync(CommandContext ctx)
             {
-                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
-                    throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
+                Chicken? chicken = await this.PreTrainCheckAsync(ctx, "STR");
+                if (chicken is null)
+                    return;
 
-                string result;
+                bool success = chicken.TrainStrength();
+                chicken.Stats.BareVitality--;
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
-                    var chicken = Chicken.FromDatabaseChicken(dbc);
-                    if (chicken is null)
-                        throw new CommandFailedException("You do not own a chicken!");
-
-                    if (chicken.Stats.TotalVitality < 25)
-                        throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
-
-                    long price = chicken.TrainStrengthPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
-                        return;
-
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
-                    
-                    if (chicken.TrainStrength())
-                        result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.TotalStrength}";
-                    else
-                        result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
-                    chicken.Stats.BareVitality--;
-
-                    dbc.Strength = chicken.Stats.BareStrength;
-                    dbc.Vitality--;
-                    db.Chickens.Update(dbc);
-
-                    await db.SaveChangesAsync();
-                }
-
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                await this.Service.UpdateAsync(chicken);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, 
+                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "STR", chicken.Stats.TotalStrength
+                );
             }
             #endregion
 
-            #region COMMAND_CHICKEN_TRAIN_VITALITY
+            #region chicken train vitality
             [Command("vitality")]
-            [Description("Train your chicken's vitality using your credits from WM bank.")]
             [Aliases("vit", "vi", "v")]
             public async Task VitalityAsync(CommandContext ctx)
             {
-                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
-                    throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
+                Chicken? chicken = await this.PreTrainCheckAsync(ctx, "VIT");
+                if (chicken is null)
+                    return;
 
-                string result;
+                bool success = chicken.TrainVitality();
+                chicken.Stats.BareVitality--;
 
-                using (DatabaseContext db = this.Database.CreateContext()) {
-                    DatabaseChicken dbc = await db.Chickens.FindAsync((long)ctx.Guild.Id, (long)ctx.User.Id);
-                    var chicken = Chicken.FromDatabaseChicken(dbc);
-                    if (chicken is null)
-                        throw new CommandFailedException("You do not own a chicken!");
+                await this.Service.UpdateAsync(chicken);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken,
+                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "VIT", chicken.Stats.TotalStrength
+                );
+            }
+            #endregion
 
-                    if (chicken.Stats.TotalVitality < 25)
-                        throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
-                    long price = chicken.TrainVitalityPrice;
-                    if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
-                        return;
+            #region internals
+            private async Task<Chicken?> PreTrainCheckAsync(CommandContext ctx, string stat)
+            {
+                if (ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-war");
 
-                    if (!await db.TryDecreaseBankAccountAsync(ctx.User.Id, ctx.Guild.Id, price))
-                        throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
+                Chicken? chicken = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
+                if (chicken is null)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                chicken.Owner = ctx.User;
 
-                    if (chicken.TrainVitality())
-                        result = $"{ctx.User.Mention}'s chicken learned alot from the training. New max vitality: {chicken.Stats.TotalMaxVitality}";
-                    else
-                        result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.TotalMaxVitality}";
-                    chicken.Stats.BareVitality--;
+                if (chicken.Stats.TotalVitality < Chicken.MinVitalityToFight)
+                    throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
 
-                    dbc.MaxVitality = chicken.Stats.BareMaxVitality;
-                    dbc.Vitality--;
-                    db.Chickens.Update(dbc);
-                    await db.SaveChangesAsync();
-                }
+                CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
+                long price = stat switch {
+                    "STR" => chicken.TrainStrengthPrice,
+                    "VIT" => chicken.TrainVitalityPrice,
+                    _ => throw new CommandFailedException(ctx),
+                };
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                if (!await ctx.WaitForBoolReplyAsync("q-chicken-train", args: new object[] { ctx.User.Mention, stat, price, gcfg.Currency }))
+                    return null;
+
+                if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price))
+                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
+
+                return chicken;
             }
             #endregion
         }

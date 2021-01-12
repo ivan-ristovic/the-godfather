@@ -1,19 +1,17 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
 using TheGodfather.Common;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Extensions
 {
     internal static class DiscordChannelExtensions
     {
-        public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji icon = null, DiscordColor? color = null)
+        public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji? icon = null, DiscordColor? color = null)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {message}",
@@ -21,45 +19,44 @@ namespace TheGodfather.Extensions
             });
         }
 
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, params object?[]? args)
+            => LocalizedEmbedAsync(channel, lcs, null, null, key, args);
+
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, DiscordEmoji? icon, DiscordColor? color, 
+                                                               string key, params object?[]? args)
+        {
+            return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{icon ?? ""} {lcs.GetString(channel.GuildId, key, args)}",
+                Color = color ?? DiscordColor.Green
+            });
+        }
+
         public static Task<DiscordMessage> InformFailureAsync(this DiscordChannel channel, string message)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.X} {message}",
+                Description = $"{Emojis.X} {message}",
                 Color = DiscordColor.IndianRed
             });
         }
 
-        public static async Task<bool> WaitForBoolResponseAsync(this DiscordChannel channel, CommandContext ctx, string question, bool reply = true)
+        public static async Task<DiscordMessage?> GetLastMessageAsync(this DiscordChannel channel)
         {
-            await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.Question} {question} (y/n)",
-                Color = DiscordColor.Yellow
-            });
-
-            if (await ctx.Client.GetInteractivity().WaitForBoolReplyAsync(channel.Id, ctx.User.Id))
-                return true;
-
-            if (reply)
-                await channel.InformFailureAsync("Alright, aborting...");
-
-            return false;
+            IReadOnlyList<DiscordMessage> m = await channel.GetMessagesBeforeAsync(channel.LastMessageId, 1);
+            return m.FirstOrDefault();
         }
 
-        public static async Task<IReadOnlyList<DiscordMessage>> GetMessagesFromAsync(this DiscordChannel channel, DiscordMember member, int limit = 1)
+        public static async Task<DiscordOverwrite?> FindOverwriteForRoleAsync(this DiscordChannel channel, DiscordRole role)
         {
-            var messages = new List<DiscordMessage>();
-            
-            for (int step = 50; messages.Count < limit && step < 400; step *= 2) {
-                ulong? lastId = messages.FirstOrDefault()?.Id;
-                IReadOnlyList<DiscordMessage> requested;
-                if (lastId is null)
-                    requested = await channel.GetMessagesAsync(step);
-                else
-                    requested = await channel.GetMessagesBeforeAsync(messages.FirstOrDefault().Id, step - messages.Count);
-                messages.AddRange(requested.Where(m => m.Author.Id == member.Id).Take(limit));
+            IEnumerable<DiscordOverwrite> roleOverwrites = channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role);
+            foreach (DiscordOverwrite overwrite in roleOverwrites) {
+                DiscordRole? r = await overwrite.GetRoleAsync();
+                if (r is { } && r == role)
+                    return overwrite;
             }
-
-            return messages.AsReadOnly();
+            return null;
         }
+
+        public static bool IsNsfwOrNsfwName(this DiscordChannel channel) 
+            => channel.IsNSFW || channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase);
     }
 }

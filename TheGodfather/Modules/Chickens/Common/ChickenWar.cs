@@ -1,34 +1,40 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using TheGodfather.Common;
-#endregion
+using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Chickens.Common
 {
-    public class ChickenWar : ChannelEvent
+    public class ChickenWar : IChannelEvent
     {
+        public DiscordChannel Channel { get; protected set; }
+        public InteractivityExtension Interactivity { get; protected set; }
         public int Gain { get; private set; }
-        public bool Started { get; private set; }
+        public bool IsRunning { get; private set; }
         public ConcurrentQueue<Chicken> Team1 { get; }
         public ConcurrentQueue<Chicken> Team2 { get; }
-        public string Team1Name { get; }
-        public string Team2Name { get; }
+        public ConcurrentQueue<Chicken> WinningTeam => this.Team1Won ? this.Team1 : this.Team2;
+        public ConcurrentQueue<Chicken> LosingTeam => this.Team1Won ? this.Team2 : this.Team1;
+        public string? Team1Name { get; }
+        public string? Team2Name { get; }
         public bool Team1Won { get; private set; }
         public bool Team2Won { get; private set; }
+        public ChickenFightResult? Result { get; private set; }
 
 
-        public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string team1, string team2)
-            : base(interactivity, channel)
+        public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string? team1, string? team2)
         {
-            this.Started = false;
+            this.Interactivity = interactivity;
+            this.Channel = channel;
+
+            this.IsRunning = false;
 
             if (!string.IsNullOrWhiteSpace(team1))
                 this.Team1Name = team1;
@@ -40,33 +46,30 @@ namespace TheGodfather.Modules.Chickens.Common
         }
 
 
-        public override async Task RunAsync()
+        public async Task RunAsync(LocalizationService _)
         {
-            this.Started = true;
+            this.IsRunning = true;
 
             int str1 = this.Team1.Sum(c => c.Stats.TotalStrength);
             int str2 = this.Team2.Sum(c => c.Stats.TotalStrength);
 
             var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Chicken} CHICKEN WAR STARTING {StaticDiscordEmoji.Chicken}",
-                Description = $"{Formatter.Bold(this.Team1Name)} ({str1} STR) vs {Formatter.Bold(this.Team2Name)} ({str2} STR)",
+                Title = $"{Emojis.Chicken} {Emojis.DuelSwords} {Emojis.Chicken}",
+                Description = $"{Formatter.Bold(this.Team1Name)} ({str1} STR) VS {Formatter.Bold(this.Team2Name)} ({str2} STR)",
                 Color = DiscordColor.Aquamarine
             };
-            emb.AddField(this.Team1Name, string.Join(", ", this.Team1.Select(c => c.Name)));
-            emb.AddField(this.Team2Name, string.Join(", ", this.Team2.Select(c => c.Name)));
+            emb.AddField(this.Team1Name, this.Team1.Select(c => c.Name).JoinWith(", "));
+            emb.AddField(this.Team2Name, this.Team2.Select(c => c.Name).JoinWith(", "));
 
             await this.Channel.SendMessageAsync(embed: emb.Build());
             await Task.Delay(TimeSpan.FromSeconds(10));
 
-            var c1 = new Chicken { Stats = new ChickenStats { BareStrength = str1 } };
-            var c2 = new Chicken { Stats = new ChickenStats { BareStrength = str2 } };
-            if (c1.Fight(c2) == c1) {
-                this.Team1Won = true;
-                this.Gain = c1.DetermineStrengthGain(c2);
-            } else {
-                this.Team2Won = true;
-                this.Gain = c2.DetermineStrengthGain(c1);
-            }
+            var c1 = new Chicken { BareStrength = str1 };
+            var c2 = new Chicken { BareStrength = str2 };
+            this.Result = ChickenFightResult.Fight(c1, c2);
+            this.Team1Won = this.Result.Winner == c1;
+            this.Team2Won = !this.Team1Won;
+            this.Gain = this.Result.StrGain;
         }
 
         public bool AddParticipant(Chicken chicken, DiscordUser owner, bool team1 = false, bool team2 = false)
@@ -85,7 +88,7 @@ namespace TheGodfather.Modules.Chickens.Common
             return true;
         }
 
-        public bool IsParticipating(DiscordUser user) 
-            => this.Team1.Any(c => c.OwnerId == user.Id) || this.Team2.Any(c => c.OwnerId == user.Id);
+        public bool IsParticipating(DiscordUser user)
+            => this.Team1.Any(c => c.UserId == user.Id) || this.Team2.Any(c => c.UserId == user.Id);
     }
 }

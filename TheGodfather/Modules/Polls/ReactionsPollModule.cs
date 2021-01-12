@@ -1,72 +1,85 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-
-using System;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
-using TheGodfather.Modules.Polls.Services;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Polls
 {
-    [Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class ReactionsPollModule : TheGodfatherModule
+    [Group("reactionspoll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
+    [Aliases("rpoll", "pollr", "voter")]
+    [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
+    public sealed class ReactionsPollModule : TheGodfatherServiceModule<ChannelEventService>
     {
-
-        public ReactionsPollModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.Orange;
-        }
-
-
-        #region COMMAND_REACTIONSPOLL
-        [Command("reactionspoll"), Priority(1)]
-        [Description("Starts a poll with reactions in the channel.")]
-        [Aliases("rpoll", "pollr", "voter")]
-        [UsageExampleArgs(":smile: :joy:")]
-        public async Task ReactionsPollAsync(CommandContext ctx,
-                                            [Description("Time for poll to run.")] TimeSpan timeout,
-                                            [RemainingText, Description("Question.")] string question)
+        #region reactionspoll
+        [GroupCommand, Priority(2)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("desc-poll-t")] TimeSpan timeout,
+                                           [RemainingText, Description("desc-poll-q")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException("Poll requires a question.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-q-none");
 
-            if (PollService.IsPollRunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another poll is already running in this channel.");
+            if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-dup");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
-                throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-poll-time", Poll.MinTimeSeconds, Poll.MaxTimeDays);
 
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
-            PollService.RegisterPollInChannel(rpoll, ctx.Channel.Id);
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+            this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
             try {
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
-                System.Collections.Generic.List<string> options = await ctx.WaitAndParsePollOptionsAsync();
-                if (options.Count < 2 || options.Count > 10)
-                    throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
+                await ctx.InfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
+                List<string>? options = await ctx.WaitAndParsePollOptionsAsync();
+                if (options is null || options.Count < 2 || options.Count > Poll.MaxPollOptions)
+                    throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 rpoll.Options = options;
 
-                await rpoll.RunAsync(timeout);
+                await rpoll.RunAsync(this.Localization);
+            } catch (TaskCanceledException) {
+                await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {
-                PollService.UnregisterPollInChannel(ctx.Channel.Id);
+                this.Service.UnregisterEventInChannel(ctx.Channel.Id);
             }
         }
 
-        [Command("reactionspoll"), Priority(0)]
-        public Task ReactionsPollAsync(CommandContext ctx,
-                                      [RemainingText, Description("Question.")] string question)
-            => this.ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question);
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-poll-q")] string question,
+                                     [Description("desc-poll-t")] TimeSpan timeout)
+            => this.ExecuteGroupAsync(ctx, timeout, question);
+
+        [GroupCommand, Priority(0)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-poll-q")] string question)
+            => this.ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question);
+        #endregion
+
+        #region reactionspoll stop
+        [Command("stop")]
+        [Aliases("end", "cancel")]
+        public Task StopAsync(CommandContext ctx)
+        {
+            Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
+            if (poll is null or not ReactionsPoll)
+                throw new CommandFailedException(ctx, "cmd-err-poll-none");
+
+            if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User != poll.Initiator)
+                throw new CommandFailedException(ctx, "cmd-err-poll-cancel-perms");
+
+            poll.Stop();
+            this.Service.UnregisterEventInChannel(ctx.Channel.Id);
+
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

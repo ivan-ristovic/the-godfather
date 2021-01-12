@@ -1,27 +1,25 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
+using TheGodfather.Database;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public class AntiInstantLeaveService : ProtectionService
+    public sealed class AntiInstantLeaveService : ProtectionService
     {
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildNewMembers;
 
 
-        public AntiInstantLeaveService(TheGodfatherShard shard)
-            : base(shard)
+        public AntiInstantLeaveService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Instant leave")
         {
             this.guildNewMembers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
-            this.reason = "_gf: Instant leave";
         }
 
 
@@ -46,13 +44,18 @@ namespace TheGodfather.Modules.Administration.Services
                 throw new ConcurrentOperationException("Failed to remove member from instant-leave watch list!");
         }
 
-        public async Task<bool> HandleMemberLeaveAsync(GuildMemberRemoveEventArgs e, AntiInstantLeaveSettings settings)
+        public async Task<bool> HandleMemberLeaveAsync(GuildMemberRemoveEventArgs e)
         {
             if (!this.guildNewMembers.ContainsKey(e.Guild.Id) || !this.guildNewMembers[e.Guild.Id].Contains(e.Member))
                 return false;
 
-            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentActionType.PermanentBan);
+            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentAction.PermanentBan);
             return true;
+        }
+
+        public override void Dispose()
+        {
+
         }
     }
 }

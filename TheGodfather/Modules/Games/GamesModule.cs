@@ -1,177 +1,144 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
-using TheGodfather.Exceptions;
+using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Services;
 
 namespace TheGodfather.Modules.Games
 {
     [Group("game"), Module(ModuleType.Games), NotBlocked]
-    [Description("Starts a game for you to play!")]
     [Aliases("games", "gm")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public partial class GamesModule : TheGodfatherModule
+    public sealed partial class GamesModule : TheGodfatherServiceModule<GameStatsService>
     {
-
-        public GamesModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.Teal;
-        }
-        
-
+        #region game
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
             var sb = new StringBuilder();
-
             sb.AppendLine().AppendLine();
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" animalrace");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" caro");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" connect4");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" duel");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" hangman");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" numberrace");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" othello");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" quiz");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" rps");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" russianroulette");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" tictactoe");
-            sb.Append(StaticDiscordEmoji.SmallBlueDiamond).AppendLine(" typingrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" animalrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" caro");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" connect4");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" duel");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" hangman");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" numberrace");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" othello");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" quiz");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" rps");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" russianroulette");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" tictactoe");
+            sb.Append(Emojis.SmallBlueDiamond).AppendLine(" typingrace");
 
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Title = "Available games:",
-                Description = sb.ToString(),
-                Color = this.ModuleColor,
-            }.WithFooter("Start a game by typing: game <game name>").Build());
+            return ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("str-games");
+                emb.WithDescription(sb.ToString());
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedFooter("str-games-help", null);
+            });
         }
+        #endregion
 
-
-        #region COMMAND_GAME_LEADERBOARD
+        #region game leaderboard
         [Command("leaderboard")]
-        [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
-        public async Task LeaderboardAsync(CommandContext ctx)
+        public Task LeaderboardAsync(CommandContext ctx)
         {
-            var emb = new DiscordEmbedBuilder {
-                Title = $"{StaticDiscordEmoji.Trophy} HALL OF FAME {StaticDiscordEmoji.Trophy}",
-                Color = DiscordColor.Chartreuse
-            };
+            return ctx.RespondWithLocalizedEmbedAsync(async emb => {
+                emb.WithLocalizedTitle("str-hall-of-fame", Emojis.Trophy, Emojis.Trophy);
+                emb.WithColor(this.ModuleColor);
 
-            IReadOnlyList<DatabaseGameStats> topStats;
-            string top;
+                IReadOnlyList<GameStats> topStats;
+                string top;
 
-            topStats = await this.Database.GetTopAnimalRaceStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
-            emb.AddField("Top players in Animal Race", top, inline: true);
+                topStats = await this.Service.GetTopAnimalRaceStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
+                emb.AddLocalizedTitleField("str-game-top-ar", top, inline: true);
 
-            topStats = await this.Database.GetTopCaroStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
-            emb.AddField("Top players in Caro", top, inline: true);
+                topStats = await this.Service.GetTopCaroStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
+                emb.AddLocalizedTitleField("str-game-top-caro", top, inline: true);
 
-            topStats = await this.Database.GetTopChain4StatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
-            emb.AddField("Top players in Connect4", top, inline: true);
+                topStats = await this.Service.GetTopConnect4StatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildConnect4StatsString());
+                emb.AddLocalizedTitleField("str-game-top-c4", top, inline: true);
 
-            topStats = await this.Database.GetTopDuelStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
-            emb.AddField("Top players in Duel", top, inline: true);
+                topStats = await this.Service.GetTopDuelStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
+                emb.AddLocalizedTitleField("str-game-top-duel", top, inline: true);
 
-            topStats = await this.Database.GetTopHangmanStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
-            emb.AddField("Top players in Hangman", top, inline: true);
+                topStats = await this.Service.GetTopHangmanStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
+                emb.AddLocalizedTitleField("str-game-top-hm", top, inline: true);
 
-            topStats = await this.Database.GetTopNumberRaceStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
-            emb.AddField("Top players in Number Race", top, inline: true);
+                topStats = await this.Service.GetTopNumberRaceStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
+                emb.AddLocalizedTitleField("str-game-top-nr", top, inline: true);
 
-            topStats = await this.Database.GetTopOthelloStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
-            emb.AddField("Top players in Othello", top, inline: true);
+                topStats = await this.Service.GetTopTypingRaceStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTypingRaceStatsString());
+                emb.AddLocalizedTitleField("str-game-top-tr", top, inline: true);
 
-            topStats = await this.Database.GetTopQuizStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
-            emb.AddField("Top players in Quiz", top, inline: true);
+                topStats = await this.Service.GetTopRussianRouletteStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildRussianRouletteStatsString());
+                emb.AddLocalizedTitleField("str-game-top-rr", top, inline: true);
 
-            topStats = await this.Database.GetTopTicTacToeStatsAsync();
-            top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
-            emb.AddField("Top players in TicTacToe", top, inline: true);
+                topStats = await this.Service.GetTopOthelloStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
+                emb.AddLocalizedTitleField("str-game-top-ot", top, inline: true);
 
-            await ctx.RespondAsync(embed: emb.Build());
+                topStats = await this.Service.GetTopQuizStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
+                emb.AddLocalizedTitleField("str-game-top-quiz", top, inline: true);
+
+                topStats = await this.Service.GetTopTicTacToeStatsAsync();
+                top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
+                emb.AddLocalizedTitleField("str-game-top-ttt", top, inline: true);
+            });
         }
         #endregion
 
-        #region COMMAND_GAME_RPS
-        [Command("rps")]
-        [Description("Rock, paper, scissors game against TheGodfather")]
-        [Aliases("rockpaperscissors")]
-        [UsageExampleArgs("scissors")]
-        public async Task RpsAsync(CommandContext ctx,
-                                  [Description("rock/paper/scissors")] string rps)
-        {
-            if (string.IsNullOrWhiteSpace(rps))
-                throw new CommandFailedException("Missing your pick!");
-
-            DiscordEmoji userPick;
-            if (string.Compare(rps, "rock", true) == 0 || string.Compare(rps, "r", true) == 0)
-                userPick = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
-            else if (string.Compare(rps, "paper", true) == 0 || string.Compare(rps, "p", true) == 0)
-                userPick = DiscordEmoji.FromName(ctx.Client, ":newspaper:");
-            else if (string.Compare(rps, "scissors", true) == 0 || string.Compare(rps, "s", true) == 0)
-                userPick = DiscordEmoji.FromName(ctx.Client, ":scissors:");
-            else
-                throw new CommandFailedException("Invalid pick. Must be rock, paper or scissors.");
-
-            DiscordEmoji gfPick;
-            switch (GFRandom.Generator.Next(3)) {
-                case 0:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
-                    break;
-                case 1:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":newspaper:");
-                    break;
-                default:
-                    gfPick = DiscordEmoji.FromName(ctx.Client, ":scissors:");
-                    break;
-            }
-            await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
-        }
-        #endregion
-
-        #region COMMAND_GAME_STATS
-        [Command("stats")]
-        [Description("Print game stats for given user.")]
+        #region game stats
+        [Command("stats"), Priority(1)]
         [Aliases("s", "st")]
-        [UsageExampleArgs("@Someone")]
-        public async Task StatsAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser user = null)
-        {
-            user = user ?? ctx.User;
+        public Task StatsAsync(CommandContext ctx,
+                              [Description("desc-member")] DiscordMember? member = null)
+            => this.StatsAsync(ctx, member as DiscordUser);
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                DatabaseGameStats stats = await db.GameStats.FindAsync((long)user.Id);
+        [Command("stats"), Priority(0)]
+        public async Task StatsAsync(CommandContext ctx,
+                                    [Description("desc-user")] DiscordUser? user = null)
+        {
+            user ??= ctx.User;
+
+            GameStats? stats = await this.Service.GetAsync(user.Id);
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                emb.WithColor(this.ModuleColor);
+                emb.WithThumbnail(user.AvatarUrl);
                 if (stats is null) {
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                        Title = $"Stats for {user.Username}",
-                        Description = "No games played yet!",
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail { Url = user.AvatarUrl },
-                        Color = this.ModuleColor
-                    }.Build());
-                    return;
+                    emb.WithLocalizedDescription("str-game-stats-none");
                 } else {
-                    await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user));
+                    emb.AddLocalizedTitleField("str-game-stats-duel", stats.BuildDuelStatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-ttt", stats.BuildTicTacToeStatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-c4", stats.BuildConnect4StatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-caro", stats.BuildCaroStatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-ot", stats.BuildOthelloStatsString());
+                    emb.AddLocalizedTitleField("str-game-stats-nr", stats.BuildNumberRaceStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-quiz", stats.BuildQuizStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-ar", stats.BuildAnimalRaceStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-rr", stats.BuildRussianRouletteStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-tr", stats.BuildTypingRaceStatsString(), inline: true);
+                    emb.AddLocalizedTitleField("str-game-stats-hm", stats.BuildHangmanStatsString(), inline: true);
                 }
-            }
+            });
         }
         #endregion
     }

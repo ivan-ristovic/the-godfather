@@ -1,241 +1,195 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using DSharpPlus.Exceptions;
+using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-#endregion
+using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("birthdays"), Module(ModuleType.Miscellaneous), NotBlocked]
-    [Description("Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.")]
-    [Aliases("birthday", "bday", "bd", "bdays")]
-    [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
+    [Group("birthday"), Module(ModuleType.Misc), NotBlocked]
+    [Aliases("birthdays", "bday", "bd", "bdays")]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    public class BirthdayModule : TheGodfatherModule
+    public sealed class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
     {
-
-        public BirthdayModule(SharedData shared, DatabaseContextBuilder db)
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.Wheat;
-        }
-
-
+        #region birthday
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Whose birthday to search for.")] DiscordUser user)
+                                     [Description("desc-bd-user")] DiscordUser user)
             => this.ListAsync(ctx, user);
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Channel for which to list the birthdays.")] DiscordChannel channel = null)
+                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
             => this.ListAsync(ctx, channel);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel,
-                                     [Description("Birth date.")] string date = null)
+                                     [Description("desc-bd-user")] DiscordUser user,
+                                     [Description("desc-bd-chn")] DiscordChannel channel,
+                                     [Description("desc-bd-date")] string? date = null)
             => this.AddAsync(ctx, user, date, channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Birth date.")] string date,
-                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
+                                     [Description("desc-bd-user")] DiscordUser user,
+                                     [Description("desc-bd-date")] string? date,
+                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
             => this.AddAsync(ctx, user, date, channel);
+        #endregion
 
-
-        #region COMMAND_BIRTHDAY_ADD
+        #region birthday add
         [Command("add"), Priority(0)]
-        [Description("Schedule a birthday notification. If the date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
-        [Aliases("new", "+", "a", "+=", "<", "<<")]
-        [UsageExampleArgs("@Someone", "@Someone #channel", "@Someone 15.2.1990", "@Someone #channel 15.2.1990", "@Someone 15.2.1990 #channel")]
+        [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Birthday boy/girl.")] DiscordUser user,
-                                  [Description("Birth date.")] string date_str = null,
-                                  [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
+                                  [Description("desc-bd-user")] DiscordUser user,
+                                  [Description("desc-bd-date")] string? date,
+                                  [Description("desc-bd-chn")] DiscordChannel? channel = null)
         {
-            DateTime date = DateTime.UtcNow.Date;
-            if (!string.IsNullOrWhiteSpace(date_str) && !DateTime.TryParse(date_str, out date))
-                throw new CommandFailedException("The given date is not valid!");
+            channel ??= ctx.Channel;
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            channel = channel ?? ctx.Channel;
+            DateTimeStyles styles = DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AssumeLocal | DateTimeStyles.AllowInnerWhite;
+
+            DateTime dt = DateTime.Now;
+            if (date is { } && !DateTime.TryParse(date, this.Localization.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
+                throw new InvalidCommandUsageException(ctx, "cmd-err-date-format");
 
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException("I can only send birthday notifications in a text channel.");
+                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Birthdays.Add(new DatabaseBirthday {
-                    ChannelId = channel.Id,
-                    Date = date,
-                    GuildId = ctx.Guild.Id,
-                    LastUpdateYear = DateTime.Now.Year,
-                    UserId = user.Id
-                });
+            await this.Service.AddAsync(new Birthday {
+                ChannelId = channel.Id,
+                Date = dt,
+                GuildId = ctx.Guild.Id,
+                UserId = user.Id
+            });
 
-                await db.SaveChangesAsync();
-            }
-            
-            await this.InformAsync(ctx, $"Added a new birthday in channel {Formatter.Bold(channel.Name)} for {Formatter.Bold(user.Username)}", important: false);
+            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, dt));
         }
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Birthday boy/girl.")] DiscordUser user,
-                            [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
-                            [Description("Birth date.")] string date_str = null)
-            => this.AddAsync(ctx, user, date_str, channel);
+                            [Description("desc-bd-user")] DiscordUser user,
+                            [Description("desc-bd-chn")] DiscordChannel? channel = null,
+                            [Description("desc-bd-date")] string? date = null)
+            => this.AddAsync(ctx, user, date, channel);
         #endregion
 
-        #region COMMAND_BIRTHDAY_DELETE
-        [Command("delete"), Priority(1), UsesInteractivity]
-        [Description("Remove status from running queue.")]
-        [Aliases("-", "remove", "rm", "del", "-=", ">", ">>")]
-        [UsageExampleArgs("@Someone", "#channel")]
+        #region birthday delete
+        [Command("delete"), Priority(1)]
+        [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("User whose birthday to remove.")] DiscordUser user)
+                                     [Description("desc-bd-user")] DiscordUser user)
         {
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.GuildId == ctx.Guild.Id && b.UserId == user.Id));
-                await db.SaveChangesAsync();
-            }
-
-            await this.InformAsync(ctx, $"Removed birthday for {Formatter.Bold(user.Username)}", important: false);
+            IReadOnlyList<Birthday> bds = await this.Service.GetUserBirthdaysAsync(ctx.Guild.Id, user.Id);
+            await this.Service.RemoveAsync(bds);
+            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-rem-user", bds.Count, user.Mention);
         }
 
         [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Channel for which to remove birthdays.")] DiscordChannel channel)
+                                     [Description("desc-bd-chn")] DiscordChannel channel)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all birthdays in this channel?"))
-                return;
-            
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.GuildId == ctx.Guild.Id && b.ChannelId == channel.Id));
-                await db.SaveChangesAsync();
-            }
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            await this.InformAsync(ctx, $"Removed birthday notifications in channel {Formatter.Bold(channel.Mention)}", important: false);
+            if (!await ctx.WaitForBoolReplyAsync("q-bd-rem-all", args: channel.Mention))
+                return;
+
+            await this.Service.ClearAsync((ctx.Guild.Id, ctx.Channel.Id));
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
-        #region COMMAND_BIRTHDAY_LIST
-        [Command("list"), Priority(1)]
-        public async Task ListAsync(CommandContext ctx,
-                                   [Description("Whose birthday to search for.")] DiscordUser user)
+        #region birthday deleteall
+        [Command("deleteall"), UsesInteractivity]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+        public async Task RemoveAllAsync(CommandContext ctx)
         {
-            List<DatabaseBirthday> birthdays;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                birthdays = await db.Birthdays
-                    .Where(b => b.GuildId == ctx.Guild.Id && b.UserId == user.Id)
-                    .ToListAsync();
-            }
+            if (!await ctx.WaitForBoolReplyAsync("q-bd-clear"))
+                return;
 
-            await ctx.SendCollectionInPagesAsync(
-                $"Birthdays registered for {user.Username}:",
-                birthdays,
-                b => $"{Formatter.InlineCode(b.Date.ToShortDateString())} | Channel: {b.ChannelId}",
-                this.ModuleColor,
-                5
-            );
+            IReadOnlyList<Birthday> bds = await this.Service.GetAllBirthdaysAsync(ctx.Guild.Id);
+            await this.Service.RemoveAsync(bds);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region birthday list
+        [Command("list"), Priority(1)]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
+        public async Task ListAsync(CommandContext ctx,
+                                   [Description("desc-bd-user")] DiscordUser user)
+        {
+            IReadOnlyList<Birthday> bds = await this.Service.GetUserBirthdaysAsync(ctx.Guild.Id, user.Id);
+            await this.InternalListAsync(ctx, bds);
         }
 
         [Command("list"), Priority(0)]
-        [Description("List registered birthday notifications for this channel.")]
-        [Aliases("ls")]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("Channel for which to list the birthdays.")] DiscordChannel channel = null)
+                                   [Description("desc-bd-chn")] DiscordChannel? channel = null)
         {
-            channel = channel ?? ctx.Channel;
-
+            channel ??= ctx.Channel;
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException("Birthday notifications are only posted in text channels");
+                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
 
-            List<DatabaseBirthday> birthdays;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                birthdays = await db.Birthdays
-                    .Where(b => b.GuildId == ctx.Guild.Id && b.ChannelId == channel.Id)
-                    .ToListAsync();
-            }
-
-            if (!birthdays.Any())
-                throw new CommandFailedException("No birthdays registered!");
-
-            var lines = new List<string>();
-            foreach (DatabaseBirthday birthday in birthdays) {
-                try {
-                    DiscordUser user = await ctx.Client.GetUserAsync(birthday.UserId);
-                    lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
-                } catch {
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
-                        await db.SaveChangesAsync();
-                    }
-                }
-            }
-
-            await ctx.SendCollectionInPagesAsync(
-                $"Birthdays registered in channel {ctx.Channel.Name}:",
-                lines,
-                line => line,
-                this.ModuleColor,
-                5
-            );
+            IReadOnlyList<Birthday> bds = await this.Service.GetAllAsync((ctx.Guild.Id, channel.Id));
+            await this.InternalListAsync(ctx, bds);
         }
         #endregion
 
-        #region COMMAND_BIRTHDAY_LISTALL
+        #region birthday listall
         [Command("listall")]
-        [Description("List all registered birthdays.")]
-        [Aliases("lsa")]
-        [RequirePrivilegedUser]
+        [Aliases("printall", "showall", "lsa", "la", "pa")]
         public async Task ListAllAsync(CommandContext ctx)
         {
-            List<DatabaseBirthday> birthdays;
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                birthdays = await db.Birthdays
-                    .Where(b => b.GuildId == ctx.Guild.Id)
-                    .ToListAsync();
-            }
+            IReadOnlyList<Birthday> bds = await this.Service.GetAllBirthdaysAsync(ctx.Guild.Id);
+            await this.InternalListAsync(ctx, bds);
+        }
+        #endregion
 
-            if (!birthdays.Any())
-                throw new CommandFailedException("No birthdays registered!");
 
+        #region internals
+        public async Task InternalListAsync(CommandContext ctx, IReadOnlyList<Birthday> bds)
+        {
+            if (!bds.Any())
+                throw new CommandFailedException(ctx, "cmd-err-bd-none");
+
+            var bdaysToRemove = new List<Birthday>();
             var lines = new List<string>();
-            foreach (DatabaseBirthday birthday in birthdays) {
+            foreach (IGrouping<ulong, Birthday> g in bds.GroupBy(bd => bd.ChannelId)) {
                 try {
-                    DiscordChannel channel = await ctx.Client.GetChannelAsync(birthday.ChannelId);
-                    DiscordUser user = await ctx.Client.GetUserAsync(birthday.UserId);
-                    lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
-                } catch {
-                    using (DatabaseContext db = this.Database.CreateContext()) {
-                        db.Birthdays.RemoveRange(db.Birthdays.Where(b => b.UserId == birthday.UserId));
-                        await db.SaveChangesAsync();
+                    DiscordChannel channel = await ctx.Client.GetChannelAsync(g.Key);
+                    foreach (Birthday bd in g) {
+                        DiscordUser? user = await ctx.Client.GetUserAsync(bd.UserId);
+                        if (user is { })
+                            lines.Add($"{Formatter.InlineCode(this.Localization.GetLocalizedTimeString(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
+                        else
+                            bdaysToRemove.Add(bd);
                     }
+                } catch (NotFoundException) {
+                    bdaysToRemove.AddRange(g);
                 }
             }
 
-            await ctx.SendCollectionInPagesAsync(
-                "Birthdays:",
-                lines,
-                line => line,
-                this.ModuleColor,
-                5
-            );
+            if (bdaysToRemove.Any()) {
+                LogExt.Information(ctx, "Cleaning {Count} invalid birthdays...", bdaysToRemove.Count);
+                await this.Service.RemoveAsync(bdaysToRemove);
+            }
+
+            await ctx.PaginateAsync("str-bdays", lines, line => line, this.ModuleColor, 10);
         }
         #endregion
     }

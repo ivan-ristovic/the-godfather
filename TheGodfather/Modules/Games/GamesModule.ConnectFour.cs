@@ -1,108 +1,111 @@
-﻿#region USING_DIRECTIVES
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Modules.Games.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("connect4")]
-        [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to " +
-                     "the column where you wish to insert your piece. You can also specify a time window in " +
-                     "which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
-        [UsageExampleArgs("10s")]
-        public class ConnectFourModule : TheGodfatherModule
+        [RequireGuild]
+        public sealed class ConnectFourModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public ConnectFourModule(SharedData shared, DatabaseContextBuilder db)
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Teal;
-            }
-
-
+            #region game connect4
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
+                                               [Description("desc-game-movetime")] TimeSpan? moveTime = null)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel!");
+                if (moveTime?.TotalSeconds is < 2 or > 120)
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-game-movetime", 2, 120);
 
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Connect4 against {ctx.User.Username}?");
-                DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+
+                DiscordUser? opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
-                    return;
+                    throw new CommandFailedException(ctx, "cmd-err-game-op-none", ctx.User.Mention);
 
-                if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)
-                    throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
-
-                var connect4 = new ConnectFourGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(connect4, ctx.Channel.Id);
+                var game = new Connect4Game(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await connect4.RunAsync();
+                    await game.RunAsync(this.Localization);
 
-                    if (!(connect4.Winner is null)) {
-                        if (connect4.IsTimeoutReached)
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                    if (game.Winner is { }) {
+                        if (game.IsTimeoutReached)
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "str-game-timeout", game.Winner.Mention);
                         else
-                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-winners", game.Winner.Mention);
 
-                        await this.Database.UpdateStatsAsync(connect4.Winner.Id, s => s.Chain4Won++);
-                        if (connect4.Winner.Id == ctx.User.Id)
-                            await this.Database.UpdateStatsAsync(opponent.Id, s => s.Chain4Lost++);
-                        else
-                            await this.Database.UpdateStatsAsync(ctx.User.Id, s => s.Chain4Lost++);
+                        GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.Connect4Won++);
+                        await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.Connect4Lost++);
                     } else {
-                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
                     }
+
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
-            }
-
-
-            #region COMMAND_CONNECT4_RULES
-            [Command("rules")]
-            [Description("Explain the Connect4 game rules.")]
-            [Aliases("help", "h", "ruling", "rule")]
-            public Task RulesAsync(CommandContext ctx)
-            {
-                return this.InformAsync(ctx,
-                    StaticDiscordEmoji.Information,
-                    "\nConnect Four (also known as ``Four in a Row``, ``Four in a Line``) is a two-player game " +
-                    "in which the players first choose a color and then take turns dropping colored discs from the " +
-                    "top into a seven-column, six-row vertically suspended grid. The pieces fall straight down, " +
-                    "occupying the next available space within the column. The objective of the game is to be the " +
-                    "first to form a horizontal, vertical, or diagonal line of four of one's own discs."
-                );
             }
             #endregion
 
-            #region COMMAND_CONNECT4_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
+            #region game connect4 rules
+            [Command("rules")]
+            [Aliases("help", "h", "ruling", "rule")]
+            public Task RulesAsync(CommandContext ctx)
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-c4");
+            #endregion
+
+            #region game connect4 stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopChain4StatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildChain4StatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Connect4:\n\n{top}");
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildConnect4StatsString());
+                });
+            }
+            #endregion
+
+            #region game connect4 top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
+            {
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopConnect4StatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildConnect4StatsString());
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-c4-top", top);
             }
             #endregion
         }

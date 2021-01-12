@@ -1,0 +1,140 @@
+{
+  "chicken": {
+    "usage": [
+      [],
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken ambush": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken ambush join": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken ambush help": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken war": {
+    "usage": [
+      [],
+      [ "arg-name", "arg-name" ]
+    ]
+  },
+  "chicken war join": {
+    "usage": [
+      [ "arg-one" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy alien": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy default": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy list": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken buy steroidempowered": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy trained": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken buy wellfed": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken fight": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken heal": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken info": {
+    "usage": [
+      [],
+      [ "arg-mem" ],
+      [ "arg-name" ]
+    ]
+  },
+  "chicken list": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken rename": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "chicken sell": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken top": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken topglobal": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken train": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken train strength": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken train vitality": {
+    "usage": [
+      []
+    ]
+  },
+  "chicken upgrade": {
+    "usage": [
+      [ "arg-five", "arg-ten" ]
+    ]
+  },
+  "chicken upgrade list": {
+    "usage": [
+      []
+    ]
+  }
+}

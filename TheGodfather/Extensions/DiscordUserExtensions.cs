@@ -1,23 +1,14 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus.Entities;
-
-using System;
-using System.Threading.Tasks;
-#endregion
 
 namespace TheGodfather.Extensions
 {
     internal static class DiscordUserExtensions
     {
-        public static async Task<bool> IsMemberOfGuildAsync(this DiscordUser u, DiscordGuild g)
-        {
-            try {
-                DiscordMember m = await g.GetMemberAsync(u.Id);
-                return true;
-            } catch {
-                // Not found
-            }
-            return false;
-        }
+        public static async Task<bool> IsMemberOfAsync(this DiscordUser user, DiscordGuild guild)
+            => await guild.GetMemberSilentAsync(user.Id) is { };
+
+        public static string ToDiscriminatorString(this DiscordUser user)
+            => $"{user.Username}#{user.Discriminator}";
     }
 }

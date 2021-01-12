@@ -1,21 +1,18 @@
-﻿#region USING_DIRECTIVES
+﻿using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using System.Threading.Tasks;
-using TheGodfather.EventListeners;
+using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public class LinkfilterService : ProtectionService
+    public sealed class LinkfilterService : ProtectionService
     {
-        public LinkfilterService(TheGodfatherShard shard)
-            : base(shard)
-        {
-            this.reason = "_gf: Linkfilter";
-        }
+        public LinkfilterService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Linkfilter") { }
 
 
         public override bool TryAddGuildToWatch(ulong gid) => true;
@@ -46,79 +43,76 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private async Task<bool> ScanForDiscordInvitesAsync(MessageCreateEventArgs e)
+        private Task<bool> ScanForDiscordInvitesAsync(MessageCreateEventArgs e)
         {
-            if (!LinkfilterMatcherCollection.InviteRegex.IsMatch(e.Message.Content))
-                return false;
-
-            await this.DeleteAsync(e, "Discord invite");
-            return true;
+            return LinkfilterMatcherCollection.InviteRegex.IsMatch(e.Message.Content)
+                ? this.DeleteAsync(e, "Discord invite", null)
+                : Task.FromResult(false);
         }
 
-        private async Task<bool> ScanForBootersAsync(MessageCreateEventArgs e)
+        private Task<bool> ScanForBootersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Check(e.Message);
-            if (!match.Success)
-                return false;
-
-            await this.DeleteAsync(e, "DDoS/Booter website", Formatter.InlineCode(match.Matched));
-            return true;
+            LinkfilterMatch match = LinkfilterMatcherCollection.BooterMatcher.Match(e.Message);
+            return match.Success
+                ? this.DeleteAsync(e, "DDoS/Booter website", match)
+                : Task.FromResult(false);
         }
 
-        private async Task<bool> ScanForIpLoggersAsync(MessageCreateEventArgs e)
+        private Task<bool> ScanForIpLoggersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Check(e.Message);
-            if (!match.Success)
-                return false;
-
-            await this.DeleteAsync(e, "IP logging website", Formatter.InlineCode(match.Matched));
-            return true;
+            LinkfilterMatch match = LinkfilterMatcherCollection.IpLoggerMatcher.Match(e.Message);
+            return match.Success
+                ? this.DeleteAsync(e, "IP logging website", match)
+                : Task.FromResult(false);
         }
 
-        private async Task<bool> ScanForDisturbingSitesAsync(MessageCreateEventArgs e)
+        private Task<bool> ScanForDisturbingSitesAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.DisturbingWebsiteMatcher.Check(e.Message);
-            if (!match.Success)
-                return false;
-
-            await this.DeleteAsync(e, "Disturbing content website", Formatter.InlineCode(match.Matched));
-            return true;
+            LinkfilterMatch match = LinkfilterMatcherCollection.DisturbingWebsiteMatcher.Match(e.Message);
+            return match.Success
+                ? this.DeleteAsync(e, "Disturbing content website", match)
+                : Task.FromResult(false);
         }
 
-        private async Task<bool> ScanForUrlShortenersAsync(MessageCreateEventArgs e)
+        private Task<bool> ScanForUrlShortenersAsync(MessageCreateEventArgs e)
         {
-            LinkfilterMatch match = LinkfilterMatcherCollection.UrlShortenerRegex.Check(e.Message);
-            if (!match.Success)
-                return false;
-
-            await this.DeleteAsync(e, "URL shortener website", $"{Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]}).\n\nIf you think this is a false detection, please report.");
-            return true;
+            LinkfilterMatch match = LinkfilterMatcherCollection.UrlShortenerRegex.Match(e.Message);
+            return match.Success
+                ? this.DeleteAsync(e, "URL shortener website", match)
+                : Task.FromResult(false);
         }
 
-        private async Task DeleteAsync(MessageCreateEventArgs e, string cause, string additionalText = null)
+        private async Task<bool> DeleteAsync(MessageCreateEventArgs e, string cause, LinkfilterMatch? match)
         {
             try {
                 await e.Message.DeleteAsync($"_gf: {cause} linkfilter");
-                await this.LogLinkfilterMatchAsync(e, $"{cause} matched");
-                await (e.Author as DiscordMember).SendMessageAsync(
-                    $"Your message:\n{Formatter.BlockCode(e.Message.Content)}was automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a {cause}{(string.IsNullOrWhiteSpace(additionalText) ? "." : $": {additionalText}")}"
-                );
+                await this.LogLinkfilterMatchAsync(e, cause, match);
+                if (e.Author is not DiscordMember member)
+                    return true;
+                await member.SendMessageAsync($"Your message:{Formatter.BlockCode(e.Message.Content)}was automatically filtered from {Formatter.Bold(e.Guild.Name)}.");
             } catch {
 
             }
+            return true;
         }
 
-        private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc)
+        private async Task LogLinkfilterMatchAsync(MessageCreateEventArgs e, string desc, LinkfilterMatch? match)
         {
-            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, e.Guild);
-            if (logchn is null)
+            if (!this.ls.IsLogEnabledFor(e.Guild.Id, out LocalizedEmbedBuilder emb))
                 return;
 
-            DiscordEmbedBuilder emb = Listeners.FormEmbedBuilder(EventOrigin.Linkfilter, "Linkfilter action triggered", desc);
-            emb.AddField("User responsible", e.Author.Mention);
+            emb.WithLocalizedTitle("evt-lf-triggered");
+            emb.WithDescription(desc);
+            if (match is { } && match.Matched is { })
+                emb.AddLocalizedTitleField("str-matched", match.Matched);
+            emb.WithColor(DiscordColor.Red);
+            emb.AddInvocationFields(e.Author, e.Channel);
+            await this.ls.LogAsync(e.Guild, emb);
+        }
 
-            await logchn.SendMessageAsync(embed: emb.Build());
+        public override void Dispose()
+        {
+
         }
     }
 }

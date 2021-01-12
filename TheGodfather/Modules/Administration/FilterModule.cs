@@ -1,272 +1,211 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Common.Collections;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
+using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
-#endregion
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Modules.Reactions.Services;
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("filter"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Message filtering commands. If invoked without subcommand, either lists all filters or " +
-                 "adds a new filter for the given word list. Filters are regular expressions.")]
-    [Aliases("f", "filters")]
-    [UsageExampleArgs("fuck fk f+u+c+k+")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class FilterModule : TheGodfatherModule
+    [Aliases("f", "filters", "autodel")]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
+    public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
-
-        public FilterModule(SharedData shared, DatabaseContextBuilder db) 
-            : base(shared, db)
-        {
-            this.ModuleColor = DiscordColor.DarkRed;
-        }
-
-
+        #region filter
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
+                                     [RemainingText, Description("desc-filters")] params string[] filters)
             => this.AddAsync(ctx, filters);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
+        #endregion
 
-
-        #region COMMAND_FILTER_ADD
+        #region filter add
         [Command("add")]
-        [Description("Add filter to guild filter list.")]
-        [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
-        [UsageExampleArgs("fuck f+u+c+k+")]
+        [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
+                                  [RemainingText, Description("desc-filters")] params string[] filters)
         {
             if (filters is null || !filters.Any())
-                throw new InvalidCommandUsageException("Filter regexes missing.");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-f-missing");
 
             var eb = new StringBuilder();
-
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                foreach (string regexString in filters) {
-                    if (regexString.Contains('%')) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot contain '%' character.");
-                        continue;
-                    }
-
-                    if (regexString.Length < 3 || regexString.Length > 120) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 120 characters.");
-                        continue;
-                    }
-
-                    if (this.Shared.GuildHasTextReaction(ctx.Guild.Id, regexString)) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} cannot be added because of a conflict with an existing text reaction trigger.");
-                        continue;
-                    }
-
-                    if (!regexString.TryParseRegex(out Regex regex)) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} is not a valid regular expression.");
-                        continue;
-                    }
-
-                    if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} collides with an existing bot command.");
-                        continue;
-                    }
-
-                    if (this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters)) {
-                        if (existingFilters.Any(f => f.BaseRegexString == regex.ToString())) {
-                            eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} already exists.");
-                            continue;
-                        }
-                    } else {
-                        if (!this.Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>()))
-                            throw new ConcurrentOperationException("Failed to create filter data structure for this guild. This is bad!");
-                    }
-
-                    var filter = new DatabaseFilter { GuildId = ctx.Guild.Id, Trigger = regexString };
-                    db.Filters.Add(filter);
-                    await db.SaveChangesAsync();
-
-                    if (filter.Id == 0 || !this.Shared.Filters[ctx.Guild.Id].Add(new Filter(filter.Id, regexString)))
-                        eb.AppendLine($"Error: Failed to add filter {Formatter.InlineCode(regexString)}.");
+            foreach (string regexString in filters) {
+                if (regexString.Contains('%')) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-%", Formatter.InlineCode(regexString)));
+                    continue;
                 }
+
+                if (regexString.Length is < 3 or > Filter.FilterLimit) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
+                    continue;
+                }
+
+                if (ctx.Services.GetRequiredService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-invalid", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex))
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
             }
-            
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Filter addition occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried adding filters", string.Join("\n", filters.Select(rgx => Formatter.InlineCode(rgx))));
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
+                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).JoinWith());
                 if (eb.Length > 0)
-                    emb.AddField("Errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+                    emb.AddLocalizedTitleField("str-errs", eb.ToString());
+            });
 
             if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                await ctx.FailAsync("evt-action-err", eb.ToString());
             else
-                await this.InformAsync(ctx, "Successfully added all given filters!", important: false);
+                await ctx.InfoAsync(this.ModuleColor, "str-f-add");
         }
         #endregion
 
-        #region COMMAND_FILTER_DELETE
-        [Command("delete"), Priority(1)]
-        [Description("Removes filter either by ID or plain text match.")]
+        #region filter delete
+        [Group("delete")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-        [UsageExampleArgs("fuck f+u+c+k+", "3 4")]
-        public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
+        public class FilterDeleteModule : TheGodfatherServiceModule<FilteringService>
         {
-            if (ids is null || !ids.Any())
-                throw new CommandFailedException("No IDs given.");
+            #region filter delete
+            [GroupCommand, Priority(1)]
+            public Task DeleteAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-filters-del-ids")] params int[] ids)
+                => this.DeleteIdAsync(ctx, ids);
 
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters))
-                throw new CommandFailedException("This guild has no filters registered.");
+            [GroupCommand, Priority(0)]
+            public Task DeleteAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-filters-del")] params string[] regexStrings)
+                => this.DeletePatternAsync(ctx, regexStrings);
+            #endregion
 
-            var eb = new StringBuilder();
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                foreach (int id in ids) {
-                    if (filters.RemoveWhere(f => f.Id == id) == 0) {
-                        eb.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
-                        continue;
-                    }
-                    db.Filters.Remove(new DatabaseFilter { GuildId = ctx.Guild.Id, Id = id });
-                }
+            #region filter delete id
+            public async Task DeleteIdAsync(CommandContext ctx,
+                                           [RemainingText, Description("desc-filters-del-ids")] params int[] ids)
+            {
+                if (ids is null || !ids.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-f-ids-none");
 
-                await db.SaveChangesAsync();
+                IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);
+                if (!fs.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-f-none");
+
+                int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id, ids);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
+                    emb.WithDescription(ids.JoinWith());
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
             }
-            
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Filter deletion occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried deleting filters with IDs", string.Join("\n", ids.Select(id => id.ToString())));
-                if (eb.Length > 0)
-                    emb.AddField("Errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
+            #endregion
 
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-            else
-                await this.InformAsync(ctx, "Successfully deleted all given filters!", important: false);
+            #region filter delete matching
+            public async Task DeleteMatchingAsync(CommandContext ctx,
+                                                 [Description("desc-filters-del")] string match)
+            {
+                if (string.IsNullOrWhiteSpace(match))
+                    throw new CommandFailedException(ctx, "cmd-err-f-pat-none");
+
+                IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);
+                if (!fs.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-f-none");
+
+                int removed = await this.Service.RemoveFiltersMatchingAsync(ctx.Guild.Id, match);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del-match");
+                    emb.WithDescription(match);
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
+            }
+            #endregion
+
+            #region filter delete pattern
+            public async Task DeletePatternAsync(CommandContext ctx,
+                                                [RemainingText, Description("desc-filters-del")] params string[] regexStrings)
+            {
+                if (regexStrings is null || !regexStrings.Any())
+                    throw new CommandFailedException(ctx, "cmd-err-f-pat-none");
+
+                IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);
+                if (!fs.Any())
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-f-none");
+
+                int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id, regexStrings);
+
+                await ctx.GuildLogAsync(emb => {
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del");
+                    emb.WithDescription(regexStrings.JoinWith());
+                });
+
+                await ctx.InfoAsync(this.ModuleColor, "str-f-del", removed);
+            }
+            #endregion
         }
-
-        [Command("delete"), Priority(0)]
-        public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Filters to remove.")] params string[] filters)
-        {
-            if (filters is null || !filters.Any())
-                throw new CommandFailedException("No filters given.");
-
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> existingFilters))
-                throw new CommandFailedException("This guild has no filters registered.");
-
-            var eb = new StringBuilder();
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                foreach (string regexString in filters) {
-                    string filterString = regexString.CreateWordBoundaryRegex().ToString();
-                    if (existingFilters.RemoveWhere(f => f.Trigger.ToString() == filterString) == 0) {
-                        eb.AppendLine($"Error: Filter {Formatter.InlineCode(regexString)} does not exist.");
-                        continue;
-                    }
-
-                    db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id && f.Trigger == regexString));
-                }
-
-                await db.SaveChangesAsync();
-            }
-            
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "Filter deletion occured",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                emb.AddField("Tried deleting filters", string.Join("\n", filters));
-                if (eb.Length > 0)
-                    emb.AddField("Errors", eb.ToString());
-                await logchn.SendMessageAsync(embed: emb.Build())
-                    .ConfigureAwait(false);
-            }
-
-            if (eb.Length > 0)
-                await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
-            else
-                await this.InformAsync(ctx);
-        }
-
         #endregion
 
-        #region COMMAND_FILTERS_DELETEALL
+        #region filter deleteall
         [Command("deleteall"), UsesInteractivity]
-        [Description("Delete all filters for the current guild.")]
-        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?"))
+            if (!await ctx.WaitForBoolReplyAsync("q-f-rem-all"))
                 return;
 
-            if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && !this.Shared.Filters.TryRemove(ctx.Guild.Id, out _))
-                throw new ConcurrentOperationException("Failed to remove filter data structure for this guild. This is bad!");
+            int removed = await this.Service.RemoveFiltersAsync(ctx.Guild.Id);
 
-            using (DatabaseContext db = this.Database.CreateContext()) {
-                db.Filters.RemoveRange(db.Filters.Where(f => f.GuildId == ctx.Guild.Id));
-                await db.SaveChangesAsync();
-            }
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del-all");
+                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+            });
 
-            DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-            if (!(logchn is null)) {
-                var emb = new DiscordEmbedBuilder {
-                    Title = "All filters have been deleted",
-                    Color = this.ModuleColor
-                };
-                emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                await logchn.SendMessageAsync(embed: emb.Build());
-            }
-
-            await this.InformAsync(ctx, "Successfully deleted all guild filters!", important: false);
+            await ctx.InfoAsync(this.ModuleColor, "str-f-del-all", removed);
         }
         #endregion
 
-        #region COMMAND_FILTER_LIST
+        #region filter list
         [Command("list")]
-        [Description("Show all filters for this guild.")]
-        [Aliases("ls", "l")]
+        [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.Filters.TryGetValue(ctx.Guild.Id, out ConcurrentHashSet<Filter> filters) || !filters.Any())
-                throw new CommandFailedException("No filters registered for this guild.");
+            IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(ctx.Guild.Id);
+            if (!fs.Any())
+                throw new CommandFailedException(ctx, "cmd-err-f-none");
 
-            return ctx.SendCollectionInPagesAsync(
-                $"Filters registered for {ctx.Guild.Name}",
-                this.Shared.Filters[ctx.Guild.Id].OrderBy(f => f.Id),
-                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.BaseRegexString)}",
+            return ctx.PaginateAsync(
+                "str-f",
+                fs.OrderBy(f => f.Id),
+                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
                 this.ModuleColor
             );
         }

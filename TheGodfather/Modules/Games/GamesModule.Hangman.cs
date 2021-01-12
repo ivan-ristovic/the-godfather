@@ -1,95 +1,120 @@
-﻿#region USING_DIRECTIVES
-using DSharpPlus;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity; using DSharpPlus.Interactivity.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
+using DSharpPlus.Interactivity.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Database;
-using TheGodfather.Database.Entities;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Extensions;
-#endregion
+using TheGodfather.Modules.Games.Services;
+using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
         [Group("hangman"), UsesInteractivity]
-        [Description("Starts a hangman game.")]
-        [Aliases("h", "hang")]
-        public class HangmanModule : TheGodfatherModule
+        [Aliases("h", "hang", "hm")]
+        [RequireGuild]
+        public sealed class HangmanModule : TheGodfatherServiceModule<ChannelEventService>
         {
-
-            public HangmanModule(SharedData shared, DatabaseContextBuilder db) 
-                : base(shared, db)
-            {
-                this.ModuleColor = DiscordColor.Teal;
-            }
-
-
+            #region game hangman
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another event is already running in the current channel!");
+                if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
 
-                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
+                DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
                 if (dm is null)
-                    throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
+                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
 
-                await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
-                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
-                InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForDmReplyAsync(dm, ctx.Channel.Id, ctx.User.Id, this.Shared);
-                if (mctx.TimedOut) {
-                    await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
+                await dm.LocalizedEmbedAsync(this.Localization, Emojis.Question, this.ModuleColor, "q-game-hm");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, "fmt-game-hm", ctx.User.Mention);
+
+                string? word = null;
+                for (int i = 0; i < 5; i++) {
+                    DiscordMessage? reply = await ctx.WaitForDmReplyAsync(dm, ctx.User);
+                    if (string.IsNullOrWhiteSpace(reply?.Content)) {
+                        await ctx.FailAsync("cmd-err-game-hm");
+                        return;
+                    }
+                    if (reply.Content.All(c => char.IsLetter(c))) {
+                        word = reply.Content;
+                        break;
+                    }
+                    await dm.LocalizedEmbedAsync(this.Localization, Emojis.Question, this.ModuleColor, "cmd-err-game-hm-format");
+                }
+
+                if (word is null) {
+                    await ctx.FailAsync("cmd-err-game-hm");
                     return;
-                } else {
-                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Result.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
                 }
 
-                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Result.Content, mctx.Result.Author);
-                this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
+                await dm.LocalizedEmbedAsync(this.Localization, Emojis.Information, this.ModuleColor, "fmt-game-hm-ok", word);
+                var game = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, word, ctx.User);
+                this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await hangman.RunAsync();
-
-                    if (!(hangman.Winner is null))
-                        await this.Database.UpdateStatsAsync(hangman.Winner.Id, s => s.HangmanWon++);
+                    await game.RunAsync(this.Localization);
+                    if (game.Winner is { }) {
+                        GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                        await gss.UpdateStatsAsync(game.Winner.Id, s => s.HangmanWon++);
+                    }
                 } finally {
-                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Service.UnregisterEventInChannel(ctx.Channel.Id);
                 }
-            }
-
-
-            #region COMMAND_HANGMAN_RULES
-            [Command("rules")]
-            [Description("Explain the Hangman game rules.")]
-            [Aliases("help", "h", "ruling", "rule")]
-            public Task RulesAsync(CommandContext ctx)
-            {
-                return this.InformAsync(ctx, 
-                    StaticDiscordEmoji.Information,
-                    "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
-                    " The game ends if the word is guessed or when all lives are spent."
-                );
             }
             #endregion
 
-            #region COMMAND_HANGMAN_STATS
-            [Command("stats")]
-            [Description("Print the leaderboard for this game.")]
-            [Aliases("top", "leaderboard")]
-            public async Task StatsAsync(CommandContext ctx)
+            #region game hangman rules
+            [Command("rules")]
+            [Aliases("help", "h", "ruling", "rule")]
+            public Task RulesAsync(CommandContext ctx)
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-hm");
+            #endregion
+
+            #region game hangman stats
+            [Command("stats"), Priority(1)]
+            [Aliases("s")]
+            public Task StatsAsync(CommandContext ctx,
+                                  [Description("desc-member")] DiscordMember? member = null)
+                => this.StatsAsync(ctx, member as DiscordUser);
+
+            [Command("stats"), Priority(0)]
+            public async Task StatsAsync(CommandContext ctx,
+                                        [Description("desc-user")] DiscordUser? user = null)
             {
-                IReadOnlyList<DatabaseGameStats> topStats = await this.Database.GetTopHangmanStatsAsync();
-                string top = await DatabaseGameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
-                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
+                user ??= ctx.User;
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+
+                GameStats? stats = await gss.GetAsync(user.Id);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithColor(this.ModuleColor);
+                    emb.WithThumbnail(user.AvatarUrl);
+                    if (stats is null)
+                        emb.WithLocalizedDescription("str-game-stats-none");
+                    else
+                        emb.WithDescription(stats.BuildHangmanStatsString());
+                });
+            }
+            #endregion
+
+            #region game hangman top
+            [Command("top")]
+            [Aliases("t", "leaderboard")]
+            public async Task TopAsync(CommandContext ctx)
+            {
+                GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
+                IReadOnlyList<GameStats> topStats = await gss.GetTopHangmanStatsAsync();
+                string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-hm-top", top);
             }
             #endregion
         }
