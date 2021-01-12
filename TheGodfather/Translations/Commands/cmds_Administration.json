@@ -511,13 +511,6 @@
       [ "arg-chn-text" ]
     ]
   },
-  "create": {
-    "usage": [
-      [ "arg-role-raw" ],
-      [ "arg-role-raw", "arg-color" ],
-      [ "arg-role-raw", "arg-color", "arg-bool" ]
-    ]
-  },
   "emoji": {
     "usage": [
       [],
@@ -808,7 +801,9 @@
   },
   "role create": {
     "usage": [
-      [ "arg-name", "arg-color", "arg-bool", "arg-bool" ]
+      [ "arg-role-raw" ],
+      [ "arg-role-raw", "arg-color" ],
+      [ "arg-role-raw", "arg-color", "arg-bool" ]
     ]
   },
   "role delete": {

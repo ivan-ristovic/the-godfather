@@ -46,9 +46,9 @@ namespace TheGodfather.Modules.Games
                 await this.AdvanceAsync();
 
             if (this.IsTimeoutReached) {
-                this.Winner = null;
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "cmd-err-game-timeout");
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "fmt-game-hm-w", this.word);
+                this.Winner = this.initiator;
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "cmd-err-game-timeout-w", this.Winner.Mention);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-w", this.word);
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games
                 await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "fmt-winners", this.Winner.Mention);
             } else {
                 this.Winner = this.initiator;
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "cmd-err-game-timeout-w", this.Winner.Mention);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-win", this.Winner.Mention);
                 await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "fmt-game-hm-w", this.word);
             }
         }

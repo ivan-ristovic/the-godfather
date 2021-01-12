@@ -22,7 +22,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageReactionsCleared)]
         public static Task MessageReactionsClearedEventHandlerAsync(TheGodfatherBot bot, MessageReactionsClearEventArgs e)
         {
-            if (e.Guild is null || e.Channel is null || e.Message is null)
+            if (e.Guild is null || e.Channel is null || e.Message is null || e.Message.Author == bot.Client.GetShard(e.Channel.Guild).CurrentUser)
                 return Task.CompletedTask;
 
             if (bot.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
@@ -38,7 +38,7 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-
+            
             string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);
             emb.WithLocalizedTitle(DiscordEventType.MessageReactionsCleared, "evt-msg-reactions-clear", desc: jumplink);
             emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
