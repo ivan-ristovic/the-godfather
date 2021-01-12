@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfather", "TheGodfather\TheGodfather.csproj", "{29C00B12-DB71-4EC9-84E8-F24989066C67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfather.Tests", "TheGodfatherTests\TheGodfather.Tests.csproj", "{88C2C600-5DCB-4CC5-8C6A-01C291B9D41E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGodfather.Tests", "TheGodfather.Tests\TheGodfather.Tests.csproj", "{88C2C600-5DCB-4CC5-8C6A-01C291B9D41E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ECA499FE-4ECA-4848-A10B-CF89324BB516}"
 	ProjectSection(SolutionItems) = preProject

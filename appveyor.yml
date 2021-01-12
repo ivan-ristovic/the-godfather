@@ -26,8 +26,8 @@ before_build:
 clone_depth: 1
 
 test_script:
-  - cmd: dotnet restore ./TheGodfatherTests/TheGodfatherTests.csproj --verbosity m
-  - cmd: cd TheGodfatherTests
+  - cmd: dotnet restore ./TheGodfatherTests/TheGodfather.Tests.csproj --verbosity m
+  - cmd: cd TheGodfather.Tests
   - cmd: dotnet test
 
 on_success:
