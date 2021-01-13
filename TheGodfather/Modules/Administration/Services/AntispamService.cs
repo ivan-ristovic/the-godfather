@@ -89,9 +89,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                db.ExemptsAntispam
-                    .Where(ee => ee.GuildId == gid)
-                    .Select(ee => new ExemptedEntity { GuildId = ee.GuildId, Id = ee.Id, Type = ee.Type })
+                db.ExemptsAntispam.Where(ee => ee.GuildIdDb == (long)gid)
             );
         }
 
