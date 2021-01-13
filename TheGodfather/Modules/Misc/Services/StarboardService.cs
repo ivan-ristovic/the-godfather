@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Misc.Services
         public IReadOnlyDictionary<ulong, List<StarboardMessage>> GetUpdatedMessages()
         {
             var toUpdate = this.updated.GroupBy(sm => sm.GuildId).ToDictionary(g => g.Key, g => g.ToList());
-            toUpdate.Clear();
+            this.updated.Clear();
             return toUpdate;
         }
 
