@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
             if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
-                LogExt.Debug(bot.GetId(e.Guild.Id), "Reacted with star emoji. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Reacted with star emoji - {MessageId}, {Guild}", e.Message.Id, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
             }
 
@@ -84,7 +84,7 @@ namespace TheGodfather.EventListeners
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
             if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
-                LogExt.Debug(bot.GetId(e.Guild.Id), "Removed star emoji reaction. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Removed star emoji reaction - {MessageId}, {Guild}", e.Message.Id, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
             }
 
@@ -99,7 +99,7 @@ namespace TheGodfather.EventListeners
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
             if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
-                LogExt.Debug(bot.GetId(e.Guild.Id), "Cleared star emoji reactions. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Cleared star emoji reactions - {MessageId}, {Guild}", e.Message.Id, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
             }
 

@@ -186,7 +186,8 @@ namespace TheGodfather.Services
                     StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
                     AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
 
-                    foreach ((ulong gid, List<StarboardMessage> toUpdate) in ss.GetUpdatedMessages()) {
+                    IReadOnlyDictionary<ulong, List<StarboardMessage>> updatedMessages = ss.GetUpdatedMessages();
+                    foreach ((ulong gid, List<StarboardMessage> toUpdate) in updatedMessages) {
                         if (!ss.IsStarboardEnabled(gid, out ulong starChannelId, out string emoji))
                             continue;
 
@@ -225,6 +226,8 @@ namespace TheGodfather.Services
                                 continue;
 
                             StarboardModificationResult res = async.Execute(ss.SyncWithDbAsync(updMsg));
+                            Log.Debug("Starboard action for message {MessageId}: {StarboardModResult}", message.Id, res.ActionType);
+
                             if (res.Entry is { } && res.Entry.StarMessageId != 0) {
                                 try {
                                     starMessage = async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
@@ -242,16 +245,19 @@ namespace TheGodfather.Services
                                             starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars))
                                         );
                                         async.Execute(ss.AddStarboardLinkAsync(updMsg.GuildId, updMsg.ChannelId, updMsg.MessageId, starMessage.Id));
+                                        Log.Debug("Sent starboard message {MessageId} to {Channel}", message.Id, starChannel);
                                         break;
                                     case StarboardActionType.Delete:
                                         if (starMessage is { })
                                             async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
+                                        Log.Debug("Removed starboard {MessageId} from {Channel}", message.Id, starChannel);
                                         break;
                                     case StarboardActionType.Modify:
                                         if (starMessage is null)
                                             async.Execute(starChannel.SendMessageAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
                                         else
                                             async.Execute(starMessage.ModifyAsync(embed: message.ToStarboardEmbed(lcs, starEmoji, updMsg.Stars)));
+                                        Log.Debug("Modified/Resent starboard message {MessageId} in {Channel}", message.Id, starChannel);
                                         break;
                                 }
                             } catch {
@@ -264,7 +270,7 @@ namespace TheGodfather.Services
                         }
                     }
 
-                    Log.Debug("Starboards updated for all guilds");
+                    Log.Debug("Starboards updated for all guilds. {Count} messages checked.", updatedMessages.Count);
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during starboard timer callback");
                 }

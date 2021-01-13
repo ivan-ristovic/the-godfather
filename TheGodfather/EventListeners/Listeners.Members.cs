@@ -65,7 +65,7 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-flags", e.Member.Flags.Humanize(), inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags.Humanize(), inline: true, unknown: false);
+            emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags?.Humanize(LetterCasing.Sentence), inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-verified", e.Member.Verified, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType.Humanize(), inline: true, unknown: false);
             emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
