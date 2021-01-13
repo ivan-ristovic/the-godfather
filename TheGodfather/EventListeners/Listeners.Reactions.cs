@@ -53,8 +53,10 @@ namespace TheGodfather.EventListeners
                 return;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Reacted with star emoji. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
+            }
 
             ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
             ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName());
@@ -81,8 +83,10 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Removed star emoji reaction. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
+            }
 
             return Task.CompletedTask;
         }
@@ -94,8 +98,10 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
-            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star)
+            if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Cleared star emoji reactions. Registering {Message} for starboard check in {Guild}", e.Message, e.Guild);
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
+            }
 
             return Task.CompletedTask;
         }
