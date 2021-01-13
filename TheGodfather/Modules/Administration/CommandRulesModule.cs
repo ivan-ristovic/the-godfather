@@ -133,10 +133,11 @@ namespace TheGodfather.Modules.Administration
 
             return crs.Any()
                 ? ctx.PaginateAsync(
-                    this.Localization.GetString(ctx.Guild.Id, "fmt-cr-list", ctx.Guild.Name),
+                    "fmt-cr-list",
                     crs.OrderBy(cr => cr.ChannelId),
                     cr => MakeListItem(cr),
-                    this.ModuleColor
+                    this.ModuleColor,
+                    args: ctx.Guild.Name
                 )
                 : ctx.InfoAsync(this.ModuleColor, "cmd-err-cr-none");
 

@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ulong> rids = this.Service.GetIds(ctx.Guild.Id);
             if (!rids.Any()) {
-                await ctx.InfoAsync(this.ModuleColor, "cmd-err-sr-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-sr-none");
                 return;
             }
 

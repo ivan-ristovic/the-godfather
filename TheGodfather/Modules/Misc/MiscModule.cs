@@ -349,7 +349,7 @@ namespace TheGodfather.Modules.Misc
             var sb = new StringBuilder();
             foreach (DiscordUser user in users) {
                 if (user.IsCurrent)
-                    return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                    return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
                 sb.Append(Formatter.Bold(this.Service.Size(user.Id))).Append(' ').AppendLine(user.Mention);
             }
 
@@ -369,7 +369,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException(ctx, "cmd-err-rate");
 
             if (users.Any(u => u.IsCurrent)) {
-                await ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
                 return;
             }
 

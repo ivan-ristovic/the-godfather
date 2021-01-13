@@ -21,7 +21,7 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<TextReactionTrigger> DbTriggers { get; set; }
 
         [NotMapped]
-        private static readonly TimeSpan _cooldownTimeout = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan _cooldownTimeout = TimeSpan.FromMinutes(10);
 
         [NotMapped]
         private bool cooldown;

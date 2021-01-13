@@ -163,7 +163,7 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException(ctx, "cmd-err-tr-404");
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithTitle("str-tr-matching");
+                emb.WithLocalizedTitle("str-tr-matching");
                 emb.WithDescription(Formatter.InlineCode(tr.Triggers.JoinWith(" | ")));
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedTitleField("str-id", tr.Id, inline: true);

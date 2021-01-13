@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ReactionRole> lrs = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!lrs.Any()) {
-                await ctx.InfoAsync(this.ModuleColor, "cmd-err-rr-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-rr-none");
                 return;
             }
 
