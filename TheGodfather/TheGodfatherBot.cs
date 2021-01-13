@@ -116,7 +116,7 @@ namespace TheGodfather
 
         private ServiceProvider SetupServices()
         {
-            Log.Information("Initializing services");
+            Log.Information("Initializing services...");
             return new ServiceCollection()
                 .AddSingleton(this.Config)
                 .AddSingleton(this.Database)
@@ -170,6 +170,7 @@ namespace TheGodfather
                     Log.Warning(e, "Translation not found");
                 }
             }
+            Log.Debug("Found translations for all commands and arguments");
 
             return cnext;
         }

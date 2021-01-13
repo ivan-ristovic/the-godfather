@@ -270,7 +270,7 @@ namespace TheGodfather.Services
                         }
                     }
 
-                    Log.Debug("Starboards updated for all guilds. {Count} messages checked.", updatedMessages.Count);
+                    Log.Debug("Starboards updated for all guilds. {Count} messages checked", updatedMessages.Count);
                 } catch (Exception e) {
                     Log.Error(e, "An error occured during starboard timer callback");
                 }

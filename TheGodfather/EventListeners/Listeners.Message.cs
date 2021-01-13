@@ -166,7 +166,7 @@ namespace TheGodfather.EventListeners
                 // TODO move to service
                 if (er is { }) {
                     try {
-                        var client = bot.Client.GetShard(e.Guild.Id);
+                        DiscordClient client = bot.Client.GetShard(e.Guild.Id);
                         var emoji = DiscordEmoji.FromName(client, er.Response);
                         await e.Message.CreateReactionAsync(emoji);
                     } catch (ArgumentException) {
