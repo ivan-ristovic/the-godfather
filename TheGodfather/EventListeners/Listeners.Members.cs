@@ -240,6 +240,8 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.PresenceUpdated)]
         public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
         {
+            return; // TODO
+
             if (e.User.IsBot)
                 return;
 
