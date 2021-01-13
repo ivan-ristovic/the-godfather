@@ -25,13 +25,13 @@ namespace TheGodfather.Modules.Administration
         #region commandrules
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-cr-cmd")] string command)
-            => this.PrintRulesAsync(ctx, cmd: command);
+                                     [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
+            => this.PrintRulesAsync(ctx, chn: channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
-            => this.PrintRulesAsync(ctx, chn: channel);
+                                     [RemainingText, Description("desc-cr-cmd")] string command)
+            => this.PrintRulesAsync(ctx, cmd: command);
         #endregion
 
         #region commandrules allow
@@ -104,14 +104,14 @@ namespace TheGodfather.Modules.Administration
             await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, validChannels.Select(c => c.Id));
             if (channels.Any()) {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allowed", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-denied", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
             } else {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allow-global", Formatter.InlineCode(cmd.QualifiedName));
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allowed-global", Formatter.InlineCode(cmd.QualifiedName));
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-forbid-global", Formatter.InlineCode(cmd.QualifiedName));
+                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-denied-global", Formatter.InlineCode(cmd.QualifiedName));
             }
 
             await ctx.GuildLogAsync(emb => {

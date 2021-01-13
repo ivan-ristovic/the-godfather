@@ -217,7 +217,7 @@ namespace TheGodfather.EventListeners
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
                 string sanitizedContent = Formatter.BlockCode(Formatter.Strip(e.Message.Content.Truncate(1000)));
-                emb.AddLocalizedTitleField("str-content", sanitizedContent, inline: true);
+                emb.AddLocalizedTitleField("str-content", sanitizedContent);
                 if (bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                     LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                     emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, "rsn-filter-match")));
@@ -250,6 +250,9 @@ namespace TheGodfather.EventListeners
 
             if (e.Message.Author == bot.Client.CurrentUser && bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
+
+            if (e.MessageBefore?.Embeds?.Count < e.Message.Embeds?.Count)
+                return;     // Discord added embed(s)
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             if (e.Message.Content is { } && bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {

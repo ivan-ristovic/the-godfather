@@ -285,6 +285,7 @@
   "cmd-err-issue-none": "Missing issue text!",
   "cmd-err-leet-none": "Y0u d1dn'7 g1v3 m3 @ny 73x7...",
   "cmd-err-lf-off": "Linkfilter for this guild is currently disabled.",
+  "cmd-err-loc": "A translation error occured. Please report this.",
   "cmd-err-locale": "Given locale is not supproted or not recognized.",
   "cmd-err-log-404": "Cannot find log at path: `{0}`",
   "cmd-err-log-off": "Logs are not dumped to any files with current bot configuration.",
