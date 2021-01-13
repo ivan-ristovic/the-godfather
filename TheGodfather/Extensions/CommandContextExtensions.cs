@@ -18,13 +18,24 @@ namespace TheGodfather.Extensions
 {
     internal static class CommandContextExtensions
     {
-        public static Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action, DiscordChannel? channel = null)
+        public static Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Action<LocalizedEmbedBuilder> action,
+                                                                          DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
             action(emb);
             return channel.SendMessageAsync(embed: emb.Build());
+        }
+
+        public static async Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Func<LocalizedEmbedBuilder, Task> action,
+                                                                                DiscordChannel? channel = null)
+        {
+            channel ??= ctx.Channel;
+            LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
+            var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
+            await action(emb);
+            return await channel.SendMessageAsync(embed: emb.Build());
         }
 
         public static string BuildInvocationDetailsString(this CommandContext ctx, string? reason = null)

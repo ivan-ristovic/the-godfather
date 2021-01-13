@@ -18,7 +18,7 @@ using TheGodfather.Services.Common;
 namespace TheGodfather.Modules.Misc
 {
     [Group("rank"), Module(ModuleType.Misc), NotBlocked]
-    [Aliases("ranks", "ranking", "level")]
+    [Aliases("ranks", "ranking", "level", "xp")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
     {
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Misc
             => this.InternalTopAsync(ctx, global: false);
         #endregion
 
-        #region rank top
+        #region rank topglobal
         [Command("topglobal")]
         [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop", "globalbest", "bestglobal")]
         public Task TopGlobalAsync(CommandContext ctx)
