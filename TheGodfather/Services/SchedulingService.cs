@@ -207,8 +207,8 @@ namespace TheGodfather.Services
         private void RegisterExecutor(ScheduledTaskExecutor texec)
         {
             if (texec.Job is Reminder rem) {
-                TaskExecutorDictionary userReminders = this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
-                if (!userReminders.TryAdd(texec.Id, texec))
+                this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
+                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec))
                     throw new ConcurrentOperationException("Failed to schedule reminder.");
             } else {
                 if (!this.tasks.TryAdd(texec.Id, texec))
