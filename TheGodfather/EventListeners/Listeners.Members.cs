@@ -206,7 +206,7 @@ namespace TheGodfather.EventListeners
                     emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
                         emb.AddLocalizedPropertyChangeField("str-name", ent.NicknameChange);
                         emb.AddLocalizedTitleField("str-roles-add", ent.AddedRoles?.Select(r => r.Mention).Humanize(", "), inline: true, unknown: false);
-                        emb.AddLocalizedTitleField("str-roles-rem", ent.RemovedRoles?.Select(r => r.Mention).Humanize(", "), inline: true,, unknown: false);
+                        emb.AddLocalizedTitleField("str-roles-rem", ent.RemovedRoles?.Select(r => r.Mention).Humanize(", "), inline: true, unknown: false);
                     });
                     break;
                 case DiscordAuditLogMemberMoveEntry mentry:
