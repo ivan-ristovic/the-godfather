@@ -295,7 +295,7 @@ namespace TheGodfather.Services
             this.DatabaseSyncTimer = new Timer(XpSyncCallback, bot, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DatabaseSyncInterval));
             this.FeedCheckTimer = new Timer(FeedCheckCallback, bot, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
             this.MiscActionsTimer = new Timer(MiscellaneousActionsCallback, bot, TimeSpan.FromSeconds(35), TimeSpan.FromHours(12));
-            this.StarboardTimer = new Timer(StarboardUpdateCallback, bot, TimeSpan.FromSeconds(45), TimeSpan.FromMinutes(1));
+            this.StarboardTimer = new Timer(StarboardUpdateCallback, bot, TimeSpan.FromSeconds(45), TimeSpan.FromMinutes(3));
         }
 
 

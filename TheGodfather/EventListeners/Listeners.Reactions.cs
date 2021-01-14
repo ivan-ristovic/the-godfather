@@ -77,10 +77,10 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionRemoved)]
-        public static Task MessageReactionRemovedEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEventArgs e)
+        public static async Task MessageReactionRemovedEventHandlerAsync(TheGodfatherBot bot, MessageReactionRemoveEventArgs e)
         {
             if (e.Guild is null || e.Channel is null || e.Message is null)
-                return Task.CompletedTask;
+                return;
 
             StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
             if (ss.IsStarboardEnabled(e.Guild.Id, out ulong cid, out string star) && cid != e.Channel.Id && e.Emoji.GetDiscordName() == star) {
@@ -88,7 +88,22 @@ namespace TheGodfather.EventListeners
                 ss.RegisterModifiedMessage(e.Guild.Id, e.Channel.Id, e.Message.Id);
             }
 
-            return Task.CompletedTask;
+            ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
+            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName());
+            if (rr is { }) {
+                DiscordRole? role = e.Guild.GetRole(rr.RoleId);
+                if (role is { }) {
+                    try {
+                        DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
+                        await member.RevokeRoleAsync(role, "_gf: Reaction role");
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Revoked reaction {Role} to {Member} of {Guild}", role, member, e.Guild);
+                    } catch (Exception ex) when (ex is UnauthorizedException | ex is NotFoundException) {
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Failed to revoke reaction role {Role} to {Member} of {Guild}", role, e.User, e.Guild);
+                    }
+                } else {
+                    LogExt.Debug(bot.GetId(e.Guild.Id), "Failed to find reaction role {Role} in {Guild}", rr.RoleId, e.Guild);
+                }
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageReactionRemovedEmoji)]

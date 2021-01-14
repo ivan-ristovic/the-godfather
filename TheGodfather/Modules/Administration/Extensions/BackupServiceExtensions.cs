@@ -36,6 +36,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 if (e.Footer is { })
                     sb.AppendLine("---").AppendLine(e.Footer.Text);
                 sb.Append('-', 12 + (e.Title?.Length ?? 0));
+                sb.AppendLine();
             }
 
             foreach (DiscordAttachment att in msg.Attachments)
