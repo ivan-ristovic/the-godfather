@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Owner
             }
 
             if (!res.Any() || !res.First().Any()) {
-                await ctx.InfoAsync(this.ModuleColor, Emojis.Information, "str-dbq-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-dbq-none");
                 return;
             }
 

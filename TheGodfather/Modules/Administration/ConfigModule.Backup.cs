@@ -52,8 +52,7 @@ namespace TheGodfather.Modules.Administration
                         emb.WithLocalizedTitle("str-backup");
                         emb.WithLocalizedDescription(gcfg.BackupEnabled ? "str-enabled" : "str-disabled");
                         emb.WithColor(this.ModuleColor);
-                        if (exemptString is { })
-                            emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
+                        emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true, unknown: false);
                     });
                 });
             }
@@ -79,7 +78,7 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.ExemptAsync(ctx.Guild.Id, this.SelectChildChannelIds());
+                await this.Service.ExemptAsync(ctx.Guild.Id, this.SelectChildChannelIds(channels));
                 await ctx.InfoAsync(this.ModuleColor);
             }
             #endregion
@@ -93,7 +92,7 @@ namespace TheGodfather.Modules.Administration
                 if (channels is null || !channels.Any())
                     throw new CommandFailedException(ctx, "cmd-err-exempt");
 
-                await this.Service.UnexemptAsync(ctx.Guild.Id, this.SelectChildChannelIds());
+                await this.Service.UnexemptAsync(ctx.Guild.Id, this.SelectChildChannelIds(channels));
                 await ctx.InfoAsync(this.ModuleColor);
             }
             #endregion

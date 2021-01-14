@@ -62,7 +62,7 @@ namespace TheGodfather.EventListeners
         public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
             LogExt.Debug(bot.GetId(e.Guild.Id), "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
-            return bot.Services.GetRequiredService<BackupService>().AddChannel(e.Channel.GuildId, e.Channel.Id);
+            return bot.Services.GetRequiredService<BackupService>().AddChannelAsync(e.Channel.GuildId, e.Channel.Id);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]

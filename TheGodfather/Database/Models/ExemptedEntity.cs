@@ -68,7 +68,7 @@ namespace TheGodfather.Database.Models
     }
 
     [Table("exempt_backup")]
-    public class ExemptedBackupEntity
+    public class ExemptedBackupEntity : IEquatable<ExemptedBackupEntity>
     {
         [Column("cid")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -85,5 +85,15 @@ namespace TheGodfather.Database.Models
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(ExemptedBackupEntity? other)
+            => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId;
+
+        public override bool Equals(object? other)
+            => this.Equals(other as ExemptedBackupEntity);
+
+        public override int GetHashCode()
+            => HashCode.Combine(this.GuildId, this.ChannelId);
     }
 }

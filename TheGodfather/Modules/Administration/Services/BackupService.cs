@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Administration.Services
             await this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = false);
         }
 
-        public async Task AddChannel(ulong gid, ulong cid)
+        public async Task AddChannelAsync(ulong gid, ulong cid)
         {
             if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
 
@@ -101,13 +102,10 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.ExemptsBackup.AddRange(cids
-                .Where(cid => !db.ExemptsBackup.Where(dbe => dbe.GuildIdDb == (long)gid).Any(dbe => dbe.ChannelIdDb == (long)cid))
-                .Select(cid => new ExemptedBackupEntity {
-                    GuildId = gid,
-                    ChannelId = cid,
-                })
-            );
+            await db.ExemptsBackup.SafeAddRangeAsync(cids.Select(cid => new ExemptedBackupEntity {
+                GuildId = gid,
+                ChannelId = cid,
+            }), e => new object[] { e.GuildIdDb, e.ChannelIdDb });
             await db.SaveChangesAsync();
         }
 
@@ -119,9 +117,10 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.ExemptsBackup.RemoveRange(
-                db.ExemptsBackup.Where(ex => ex.GuildId == gid && cids.Any(id => id == ex.ChannelId))
-            );
+            await db.ExemptsBackup.SafeRemoveRangeAsync(cids.Select(cid => new ExemptedBackupEntity {
+                GuildId = gid,
+                ChannelId = cid,
+            }), e => new object[] { e.GuildIdDb, e.ChannelIdDb });
             await db.SaveChangesAsync();
         }
 
@@ -134,7 +133,7 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
 
             if (!sws.TryGetValue(cid, out _))
-                await this.AddChannel(gid, cid);
+                await this.AddChannelAsync(gid, cid);
 
             if (!sws.TryGetValue(cid, out StreamWriter? swNew) || swNew is null)
                 return;
