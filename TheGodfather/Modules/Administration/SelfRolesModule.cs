@@ -41,11 +41,13 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException(ctx, "cmd-err-missing-roles");
 
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
+
+            string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-sr-change");
-                emb.AddLocalizedTitleField("str-roles-add", roles.JoinWith());
+                emb.AddLocalizedTitleField("str-roles-add", roleStr);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-add", roles.JoinWith());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-add", roleStr);
         }
         #endregion
 
@@ -61,11 +63,13 @@ namespace TheGodfather.Modules.Administration
             }
 
             await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
+
+            string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-sr-change");
-                emb.AddLocalizedTitleField("str-roles-rem", roles.JoinWith());
+                emb.AddLocalizedTitleField("str-roles-rem", roleStr);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-rem", roles.JoinWith());
+            await ctx.InfoAsync(this.ModuleColor, "fmt-sr-rem", roleStr);
         }
         #endregion
 
