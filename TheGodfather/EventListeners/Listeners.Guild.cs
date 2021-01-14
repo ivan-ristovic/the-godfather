@@ -216,11 +216,14 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.InviteCreated)]
-        public static async Task InviteCreatedEventHandlerAsync(TheGodfatherBot bot, InviteCreateEventArgs e)
+        public static Task InviteCreatedEventHandlerAsync(TheGodfatherBot bot, InviteCreateEventArgs e)
         {
+            if (e.Guild is null)
+                return Task.CompletedTask;
+
             LogExt.Debug(bot.GetId(e.Guild.Id), "Guild invite created: {Invite} {Guild}", e.Invite, e.Guild);
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                return;
+                return Task.CompletedTask;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             emb.WithLocalizedTitle(DiscordEventType.InviteCreated, "evt-gld-inv-add", e.Channel);
@@ -229,8 +232,9 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
             emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
             emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
-            emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter.AvatarUrl);
-            await logService.LogAsync(e.Guild, emb);
+            if (e.Invite.CreatedAt is { })
+                emb.WithLocalizedFooter("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt), e.Invite.Inviter?.AvatarUrl);
+            return logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.InviteDeleted)]
