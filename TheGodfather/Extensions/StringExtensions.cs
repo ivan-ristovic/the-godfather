@@ -5,16 +5,20 @@ namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
-        public static bool TryParseRegex(this string pattern, out Regex? regex, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
+        public static bool TryParseRegex(this string pattern, out Regex? regex, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false, bool wb = false)
         {
             regex = null;
 
             if (string.IsNullOrEmpty(pattern))
                 return false;
+            
             pattern = pattern.ToLowerInvariant();
+            pattern = escape ? Regex.Escape(pattern) : pattern;
+            if (wb)
+                pattern = $"\\b({pattern})\\b";
 
             try {
-                regex = new Regex(escape ? Regex.Escape(pattern) : pattern, options);
+                regex = new Regex(pattern, options);
             } catch (ArgumentException) {
                 return false;
             }
@@ -59,9 +63,9 @@ namespace TheGodfather.Extensions
             return d[n, m];
         }
 
-        public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false)
+        public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false, bool wb = false)
         {
-            return TryParseRegex(pattern, out Regex? regex, options, escape) && regex is { }
+            return TryParseRegex(pattern, out Regex? regex, options, escape, wb) && regex is { }
                 ? regex
                 : throw new ArgumentException($"Invalid regex string: {pattern}", nameof(pattern));
         }

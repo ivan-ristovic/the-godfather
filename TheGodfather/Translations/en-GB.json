@@ -796,7 +796,7 @@
   "fmt-eval-fail-compile": "Compilation failed after {0}ms with {1} errors.",
   "fmt-eval-fail-run": "Execution failed after {0}ms with `{1}`: ```{2}```",
   "fmt-eval-omit": "**{0}** errors not displayed.",
-  "fmt-filter": "{0} said: ||```{1}```||",
+  "fmt-filter": "{0} said: ||{1}||",
   "fmt-from-to": "{0} \u2192 {1}",
   "fmt-from-to-block": "From:{0}To:{1}",
   "fmt-gamble-coin-l": "{0} flipped **{1}** and lost **{2:n0}** {3}!",

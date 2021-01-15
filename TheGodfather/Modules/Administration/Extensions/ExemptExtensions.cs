@@ -75,9 +75,9 @@ namespace TheGodfather.Modules.Administration.Extensions
             foreach (ExemptedBackupEntity e in exempts) {
                 try {
                     DiscordChannel chn = await client.GetChannelAsync(e.ChannelId);
-                    sb.AppendLine(chn.Mention);
+                    sb.Append(chn.Mention).Append(' ');
                 } catch {
-                    sb.AppendLine(e.ChannelId.ToString());
+                    sb.Append(e.ChannelId.ToString());
                 }
             }
             return sb.ToString();

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Exceptions;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
@@ -138,13 +139,15 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.ManageMessages))
                 return;
 
-            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
 
             // TODO automatize, same below in message update handler
-            await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-            string sanitizedContent = Formatter.Strip(e.Message.Content);
-            string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
-            await e.Channel.SendMessageAsync(localizedSpoiler);
+            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+            try {
+                await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
+                await e.Channel.LocalizedEmbedAsync(ls, "fmt-filter", e.Author.Mention, Formatter.Strip(e.Message.Content));
+            } catch {
+                // TODO
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -178,6 +181,8 @@ namespace TheGodfather.EventListeners
                                 .Where(r => r.HasSameResponseAs(er))
                         );
                         await db.SaveChangesAsync();
+                    } catch (NotFoundException) {
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Trying to react to a deleted message.");
                     }
                 }
             }
@@ -255,12 +260,11 @@ namespace TheGodfather.EventListeners
                 return;     // Discord added embed(s)
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-            if (e.Message.Content is { } && bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
+            FilteringService fs = bot.Services.GetRequiredService<FilteringService>();
+            if (!string.IsNullOrWhiteSpace(e.Message.Content) && fs.TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                 try {
                     await e.Message.DeleteAsync(ls.GetString(e.Guild.Id, "rsn-filter-match"));
-                    string sanitizedContent = Formatter.Strip(e.Message.Content);
-                    string localizedSpoiler = ls.GetString(e.Guild.Id, "fmt-filter", e.Author.Mention, sanitizedContent);
-                    await e.Channel.SendMessageAsync(localizedSpoiler);
+                    await e.Channel.LocalizedEmbedAsync(ls, "fmt-filter", e.Author.Mention, Formatter.Strip(e.Message.Content));
                 } catch {
                     // TODO
                 }

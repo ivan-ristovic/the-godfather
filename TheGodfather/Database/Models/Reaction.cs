@@ -41,7 +41,7 @@ namespace TheGodfather.Database.Models
         public int RegexCount => this.triggerRegexes.Count;
 
         [NotMapped]
-        public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString());
+        public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString()[3..^3]);
 
         [NotMapped]
         public IEnumerable<string> OrderedTriggers => this.Triggers.OrderBy(s => s);
@@ -80,10 +80,10 @@ namespace TheGodfather.Database.Models
 
 
         public bool AddTrigger(string trigger, bool isRegex = false)
-            => trigger.TryParseRegex(out Regex? regex, escape: !isRegex) && regex is { } && this.triggerRegexes.Add(regex);
+            => trigger.TryParseRegex(out Regex? regex, escape: !isRegex, wb: true) && regex is { } && this.triggerRegexes.Add(regex);
 
         public bool RemoveTrigger(string trigger)
-            => trigger.TryParseRegex(out Regex? regex) && regex is { } && this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
+            => trigger.TryParseRegex(out Regex? regex, wb: true) && regex is { } && this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
 
         public bool IsMatch(string str)
             => !string.IsNullOrWhiteSpace(str) && this.triggerRegexes.Any(rgx => rgx.IsMatch(str));
