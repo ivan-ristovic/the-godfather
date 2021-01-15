@@ -103,7 +103,7 @@ namespace TheGodfather
                 Intents = DiscordIntents.All
                        & ~DiscordIntents.GuildMessageTyping
                        & ~DiscordIntents.DirectMessageTyping
-                       //& ~DiscordIntents.GuildPresences
+                       & ~DiscordIntents.GuildPresences
             };
 
             var client = new DiscordShardedClient(cfg);
