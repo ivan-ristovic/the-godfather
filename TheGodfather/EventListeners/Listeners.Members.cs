@@ -194,6 +194,21 @@ namespace TheGodfather.EventListeners
             switch (entry) {
                 case null:
                     emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
+                    emb.WithTitle(e.Member.ToDiscriminatorString());
+                    emb.WithThumbnail(e.Member.AvatarUrl);
+                    emb.AddLocalizedTimestampField("str-regtime", e.Member.CreationTimestamp, inline: true);
+                    emb.AddLocalizedTimestampField("str-joined-at", e.Member.JoinedAt, inline: true);
+                    emb.AddLocalizedTitleField("str-id", e.Member.Id, inline: true);
+                    emb.AddLocalizedTitleField("str-hierarchy", e.Member.Hierarchy, inline: true);
+                    emb.AddLocalizedTitleField("str-ahash", e.Member.AvatarHash, inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-verified", e.Member.Verified, inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-flags", e.Member.Flags.Humanize(), inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags?.Humanize(), inline: true, unknown: false);
+                    emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType?.Humanize(), inline: true, unknown: false);
+                    emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
+                    emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
                     if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {
                         string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
                         string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
@@ -240,8 +255,6 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.PresenceUpdated)]
         public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
         {
-            return; // TODO
-
             if (e.User.IsBot)
                 return;
 
