@@ -41,7 +41,7 @@ namespace TheGodfather.Database.Models
         public int RegexCount => this.triggerRegexes.Count;
 
         [NotMapped]
-        public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString()[3..^3]);
+        public IEnumerable<string> Triggers => this.triggerRegexes.Select(rgx => rgx.ToString().RemoveWordBoundaryRegexes());
 
         [NotMapped]
         public IEnumerable<string> OrderedTriggers => this.Triggers.OrderBy(s => s);

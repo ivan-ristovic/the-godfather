@@ -5,17 +5,21 @@ namespace TheGodfather.Extensions
 {
     internal static class StringExtensions
     {
+        private static readonly Regex _wbRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
+
+
         public static bool TryParseRegex(this string pattern, out Regex? regex, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false, bool wb = false)
         {
             regex = null;
 
             if (string.IsNullOrEmpty(pattern))
                 return false;
-            
+
             pattern = pattern.ToLowerInvariant();
             pattern = escape ? Regex.Escape(pattern) : pattern;
             if (wb)
-                pattern = $"\\b({pattern})\\b";
+                pattern = $"{(char.IsLetterOrDigit(pattern[0]) ? @"\b" : @"(^|\s)")}({pattern}){(char.IsLetterOrDigit(pattern[^1]) ? @"\b" : @"($|\s)")}";
+
 
             try {
                 regex = new Regex(pattern, options);
@@ -25,6 +29,9 @@ namespace TheGodfather.Extensions
 
             return true;
         }
+
+        public static string RemoveWordBoundaryRegexes(this string pattern)
+            => _wbRegex.Replace(pattern, "")[1..^1];
 
         // http://www.dotnetperls.com/levenshtein
         public static int LevenshteinDistanceTo(this string s, string t)

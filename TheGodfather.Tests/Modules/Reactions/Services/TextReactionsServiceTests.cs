@@ -74,7 +74,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     AssertFindReaction(0, "This trigger me has only one", true);
                     AssertFindReaction(1, "ricckasstley doesnt work", false);
                     AssertFindReaction(1, "But @rick- works", true);
-                    AssertFindReaction(1, "So does 123RIcK.", true);
+                    AssertFindReaction(1, "So does -RIcK.", true);
                     AssertFindReaction(2, "This one doesn't have reactions...", false);
                     AssertFindReaction(3, "Multiple valid reactions teSt.", true);
                     AssertFindReaction(3, "But teSting has only one", true);
@@ -196,7 +196,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(trs0.Single().IsMatch("This is a test for trig match"));
                     IReadOnlyCollection<TextReaction> trs1 = this.Service.GetGuildTextReactions(MockData.Ids[1]);
                     Assert.That(trs1.Single(), Is.Not.Null);
-                    Assert.That(trs1.Single().IsMatch("This is another 2tRiG@ example."));
+                    Assert.That(trs1.Single().IsMatch("This is another 2tRiG@ example."), Is.False);
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig");
                     AssertTextReactionExists(db, MockData.Ids[1], "h3h3", "trig");
                     return Task.CompletedTask;
@@ -216,7 +216,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(db.TextReactions, Has.Exactly(4).Items);
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
                     Assert.That(trs, Has.Exactly(4).Items);
-                    Assert.That(trs.Single(tr => tr.IsMatch("I am tr1ggered")), Is.Not.Null);
+                    Assert.That(trs.Single(tr => tr.IsMatch("I am triggered")), Is.Not.Null);
                     Assert.That(trs.Single(tr => tr.IsMatch("I am nOt trig+ered")), Is.Not.Null);
                     AssertTextReactionExists(db, MockData.Ids[0], "h3h3", "trig+ered", "triggggered");
                     AssertTextReactionExists(db, MockData.Ids[0], "not regex", @"not\ trig\+ered");

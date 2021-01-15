@@ -76,8 +76,8 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     AssertFindReactionsCount(0, "Ha abc ha", 4);
                     AssertFindReactionsCount(0, "This cde has only one", 1);
                     AssertFindReactionsCount(1, "abbcdef doesnt work", 0);
-                    AssertFindReactionsCount(1, "But @abc3 works", 3);
-                    AssertFindReactionsCount(1, "So does @a2ABC.", 3);
+                    AssertFindReactionsCount(1, "But @abc works", 3);
+                    AssertFindReactionsCount(1, "So does @ABC.", 3);
                     AssertFindReactionsCount(2, "This one doesn't have reactions...", 0);
                 }
             );
@@ -203,6 +203,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(info.IsMatch("This is a tEst."));
                     Assert.That(info.IsMatch("This is a -tEsting."));
                     Assert.That(info.IsMatch("This is an alarm"), Is.False);
+                    Assert.That(info.IsMatch("This is a protEsting."), Is.False);
                     Assert.That(ers.Any(e => e.IsMatch("here regex(es)? (much)+ will match because this is literal string interpretation")));
 
                     Assert.That(
@@ -235,6 +236,8 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(info.Triggers, Has.Exactly(1).Items);
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is another TEST rEGex example which passes"));
+                    Assert.That(info.IsMatch("This is a protesting regexes example which should not pass due to wb check"), Is.False);
                     Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
                     Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
@@ -275,7 +278,9 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
                     Assert.That(info.Triggers, Has.Exactly(2).Items);
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(info.IsMatch("This is another tEst example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is a another protesting regexes example which should not pass due to wb check"), Is.False);
                     Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
                     Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
@@ -319,6 +324,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                     Assert.That(info.IsMatch("This is another tEst regex example which passes"));
                     Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(info.IsMatch("This is a another protesting regexes example which should not pass due to wb check"), Is.False);
                     Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
                     Assert.That(
@@ -355,13 +361,14 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
-                    EmojiReaction chicken = ers.Single(e => e.Response == Emojis.Chicken.GetDiscordName());
-                    Assert.That(chicken.Triggers, Has.Exactly(3).Items);
-                    Assert.That(chicken.IsMatch("This is old abc abc test which passes"));
-                    Assert.That(chicken.IsMatch("This is a tEsting regexes example which passes"));
-                    Assert.That(chicken.IsMatch("This is another tEst regex example which passes"));
-                    Assert.That(chicken.IsMatch("This is a tEst which wont pass"), Is.False);
-                    Assert.That(chicken.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
+                    EmojiReaction info = ers.Single(e => e.Response == Emojis.Chicken.GetDiscordName());
+                    Assert.That(info.Triggers, Has.Exactly(3).Items);
+                    Assert.That(info.IsMatch("This is old abc abc test which passes"));
+                    Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
+                    Assert.That(info.IsMatch("This is another tEst regex example which passes"));
+                    Assert.That(info.IsMatch("This is a tEst which wont pass"), Is.False);
+                    Assert.That(info.IsMatch("This is a another protesting regexes example which should not pass due to wb check"), Is.False);
+                    Assert.That(info.IsMatch("This is a literal test(ing)? regex(es)? string which wont pass"), Is.False);
 
                     Assert.That(
                         db.EmojiReactions
@@ -385,7 +392,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     );
                     Assert.That(
                         await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(), new[] { "test(ing)? regex(es)?" }, false),
-                        Is.Zero
+                        Is.EqualTo(0)
                     );
                 },
                 verify: db => {
