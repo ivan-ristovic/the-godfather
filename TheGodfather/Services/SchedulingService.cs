@@ -208,11 +208,11 @@ namespace TheGodfather.Services
         {
             if (texec.Job is Reminder rem) {
                 this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
-                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec))
-                    throw new ConcurrentOperationException("Failed to schedule reminder.");
+                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec)) 
+                    Log.Warning("Reminder {Id} already exists in the collection for user {UserId}: {@Rems}", texec.Id, rem.UserId, this.reminders[rem.UserId]);
             } else {
                 if (!this.tasks.TryAdd(texec.Id, texec))
-                    throw new ConcurrentOperationException("Failed to schedule guild task.");
+                    Log.Warning("Guild task {Id} already exists in the collection for user {UserId}: {@Tasks}", texec.Id, this.tasks);
             }
         }
     }

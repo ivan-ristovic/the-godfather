@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedTitleField("str-status", ToPresenceString(member.Presence), inline: true);
                 emb.AddLocalizedTitleField("str-ahash", member.AvatarHash, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-verified", member.Verified, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags", member.Flags.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-flags", member.Flags?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-locale", member.Locale, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-mfa", member.MfaEnabled, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-flags-oauth", member.OAuthFlags?.Humanize(), inline: true, unknown: false);
@@ -178,7 +178,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedTitleField("str-status", ToPresenceString(user.Presence), inline: true);
                 emb.AddLocalizedTitleField("str-ahash", user.AvatarHash, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-verified", user.Verified, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags", user.Flags.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-flags", user.Flags?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-locale", user.Locale, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-mfa", user.MfaEnabled, inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-flags-oauth", user.OAuthFlags?.Humanize(), inline: true, unknown: false);

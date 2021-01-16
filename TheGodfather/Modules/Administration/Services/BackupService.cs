@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         private readonly DbContextBuilder dbb;
         private readonly GuildConfigService gcs;
-        private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, StreamWriter?>> streams;
+        private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, TextWriter?>> streams;
 
 
         public BackupService(DbContextBuilder dbb, GuildConfigService gcs)
@@ -35,8 +35,8 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void Dispose()
         {
-            foreach (ConcurrentDictionary<ulong, StreamWriter?> sws in this.streams.Values) {
-                foreach (StreamWriter? sw in sws.Values)
+            foreach (ConcurrentDictionary<ulong, TextWriter?> sws in this.streams.Values) {
+                foreach (TextWriter? sw in sws.Values)
                     sw?.Dispose();
             }
         }
@@ -49,8 +49,8 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task DisableAsync(ulong gid)
         {
-            if (this.streams.TryRemove(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
-                foreach (StreamWriter? sw in sws.Values)
+            if (this.streams.TryRemove(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws)) {
+                foreach (TextWriter? sw in sws.Values)
                     sw?.Dispose();
             }
             await this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.BackupEnabled = false);
@@ -58,12 +58,11 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task AddChannelAsync(ulong gid, ulong cid)
         {
-            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
-
+            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws)) {
                 using TheGodfatherDbContext db = this.dbb.CreateContext();
                 ExemptedBackupEntity? e = await db.ExemptsBackup.FindAsync((long)gid, (long)cid);
                 if (e is null)
-                    sws.TryAdd(cid, this.CreateStreamWriter(gid, cid));
+                    sws.TryAdd(cid, this.CreateTextWriter(gid, cid));
                 else
                     sws.TryAdd(cid, null);
             }
@@ -71,7 +70,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public void RemoveChannel(ulong gid, ulong cid)
         {
-            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws))
+            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws))
                 sws.TryRemove(cid, out _);
         }
 
@@ -88,9 +87,9 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task ExemptAsync(ulong gid, IEnumerable<ulong> cids)
         {
-            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
+            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws)) {
                 foreach (ulong cid in cids) {
-                    if (sws.TryGetValue(cid, out StreamWriter? sw) && sw is { }) {
+                    if (sws.TryGetValue(cid, out TextWriter? sw) && sw is { }) {
                         try {
                             await sw.DisposeAsync();
                         } catch (IOException e) {
@@ -111,9 +110,9 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task UnexemptAsync(ulong gid, IEnumerable<ulong> cids)
         {
-            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws)) {
+            if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws)) {
                 foreach (ulong cid in cids)
-                    sws.TryUpdate(cid, this.CreateStreamWriter(gid, cid), null);
+                    sws.TryUpdate(cid, this.CreateTextWriter(gid, cid), null);
             }
 
             using TheGodfatherDbContext db = this.dbb.CreateContext();
@@ -125,17 +124,17 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
         public bool IsChannelExempted(ulong gid, ulong cid)
-            => !this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws) || (sws.TryGetValue(cid, out StreamWriter? sw) && sw is null);
+            => !this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws) || (sws.TryGetValue(cid, out TextWriter? sw) && sw is null);
 
         public async Task BackupAsync(ulong gid, ulong cid, string contents)
         {
-            if (!this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, StreamWriter?>? sws))
+            if (!this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws))
                 return;
 
             if (!sws.TryGetValue(cid, out _))
                 await this.AddChannelAsync(gid, cid);
 
-            if (!sws.TryGetValue(cid, out StreamWriter? swNew) || swNew is null)
+            if (!sws.TryGetValue(cid, out TextWriter? swNew) || swNew is null)
                 return;
 
             try {
@@ -169,12 +168,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private StreamWriter CreateStreamWriter(ulong gid, ulong cid)
+        private TextWriter CreateTextWriter(ulong gid, ulong cid)
         {
             string dirPath = Path.Combine("backup", gid.ToString());
             if (!Directory.Exists(dirPath))
                 Directory.CreateDirectory(dirPath);
-            return new StreamWriter(Path.Combine(dirPath, $"{cid}.txt"), true, Encoding.UTF8) { AutoFlush = true };
+            return TextWriter.Synchronized(new StreamWriter(Path.Combine(dirPath, $"{cid}.txt"), true, Encoding.UTF8) { AutoFlush = true });
         }
 
         private void LoadData()
