@@ -12,6 +12,8 @@ namespace TheGodfather.Services.Common
 {
     public sealed class LocalizedEmbedBuilder
     {
+        public int FieldCount => this.emb.Fields?.Count ?? 0;
+
         private readonly DiscordEmbedBuilder emb;
         private readonly LocalizationService lcs;
         private readonly ulong gid;

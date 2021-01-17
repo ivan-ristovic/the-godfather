@@ -9,6 +9,7 @@ namespace TheGodfather.Common.Converters
         private static readonly Regex _playingRegex;
         private static readonly Regex _streamingRegex;
         private static readonly Regex _watchingRegex;
+        private static readonly Regex _competingRegex;
 
 
         static ActivityTypeConverter()
@@ -17,6 +18,7 @@ namespace TheGodfather.Common.Converters
             _playingRegex = new Regex(@"^p+(l+a+y+([sz]+|i+n+g+)?)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _streamingRegex = new Regex(@"^s+(t+r+e+a+m+(e*[sz]+|i+n+g+)?)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             _watchingRegex = new Regex(@"^w+(a+t+c+h+(e*[sz]+|i+n+g+)?)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            _competingRegex = new Regex(@"^c+o+m+p+e+t+i+n+g(\s+i+n+)?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
 
@@ -33,6 +35,8 @@ namespace TheGodfather.Common.Converters
                 result = ActivityType.ListeningTo;
             else if (_streamingRegex.IsMatch(value))
                 result = ActivityType.Streaming;
+            else if (_competingRegex.IsMatch(value))
+                result = ActivityType.Competing;
             else
                 parses = false;
 

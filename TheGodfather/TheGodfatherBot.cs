@@ -97,7 +97,7 @@ namespace TheGodfather
                 Token = this.Config.CurrentConfiguration.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
-                LargeThreshold = 300,
+                LargeThreshold = 500,
                 ShardCount = this.Config.CurrentConfiguration.ShardCount,
                 LoggerFactory = new SerilogLoggerFactory(dispose: true),
                 Intents = DiscordIntents.All

@@ -194,20 +194,13 @@ namespace TheGodfather.EventListeners
             switch (entry) {
                 case null:
                     emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
-                    emb.WithThumbnail(e.Member.AvatarUrl);
-                    emb.AddLocalizedTimestampField("str-regtime", e.Member.CreationTimestamp, inline: true);
-                    emb.AddLocalizedTimestampField("str-joined-at", e.Member.JoinedAt, inline: true);
-                    emb.AddLocalizedTitleField("str-id", e.Member.Id, inline: true);
-                    emb.AddLocalizedTitleField("str-hierarchy", e.Member.Hierarchy, inline: true);
-                    emb.AddLocalizedTitleField("str-ahash", e.Member.AvatarHash, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-verified", e.Member.Verified, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-flags", e.Member.Flags?.Humanize(), inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags?.Humanize(), inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType?.Humanize(), inline: true, unknown: false);
-                    emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
-                    emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
+                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {
+                        string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
+                        string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
+                        string noneStr = ls.GetString(e.Guild.Id, "str-none");
+                        emb.AddLocalizedTitleField("str-roles-bef", string.IsNullOrWhiteSpace(rolesBefore) ? noneStr : rolesBefore, inline: true);
+                        emb.AddLocalizedTitleField("str-roles-aft", string.IsNullOrWhiteSpace(rolesAfter) ? noneStr : rolesAfter, inline: true);
+                    }
                     break;
                 case DiscordAuditLogMemberUpdateEntry uentry:
                     emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
@@ -251,11 +244,8 @@ namespace TheGodfather.EventListeners
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
-            if (e.UserBefore.Presence?.Status != e.UserAfter.Presence?.Status || e.UserBefore.Presence?.Activity != e.UserAfter.Presence?.Activity)
+            if (DiscordPresenceExtensions.IsDifferentThan(e.PresenceBefore, e.PresenceAfter))
                 return;
-
-            // TODO
-            return;
 
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
@@ -264,30 +254,34 @@ namespace TheGodfather.EventListeners
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
             foreach (DiscordGuild guild in guilds) {
-                if (await e.UserAfter.IsMemberOfAsync(guild)) {
-                    if (!LoggingService.IsLogEnabledForGuild(bot, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                        return;
+                if (!await e.UserAfter.IsMemberOfAsync(guild))
+                    continue;
 
-                    emb.WithLocalizedTitle(DiscordEventType.PresenceUpdated, "evt-presence-upd", e.User);
-                    emb.WithThumbnail(e.UserAfter.AvatarUrl);
+                if (!LoggingService.IsLogEnabledForGuild(bot, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                    continue;
 
-                    emb.AddLocalizedTitleField("str-flags", e.UserAfter.Flags);
-                    emb.AddLocalizedPropertyChangeField("str-name", e.UserBefore.Username, e.UserAfter.Username);
-                    emb.AddLocalizedPropertyChangeField("str-discriminator", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
-                    if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
-                        emb.AddLocalizedTitleField("str-avatar", Formatter.MaskedUrl(ls.GetString(guild.Id, "str-avatar-old"), new Uri(e.UserBefore.AvatarUrl)));
-                    emb.AddLocalizedPropertyChangeField("str-email", e.UserBefore.Email, e.UserAfter.Email);
-                    emb.AddLocalizedPropertyChangeField("str-locale", e.UserBefore.Locale, e.UserAfter.Locale);
-                    emb.AddLocalizedPropertyChangeField("str-mfa", e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
-                    emb.AddLocalizedPropertyChangeField("str-flags-oauth", e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
-                    emb.AddLocalizedPropertyChangeField("str-premium-type", e.UserBefore.PremiumType, e.UserAfter.PremiumType);
-                    emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
+                emb.WithLocalizedTitle(DiscordEventType.PresenceUpdated, "evt-presence-upd", e.User);
+                emb.WithThumbnail(e.UserAfter.AvatarUrl);
 
-                    // TODO improve
-                    emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
+                emb.AddLocalizedTitleField("str-flags", e.UserAfter.Flags);
+                emb.AddLocalizedPropertyChangeField("str-name", e.UserBefore.Username, e.UserAfter.Username);
+                emb.AddLocalizedPropertyChangeField("str-discriminator", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
+                if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
+                    emb.AddLocalizedTitleField("str-avatar", Formatter.MaskedUrl(ls.GetString(guild.Id, "str-avatar-old"), new Uri(e.UserBefore.AvatarUrl)));
+                emb.AddLocalizedPropertyChangeField("str-email", e.UserBefore.Email, e.UserAfter.Email);
+                emb.AddLocalizedPropertyChangeField("str-locale", e.UserBefore.Locale, e.UserAfter.Locale);
+                emb.AddLocalizedPropertyChangeField("str-mfa", e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
+                emb.AddLocalizedPropertyChangeField("str-flags-oauth", e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
+                emb.AddLocalizedPropertyChangeField("str-premium-type", e.UserBefore.PremiumType, e.UserAfter.PremiumType);
+                emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
 
-                    await logService.LogAsync(guild, emb);
-                }
+                // TODO improve
+                emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
+
+                if (emb.FieldCount == 0)
+                    return;
+
+                await logService.LogAsync(guild, emb);
             }
         }
     }
