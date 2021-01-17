@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc
                     short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
                     XpRank? rankInfo = ctx.Guild is { } ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
                     emb.AddLocalizedTitleField("str-rank", rank, inline: true);
-                    emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank(rank), inline: true);
+                    emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), inline: true);
                     if (rankInfo is { })
                         emb.AddLocalizedTitleField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
                     else

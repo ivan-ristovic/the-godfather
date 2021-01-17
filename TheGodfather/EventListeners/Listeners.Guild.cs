@@ -232,7 +232,8 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
             emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
             emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
-            emb.AddInvocationFields(e.Invite.Inviter, e.Channel);
+            if (e.Invite.Inviter is { })
+                emb.AddInvocationFields(e.Invite.Inviter, e.Channel);
             if (e.Invite.CreatedAt is { })
                 emb.WithLocalizedFooter("str-created-at", e.Invite.Inviter?.AvatarUrl, ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt));
             return logService.LogAsync(e.Guild, emb);

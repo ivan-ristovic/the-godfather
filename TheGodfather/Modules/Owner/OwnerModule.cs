@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Owner
 
         #region eval
         [Command("eval")]
-        [Aliases("evaluate", "compile", "run", "e", "c", "r")]
+        [Aliases("evaluate", "compile", "run", "e", "c", "r", "exec")]
         [RequireOwner]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("desc-code")] string code)
