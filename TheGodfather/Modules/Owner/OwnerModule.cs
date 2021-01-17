@@ -214,7 +214,9 @@ namespace TheGodfather.Modules.Owner
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.InlineCode(d.GetMessage()), titleArgs: new[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character });
+                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.InlineCode(d.GetMessage()), 
+                        titleArgs: new object[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character }
+                    );
                 }
 
                 if (diag.Length > 3)

@@ -792,7 +792,7 @@
   "fmt-er-add": "Successfully added **{0}** new emoji reactions.",
   "fmt-er-del": "Successfully removed **{0}** emoji reactions.",
   "fmt-err": "Action finished with following warnings/errors:\n\n{0}",
-  "fmt-eval-err": "Error at {0}:{1}",
+  "fmt-eval-err": "Error at {0}L:{1}C",
   "fmt-eval-fail-compile": "Compilation failed after {0}ms with {1} errors.",
   "fmt-eval-fail-run": "Execution failed after {0}ms with `{1}`: ```{2}```",
   "fmt-eval-omit": "**{0}** errors not displayed.",

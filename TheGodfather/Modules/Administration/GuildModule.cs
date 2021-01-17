@@ -100,9 +100,7 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("icon"), Priority(0)]
-#pragma warning disable CA1822 // Mark members as static
         public Task SetIconAsync(CommandContext ctx)
-#pragma warning restore CA1822 // Mark members as static
             => ctx.RespondAsync(ctx.Guild.IconUrl);
         #endregion
 

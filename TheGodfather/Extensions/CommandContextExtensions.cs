@@ -201,7 +201,7 @@ namespace TheGodfather.Extensions
             ulong gid = ctx.Guild?.Id ?? 0;
             if (!important && (ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid)?.ReactionResponse ?? false)) {
                 try {
-                    await ctx.Message.CreateReactionAsync(emoji);
+                    await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
                     await InfoAsync(ctx, emoji, "str-done");
                 }

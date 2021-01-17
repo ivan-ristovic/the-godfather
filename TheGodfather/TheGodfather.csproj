@@ -649,10 +649,10 @@
     <None Update="Translations\Commands\desc_en-GB.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Translations\en-GB.json">
+    <None Update="Translations\en-US.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Translations\en-US.json">
+    <None Update="Translations\en-GB.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

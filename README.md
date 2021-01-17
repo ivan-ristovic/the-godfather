@@ -6,7 +6,7 @@
 [![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable)](https://github.com/ivan-ristovic/the-godfather/releases)
 [![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
 
-Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible but keeping the simplicity in mind. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
+Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible while keeping simplicity in mind when it comes to usage. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
 [![TheGodfather](https://discord.com/api/guilds/794671727291531274/embed.png?style=banner2)](https://discord.gg/z7KZGQQxRz)
 
@@ -42,7 +42,7 @@ Features:
 
 TheGodfather listens for commands inside guilds and in DM. However, some commands cannot be invoked in DM and vice versa.
 
-The commands are invoked by sending a message starting with a bot "prefix" or by mentioning the bot at the start of the message. The default prefix for the bot is ``!``, however you can change it using ``prefix`` command (guild specific). 
+Commands are invoked by sending a message starting with the bot "prefix" or by mentioning the bot at the start of the message. The default prefix for the bot is ``!``, however it can be configured separately for each guild. 
 
 For example, valid command calls are: 
 ```
