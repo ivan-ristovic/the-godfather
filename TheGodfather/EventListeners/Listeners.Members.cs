@@ -254,6 +254,9 @@ namespace TheGodfather.EventListeners
             if (e.UserBefore.Presence?.Status != e.UserAfter.Presence?.Status || e.UserBefore.Presence?.Activity != e.UserAfter.Presence?.Activity)
                 return;
 
+            // TODO
+            return;
+
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             IEnumerable<DiscordGuild> guilds = bot.Client.ShardClients.Values

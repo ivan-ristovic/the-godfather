@@ -97,13 +97,12 @@ namespace TheGodfather
                 Token = this.Config.CurrentConfiguration.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
-                LargeThreshold = 250,
+                LargeThreshold = 300,
                 ShardCount = this.Config.CurrentConfiguration.ShardCount,
                 LoggerFactory = new SerilogLoggerFactory(dispose: true),
                 Intents = DiscordIntents.All
-                       & ~DiscordIntents.GuildMessageTyping
-                       & ~DiscordIntents.DirectMessageTyping
-                       & ~DiscordIntents.GuildPresences
+                    .RemoveIntent(DiscordIntents.GuildMessageTyping)
+                    .RemoveIntent(DiscordIntents.DirectMessageTyping)
             };
 
             var client = new DiscordShardedClient(cfg);
