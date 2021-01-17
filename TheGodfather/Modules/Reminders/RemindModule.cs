@@ -205,15 +205,15 @@ namespace TheGodfather.Modules.Reminders
             string rel = timespan.Humanize(4, this.Localization.GetGuildCulture(ctx.Guild?.Id), minUnit: TimeUnit.Minute);
             if (repeat) {
                 if (channel is { })
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-rep-c", channel.Mention, rel, message);
+                    await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-rep-c", channel.Mention, rel, message);
                 else
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-rep", rel, message);
+                    await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-rep", rel, message);
             } else {
                 string abs = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, when);
                 if (channel is { })
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-c", channel.Mention, rel, abs, message);
+                    await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind-c", channel.Mention, rel, abs, message);
                 else
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind", rel, abs, message);
+                    await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, "fmt-remind", rel, abs, message);
             }
         }
 

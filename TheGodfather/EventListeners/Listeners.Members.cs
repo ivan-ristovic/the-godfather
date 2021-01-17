@@ -194,7 +194,6 @@ namespace TheGodfather.EventListeners
             switch (entry) {
                 case null:
                     emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
-                    emb.WithTitle(e.Member.ToDiscriminatorString());
                     emb.WithThumbnail(e.Member.AvatarUrl);
                     emb.AddLocalizedTimestampField("str-regtime", e.Member.CreationTimestamp, inline: true);
                     emb.AddLocalizedTimestampField("str-joined-at", e.Member.JoinedAt, inline: true);
@@ -209,13 +208,6 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType?.Humanize(), inline: true, unknown: false);
                     emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
                     emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
-                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {
-                        string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
-                        string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
-                        string noneStr = ls.GetString(e.Guild.Id, "str-none");
-                        emb.AddLocalizedTitleField("str-roles-bef", string.IsNullOrWhiteSpace(rolesBefore) ? noneStr : rolesBefore, inline: true);
-                        emb.AddLocalizedTitleField("str-roles-aft", string.IsNullOrWhiteSpace(rolesAfter) ? noneStr : rolesAfter, inline: true);
-                    }
                     break;
                 case DiscordAuditLogMemberUpdateEntry uentry:
                     emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
