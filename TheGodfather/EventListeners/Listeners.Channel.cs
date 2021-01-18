@@ -140,7 +140,7 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", ent.BitrateChange);
                     emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", ent.PerUserRateLimitChange);
                     emb.AddLocalizedPropertyChangeField("evt-upd-type", ent.TypeChange);
-                    emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange.After.Count, unknown: false);
+                    emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange?.After?.Count, unknown: false);
                     if (ent.TopicChange is { }) {
                         string before = Formatter.BlockCode(
                             Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")

@@ -135,7 +135,7 @@ namespace TheGodfather.Common
 
             public static DiscordEmoji Get(int index)
             {
-                return index is < 1 or > 10
+                return index is < 0 or > 10
                     ? throw new ArgumentOutOfRangeException(nameof(index), "Index can't be lower than 1 or greater than 10")
                     : _numbers[index];
             }

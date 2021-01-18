@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Misc
             var failedRoles = new List<DiscordRole>();
             foreach (DiscordRole role in roles.Distinct()) {
                 if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
-                    await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("rsn-grant-role"));
+                    await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-granted"));
                 else
                     failedRoles.Add(role);
             }
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Misc
             var failedRoles = new List<DiscordRole>();
             foreach (DiscordRole role in roles.Distinct()) {
                 if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
-                    await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("rsn-revoke-role"));
+                    await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-revoke"));
                 else
                     failedRoles.Add(role);
             }
