@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency.Services
             List<BankAccount> topAccounts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             topAccounts = await 
-                (gid is { } ? db.BankAccounts.Where(a => a.GuildId == gid) : db.BankAccounts)
+                (gid is { } ? db.BankAccounts.Where(a => a.GuildIdDb == (long)gid) : db.BankAccounts)
                 .OrderByDescending(a => a.Balance)
                 .Take(amount)
                 .ToListAsync();

@@ -12,7 +12,7 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Misc
 {
     [Group("help"), Module(ModuleType.Misc), NotBlocked]
-    [Aliases("h", "?", "??", "???")]
+    [Aliases("h", "?", "??", "???", "man")]
     [Cooldown(3, 5, CooldownBucketType.User)]
     public sealed class HelpModule : TheGodfatherServiceModule<CommandService>
     {
