@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency.Services
             if (account is null || account.Balance < change)
                 return false;
 
-            account.Balance += change;
+            account.Balance -= change;
             db.BankAccounts.Update(account);
 
             await db.SaveChangesAsync();

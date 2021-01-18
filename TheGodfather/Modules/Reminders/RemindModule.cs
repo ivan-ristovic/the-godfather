@@ -233,7 +233,7 @@ namespace TheGodfather.Modules.Reminders
                 if (chn is null)
                     emb.WithLocalizedTitle("str-remind-chn");
                 else
-                    emb.WithLocalizedTitle("fmt-remind-chn", chn.Mention);
+                    emb.WithLocalizedTitle("fmt-remind-chn", chn.Name);
 
                 emb.WithDescription(r.Message);
                 emb.AddLocalizedTitleField("str-id", r.Id, inline: true);

@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Currency
                 i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
                 this.ModuleColor,
                 5,
-                member.Mention
+                member.ToDiscriminatorString()
             );
         }
         #endregion
