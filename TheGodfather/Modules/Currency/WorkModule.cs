@@ -11,12 +11,12 @@ namespace TheGodfather.Modules.Currency
 {
     [Group("work"), Module(ModuleType.Currency), NotBlocked]
     [Aliases("job")]
+    [Cooldown(1, 60, CooldownBucketType.User)]
     [RequireGuild]
     public sealed class WorkModule : TheGodfatherServiceModule<WorkService>
     {
         #region work
         [GroupCommand]
-        [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string workStr = await this.Service.WorkAsync(ctx.Guild.Id, ctx.User.Id);

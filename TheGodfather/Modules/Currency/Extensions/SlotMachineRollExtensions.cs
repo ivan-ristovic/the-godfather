@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         public static Task SendAsync(this SlotMachineRoll roll, CommandContext ctx, DiscordColor color)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("fmt-casino-slot-title", Emojis.LargeOrangeDiamond, Emojis.LargeOrangeDiamond);
+                emb.WithLocalizedTitle("fmt-casino-slot", Emojis.LargeOrangeDiamond, Emojis.LargeOrangeDiamond);
                 emb.WithColor(color);
                 emb.WithDescription(roll.ToEmojiString());
                 emb.WithThumbnail(ctx.User.AvatarUrl);

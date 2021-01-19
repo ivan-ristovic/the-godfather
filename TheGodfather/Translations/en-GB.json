@@ -738,7 +738,7 @@
   "fmt-casino-lottery": "{0} Lottery draws {1}",
   "fmt-casino-lottery-join": "{0} has joined the Lottery game.",
   "fmt-casino-slot": "{0} SLOT MACHINE {1}",
-  "fmt-casino-win": "{0} won **{1}** ({2}) {3}!",
+  "fmt-casino-win": "{0} won **{1}** (**{2}**) {3}!",
   "fmt-chicken-ambush-help": "**{0}** joined the ambushed party!",
   "fmt-chicken-ambush-join": "**{0}** joined the ambushers!",
   "fmt-chicken-buy": "{0} bought a {1} chicken named **{2}**!",
