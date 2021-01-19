@@ -207,10 +207,12 @@ namespace TheGodfather.Services
         private void RegisterExecutor(ScheduledTaskExecutor texec)
         {
             if (texec.Job is Reminder rem) {
+                Log.Debug("Attempting to register reminder {ReminderId} in channel {Channel} @ {ExecutionTime}", rem.Id, rem.ChannelId, rem.ExecutionTime);
                 this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
-                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec)) 
+                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec))
                     Log.Warning("Reminder {Id} already exists in the collection for user {UserId}: {@Rems}", texec.Id, rem.UserId, this.reminders[rem.UserId]);
             } else {
+                Log.Debug("Attempting to register guild task {ReminderId} @ {ExecutionTime}", texec.Id, texec.Job.ExecutionTime);
                 if (!this.tasks.TryAdd(texec.Id, texec))
                     Log.Warning("Guild task {Id} already exists in the collection for user {UserId}: {@Tasks}", texec.Id, this.tasks);
             }
