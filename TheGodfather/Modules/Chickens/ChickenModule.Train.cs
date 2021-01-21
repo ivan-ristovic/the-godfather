@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Chickens
 
                 await this.Service.UpdateAsync(chicken);
                 await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken,
-                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "VIT", chicken.Stats.TotalStrength
+                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "VIT", chicken.Stats.TotalMaxVitality
                 );
             }
             #endregion

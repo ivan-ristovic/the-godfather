@@ -119,10 +119,10 @@ namespace TheGodfather.Database.Models
         public bool TrainStrength()
         {
             if (new SecureRandom().NextBool()) {
-                this.Stats.BareStrength += 5;
+                this.BareStrength += 5;
                 return true;
             } else {
-                this.Stats.BareStrength -= 3;
+                this.BareStrength -= 3;
                 return false;
             }
         }
@@ -130,10 +130,10 @@ namespace TheGodfather.Database.Models
         public bool TrainVitality()
         {
             if (new SecureRandom().NextBool()) {
-                this.Stats.BareMaxVitality += 4;
+                this.BareMaxVitality += 4;
                 return true;
             } else {
-                this.Stats.BareMaxVitality -= 3;
+                this.BareMaxVitality -= 3;
                 return false;
             }
         }
