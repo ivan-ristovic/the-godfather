@@ -134,7 +134,7 @@ namespace TheGodfather.Services
                     if (this.tasks.TryRemove(task.Id, out ScheduledTaskExecutor? taskExec))
                         taskExec.Dispose();
                     else
-                        throw new KeyNotFoundException("Cannot find any guild task that matches the given ID.");
+                        Log.Warning("Failed to remove guild task from task collection: {GuildTaskId}", task.Id);
                     using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                         db.GuildTasks.Remove(new GuildTask { Id = task.Id });
                         await db.SaveChangesAsync();
@@ -145,7 +145,7 @@ namespace TheGodfather.Services
                         if (userReminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))
                             remindExec.Dispose();
                         else
-                            throw new ConcurrentOperationException("Failed to remove reminder.");
+                            Log.Warning("Failed to remove reminder from task collection: {ReminderId}", task.Id);
                         if (!userReminders.Any())
                             this.reminders.TryRemove(rem.UserId, out _);
                     }
@@ -209,7 +209,7 @@ namespace TheGodfather.Services
             if (texec.Job is Reminder rem) {
                 Log.Debug("Attempting to register reminder {ReminderId} in channel {Channel} @ {ExecutionTime}", rem.Id, rem.ChannelId, rem.ExecutionTime);
                 this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
-                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec))
+                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec) && !rem.IsRepeating)
                     Log.Warning("Reminder {Id} already exists in the collection for user {UserId}: {@Rems}", texec.Id, rem.UserId, this.reminders[rem.UserId]);
             } else {
                 Log.Debug("Attempting to register guild task {ReminderId} @ {ExecutionTime}", texec.Id, texec.Job.ExecutionTime);
