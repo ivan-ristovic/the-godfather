@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -12,7 +13,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class CaroGame : BaseBoardGame
     {
-        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.JoinWith("");
+        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.Skip(1).JoinWith("");
 
 
         public CaroGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)

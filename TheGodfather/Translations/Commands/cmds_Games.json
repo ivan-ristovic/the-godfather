@@ -51,6 +51,17 @@
       []
     ]
   },
+  "game minesweeper": {
+    "usage": [
+      [],
+      [ "arg-twenty", "arg-twenty", "arg-fifty" ]
+    ]
+  },
+  "game minesweeper rules": {
+    "usage": [
+      []
+    ]
+  },
   "game caro stats": {
     "usage": [
       [],

@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Polls.Common
 
             this.Results = await this.Interactivity.DoPollAsync(
                 msgHandle,
-                Emojis.Numbers.All.Take(this.Options.Count).ToArray(),
+                Emojis.Numbers.All.Skip(1).Take(this.Options.Count).ToArray(),
                 PollBehaviour.DeleteEmojis,
                 this.TimeUntilEnd
             );

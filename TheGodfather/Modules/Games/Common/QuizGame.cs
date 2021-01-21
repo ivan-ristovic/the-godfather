@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games.Common
                 foreach ((string answer, int index) in answers.Select((a, i) => (a, i)))
                     emb.AddLocalizedTitleField("fmt-game-quiz-a", answer, inline: true, titleArgs: index + 1);
 
-                var options = Emojis.Numbers.All.Take(4).ToList();
+                var options = Emojis.Numbers.All.Skip(1).Take(4).ToList();
                 DiscordMessage msg = await this.Channel.SendMessageAsync(embed: emb.Build());
                 foreach (DiscordEmoji emoji in options)
                     await msg.CreateReactionAsync(emoji);

@@ -221,6 +221,8 @@
   "game hangman stats": "Prints Hangman game stats for a given user.",
   "game hangman top": "Prints Hangman game leaderboard.",
   "game leaderboard": "Prints global leaderboard for all games.",
+  "game minesweeper": "Starts a new Minesweeper game.",
+  "game minesweeper rules": "Prints Minesweeper game rules.",
   "game numberrace": "Starts a new Number Race game.",
   "game numberrace join": "Joins a pending Number Race game.",
   "game numberrace rules": "Prints Number Race rules.",

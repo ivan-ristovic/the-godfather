@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class OthelloGame : BaseBoardGame
     {
-        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.Take(8).JoinWith("");
+        private static readonly string _header = Emojis.ArrowUp + Emojis.Numbers.All.Skip(1).Take(8).JoinWith("");
 
 
         public OthelloGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)

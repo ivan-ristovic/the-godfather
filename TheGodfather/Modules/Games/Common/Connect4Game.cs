@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class Connect4Game : BaseBoardGame
     {
-        private static readonly string _header = Emojis.Numbers.All.Take(9).JoinWith("");
+        private static readonly string _header = Emojis.Numbers.All.Skip(1).Take(9).JoinWith("");
 
 
         public Connect4Game(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)

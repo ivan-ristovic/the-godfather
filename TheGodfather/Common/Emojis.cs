@@ -98,6 +98,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji AlarmClock => DiscordEmoji.FromUnicode("\u23f0");
         public static DiscordEmoji ArrowDown => DiscordEmoji.FromUnicode("\u2b07");
         public static DiscordEmoji ArrowUp => DiscordEmoji.FromUnicode("\u2b06");
+        public static DiscordEmoji Bomb => DiscordEmoji.FromUnicode("\U0001f4a3");
         public static DiscordEmoji Cake => DiscordEmoji.FromUnicode("\U0001f370");
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
@@ -121,6 +122,7 @@ namespace TheGodfather.Common
         {
             public static IReadOnlyList<DiscordEmoji> All => _numbers;
             private static readonly ImmutableList<DiscordEmoji> _numbers = new List<DiscordEmoji> {
+                DiscordEmoji.FromUnicode("0\u20e3"),
                 DiscordEmoji.FromUnicode("1\u20e3"),
                 DiscordEmoji.FromUnicode("2\u20e3"),
                 DiscordEmoji.FromUnicode("3\u20e3"),
