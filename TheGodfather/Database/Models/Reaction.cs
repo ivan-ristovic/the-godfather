@@ -53,7 +53,7 @@ namespace TheGodfather.Database.Models
         public virtual GuildConfig GuildConfig { get; set; } = null!;
 
 
-        public Reaction()
+        protected Reaction()
         {
             this.triggerRegexes = new ConcurrentHashSet<Regex>();
         }

@@ -14,7 +14,7 @@ namespace TheGodfather.Services
         protected readonly DbContextBuilder dbb;
 
 
-        public DbAbstractionServiceBase(DbContextBuilder dbb)
+        protected DbAbstractionServiceBase(DbContextBuilder dbb)
         {
             this.dbb = dbb;
         }
