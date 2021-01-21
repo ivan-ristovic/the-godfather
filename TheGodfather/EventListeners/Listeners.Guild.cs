@@ -223,7 +223,6 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return Task.CompletedTask;
 
-            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             emb.WithLocalizedTitle(DiscordEventType.InviteCreated, "evt-gld-inv-add", e.Channel);
             emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
             emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);

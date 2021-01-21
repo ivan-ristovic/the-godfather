@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner.Services
 
             Assembly? assembly = null;
             using (var ms = new MemoryStream()) {
-                EmitResult er = compilation.Emit(ms);
+                compilation.Emit(ms);
                 ms.Position = 0;
                 assembly = Assembly.Load(ms.ToArray());
             }

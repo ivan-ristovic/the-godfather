@@ -200,8 +200,6 @@ namespace TheGodfather.Services
                             LogExt.Debug(bot.GetId(gid), "Failed to fetch starboard config {ChannelId} for guild {GuildId}", starChannelId, gid);
                         }
 
-                        int threshold = ss.GetMinimumStarCount(gid);
-
                         if (starChannel is null || starEmoji is null) {
                             async.Execute(ss.ModifySettingsAsync(gid, null));
                             continue;

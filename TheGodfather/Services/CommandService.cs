@@ -83,7 +83,7 @@ namespace TheGodfather.Services
                         info.Module = module;
                         foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
                             try {
-                                string _ = this.lcs.GetString(null, arg);
+                                this.lcs.GetString(null, arg);
                                 Log.Verbose("Checked {Argument}", arg);
                             } catch (LocalizationException) {
                                 Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
@@ -110,7 +110,6 @@ namespace TheGodfather.Services
         public IReadOnlyList<string> GetCommandUsageExamples(ulong? gid, string command)
         {
             CommandInfo cmdInfo = this.GetInfoForCommand(command);
-            string locale = this.lcs.GetGuildLocale(gid);
             var examples = new List<string>();
 
             if (cmdInfo.UsageExamples.Any()) {

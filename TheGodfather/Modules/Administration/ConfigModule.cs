@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         public async Task SilentResponseAsync(CommandContext ctx,
                                              [Description("desc-replies-s")] bool enable)
         {
-            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
+            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.ReactionResponse = enable;
             });
 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
                 throw new CommandFailedException(ctx, "cmd-err-currency");
 
-            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
+            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cfg-upd");
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Administration
         public async Task SuggestionsAsync(CommandContext ctx,
                                           [Description("desc-suggestions")] bool enable)
         {
-            GuildConfig gcfg = await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.SuggestionsEnabled = enable);
+            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.SuggestionsEnabled = enable);
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cfg-upd");

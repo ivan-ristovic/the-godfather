@@ -248,7 +248,6 @@ namespace TheGodfather.EventListeners
             if (!IsUpdated(e.UserBefore, e.UserAfter))
                 return;
 
-            GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             IEnumerable<DiscordGuild> guilds = bot.Client.ShardClients.Values
                 .SelectMany(s => s.Guilds)

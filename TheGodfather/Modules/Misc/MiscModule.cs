@@ -216,7 +216,7 @@ namespace TheGodfather.Modules.Misc
             if (prefix.Length > GuildConfig.PrefixLimit)
                 throw new CommandFailedException(ctx, "cmd-err-prefix", GuildConfig.PrefixLimit);
 
-            GuildConfig gcfg = await gcs.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Prefix = prefix);
+            await gcs.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Prefix = prefix);
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion

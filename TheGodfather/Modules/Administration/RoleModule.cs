@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
                     return;
             }
 
-            DiscordRole role = await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildInvocationDetailsString(reason));
+            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
         }
 

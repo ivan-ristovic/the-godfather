@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Search.Services
         public static bool IsValidFeedURL(string url)
         {
             try {
-                var feed = SyndicationFeed.Load(XmlReader.Create(url, _settings));
+                SyndicationFeed.Load(XmlReader.Create(url, _settings));
             } catch {
                 return false;
             }
