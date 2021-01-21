@@ -128,14 +128,14 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.UserUpdated)]
         public static Task UserUpdatedEventHandlerAsync(TheGodfatherBot bot, UserUpdateEventArgs e)
         {
-            Log.Information("Bot updated: {@BotUserAfter}", e.UserAfter);
+            Log.Information("Bot updated");
             return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.UserSettingsUpdated)]
         public static Task UserSettingsUpdatedEventHandlerAsync(TheGodfatherBot bot, UserSettingsUpdateEventArgs e)
         {
-            Log.Information("User settings updated: {@User}", e.User);
+            Log.Information("User settings updated");
             return Task.CompletedTask;
         }
     }

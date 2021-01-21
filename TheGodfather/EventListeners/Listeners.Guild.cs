@@ -47,7 +47,6 @@ namespace TheGodfather.EventListeners
         public static Task GuildDeleteEventHandlerAsync(TheGodfatherBot bot, GuildDeleteEventArgs e)
         {
             LogExt.Information(bot.GetId(e.Guild.Id), "Guild deleted {Guild}", e.Guild);
-            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild deleted event args: {@GuildDeleteEventArgs}", e);
             return bot.Services.GetRequiredService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
         }
 
@@ -55,7 +54,6 @@ namespace TheGodfather.EventListeners
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherBot bot, GuildEmojisUpdateEventArgs e)
         {
             LogExt.Information(bot.GetId(e.Guild.Id), "Emojis updated {Guild}, ({EmojisBefore} to {EmojisAfter}", e.Guild, e.EmojisBefore, e.EmojisAfter);
-            LogExt.Debug(bot.GetId(e.Guild.Id), "Emojis updated: {@GuildEmojisUpdateEventArgs}", e);
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 

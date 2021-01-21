@@ -212,7 +212,7 @@ namespace TheGodfather.EventListeners
                 case DiscordAuditLogMemberMoveEntry mentry:
                     // TODO
                     emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, "evt-gld-mem-vc-mv", e.Member);
-                    Log.Debug("{@Member}", e.Member);
+                    Log.Debug("{Member}", e.Member);
                     emb.AddFieldsFromAuditLogEntry(mentry, (emb, ent) => {
                         emb.WithDescription(ent.Channel);
                         emb.AddLocalizedTitleField("str-move-count", ent.UserCount);
