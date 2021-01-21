@@ -227,7 +227,8 @@ namespace TheGodfather.EventListeners
             if (failed)
                 emb.AddLocalizedField("str-err", "err-fname-match");
 
-            await logService.LogAsync(e.Guild, emb);
+            if (emb.FieldCount > 0)
+                await logService.LogAsync(e.Guild, emb);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMembersChunked)]
@@ -276,7 +277,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
 
                 // TODO improve
-                emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
+                // emb.AddLocalizedTitleField("str-activity", e.Activity.ToDetailedString());
 
                 if (emb.FieldCount == 0)
                     return;

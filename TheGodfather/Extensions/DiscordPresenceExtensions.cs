@@ -68,16 +68,14 @@ namespace TheGodfather.Extensions
             if (DiscordActivityExtensions.IsDifferentThan(@this.Activity, other.Activity))
                 return true;
 
-            if (@this.Guild != other.Guild)
-                return true;
-
             if (@this.Status != other.Status)
                 return true;
 
-            if (@this.ClientStatus?.Desktop != other.ClientStatus?.Desktop
-             || @this.ClientStatus?.Mobile != other.ClientStatus?.Mobile
-             || @this.ClientStatus?.Web != other.ClientStatus?.Web)
-                return true;
+            if (@this.ClientStatus is { } && other.ClientStatus is { }
+                && (@this.ClientStatus?.Desktop != other.ClientStatus?.Desktop
+                 || @this.ClientStatus?.Mobile != other.ClientStatus?.Mobile
+                 || @this.ClientStatus?.Web != other.ClientStatus?.Web)
+            ) return true;
 
             return false;
         }

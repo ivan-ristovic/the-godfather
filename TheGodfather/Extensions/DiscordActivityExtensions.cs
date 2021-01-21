@@ -31,7 +31,7 @@ namespace TheGodfather.Extensions
             if (@this.ActivityType != other.ActivityType)
                 return true;
 
-            if (@this.CustomStatus?.Emoji?.Id == other.CustomStatus?.Emoji?.Id || @this.CustomStatus?.Name == other?.CustomStatus?.Name)
+            if (@this.CustomStatus?.Emoji?.Id != other.CustomStatus?.Emoji?.Id || @this.CustomStatus?.Name != other?.CustomStatus?.Name)
                 return true;
 
             if (@this.Name != other?.Name)

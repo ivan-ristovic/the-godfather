@@ -493,7 +493,7 @@
   "webhook listall": "Shows webhooks for the entire guild.",
   "wikipedia": "Wikipedia search commands. Group call searches Wikipedia with given query.",
   "wikipedia search": "Searches Wikipedia with given query.",
-  "work": "Do something productive with your life or decide to earn money using immoral or illegal ways.",
+  "work": "Do something productive with your life or decide to earn money using immoral or illegal ways. You can work once every minute.",
   "work crime": "Attempt a crime. This can be done once every 5 minutes.",
   "work streets": "Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes.",
   "xkcd": "xkcd search commands. Group call returns a random comic or, if an ID is provided, a comic with given ID.",
