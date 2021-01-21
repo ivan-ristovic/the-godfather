@@ -262,7 +262,7 @@ namespace TheGodfather.EventListeners
                 if (!LoggingService.IsLogEnabledForGuild(bot, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                     continue;
 
-                emb.WithLocalizedTitle(DiscordEventType.PresenceUpdated, "evt-presence-upd", e.User);
+                emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, "evt-gld-mem-upd", e.User);
                 emb.WithThumbnail(e.UserAfter.AvatarUrl);
 
                 emb.AddLocalizedPropertyChangeField("str-name", e.UserBefore.Username, e.UserAfter.Username);
@@ -289,9 +289,8 @@ namespace TheGodfather.EventListeners
 
             static bool IsUpdated(DiscordUser? before, DiscordUser? after)
             {
-                if (!ReferenceEquals(before, after))
+                if (before is null || after is null)
                     return false;
-
                 return !Equals(before?.Username, after?.Username)
                     || !Equals(before?.Discriminator, after?.Discriminator)
                     || !Equals(before?.AvatarUrl, after?.AvatarUrl)
