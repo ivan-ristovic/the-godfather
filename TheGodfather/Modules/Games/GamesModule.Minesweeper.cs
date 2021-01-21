@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Common;
@@ -25,8 +26,12 @@ namespace TheGodfather.Modules.Games
                 if (rows < 4 || rows > 9 || cols < 4 || cols > 12)
                     throw new InvalidCommandUsageException(ctx, "cmd-err-ms-dim", 4, 9, 4, 12);
 
-                var field = new MinesweeperField(rows, cols, bombs);
-                return ctx.RespondAsync(field.ToEmojiString());
+                try {
+                    var field = new MinesweeperField(rows, cols, bombs);
+                    return ctx.RespondAsync(field.ToEmojiString());
+                } catch (ArgumentException) {
+                    throw new CommandFailedException(ctx, "cmd-err-game-ms-bombs");
+                }
             }
             #endregion
 

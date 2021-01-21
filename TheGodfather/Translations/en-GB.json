@@ -251,6 +251,7 @@
   "cmd-err-game-hm-format": "The secret word must only contain letters. Try again.",
   "cmd-err-game-move": "Move **{0}** is invalid!",
   "cmd-err-game-movetime": "Move time must be in range of [{0},{1}] seconds.",
+  "cmd-err-game-ms-bombs": "Too many bombs for a field of such size.",
   "cmd-err-game-ms-dim": "Minesweeper field must have atleast **{0}** and atmost **{1}** rows, as well as atleast **{2}** and atmost **{3}** columns.",
   "cmd-err-game-nr-dup": "You are already participating in the Number Race game.",
   "cmd-err-game-nr-full": "Number Race slots are full (max {0} participants), kthxbye.",
