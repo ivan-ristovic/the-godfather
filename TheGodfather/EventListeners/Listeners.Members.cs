@@ -245,7 +245,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
-            if (DiscordPresenceExtensions.IsDifferentThan(e.PresenceBefore, e.PresenceAfter))
+            if (!IsUpdated(e.UserBefore, e.UserAfter))
                 return;
 
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
@@ -272,6 +272,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("str-email", e.UserBefore.Email, e.UserAfter.Email);
                 emb.AddLocalizedPropertyChangeField("str-locale", e.UserBefore.Locale, e.UserAfter.Locale);
                 emb.AddLocalizedPropertyChangeField("str-mfa", e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
+                emb.AddLocalizedPropertyChangeField("str-flags", e.UserBefore.Flags, e.UserAfter.Flags);
                 emb.AddLocalizedPropertyChangeField("str-flags-oauth", e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
                 emb.AddLocalizedPropertyChangeField("str-premium-type", e.UserBefore.PremiumType, e.UserAfter.PremiumType);
                 emb.AddLocalizedPropertyChangeField("str-verified", e.UserBefore.Verified, e.UserAfter.Verified);
@@ -283,6 +284,24 @@ namespace TheGodfather.EventListeners
                     return;
 
                 await logService.LogAsync(guild, emb);
+            }
+
+
+            static bool IsUpdated(DiscordUser? before, DiscordUser? after)
+            {
+                if (!ReferenceEquals(before, after))
+                    return false;
+
+                return !Equals(before?.Username, after?.Username)
+                    || !Equals(before?.Discriminator, after?.Discriminator)
+                    || !Equals(before?.AvatarUrl, after?.AvatarUrl)
+                    || !Equals(before?.Email, after?.Email)
+                    || !Equals(before?.MfaEnabled, after?.MfaEnabled)
+                    || !Equals(before?.Flags, after?.Flags)
+                    || !Equals(before?.OAuthFlags, after?.OAuthFlags)
+                    || !Equals(before?.PremiumType, after?.PremiumType)
+                    || !Equals(before?.Verified, after?.Verified)
+                    ;
             }
         }
     }

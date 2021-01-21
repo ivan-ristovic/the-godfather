@@ -22,28 +22,5 @@ namespace TheGodfather.Extensions
                 sb.AppendLine(activity.RichPresence.Details);
             return sb.ToString();
         }
-
-        public static bool IsDifferentThan(this DiscordActivity? @this, DiscordActivity? other)
-        {
-            if (@this is null || other is null)
-                return !ReferenceEquals(@this, other);
-
-            if (@this.ActivityType != other.ActivityType)
-                return true;
-
-            if (@this.CustomStatus?.Emoji?.Id != other.CustomStatus?.Emoji?.Id || @this.CustomStatus?.Name != other?.CustomStatus?.Name)
-                return true;
-
-            if (@this.Name != other?.Name)
-                return true;
-
-            if (@this.StreamUrl != other?.StreamUrl)
-                return true;
-
-            if (@this.RichPresence.IsDifferentThan(other.RichPresence))
-                return true;
-
-            return false;
-        }
     }
 }
