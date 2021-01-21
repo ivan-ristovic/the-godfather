@@ -254,6 +254,7 @@ namespace TheGodfather.EventListeners
                 .SelectMany(s => s.Guilds)
                 .Select(kvp => kvp.Value)
                 ?? Enumerable.Empty<DiscordGuild>();
+            Log.Debug("Logging user update: {User}", e.User);
             foreach (DiscordGuild guild in guilds) {
                 if (!await e.UserAfter.IsMemberOfAsync(guild))
                     continue;
