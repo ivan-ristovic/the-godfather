@@ -33,8 +33,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(BankAccount? other)
             => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as BankAccount);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as BankAccount);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.UserId);

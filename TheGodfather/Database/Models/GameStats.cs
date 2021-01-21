@@ -70,8 +70,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(GameStats? other)
             => !(other is null) && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as GameStats);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as GameStats);
 
         public override int GetHashCode()
             => this.UserId.GetHashCode();

@@ -34,8 +34,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(RssFeed? other)
             => other is { } && this.Id == other.Id;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as RssFeed);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as RssFeed);
 
         public override int GetHashCode()
             => this.Id.GetHashCode();

@@ -40,8 +40,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(StarboardMessage? other)
             => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as StarboardMessage);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as StarboardMessage);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.ChannelId, this.MessageId);

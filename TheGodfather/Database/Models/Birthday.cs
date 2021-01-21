@@ -38,8 +38,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(Birthday? other)
             => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as Birthday);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as Birthday);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.ChannelId, this.UserId);

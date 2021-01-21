@@ -18,8 +18,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(PrivilegedUser? other)
             => !(other is null) && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as PrivilegedUser);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as PrivilegedUser);
 
         public override int GetHashCode()
             => this.UserId.GetHashCode();

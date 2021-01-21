@@ -25,8 +25,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(BotStatus? other)
             => other is { } && this.Id == other.Id;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as BotStatus);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as BotStatus);
 
         public override int GetHashCode()
             => this.Id.GetHashCode();

@@ -28,8 +28,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(XpRank? other)
             => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as XpRank);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as XpRank);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.Rank);

@@ -43,8 +43,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(PurchasableItem? other)
             => other is { } && this.Id == other.Id;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as PurchasableItem);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as PurchasableItem);
 
         public override int GetHashCode()
             => this.Id.GetHashCode();

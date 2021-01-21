@@ -26,8 +26,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(XpCount? other)
             => other is { } && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as XpCount);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as XpCount);
 
         public override int GetHashCode()
             => this.UserId.GetHashCode();

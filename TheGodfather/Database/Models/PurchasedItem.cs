@@ -24,8 +24,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(PurchasedItem? other)
             => other is { } && this.ItemId == other.ItemId && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as PurchasedItem);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as PurchasedItem);
 
         public override int GetHashCode()
             => HashCode.Combine(this.ItemId, this.UserId);

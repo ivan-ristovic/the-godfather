@@ -90,8 +90,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(ExemptedBackupEntity? other)
             => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as ExemptedBackupEntity);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as ExemptedBackupEntity);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.ChannelId);

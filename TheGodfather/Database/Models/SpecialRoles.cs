@@ -26,8 +26,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(SpecialRole? other)
             => other is { } && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as SpecialRole);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as SpecialRole);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.RoleId);
@@ -57,8 +57,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(LevelRole? other)
             => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as LevelRole);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as LevelRole);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.Rank);
@@ -77,8 +77,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(ReactionRole? other)
             => other is { } && this.GuildId == other.GuildId && this.Emoji == other.Emoji;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as ReactionRole);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as ReactionRole);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.Emoji);

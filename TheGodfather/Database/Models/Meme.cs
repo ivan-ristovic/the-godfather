@@ -33,8 +33,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(Meme? other)
             => other is { } && this.GuildId == other.GuildId && this.Name == other.Name;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as Meme);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as Meme);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.Name);

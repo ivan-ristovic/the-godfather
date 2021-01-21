@@ -153,8 +153,8 @@ namespace TheGodfather.Database.Models
         public bool Equals(Chicken? other)
             => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
 
-        public override bool Equals(object? other)
-            => this.Equals(other as Chicken);
+        public override bool Equals(object? obj)
+            => this.Equals(obj as Chicken);
 
         public override int GetHashCode()
             => HashCode.Combine(this.GuildId, this.UserId);
