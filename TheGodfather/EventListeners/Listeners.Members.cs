@@ -245,6 +245,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
+            return;
             if (DiscordPresenceExtensions.IsDifferentThan(e.PresenceBefore, e.PresenceAfter))
                 return;
 
