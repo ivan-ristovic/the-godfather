@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Currency.Services
         {
             int change = this.rng.Next(StreetEarnLimit) + 1;
             TimeOfDay tod = this.FindCurrentTimeOfDay(gid);
-            if (this.rng.NextBool(tod == TimeOfDay.Evening ? 1 : 2)) {
+            if (this.rng.NextBool(tod == TimeOfDay.Night ? 2 : 1)) {
                 NegativeStreetWorkType streetType = this.rng.ChooseRandomEnumValue<NegativeStreetWorkType>();
                 await this.bas.ModifyBankAccountAsync(gid, uid, v => v - change);
                 return this.lcs.GetString(gid, $"fmt-work-streets-fail-{(int)streetType}", change);
