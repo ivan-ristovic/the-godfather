@@ -71,6 +71,7 @@ namespace TheGodfather.Extensions
             if (@this.Status != other.Status)
                 return true;
 
+            Serilog.Log.Debug("Client status: {@Before} => {@After}", @this.ClientStatus, other.ClientStatus);
             if (@this.ClientStatus is { } && other.ClientStatus is { }
                 && (@this.ClientStatus?.Desktop != other.ClientStatus?.Desktop
                  || @this.ClientStatus?.Mobile != other.ClientStatus?.Mobile

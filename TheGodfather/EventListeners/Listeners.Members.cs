@@ -245,7 +245,6 @@ namespace TheGodfather.EventListeners
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
-            return;
             if (DiscordPresenceExtensions.IsDifferentThan(e.PresenceBefore, e.PresenceAfter))
                 return;
 
@@ -265,7 +264,6 @@ namespace TheGodfather.EventListeners
                 emb.WithLocalizedTitle(DiscordEventType.PresenceUpdated, "evt-presence-upd", e.User);
                 emb.WithThumbnail(e.UserAfter.AvatarUrl);
 
-                emb.AddLocalizedTitleField("str-flags", e.UserAfter.Flags);
                 emb.AddLocalizedPropertyChangeField("str-name", e.UserBefore.Username, e.UserAfter.Username);
                 emb.AddLocalizedPropertyChangeField("str-discriminator", e.UserBefore.Discriminator, e.UserAfter.Discriminator);
                 if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
