@@ -39,8 +39,8 @@ namespace TheGodfather.Modules.Administration
             #region channel add category
             [Command("category"), UsesInteractivity]
             [Aliases("addcategory", "cat", "c", "cc", "+category", "+cat", "+c", "<c", "<<c")]
-            public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                    [RemainingText, Description("desc-chn-cat-name")] string name)
+            public async Task CreateCategoryAsync(CommandContext ctx,
+                                                 [RemainingText, Description("desc-chn-cat-name")] string name)
             {
                 await CheckPotentialChannelNameAsync(ctx, name);
                 DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildInvocationDetailsString());

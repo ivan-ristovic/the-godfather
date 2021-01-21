@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                             [Description("desc-member")] DiscordMember member,
                             [Description("desc-ban-msg-days-del")] int days,
                             [RemainingText, Description("desc-rsn")] string? reason = null)
-            => this.BanAsync(ctx, member, days, reason);
+            => this.BanAsync(ctx, member as DiscordUser, days, reason);
 
         [Command("ban"), Priority(1)]
         public Task BanAsync(CommandContext ctx,
