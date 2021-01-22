@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Reminders
             if (ids is null || !ids.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
 
-            IReadOnlyList<Reminder> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+            IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
             if (!reminders.Any())
                 throw new CommandFailedException(ctx, "cmd-err-remind-none");
 
@@ -110,31 +110,33 @@ namespace TheGodfather.Modules.Reminders
         #region remind list
         [Command("list"), Priority(1)]
         [Aliases("print", "show", "view", "ls", "l", "p")]
-        public Task ListAsync(CommandContext ctx,
-                             [Description("desc-chn-list")] DiscordChannel channel)
+        public async Task ListAsync(CommandContext ctx,
+                                   [Description("desc-chn-list")] DiscordChannel channel)
         {
             this.ThrowIfDM(ctx, channel);
 
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
 
-            IEnumerable<Reminder> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id)
+            IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
+            IEnumerable<Reminder> orderedReminders = reminders
                 .Where(r => r.ChannelId == channel.Id)
                 .OrderBy(r => r.TimeUntilExecution).ThenBy(r => r.Id)
                 ;
 
-            return this.PaginateRemindersAsync(ctx, reminders, channel);
+            await this.PaginateRemindersAsync(ctx, orderedReminders, channel);
         }
 
         [Command("list"), Priority(0)]
-        public Task ListAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
-            IEnumerable<Reminder> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id)
+            IEnumerable<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
+            IEnumerable<Reminder> orderedReminders = reminders
                 .Where(r => r.ChannelId == 0)
                 .OrderBy(r => r.TimeUntilExecution).ThenBy(r => r.Id)
                 ;
 
-            return this.PaginateRemindersAsync(ctx, reminders);
+            await this.PaginateRemindersAsync(ctx, orderedReminders);
         }
         #endregion
 
@@ -187,8 +189,11 @@ namespace TheGodfather.Modules.Reminders
                 throw new CommandFailedException(ctx, "err-dm-fail");
 
             bool priv = await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id);
-            if (!priv && !ctx.Client.IsOwnedBy(ctx.User) && this.Service.GetRemindTasksForUser(ctx.User.Id).Count >= 20)
-                throw new CommandFailedException(ctx, "cmd-err-remind-max", 20);
+            if (!priv && !ctx.Client.IsOwnedBy(ctx.User)) {
+                IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
+                if (reminders.Count >= 20)
+                    throw new CommandFailedException(ctx, "cmd-err-remind-max", 20);
+            }
 
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 

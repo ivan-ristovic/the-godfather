@@ -195,7 +195,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<Reminder>> GetRemindTasksForUser(ulong uid)
+        public async Task<IReadOnlyList<Reminder>> GetRemindTasksForUserAsync(ulong uid)
         {
             List<Reminder> reminders;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())

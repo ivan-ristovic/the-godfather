@@ -80,14 +80,14 @@ namespace TheGodfather.Modules.Reminders
 
 
             #region internals
-            private Task InternalListAsync(CommandContext ctx, TimeSpan until, DiscordChannel? channel)
+            private async Task InternalListAsync(CommandContext ctx, TimeSpan until, DiscordChannel? channel)
             {
                 this.ThrowIfDM(ctx, channel);
 
                 if (channel is { } && channel.Type != ChannelType.Text)
                     throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
 
-                IReadOnlyList<Reminder> reminders = this.Service.GetRemindTasksForUser(ctx.User.Id);
+                IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
 
                 IEnumerable<Reminder> filtered = reminders;
                 if (channel is { })
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Reminders
                     .OrderBy(r => r.TimeUntilExecution).ThenBy(r => r.Id)
                     ;
 
-                return this.PaginateRemindersAsync(ctx, filtered, channel);
+                await this.PaginateRemindersAsync(ctx, filtered, channel);
             }
             #endregion
         }
