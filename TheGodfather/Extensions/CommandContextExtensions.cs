@@ -110,7 +110,7 @@ namespace TheGodfather.Extensions
             var pages = new List<Page>();
             int pageCount = (arr.Length - 1) / pageSize + 1;
             int from = 0;
-            string title = key = ls.GetString(ctx.Guild?.Id, key, args);
+            string title = ls.GetString(ctx.Guild?.Id, key, args);
             for (int i = 1; i <= pageCount; i++) {
                 int to = from + pageSize > arr.Length ? arr.Length : from + pageSize;
                 pages.Add(new Page(embed: new DiscordEmbedBuilder {

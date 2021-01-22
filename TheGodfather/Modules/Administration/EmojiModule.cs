@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 string name = gemoji.GetDiscordName();
-                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildInvocationDetailsString(reason));
+                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildInvocationDetailsString(reason));
                 await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-edit", Formatter.Bold(name));
             } catch (NotFoundException) {
                 throw new CommandFailedException(ctx, "cmd-err-emoji-del-404");

@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedTitleField("str-premium-type", member.PremiumType?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTimestampField("str-premium-since", member.PremiumSince, inline: true);
                 emb.AddLocalizedTitleField("str-email", member.Email, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-activity", member.Presence.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-activity", member.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
                 if (member.Roles.Any())
                     emb.AddLocalizedTitleField("str-roles", member.Roles.Select(r => r.Mention).JoinWith(", "));
             });

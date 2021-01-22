@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region webhook add
-        [Command("add"), Priority(7)]
+        [Command("add"), Priority(6)]
         [Aliases("create", "c", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
                             [Description("desc-avatar-url")] Uri? avatarUrl,
@@ -41,49 +41,43 @@ namespace TheGodfather.Modules.Administration
                             [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
 
-        [Command("add"), Priority(6)]
-        public Task AddAsync(CommandContext ctx,
-                            [Description("desc-avatar-url")] Uri avatarUrl,
-                            [Description("desc-chn-wh-name")] string name,
-                            [Description("desc-chn-wh-add")] DiscordChannel channel,
-                            [RemainingText, Description("desc-rsn")] string? reason = null)
-            => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
-
         [Command("add"), Priority(5)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-chn-wh-add")] DiscordChannel channel,
                             [Description("desc-avatar-url")] Uri avatarUrl,
                             [Description("desc-chn-wh-name")] string name,
+                            [Description("desc-chn-wh-add")] DiscordChannel channel,
                             [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
 
         [Command("add"), Priority(4)]
         public Task AddAsync(CommandContext ctx,
                             [Description("desc-chn-wh-add")] DiscordChannel channel,
-                            [Description("desc-chn-wh-name")] string name,
                             [Description("desc-avatar-url")] Uri avatarUrl,
+                            [Description("desc-chn-wh-name")] string name,
                             [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
 
         [Command("add"), Priority(3)]
         public Task AddAsync(CommandContext ctx,
+                            [Description("desc-chn-wh-add")] DiscordChannel channel,
                             [Description("desc-chn-wh-name")] string name,
                             [Description("desc-avatar-url")] Uri avatarUrl,
                             [RemainingText, Description("desc-rsn")] string? reason = null)
-            => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, reason);
+            => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
 
         [Command("add"), Priority(2)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-avatar-url")] Uri avatarUrl,
                             [Description("desc-chn-wh-name")] string name,
+                            [Description("desc-avatar-url")] Uri avatarUrl,
                             [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, reason);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
                             [Description("desc-avatar-url")] Uri avatarUrl,
-                            [RemainingText, Description("desc-chn-wh-name")] string name)
-            => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, null);
+                            [Description("desc-chn-wh-name")] string name,
+                            [RemainingText, Description("desc-rsn")] string? reason = null)
+            => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, reason);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
@@ -92,19 +86,19 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region webhook delete
-        [Command("delete"), Priority(4)]
+        [Command("delete"), Priority(3)]
         public Task DeleteAsync(CommandContext ctx,
                                [Description("desc-chn-wh-del")] DiscordChannel channel,
                                [RemainingText, Description("desc-chn-wh-name")] string name)
             => this.DeleteAsync(ctx, name, channel);
 
-        [Command("delete"), Priority(3)]
+        [Command("delete"), Priority(2)]
         public Task DeleteAsync(CommandContext ctx,
                                [Description("desc-chn-wh-del")] DiscordChannel channel,
                                [Description("str-id")] ulong whid)
             => this.DeleteAsync(ctx, whid, channel);
 
-        [Command("delete"), Priority(2)]
+        [Command("delete"), Priority(1)]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("desc-chn-wh-name")] string name,
@@ -125,7 +119,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor, "fmt-wh-del", Formatter.Bold(Formatter.Strip(name)));
         }
 
-        [Command("delete"), Priority(1)]
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("str-id")] ulong whid,
                                      [Description("desc-chn-wh-del")] DiscordChannel? channel = null)
@@ -144,11 +138,6 @@ namespace TheGodfather.Modules.Administration
             await wh.DeleteAsync();
             await ctx.InfoAsync(this.ModuleColor, "fmt-wh-del", Formatter.Bold(Formatter.Strip(wh.Name)));
         }
-
-        [Command("delete"), Priority(0)]
-        public Task DeleteAsync(CommandContext ctx,
-                               [RemainingText, Description("desc-chn-wh-name")] string name)
-            => this.DeleteAsync(ctx, name, ctx.Channel);
         #endregion
 
         #region webhook deleteall

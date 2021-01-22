@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Administration
             IEnumerable<string> toRemove = roles
                 .Where(kvp => kvp.Role is null)
                 .Select(kvp => kvp.ReactionRole.Emoji)
-                .Union(lrs.Select(e => e.Emoji).Except(ctx.Guild.Emojis.Values.Select(e => e.GetDiscordName())));
+                .Union(lrs.Select(e => e.Emoji).Except(ctx.Guild.Emojis.Values.Select(e => e.GetDiscordName())))
                 ;
 
             if (toRemove.Any()) {

@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Currency.Extensions
             sb.AppendLine();
 
             for (int i = 0; i < 3; i++) {
-                if (i % 2 == 1)
+                if (i % 2 != 0)
                     sb.Append(Emojis.Joystick);
                 else
                     sb.Append(Emojis.BlackSquare);

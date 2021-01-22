@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region role create
-        [Command("create"), Priority(2), UsesInteractivity]
+        [Command("create"), Priority(1), UsesInteractivity]
         [Aliases("new", "add", "a", "+", "+=", "<<", "<", "<-", "<=")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateAsync(CommandContext ctx,
@@ -51,16 +51,11 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor);
         }
 
-        [Command("create"), Priority(1)]
+        [Command("create"), Priority(0)]
         public Task CreateAsync(CommandContext ctx,
                                [Description("desc-color")] DiscordColor color,
                                [RemainingText, Description("desc-name")] string name)
             => this.CreateAsync(ctx, name, color, false, false);
-
-        [Command("create"), Priority(0)]
-        public Task CreateAsync(CommandContext ctx,
-                               [RemainingText, Description("desc-name")] string name)
-            => this.CreateAsync(ctx, name, null, false, false);
         #endregion
 
         #region role delete

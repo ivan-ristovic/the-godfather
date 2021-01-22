@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
         public sealed class QuizModule : TheGodfatherServiceModule<ChannelEventService>
         {
             #region game quiz
-            [GroupCommand, Priority(3)]
+            [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-game-quiz-cat-id")] int id,
                                                [Description("desc-game-quiz-amount")] int amount = 10,
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizGame(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 await this.RunQuizAsync(ctx, quiz);
             }
-            [GroupCommand, Priority(2)]
+            [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-game-quiz-cat-id")] string category,
                                                [Description("desc-game-quiz-diff")] int diff = 0,
@@ -60,11 +60,6 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException(ctx, "cmd-err-game-quiz-cat");
                 await this.ExecuteGroupAsync(ctx, id.Value, amount, diff);
             }
-
-            [GroupCommand, Priority(1)]
-            public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("desc-game-quiz-cat-id")] string category)
-                => string.IsNullOrWhiteSpace(category) ? this.ExecuteGroupAsync(ctx) : this.ExecuteGroupAsync(ctx, category, amount: 10);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)

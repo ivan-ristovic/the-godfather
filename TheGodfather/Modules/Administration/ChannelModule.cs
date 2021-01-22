@@ -411,7 +411,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region channel setname
-        [Command("setname"), Priority(3)]
+        [Command("setname"), Priority(2)]
         [Aliases("settitle", "rename", "changename", "rn", "rnm", "name", "mv")]
         public Task RenameAsync(CommandContext ctx,
                                [Description("desc-chn-mod")] DiscordChannel channel,
@@ -419,19 +419,12 @@ namespace TheGodfather.Modules.Administration
                                [RemainingText, Description("desc-rsn")] string? reason = null)
             => InternalModifyNameAsync(ctx, channel, name, reason);
 
-        [Command("setname"), Priority(2)]
+        [Command("setname"), Priority(1)]
         public Task RenameAsync(CommandContext ctx,
                                [Description("str-name")] string name,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [RemainingText, Description("desc-rsn")] string? reason = null)
             => InternalModifyNameAsync(ctx, channel, name, reason);
-
-        [Command("setname"), Priority(1)]
-        public Task RenameAsync(CommandContext ctx,
-                               [Description("desc-chn-mod")] DiscordChannel channel,
-                               [RemainingText, Description("str-name")] string name)
-            => InternalModifyNameAsync(ctx, channel, name, null);
-
 
         [Command("setname"), Priority(0)]
         public Task RenameAsync(CommandContext ctx,
