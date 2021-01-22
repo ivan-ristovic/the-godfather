@@ -5,12 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
-using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Common;
-using TaskExecutorDictionary = System.Collections.Concurrent.ConcurrentDictionary<int, TheGodfather.Services.Common.ScheduledTaskExecutor>;
 
 namespace TheGodfather.Services
 {
@@ -37,6 +37,8 @@ namespace TheGodfather.Services
             } catch (Exception e) {
                 Log.Error(e, "Loading scheduled tasks failed");
             }
+
+            @this.LastReloadTime = DateTimeOffset.Now;
 
 
             void RegisterTasks(IReadOnlyDictionary<int, GuildTask> tasks)
@@ -67,13 +69,14 @@ namespace TheGodfather.Services
 
         public bool IsDisabled => false;
         public TimeSpan ReloadSpan { get; }
+        public DateTimeOffset LastReloadTime { get; private set; }
 
         private readonly DiscordShardedClient client;
         private readonly DbContextBuilder dbb;
         private readonly LocalizationService lcs;
         private readonly AsyncExecutionService async;
-        private readonly TaskExecutorDictionary tasks;
-        private readonly ConcurrentDictionary<ulong, TaskExecutorDictionary> reminders;
+        private readonly ConcurrentDictionary<int, ScheduledTaskExecutor> tasks;
+        private readonly ConcurrentDictionary<int, ScheduledTaskExecutor> reminders;
         private Timer? loadTimer;
 
 
@@ -83,8 +86,9 @@ namespace TheGodfather.Services
             this.dbb = dbb;
             this.lcs = lcs;
             this.async = async;
-            this.tasks = new TaskExecutorDictionary();
-            this.reminders = new ConcurrentDictionary<ulong, TaskExecutorDictionary>();
+            this.tasks = new ConcurrentDictionary<int, ScheduledTaskExecutor>();
+            this.reminders = new ConcurrentDictionary<int, ScheduledTaskExecutor>();
+            this.LastReloadTime = DateTimeOffset.Now;
             this.ReloadSpan = TimeSpan.FromMinutes(5);
             if (start)
                 this.Start();
@@ -95,10 +99,8 @@ namespace TheGodfather.Services
             this.loadTimer?.Dispose();
             foreach ((_, ScheduledTaskExecutor texec) in this.tasks)
                 texec.Dispose();
-            foreach ((_, TaskExecutorDictionary reminders) in this.reminders) {
-                foreach ((_, ScheduledTaskExecutor texec) in this.tasks)
-                    texec.Dispose();
-            }
+            foreach ((_, ScheduledTaskExecutor texec) in this.reminders)
+                texec.Dispose();
         }
 
 
@@ -119,7 +121,9 @@ namespace TheGodfather.Services
                 } else {
                     throw new ArgumentException("Unknown scheduled task type");
                 }
-                texec = this.CreateTaskExecutor(task);
+
+                if (DateTimeOffset.Now + task.TimeUntilExecution <= this.LastReloadTime + this.ReloadSpan)
+                    texec = this.CreateTaskExecutor(task);
             } catch (Exception e) {
                 texec?.Dispose();
                 Log.Warning(e, "Scheduling tasks failed");
@@ -129,6 +133,7 @@ namespace TheGodfather.Services
 
         public async Task UnscheduleAsync(ScheduledTask task)
         {
+
             switch (task) {
                 case GuildTask _:
                     if (this.tasks.TryRemove(task.Id, out ScheduledTaskExecutor? taskExec))
@@ -141,14 +146,14 @@ namespace TheGodfather.Services
                     }
                     break;
                 case Reminder rem:
-                    if (this.reminders.TryGetValue(rem.UserId, out TaskExecutorDictionary? userReminders)) {
-                        if (userReminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))
-                            remindExec.Dispose();
-                        else
-                            Log.Warning("Failed to remove reminder from task collection: {ReminderId}", task.Id);
-                        if (!userReminders.Any())
-                            this.reminders.TryRemove(rem.UserId, out _);
-                    }
+                    if (rem.IsRepeating && rem.RepeatInterval < this.ReloadSpan)
+                        break;
+
+                    if (this.reminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))
+                        remindExec.Dispose();
+                    else
+                        Log.Warning("Failed to remove reminder from task collection: {ReminderId}", task.Id);
+
                     using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                         db.Reminders.Remove(new Reminder { Id = task.Id });
                         await db.SaveChangesAsync();
@@ -160,26 +165,42 @@ namespace TheGodfather.Services
             }
         }
 
-        public Task UnscheduleRemindersForUserAsync(ulong uid)
+        public async Task UnscheduleRemindersForUserAsync(ulong uid)
         {
-            return this.reminders.TryRemove(uid, out TaskExecutorDictionary? userReminders)
-                ? Task.WhenAll(userReminders.Select(kvp => this.UnscheduleAsync(kvp.Value.Job)))
-                : Task.CompletedTask;
+            List<Reminder> toRemove;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                toRemove = await db.Reminders.Where(r => r.UserIdDb == (long)uid).ToListAsync();
+                await db.Reminders.SafeRemoveRangeAsync(toRemove, e => new object[] { e.Id });
+                await db.SaveChangesAsync();
+            }
+
+            foreach (Reminder reminder in toRemove) {
+                if (this.reminders.TryRemove(reminder.Id, out ScheduledTaskExecutor? texec))
+                    await this.UnscheduleAsync(texec.Job);
+            }
         }
 
-        public Task UnscheduleRemindersForChannelAsync(ulong cid)
+        public async Task UnscheduleRemindersForChannelAsync(ulong cid)
         {
-            IEnumerable<ScheduledTaskExecutor> rs = this.reminders.Values.SelectMany(
-                kvp => kvp.Values.Where(t => t.Job is Reminder rem && rem.ChannelId == cid)
-            );
-            return Task.WhenAll(rs.Select(r => this.UnscheduleAsync(r.Job)));
+            List<Reminder> toRemove;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                toRemove = await db.Reminders.Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
+                await db.Reminders.SafeRemoveRangeAsync(toRemove, e => new object[] { e.Id });
+                await db.SaveChangesAsync();
+            }
+
+            foreach (Reminder reminder in toRemove) {
+                if (this.reminders.TryRemove(reminder.Id, out ScheduledTaskExecutor? texec))
+                    await this.UnscheduleAsync(texec.Job);
+            }
         }
 
-        public IReadOnlyList<Reminder> GetRemindTasksForUser(ulong uid)
+        public async Task<IReadOnlyList<Reminder>> GetRemindTasksForUser(ulong uid)
         {
-            return this.reminders.TryGetValue(uid, out TaskExecutorDictionary? userReminders)
-                ? userReminders.Select(kvp => kvp.Value.Job as Reminder).ToList().AsReadOnly()
-                : new List<Reminder>();
+            List<Reminder> reminders;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
+                reminders = await db.Reminders.Where(r => r.UserIdDb == (long)uid).ToListAsync();
+            return reminders.AsReadOnly();
         }
 
 
@@ -198,24 +219,28 @@ namespace TheGodfather.Services
         {
             var texec = new ScheduledTaskExecutor(this.client, this.lcs, this.async, task);
             texec.OnTaskExecuted += this.UnscheduleAsync;
-            this.RegisterExecutor(texec);
-            if (task.TimeUntilExecution > TimeSpan.Zero)
+            if (this.RegisterExecutor(texec) && !task.IsExecutionTimeReached)
                 texec.ScheduleExecution();
             return texec;
         }
 
-        private void RegisterExecutor(ScheduledTaskExecutor texec)
+        private bool RegisterExecutor(ScheduledTaskExecutor texec)
         {
             if (texec.Job is Reminder rem) {
                 Log.Debug("Attempting to register reminder {ReminderId} in channel {Channel} @ {ExecutionTime}", rem.Id, rem.ChannelId, rem.ExecutionTime);
-                this.reminders.GetOrAdd(rem.UserId, new TaskExecutorDictionary());
-                if (!this.reminders[rem.UserId].TryAdd(texec.Id, texec) && !rem.IsRepeating)
-                    Log.Warning("Reminder {Id} already exists in the collection for user {UserId}: {@Rems}", texec.Id, rem.UserId, this.reminders[rem.UserId]);
+                if (!this.reminders.TryAdd(texec.Id, texec)) {
+                    if (!rem.IsRepeating)
+                        Log.Warning("Reminder {Id} already exists in the collection for user {UserId}", texec.Id, rem.UserId);
+                    return false;
+                }
             } else {
                 Log.Debug("Attempting to register guild task {ReminderId} @ {ExecutionTime}", texec.Id, texec.Job.ExecutionTime);
-                if (!this.tasks.TryAdd(texec.Id, texec))
-                    Log.Warning("Guild task {Id} already exists in the collection for user {UserId}: {@Tasks}", texec.Id, this.tasks);
+                if (!this.tasks.TryAdd(texec.Id, texec)) {
+                    Log.Warning("Guild task {Id} already exists in the collection for user {UserId}", texec.Id);
+                    return false;
+                }
             }
+            return true;
         }
     }
 }

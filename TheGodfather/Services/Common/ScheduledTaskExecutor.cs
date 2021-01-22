@@ -120,12 +120,10 @@ namespace TheGodfather.Services.Common
             } catch (Exception e) {
                 Log.Debug(e, "Error while handling send message saved task");
             } finally {
-                if (!rem.IsRepeating) {
-                    try {
-                        this.async.Execute(this.OnTaskExecuted(this.Job));
-                    } catch (Exception e) {
-                        Log.Error(e, "Error while unscheduling send message saved task");
-                    }
+                try {
+                    this.async.Execute(this.OnTaskExecuted(this.Job));
+                } catch (Exception e) {
+                    Log.Error(e, "Error while unscheduling send message saved task");
                 }
             }
         }

@@ -18,7 +18,7 @@ namespace TheGodfather.Database.Models
             => Enum.GetName(typeof(ExemptedEntityType), type) ?? "Unknown";
     }
 
-    public abstract class ScheduledTask
+    public abstract class ScheduledTask : IEquatable<ScheduledTask>
     {
         [Key]
         [Column("id")]
@@ -40,10 +40,20 @@ namespace TheGodfather.Database.Models
 
         [NotMapped]
         public abstract TimeSpan TimeUntilExecution { get; }
+
+
+        public bool Equals(ScheduledTask? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? obj)
+            => this.Equals(obj as ScheduledTask);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 
     [Table("scheduled_tasks")]
-    public class GuildTask : ScheduledTask
+    public class GuildTask : ScheduledTask, IEquatable<GuildTask>
     {
         [ForeignKey("GuildConfig")]
         [Column("gid")]
@@ -65,10 +75,20 @@ namespace TheGodfather.Database.Models
             => this.ExecutionTime - DateTimeOffset.Now;
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public bool Equals(GuildTask? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? obj)
+            => this.Equals(obj as GuildTask);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 
     [Table("reminders")]
-    public class Reminder : ScheduledTask
+    public class Reminder : ScheduledTask, IEquatable<Reminder>
     {
         public const int MessageLimit = 256;
 
@@ -99,5 +119,15 @@ namespace TheGodfather.Database.Models
                 return TimeSpan.FromTicks(this.RepeatInterval.Ticks - diff.Ticks % this.RepeatInterval.Ticks);
             }
         }
+
+
+        public bool Equals(Reminder? other)
+            => other is { } && this.Id == other.Id;
+
+        public override bool Equals(object? obj)
+            => this.Equals(obj as Reminder);
+
+        public override int GetHashCode()
+            => this.Id.GetHashCode();
     }
 }

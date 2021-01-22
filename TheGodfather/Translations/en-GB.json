@@ -900,6 +900,7 @@
   "fmt-remind-exec": "{0}'s reminder:\n\n{1}",
   "fmt-remind-miss": "I have been asleep and failed to remind you at {0} to:\n\n{1}",
   "fmt-remind-rep": "I will repeatedly remind you every **{0}** to:\n\n{1}",
+  "fmt-remind-rep-c": "I will repeatedly remind **{0}** every **{1}** to:\n\n{2}",
   "fmt-results": "Results:\n\n{0}",
   "fmt-role-perms-none": "You cannot view permissions for roles which have position above your highest role position.",
   "fmt-rps": "{0} {1} | {2} {3}",
