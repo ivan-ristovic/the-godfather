@@ -44,8 +44,7 @@ namespace TheGodfather.Modules.Games.Common
                 emb.WithColor(DiscordColor.Teal);
                 emb.AddLocalizedTitleField("str-category", question.Category, inline: false);
 
-                var answers = new List<string>(question.IncorrectAnswers) { question.CorrectAnswer };
-                answers.Shuffle();
+                var answers = new List<string>(question.IncorrectAnswers) { question.CorrectAnswer }.Shuffle().ToList();
 
                 foreach ((string answer, int index) in answers.Select((a, i) => (a, i)))
                     emb.AddLocalizedTitleField("fmt-game-quiz-a", answer, inline: true, titleArgs: index + 1);
@@ -59,7 +58,7 @@ namespace TheGodfather.Modules.Games.Common
                 var failed = new ConcurrentHashSet<ulong>();
                 InteractivityResult<MessageReactionAddEventArgs> res = await this.Interactivity.WaitForReactionAsync(
                     e => {
-                        if (e.User.IsBot || failed.Contains(e.User.Id))
+                        if (e.User.IsBot || failed.Contains(e.User.Id) || e.Message != msg)
                             return false;
                         int opt = options.IndexOf(e.Emoji);
                         if (opt == -1)

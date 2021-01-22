@@ -79,39 +79,39 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             TestDbProvider.SetupAndVerify(
                 setup: db => this.AddMockForbiddenNames(db),
                 verify: db => {
-                    IsForbidden(db, MockData.Ids[0], "cat", true);
-                    IsForbidden(db, MockData.Ids[0], "doG.", true);
-                    IsForbidden(db, MockData.Ids[0], "what a nice Cat, indeed.", true);
-                    IsForbidden(db, MockData.Ids[0], "a fiSh?? and a cAt???", true);
-                    IsForbidden(db, MockData.Ids[0], "i can haz spaces :)", true);
-                    IsForbidden(db, MockData.Ids[0], "what a cute doge!", true);
-                    IsForbidden(db, MockData.Ids[0], "doggy dooby doo", true);
-                    IsForbidden(db, MockData.Ids[0], "fapfapfapfap", true);
-                    IsForbidden(db, MockData.Ids[1], "cat", true);
-                    IsForbidden(db, MockData.Ids[1], "cat@catmail.com", true);
-                    IsForbidden(db, MockData.Ids[1], "a nice Doge", true);
-                    IsForbidden(db, MockData.Ids[1], "whyyyYyyyyyyyy", true);
-                    IsForbidden(db, MockData.Ids[2], "catmail@something.dot.com!", true);
-                    IsForbidden(db, MockData.Ids[2], "help.me.pls.dot.com?abc", true);
-                    IsForbidden(db, MockData.Ids[2], "no-way i will do that!", true);
-                    IsForbidden(db, MockData.Ids[2], "spam @every1", true);
+                    IsForbidden(MockData.Ids[0], "cat", true);
+                    IsForbidden(MockData.Ids[0], "doG.", true);
+                    IsForbidden(MockData.Ids[0], "what a nice Cat, indeed.", true);
+                    IsForbidden(MockData.Ids[0], "a fiSh?? and a cAt???", true);
+                    IsForbidden(MockData.Ids[0], "i can haz spaces :)", true);
+                    IsForbidden(MockData.Ids[0], "what a cute doge!", true);
+                    IsForbidden(MockData.Ids[0], "doggy dooby doo", true);
+                    IsForbidden(MockData.Ids[0], "fapfapfapfap", true);
+                    IsForbidden(MockData.Ids[1], "cat", true);
+                    IsForbidden(MockData.Ids[1], "cat@catmail.com", true);
+                    IsForbidden(MockData.Ids[1], "a nice Doge", true);
+                    IsForbidden(MockData.Ids[1], "whyyyYyyyyyyyy", true);
+                    IsForbidden(MockData.Ids[2], "catmail@something.dot.com!", true);
+                    IsForbidden(MockData.Ids[2], "help.me.pls.dot.com?abc", true);
+                    IsForbidden(MockData.Ids[2], "no-way i will do that!", true);
+                    IsForbidden(MockData.Ids[2], "spam @every1", true);
 
-                    IsForbidden(db, MockData.Ids[0], "caat", false);
-                    IsForbidden(db, MockData.Ids[0], "c4tz", false);
-                    IsForbidden(db, MockData.Ids[0], "i like c@t.", false);
-                    IsForbidden(db, MockData.Ids[0], "i like d0ges.", false);
-                    IsForbidden(db, MockData.Ids[0], "so fisshy...", false);
-                    IsForbidden(db, MockData.Ids[0], "dooggggy", false);
-                    IsForbidden(db, MockData.Ids[1], "whhy", false);
-                    IsForbidden(db, MockData.Ids[2], "mail@something.dot=com!", false);
-                    IsForbidden(db, MockData.Ids[2], "help.me.pls.dot&com?abc", false);
-                    IsForbidden(db, MockData.Ids[2], "no--way i will do that!", false);
-                    IsForbidden(db, MockData.Ids[2], "spam every1", false);
+                    IsForbidden(MockData.Ids[0], "caat", false);
+                    IsForbidden(MockData.Ids[0], "c4tz", false);
+                    IsForbidden(MockData.Ids[0], "i like c@t.", false);
+                    IsForbidden(MockData.Ids[0], "i like d0ges.", false);
+                    IsForbidden(MockData.Ids[0], "so fisshy...", false);
+                    IsForbidden(MockData.Ids[0], "dooggggy", false);
+                    IsForbidden(MockData.Ids[1], "whhy", false);
+                    IsForbidden(MockData.Ids[2], "mail@something.dot=com!", false);
+                    IsForbidden(MockData.Ids[2], "help.me.pls.dot&com?abc", false);
+                    IsForbidden(MockData.Ids[2], "no--way i will do that!", false);
+                    IsForbidden(MockData.Ids[2], "spam every1", false);
                 }
             );
 
 
-            void IsForbidden(TheGodfatherDbContext db, ulong gid, string name, bool forbidden)
+            void IsForbidden(ulong gid, string name, bool forbidden)
             {
                 Assert.That(this.Service.IsNameForbidden(gid, name, out ForbiddenName? fname), Is.EqualTo(forbidden));
                 if (forbidden) {

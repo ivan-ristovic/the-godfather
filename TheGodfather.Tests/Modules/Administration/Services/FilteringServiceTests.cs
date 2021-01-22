@@ -78,39 +78,39 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 setup: db => this.AddMockFilters(db),
                 alter: db => this.Service.LoadData(),
                 verify: db => {
-                    ContainsFilter(db, MockData.Ids[0], "cat", true);
-                    ContainsFilter(db, MockData.Ids[0], "doG.", true);
-                    ContainsFilter(db, MockData.Ids[0], "what a nice Cat, indeed.", true);
-                    ContainsFilter(db, MockData.Ids[0], "a fiSh?? and a cAt???", true);
-                    ContainsFilter(db, MockData.Ids[0], "i can haz spaces :)", true);
-                    ContainsFilter(db, MockData.Ids[0], "what a cute doge!", true);
-                    ContainsFilter(db, MockData.Ids[0], "doggy dooby doo", true);
-                    ContainsFilter(db, MockData.Ids[0], "fapfapfapfap", true);
-                    ContainsFilter(db, MockData.Ids[1], "cat", true);
-                    ContainsFilter(db, MockData.Ids[1], "cat@catmail.com", true);
-                    ContainsFilter(db, MockData.Ids[1], "a nice Doge", true);
-                    ContainsFilter(db, MockData.Ids[1], "whyyyYyyyyyyyy", true);
-                    ContainsFilter(db, MockData.Ids[2], "catmail@something.dot.com!", true);
-                    ContainsFilter(db, MockData.Ids[2], "help.me.pls.dot.com?abc", true);
-                    ContainsFilter(db, MockData.Ids[2], "no-way i will do that!", true);
-                    ContainsFilter(db, MockData.Ids[2], "spam @every1", true);
+                    ContainsFilter(MockData.Ids[0], "cat", true);
+                    ContainsFilter(MockData.Ids[0], "doG.", true);
+                    ContainsFilter(MockData.Ids[0], "what a nice Cat, indeed.", true);
+                    ContainsFilter(MockData.Ids[0], "a fiSh?? and a cAt???", true);
+                    ContainsFilter(MockData.Ids[0], "i can haz spaces :)", true);
+                    ContainsFilter(MockData.Ids[0], "what a cute doge!", true);
+                    ContainsFilter(MockData.Ids[0], "doggy dooby doo", true);
+                    ContainsFilter(MockData.Ids[0], "fapfapfapfap", true);
+                    ContainsFilter(MockData.Ids[1], "cat", true);
+                    ContainsFilter(MockData.Ids[1], "cat@catmail.com", true);
+                    ContainsFilter(MockData.Ids[1], "a nice Doge", true);
+                    ContainsFilter(MockData.Ids[1], "whyyyYyyyyyyyy", true);
+                    ContainsFilter(MockData.Ids[2], "catmail@something.dot.com!", true);
+                    ContainsFilter(MockData.Ids[2], "help.me.pls.dot.com?abc", true);
+                    ContainsFilter(MockData.Ids[2], "no-way i will do that!", true);
+                    ContainsFilter(MockData.Ids[2], "spam @every1", true);
 
-                    ContainsFilter(db, MockData.Ids[0], "caat", false);
-                    ContainsFilter(db, MockData.Ids[0], "c4tz", false);
-                    ContainsFilter(db, MockData.Ids[0], "i like c@t.", false);
-                    ContainsFilter(db, MockData.Ids[0], "i like d0ges.", false);
-                    ContainsFilter(db, MockData.Ids[0], "so fisshy...", false);
-                    ContainsFilter(db, MockData.Ids[0], "dooggggy", false);
-                    ContainsFilter(db, MockData.Ids[1], "whhy", false);
-                    ContainsFilter(db, MockData.Ids[2], "mail@something.dot=com!", false);
-                    ContainsFilter(db, MockData.Ids[2], "help.me.pls.dot&com?abc", false);
-                    ContainsFilter(db, MockData.Ids[2], "no--way i will do that!", false);
-                    ContainsFilter(db, MockData.Ids[2], "spam every1", false);
+                    ContainsFilter(MockData.Ids[0], "caat", false);
+                    ContainsFilter(MockData.Ids[0], "c4tz", false);
+                    ContainsFilter(MockData.Ids[0], "i like c@t.", false);
+                    ContainsFilter(MockData.Ids[0], "i like d0ges.", false);
+                    ContainsFilter(MockData.Ids[0], "so fisshy...", false);
+                    ContainsFilter(MockData.Ids[0], "dooggggy", false);
+                    ContainsFilter(MockData.Ids[1], "whhy", false);
+                    ContainsFilter(MockData.Ids[2], "mail@something.dot=com!", false);
+                    ContainsFilter(MockData.Ids[2], "help.me.pls.dot&com?abc", false);
+                    ContainsFilter(MockData.Ids[2], "no--way i will do that!", false);
+                    ContainsFilter(MockData.Ids[2], "spam every1", false);
                 }
             );
 
 
-            void ContainsFilter(TheGodfatherDbContext db, ulong gid, string text, bool filtered)
+            void ContainsFilter(ulong gid, string text, bool filtered)
             {
                 Assert.That(this.Service.TextContainsFilter(gid, text, out Filter? filter), Is.EqualTo(filtered));
                 if (filtered) {
