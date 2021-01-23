@@ -37,36 +37,46 @@ ask() {
 
 RED='\033[0;31m'
 NC='\033[0m'
-
-echo "!> Updating... "
-git pull > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-	(>&2 echo -e "${RED}error:${NC} Failed to sync the repository (git pull cannot be executed due to conflicts)!")
-	if ask "!> Force the sync of the repository (recommended)?"; then
-		git fetch origin
-		git reset --hard origin/master
-		if ask "!> Clean all auxiliary files and directories (this will delete your bot config)?"; then
-			git clean -fdx
-		fi
-	else
-		exit 1
-	fi
-fi
+EXC=101
 
 cd TheGodfather
 
-echo "!> Building (this may take a while)... "
-dotnet build > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-	(>&2 echo -e "${RED}critical:${NC} Failed to build the bot. This should not happen.")
-	exit $?;
-fi
+while [ $EXC -ne 0 ]; do
 
-echo "!> Updating the database... "
-dotnet ef database update > /dev/null 2>&1
+    if [ $EXC -eq 101 ]; then
+        echo "!> Updating... "
+        git pull > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+	        (>&2 echo -e "${RED}error:${NC} Failed to sync the repository (git pull cannot be executed due to conflicts)!")
+	        if ask "!> Force the sync of the repository (recommended)?"; then
+		        git fetch origin
+		        git reset --hard origin/master
+		        if ask "!> Clean all auxiliary files and directories (this will delete your bot config)?"; then
+			        git clean -fdx
+		        fi
+	        else
+		        exit 1
+	        fi
+        fi
+    fi
 
-echo "!> All done! Starting the bot... "
-until dotnet run; do
-	echo "!> TheGodfather crashed with exit code $?. Relaunching in 5 seconds..." >&2
-	sleep 5
+    echo "!> Building (this may take a while)... "
+    dotnet.exe build > /dev/null
+    if [ $? -ne 0 ]; then
+	    (>&2 echo -e "${RED}critical:${NC} Failed to build the bot. This should not happen.")
+	    exit $?;
+    fi
+
+    echo "!> Updating the database... "
+    dotnet.exe ef database update > /dev/null
+
+    echo "!> All done! Starting the bot... "
+    dotnet.exe run
+    EXC=$?
+
+    if [ $EXC -ne 0 ]; then
+	    echo "!> TheGodfather exited with code $EXC. Relaunching in 5 seconds..." >&2
+    fi
+	
+    sleep 5
 done

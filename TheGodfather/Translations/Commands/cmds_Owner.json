@@ -128,6 +128,11 @@
       [ "arg-name" ]
     ]
   },
+  "owner restart": {
+    "usage": [
+      []
+    ]
+  },
   "owner sendmessage": {
     "usage": [
       [ "arg-send-uc" ],
@@ -149,6 +154,11 @@
     ]
   },
   "owner toggleignore": {
+    "usage": [
+      []
+    ]
+  },
+  "owner update": {
     "usage": [
       []
     ]

@@ -610,6 +610,20 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
+        #region restart
+        [Command("restart")]
+        [RequirePrivilegedUser]
+        public Task RestartAsync(CommandContext ctx)
+            => this.ExitAsync(ctx, 100);
+        #endregion
+
+        #region update
+        [Command("update")]
+        [RequirePrivilegedUser]
+        public Task UpdateAsync(CommandContext ctx)
+            => this.ExitAsync(ctx, 101);
+        #endregion
+
         #region uptime
         [Command("uptime")]
         [RequirePrivilegedUser]
