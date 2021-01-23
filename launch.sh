@@ -61,17 +61,17 @@ while [ $EXC -ne 0 ]; do
     fi
 
     echo "!> Building (this may take a while)... "
-    dotnet.exe build > /dev/null
+    dotnet build > /dev/null
     if [ $? -ne 0 ]; then
 	    (>&2 echo -e "${RED}critical:${NC} Failed to build the bot. This should not happen.")
 	    exit $?;
     fi
 
     echo "!> Updating the database... "
-    dotnet.exe ef database update > /dev/null
+    dotnet ef database update > /dev/null
 
     echo "!> All done! Starting the bot... "
-    dotnet.exe run
+    dotnet run
     EXC=$?
 
     if [ $EXC -ne 0 ]; then
