@@ -44,15 +44,15 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-am-enabled");
+                        emb.WithLocalizedDescription("evt-am-enable");
                         emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
                         emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-am-disabled");
+                        emb.WithLocalizedDescription("evt-am-disable");
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-am-enabled" : "evt-am-disabled");
+                await ctx.InfoAsync(enable ? "evt-am-enable" : "evt-am-disable");
             }
 
             [GroupCommand, Priority(2)]

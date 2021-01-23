@@ -47,16 +47,16 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-af-enabled");
+                        emb.WithLocalizedDescription("evt-af-enable");
                         emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
                         emb.AddLocalizedTitleField("str-cooldown", settings.Cooldown, inline: true);
                         emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-af-disabled");
+                        emb.WithLocalizedDescription("evt-af-disable");
                     }
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-af-enabled" : "evt-af-disabled");
+                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-af-enable" : "evt-af-disable");
             }
 
             [GroupCommand, Priority(4)]
