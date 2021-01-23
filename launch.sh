@@ -67,10 +67,7 @@ while [ $EXC -ne 0 ]; do
 	    exit $?;
     fi
 
-    echo "!> Updating the database... "
-    dotnet ef database update > /dev/null
-
-    echo "!> All done! Starting the bot... "
+    echo "!> Starting the bot... "
     dotnet run
     EXC=$?
 

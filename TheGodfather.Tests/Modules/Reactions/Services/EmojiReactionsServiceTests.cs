@@ -117,16 +117,12 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                     Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
                     Assert.That(ers.Select(er => er.Id), Is.Unique);
-                    var x =
-                        db.EmojiReactions
-                          .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
-                          .Include(er => er.DbTriggers)
-                          .AsEnumerable();
+                    IEnumerable<EmojiReaction> x = db.EmojiReactions
+                        .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
+                        .Include(er => er.DbTriggers)
+                        .AsEnumerable();
                     Assert.That(
-                        x
-                          .Single(er => er.Response == Emojis.Information.GetDiscordName() &&
-                                        er.DbTriggers.Single().Trigger == "test"
-                          ),
+                        x.Single(er => er.Response == Emojis.Information.GetDiscordName() && er.DbTriggers.Single().Trigger == "test"),
                         Is.Not.Null
                     );
                     return Task.CompletedTask;
