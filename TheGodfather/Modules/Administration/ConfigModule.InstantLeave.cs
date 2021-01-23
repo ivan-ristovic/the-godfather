@@ -56,7 +56,10 @@ namespace TheGodfather.Modules.Administration
             public Task ExecuteGroupAsync(CommandContext ctx)
             {
                 return ctx.WithGuildConfigAsync(
-                    gcfg => ctx.InfoAsync(this.ModuleColor, "fmt-settings-rl", gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization))
+                    gcfg => ctx.RespondWithLocalizedEmbedAsync(emb => {
+                        emb.WithDescription(gcfg.AntiInstantLeaveSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithColor(this.ModuleColor);
+                    })
                 );
             }
             #endregion

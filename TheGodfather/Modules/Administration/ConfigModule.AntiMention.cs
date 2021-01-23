@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable)
-                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick);
+                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.TemporaryMute);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
                         emb.WithLocalizedTitle("str-antimention");
-                        emb.WithLocalizedDescription("fmt-settings-am", gcfg.AntiMentionSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithDescription(gcfg.AntiMentionSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
                             emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);

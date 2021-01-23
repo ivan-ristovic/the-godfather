@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games
                                          [Description("desc-game-ms-bombs")] int bombs = 10)
             {
                 if (rows < 4 || rows > 9 || cols < 4 || cols > 12)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-ms-dim", 4, 9, 4, 12);
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-game-ms-dim", 4, 9, 4, 12);
 
                 try {
                     var field = new MinesweeperField(rows, cols, bombs);

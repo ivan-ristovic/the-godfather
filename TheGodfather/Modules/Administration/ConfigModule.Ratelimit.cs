@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
                         emb.WithLocalizedTitle("str-ratelimit");
-                        emb.WithLocalizedDescription("fmt-settings-rl", gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithDescription(gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
                             emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
