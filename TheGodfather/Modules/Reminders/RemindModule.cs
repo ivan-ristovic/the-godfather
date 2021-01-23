@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Reminders
             if (!reminders.Any())
                 throw new CommandFailedException(ctx, "cmd-err-remind-none");
 
-            await Task.WhenAll(reminders.Where(r => r.ChannelId == channel.Id).Select(r => this.Service.UnscheduleAsync(r)));
+            await Task.WhenAll(reminders.Where(r => r.ChannelId == channel.Id).Select(r => this.Service.UnscheduleAsync(r, force: true)));
             await ctx.InfoAsync(this.ModuleColor);
         }
 
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Reminders
             if (!reminders.Any())
                 throw new CommandFailedException(ctx, "cmd-err-remind-none");
 
-            await Task.WhenAll(reminders.Where(r => r.ChannelId == 0).Select(r => this.Service.UnscheduleAsync(r)));
+            await Task.WhenAll(reminders.Where(r => r.ChannelId == 0).Select(r => this.Service.UnscheduleAsync(r, force: true)));
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion

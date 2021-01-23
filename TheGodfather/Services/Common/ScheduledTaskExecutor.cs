@@ -16,7 +16,7 @@ namespace TheGodfather.Services.Common
         public int Id => this.Job.Id;
         public ScheduledTask Job { get; }
 
-        public delegate Task TaskExecuted(ScheduledTask task);
+        public delegate Task TaskExecuted(ScheduledTask task, bool force);
         public event TaskExecuted OnTaskExecuted;
 
         private readonly DiscordShardedClient client;
@@ -31,7 +31,7 @@ namespace TheGodfather.Services.Common
             this.lcs = lcs;
             this.async = async;
             this.Job = task;
-            this.OnTaskExecuted += task => Task.CompletedTask;
+            this.OnTaskExecuted += (task, _) => Task.CompletedTask;
         }
 
 
@@ -121,7 +121,7 @@ namespace TheGodfather.Services.Common
                 Log.Debug(e, "Error while handling send message saved task");
             } finally {
                 try {
-                    this.async.Execute(this.OnTaskExecuted(this.Job));
+                    this.async.Execute(this.OnTaskExecuted(this.Job, false));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling send message saved task");
                 }
@@ -141,7 +141,7 @@ namespace TheGodfather.Services.Common
                 Log.Debug(e, "Error while handling unban saved task");
             } finally {
                 try {
-                    this.async.Execute(this.OnTaskExecuted(this.Job));
+                    this.async.Execute(this.OnTaskExecuted(this.Job, false));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unban saved task");
                 }
@@ -165,7 +165,7 @@ namespace TheGodfather.Services.Common
                 Log.Debug(e, "Error while handling unmute saved task");
             } finally {
                 try {
-                    this.async.Execute(this.OnTaskExecuted(this.Job));
+                    this.async.Execute(this.OnTaskExecuted(this.Job, false));
                 } catch (Exception e) {
                     Log.Error(e, "Error while unscheduling unmute saved task");
                 }

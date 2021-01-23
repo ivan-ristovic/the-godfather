@@ -131,9 +131,8 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task UnscheduleAsync(ScheduledTask task)
+        public async Task UnscheduleAsync(ScheduledTask task, bool force = false)
         {
-
             switch (task) {
                 case GuildTask _:
                     if (this.tasks.TryRemove(task.Id, out ScheduledTaskExecutor? taskExec))
@@ -146,7 +145,7 @@ namespace TheGodfather.Services
                     }
                     break;
                 case Reminder rem:
-                    if (rem.IsRepeating && rem.RepeatInterval < this.ReloadSpan)
+                    if (!force && rem.IsRepeating && rem.RepeatInterval < this.ReloadSpan)
                         break;
 
                     if (this.reminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))
