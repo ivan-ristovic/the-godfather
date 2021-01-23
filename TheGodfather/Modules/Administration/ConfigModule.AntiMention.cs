@@ -18,41 +18,41 @@ namespace TheGodfather.Modules.Administration
 {
     public sealed partial class ConfigModule
     {
-        [Group("antispam")]
-        [Aliases("as")]
-        public sealed class AntispamModule : TheGodfatherServiceModule<AntispamService>
+        [Group("antimention")]
+        [Aliases("am")]
+        public sealed class AntiMentionModule : TheGodfatherServiceModule<AntiMentionService>
         {
-            #region config antispam
+            #region config antimention
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-enable")] bool enable,
                                                [Description("desc-sens")] short sens,
                                                [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.TemporaryMute)
             {
-                if (sens is < AntispamSettings.MinSensitivity or > AntispamSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                if (sens is < AntiMentionSettings.MinSensitivity or > AntiMentionSettings.MaxSensitivity)
+                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity);
 
-                var settings = new AntispamSettings {
+                var settings = new AntiMentionSettings {
                     Action = action,
                     Enabled = enable,
                     Sensitivity = sens
                 };
 
-                await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntispamSettings = settings);
+                await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntiMentionSettings = settings);
 
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-as-enabled");
+                        emb.WithLocalizedDescription("evt-am-enabled");
                         emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
                         emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-as-disabled");
+                        emb.WithLocalizedDescription("evt-am-disabled");
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-as-enabled" : "evt-as-disabled");
+                await ctx.InfoAsync(enable ? "evt-am-enabled" : "evt-am-disabled");
             }
 
             [GroupCommand, Priority(2)]
@@ -74,8 +74,8 @@ namespace TheGodfather.Modules.Administration
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                        emb.WithLocalizedTitle("str-antispam");
-                        emb.WithLocalizedDescription("fmt-settings-as", gcfg.AntispamSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithLocalizedTitle("str-antimention");
+                        emb.WithLocalizedDescription("fmt-settings-am", gcfg.AntiMentionSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
                             emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
@@ -84,14 +84,14 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-            #region config antispam action
+            #region config antimention action
             [Command("action")]
             [Aliases("setaction", "setact", "act", "a")]
             public async Task SetActionAsync(CommandContext ctx,
                                             [Description("desc-punish-action")] PunishmentAction? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-as-action", gcfg.AntispamAction.Humanize()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-am-action", gcfg.AntispamAction.Humanize()));
                     return;
                 }
 
@@ -102,26 +102,26 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-as-action", action.Value.Humanize());
+                    emb.WithLocalizedDescription("evt-am-action", action.Value.Humanize());
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-as-action", action.Value.Humanize());
+                await ctx.InfoAsync(this.ModuleColor, "evt-am-action", action.Value.Humanize());
             }
             #endregion
 
-            #region config antispam sensitivity
+            #region config antimention sensitivity
             [Command("sensitivity")]
             [Aliases("setsensitivity", "setsens", "sens", "s")]
             public async Task SetSensitivityAsync(CommandContext ctx,
                                                  [Description("desc-sens")] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-as-sens", gcfg.AntispamSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-am-sens", gcfg.AntispamSensitivity));
                     return;
                 }
 
-                if (sens is < AntispamSettings.MinSensitivity or > AntispamSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                if (sens is < AntiMentionSettings.MinSensitivity or > AntiMentionSettings.MaxSensitivity)
+                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.AntispamSensitivity = sens.Value;
@@ -130,31 +130,31 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-as-sens", sens.Value);
+                    emb.WithLocalizedDescription("evt-am-sens", sens.Value);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-as-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, "evt-am-sens", sens.Value);
             }
             #endregion
 
-            #region config antispam reset
+            #region config antimention reset
             [Command("reset"), UsesInteractivity]
             [Aliases("default", "def", "s", "rr")]
             public async Task ResetAsync(CommandContext ctx)
             {
                 await ctx.WithGuildConfigAsync(gcfg => {
-                    return !gcfg.AntispamEnabled ? throw new CommandFailedException(ctx, "cmd-err-reset-as-off") : Task.CompletedTask;
+                    return !gcfg.AntispamEnabled ? throw new CommandFailedException(ctx, "cmd-err-reset-am-off") : Task.CompletedTask;
                 });
 
                 if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
                     return;
 
-                var settings = new AntispamSettings();
+                var settings = new AntiMentionSettings();
                 await this.ExecuteGroupAsync(ctx, true, settings.Action, settings.Sensitivity);
             }
             #endregion
 
-            #region config antispam exempt
+            #region config antimention exempt
             [Command("exempt"), Priority(2)]
             [Aliases("ex", "exc")]
             public async Task ExemptAsync(CommandContext ctx,
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-            #region config antispam unexempt
+            #region config antimention unexempt
             [Command("unexempt"), Priority(2)]
             [Aliases("unex", "uex")]
             public async Task UnxemptAsync(CommandContext ctx,

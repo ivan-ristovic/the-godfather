@@ -107,6 +107,8 @@ namespace TheGodfather.EventListeners
                     await bot.Services.GetRequiredService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
                 if (gcfg.AntispamSettings.Enabled)
                     await bot.Services.GetRequiredService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
+                if (gcfg.AntiMentionSettings.Enabled)
+                    await bot.Services.GetRequiredService<AntiMentionService>().HandleNewMessageAsync(e, gcfg.AntiMentionSettings);
             }
         }
 

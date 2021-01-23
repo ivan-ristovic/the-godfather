@@ -50,7 +50,7 @@ namespace TheGodfather.Database.Models
     }
 
     [Table("exempt_antispam")]
-    public class ExemptedAntispamEntity : ExemptedEntity
+    public class ExemptedSpamEntity : ExemptedEntity
     {
 
     }
@@ -63,6 +63,12 @@ namespace TheGodfather.Database.Models
 
     [Table("exempt_ratelimit")]
     public class ExemptedRatelimitEntity : ExemptedEntity
+    {
+
+    }
+
+    [Table("exempt_mention")]
+    public class ExemptedMentionEntity : ExemptedEntity
     {
 
     }

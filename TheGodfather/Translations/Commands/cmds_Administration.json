@@ -253,6 +253,45 @@
       [ "arg-five" ]
     ]
   },
+  "config antimention": {
+    "usage": [
+      [],
+      [ "arg-bool" ],
+      [ "arg-bool", "arg-five", "arg-punish-action" ],
+      [ "arg-bool", "arg-punish-action", "arg-five" ]
+    ]
+  },
+  "config antimention action": {
+    "usage": [
+      [],
+      [ "arg-punish-action" ]
+    ]
+  },
+  "config antimention exempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "config antimention reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config antimention sensitivity": {
+    "usage": [
+      [],
+      [ "arg-five" ]
+    ]
+  },
+  "config antimention unexempt": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-role" ],
+      [ "arg-chn-text" ]
+    ]
+  },
   "config antispam": {
     "usage": [
       [],

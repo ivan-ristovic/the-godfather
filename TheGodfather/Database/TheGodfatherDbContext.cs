@@ -22,9 +22,10 @@ namespace TheGodfather.Database
         public virtual DbSet<GameStats> GameStats { get; protected set; }
         public virtual DbSet<GuildConfig> Configs { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; protected set; }
-        public virtual DbSet<ExemptedAntispamEntity> ExemptsAntispam { get; protected set; }
+        public virtual DbSet<ExemptedSpamEntity> ExemptsAntispam { get; protected set; }
         public virtual DbSet<ExemptedBackupEntity> ExemptsBackup { get; protected set; }
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; protected set; }
+        public virtual DbSet<ExemptedLoggingEntity> ExemptsMention { get; protected set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; protected set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
@@ -103,10 +104,11 @@ namespace TheGodfather.Database
             mb.Entity<ChickenBoughtUpgrade>().HasOne(bu => bu.Chicken).WithMany(u => u.Upgrades).HasForeignKey(bu => new { bu.GuildIdDb, bu.UserIdDb });
             mb.Entity<CommandRule>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb, e.Command });
             mb.Entity<EmojiReactionTrigger>().HasKey(t => new { t.ReactionId, t.Trigger });
-            mb.Entity<ExemptedAntispamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedBackupEntity>().HasKey(e => new { e.GuildIdDb, e.ChannelIdDb });
             mb.Entity<ExemptedLoggingEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<ExemptedMentionEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<ExemptedRatelimitEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
+            mb.Entity<ExemptedSpamEntity>().HasKey(e => new { e.IdDb, e.GuildIdDb, e.Type });
             mb.Entity<GameStats>().Property(s => s.AnimalRacesWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.CaroLost).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.CaroWon).HasDefaultValue(0);

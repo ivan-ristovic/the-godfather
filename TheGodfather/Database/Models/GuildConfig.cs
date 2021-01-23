@@ -23,7 +23,8 @@ namespace TheGodfather.Database.Models
         public virtual ICollection<ChickenBoughtUpgrade> ChickenBoughtUpgrades { get; set; }
         public virtual ICollection<CommandRule> CommandRules { get; set; }
         public virtual ICollection<EmojiReaction> EmojiReactions { get; set; }
-        public virtual ICollection<ExemptedAntispamEntity> ExemptsAntispam { get; set; }
+        public virtual ICollection<ExemptedSpamEntity> ExemptsSpam { get; set; }
+        public virtual ICollection<ExemptedMentionEntity> ExemptsMention { get; set; }
         public virtual ICollection<ExemptedLoggingEntity> ExemptsLogging { get; set; }
         public virtual ICollection<ExemptedRatelimitEntity> ExemptsRatelimit { get; set; }
         public virtual ICollection<Filter> Filters { get; set; }
@@ -46,7 +47,8 @@ namespace TheGodfather.Database.Models
             this.ChickenBoughtUpgrades = new HashSet<ChickenBoughtUpgrade>();
             this.CommandRules = new HashSet<CommandRule>();
             this.EmojiReactions = new HashSet<EmojiReaction>();
-            this.ExemptsAntispam = new HashSet<ExemptedAntispamEntity>();
+            this.ExemptsSpam = new HashSet<ExemptedSpamEntity>();
+            this.ExemptsMention = new HashSet<ExemptedMentionEntity>();
             this.ExemptsLogging = new HashSet<ExemptedLoggingEntity>();
             this.ExemptsRatelimit = new HashSet<ExemptedRatelimitEntity>();
             this.Filters = new HashSet<Filter>();
@@ -245,6 +247,29 @@ namespace TheGodfather.Database.Models
         }
         #endregion
 
+        #region AntiMention Settings
+        [NotMapped]
+        public AntiMentionSettings AntiMentionSettings { get; set; } = new AntiMentionSettings();
+
+        [Column("antimention_enabled")]
+        public bool AntiMentionEnabled {
+            get => this.AntiMentionSettings.Enabled;
+            set => this.AntiMentionSettings.Enabled = value;
+        }
+
+        [Column("antimention_action")]
+        public PunishmentAction AntiMentionAction {
+            get => this.AntiMentionSettings.Action;
+            set => this.AntiMentionSettings.Action = value;
+        }
+
+        [Column("antimention_sensitivity")]
+        public short AntiMentionSensitivity {
+            get => this.AntiMentionSettings.Sensitivity;
+            set => this.AntiMentionSettings.Sensitivity = value;
+        }
+        #endregion
+
         #region Ratelimit Settings
         [NotMapped]
         public RatelimitSettings RatelimitSettings { get; set; } = new RatelimitSettings();
@@ -273,6 +298,7 @@ namespace TheGodfather.Database.Models
         public CachedGuildConfig CachedConfig {
             get => new CachedGuildConfig {
                 AntispamSettings = this.AntispamSettings,
+                AntiMentionSettings = this.AntiMentionSettings,
                 Currency = this.Currency ?? CachedGuildConfig.DefaultCurrency,
                 LinkfilterSettings = this.LinkfilterSettings,
                 Locale = this.Locale ?? BotConfig.DefaultLocale,
@@ -288,6 +314,7 @@ namespace TheGodfather.Database.Models
             };
             set {
                 this.AntispamSettings = value.AntispamSettings;
+                this.AntiMentionSettings = value.AntiMentionSettings;
                 this.Currency = value.Currency;
                 this.LinkfilterSettings = value.LinkfilterSettings;
                 this.Locale = value.Locale;

@@ -28,6 +28,7 @@ namespace TheGodfather.Services.Common
         public bool ReactionResponse { get; set; } = false;
         public LinkfilterSettings LinkfilterSettings { get; set; } = new LinkfilterSettings();
         public AntispamSettings AntispamSettings { get; set; } = new AntispamSettings();
+        public AntiMentionSettings AntiMentionSettings { get; set; } = new AntiMentionSettings();
         public RatelimitSettings RatelimitSettings { get; set; } = new RatelimitSettings();
 
         public bool LoggingEnabled => this.LogChannelId != default;

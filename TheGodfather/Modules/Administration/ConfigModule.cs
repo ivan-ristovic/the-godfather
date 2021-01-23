@@ -60,6 +60,7 @@ namespace TheGodfather.Modules.Administration
             await this.SetupMuteRoleAsync(gcfg, ctx, channel);
             await this.SetupLinkfilterAsync(gcfg, ctx, channel);
             await this.SetupAntispamAsync(gcfg, ctx, channel);
+            await this.SetupAntiMentionAsync(gcfg, ctx, channel);
             await this.SetupRatelimitAsync(gcfg, ctx, channel);
             await this.SetupAntifloodAsync(gcfg, ctx, channel);
             await this.SetupAntiInstantLeaveAsync(gcfg, ctx, channel);
@@ -353,11 +354,33 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (await ctx.WaitForBoolReplyAsync("q-setup-as-sens", channel: channel, reply: false, args: gcfg.AntispamSensitivity)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
                     );
                     gcfg.AntispamSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                }
+            }
+        }
+
+        private async Task SetupAntiMentionAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
+        {
+            if (await ctx.WaitForBoolReplyAsync("q-setup-am", channel: channel, reply: false)) {
+                gcfg.AntispamEnabled = true;
+
+                if (await ctx.WaitForBoolReplyAsync("q-setup-am-action", channel: channel, reply: false, args: gcfg.AntiMentionAction.Humanize())) {
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<PunishmentAction>().JoinWith(", "));
+                    PunishmentAction? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
+                    if (action is { })
+                        gcfg.AntiMentionAction = action.Value;
+                }
+
+                if (await ctx.WaitForBoolReplyAsync("q-setup-am-sens", channel: channel, reply: false, args: gcfg.AntiMentionSensitivity)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                    InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
+                        m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
+                    );
+                    gcfg.AntiMentionSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
                 }
             }
         }
