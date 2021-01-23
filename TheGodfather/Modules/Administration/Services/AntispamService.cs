@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -36,6 +37,8 @@ namespace TheGodfather.Modules.Administration.Services
                 foreach (ulong uid in toRemove)
                     service.guildSpamInfo[gid].TryRemove(uid, out UserSpamInfo _);
             }
+
+            Log.Debug("Cleared outdated antispam information");
         }
 
 
@@ -63,14 +66,14 @@ namespace TheGodfather.Modules.Administration.Services
         {
             List<ExemptedSpamEntity> exempts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            exempts = await db.ExemptsAntispam.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            exempts = await db.ExemptsSpam.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
             return exempts.AsReadOnly();
         }
 
         public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.ExemptsAntispam.AddExemptions(gid, type, ids);
+            db.ExemptsSpam.AddExemptions(gid, type, ids);
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);
         }
@@ -78,8 +81,8 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.ExemptsAntispam.RemoveRange(
-                db.ExemptsAntispam.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+            db.ExemptsSpam.RemoveRange(
+                db.ExemptsSpam.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
             );
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);
@@ -89,7 +92,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                db.ExemptsAntispam.Where(ee => ee.GuildIdDb == (long)gid)
+                db.ExemptsSpam.Where(ee => ee.GuildIdDb == (long)gid)
             );
         }
 

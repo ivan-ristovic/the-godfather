@@ -21,7 +21,7 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.ClientErrored)]
-        public static Task ClientErrorEventHandlerAsync(TheGodfatherBot bot, ClientErrorEventArgs e)
+        public static Task ClientErrorEventHandlerAsync(TheGodfatherBot _, ClientErrorEventArgs e)
         {
             Exception ex = e.Exception;
             while (ex is AggregateException)

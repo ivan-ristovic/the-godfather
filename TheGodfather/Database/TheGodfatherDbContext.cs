@@ -22,10 +22,10 @@ namespace TheGodfather.Database
         public virtual DbSet<GameStats> GameStats { get; protected set; }
         public virtual DbSet<GuildConfig> Configs { get; protected set; }
         public virtual DbSet<EmojiReaction> EmojiReactions { get; protected set; }
-        public virtual DbSet<ExemptedSpamEntity> ExemptsAntispam { get; protected set; }
+        public virtual DbSet<ExemptedSpamEntity> ExemptsSpam { get; protected set; }
         public virtual DbSet<ExemptedBackupEntity> ExemptsBackup { get; protected set; }
         public virtual DbSet<ExemptedLoggingEntity> ExemptsLogging { get; protected set; }
-        public virtual DbSet<ExemptedLoggingEntity> ExemptsMention { get; protected set; }
+        public virtual DbSet<ExemptedMentionEntity> ExemptsMention { get; protected set; }
         public virtual DbSet<ExemptedRatelimitEntity> ExemptsRatelimit { get; protected set; }
         public virtual DbSet<Filter> Filters { get; protected set; }
         public virtual DbSet<ForbiddenName> ForbiddenNames { get; protected set; }
