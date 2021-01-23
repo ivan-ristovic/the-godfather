@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TheGodfather.Extensions;
 
@@ -15,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Common
         private int remainingUses;
         private readonly int maxAmount;
         private readonly object decrementLock;
-        private string lastContent;
+        private readonly List<string> msgs;
 
 
         public UserSpamInfo(int maxRepeats)
@@ -24,20 +26,29 @@ namespace TheGodfather.Modules.Administration.Common
             this.remainingUses = maxRepeats;
             this.resetsAt = DateTimeOffset.UtcNow + _resetAfter;
             this.decrementLock = new object();
-            this.lastContent = string.Empty;
+            this.msgs = new List<string>();
         }
 
 
         public bool TryDecrementAllowedMessageCount(string newContent)
         {
+            if (string.IsNullOrWhiteSpace(newContent))
+                newContent = "<NULL>";
+
             newContent = newContent.ToLowerInvariant();
 
             lock (this.decrementLock) {
                 DateTimeOffset now = DateTimeOffset.UtcNow;
-                if (now >= this.resetsAt || (!string.IsNullOrWhiteSpace(newContent) && this.lastContent.LevenshteinDistanceTo(newContent) > 2)) {
+                if (now >= this.resetsAt || this.msgs.All(m => m.LevenshteinDistanceTo(newContent) > 2)) {
                     Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
                     this.resetsAt = now + _resetAfter;
-                    this.lastContent = newContent;
+                    this.msgs.Clear();
+                }
+
+                this.msgs.Add(newContent);
+                if (this.msgs.Count > this.maxAmount) {
+                    string leastMatch = this.msgs.MaxBy(s => s.LevenshteinDistanceTo(newContent));
+                    this.msgs.Remove(leastMatch);
                 }
 
                 if (this.RemainingUses > 0)
