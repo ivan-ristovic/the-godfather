@@ -128,7 +128,6 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             await TestDbProvider.AlterAndVerifyAsync(
                 alter: _ => this.Service.AddRuleAsync(MockData.Ids[0], "a", true, MockData.Ids[1]),
                 verify: db => {
-                    var crs = db.CommandRules.ToList();
                     this.AssertIsBlocked(MockData.Ids[0], "a", allowed: new[] { MockData.Ids[1] });
                     return Task.CompletedTask;
                 }

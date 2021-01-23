@@ -243,19 +243,13 @@ namespace TheGodfather.Modules.Administration
             #endregion
 
             #region channel modify name
-            [Command("name"), Priority(3)]
+            [Command("name"), Priority(2)]
             [Aliases("title", "nm", "n")]
             public Task ModifyNameAsync(CommandContext ctx,
                                        [Description("desc-chn-mod")] DiscordChannel channel,
                                        [Description("str-name")] string name,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
                 => InternalModifyNameAsync(ctx, channel, name, reason);
-
-            [Command("name"), Priority(2)]
-            public Task ModifyNameAsync(CommandContext ctx,
-                                       [Description("desc-chn-mod")] DiscordChannel channel,
-                                       [RemainingText, Description("str-name")] string name)
-                => InternalModifyNameAsync(ctx, channel, name, null);
 
             [Command("name"), Priority(1)]
             public Task ModifyNameAsync(CommandContext ctx,
@@ -612,7 +606,7 @@ namespace TheGodfather.Modules.Administration
 
                 if (ctx.Guild.Channels.Select(kvp => kvp.Value.Name.ToLowerInvariant()).Contains(name.ToLowerInvariant())) {
                     if (!await ctx.WaitForBoolReplyAsync("q-chn-exists"))
-                        return;
+                        throw new CommandCancelledException();
                 }
             } else if (throwIfNull) {
                 throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
@@ -621,8 +615,7 @@ namespace TheGodfather.Modules.Administration
 
         private static void CheckBitrate(CommandContext ctx, int? bitrate)
         {
-            if (bitrate is
-            { } and (< DiscordLimits.VoiceChannelMinBitrate or > DiscordLimits.VoiceChannelMaxBitrate))
+            if (bitrate is { } and (< DiscordLimits.VoiceChannelMinBitrate or > DiscordLimits.VoiceChannelMaxBitrate))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-bitrate", DiscordLimits.VoiceChannelMinBitrate, DiscordLimits.VoiceChannelMinBitrate);
         }
 

@@ -218,8 +218,6 @@ namespace TheGodfather.EventListeners
                         emb.AddLocalizedTitleField("str-move-count", ent.UserCount);
                     });
                     break;
-                default:
-                    break;
             }
 
             if (renamed)

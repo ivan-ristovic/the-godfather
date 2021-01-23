@@ -605,35 +605,35 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
 
         private void AddMockReactions(TheGodfatherDbContext db)
         {
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Joystick.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "not" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Headphones.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "ab+c" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Chicken.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "abc" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Gun.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "abc" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[0],
                 Response = Emojis.Cloud.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
@@ -642,21 +642,21 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             });
 
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[1],
                 Response = Emojis.Cake.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "abc" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[1],
                 Response = Emojis.ArrowUp.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
                     new EmojiReactionTrigger { Trigger = "abc" },
                 }
             });
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[1],
                 Response = Emojis.ArrowDown.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {
@@ -664,7 +664,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 }
             });
 
-            db.EmojiReactions.Add(new EmojiReaction() {
+            db.EmojiReactions.Add(new EmojiReaction {
                 GuildId = MockData.Ids[2],
                 Response = Emojis.Chicken.GetDiscordName(),
                 DbTriggers = new HashSet<EmojiReactionTrigger> {

@@ -108,17 +108,17 @@ namespace TheGodfather.Tests.Modules.Misc.Services
             await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     db.XpCounts.AddRange(new[] {
-                        new XpCount() {
+                        new XpCount {
                             Xp = 5,
                             GuildId = MockData.Ids[0],
                             UserId = MockData.Ids[0]
                         },
-                        new XpCount() {
+                        new XpCount {
                             Xp = 5,
                             GuildId = MockData.Ids[0],
                             UserId = MockData.Ids[1]
                         },
-                        new XpCount() {
+                        new XpCount {
                             Xp = 1,
                             GuildId = MockData.Ids[1],
                             UserId = MockData.Ids[1]
@@ -169,17 +169,17 @@ namespace TheGodfather.Tests.Modules.Misc.Services
             await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
                     db.XpCounts.AddRange(new[] {
-                        new XpCount() {
+                        new XpCount {
                             Xp = 5,
                             GuildId = MockData.Ids[0],
                             UserId = MockData.Ids[0]
                         },
-                        new XpCount() {
+                        new XpCount {
                             Xp = 5,
                             GuildId = MockData.Ids[0],
                             UserId = MockData.Ids[1]
                         },
-                        new XpCount() {
+                        new XpCount {
                             Xp = 1,
                             GuildId = MockData.Ids[1],
                             UserId = MockData.Ids[1]

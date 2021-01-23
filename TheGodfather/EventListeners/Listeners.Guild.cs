@@ -82,8 +82,6 @@ namespace TheGodfather.EventListeners
                     case AuditLogActionType.EmojiUpdate:
                         emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange, inline: true);
                         break;
-                    default:
-                        break;
                 }
             });
 

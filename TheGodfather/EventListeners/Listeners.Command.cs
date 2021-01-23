@@ -156,6 +156,8 @@ namespace TheGodfather.EventListeners
                 case DbUpdateException _:
                     emb.WithLocalizedDescription("err-db");
                     break;
+                case CommandCancelledException:
+                    break;
                 default:
                     LogExt.Error(bot.GetId(e.Context.Guild?.Id), ex, "Unhandled error");
                     break;

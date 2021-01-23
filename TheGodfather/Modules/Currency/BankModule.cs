@@ -219,7 +219,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region bank unregister
-        [Command("unregister"), Priority(1)]
+        [Command("unregister")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
         [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
@@ -232,11 +232,6 @@ namespace TheGodfather.Modules.Currency
                 await this.Service.RemoveAllAsync(member.Id);
             await ctx.InfoAsync(this.ModuleColor);
         }
-
-        [Command("unregister"), Priority(0)]
-        public Task UnregisterAsync(CommandContext ctx,
-                                   [Description("desc-member")] DiscordMember member)
-            => this.UnregisterAsync(ctx, member, false);
         #endregion
     }
 }

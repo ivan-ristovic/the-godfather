@@ -50,7 +50,7 @@ namespace TheGodfather.Services
                     else
                         missed++;
                 }
-                Log.Information("Guild tasks: {ScheduledGuildTasksCount} scheduled; {MissedGuildTasksCount} missed.", scheduled, missed);
+                Log.Debug("Guild tasks: {ScheduledGuildTasksCount} scheduled; {MissedGuildTasksCount} missed.", scheduled, missed);
             }
 
             void RegisterReminders(IReadOnlyDictionary<int, Reminder> reminders)
@@ -62,7 +62,7 @@ namespace TheGodfather.Services
                     else
                         missed++;
                 }
-                Log.Information("Reminders: {ScheduledRemindersCount} scheduled; {MissedRemindersCount} missed.", scheduled, missed);
+                Log.Debug("Reminders: {ScheduledRemindersCount} scheduled; {MissedRemindersCount} missed.", scheduled, missed);
             }
         }
 

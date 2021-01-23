@@ -20,7 +20,7 @@ namespace TheGodfather.Tests
             ConnectionString = "DataSource=:memory:;foreign keys=true;";
             DatabaseConnection = new SqliteConnection(ConnectionString);
 
-            var cfg = new DbConfig() {
+            var cfg = new DbConfig {
                 Provider = DbProvider.SqliteInMemory
             };
             DbContextOptions<TheGodfatherDbContext> options = new DbContextOptionsBuilder<TheGodfatherDbContext>()
@@ -72,7 +72,7 @@ namespace TheGodfather.Tests
         private static void SeedGuildData()
         {
             using TheGodfatherDbContext context = Database.CreateContext();
-            context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig() { GuildId = id }));
+            context.Configs.AddRange(MockData.Ids.Select(id => new GuildConfig { GuildId = id }));
             context.SaveChanges();
         }
 
