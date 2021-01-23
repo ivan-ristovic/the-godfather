@@ -97,23 +97,12 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && ee.Id == e.Channel.Id))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
-                    return;
-            }
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts) && exempts.AnyAppliesTo(e))
+                return;
 
             ConcurrentDictionary<ulong, UserRatelimitInfo> gRateInfo = this.guildRatelimitInfo[e.Guild.Id];
-            if (!gRateInfo.ContainsKey(e.Author.Id)) {
-                if (!gRateInfo.TryAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity)))
-                    throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");
-                return;
-            }
-
-            if (gRateInfo.TryGetValue(e.Author.Id, out UserRatelimitInfo? rateInfo) && !rateInfo.TryDecrementAllowedMessageCount()) {
+            UserRatelimitInfo rateInfo = gRateInfo.GetOrAdd(e.Author.Id, new UserRatelimitInfo(settings.Sensitivity));
+            if (!rateInfo.TryDecrementAllowedMessageCount()) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 rateInfo.Reset();
             }

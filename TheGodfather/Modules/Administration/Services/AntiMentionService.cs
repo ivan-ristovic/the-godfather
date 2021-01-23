@@ -105,24 +105,13 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && (ee.Id == e.Channel.Id || ee.Id == e.Channel.ParentId)))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
-                    return;
-            }
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts) && exempts.AnyAppliesTo(e))
+                return;
 
             ConcurrentDictionary<ulong, UserMentionInfo> gMentionInfo = this.guildMentionInfo[e.Guild.Id];
-            if (!gMentionInfo.ContainsKey(e.Author.Id)) {
-                if (!gMentionInfo.TryAdd(e.Author.Id, new UserMentionInfo(settings.Sensitivity)))
-                    throw new ConcurrentOperationException("Failed to add member to anti-mention watch list!");
-                return;
-            }
-
-            int count = e.MentionedChannels.Count + e.MentionedRoles.Count + e.MentionedUsers.Count;
-            if (gMentionInfo.TryGetValue(e.Author.Id, out UserMentionInfo? mentionInfo) && !mentionInfo.TryDecrementAllowedMentionCount(count)) {
+            UserMentionInfo mentionInfo = gMentionInfo.GetOrAdd(e.Author.Id, new UserMentionInfo(settings.Sensitivity));
+            int count = (e.Message.MentionEveryone ? 1 : 0) + e.MentionedChannels.Count + e.MentionedRoles.Count + e.MentionedUsers.Count;
+            if (!mentionInfo.TryDecrementAllowedMentionCount(count)) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 mentionInfo.Reset();
             }

@@ -105,23 +105,12 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             DiscordMember member = e.Author as DiscordMember ?? throw new ConcurrentOperationException("Message sender not part of guild.");
-            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts)) {
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Channel && (ee.Id == e.Channel.Id || ee.Id == e.Channel.ParentId)))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Member && ee.Id == e.Author.Id))
-                    return;
-                if (exempts.Any(ee => ee.Type == ExemptedEntityType.Role && member.Roles.Any(r => r.Id == ee.Id)))
-                    return;
-            }
+            if (this.guildExempts.TryGetValue(e.Guild.Id, out ConcurrentHashSet<ExemptedEntity>? exempts) && exempts.AnyAppliesTo(e))
+                return;
 
             ConcurrentDictionary<ulong, UserSpamInfo> gSpamInfo = this.guildSpamInfo[e.Guild.Id];
-            if (!gSpamInfo.ContainsKey(e.Author.Id)) {
-                if (!gSpamInfo.TryAdd(e.Author.Id, new UserSpamInfo(settings.Sensitivity)))
-                    throw new ConcurrentOperationException("Failed to add member to antispam watch list!");
-                return;
-            }
-
-            if (gSpamInfo.TryGetValue(e.Author.Id, out UserSpamInfo? spamInfo) && !spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
+            UserSpamInfo spamInfo = gSpamInfo.GetOrAdd(e.Author.Id, new UserSpamInfo(settings.Sensitivity));
+            if (!spamInfo.TryDecrementAllowedMessageCount(e.Message.Content)) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 spamInfo.Reset();
             }
