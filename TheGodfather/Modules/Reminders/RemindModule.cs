@@ -90,6 +90,26 @@ namespace TheGodfather.Modules.Reminders
         #endregion
 
         #region remind delete
+        [Command("delete"), Priority(1)]
+        [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("desc-remind-chn-rem")] DiscordChannel channel,
+                                     [Description("desc-ids")] params int[] ids)
+        {
+            if (ids is null || !ids.Any())
+                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
+
+            if (channel.Guild != ctx.Guild || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.Administrator))
+                throw new CommandFailedException(ctx, "cmd-chk-perms-usr", Permissions.Administrator);
+
+            IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForChannelAsync(channel.Id);
+            if (!reminders.Any())
+                throw new CommandFailedException(ctx, "cmd-err-remind-none");
+
+            await Task.WhenAll(reminders.Where(r => r.ChannelId == channel.Id).Select(r => this.Service.UnscheduleAsync(r)));
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+
         [Command("delete")]
         [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
         public async Task DeleteAsync(CommandContext ctx,

@@ -203,6 +203,14 @@ namespace TheGodfather.Services
             return reminders.AsReadOnly();
         }
 
+        public async Task<IReadOnlyList<Reminder>> GetRemindTasksForChannelAsync(ulong cid)
+        {
+            List<Reminder> reminders;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext())
+                reminders = await db.Reminders.Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
+            return reminders.AsReadOnly();
+        }
+
 
         private async Task<bool> RegisterDbTaskAsync(ScheduledTask task)
         {

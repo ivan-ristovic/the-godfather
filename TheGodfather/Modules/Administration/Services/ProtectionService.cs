@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string? reason = null)
         {
-            Log.Debug("Punishing {Member} in guild {Guild} with action {ActionType} due to: {Reason}", member, guild, type, reason);
+            Log.Debug("Punishing {Member} in guild {Guild} with action {ActionType} due to: {Reason}", member, guild, type, reason ?? this.reason);
             try {
                 DiscordRole muteRole;
                 GuildTask gt;

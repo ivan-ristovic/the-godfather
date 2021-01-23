@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration.Common
 
             lock (this.decrementLock) {
                 DateTimeOffset now = DateTimeOffset.UtcNow;
-                if (now >= this.resetsAt || this.msgs.All(m => m.LevenshteinDistanceTo(newContent) > 2)) {
+                if (now >= this.resetsAt || (this.msgs.Count == this.maxAmount && this.msgs.All(m => m.LevenshteinDistanceTo(newContent) > 1))) {
                     Interlocked.Exchange(ref this.remainingUses, this.maxAmount);
                     this.resetsAt = now + _resetAfter;
                     this.msgs.Clear();
