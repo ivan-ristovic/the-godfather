@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                IReadOnlyList<ExemptedSpamEntity> exempts = await this.Service.GetExemptsAsync(ctx.Guild.Id);
+                IReadOnlyList<ExemptedMentionEntity> exempts = await this.Service.GetExemptsAsync(ctx.Guild.Id);
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
