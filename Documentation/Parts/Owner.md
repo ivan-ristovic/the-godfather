@@ -640,6 +640,23 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 ---
 
+### owner restart
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Restarts the bot.*
+
+**Privileged users only.**
+
+
+**Examples:**
+
+```xml
+!owner restart
+```
+</p></details>
+
+---
+
 ### owner sendmessage
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -742,6 +759,22 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 ```xml
 !owner toggleignore
+```
+</p></details>
+
+---
+
+### owner update
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Restarts and updates the bot.*
+
+**Owner-only.**
+
+**Examples:**
+
+```xml
+!owner update
 ```
 </p></details>
 

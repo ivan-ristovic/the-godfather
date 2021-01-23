@@ -208,7 +208,13 @@
 
 **Aliases:**
 `-, remove, rm, del, -=, >, >>, unschedule`
-**Arguments:**
+**Overload 1:**
+
+[`channel`]: *Channel whose reminders to remove*
+
+[`int...`]: *ID(s)*
+
+**Overload 0:**
 
 [`int...`]: *ID(s)*
 

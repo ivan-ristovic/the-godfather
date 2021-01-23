@@ -619,7 +619,7 @@ namespace TheGodfather.Modules.Owner
 
         #region update
         [Command("update")]
-        [RequirePrivilegedUser]
+        [RequireOwner]
         public Task UpdateAsync(CommandContext ctx)
             => this.ExitAsync(ctx, 101);
         #endregion

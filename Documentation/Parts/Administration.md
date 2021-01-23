@@ -456,19 +456,13 @@
 **Requires permissions:**
 `Manage channels`
 
-**Overload 3:**
+**Overload 2:**
 
 [`channel`]: *Channel to modify*
 
 [`string`]: *Name*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
-
-**Overload 2:**
-
-[`channel`]: *Channel to modify*
-
-[`string...`]: *Name*
 
 **Overload 1:**
 

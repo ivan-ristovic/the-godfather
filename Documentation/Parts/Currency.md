@@ -202,15 +202,11 @@
 **Privileged users only.**
 
 
-**Overload 1:**
+**Arguments:**
 
 [`member`]: *Member*
 
 (optional) [`boolean`]: *Globally?* (def: `False`)
-
-**Overload 0:**
-
-[`member`]: *Member*
 
 **Examples:**
 
