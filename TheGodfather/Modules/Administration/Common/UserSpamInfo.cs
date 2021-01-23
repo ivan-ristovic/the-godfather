@@ -8,7 +8,7 @@ namespace TheGodfather.Modules.Administration.Common
 {
     public sealed class UserSpamInfo
     {
-        private static readonly TimeSpan _resetAfter = TimeSpan.FromHours(1);
+        private static readonly TimeSpan _resetAfter = TimeSpan.FromMinutes(10);
 
         public int RemainingUses => Volatile.Read(ref this.remainingUses);
         public bool IsActive => DateTimeOffset.UtcNow <= this.resetsAt;
@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Common
         private int remainingUses;
         private readonly int maxAmount;
         private readonly object decrementLock;
-        private readonly List<string> msgs;
+        private readonly HashSet<string> msgs;
 
 
         public UserSpamInfo(int maxRepeats)
@@ -25,8 +25,8 @@ namespace TheGodfather.Modules.Administration.Common
             this.maxAmount = maxRepeats;
             this.remainingUses = maxRepeats;
             this.resetsAt = DateTimeOffset.UtcNow + _resetAfter;
-            this.decrementLock = new object();
-            this.msgs = new List<string>();
+            this.decrementLock = new();
+            this.msgs = new();
         }
 
 
