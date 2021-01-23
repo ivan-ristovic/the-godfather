@@ -110,8 +110,7 @@ namespace TheGodfather.Modules.Reminders
             await ctx.InfoAsync(this.ModuleColor);
         }
 
-        [Command("delete")]
-        [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("desc-ids")] params int[] ids)
         {
