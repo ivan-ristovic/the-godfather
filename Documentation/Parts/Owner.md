@@ -520,7 +520,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 *Evaluates a snippet of C# code, in context.*
 
 **Aliases:**
-`evaluate, compile, run, e, c, r`
+`evaluate, compile, run, e, c, r, exec`
 **Owner-only.**
 
 **Arguments:**

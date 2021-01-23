@@ -506,6 +506,47 @@
 
 ---
 
+## Group: game minesweeper
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Starts a new Minesweeper game.*
+
+**Aliases:**
+`mines, ms`
+**Arguments:**
+
+(optional) [`int`]: *Rows* (def: `9`)
+
+(optional) [`int`]: *Columns* (def: `9`)
+
+(optional) [`int`]: *Bombs* (def: `10`)
+
+**Examples:**
+
+```xml
+!game minesweeper
+!game minesweeper 20 20 50
+```
+</p></details>
+
+---
+
+### game minesweeper rules
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints Minesweeper game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+**Examples:**
+
+```xml
+!game minesweeper rules
+```
+</p></details>
+
+---
+
 ## Group: game numberrace
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -700,7 +741,7 @@
 `trivia, q`
 **Guild only.**
 
-**Overload 3:**
+**Overload 2:**
 
 [`int`]: *ID of the quiz category*
 
@@ -708,17 +749,13 @@
 
 (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 
-**Overload 2:**
+**Overload 1:**
 
 [`string`]: *ID of the quiz category*
 
 (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 
 (optional) [`int`]: *Amount of questions* (def: `10`)
-
-**Overload 1:**
-
-[`string...`]: *ID of the quiz category*
 
 **Examples:**
 

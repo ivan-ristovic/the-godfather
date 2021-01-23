@@ -785,27 +785,21 @@
 **Requires permissions:**
 `Manage channels`
 
-**Overload 3:**
-
-[`channel`]: *Channel to modify*
-
-[`string`]: *Name*
-
-(optional) [`string...`]: *Reason for the action* (def: `None`)
-
 **Overload 2:**
 
-[`string`]: *Name*
-
 [`channel`]: *Channel to modify*
+
+[`string`]: *Name*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 
+[`string`]: *Name*
+
 [`channel`]: *Channel to modify*
 
-[`string...`]: *Name*
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
@@ -1129,11 +1123,11 @@
 
 **Overload 1:**
 
-[`string...`]: *Command/Group full name*
+(optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
 
 **Overload 0:**
 
-(optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
+[`string...`]: *Command/Group full name*
 
 **Examples:**
 
@@ -1452,6 +1446,193 @@
 ```xml
 !config antiflood sensitivity
 !config antiflood sensitivity 5
+```
+</p></details>
+
+---
+
+## Group: config antimention
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Punishes users that send more than specified amount mentions (sensitivity) in a message.*
+
+**Aliases:**
+`am`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 3:**
+
+[`boolean`]: *Enable?*
+
+[`short`]: *Sensitivity*
+
+(optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
+
+**Overload 2:**
+
+[`boolean`]: *Enable?*
+
+[`PunishmentAction`]: *Punishment action*
+
+(optional) [`short`]: *Sensitivity* (def: `5`)
+
+**Overload 1:**
+
+[`boolean`]: *Enable?*
+
+**Examples:**
+
+```xml
+!config antimention
+!config antimention Yes/No
+!config antimention Yes/No 5 Kick
+!config antimention Yes/No Kick 5
+```
+</p></details>
+
+---
+
+### config antimention action
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets the anti-mention action.*
+
+**Aliases:**
+`setaction, setact, act, a`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+(optional) [`Nullable`1`]: *Punishment action* (def: `None`)
+
+**Examples:**
+
+```xml
+!config antimention action
+!config antimention action Kick
+```
+</p></details>
+
+---
+
+### config antimention exempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disable anti-mention for specified users, channels or roles.*
+
+**Aliases:**
+`ex, exc`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 2:**
+
+[`member...`]: *User(s) to exempt*
+
+**Overload 1:**
+
+[`role...`]: *Role(s) to exempt*
+
+**Overload 0:**
+
+[`channel...`]: *Channel(s) to exempt*
+
+**Examples:**
+
+```xml
+!config antimention exempt @User
+!config antimention exempt @Role
+!config antimention exempt #my-text-channel
+```
+</p></details>
+
+---
+
+### config antimention reset
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Reverts anti-mention configuration to default values.*
+
+**Aliases:**
+`default, def, s, rr`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!config antimention reset
+```
+</p></details>
+
+---
+
+### config antimention sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets the anti-mention sensitivity.*
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+(optional) [`short`]: *Sensitivity* (def: `None`)
+
+**Examples:**
+
+```xml
+!config antimention sensitivity
+!config antimention sensitivity 5
+```
+</p></details>
+
+---
+
+### config antimention unexempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes anti-mention exemptions.*
+
+**Aliases:**
+`unex, uex`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 2:**
+
+[`member...`]: *User(s) to unexempt*
+
+**Overload 1:**
+
+[`role...`]: *Role(s) to unexempt*
+
+**Overload 0:**
+
+[`channel...`]: *Channel(s) to unexempt*
+
+**Examples:**
+
+```xml
+!config antimention unexempt @User
+!config antimention unexempt @Role
+!config antimention unexempt #my-text-channel
 ```
 </p></details>
 
@@ -4039,7 +4220,7 @@
 **Requires permissions:**
 `Manage roles`
 
-**Overload 2:**
+**Overload 1:**
 
 [`string`]: *New name*
 
@@ -4051,20 +4232,18 @@
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
-**Overload 1:**
+**Overload 0:**
 
 [`color`]: *Color (hex or RGB)*
-
-[`string...`]: *New name*
-
-**Overload 0:**
 
 [`string...`]: *New name*
 
 **Examples:**
 
 ```xml
-!role create SampleName #ff00ff Yes/No Yes/No
+!role create RoleName
+!role create RoleName #ff00ff
+!role create RoleName #ff00ff Yes/No
 ```
 </p></details>
 
@@ -5113,33 +5292,23 @@
 **Requires permissions:**
 `Manage webhooks`
 
-**Overload 7:**
-
-[`URL`]: *Avatar URL*
-
-[`channel`]: *Channel where to add the webhook*
-
-[`string`]: *Webhook name*
-
-(optional) [`string...`]: *Reason for the action* (def: `None`)
-
 **Overload 6:**
 
 [`URL`]: *Avatar URL*
 
-[`string`]: *Webhook name*
-
 [`channel`]: *Channel where to add the webhook*
+
+[`string`]: *Webhook name*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 5:**
 
-[`channel`]: *Channel where to add the webhook*
-
 [`URL`]: *Avatar URL*
 
 [`string`]: *Webhook name*
+
+[`channel`]: *Channel where to add the webhook*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
@@ -5147,13 +5316,15 @@
 
 [`channel`]: *Channel where to add the webhook*
 
-[`string`]: *Webhook name*
-
 [`URL`]: *Avatar URL*
+
+[`string`]: *Webhook name*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 3:**
+
+[`channel`]: *Channel where to add the webhook*
 
 [`string`]: *Webhook name*
 
@@ -5163,9 +5334,9 @@
 
 **Overload 2:**
 
-[`URL`]: *Avatar URL*
-
 [`string`]: *Webhook name*
+
+[`URL`]: *Avatar URL*
 
 (optional) [`string...`]: *Reason for the action* (def: `None`)
 
@@ -5173,7 +5344,9 @@
 
 [`URL`]: *Avatar URL*
 
-[`string...`]: *Webhook name*
+[`string`]: *Webhook name*
+
+(optional) [`string...`]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
 
@@ -5201,33 +5374,29 @@
 **Requires permissions:**
 `Manage webhooks`
 
-**Overload 4:**
+**Overload 3:**
 
 [`channel`]: *Channel whose webhooks to delete*
 
 [`string...`]: *Webhook name*
 
-**Overload 3:**
+**Overload 2:**
 
 [`channel`]: *Channel whose webhooks to delete*
 
 [`unsigned long`]: *ID*
 
-**Overload 2:**
+**Overload 1:**
 
 [`string`]: *Webhook name*
 
 (optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
 
-**Overload 1:**
+**Overload 0:**
 
 [`unsigned long`]: *ID*
 
 (optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
-
-**Overload 0:**
-
-[`string...`]: *Webhook name*
 
 **Examples:**
 

@@ -331,7 +331,7 @@
 *Shows the help embed.*
 
 **Aliases:**
-`h, ?, ??, ???`
+`h, ?, ??, ???, man`
 **Overload 1:**
 
 [`ModuleType`]: *Command module*
@@ -779,7 +779,7 @@
 *User rank management. Group call prints user rank info.*
 
 **Aliases:**
-`ranks, ranking, level`
+`ranks, ranking, level, xp`
 **Overload 1:**
 
 (optional) [`member`]: *Member* (def: `None`)

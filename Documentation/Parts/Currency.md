@@ -710,7 +710,7 @@
 ## Group: work
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Do something productive with your life or decide to earn money using immoral or illegal ways.*
+*Do something productive with your life or decide to earn money using immoral or illegal ways. You can work once every minute. Keep in mind that your salary is influenced by the current time.*
 
 **Aliases:**
 `job`
@@ -728,7 +728,7 @@
 ### work crime
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Attempt a crime. This can be done once every 5 minutes.*
+*Attempt a crime. This can be done once every 5 minutes. Keep in mind that attempting a crime at night gives higher chance of success.*
 
 **Guild only.**
 
@@ -744,7 +744,7 @@
 ### work streets
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes.*
+*Work the streets tonight hoping to gather some easy money but beware - there are many threats lurking at that hour. This can be done once every 2 minutes. Keep in mind that during the night there is a higher chance to become a victim of a crime.*
 
 **Aliases:**
 `prostitute`
