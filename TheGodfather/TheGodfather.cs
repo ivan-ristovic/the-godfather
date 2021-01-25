@@ -121,7 +121,7 @@ namespace TheGodfather
             if (Bot is { })
                 await Bot.DisposeAsync();
     
-            Log.Information("Cleanup complete! Powering off");
+            Log.Information("Cleanup complete");
         }
         #endregion
     }
