@@ -20,7 +20,7 @@ Just another general-purpose Discord bot developed with the goal to remove all o
 Features:
   - Categorized and intuitive command group system with over 500 commands.
   - Complete administration of guilds, channels, users, emojis, roles, integrations etc. via categorized commands.
-  - Automatic guild administration: antispam, antiraid, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
+  - Automatic guild administration: spam protection, raid protection, mass-mention protection, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
   - Eases your pain with auto-assignable roles, self-assignable roles, roles granted upon reaching a certain level or reacting with certain emojis.
   - Real-time guild backup with exemptions of specified channels.
   - Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
