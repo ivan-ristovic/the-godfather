@@ -39,11 +39,11 @@ namespace TheGodfather.Modules.Administration
                 return ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithLocalizedTitle("str-lf");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddField("str-lf-invite", settings.BlockDiscordInvites ? "str-on" : "str-off", inline: true);
-                    emb.AddField("str-lf-ddos", settings.BlockBooterWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddField("str-lf-gore", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddField("str-lf-ip", settings.BlockIpLoggingWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddField("str-lf-urlshort", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField("str-lf-invite", settings.BlockDiscordInvites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField("str-lf-ddos", settings.BlockBooterWebsites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField("str-lf-gore", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField("str-lf-ip", settings.BlockIpLoggingWebsites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField("str-lf-urlshort", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
                 });
             }
             #endregion
