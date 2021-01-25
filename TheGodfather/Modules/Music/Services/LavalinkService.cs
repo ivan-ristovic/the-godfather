@@ -61,7 +61,8 @@ namespace TheGodfather.Modules.Music.Services
                         });
                         this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
                         this.failedAttempts = 0;
-                    } catch {
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to connect to Lavaling server");
                         this.failedAttempts++;
                         throw;
                     }

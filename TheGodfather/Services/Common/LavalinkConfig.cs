@@ -14,6 +14,6 @@ namespace TheGodfather.Services.Common
         public string Password { get; set; } = "youshallnotpass";
 
         [JsonProperty("retry")]
-        public int RetryAmount { get; set; } = 0;
+        public int RetryAmount { get; set; } = 5;
     }
 }

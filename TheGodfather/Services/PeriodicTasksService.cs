@@ -156,10 +156,11 @@ namespace TheGodfather.Services
                                 break;
                             case DbProvider.Sqlite:
                             case DbProvider.SqliteInMemory:
-                                db.Database.ExecuteSqlRaw("UPDATE bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                                db.Database.ExecuteSqlRaw("UPDATE bank_accounts SET balance = MAX(ROUND(0.5 + 1.0015 * balance), 10);");
                                 break;
                             case DbProvider.SqlServer:
-                                db.Database.ExecuteSqlRaw("UPDATE dbo.bank_accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);");
+                                // TODO
+                                db.Database.ExecuteSqlRaw("UPDATE dbo.bank_accounts SET balance = MAX(CEILING(1.0015 * balance), 10);");
                                 break;
                         }
                     }
