@@ -1,5 +1,6 @@
 ﻿# the-godfather
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9d6e1baa1ea94567a93575dc003b9b3c)](https://app.codacy.com/gh/ivan-ristovic/the-godfather?utm_source=github.com&utm_medium=referral&utm_content=ivan-ristovic/the-godfather&utm_campaign=Badge_Grade)
 [![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
 [![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
 [![Discord Server](https://discord.com/api/guilds/794671727291531274/embed.png)](https://discord.gg/z7KZGQQxRz)
