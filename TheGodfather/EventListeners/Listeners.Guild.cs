@@ -53,7 +53,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherBot bot, GuildEmojisUpdateEventArgs e)
         {
-            LogExt.Information(bot.GetId(e.Guild.Id), "Emojis updated {Guild}, ({EmojisBefore} to {EmojisAfter}", e.Guild, e.EmojisBefore, e.EmojisAfter);
+            LogExt.Information(bot.GetId(e.Guild.Id), "Emojis updated {Guild}", e.Guild);
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
