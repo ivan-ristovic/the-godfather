@@ -188,6 +188,8 @@ namespace TheGodfather.EventListeners
                     emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
                 }
                 emb.AddInsufficientAuditLogPermissionsField();
+                if (emb.FieldCount <= 2)
+                    return;
             }
 
             await logService.LogAsync(e.Guild, emb);

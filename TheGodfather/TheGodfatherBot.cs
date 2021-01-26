@@ -179,7 +179,7 @@ namespace TheGodfather
         {
             return this.Client.UseInteractivityAsync(new InteractivityConfiguration {
                 PaginationBehaviour = PaginationBehaviour.WrapAround,
-                PaginationDeletion = PaginationDeletion.DeleteEmojis,
+                PaginationDeletion = PaginationDeletion.KeepEmojis,
                 PaginationEmojis = new PaginationEmojis(),
                 PollBehaviour = PollBehaviour.KeepEmojis,
                 Timeout = TimeSpan.FromMinutes(1)

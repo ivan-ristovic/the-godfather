@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Misc
                 emb.WithLocalizedDescription("evt-sb-sens", sens.Value);
             });
 
-            await ctx.ImpInfoAsync(this.ModuleColor, "evt-sb-sens", sens.Value);
+            await ctx.InfoAsync(this.ModuleColor, "evt-sb-sens", sens.Value);
         }
         #endregion
 

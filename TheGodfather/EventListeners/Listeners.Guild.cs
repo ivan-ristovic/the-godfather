@@ -154,7 +154,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("str-mention", ent.MentionableChange);
                 emb.AddLocalizedPropertyChangeField("str-pos", ent.PositionChange);
                 // TODO use permissions_new once it is implemented in D#+
-                emb.AddLocalizedTitleField("str-perms", ent.PermissionChange.After, inline: false);
+                emb.AddLocalizedTitleField("str-perms", ent.PermissionChange?.After, inline: false, unknown: false);
             });
 
             await logService.LogAsync(e.Guild, emb);
