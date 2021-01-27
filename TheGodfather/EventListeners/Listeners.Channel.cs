@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,9 @@ namespace TheGodfather.EventListeners
 {
     internal static partial class Listeners
     {
+        private static ConcurrentDictionary<ulong, ConcurrentQueue<ChannelUpdateEventArgs>> _channelUpdates = new();
+
+
         [AsyncEventListener(DiscordEventType.DmChannelCreated)]
         public static Task DmChannelCreateEventHandlerAsync(TheGodfatherBot bot, DmChannelCreateEventArgs e)
         {
@@ -122,10 +126,17 @@ namespace TheGodfather.EventListeners
             if (e.ChannelBefore.IsPrivate || LoggingService.IsChannelExempted(bot, e.Guild, e.ChannelBefore, out _))
                 return;
 
-            if (e.ChannelBefore.Position != e.ChannelAfter.Position)
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            ConcurrentQueue<ChannelUpdateEventArgs> upds = _channelUpdates.GetOrAdd(e.ChannelAfter.Id, new ConcurrentQueue<ChannelUpdateEventArgs>());
+            upds.Enqueue(e);
+            int updatesBefore = upds.Count;
+            await Task.Delay(e.ChannelAfter.IsCategory ? TimeSpan.FromSeconds(3) : TimeSpan.FromSeconds(2));
+
+            Log.Debug("Channel update {Id} event count: {BeforeCount} -> {Count}", e.ChannelAfter.Id, updatesBefore, upds.Count);
+            _channelUpdates.TryRemove(e.ChannelAfter.Id, out _);
+            if ((e.ChannelAfter.ParentId is { } && _channelUpdates.ContainsKey(e.ChannelAfter.ParentId.Value)) || updatesBefore < upds.Count)
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
@@ -172,24 +183,25 @@ namespace TheGodfather.EventListeners
                 }
                 emb.AddInvocationFields(owentry.UserResponsible);
             } else {
-                emb.AddLocalizedTitleField("str-chn", e.ChannelBefore.Mention, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-name", e.ChannelBefore.Name, e.ChannelAfter.Name, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", e.ChannelBefore.IsNSFW, e.ChannelAfter.IsNSFW, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", e.ChannelBefore.Bitrate, e.ChannelAfter.Bitrate, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", e.ChannelBefore.PerUserRateLimit, e.ChannelAfter.PerUserRateLimit, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-type", e.ChannelBefore.Type, e.ChannelAfter.Type, inline: true);
-                if (!e.ChannelBefore.Topic.Equals(e.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase)) {
+                emb.AddLocalizedTitleField("str-chn", e.ChannelBefore, inline: true);
+                ChannelUpdateEventArgs fst = upds.First();
+                ChannelUpdateEventArgs lst = upds.Last();
+                emb.AddLocalizedPropertyChangeField("evt-upd-name", fst.ChannelBefore.Name, lst.ChannelAfter.Name, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", fst.ChannelBefore.IsNSFW, lst.ChannelAfter.IsNSFW, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", fst.ChannelBefore.Bitrate, lst.ChannelAfter.Bitrate, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-position", fst.ChannelBefore.Position, lst.ChannelAfter.Position, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", fst.ChannelBefore.PerUserRateLimit, lst.ChannelAfter.PerUserRateLimit, inline: true);
+                emb.AddLocalizedPropertyChangeField("evt-upd-type", fst.ChannelBefore.Type, lst.ChannelAfter.Type, inline: true);
+                if (!fst.ChannelBefore.Topic.Equals(lst.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase)) {
                     string before = Formatter.BlockCode(
-                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelBefore.Topic) ? " " : e.ChannelBefore.Topic).Truncate(450, "...")
+                        Formatter.Strip(string.IsNullOrWhiteSpace(fst.ChannelBefore.Topic) ? " " : fst.ChannelBefore.Topic).Truncate(450, "...")
                     );
                     string after = Formatter.BlockCode(
-                        Formatter.Strip(string.IsNullOrWhiteSpace(e.ChannelAfter.Topic) ? " " : e.ChannelAfter.Topic).Truncate(450, "...")
+                        Formatter.Strip(string.IsNullOrWhiteSpace(lst.ChannelAfter.Topic) ? " " : lst.ChannelAfter.Topic).Truncate(450, "...")
                     );
                     emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
                 }
                 emb.AddInsufficientAuditLogPermissionsField();
-                if (emb.FieldCount <= 2)
-                    return;
             }
 
             await logService.LogAsync(e.Guild, emb);

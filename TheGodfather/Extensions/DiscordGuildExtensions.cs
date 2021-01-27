@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -25,7 +26,8 @@ namespace TheGodfather.Extensions
         {
             period ??= TimeSpan.FromSeconds(5);
             try {
-                DiscordAuditLogEntry? entry = (await guild.GetAuditLogsAsync(1, action_type: type))?.FirstOrDefault();
+                IReadOnlyList<DiscordAuditLogEntry>? logs = await guild.GetAuditLogsAsync(1, action_type: type);
+                DiscordAuditLogEntry? entry = logs?[0];
                 return entry is { } && DateTimeOffset.UtcNow - entry.CreationTimestamp.ToUniversalTime() <= period ? entry : null;
             } catch {
                 // no perms, ignored

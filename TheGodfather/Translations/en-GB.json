@@ -725,6 +725,7 @@
   "evt-upd-bitrate": "Bitrate updated",
   "evt-upd-name": "Name updated",
   "evt-upd-nsfw": "NSFW flag updated",
+  "evt-upd-position": "Position updated",
   "evt-upd-ratelimit": "Ratelimit updated",
   "evt-upd-type": "Type updated",
   "evt-usr-responsible": "User responsible",

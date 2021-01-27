@@ -200,17 +200,6 @@ namespace TheGodfather.EventListeners
             await logService.LogAsync(e.GuildAfter, emb);
         }
 
-        [AsyncEventListener(DiscordEventType.VoiceServerUpdated)]
-        public static async Task GuildVoiceServerUpdateEventHandlerAsync(TheGodfatherBot bot, VoiceServerUpdateEventArgs e)
-        {
-            LogExt.Debug(bot.GetId(e.Guild.Id), "Guild voice server updated: {Endpoint} {Guild}", e.Endpoint, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                return;
-
-            emb.WithLocalizedTitle(DiscordEventType.VoiceServerUpdated, "evt-gld-vs-upd", e.Endpoint);
-            await logService.LogAsync(e.Guild, emb);
-        }
-
         [AsyncEventListener(DiscordEventType.InviteCreated)]
         public static Task InviteCreatedEventHandlerAsync(TheGodfatherBot bot, InviteCreateEventArgs e)
         {
