@@ -65,6 +65,7 @@ namespace TheGodfather.Modules.Music.Common
                 return;
 
             this.NowPlaying = default;
+            this.RepeatMode = RepeatMode.None;
             await this.player.StopAsync();
         }
 
@@ -128,6 +129,7 @@ namespace TheGodfather.Modules.Music.Common
 
         public int EmptyQueue()
         {
+            this.RepeatMode = RepeatMode.None;
             lock (this.queue) {
                 int count = this.queue.Count;
                 this.queue.Clear();

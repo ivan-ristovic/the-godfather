@@ -76,6 +76,17 @@ namespace TheGodfather.Modules.Music
         }
         #endregion
 
+        #region music forward
+        [Command("forward")]
+        [Aliases("fw", "f", ">", ">>")]
+        public async Task ForwardAsync(CommandContext ctx,
+                                      [RemainingText, Description("desc-music-fw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
         #region music info
         [Command("info")]
         [Aliases("i", "player")]
@@ -107,82 +118,14 @@ namespace TheGodfather.Modules.Music
         }
         #endregion
 
-        #region music stop
-        [Command("stop")]
-        public async Task StopAsync(CommandContext ctx)
+        #region music repeat
+        [Command("repeat")]
+        [Aliases("loop", "l", "rep", "lp")]
+        public Task RepeatAsync(CommandContext ctx,
+                               [Description("desc-music-mode")] RepeatMode mode = RepeatMode.Single)
         {
-            int removed = this.Player.EmptyQueue();
-            await this.Player.StopAsync();
-            await this.Player.DestroyPlayerAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
-        }
-        #endregion
-
-        #region music resume
-        [Command("resume")]
-        [Aliases("unpause", "up", "rs")]
-        public async Task ResumeAsync(CommandContext ctx)
-        {
-            await this.Player.ResumeAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-resume");
-        }
-        #endregion
-
-        #region music skip
-        [Command("skip")]
-        [Aliases("next", "n", "sk")]
-        public async Task SkipAsync(CommandContext ctx)
-        {
-            Song song = this.Player.NowPlaying;
-            await this.Player.StopAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-skip", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
-        }
-        #endregion
-
-        #region music seek
-        [Command("seek")]
-        [Aliases("s")]
-        public async Task SeekAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-music-seek")] TimeSpan position)
-        {
-            await this.Player.SeekAsync(position, false);
-            await ctx.InfoAsync(this.ModuleColor);
-        }
-        #endregion
-
-        #region music forward
-        [Command("forward")]
-        [Aliases("fw", "f", ">", ">>")]
-        public async Task ForwardAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-music-fw")] TimeSpan offset)
-        {
-            await this.Player.SeekAsync(offset, true);
-            await ctx.InfoAsync(this.ModuleColor);
-        }
-        #endregion
-
-        #region music rewind
-        [Command("rewind")]
-        [Aliases("bw", "rw", "<", "<<")]
-        public async Task RewindAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-music-bw")] TimeSpan offset)
-        {
-            await this.Player.SeekAsync(-offset, true);
-            await ctx.InfoAsync(this.ModuleColor);
-        }
-        #endregion
-
-        #region music volume
-        [Command("volume")]
-        [Aliases("vol", "v")]
-        public async Task VolumeAsync(CommandContext ctx,
-                                     [Description("desc-music-vol")] int volume = 100)
-        {
-            if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-music-vol", GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume);
-
-            await this.Player.SetVolumeAsync(volume);
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-vol", volume);
+            this.Player.SetRepeatMode(mode);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-mode", mode);
         }
         #endregion
 
@@ -197,14 +140,44 @@ namespace TheGodfather.Modules.Music
         }
         #endregion
 
-        #region music repeat
-        [Command("repeat")]
-        [Aliases("loop", "l", "rep", "lp")]
-        public Task RepeatAsync(CommandContext ctx,
-                               [Description("desc-music-mode")] RepeatMode mode = RepeatMode.Single)
+        #region music resume
+        [Command("resume")]
+        [Aliases("unpause", "up", "rs")]
+        public async Task ResumeAsync(CommandContext ctx)
         {
-            this.Player.SetRepeatMode(mode);
-            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-mode", mode);
+            await this.Player.ResumeAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-resume");
+        }
+        #endregion
+
+        #region music reshuffle
+        [Command("reshuffle")]
+        public Task ReshuffleAsync(CommandContext ctx)
+        {
+            this.Player.Reshuffle();
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-reshuffle");
+        }
+        #endregion
+
+        #region music rewind
+        [Command("rewind")]
+        [Aliases("bw", "rw", "<", "<<")]
+        public async Task RewindAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-music-bw")] TimeSpan offset)
+        {
+            await this.Player.SeekAsync(-offset, true);
+            await ctx.InfoAsync(this.ModuleColor);
+        }
+        #endregion
+
+        #region music seek
+        [Command("seek")]
+        [Aliases("s")]
+        public async Task SeekAsync(CommandContext ctx,
+                                   [RemainingText, Description("desc-music-seek")] TimeSpan position)
+        {
+            await this.Player.SeekAsync(position, false);
+            await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
 
@@ -223,12 +196,39 @@ namespace TheGodfather.Modules.Music
         }
         #endregion
 
-        #region music reshuffle
-        [Command("reshuffle")]
-        public Task ReshuffleAsync(CommandContext ctx)
+        #region music skip
+        [Command("skip")]
+        [Aliases("next", "n", "sk")]
+        public async Task SkipAsync(CommandContext ctx)
         {
-            this.Player.Reshuffle();
-            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-reshuffle");
+            Song song = this.Player.NowPlaying;
+            await this.Player.StopAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-skip", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+        }
+        #endregion
+
+        #region music stop
+        [Command("stop")]
+        public async Task StopAsync(CommandContext ctx)
+        {
+            int removed = this.Player.EmptyQueue();
+            await this.Player.StopAsync();
+            await this.Player.DestroyPlayerAsync();
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
+        }
+        #endregion
+
+        #region music volume
+        [Command("volume")]
+        [Aliases("vol", "v")]
+        public async Task VolumeAsync(CommandContext ctx,
+                                     [Description("desc-music-vol")] int volume = 100)
+        {
+            if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-music-vol", GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume);
+
+            await this.Player.SetVolumeAsync(volume);
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-vol", volume);
         }
         #endregion
     }

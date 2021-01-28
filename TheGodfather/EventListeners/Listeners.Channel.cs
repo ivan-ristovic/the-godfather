@@ -19,7 +19,7 @@ namespace TheGodfather.EventListeners
 {
     internal static partial class Listeners
     {
-        private static ConcurrentDictionary<ulong, ConcurrentQueue<ChannelUpdateEventArgs>> _channelUpdates = new();
+        private static readonly ConcurrentDictionary<ulong, ConcurrentQueue<ChannelUpdateEventArgs>> _channelUpdates = new();
 
 
         [AsyncEventListener(DiscordEventType.DmChannelCreated)]
