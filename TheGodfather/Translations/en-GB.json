@@ -368,6 +368,7 @@
   "cmd-err-shop-purchased": "You have already purchased **{0}**!",
   "cmd-err-shop-purchased-none": "{0} did not purchase any items.",
   "cmd-err-shop-sell": "You did not purchase **{0}**, so you can't sell it!",
+  "cmd-err-sim": "Given user has not sent enough messages recently.",
   "cmd-err-size": "You must provide atleast atleast one and less than 10 users to measure.",
   "cmd-err-size-bot": "Please, I do not want to make everyone laugh at you...",
   "cmd-err-sr-none": "This guild has no self-assignable roles registered.",

@@ -282,6 +282,25 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region simulate
+        [Command("simulate")]
+        [Aliases("sim")]
+        [RequireGuild, Cooldown(1, 5, CooldownBucketType.Guild)]
+        public async Task SimulateAsync(CommandContext ctx,
+                                       [Description("desc-member")] DiscordMember? member = null)
+        {
+            member ??= ctx.Member;
+            if (member == ctx.Guild.CurrentMember)
+                member = ctx.Member;
+
+            string prefix = ctx.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
+            string? simulatedMessage = await SimulationService.SimulateAsync(ctx.Channel, member, prefix);
+            if (simulatedMessage is null)
+                throw new CommandFailedException(ctx, "cmd-err-sim");
+            await ctx.Channel.EmbedAsync(simulatedMessage, Emojis.Loudspeaker, this.ModuleColor);
+        }
+        #endregion
+
         #region tts
         [Command("tts")]
         [RequirePermissions(Permissions.SendTtsMessages)]

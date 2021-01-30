@@ -29,12 +29,6 @@
       []
     ]
   },
-  "linux": {
-    "usage": [
-      [],
-      [ "arg-gnu", "arg-windows" ]
-    ]
-  },
   "birthday list": {
     "usage": [
       [ "arg-usr" ],
@@ -112,6 +106,12 @@
   "leet": {
     "usage": [
       [ "arg-string" ]
+    ]
+  },
+  "linux": {
+    "usage": [
+      [],
+      [ "arg-gnu", "arg-windows" ]
     ]
   },
   "meme": {
@@ -248,6 +248,12 @@
   "say": {
     "usage": [
       [ "arg-string" ]
+    ]
+  },
+  "simulate": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
     ]
   },
   "starboard": {

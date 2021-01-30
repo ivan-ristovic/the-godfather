@@ -433,6 +433,7 @@
   "shop list": "Lists all items available for purchase in the guild shop.",
   "shop purchases": "Print user purchases in this guild.",
   "shop sell": "Sell item(s) bought from the guild shop.",
+  "simulate": "Simulates a message from another user.",
   "starboard": "Guild starboard commands. Starboard is a channel where member-voted messages will be saved. Something like pins however the starboard is not limited to one channel, has no limits on the number of starred messages, and it is automatically updated. If a message has more than a number of specified emoji reactions, it will be saved in the starboard. The number of reactions before saving is referred to as *sensitivity*, whereas the emoji is referred to as a *star* (star being the default emoji). Both are customziable. Group call shows current starboard information for the guild or enables/disables starboard in given channel and using given star emoji.",
   "starboard channel": "Sets starboard channel.",
   "starboard sensitivity": "Gets or sets starboard sensitivity.",
