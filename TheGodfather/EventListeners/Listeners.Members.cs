@@ -239,6 +239,11 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.PresenceUpdated)]
         public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
         {
+            if (e.User is null) {
+                Log.Warning("404 user in presence update handler: {UserId}", e.UserBefore?.Id ?? e.UserAfter?.Id ?? 0);
+                return;
+            }
+
             if (e.User.IsBot)
                 return;
 
