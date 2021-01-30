@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Misc.Services
     {
         private static readonly SecureRandom _rng = new SecureRandom();
         private static readonly Regex _urlRegex =
-            new Regex(@"[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            new Regex(@"([a-z]+:\/*)?[-a-z0-9@:%._\+~#=]{1,256}\.[a-z0-9()]{1,6}\b([-a-z0-9()@:%_\+.~#?&\/=]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 
         public static async Task<string?> SimulateAsync(DiscordChannel channel, DiscordMember member, string ignorePrefix)

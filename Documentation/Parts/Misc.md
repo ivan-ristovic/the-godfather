@@ -1006,6 +1006,29 @@
 
 ---
 
+## simulate
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Simulates a message from another user.*
+
+**Aliases:**
+`sim`
+**Guild only.**
+
+**Arguments:**
+
+(optional) [`member`]: *Member* (def: `None`)
+
+**Examples:**
+
+```xml
+!simulate
+!simulate @User
+```
+</p></details>
+
+---
+
 ## Group: starboard
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
