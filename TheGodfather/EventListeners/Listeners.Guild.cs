@@ -178,9 +178,22 @@ namespace TheGodfather.EventListeners
             LogExt.Debug(bot.GetId(e.GuildBefore.Id), "Guild updated: {Guild}", e.GuildBefore);
             if (!LoggingService.IsLogEnabledForGuild(bot, e.GuildBefore.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
-
+            
             emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-gld-upd");
 
+            emb.AddLocalizedPropertyChangeField("str-afktime", e.GuildBefore.AfkTimeout, e.GuildAfter.AfkTimeout);
+            emb.AddLocalizedPropertyChangeField("str-banner", e.GuildBefore.BannerUrl, e.GuildAfter.BannerUrl);
+            emb.AddLocalizedPropertyChangeField("str-boosters", e.GuildBefore.PremiumSubscriptionCount, e.GuildAfter.PremiumSubscriptionCount);
+            emb.AddLocalizedPropertyChangeField("str-notifications", e.GuildBefore.DefaultMessageNotifications, e.GuildAfter.DefaultMessageNotifications);
+            emb.AddLocalizedPropertyChangeField("str-desc", e.GuildBefore.Description, e.GuildAfter.Description);
+            emb.AddLocalizedPropertyChangeField("str-discovery-url", e.GuildBefore.DiscoverySplashUrl, e.GuildAfter.DiscoverySplashUrl);
+            emb.AddLocalizedPropertyChangeField("str-embeds", e.GuildBefore.EmbedEnabled, e.GuildAfter.EmbedEnabled);
+            emb.AddLocalizedPropertyChangeField("str-nsfw", e.GuildBefore.ExplicitContentFilter, e.GuildAfter.ExplicitContentFilter);
+            emb.AddLocalizedPropertyChangeField("str-icon", e.GuildBefore.IconUrl, e.GuildAfter.IconUrl);
+            emb.AddLocalizedPropertyChangeField("str-locale", e.GuildBefore.PreferredLocale, e.GuildAfter.PreferredLocale);
+            emb.AddLocalizedPropertyChangeField("str-tier", e.GuildBefore.PremiumTier, e.GuildAfter.PremiumTier);
+            emb.AddLocalizedPropertyChangeField("str-vanity-url", e.GuildBefore.VanityUrlCode, e.GuildAfter.VanityUrlCode);
+            emb.AddLocalizedPropertyChangeField("str-region", e.GuildBefore.VoiceRegion, e.GuildAfter.VoiceRegion);
             DiscordAuditLogGuildEntry? entry = await e.GuildAfter.GetLatestAuditLogEntryAsync<DiscordAuditLogGuildEntry>(AuditLogActionType.GuildUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
