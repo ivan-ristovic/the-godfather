@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Misc
             if (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)
                 return this.ExecuteGroupAsync(ctx, module.ToString());
 
-            IReadOnlyList<string> cmds = this.Service.GetCommandsInModule(module);
+            IEnumerable<string> cmds = this.Service.GetCommandsInModule(module).OrderBy(cmd => cmd);
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(module.ToDiscordColor());
                 emb.WithLocalizedTitle("h-title-m", module);
