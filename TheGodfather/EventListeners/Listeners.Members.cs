@@ -144,7 +144,7 @@ namespace TheGodfather.EventListeners
                 return;
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-mem-del", e.Member);
+            emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-mem-left", e.Member);
 
             DiscordAuditLogKickEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogKickEntry>(AuditLogActionType.Kick);
             if (entry?.Target?.Id == e.Member.Id)
@@ -239,12 +239,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.PresenceUpdated)]
         public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
         {
-            if (e.User is null) {
-                Log.Warning("404 user in presence update handler: {UserId}", e.UserBefore?.Id ?? e.UserAfter?.Id ?? 0);
-                return;
-            }
-
-            if (e.User.IsBot)
+            if (e.User is null || e.User.IsBot)
                 return;
 
             Log.Debug("Presence updated: {User}", e.User);
