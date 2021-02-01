@@ -28,6 +28,7 @@ namespace TheGodfather.Modules.Misc.Services
                         .Where(m => m.Author.Id == member.Id && !string.IsNullOrWhiteSpace(m.Content))
                         .Where(m => !m.Content.StartsWith(ignorePrefix))
                 );
+                count *= 2;
             } while (pastMessages.Count < 2 && count < 500);
 
             if (pastMessages.Count == 0)

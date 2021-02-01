@@ -56,8 +56,8 @@ namespace TheGodfather.Modules.Owner
             if (cmd is null)
                 throw new CommandFailedException(ctx, "cmd-name-404");
             ctx.CommandsNext.UnregisterCommands(cmd);
-            bool success = this.Service.RemoveCommand(command);
-            return success ? ctx.InfoAsync(this.ModuleColor) : ctx.FailAsync("cmd-err-cmd-del");
+            bool success = this.Service.RemoveCommand(cmd.QualifiedName);
+            return success ? ctx.InfoAsync(this.ModuleColor) : ctx.FailAsync("cmd-err-cmd-del", cmd.QualifiedName);
         }
         #endregion
 
