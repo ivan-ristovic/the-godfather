@@ -9,6 +9,7 @@ namespace TheGodfather.Modules.Reminders
     public partial class RemindModule
     {
         [Group("at")]
+        [Aliases("when", "@")]
         public sealed class RemindAtModule : RemindModule
         {
             #region remind at

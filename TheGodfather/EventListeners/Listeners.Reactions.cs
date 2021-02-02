@@ -22,13 +22,13 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageReactionsCleared)]
         public static Task MessageReactionsClearedEventHandlerAsync(TheGodfatherBot bot, MessageReactionsClearEventArgs e)
         {
-            if (e.Guild is null || e.Channel is null || e.Message is null || e.Message.Author == bot.Client.GetShard(e.Channel.Guild).CurrentUser)
+            if (e.Guild is null || e.Channel is null || e.Message is null || e.Message.Author == bot.Client.CurrentUser)
                 return Task.CompletedTask;
 
             if (bot.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
                 return Task.CompletedTask;
 
-            if (e.Message.Author == bot.Client.CurrentUser && bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+            if (bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return Task.CompletedTask;
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
