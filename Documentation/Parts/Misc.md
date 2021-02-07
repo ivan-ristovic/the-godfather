@@ -1133,7 +1133,7 @@
 `t`
 **Arguments:**
 
-(optional) [`string...`]: *IANA/Windows timezone ID* (def: `None`)
+(optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
 
 **Examples:**
 

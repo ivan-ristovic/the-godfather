@@ -2742,6 +2742,146 @@
 
 ---
 
+## Group: config timezone
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets current guild time zone.*
+
+**Aliases:**
+`tz`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 0:**
+
+[`string...`]: *IANA/Windows/Rails timezone ID*
+
+**Examples:**
+
+```xml
+!config timezone
+!config timezone CET
+```
+</p></details>
+
+---
+
+### config timezone current
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints current guild time zone.*
+
+**Aliases:**
+`curr, active`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!config timezone current
+```
+</p></details>
+
+---
+
+### config timezone info
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints information about given time zone.*
+
+**Aliases:**
+`i, information`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+(optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
+
+**Examples:**
+
+```xml
+!config timezone info
+!config timezone info CET
+```
+</p></details>
+
+---
+
+### config timezone list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all available time zones.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!config timezone list
+```
+</p></details>
+
+---
+
+### config timezone reset
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Resets guild time zone information to the default value.*
+
+**Aliases:**
+`default, def, rr`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!config timezone reset
+```
+</p></details>
+
+---
+
+### config timezone set
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Modifies current guild time zone.*
+
+**Aliases:**
+`s`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`string...`]: *IANA/Windows/Rails timezone ID*
+
+**Examples:**
+
+```xml
+!config timezone set CET
+```
+</p></details>
+
+---
+
 ### config verbose
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

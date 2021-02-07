@@ -52,7 +52,7 @@
 *Sends a reminder at the exact specified date and time. Specified date and/or time is relative to guild timezone setting, or UTC time if the command is invoked in DM.*
 
 **Aliases:**
-`reminders, reminder, todo, todolist, note`
+`when, @`
 **Overload 2:**
 
 [`date and time`]: *Localized due date*
