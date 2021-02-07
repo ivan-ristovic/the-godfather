@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Music
                     string title = track.Title;
                     string author = track.Author;
                     if (!track.Uri.Scheme.StartsWith("http")) {
-                        title = track.Uri.LocalPath;
+                        title = track.Uri.ToString();
                         author = TheGodfather.ApplicationName;
                     } else {
                         emb.WithUrl(track.Uri);

@@ -528,6 +528,38 @@
       [ "arg-bool" ]
     ]
   },
+  "config timezone": {
+    "usage": [
+      [],
+      [ "arg-tz" ]
+    ]
+  },
+  "config timezone current": {
+    "usage": [
+      []
+    ]
+  },
+  "config timezone info": {
+    "usage": [
+      [],
+      [ "arg-tz" ]
+    ]
+  },
+  "config timezone list": {
+    "usage": [
+      []
+    ]
+  },
+  "config timezone reset": {
+    "usage": [
+      []
+    ]
+  },
+  "config timezone set": {
+    "usage": [
+      [ "arg-tz" ]
+    ]
+  },
   "config verbose": {
     "usage": [
       [],
