@@ -95,15 +95,22 @@ namespace TheGodfather.Modules.Music
             } else {
                 LavalinkTrack track = tracks.First();
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    string title = track.Title;
+                    string author = track.Author;
+                    if (!track.Uri.Scheme.StartsWith("http")) {
+                        title = track.Uri.LocalPath;
+                        author = TheGodfather.ApplicationName;
+                    } else {
+                        emb.WithUrl(track.Uri);
+                    }
                     emb.WithColor(this.ModuleColor);
                     emb.WithLocalizedTitle("fmt-music-add", Emojis.Headphones);
-                    emb.WithDescription(Formatter.Bold(Formatter.Sanitize(track.Title)));
-                    emb.AddLocalizedTitleField("str-author", track.Author, inline: true);
+                    emb.WithDescription(Formatter.Bold(Formatter.Sanitize(title)));
+                    emb.AddLocalizedTitleField("str-author", author, inline: true);
                     emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);
-                    emb.WithUrl(track.Uri);
                 });
             }
-        } 
+        }
         #endregion
     }
 }
