@@ -4,6 +4,9 @@ namespace TheGodfather.Services.Common
 {
     public sealed class LavalinkConfig
     {
+        [JsonProperty("enable")]
+        public bool Enable { get; set; } = false;
+
         [JsonProperty("hostname")]
         public string Hostname { get; set; } = "localhost";
 

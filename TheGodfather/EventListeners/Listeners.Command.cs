@@ -54,10 +54,10 @@ namespace TheGodfather.EventListeners
                 return e.Context.Message.CreateReactionAsync(Emojis.X);
 
             LogExt.Debug(
-                bot.GetId(e.Context.Guild?.Id),
-                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}", "Message: {Message}" },
+                bot.GetId(e.Context.Guild?.Id), e.Exception,
+                new[] { "Command errored ({ExceptionName}): {ErroredCommand}", "{User}", "{Guild}", "{Channel}" },
                 e.Exception?.GetType().Name ?? "Unknown", e.Command?.QualifiedName ?? "Unknown",
-                e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel, ex.Message
+                e.Context.User, e.Context.Guild?.ToString() ?? "DM", e.Context.Channel
             );
 
             LocalizationService lcs = bot.Services.GetRequiredService<LocalizationService>();
@@ -150,7 +150,6 @@ namespace TheGodfather.EventListeners
                     emb.WithLocalizedDescription("cmd-err-403");
                     break;
                 case TaskCanceledException tcex:
-                    LogExt.Warning(bot.GetId(e.Context.Guild?.Id), "Task cancelled");
                     return Task.CompletedTask;
                 case NpgsqlException _:
                 case DbUpdateException _:

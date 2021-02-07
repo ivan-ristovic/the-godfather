@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Music
                     emb.WithUrl(track.Uri);
                 });
             }
-        }
+        } 
         #endregion
     }
 }

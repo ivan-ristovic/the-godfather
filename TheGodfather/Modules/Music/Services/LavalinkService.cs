@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Music.Services
 {
     public sealed class LavalinkService : ITheGodfatherService
     {
-        public bool IsDisabled => this.LavalinkNode is null;
+        public bool IsDisabled => !this.cfg.Enable || this.LavalinkNode is null;
         public LavalinkNodeConnection? LavalinkNode { get; private set; }
 
 
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Music.Services
 
         private Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
         {
-            if (this.LavalinkNode is null && this.failedAttempts < this.cfg.RetryAmount) {
+            if (this.cfg.Enable && this.LavalinkNode is null && this.failedAttempts < this.cfg.RetryAmount) {
                 _ = Task.Run(async () => {
                     try {
                         LavalinkExtension lava = client.GetLavalink();
