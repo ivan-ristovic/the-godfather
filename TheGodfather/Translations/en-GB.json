@@ -546,7 +546,7 @@
   "desc-msg-del-amount": "Amount of messages to delete",
   "desc-music-bw": "Backward amount",
   "desc-music-fw": "Forward amount",
-  "desc-music-mode": "Repeat mode (0 - none, 1 - one, A - all)",
+  "desc-music-mode": "Repeat mode (0 - none, 1 - single, A - all)",
   "desc-music-seek": "Point to seek to",
   "desc-music-vol": "Volume to set",
   "desc-muterole": "New mute role",

@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Music
                 emb.AddLocalizedTitleField("str-music-shuffled", this.Player.IsShuffled, inline: true);
                 emb.AddLocalizedTitleField("str-music-mode", this.Player.RepeatMode, inline: true);
                 emb.AddLocalizedTitleField("str-music-vol", $"{this.Player.Volume}%", inline: true);
-                emb.AddLocalizedTitleField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()}", inline: true);
+                emb.AddLocalizedTitleField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()})", inline: true);
             });
         }
         #endregion
