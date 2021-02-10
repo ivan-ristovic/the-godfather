@@ -74,10 +74,13 @@ namespace TheGodfather.Modules.Currency.Common
                 using var ms = new MemoryStream();
                 wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 ms.Position = 0;
-                await this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder {
-                    Description = lcs.GetString(this.gid, "fmt-casino-win", this.user.Mention, this.WonAmount.ToWords(culture), this.WonAmount, this.currency),
-                    Color = DiscordColor.DarkGreen
-                });
+                await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
+                    .WithFile("wof.png", ms)
+                    .WithEmbed(new DiscordEmbedBuilder {
+                        Description = lcs.GetString(this.gid, "fmt-casino-win", this.user.Mention, this.WonAmount.ToWords(culture), this.WonAmount, this.currency),
+                        Color = DiscordColor.DarkGreen
+                    })
+                );
             } catch (Exception e) {
                 Log.Error("Failed to process wheel of fortune image!", e);
             }

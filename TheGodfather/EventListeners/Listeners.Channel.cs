@@ -22,18 +22,6 @@ namespace TheGodfather.EventListeners
         private static readonly ConcurrentDictionary<ulong, ConcurrentQueue<ChannelUpdateEventArgs>> _channelUpdates = new();
 
 
-        [AsyncEventListener(DiscordEventType.DmChannelCreated)]
-        public static Task DmChannelCreateEventHandlerAsync(TheGodfatherBot bot, DmChannelCreateEventArgs e)
-        {
-            LogExt.Debug(
-                bot.GetId(null),
-                new[] { "Create: DM {Channel}, recipients:", "{Recipients}" },
-                e.Channel,
-                e.Channel.Recipients.Humanize(Environment.NewLine)
-            );
-            return Task.CompletedTask;
-        }
-
         [AsyncEventListener(DiscordEventType.DmChannelDeleted)]
         public static Task DmChannelDeleteEventHandlerAsync(TheGodfatherBot bot, DmChannelDeleteEventArgs e)
         {

@@ -69,9 +69,6 @@ namespace TheGodfather.EventListeners.Attributes
                     foreach (CommandsNextExtension cnext in bot.CNext.Values)
                         cnext.CommandExecuted += OnEventWithArgs;
                     break;
-                case DiscordEventType.DmChannelCreated:
-                    bot.Client.DmChannelCreated += OnEventWithArgs;
-                    break;
                 case DiscordEventType.DmChannelDeleted:
                     bot.Client.DmChannelDeleted += OnEventWithArgs;
                     break;

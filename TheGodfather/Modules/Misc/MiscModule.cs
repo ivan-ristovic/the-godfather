@@ -127,11 +127,11 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(str1))
                 str1 = "GNU";
-            
+
             if (string.IsNullOrWhiteSpace(str2))
                 str2 = "Linux";
 
-            string interjection = 
+            string interjection =
                 $"I'd just like to interject for a moment. What you're refering to as {str2}, " +
                 $"is in fact, {str1}/{str2}, or as I've recently taken to calling it, {str1} plus {str2}. " +
                 $"{str2} is not an operating system unto itself, but rather another free component of a fully " +
@@ -313,7 +313,7 @@ namespace TheGodfather.Modules.Misc
 
             return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
                 ? throw new CommandFailedException(ctx, "cmd-err-say")
-                : ctx.RespondAsync(Formatter.BlockCode(Formatter.Strip(text)), isTTS: true);
+                : ctx.RespondAsync(new DiscordMessageBuilder().WithContent(Formatter.BlockCode(Formatter.Strip(text))).HasTTS(true));
         }
         #endregion
 
@@ -378,8 +378,7 @@ namespace TheGodfather.Modules.Misc
             });
         }
 
-
-        public async Task InternalRateAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+        private async Task InternalRateAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
         {
             users = users.Distinct().ToList();
             if (!users.Any())
@@ -393,10 +392,13 @@ namespace TheGodfather.Modules.Misc
             }
 
             using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
-            await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder {
-                Description = this.Localization.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
-                Color = this.ModuleColor,
-            });
+            await ctx.RespondAsync(new DiscordMessageBuilder()
+                .WithFile("Rating.jpg", ms)
+                .WithEmbed(new DiscordEmbedBuilder {
+                    Description = this.Localization.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
+                    Color = this.ModuleColor,
+                })
+            );
         }
         #endregion
     }

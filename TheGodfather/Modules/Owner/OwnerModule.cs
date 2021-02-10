@@ -520,7 +520,7 @@ namespace TheGodfather.Modules.Owner
             }
 
             using FileStream? fs = fi.OpenRead();
-            await ctx.RespondWithFileAsync(fs);
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithFile(fs));
         }
 
         [Command("log"), Priority(0)]

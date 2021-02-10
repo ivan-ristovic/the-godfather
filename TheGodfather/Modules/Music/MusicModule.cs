@@ -94,6 +94,7 @@ namespace TheGodfather.Modules.Music
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithLocalizedTitle("str-music-player");
+                emb.WithColor(this.ModuleColor);
                 var totalQueueTime = TimeSpan.FromSeconds(this.Player.Queue.Sum(s => s.Track.Length.TotalSeconds));
                 emb.AddLocalizedTitleField("str-music-shuffled", this.Player.IsShuffled, inline: true);
                 emb.AddLocalizedTitleField("str-music-mode", this.Player.RepeatMode, inline: true);

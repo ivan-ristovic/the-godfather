@@ -50,7 +50,13 @@ namespace TheGodfather.EventListeners
             }
             ms.Seek(0, SeekOrigin.Begin);
             DiscordChannel? chn = gcs.GetLogChannelForGuild(e.Guild);
-            await (chn?.SendFileAsync($"{e.Channel.Name}-deleted-messages.txt", ms, embed: emb.Build()) ?? Task.CompletedTask);
+            if (chn is { }) {
+                await chn.SendMessageAsync(
+                    new DiscordMessageBuilder()
+                        .WithEmbed(emb.Build())
+                        .WithFile($"{e.Channel.Name}-deleted-messages.txt", ms)
+                );
+            }
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]

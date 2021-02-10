@@ -187,7 +187,6 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedPropertyChangeField("str-notifications", e.GuildBefore.DefaultMessageNotifications, e.GuildAfter.DefaultMessageNotifications);
             emb.AddLocalizedPropertyChangeField("str-desc", e.GuildBefore.Description, e.GuildAfter.Description);
             emb.AddLocalizedPropertyChangeField("str-discovery-url", e.GuildBefore.DiscoverySplashUrl, e.GuildAfter.DiscoverySplashUrl);
-            emb.AddLocalizedPropertyChangeField("str-embeds", e.GuildBefore.EmbedEnabled, e.GuildAfter.EmbedEnabled);
             emb.AddLocalizedPropertyChangeField("str-nsfw", e.GuildBefore.ExplicitContentFilter, e.GuildAfter.ExplicitContentFilter);
             emb.AddLocalizedPropertyChangeField("str-icon", e.GuildBefore.IconUrl, e.GuildAfter.IconUrl);
             emb.AddLocalizedPropertyChangeField("str-locale", e.GuildBefore.PreferredLocale, e.GuildAfter.PreferredLocale);

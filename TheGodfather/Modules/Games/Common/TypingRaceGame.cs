@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Games.Common
                 using var ms = new MemoryStream();
                 image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 ms.Position = 0;
-                await this.Channel.SendFileAsync("typing-challenge.png", ms);
+                await this.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile("typing-challenge.png", ms));
             }
 
             await this.Interactivity.WaitForMessageAsync(

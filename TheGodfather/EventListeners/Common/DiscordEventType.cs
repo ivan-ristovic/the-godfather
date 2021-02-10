@@ -12,7 +12,6 @@ namespace TheGodfather.EventListeners.Common
         ClientErrored,
         CommandErrored,
         CommandExecuted,
-        DmChannelCreated,
         DmChannelDeleted,
         GuildAvailable,
         GuildBanAdded,
@@ -83,7 +82,6 @@ namespace TheGodfather.EventListeners.Common
                 #endregion
 
                 #region Availability
-                case DiscordEventType.DmChannelCreated:
                 case DiscordEventType.DmChannelDeleted:
                 case DiscordEventType.GuildAvailable:
                 case DiscordEventType.GuildCreated:

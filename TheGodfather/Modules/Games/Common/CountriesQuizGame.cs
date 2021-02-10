@@ -63,7 +63,13 @@ namespace TheGodfather.Modules.Games.Common
 
                 var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
                 emb.WithLocalizedDescription("fmt-game-quiz-q", i + 1);
-                await this.Channel.SendFileAsync("flag.png", new FileStream(question, FileMode.Open), embed: emb.Build());
+
+                using (var fs = new FileStream(question, FileMode.Open)) {
+                    await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
+                        .WithFile("flag.png", fs)
+                        .WithEmbed(emb.Build())
+                    );
+                }
 
                 bool timeout = true;
                 var failed = new ConcurrentHashSet<ulong>();
