@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail", DiscordLimits.EmojiSizeLimit.ToMetric());
 
             try {
-                using Stream stream = await HttpService.GetStreamAsync(url);
+                using Stream stream = await HttpService.GetMemoryStreamAsync(url);
                 DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
                 await ctx.InfoAsync(this.ModuleColor, "fmt-emoji-add", emoji.GetDiscordName());
             } catch (WebException e) {

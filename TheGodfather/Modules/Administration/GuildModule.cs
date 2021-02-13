@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail", DiscordLimits.EmojiSizeLimit.ToMetric());
 
             try {
-                using Stream stream = await HttpService.GetStreamAsync(url);
+                using Stream stream = await HttpService.GetMemoryStreamAsync(url);
                 await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
                 await ctx.InfoAsync(this.ModuleColor);
             } catch (WebException e) {
