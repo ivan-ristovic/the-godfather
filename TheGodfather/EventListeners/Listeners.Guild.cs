@@ -198,10 +198,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
                 emb.AddLocalizedPropertyChangeField("str-afkchn", ent.AfkChannelChange);
                 emb.AddLocalizedPropertyChangeField("str-embchn", ent.EmbedChannelChange);
-                emb.AddLocalizedPropertyChangeField("str-nsfw", ent.ExplicitContentFilterChange);
-                emb.AddLocalizedPropertyChangeField("str-icon", ent.IconChange);
                 emb.AddLocalizedPropertyChangeField("str-mfa", ent.MfaLevelChange);
-                emb.AddLocalizedPropertyChangeField("str-notifications", ent.NotificationSettingsChange);
                 emb.AddLocalizedPropertyChangeField("str-owner", ent.OwnerChange);
                 emb.AddLocalizedPropertyChangeField("str-region", ent.RegionChange);
                 emb.AddLocalizedPropertyChangeField("str-splash", ent.SplashChange);

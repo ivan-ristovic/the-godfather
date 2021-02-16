@@ -10,7 +10,6 @@ using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Common;
-using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
@@ -40,7 +39,6 @@ namespace TheGodfather.EventListeners
             if (e.Member.Guild is null)     // User left in meantime
                 return;
 
-            // TODO move to service
             DiscordChannel? wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
             if (wchn is { }) {
                 string welcomeStr = string.IsNullOrWhiteSpace(gcfg.WelcomeMessage)
@@ -56,6 +54,7 @@ namespace TheGodfather.EventListeners
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
+
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
 
             emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
@@ -71,25 +70,17 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
             emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
 
-            // TODO move to service
-            using (TheGodfatherDbContext db = bot.Database.CreateContext()) {
-                ForbiddenName? fname = db.ForbiddenNames
-                    .Where(n => n.GuildIdDb == (long)e.Guild.Id)
-                    .AsEnumerable()
-                    .FirstOrDefault(fn => fn.Regex.IsMatch(e.Member.DisplayName))
-                    ;
-                if (fname is { }) {
-                    try {
-                        await e.Member.ModifyAsync(m => {
-                            m.Nickname = e.Member.Id.ToString();
-                            m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
-                        });
-                        emb.AddLocalizedTitleField("str-act-taken", "act-fname-match");
-                        if (!e.Member.IsBot)
-                            await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
-                    } catch (UnauthorizedException) {
-                        emb.AddLocalizedField("str-err", "err-fname-match");
-                    }
+            if (bot.Services.GetRequiredService<ForbiddenNamesService>().IsNameForbidden(e.Guild.Id, e.Member.DisplayName, out ForbiddenName? fname)) {
+                try {
+                    await e.Member.ModifyAsync(m => {
+                        m.Nickname = e.Member.Id.ToString();
+                        m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname?.RegexString ?? "?");
+                    });
+                    emb.AddLocalizedTitleField("str-act-taken", "act-fname-match");
+                    if (!e.Member.IsBot)
+                        await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
+                } catch (UnauthorizedException) {
+                    emb.AddLocalizedField("str-err", "err-fname-match");
                 }
             }
 
@@ -127,7 +118,6 @@ namespace TheGodfather.EventListeners
                 punished = await bot.Services.GetRequiredService<AntiInstantLeaveService>().HandleMemberLeaveAsync(e);
 
             if (!punished) {
-                // TODO move to service
                 DiscordChannel? lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
                 if (lchn is { }) {
                     string leaveStr = string.IsNullOrWhiteSpace(gcfg.LeaveMessage)
@@ -142,6 +132,7 @@ namespace TheGodfather.EventListeners
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
+
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
 
             emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-mem-left", e.Member);

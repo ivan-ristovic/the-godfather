@@ -229,6 +229,18 @@ namespace TheGodfather.Modules.Reactions.Services
 
             return removed;
         }
+
+        public async Task RemoveEmojiReactionsWhereAsync(ulong gid, Func<EmojiReaction, bool> condition)
+        {
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            db.EmojiReactions.RemoveRange(
+                db.EmojiReactions
+                    .Where(r => r.GuildIdDb == (long)gid)
+                    .AsEnumerable()
+                    .Where(condition)
+            );
+            await db.SaveChangesAsync();
+        }
         #endregion
 
         #region Text Reactions

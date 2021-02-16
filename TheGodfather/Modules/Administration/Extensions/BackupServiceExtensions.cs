@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             ulong gid = msg.Channel.GuildId;
             ulong cid = msg.ChannelId;
 
-            if (bs.IsChannelExempted(gid, cid))
+            if (!bs.IsBackupEnabledFor(gid) || bs.IsChannelExempted(gid, cid))
                 return Task.CompletedTask;
 
             var sb = new StringBuilder();

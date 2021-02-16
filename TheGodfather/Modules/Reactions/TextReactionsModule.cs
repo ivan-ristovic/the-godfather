@@ -218,7 +218,7 @@ namespace TheGodfather.Modules.Reactions
             if (!await this.Service.AddTextReactionAsync(ctx.Guild.Id, trigger, response, regex))
                 throw new CommandFailedException(ctx, "cmd-err-trig-fail", trigger);
 
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-tr-add", 1);
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tr-add", 1);
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-tr-add");
