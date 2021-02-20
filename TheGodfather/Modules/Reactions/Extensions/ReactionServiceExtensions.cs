@@ -12,13 +12,13 @@ namespace TheGodfather.Modules.Reactions.Extensions
 {
     public static class ReactionServiceExtensions
     {
-        public static Task<int> AddEmojiReactionEAsync(this ReactionsService service, ulong gid, DiscordEmoji emoji, IEnumerable<string> triggers, bool regex)
+        public static Task<int> AddEmojiReactionEmojiAsync(this ReactionsService service, ulong gid, DiscordEmoji emoji, IEnumerable<string> triggers, bool regex)
             => service.AddEmojiReactionAsync(gid, emoji.GetDiscordName(), triggers, regex);
 
-        public static Task<int> RemoveEmojiReactionsEAsync(this ReactionsService service, ulong gid, DiscordEmoji emoji)
+        public static Task<int> RemoveEmojiReactionsEmojiAsync(this ReactionsService service, ulong gid, DiscordEmoji emoji)
             => service.RemoveEmojiReactionsAsync(gid, emoji.GetDiscordName());
 
-        public static async Task HandleEmojiReactions(this ReactionsService service, DiscordClient shard, DiscordMessage msg)
+        public static async Task HandleEmojiReactionsAsync(this ReactionsService service, DiscordClient shard, DiscordMessage msg)
         {
             ulong gid = msg.Channel.GuildId;
 
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Reactions.Extensions
             }
         }
 
-        public static async Task HandleTextReactions(this ReactionsService service, DiscordMessage msg)
+        public static async Task HandleTextReactionsAsync(this ReactionsService service, DiscordMessage msg)
         {
             TextReaction? tr = service.FindMatchingTextReaction(msg.Channel.GuildId, msg.Content);
             if (tr is { } && tr.CanSend())

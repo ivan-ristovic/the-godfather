@@ -152,10 +152,9 @@ namespace TheGodfather.Modules.Reactions.Services
         {
             int removed = 0;
             if (this.ereactions.ContainsKey(gid)) {
-                if (this.ereactions.TryRemove(gid, out ConcurrentHashSet<EmojiReaction>? ers))
-                    removed = ers.Count;
-                else
-                    throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
+                removed = this.ereactions.TryRemove(gid, out ConcurrentHashSet<EmojiReaction>? ers)
+                    ? ers.Count
+                    : throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
@@ -307,10 +306,9 @@ namespace TheGodfather.Modules.Reactions.Services
         {
             int removed = 0;
             if (this.treactions.ContainsKey(gid)) {
-                if (this.treactions.TryRemove(gid, out ConcurrentHashSet<TextReaction>? trs))
-                    removed = trs.Count;
-                else
-                    throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
+                removed = this.treactions.TryRemove(gid, out ConcurrentHashSet<TextReaction>? trs)
+                    ? trs.Count
+                    : throw new ConcurrentOperationException("Failed to remove emoji reaction collection!");
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {

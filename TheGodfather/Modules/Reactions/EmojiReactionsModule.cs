@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Reactions
             if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
                 throw new CommandFailedException(ctx, "cmd-err-er-none");
 
-            int removed = await this.Service.RemoveEmojiReactionsEAsync(ctx.Guild.Id, emoji);
+            int removed = await this.Service.RemoveEmojiReactionsEmojiAsync(ctx.Guild.Id, emoji);
             if (removed == 0)
                 throw new CommandFailedException(ctx, "cmd-err-er-404");
 
@@ -269,7 +269,7 @@ namespace TheGodfather.Modules.Reactions
                 validTriggers.Add(trigger);
             }
 
-            int added = await this.Service.AddEmojiReactionEAsync(ctx.Guild.Id, emoji, validTriggers, regex);
+            int added = await this.Service.AddEmojiReactionEmojiAsync(ctx.Guild.Id, emoji, validTriggers, regex);
 
             if (eb.Length > 0)
                 await ctx.ImpInfoAsync(this.ModuleColor, "fmt-action-err", eb);

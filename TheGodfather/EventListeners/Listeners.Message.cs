@@ -157,14 +157,14 @@ namespace TheGodfather.EventListeners
             if (perms.HasFlag(Permissions.AddReactions)) {
                 DiscordClient client = bot.Client.GetShard(e.Guild.Id);
                 try {
-                    await rs.HandleEmojiReactions(client, e.Message);
+                    await rs.HandleEmojiReactionsAsync(client, e.Message);
                 } catch (NotFoundException) {
                     LogExt.Debug(bot.GetId(e.Guild.Id), "Trying to react to a deleted message.");
                 }
             }
 
             if (perms.HasFlag(Permissions.SendMessages))
-                await rs.HandleTextReactions(e.Message);
+                await rs.HandleTextReactionsAsync(e.Message);
         }
 
         [AsyncEventListener(DiscordEventType.MessageDeleted)]
@@ -290,7 +290,7 @@ namespace TheGodfather.EventListeners
                 LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                 try {
                     await msg.DeleteAsync(ls.GetString(msg.Channel.GuildId, "rsn-filter-match"));
-                    await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Strip(msg.Content));
+                    await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
                 } catch {
                     await SendErrorReportAsync();
                 }

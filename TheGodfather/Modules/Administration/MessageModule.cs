@@ -67,12 +67,14 @@ namespace TheGodfather.Modules.Administration
                 timeoutOverride: timespan ?? TimeSpan.FromMinutes(1)
             );
             var votes = res.ToDictionary(pe => pe.Emoji, pe => pe.Total);
-            if (votes.GetValueOrDefault(Emojis.ArrowDown) > 2 * votes.GetValueOrDefault(Emojis.ArrowUp)) {
-                string sanitized = Formatter.Strip(msg.Content);
+            int votesFor = votes.GetValueOrDefault(Emojis.ArrowUp);
+            int votesAgainst = votes.GetValueOrDefault(Emojis.ArrowDown);
+            if (votesAgainst > 2 * (votesFor > 0 ? votesFor : 1)) {
+                string sanitized = Formatter.Spoiler(Formatter.Strip(msg.Content));
                 await msg.DeleteAsync("_gf: Flagged for deletion");
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("fmt-filter", msg.Author.Mention, sanitized);
+                    emb.WithLocalizedDescription("fmt-flag", msg.Author.Mention, votesAgainst, sanitized);
                 });
             } else {
                 await ctx.FailAsync("cmd-err-flag");
