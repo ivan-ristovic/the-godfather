@@ -19,7 +19,8 @@ namespace TheGodfather.Modules.Currency
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string workStr = await this.Service.WorkAsync(ctx.Guild.Id, ctx.User.Id);
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            string workStr = await this.Service.WorkAsync(ctx.Guild.Id, ctx.User.Id, currency);
             await this.RespondWithWorkString(ctx, workStr, "str-work-footer");
         }
         #endregion
@@ -30,7 +31,8 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 120, CooldownBucketType.User)]
         public async Task StreetsAsync(CommandContext ctx)
         {
-            string workStr = await this.Service.StreetsAsync(ctx.Guild.Id, ctx.User.Id);
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            string workStr = await this.Service.StreetsAsync(ctx.Guild.Id, ctx.User.Id, currency);
             await this.RespondWithWorkString(ctx, workStr, "str-work-streets-footer");
         }
         #endregion
@@ -40,7 +42,8 @@ namespace TheGodfather.Modules.Currency
         [Cooldown(1, 300, CooldownBucketType.User)]
         public async Task CrimeAsync(CommandContext ctx)
         {
-            string workStr = await this.Service.StreetsAsync(ctx.Guild.Id, ctx.User.Id);
+            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
+            string workStr = await this.Service.CrimeAsync(ctx.Guild.Id, ctx.User.Id, currency);
             await this.RespondWithWorkString(ctx, workStr, "str-work-crime-footer");
         }
         #endregion
@@ -49,10 +52,9 @@ namespace TheGodfather.Modules.Currency
         #region internals
         public Task RespondWithWorkString(CommandContext ctx, string str, string footer)
         {
-            string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
-                emb.WithDescription($"{ctx.User.Mention} {str} {currency}");
+                emb.WithDescription($"{ctx.User.Mention} {str}");
                 emb.WithLocalizedFooter(footer, ctx.User.AvatarUrl);
             });
         }
