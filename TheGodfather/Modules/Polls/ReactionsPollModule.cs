@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Polls
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-poll-time", Poll.MinTimeSeconds, Poll.MaxTimeDays);
 
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
             this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
             try {
                 await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Polls
                     throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 rpoll.Options = options;
 
-                await rpoll.RunAsync(this.Localization, timeout);
+                await rpoll.RunAsync(this.Localization);
             } catch (TaskCanceledException) {
                 await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {

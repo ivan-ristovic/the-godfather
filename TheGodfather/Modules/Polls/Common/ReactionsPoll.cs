@@ -17,13 +17,13 @@ namespace TheGodfather.Modules.Polls.Common
         public new IReadOnlyCollection<PollEmoji>? Results { get; private set; }
 
 
-        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
-            : base(interactivity, channel, sender, question) { }
+        public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question, TimeSpan timeout)
+            : base(interactivity, channel, sender, question, timeout) { }
 
 
-        public override async Task RunAsync(LocalizationService lcs, TimeSpan runFor)
+        public override async Task RunAsync(LocalizationService lcs)
         {
-            this.EndTime = DateTimeOffset.UtcNow + runFor;
+            this.EndTime = DateTimeOffset.UtcNow + this.TimeoutAfter;
             this.IsRunning = true;
 
             DiscordMessage msgHandle = await this.Channel.SendMessageAsync(embed: this.ToEmbed(lcs));
