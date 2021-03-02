@@ -21,9 +21,9 @@ namespace TheGodfather.Modules.Polls.Common
         public string Question { get; }
         public bool IsRunning { get; protected set; }
         public List<string> Options { get; set; }
-        public DateTimeOffset? EndTime { get; }
+        public DateTimeOffset? EndTime { get; protected set; }
         public TimeSpan TimeUntilEnd => this.EndTime is null ? TimeSpan.Zero : this.EndTime.Value - DateTimeOffset.UtcNow;
-        public DiscordMember Initiator { get; set; }
+        public DiscordMember Initiator { get; }
         public DiscordChannel Channel { get; protected set; }
         public IReadOnlyDictionary<ulong, int> Results => this.votes;
 
@@ -33,9 +33,8 @@ namespace TheGodfather.Modules.Polls.Common
         protected readonly CancellationTokenSource cts;
 
 
-        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question, TimeSpan runFor)
+        public Poll(InteractivityExtension interactivity, DiscordChannel channel, DiscordMember sender, string question)
         {
-            this.EndTime = DateTimeOffset.UtcNow + runFor;
             this.Channel = channel;
             this.Interactivity = interactivity;
             this.Question = question;
@@ -46,8 +45,9 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
 
-        public virtual async Task RunAsync(LocalizationService lcs)
+        public virtual async Task RunAsync(LocalizationService lcs, TimeSpan runFor)
         {
+            this.EndTime = DateTimeOffset.UtcNow + runFor;
             this.IsRunning = true;
             DiscordMessage msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed(lcs));
 

@@ -34,16 +34,16 @@ namespace TheGodfather.Modules.Polls
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-poll-time", Poll.MinTimeSeconds, Poll.MaxTimeDays);
 
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
             this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
             try {
-                await ctx.InfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
                 List<string>? options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options is null || options.Count < 2 || options.Count > Poll.MaxPollOptions)
                     throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 rpoll.Options = options;
 
-                await rpoll.RunAsync(this.Localization);
+                await rpoll.RunAsync(this.Localization, timeout);
             } catch (TaskCanceledException) {
                 await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {

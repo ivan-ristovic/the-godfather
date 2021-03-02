@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Polls.Extensions
             if (poll.EndTime is { }) {
                 string localizedTime = lcs.GetLocalizedTimeString(poll.Channel.GuildId, poll.EndTime);
                 if (poll.TimeUntilEnd.TotalSeconds > 1)
-                    emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl, localizedTime, $"{localizedTime:hh\\:mm\\:ss}");
+                    emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl, localizedTime, $"{poll.TimeUntilEnd:hh\\:mm\\:ss}");
                 else
                     emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl);
             }

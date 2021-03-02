@@ -33,16 +33,16 @@ namespace TheGodfather.Modules.Polls
             if (timeout < TimeSpan.FromSeconds(Poll.MinTimeSeconds) || timeout >= TimeSpan.FromDays(Poll.MaxTimeDays))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-poll-time", Poll.MinTimeSeconds, Poll.MaxTimeDays);
 
-            var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+            var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question);
             this.Service.RegisterEventInChannel(poll, ctx.Channel.Id);
             try {
-                await ctx.InfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, "q-poll-ans");
                 List<string>? options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options is null || options.Count < 2 || options.Count > Poll.MaxPollOptions)
                     throw new CommandFailedException(ctx, "cmd-err-poll-opt", Poll.MaxPollOptions);
                 poll.Options = options;
 
-                await poll.RunAsync(this.Localization);
+                await poll.RunAsync(this.Localization, timeout);
             } catch (TaskCanceledException) {
                 await ctx.FailAsync("cmd-err-poll-cancel");
             } finally {
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Polls
             poll.Stop();
             this.Service.UnregisterEventInChannel(ctx.Channel.Id);
 
-            return Task.CompletedTask;
+            return ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
     }
