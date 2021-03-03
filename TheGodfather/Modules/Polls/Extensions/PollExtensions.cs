@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Polls.Extensions
 
             for (int i = 0; i < poll.Options.Count; i++) {
                 if (!string.IsNullOrWhiteSpace(poll.Options[i]))
-                    emb.AddField($"{i + 1} : {poll.Options[i]}", $"{poll.Results.Count(kvp => kvp.Value == i)}");
+                    emb.AddField($"{i + 1} : {poll.Options[i]}", $"{poll.Results.Count(kvp => kvp.Value == i)}", inline: true);
             }
 
             if (poll.EndTime is { }) {

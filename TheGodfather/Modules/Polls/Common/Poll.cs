@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
@@ -55,7 +56,8 @@ namespace TheGodfather.Modules.Polls.Common
 
             while (!this.cts.IsCancellationRequested) {
                 try {
-                    if (this.Channel.LastMessageId != msgHandle.Id) {
+                    IReadOnlyList<DiscordMessage> msgs = await this.Channel.GetMessagesAsync(1);
+                    if (msgs.Any() && msgs.Single().Id != msgHandle.Id) {
                         await msgHandle.DeleteAsync();
                         msgHandle = await this.Channel.SendMessageAsync(embed: this.ToDiscordEmbed(lcs));
                     } else {
