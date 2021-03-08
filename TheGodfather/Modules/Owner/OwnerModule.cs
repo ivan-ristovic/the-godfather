@@ -587,7 +587,9 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(command))
                 throw new InvalidCommandUsageException(ctx);
 
-            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            Command? cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            if (cmd is null)
+                throw new CommandFailedException(ctx, "cmd-404", command);
             if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute or RequirePrivilegedUserAttribute))
                 throw new CommandFailedException(ctx, "cmd-err-sudo");
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);

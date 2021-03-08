@@ -185,7 +185,9 @@ namespace TheGodfather.EventListeners
             switch (entry) {
                 case null:
                     emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
-                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {
+                    // TODO add pending membership screening
+                    // TODO add nitro notifications
+                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {   // FIXME order shouldn't matter
                         string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
                         string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
                         string noneStr = ls.GetString(e.Guild.Id, "str-none");

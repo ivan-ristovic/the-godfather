@@ -80,7 +80,8 @@ namespace TheGodfather.Modules.Administration.Services
                         await this.ss.ScheduleAsync(gt);
                         break;
                 }
-            } catch {
+            } catch (Exception e) {
+                Log.Error(e, "Failed to punish ({PunishmentType}) {Member} in {Guild}", type, member, guild);
                 if (this.ls.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb)) {
                     emb.WithLocalizedTitle("err-punish-failed");
                     emb.WithColor(DiscordColor.Red);
