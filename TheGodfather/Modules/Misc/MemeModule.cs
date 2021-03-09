@@ -174,8 +174,8 @@ namespace TheGodfather.Modules.Misc
 
                 await ctx.PaginateAsync(
                     "str-meme-templates",
-                    templates.OrderBy(t => t.Key),
-                    t => $"{Formatter.Bold(t.Name)}: {Formatter.MaskedUrl(t.Key, new Uri(t.Url))}",
+                    templates.OrderBy(t => t.Id),
+                    t => $"{Formatter.Bold(t.Name)}: {Formatter.MaskedUrl(t.Id, new Uri(t.Url))}",
                     this.ModuleColor
                 );
             } else {
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Misc
                     throw new CommandFailedException(ctx, "cmd-err-meme-template-404");
 
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Title = $"{t.Name}: {t.Key}",
+                    Title = $"{t.Name}: {t.Id}",
                     ImageUrl = t.Url,
                     Color = this.ModuleColor,
                     Url = t.Url,

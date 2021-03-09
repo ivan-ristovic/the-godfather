@@ -6,11 +6,11 @@ namespace TheGodfather.Modules.Misc.Common
 {
     public sealed class MemeTemplate
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("key")]
-        public string Key { get; set; }
 
         [JsonProperty("lines")]
         public int Lines { get; set; }
