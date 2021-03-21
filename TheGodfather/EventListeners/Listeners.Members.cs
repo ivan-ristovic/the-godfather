@@ -142,7 +142,7 @@ namespace TheGodfather.EventListeners
                 emb.AddFieldsFromAuditLogEntry(entry, (emb, _) => emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-kick"));
             emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddLocalizedTitleField("str-regtime", ls.GetLocalizedTimeString(e.Guild.Id, e.Member.CreationTimestamp), inline: true);
-            emb.AddLocalizedTitleField("str-email", e.Member.Email);
+            emb.AddLocalizedTitleField("str-email", e.Member.Email, unknown: false);
 
             await logService.LogAsync(e.Guild, emb);
         }

@@ -137,39 +137,25 @@ namespace TheGodfather.EventListeners
         public static async Task GuildRoleUpdateEventHandlerAsync(TheGodfatherBot bot, GuildRoleUpdateEventArgs e)
         {
             LogExt.Debug(bot.GetId(e.Guild.Id), "Role updated: {Role} {Guild}", e.RoleBefore, e.Guild);
-            // FIXME Still no solution for Discord role position event spam...
-            if (OnlyPositionUpdate(e.RoleBefore, e.RoleAfter))
-                return;
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleUpdated, "evt-gld-role-upd", e.RoleBefore);
+            emb.AddLocalizedPropertyChangeField("evt-upd-name", e.RoleBefore.Name, e.RoleAfter.Name);
+            emb.AddLocalizedPropertyChangeField("evt-upd-color", e.RoleBefore.Color, e.RoleAfter.Color);
+            emb.AddLocalizedPropertyChangeField("evt-upd-hoist", e.RoleBefore.IsHoisted, e.RoleAfter.IsHoisted);
+            emb.AddLocalizedPropertyChangeField("evt-upd-managed", e.RoleBefore.IsManaged, e.RoleAfter.IsManaged);
+            emb.AddLocalizedPropertyChangeField("evt-upd-mention", e.RoleBefore.IsMentionable, e.RoleAfter.IsMentionable);
+            emb.AddLocalizedPropertyChangeField("evt-upd-position", e.RoleBefore.Position, e.RoleAfter.Position);
 
             DiscordAuditLogRoleUpdateEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
-                emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
-                emb.AddLocalizedPropertyChangeField("str-color", ent.ColorChange);
-                emb.AddLocalizedPropertyChangeField("str-hoist", ent.HoistChange);
-                emb.AddLocalizedPropertyChangeField("str-mention", ent.MentionableChange);
-                emb.AddLocalizedPropertyChangeField("str-pos", ent.PositionChange);
                 // TODO use permissions_new once it is implemented in D#+
                 emb.AddLocalizedTitleField("str-perms", ent.PermissionChange?.After, inline: false, unknown: false);
             });
 
             await logService.LogAsync(e.Guild, emb);
-
-
-            static bool OnlyPositionUpdate(DiscordRole roleBefore, DiscordRole roleAfter)
-            {
-                return roleBefore.Position != roleAfter.Position
-                    && roleBefore.Color.Value == roleAfter.Color.Value
-                    && roleBefore.IsHoisted == roleAfter.IsHoisted
-                    && roleBefore.IsManaged == roleAfter.IsManaged
-                    && roleBefore.IsMentionable == roleAfter.IsMentionable
-                    && roleBefore.Name == roleAfter.Name
-                    && roleBefore.Permissions == roleAfter.Permissions;
-            }
         }
 
         [AsyncEventListener(DiscordEventType.GuildUpdated)]
@@ -204,7 +190,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("str-splash", ent.SplashChange);
                 emb.AddLocalizedPropertyChangeField("str-syschn", ent.SystemChannelChange);
                 emb.AddLocalizedPropertyChangeField("str-verlvl", ent.VerificationLevelChange);
-            });
+            }, errReport: false);
 
             await logService.LogAsync(e.GuildAfter, emb);
         }
