@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency.Services
             List<BankAccount> topAccounts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             topAccounts = await 
-                (gid is { } ? db.BankAccounts.Where(a => a.GuildIdDb == (long)gid) : db.BankAccounts)
+                (gid is { } ? db.BankAccounts.AsQueryable().Where(a => a.GuildIdDb == (long)gid) : db.BankAccounts)
                 .OrderByDescending(a => a.Balance)
                 .Take(amount)
                 .ToListAsync();
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Currency.Services
         public async Task RemoveAllAsync(ulong uid)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.BankAccounts.RemoveRange(db.BankAccounts.Where(acc => acc.UserIdDb == (long)uid));
+            db.BankAccounts.RemoveRange(db.BankAccounts.AsQueryable().Where(acc => acc.UserIdDb == (long)uid));
             await db.SaveChangesAsync();
         }
     }

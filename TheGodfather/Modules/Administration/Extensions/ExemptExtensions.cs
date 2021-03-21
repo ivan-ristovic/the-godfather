@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             where TEntity : ExemptedEntity, new()
         {
             set.AddRange(ids
-                .Where(id => !set.Where(dbe => dbe.GuildIdDb == (long)gid).Any(dbe => dbe.Type == type && dbe.IdDb == (long)id))
+                .Where(id => !set.AsQueryable().Where(dbe => dbe.GuildIdDb == (long)gid).Any(dbe => dbe.Type == type && dbe.IdDb == (long)id))
                 .Select(id => new TEntity {
                     GuildId = gid,
                     Id = id,
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                     DiscordChannel chn = await client.GetChannelAsync(e.ChannelId);
                     sb.Append(chn.Mention).Append(' ');
                 } catch {
-                    sb.Append(e.ChannelId.ToString());
+                    sb.Append(e.ChannelId);
                 }
             }
             return sb.ToString();

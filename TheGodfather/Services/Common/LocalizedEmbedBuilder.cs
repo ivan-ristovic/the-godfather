@@ -204,10 +204,11 @@ namespace TheGodfather.Services.Common
         public LocalizedEmbedBuilder AddReason(string? reason)
             => reason is null ? this : this.AddLocalizedTitleField("str-rsn", reason);
 
-        public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T>? action = null) where T : DiscordAuditLogEntry
+        public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T>? action = null, bool errReport = true) where T : DiscordAuditLogEntry
         {
             if (entry is null) {
-                this.AddInsufficientAuditLogPermissionsField();
+                if (errReport)
+                    this.AddInsufficientAuditLogPermissionsField();
             } else {
                 if (action is { })
                     action(this, entry);

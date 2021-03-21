@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games.Services
             // FIXME inefficient - try to use IQueryable with LINQ Expressions ?
             List<GameStats> top;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                List<GameStats> stats = await db.GameStats.ToListAsync();
+                List<GameStats> stats = await db.GameStats.AsQueryable().ToListAsync();
                 IOrderedEnumerable<GameStats> orderedStats = stats
                     .OrderByDescending(orderBy)
                     ;

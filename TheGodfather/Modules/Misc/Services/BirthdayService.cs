@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Misc.Services
         {
             List<Birthday> bds;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                bds = await db.Birthdays.Where(b => b.GuildIdDb == (long)gid && b.UserIdDb == (long)uid).ToListAsync();
+                bds = await db.Birthdays.AsQueryable().Where(b => b.GuildIdDb == (long)gid && b.UserIdDb == (long)uid).ToListAsync();
             }
             return bds.AsReadOnly();
         }
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Misc.Services
         {
             List<Birthday> bds;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                bds = await db.Birthdays.Where(b => b.GuildIdDb == (long)gid).ToListAsync();
+                bds = await db.Birthdays.AsQueryable().Where(b => b.GuildIdDb == (long)gid).ToListAsync();
             }
             return bds.AsReadOnly();
         }

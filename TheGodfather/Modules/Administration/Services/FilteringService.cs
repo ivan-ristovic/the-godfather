@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         private IQueryable<Filter> InternalGetFiltersForGuild(TheGodfatherDbContext db, ulong gid)
-            => db.Filters.Where(n => n.GuildIdDb == (long)gid);
+            => db.Filters.AsQueryable().Where(n => n.GuildIdDb == (long)gid);
 
         private async Task<int> InternalRemoveByPredicateAsync(ulong gid, Func<Filter, bool> predicate)
         {

@@ -41,6 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
             static CommandRule? DbFetch(TheGodfatherDbContext db, string qcmd, ulong gid, ulong cid)
             {
                 IEnumerable<CommandRule> crs = db.CommandRules
+                    .AsQueryable()
                     .Where(cr => cr.GuildIdDb == (long)gid && cr.ChannelIdDb == (long)cid)
                     .AsEnumerable()
                     .Where(cr => cr.AppliesTo(qcmd))
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Administration.Services
         public IReadOnlyList<CommandRule> GetRules(ulong gid, string? cmd = null)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            IEnumerable<CommandRule> rules = db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid);
+            IEnumerable<CommandRule> rules = db.CommandRules.AsQueryable().Where(cr => cr.GuildIdDb == (long)gid);
             if (!string.IsNullOrWhiteSpace(cmd))
                 rules = rules.Where(cr => cr.AppliesTo(cmd));
             return rules.ToList().AsReadOnly();
@@ -102,7 +103,7 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task ClearAsync(ulong gid)
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            db.CommandRules.RemoveRange(db.CommandRules.Where(cr => cr.GuildIdDb == (long)gid));
+            db.CommandRules.RemoveRange(db.CommandRules.AsQueryable().Where(cr => cr.GuildIdDb == (long)gid));
             await db.SaveChangesAsync();
         }
     }

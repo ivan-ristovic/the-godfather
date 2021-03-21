@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Administration.Services
 
 
         private IQueryable<ForbiddenName> InternalGetForbiddenNamesForGuild(TheGodfatherDbContext db, ulong gid)
-            => db.ForbiddenNames.Where(n => n.GuildIdDb == (long)gid);
+            => db.ForbiddenNames.AsQueryable().Where(n => n.GuildIdDb == (long)gid);
 
         private async Task<int> InternalRemoveByPredicateAsync(ulong gid, Func<ForbiddenName, bool> predicate)
         {

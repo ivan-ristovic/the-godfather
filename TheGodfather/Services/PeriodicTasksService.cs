@@ -129,6 +129,7 @@ namespace TheGodfather.Services
                     List<Birthday> todayBirthdays;
                     using (TheGodfatherDbContext db = bot.Database.CreateContext()) {
                         todayBirthdays = db.Birthdays
+                            .AsQueryable()
                             .Where(b => b.Date.Month == DateTime.Now.Month && b.Date.Day == DateTime.Now.Day && b.LastUpdateYear < DateTime.Now.Year)
                             .ToList();
                     }

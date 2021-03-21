@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             List<ExemptedSpamEntity> exempts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            exempts = await db.ExemptsSpam.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            exempts = await db.ExemptsSpam.AsQueryable().Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
             return exempts.AsReadOnly();
         }
 
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             db.ExemptsSpam.RemoveRange(
-                db.ExemptsSpam.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+                db.ExemptsSpam.AsQueryable().Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
             );
             await db.SaveChangesAsync();
             this.UpdateExemptsForGuildAsync(gid);
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             this.guildExempts[gid] = new ConcurrentHashSet<ExemptedEntity>(
-                db.ExemptsSpam.Where(ee => ee.GuildIdDb == (long)gid)
+                db.ExemptsSpam.AsQueryable().Where(ee => ee.GuildIdDb == (long)gid)
             );
         }
 

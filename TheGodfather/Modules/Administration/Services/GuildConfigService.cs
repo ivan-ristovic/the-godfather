@@ -116,6 +116,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             return db.ExemptsLogging
+                .AsQueryable()
                 .Where(e => e.GuildIdDb == (long)gid)
                 .AsEnumerable()
                 .Any(e => e.Type == ExemptedEntityType.Channel && (e.Id == cid || e.Id == parentId));
@@ -127,6 +128,7 @@ namespace TheGodfather.Modules.Administration.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 exempted |= db.ExemptsLogging
+                    .AsQueryable()
                     .Where(e => e.GuildIdDb == (long)gid)
                     .AsEnumerable()
                     .Any(e => (e.Type == ExemptedEntityType.Member && e.Id == uid)

@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Search.Services
             url = url.ToLowerInvariant();
             RssFeed? feed = null;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            feed = await db.RssFeeds.SingleOrDefaultAsync(f => f.Url == url);
+            feed = await db.RssFeeds.AsQueryable().SingleOrDefaultAsync(f => f.Url == url);
             return feed;
         }
 

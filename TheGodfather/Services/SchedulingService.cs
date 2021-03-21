@@ -24,12 +24,14 @@ namespace TheGodfather.Services
                 using TheGodfatherDbContext db = @this.dbb.CreateContext();
                 DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
                 var guildTasks = db.GuildTasks
+                    .AsQueryable()
                     .Where(t => t.ExecutionTime <= threshold)
                     .AsEnumerable()
                     .ToDictionary(t => t.Id, t => t);
                 RegisterTasks(guildTasks);
 
                 var reminders = db.Reminders
+                    .AsQueryable()
                     .Where(r => r.ExecutionTime <= threshold)
                     .AsEnumerable()
                     .ToDictionary(r => r.Id, t => t);
@@ -168,7 +170,7 @@ namespace TheGodfather.Services
         {
             List<Reminder> toRemove;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                toRemove = await db.Reminders.Where(r => r.UserIdDb == (long)uid).ToListAsync();
+                toRemove = await db.Reminders.AsQueryable().Where(r => r.UserIdDb == (long)uid).ToListAsync();
                 await db.Reminders.SafeRemoveRangeAsync(toRemove, e => new object[] { e.Id });
                 await db.SaveChangesAsync();
             }
@@ -183,7 +185,7 @@ namespace TheGodfather.Services
         {
             List<Reminder> toRemove;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                toRemove = await db.Reminders.Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
+                toRemove = await db.Reminders.AsQueryable().Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
                 await db.Reminders.SafeRemoveRangeAsync(toRemove, e => new object[] { e.Id });
                 await db.SaveChangesAsync();
             }
@@ -198,7 +200,7 @@ namespace TheGodfather.Services
         {
             List<Reminder> reminders;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())
-                reminders = await db.Reminders.Where(r => r.UserIdDb == (long)uid).ToListAsync();
+                reminders = await db.Reminders.AsQueryable().Where(r => r.UserIdDb == (long)uid).ToListAsync();
             return reminders.AsReadOnly();
         }
 
@@ -206,7 +208,7 @@ namespace TheGodfather.Services
         {
             List<Reminder> reminders;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())
-                reminders = await db.Reminders.Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
+                reminders = await db.Reminders.AsQueryable().Where(r => r.ChannelIdDb == (long)cid).ToListAsync();
             return reminders.AsReadOnly();
         }
 

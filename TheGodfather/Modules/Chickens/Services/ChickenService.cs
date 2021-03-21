@@ -108,6 +108,7 @@ namespace TheGodfather.Modules.Chickens.Services
             List<Chicken> chickens;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 chickens = await db.Chickens
+                    .AsQueryable()
                     .Where(c => c.GuildIdDb == (long)gid)
                     .Include(c => c.Upgrades)
                         .ThenInclude(u => u.Upgrade)

@@ -108,7 +108,7 @@ namespace TheGodfather.Services
         {
             List<TEntity> res;
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                res = await this.DbSetSelector(db).ToListAsync();
+                res = await this.DbSetSelector(db).AsQueryable().ToListAsync();
             }
             return res.AsReadOnly();
         }

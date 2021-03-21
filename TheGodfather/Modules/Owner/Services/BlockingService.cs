@@ -40,9 +40,9 @@ namespace TheGodfather.Modules.Owner.Services
             Log.Debug("Loading blocked entities");
             try {
                 using TheGodfatherDbContext db = this.dbb.CreateContext();
-                this.bChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.Select(c => c.Id));
-                this.bUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.Select(u => u.Id));
-                this.bGuilds = new ConcurrentHashSet<ulong>(db.BlockedGuilds.Select(g => g.Id));
+                this.bChannels = new ConcurrentHashSet<ulong>(db.BlockedChannels.AsQueryable().Select(c => c.Id));
+                this.bUsers = new ConcurrentHashSet<ulong>(db.BlockedUsers.AsQueryable().Select(u => u.Id));
+                this.bGuilds = new ConcurrentHashSet<ulong>(db.BlockedGuilds.AsQueryable().Select(g => g.Id));
             } catch (Exception e) {
                 Log.Error(e, "Loading blocked entities failed");
             }
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             List<BlockedChannel> blocked;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())
-                blocked = await db.BlockedChannels.ToListAsync();
+                blocked = await db.BlockedChannels.AsQueryable().ToListAsync();
             return blocked.AsReadOnly();
         }
 
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             List<BlockedGuild> blocked;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())
-                blocked = await db.BlockedGuilds.ToListAsync();
+                blocked = await db.BlockedGuilds.AsQueryable().ToListAsync();
             return blocked.AsReadOnly();
         }
 
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Owner.Services
         {
             List<BlockedUser> blocked;
             using (TheGodfatherDbContext db = this.dbb.CreateContext())
-                blocked = await db.BlockedUsers.ToListAsync();
+                blocked = await db.BlockedUsers.AsQueryable().ToListAsync();
             return blocked.AsReadOnly();
         }
 

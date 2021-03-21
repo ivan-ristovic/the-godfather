@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             List<ExemptedLoggingEntity> exempts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            exempts = await db.ExemptsLogging.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            exempts = await db.ExemptsLogging.AsQueryable().Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
             return exempts.AsReadOnly();
         }
 
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             db.ExemptsLogging.RemoveRange(
-                db.ExemptsLogging.Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
+                db.ExemptsLogging.AsQueryable().Where(ex => ex.GuildId == gid && ex.Type == type && ids.Any(id => id == ex.Id))
             );
             await db.SaveChangesAsync();
         }

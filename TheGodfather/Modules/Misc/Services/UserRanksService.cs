@@ -94,7 +94,7 @@ namespace TheGodfather.Misc.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             return gid is null
-                ? await this.DbSetSelector(db).OrderByDescending(r => r.Xp).Take(count).ToListAsync()
+                ? await this.DbSetSelector(db).AsQueryable().OrderByDescending(r => r.Xp).Take(count).ToListAsync()
                 : await this.GroupSelector(this.DbSetSelector(db), gid.Value).OrderByDescending(r => r.Xp).Take(count).ToListAsync();
         }
 
@@ -102,7 +102,7 @@ namespace TheGodfather.Misc.Services
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             foreach (ulong uid in uids)
-                this.DbSetSelector(db).RemoveRange(this.DbSetSelector(db).Where(xpc => xpc.UserIdDb == (long)uid));
+                this.DbSetSelector(db).RemoveRange(this.DbSetSelector(db).AsQueryable().Where(xpc => xpc.UserIdDb == (long)uid));
             await db.SaveChangesAsync();
         }
 

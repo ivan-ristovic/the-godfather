@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Reactions.Services
             int removed = ers.RemoveWhere(er => er.Response == emoji);
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid && er.Response == emoji));
+                db.EmojiReactions.RemoveRange(db.EmojiReactions.AsQueryable().Where(er => er.GuildIdDb == (long)gid && er.Response == emoji));
                 await db.SaveChangesAsync();
             }
 
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Reactions.Services
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.EmojiReactions.RemoveRange(db.EmojiReactions.Where(er => er.GuildIdDb == (long)gid));
+                db.EmojiReactions.RemoveRange(db.EmojiReactions.AsQueryable().Where(er => er.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
 
@@ -178,6 +178,7 @@ namespace TheGodfather.Modules.Reactions.Services
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.EmojiReactions.RemoveRange(
                     db.EmojiReactions
+                      .AsQueryable()
                       .Where(er => er.GuildIdDb == (long)gid)
                       .AsEnumerable()
                       .Where(er => ids.Contains(er.Id))
@@ -207,6 +208,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.EmojiReactions
+                   .AsQueryable()
                    .Where(er => er.GuildIdDb == (long)gid)
                    .Include(er => er.DbTriggers)
                    .AsEnumerable()
@@ -234,6 +236,7 @@ namespace TheGodfather.Modules.Reactions.Services
             using TheGodfatherDbContext db = this.dbb.CreateContext();
             db.EmojiReactions.RemoveRange(
                 db.EmojiReactions
+                    .AsQueryable()
                     .Where(r => r.GuildIdDb == (long)gid)
                     .AsEnumerable()
                     .Where(condition)
@@ -312,7 +315,7 @@ namespace TheGodfather.Modules.Reactions.Services
             }
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.TextReactions.RemoveRange(db.TextReactions.Where(tr => tr.GuildIdDb == (long)gid));
+                db.TextReactions.RemoveRange(db.TextReactions.AsQueryable().Where(tr => tr.GuildIdDb == (long)gid));
                 await db.SaveChangesAsync();
             }
 
@@ -332,6 +335,7 @@ namespace TheGodfather.Modules.Reactions.Services
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 db.TextReactions.RemoveRange(
                     db.TextReactions
+                      .AsQueryable()
                       .Where(tr => tr.GuildIdDb == (long)gid)
                       .AsEnumerable()
                       .Where(tr => ids.Contains(tr.Id))
@@ -361,6 +365,7 @@ namespace TheGodfather.Modules.Reactions.Services
 
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 var toUpdate = db.TextReactions
+                    .AsQueryable()
                     .Where(tr => tr.GuildIdDb == (long)gid)
                     .Include(tr => tr.DbTriggers)
                     .AsEnumerable()

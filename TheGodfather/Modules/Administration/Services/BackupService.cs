@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Administration.Services
         {
             List<ExemptedBackupEntity> exempts;
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            exempts = await db.ExemptsBackup.Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+            exempts = await db.ExemptsBackup.AsQueryable().Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
             return exempts.AsReadOnly();
         }
 
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration.Services
         private void LoadData()
         {
             using TheGodfatherDbContext db = this.dbb.CreateContext();
-            var gids = db.Configs.Where(gcfg => gcfg.BackupEnabled).Select(gcfg => gcfg.GuildIdDb).ToList();
+            var gids = db.Configs.AsQueryable().Where(gcfg => gcfg.BackupEnabled).Select(gcfg => gcfg.GuildIdDb).ToList();
             foreach (long gid in gids)
                 this.streams.TryAdd((ulong)gid, new());
         }
