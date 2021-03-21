@@ -543,7 +543,7 @@ namespace TheGodfather.Tests.Services
         }
 
         private IEnumerable<ulong> GetGuildRoles(TheGodfatherDbContext db, ulong gid)
-            => db.AutoRoles.Where(ar => ar.GuildIdDb == (long)gid).AsEnumerable().Select(ar => ar.RoleId);
+            => db.AutoRoles.AsQueryable().Where(ar => ar.GuildIdDb == (long)gid).AsEnumerable().Select(ar => ar.RoleId);
     }
 
     public class ConcreteService2 : DbAbstractionServiceBase<PrivilegedUser, ulong>

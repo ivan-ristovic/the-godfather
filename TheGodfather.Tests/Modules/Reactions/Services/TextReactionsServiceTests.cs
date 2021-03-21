@@ -265,6 +265,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 if (triggers?.Any() ?? false) {
                     Assert.That(
                         db.TextReactions
+                          .AsQueryable()
                           .Where(tr => tr.GuildIdDb == (long)gid)
                           .AsEnumerable()
                           .SingleOrDefault(tr => tr.Response == response && CheckTriggers(triggers, tr.DbTriggers.Select(t => t.Trigger.ToLower()))),
@@ -326,7 +327,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
                     for (int i = 0; i < MockData.Ids.Count; i++) {
                         Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[i]), Has.Exactly(this.trCount[i]).Items);
-                        Assert.That(db.TextReactions.Where(tr => tr.GuildIdDb == (long)MockData.Ids[i]), Has.Exactly(this.trCount[i]).Items);
+                        Assert.That(db.TextReactions.AsQueryable().Where(tr => tr.GuildIdDb == (long)MockData.Ids[i]), Has.Exactly(this.trCount[i]).Items);
                     }
                     return Task.CompletedTask;
                 }
@@ -357,7 +358,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
             void AssertReactionsRemoved(TheGodfatherDbContext db, ulong gid, params int[] ids)
             {
                 if (ids?.Any() ?? false) {
-                    Assert.That(db.TextReactions.Where(tr => tr.GuildIdDb == (long)gid).Select(tr => tr.Id), Has.No.AnyOf(ids));
+                    Assert.That(db.TextReactions.AsQueryable().Where(tr => tr.GuildIdDb == (long)gid).Select(tr => tr.Id), Has.No.AnyOf(ids));
                     Assert.That(this.Service.GetGuildTextReactions(gid).Select(f => f.Id), Has.No.AnyOf(ids));
                 } else {
                     Assert.Fail("No IDs provided to assert function.");
@@ -386,6 +387,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                 verify: db => {
                     Assert.That(db.TextReactions, Has.Exactly(this.trCount.Sum(kvp => kvp.Value)).Items);
                     TextReaction dber = db.TextReactions
+                        .AsQueryable()
                         .Where(tr => tr.GuildIdDb == (long)MockData.Ids[0])
                         .Single(tr => tr.Response == "response5");
                     Assert.That(dber.DbTriggers.Single().Trigger, Is.EqualTo("kill"));
@@ -405,6 +407,7 @@ namespace TheGodfather.Tests.Modules.Reactions.Services
                     IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[0]);
 
                     TextReaction dbtr = db.TextReactions
+                        .AsQueryable()
                         .Where(tr => tr.GuildIdDb == (long)MockData.Ids[0])
                         .Single(tr => tr.Response == "response1");
 

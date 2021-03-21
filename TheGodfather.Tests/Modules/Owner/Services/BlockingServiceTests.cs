@@ -290,10 +290,10 @@ namespace TheGodfather.Tests.Modules.Owner.Services
             Assert.That(busrs.Select(u => u.Id), Is.EquivalentTo(buExpected));
             Assert.That(bchns.Select(c => c.Reason), Is.EquivalentTo(bcReasons));
             Assert.That(busrs.Select(u => u.Reason), Is.EquivalentTo(buReasons));
-            Assert.That(db.BlockedChannels.Select(c => c.Id), Is.EquivalentTo(bcExpected));
-            Assert.That(db.BlockedUsers.Select(c => c.Id), Is.EquivalentTo(buExpected));
-            Assert.That(db.BlockedChannels.Select(c => c.Reason), Is.EquivalentTo(bcReasons));
-            Assert.That(db.BlockedUsers.Select(c => c.Reason), Is.EquivalentTo(buReasons));
+            Assert.That(db.BlockedChannels.AsQueryable().Select(c => c.Id), Is.EquivalentTo(bcExpected));
+            Assert.That(db.BlockedUsers.AsQueryable().Select(c => c.Id), Is.EquivalentTo(buExpected));
+            Assert.That(db.BlockedChannels.AsQueryable().Select(c => c.Reason), Is.EquivalentTo(bcReasons));
+            Assert.That(db.BlockedUsers.AsQueryable().Select(c => c.Reason), Is.EquivalentTo(buReasons));
         }
 
         private void AddMockData(TheGodfatherDbContext db)

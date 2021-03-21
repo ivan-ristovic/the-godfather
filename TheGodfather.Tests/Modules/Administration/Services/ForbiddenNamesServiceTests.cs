@@ -494,7 +494,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             void AssertForbiddenNamesRemoved(TheGodfatherDbContext db, ulong gid, params int[]? ids)
             {
                 if (ids?.Any() ?? false) {
-                    Assert.That(db.ForbiddenNames.Where(f => f.GuildIdDb == (long)gid).Select(f => f.Id), Has.No.AnyOf(ids));
+                    Assert.That(db.ForbiddenNames.AsQueryable().Where(f => f.GuildIdDb == (long)gid).Select(f => f.Id), Has.No.AnyOf(ids));
                     Assert.That(this.Service.GetGuildForbiddenNames(gid).Select(f => f.Id), Has.No.AnyOf(ids));
                 } else {
                     Assert.Fail("No IDs provided to assert function.");
@@ -505,6 +505,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             {
                 if (regexStrings?.Any() ?? false) {
                     Assert.That(db.ForbiddenNames
+                                  .AsQueryable()
                                   .Where(f => f.GuildIdDb == (long)gid)
                                   .AsEnumerable()
                                   .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, true) == 0)),
@@ -558,6 +559,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             Assert.IsNotNull(filter);
 
             ForbiddenName dbf = db.ForbiddenNames
+                .AsQueryable()
                 .Where(f => f.GuildIdDb == (long)MockData.Ids[index])
                 .AsEnumerable()
                 .Single(f => string.Compare(f.RegexString, regex, true) == 0);
