@@ -48,7 +48,7 @@ namespace TheGodfather.Misc.Services
             => index * index * 10;
 
         public short CalculateRankForUser(ulong gid, ulong uid)
-            => this.xps.GetOrAdd(gid, new ConcurrentDictionary<ulong, int>()).TryGetValue(uid, out int count) ? CalculateRankForXp(count) : 0;
+            => this.xps.GetOrAdd(gid, new ConcurrentDictionary<ulong, int>()).TryGetValue(uid, out int count) ? CalculateRankForXp(count) : (short)0;
 
         public int GetUserXp(ulong? gid, ulong uid)
         {
@@ -67,7 +67,7 @@ namespace TheGodfather.Misc.Services
             short prev = CalculateRankForXp(this.xps[gid][uid] - change);
             short curr = CalculateRankForXp(this.xps[gid][uid]);
 
-            return curr != prev ? curr : 0;
+            return curr != prev ? curr : (short)0;
         }
 
         public async Task Sync()
