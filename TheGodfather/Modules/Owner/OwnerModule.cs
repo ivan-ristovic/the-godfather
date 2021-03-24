@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Owner
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.InlineCode(d.GetMessage()), 
+                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.BlockCode(d.GetMessage()),
                         titleArgs: new object[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character }
                     );
                 }
@@ -240,7 +240,6 @@ namespace TheGodfather.Modules.Owner
                 emb.WithLocalizedTitle("str-eval-fail-run");
                 emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message);
                 emb.WithColor(DiscordColor.Red);
-                await UpdateOrRespondAsync();
             } else {
                 emb.WithLocalizedTitle("str-eval-succ");
                 emb.WithColor(this.ModuleColor);
@@ -252,9 +251,9 @@ namespace TheGodfather.Modules.Owner
                 }
                 emb.AddLocalizedTitleField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
                 emb.AddLocalizedTitleField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
-                if (res.ReturnValue is { })
-                    await UpdateOrRespondAsync();
             }
+
+            await UpdateOrRespondAsync();
 
 
             Task UpdateOrRespondAsync()
