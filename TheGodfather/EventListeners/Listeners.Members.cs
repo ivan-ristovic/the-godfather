@@ -184,7 +184,7 @@ namespace TheGodfather.EventListeners
             DiscordAuditLogEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEntry>();
             switch (entry) {
                 case null:
-                    emb.AddLocalizedPropertyChangeField("str-name", e.NicknameBefore, e.NicknameAfter);
+                    AddNicknameChangeField(emb, e.NicknameBefore, e.NicknameAfter);
                     // TODO add pending membership screening
                     // TODO add nitro notifications
                     if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {   // FIXME order shouldn't matter
@@ -197,7 +197,8 @@ namespace TheGodfather.EventListeners
                     break;
                 case DiscordAuditLogMemberUpdateEntry uentry:
                     emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
-                        emb.AddLocalizedPropertyChangeField("str-name", ent.NicknameChange);
+                        if (ent.NicknameChange is { })
+                            AddNicknameChangeField(emb, ent.NicknameChange.Before, ent.NicknameChange.After);
                         emb.AddLocalizedTitleField("str-roles-add", ent.AddedRoles?.Select(r => r.Mention).Humanize(", "), inline: true, unknown: false);
                         emb.AddLocalizedTitleField("str-roles-rem", ent.RemovedRoles?.Select(r => r.Mention).Humanize(", "), inline: true, unknown: false);
                     });
@@ -220,6 +221,15 @@ namespace TheGodfather.EventListeners
 
             if (emb.FieldCount > 0)
                 await logService.LogAsync(e.Guild, emb);
+
+
+            static void AddNicknameChangeField(LocalizedEmbedBuilder emb, string? nameBefore, string? nameAfter)
+            {
+                if (string.IsNullOrWhiteSpace(nameAfter))
+                    emb.AddLocalizedPropertyChangeField("str-name", nameBefore, nameAfter);
+                else
+                    emb.AddLocalizedTitleField("evt-nick-clear", nameBefore);
+            }
         }
 
         [AsyncEventListener(DiscordEventType.GuildMembersChunked)]
