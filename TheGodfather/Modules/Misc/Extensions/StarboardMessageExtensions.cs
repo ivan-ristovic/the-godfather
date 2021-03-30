@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Misc.Extensions
             emb.WithColor(DiscordColor.Gold);
             emb.WithUrl(msg.JumpLink);
             emb.WithAuthor(msg.Author.ToDiscriminatorString(), iconUrl: msg.Author.AvatarUrl);
-            emb.WithDescription(msg.Content.Truncate(DiscordLimits.EmbedDescriptionLimit - 5, " ..."));
+            emb.WithDescription(msg.Content?.Truncate(DiscordLimits.EmbedDescriptionLimit - 5, " ..."), unknown: false);
             emb.AddLocalizedTitleField("str-votes", $"{Formatter.Bold(count.ToString())} {star}", inline: true);
             emb.AddLocalizedTitleField("str-chn", msg.Channel.Mention, inline: true);
 
