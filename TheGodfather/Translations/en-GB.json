@@ -394,7 +394,7 @@
   "cmd-err-text-none": "Text missing.",
   "cmd-err-timed-out": "Command timed out.",
   "cmd-err-timespan": "Timespan must be in range [{0},{1}] (in seconds).",
-  "cmd-err-timespan-m-d": "Timespan must be greater than {0} minue.",
+  "cmd-err-timespan-m-d": "Timespan must be greater than {0} minute(s) and less than {1} day(s).",
   "cmd-err-tr-404": "No such text reactions found!",
   "cmd-err-trig-404": "Warning: Trigger `{0}` does not fit any reaction triggers that are registered.",
   "cmd-err-trig-coll": "Error: Trigger `{0}` collides with a filter in this guild.",

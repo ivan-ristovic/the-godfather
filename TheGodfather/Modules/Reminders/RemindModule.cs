@@ -201,7 +201,8 @@ namespace TheGodfather.Modules.Reminders
             if (string.IsNullOrWhiteSpace(message) || message.Length > Reminder.MessageLimit)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-remind-msg", Reminder.MessageLimit);
 
-            if (timespan < TimeSpan.Zero || timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
+            bool bypassLimits = ctx.Client.IsOwnedBy(ctx.User) || await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id);
+            if (timespan < TimeSpan.Zero || (!bypassLimits && (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-timespan-m-d", 1, 31);
 
             if (channel is null && await ctx.Client.CreateDmChannelAsync(ctx.User.Id) is null)
