@@ -169,6 +169,31 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region config actionhistory
+        [Command("actionhistory"), Priority(1)]
+        [Aliases("history", "ah")]
+        public async Task ActionHistoryAsync(CommandContext ctx,
+                                            [Description("desc-actionhistory")] bool enable)
+        {
+            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.ActionHistoryEnabled = enable);
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-actionhistory", enable ? "str-on" : "str-off", inline: true);
+            });
+
+            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-ah-on" : "str-cfg-ah-off");
+        }
+
+        [Command("actionhistory"), Priority(0)]
+        public async Task ActionHistoryAsync(CommandContext ctx)
+        {
+            GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
+            await ctx.InfoAsync(this.ModuleColor, gcfg.ActionHistoryEnabled ? "str-cfg-ah-get-on" : "str-cfg-ah-get-off");
+        }
+        #endregion
+
         #region config muterole
         [Command("muterole")]
         [Aliases("mr", "muterl", "mrl")]

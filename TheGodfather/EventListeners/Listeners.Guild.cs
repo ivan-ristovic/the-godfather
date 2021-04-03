@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
@@ -17,7 +19,10 @@ namespace TheGodfather.EventListeners
         public static async Task GuildBanEventHandlerAsync(TheGodfatherBot bot, GuildBanAddEventArgs e)
         {
             LogExt.Debug(bot.GetId(e.Guild.Id), "Banned: {Member} {Guild}", e.Member, e.Guild);
-            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+
+            GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
+            GuildConfig gcfg = await gcs.GetConfigAsync(e.Guild.Id);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb) && !gcfg.ActionHistoryEnabled)
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-ban-add");
@@ -26,6 +31,19 @@ namespace TheGodfather.EventListeners
             emb.WithDescription(e.Member);
             emb.AddFieldsFromAuditLogEntry(entry);
             await logService.LogAsync(e.Guild, emb);
+
+            // TODO handle temp ban separately
+            if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Adding ban entry to action history: {Member}, {Guild}", e.Member, e.Guild);
+                LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+                await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                    Action = ActionHistoryEntry.ActionType.PermanentBan,
+                    GuildId = e.Guild.Id,
+                    Notes = entry is null ? null : ls.GetString(e.Guild.Id, "fmt-ah", entry.UserResponsible.Mention, entry.Reason),
+                    Time = DateTimeOffset.Now,
+                    UserId = e.Member.Id,
+                });
+            }
         }
 
         [AsyncEventListener(DiscordEventType.GuildBanRemoved)]

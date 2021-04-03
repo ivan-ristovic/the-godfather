@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration.Common
                 using (var sr = new StreamReader(fs, utf8))
                     json = sr.ReadToEnd();
 
-                return JsonConvert.DeserializeObject<List<string>>(json);
+                return JsonConvert.DeserializeObject<List<string>>(json) ?? throw new JsonSerializationException();
             } catch (Exception e) {
                 Log.Error(e, "Failed to load website URLs from: {Path}", path);
                 return new List<string>();
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Administration.Common
                 using (var sr = new StreamReader(fs, utf8))
                     json = sr.ReadToEnd();
 
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(json) ?? throw new JsonSerializationException();
             } catch (Exception e) {
                 Log.Error(e, "Failed to load URL shorteners");
                 return new Dictionary<string, string>();

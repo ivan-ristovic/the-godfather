@@ -244,6 +244,17 @@ namespace TheGodfather.Modules.Administration
             DiscordRole muteRole = await ctx.Services.GetRequiredService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
             await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
+
+            if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
+                LogExt.Debug(ctx, "Adding mute entry to action history: {Member}, {Guild}", member, ctx.Guild);
+                await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                    Action = ActionHistoryEntry.ActionType.Warning,
+                    GuildId = ctx.Guild.Id,
+                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, reason),
+                    Time = DateTimeOffset.Now,
+                    UserId = member.Id,
+                });
+            }
         }
         #endregion
 
@@ -375,7 +386,20 @@ namespace TheGodfather.Modules.Administration
                 Type = ScheduledTaskType.Unban,
                 UserId = user.Id,
             };
+
             await ctx.Services.GetRequiredService<SchedulingService>().ScheduleAsync(task);
+
+            if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
+                LogExt.Debug(ctx, "Adding tempban entry to action history: {Member}, {Guild}", user, ctx.Guild);
+                string timestamp = timespan.Humanize(2, this.Localization.GetGuildCulture(ctx.Guild.Id));
+                await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                    Action = ActionHistoryEntry.ActionType.TemporaryBan,
+                    GuildId = ctx.Guild.Id,
+                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
+                    Time = DateTimeOffset.Now,
+                    UserId = user.Id,
+                });
+            }
         }
 
         [Command("tempban"), Priority(2)]
@@ -422,6 +446,18 @@ namespace TheGodfather.Modules.Administration
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
             await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until));
+
+            if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
+                LogExt.Debug(ctx, "Adding tempmute entry to action history: {Member}, {Guild}", member, ctx.Guild);
+                string timestamp = timespan.Humanize(2, this.Localization.GetGuildCulture(ctx.Guild.Id));
+                await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                    Action = ActionHistoryEntry.ActionType.TemporaryMute,
+                    GuildId = ctx.Guild.Id,
+                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
+                    Time = DateTimeOffset.Now,
+                    UserId = member.Id,
+                });
+            }
         }
 
         [Command("tempmute"), Priority(0)]
@@ -514,6 +550,17 @@ namespace TheGodfather.Modules.Administration
             }
 
             await ctx.InfoAsync(this.ModuleColor);
+
+            if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
+                LogExt.Debug(ctx, "Adding warn to action history: {Member}, {Guild}", member, ctx.Guild);
+                await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                    Action = ActionHistoryEntry.ActionType.Warning,
+                    GuildId = ctx.Guild.Id,
+                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, msg),
+                    Time = DateTimeOffset.Now,
+                    UserId = member.Id,
+                });
+            }
         }
         #endregion
     }

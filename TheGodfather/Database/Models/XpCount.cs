@@ -24,12 +24,12 @@ namespace TheGodfather.Database.Models
 
 
         public bool Equals(XpCount? other)
-            => other is { } && this.UserId == other.UserId;
+            => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
 
         public override bool Equals(object? obj)
             => this.Equals(obj as XpCount);
 
         public override int GetHashCode()
-            => this.UserId.GetHashCode();
+            => HashCode.Combine(this.GuildId, this.UserId);
     }
 }

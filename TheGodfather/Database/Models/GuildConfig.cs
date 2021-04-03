@@ -16,8 +16,9 @@ namespace TheGodfather.Database.Models
         public const int CurrencyLimit = 32;
         public const int MemberUpdateMessageLimit = 128;
 
-        public virtual ICollection<BankAccount> Accounts { get; set; }
+        public virtual ICollection<ActionHistoryEntry> ActionHistory { get; set; }
         public virtual ICollection<AutoRole> AutoRoles { get; set; }
+        public virtual ICollection<BankAccount> Accounts { get; set; }
         public virtual ICollection<Birthday> Birthdays { get; set; }
         public virtual ICollection<Chicken> Chickens { get; set; }
         public virtual ICollection<ChickenBoughtUpgrade> ChickenBoughtUpgrades { get; set; }
@@ -41,6 +42,7 @@ namespace TheGodfather.Database.Models
         public GuildConfig()
         {
             this.Accounts = new HashSet<BankAccount>();
+            this.ActionHistory = new HashSet<ActionHistoryEntry>();
             this.AutoRoles = new HashSet<AutoRole>();
             this.Birthdays = new HashSet<Birthday>();
             this.Chickens = new HashSet<Chicken>();
@@ -102,6 +104,9 @@ namespace TheGodfather.Database.Models
 
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
+
+        [Column("action_history_enabled")]
+        public bool ActionHistoryEnabled { get; set; }
 
 
         #region Starboard

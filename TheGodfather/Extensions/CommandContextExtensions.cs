@@ -130,7 +130,7 @@ namespace TheGodfather.Extensions
         }
 
         public static Task PaginateAsync<T>(this CommandContext ctx, IEnumerable<T> collection,
-                                           Func<LocalizedEmbedBuilder, T, LocalizedEmbedBuilder> formatter, DiscordColor? color = null)
+                                            Func<LocalizedEmbedBuilder, T, LocalizedEmbedBuilder> formatter, DiscordColor? color = null)
         {
             int count = collection.Count();
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();

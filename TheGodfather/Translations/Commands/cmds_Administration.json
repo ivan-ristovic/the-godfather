@@ -1,4 +1,46 @@
 {
+  "actionhistory": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "actionhistory add": {
+    "usage": [
+      [ "arg-usr", "str-rsn" ]
+    ]
+  },
+  "actionhistory delete": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "actionhistory delete after": {
+    "usage": [
+      [ "arg-date" ]
+    ]
+  },
+  "actionhistory delete before": {
+    "usage": [
+      [ "arg-date" ]
+    ]
+  },
+  "actionhistory delete users": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "actionhistory deleteall": {
+    "usage": [
+      []
+    ]
+  },
+  "actionhistory list": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
   "automaticroles": {
     "usage": [
       [],
@@ -219,6 +261,12 @@
   "config": {
     "usage": [
       []
+    ]
+  },
+  "config actionhistory": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
     ]
   },
   "config antiflood": {

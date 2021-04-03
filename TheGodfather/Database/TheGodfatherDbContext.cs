@@ -8,6 +8,7 @@ namespace TheGodfather.Database
     public class TheGodfatherDbContext : DbContext
     {
         #region db sets
+        public virtual DbSet<ActionHistoryEntry> ActionHistory { get; protected set; }
         public virtual DbSet<AutoRole> AutoRoles { get; protected set; }
         public virtual DbSet<BankAccount> BankAccounts { get; protected set; }
         public virtual DbSet<Birthday> Birthdays { get; protected set; }
@@ -93,6 +94,7 @@ namespace TheGodfather.Database
         {
             mb.HasDefaultSchema("gf");
 
+            mb.Entity<ActionHistoryEntry>().HasKey(ahe => new { ahe.GuildIdDb, ahe.UserIdDb, ahe.Time });
             mb.Entity<AutoRole>().HasKey(ar => new { ar.GuildIdDb, ar.RoleIdDb });
             mb.Entity<BankAccount>().HasKey(acc => new { acc.GuildIdDb, acc.UserIdDb });
             mb.Entity<Birthday>().HasKey(b => new { b.GuildIdDb, b.ChannelIdDb, b.UserIdDb });

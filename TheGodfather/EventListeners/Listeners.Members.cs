@@ -130,7 +130,7 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb) && !gcfg.ActionHistoryEnabled)
                 return;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
@@ -138,8 +138,19 @@ namespace TheGodfather.EventListeners
             emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-mem-left", e.Member);
 
             DiscordAuditLogKickEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogKickEntry>(AuditLogActionType.Kick);
-            if (entry?.Target?.Id == e.Member.Id)
+            if (entry?.Target?.Id == e.Member.Id) {
                 emb.AddFieldsFromAuditLogEntry(entry, (emb, _) => emb.WithLocalizedTitle(DiscordEventType.GuildMemberRemoved, "evt-gld-kick"));
+                if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
+                    LogExt.Debug(bot.GetId(e.Guild.Id), "Adding kick entry to action history: {Member}, {Guild}", e.Member, e.Guild);
+                    await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                        Action = ActionHistoryEntry.ActionType.Kick,
+                        GuildId = e.Guild.Id,
+                        Notes = ls.GetString(e.Guild.Id, "fmt-ah", entry.UserResponsible.Mention, entry.Reason),
+                        Time = DateTimeOffset.Now,
+                        UserId = e.Member.Id,
+                    });
+                }
+            }
             emb.WithThumbnail(e.Member.AvatarUrl);
             emb.AddLocalizedTitleField("str-regtime", ls.GetLocalizedTimeString(e.Guild.Id, e.Member.CreationTimestamp), inline: true);
             emb.AddLocalizedTitleField("str-email", e.Member.Email, unknown: false);
@@ -171,6 +182,17 @@ namespace TheGodfather.EventListeners
                             await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
                     } catch (UnauthorizedException) {
                         failed = true;
+                    }
+
+                    if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
+                        LogExt.Debug(bot.GetId(e.Guild.Id), "Adding forbidden name entry to action history: {Member}, {Guild}", e.Member, e.Guild);
+                        await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                            Action = ActionHistoryEntry.ActionType.ForbiddenName,
+                            GuildId = e.Guild.Id,
+                            Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString).Truncate(ActionHistoryEntry.NoteLimit),
+                            Time = DateTimeOffset.Now,
+                            UserId = e.Member.Id,
+                        });
                     }
                 }
             }
