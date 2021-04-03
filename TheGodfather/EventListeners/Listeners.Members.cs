@@ -52,9 +52,7 @@ namespace TheGodfather.EventListeners
 
             await bot.Services.GetRequiredService<AutoRoleService>().GrantRolesAsync(bot, e.Guild, e.Member);
 
-            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                return;
-
+            _ = LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb);
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
 
             emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
@@ -71,6 +69,16 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
 
             if (bot.Services.GetRequiredService<ForbiddenNamesService>().IsNameForbidden(e.Guild.Id, e.Member.DisplayName, out ForbiddenName? fname)) {
+                if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
+                    LogExt.Debug(bot.GetId(e.Guild.Id), "Adding forbidden name entry to action history: {Member}, {Guild}", e.Member, e.Guild);
+                    await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
+                        Action = ActionHistoryEntry.ActionType.ForbiddenName,
+                        GuildId = e.Guild.Id,
+                        Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname?.RegexString ?? "?"),
+                        Time = DateTimeOffset.Now,
+                        UserId = e.Member.Id,
+                    });
+                }
                 try {
                     await e.Member.ModifyAsync(m => {
                         m.Nickname = e.Member.Id.ToString();
@@ -189,7 +197,7 @@ namespace TheGodfather.EventListeners
                         await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                             Action = ActionHistoryEntry.ActionType.ForbiddenName,
                             GuildId = e.Guild.Id,
-                            Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString).Truncate(ActionHistoryEntry.NoteLimit),
+                            Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString),
                             Time = DateTimeOffset.Now,
                             UserId = e.Member.Id,
                         });

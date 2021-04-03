@@ -248,7 +248,7 @@ namespace TheGodfather.Modules.Administration
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
                 LogExt.Debug(ctx, "Adding mute entry to action history: {Member}, {Guild}", member, ctx.Guild);
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.Warning,
+                    Action = ActionHistoryEntry.ActionType.IndefiniteMute,
                     GuildId = ctx.Guild.Id,
                     Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, reason),
                     Time = DateTimeOffset.Now,
@@ -378,7 +378,12 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: 0, reason: ctx.BuildInvocationDetailsString(reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, name, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", 
+                ctx.User.Mention, 
+                name, 
+                timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
+                this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+            );
 
             var task = new GuildTask {
                 ExecutionTime = until,
@@ -445,7 +450,12 @@ namespace TheGodfather.Modules.Administration
             );
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", ctx.User.Mention, member.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until));
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempmute", 
+                ctx.User.Mention, 
+                member.Mention, 
+                timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
+                this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+            );
 
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
                 LogExt.Debug(ctx, "Adding tempmute entry to action history: {Member}, {Guild}", member, ctx.Guild);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Humanizer;
 using TheGodfather.Common;
 
 namespace TheGodfather.Database.Models
@@ -31,7 +32,9 @@ namespace TheGodfather.Database.Models
         public DateTimeOffset Time { get; set; }
 
         [Column("notes"), MaxLength(NoteLimit)]
-        public string? Notes { get; set; }
+        public string? NotesDb { get; set; }
+        [NotMapped]
+        public string? Notes { get => this.NotesDb; set => this.NotesDb = value.Truncate(NoteLimit); }
 
 
         public bool Equals(ActionHistoryEntry? other)

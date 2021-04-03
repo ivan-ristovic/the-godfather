@@ -28,13 +28,13 @@ namespace TheGodfather.Extensions
             return channel.SendMessageAsync(embed: emb.Build());
         }
 
-        public static async Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Func<LocalizedEmbedBuilder, Task> action,
+        public static async Task<DiscordMessage> RespondWithLocalizedEmbedAsync(this CommandContext ctx, Func<LocalizedEmbedBuilder, Task> asyncAction,
                                                                                 DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
             var emb = new LocalizedEmbedBuilder(lcs, ctx.Guild?.Id);
-            await action(emb);
+            await asyncAction(emb);
             return await channel.SendMessageAsync(embed: emb.Build());
         }
 

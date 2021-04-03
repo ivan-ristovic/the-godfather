@@ -144,13 +144,19 @@ namespace TheGodfather.Modules.Administration
             if (!history.Any())
                 throw new CommandFailedException(ctx, "cmd-err-ah-none");
 
-            await ctx.PaginateAsync(history.OrderByDescending(e => e.Action).ThenByDescending(e => e.Time), (emb, e) => {
-                emb.WithLocalizedTitle(e.Action.ToLocalizedKey());
-                emb.WithDescription(user.Mention);
-                emb.AddLocalizedTitleField("str-notes", e.Notes, unknown: false);
-                emb.WithLocalizedTimestamp(e.Time, user?.AvatarUrl);
-                return emb;
-            }, this.ModuleColor);
+            await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                emb.WithTitle(user.ToDiscriminatorString());
+                emb.WithColor(this.ModuleColor);
+                foreach (ActionHistoryEntry e in history.OrderByDescending(e => e.Action).ThenByDescending(e => e.Time)) {
+                    string title = e.Action.ToLocalizedKey();
+                    string content = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-emb", 
+                        this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
+                        e.Notes
+                    );
+                    emb.AddLocalizedTitleField(title, content);
+                }
+                emb.WithThumbnail(user.AvatarUrl);
+            });
         }
 
         [Command("list"), Priority(0)]
