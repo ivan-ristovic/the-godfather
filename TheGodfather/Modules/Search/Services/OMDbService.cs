@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Serilog;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Services;
 
@@ -30,15 +32,21 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             string url = $"{Endpoint}?apikey={this.key}&s={WebUtility.UrlEncode(query)}";
-            string response = await _http.GetStringAsync(url).ConfigureAwait(false);
-            OMDbResponse data = JsonConvert.DeserializeObject<OMDbResponse>(response);
-            IReadOnlyList<MovieInfo>? results = data.Success ? data.Results?.AsReadOnly() : null;
-            if (results is null || !results.Any())
-                return null;
 
-            return results
-                .ToList()
-                .AsReadOnly();
+            try {
+                string response = await _http.GetStringAsync(url).ConfigureAwait(false);
+                OMDbResponse data = JsonConvert.DeserializeObject<OMDbResponse>(response) ?? throw new JsonSerializationException();
+                IReadOnlyList<MovieInfo>? results = data.Success ? data.Results?.AsReadOnly() : null;
+                if (results is null || !results.Any())
+                    return null;
+
+                return results
+                    .ToList()
+                    .AsReadOnly();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to fetch OMDb data");
+                return null;
+            }
         }
 
         public async Task<MovieInfo?> SearchSingleAsync(OMDbQueryType type, string query)
@@ -46,10 +54,15 @@ namespace TheGodfather.Modules.Search.Services
             if (this.IsDisabled)
                 return null;
 
-            string url = $"{Endpoint}?apikey={this.key}&{type.ToApiString()}={WebUtility.UrlEncode(query)}";
-            string response = await _http.GetStringAsync(url).ConfigureAwait(false);
-            MovieInfo data = JsonConvert.DeserializeObject<MovieInfo>(response);
-            return data.Success ? data : null;
+            try {
+                string url = $"{Endpoint}?apikey={this.key}&{type.ToApiString()}={WebUtility.UrlEncode(query)}";
+                string response = await _http.GetStringAsync(url).ConfigureAwait(false);
+                MovieInfo data = JsonConvert.DeserializeObject<MovieInfo>(response) ?? throw new JsonSerializationException();
+                return data.Success ? data : null;
+            } catch (Exception e) {
+                Log.Error(e, "Failed to fetch OMDb data");
+                return null;
+            }
         }
 
         public string GetUrl(string id) => $"{ImdbUrl}title/{id}";

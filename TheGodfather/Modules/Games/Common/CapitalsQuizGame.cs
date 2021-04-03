@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Games.Common
             try {
                 string data = File.ReadAllText("Resources/quiz-capitals.json");
                 _capitals = JsonConvert.DeserializeObject<List<CapitalInfo>>(data)
-                    .ToDictionary(ci => ci.Country, ci => ci.Capital);
+                    ?.ToDictionary(ci => ci.Country, ci => ci.Capital);
             } catch (Exception e) {
                 Log.Error(e, "Failed to load capitals data from Resources folder");
             }

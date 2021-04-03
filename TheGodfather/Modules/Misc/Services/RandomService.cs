@@ -38,8 +38,35 @@ namespace TheGodfather.Modules.Misc.Services
         public bool IsDisabled => false;
 
         private readonly SecureRandom rng;
-        private ImmutableDictionary<char, string> leetAlphabet;
         private Bitmap? ratingChart;
+        private ImmutableDictionary<char, string> leetAlphabet = new Dictionary<char, string>() {
+            { 'a', "4@λ∂" },
+            { 'b', "86ß"},
+            { 'c', "(<©¢€"},
+            { 'd', "Ð∂ð"},
+            { 'e', "3€ə£"},
+            { 'f', "ʃ"},
+            { 'g', "9"},
+            { 'h', "#╫"},
+            { 'i', "!1|l"},
+            { 'j', "]¿ʝ"},
+            { 'k', "ɮ"},
+            { 'l', "17"},
+            { 'm', "m"},
+            { 'n', "₪"},
+            { 'o', "0¤Ω"},
+            { 'p', "q℗þ¶"},
+            { 'q', "9¶"},
+            { 'r', "®Яʁ"},
+            { 's', "5$§š"},
+            { 't', "7+†"},
+            { 'u', "µ"},
+            { 'v', "√"},
+            { 'w', "Шɰ"},
+            { 'x', "%xЖ×"},
+            { 'y', "jЧ¥"},
+            { 'z', "ʒ≥"},
+        }.ToImmutableDictionary();
 
 
         public RandomService(bool loadData = true)
@@ -69,8 +96,10 @@ namespace TheGodfather.Modules.Misc.Services
                 try {
                     Log.Debug("Loading leet alphabet from {Path}", alphabetPath);
                     string json = File.ReadAllText(alphabetPath, Encoding.UTF8);
-                    this.leetAlphabet = JsonConvert.DeserializeObject<Dictionary<char, string>>(json)
-                        .ToImmutableDictionary();
+                    Dictionary<char, string>? loadedLeetAlphabet = JsonConvert.DeserializeObject<Dictionary<char, string>>(json);
+                    if (loadedLeetAlphabet is null)
+                        throw new JsonSerializationException();
+                    this.leetAlphabet = loadedLeetAlphabet.ToImmutableDictionary();
                 } catch (Exception e) {
                     Log.Error(e, "Failed to load leet alphabet, path: {Path}", alphabetPath);
                     throw;

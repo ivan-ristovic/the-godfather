@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Search.Services
 
             try {
                 string response = await _http.GetStringAsync($"{IpApiUrl}/{ip}").ConfigureAwait(false);
-                IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response);
+                IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response) ?? throw new JsonSerializationException();
                 return data;
             } catch {
                 return null;

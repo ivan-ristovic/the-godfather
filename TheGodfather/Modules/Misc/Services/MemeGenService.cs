@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Misc.Services
         public static async Task<IReadOnlyList<MemeTemplate>> GetMemeTemplatesAsync()
         {
             string json = await _http.GetStringAsync($"{ApiEndpoint}/templates/").ConfigureAwait(false);
-            List<MemeTemplate> data = JsonConvert.DeserializeObject<List<MemeTemplate>>(json);
+            List<MemeTemplate> data = JsonConvert.DeserializeObject<List<MemeTemplate>>(json) ?? throw new JsonSerializationException();
             return data.AsReadOnly();
         }
 

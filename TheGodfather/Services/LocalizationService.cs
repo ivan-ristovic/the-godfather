@@ -66,8 +66,8 @@ namespace TheGodfather.Services
                             string locale = fi.Name[searchPattern.IndexOf('*')..fi.Name.IndexOf('.')];
                             if (locale.Equals(this.DefaultLocale))
                                 defLocaleLoaded = true;
-                            Dictionary<string, string> translation = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                            if (!strs.TryAdd(locale, translation.ToImmutableDictionary()))
+                            Dictionary<string, string>? translation = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                            if (translation is null || !strs.TryAdd(locale, translation.ToImmutableDictionary()))
                                 Log.Error("Duplicate locale found in lookup table: {Locale}", locale);
                         } catch (Exception e) {
                             Log.Error(e, "Failed to load strings for locale: {LocaleJson}", fi.Name);
@@ -106,7 +106,7 @@ namespace TheGodfather.Services
                     throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode("str-404")} Please report this.");
                 }
                 IEnumerable<object> margs = args?.Select(a => a is null ? str404 : a) ?? Enumerable.Empty<object>();
-                return string.Format(response, margs.ToArray());
+                return string.Format(response, margs.ToArray()).Trim();
             } else {
                 Log.Error("Guild {GuildId} has unknown locale {Locale}", gid, locale);
                 throw new LocalizationException($"Locale not found for guild {gid}");

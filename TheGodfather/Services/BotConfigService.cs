@@ -40,7 +40,7 @@ namespace TheGodfather.Services
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
 
-            this.CurrentConfiguration = JsonConvert.DeserializeObject<BotConfig>(json);
+            this.CurrentConfiguration = JsonConvert.DeserializeObject<BotConfig>(json) ?? throw new JsonSerializationException();
             return this.CurrentConfiguration;
         }
     }

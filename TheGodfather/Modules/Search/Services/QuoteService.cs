@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search.Services
                 string? response = string.IsNullOrWhiteSpace(category)
                     ? await _http.GetStringAsync(QuoteUrl).ConfigureAwait(false)
                     : await _http.GetStringAsync($"{QuoteUrl}?category={WebUtility.UrlEncode(category)}").ConfigureAwait(false);
-                QuoteApiResponse data = JsonConvert.DeserializeObject<QuoteApiResponse>(response);
+                QuoteApiResponse data = JsonConvert.DeserializeObject<QuoteApiResponse>(response) ?? throw new JsonSerializationException();
                 Quote? q = data?.Contents?.Quotes?.FirstOrDefault();
                 if (q is { })
                     _cache.Set("qotd", q, TimeSpan.FromMinutes(10));

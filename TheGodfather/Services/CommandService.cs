@@ -64,7 +64,7 @@ namespace TheGodfather.Services
 
             ModuleType ParseModuleType(FileInfo fi)
             {
-                string moduleRaw = fi.Name.Substring(0, fi.Name.IndexOf('.')).Substring(fi.Name.IndexOf('_') + 1);
+                string moduleRaw = fi.Name.Substring(0, fi.Name.IndexOf('.'))[(fi.Name.IndexOf('_') + 1)..];
                 if (!Enum.TryParse(moduleRaw, out ModuleType module)) {
                     module = ModuleType.Uncategorized;
                     Log.Error("Failed to parse module name from file {FileName}", fi.Name);
@@ -78,8 +78,10 @@ namespace TheGodfather.Services
             {
                 try {
                     string json = File.ReadAllText(fi.FullName);
-                    foreach ((string cmd, CommandInfo info) in JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)) {
+                    Dictionary<string, CommandInfo> cmds = JsonConvert.DeserializeObject<Dictionary<string, CommandInfo>>(json)
+                        ?? throw new JsonSerializationException();
 
+                    foreach ((string cmd, CommandInfo info) in cmds) {
                         info.Module = module;
                         foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
                             try {
@@ -98,7 +100,7 @@ namespace TheGodfather.Services
                         }
                     }
                     Log.Debug("Loaded command list from: {FileName}", fi.Name);
-                } catch (JsonReaderException e) {
+                } catch (Exception e) {
                     Log.Error(e, "Failed to load command list from file: {FileName}", fi.Name);
                 }
             }

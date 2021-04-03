@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games.Services
         {
             try {
                 string response = await _http.GetStringAsync($"{ApiUrl}/api_category.php").ConfigureAwait(false);
-                QuizCategoryList data = JsonConvert.DeserializeObject<QuizCategoryList>(response);
+                QuizCategoryList data = JsonConvert.DeserializeObject<QuizCategoryList>(response) ?? throw new JsonSerializationException();
                 return data.Categories.AsReadOnly();
             } catch (Exception e) {
                 Log.Error(e, "Failed to fetch quiz categories");
