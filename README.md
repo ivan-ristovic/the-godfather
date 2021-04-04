@@ -22,6 +22,7 @@ Features:
   - Complete administration of guilds, channels, users, emojis, roles, integrations etc. via categorized commands.
   - Automatic guild administration: spam protection, raid protection, mass-mention protection, ratelimit, instant join-leave protection, forbidden names and many more! All of them are customizable to suit your needs.
   - Eases your pain with auto-assignable roles, self-assignable roles, roles granted upon reaching a certain level or reacting with certain emojis.
+  - A detailed history of all actions performed on users within the guild - warnings, mutes, kicks, bans. The history is queryable and editable on a per-guild basis.
   - Real-time guild backup with exemptions of specified channels.
   - Activity logs for any changes made to the guild, channels, members etc. It is possible to exempt entities (channels, users) that you do not want to be logged.
   - Message filtering either by raw string matching or regular expression matching, automatic gore websites filter, IP logging websites filter, invite filter, etc.

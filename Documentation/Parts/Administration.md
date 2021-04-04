@@ -4,6 +4,206 @@
 *This module contains commands which help administer guilds and automate some actions.*
 
 
+## Group: actionhistory
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manages action history entries. Action history is a log of all actions performed in the guild and can be queried to get detailed list of all the actions performed on a given user. Action history can be enabled using the `config actionhistory` command.*
+
+**Aliases:**
+`history, ah`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`user`]: *User*
+
+**Examples:**
+
+```xml
+!actionhistory
+!actionhistory @User
+```
+</p></details>
+
+---
+
+### actionhistory add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Adds a new custom note entry to the action history for the given user and note.*
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`user`]: *User*
+
+[`string...`]: *Reason for the action*
+
+**Examples:**
+
+```xml
+!actionhistory add @User Reason
+```
+</p></details>
+
+---
+
+## Group: actionhistory delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manages removal of action history entries. Group call removes all entries for given user(s).*
+
+**Aliases:**
+`remove, rm, del, d, -, -=, >, >>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`user...`]: *User(s)*
+
+**Examples:**
+
+```xml
+!actionhistory delete @User
+```
+</p></details>
+
+---
+
+### actionhistory delete after
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all action history entries which were recorded after the specified time.*
+
+**Aliases:**
+`aft, a`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`date and time`]: *When?*
+
+**Examples:**
+
+```xml
+!actionhistory delete after 13.10.2000
+```
+</p></details>
+
+---
+
+### actionhistory delete before
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all action history entries which were recorded before the specified time.*
+
+**Aliases:**
+`due, b`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`date and time`]: *When?*
+
+**Examples:**
+
+```xml
+!actionhistory delete before 13.10.2000
+```
+</p></details>
+
+---
+
+### actionhistory delete users
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all action history entries for given user(s).*
+
+**Aliases:**
+`members, member, mem, user, usr, m, u`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Arguments:**
+
+[`user...`]: *User(s)*
+
+**Examples:**
+
+```xml
+!actionhistory delete users @User
+```
+</p></details>
+
+---
+
+### actionhistory deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Removes all action history entries for this guild.*
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Examples:**
+
+```xml
+!actionhistory deleteall
+```
+</p></details>
+
+---
+
+### actionhistory list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Lists all action history entries for this guild or only those matching the specified user if the user is provided.*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`user`]: *User*
+
+**Examples:**
+
+```xml
+!actionhistory list
+!actionhistory list @User
+```
+</p></details>
+
+---
+
 ## Group: automaticroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1272,6 +1472,32 @@
 
 ```xml
 !config
+```
+</p></details>
+
+---
+
+### config actionhistory
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Views or toggles moderation action recording.*
+
+**Aliases:**
+`history, ah`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`boolean`]: *Enable action history?*
+
+**Examples:**
+
+```xml
+!config actionhistory
+!config actionhistory Yes/No
 ```
 </p></details>
 
@@ -2719,7 +2945,7 @@
 ### config suggestions
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Views or toggles command suggestions when command name is not found.*
+*Views or toggles command suggestion setting when command name is not found.*
 
 **Aliases:**
 `suggestion, cmdsug, sugg, sug, help`

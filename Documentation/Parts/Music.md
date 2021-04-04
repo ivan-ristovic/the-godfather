@@ -180,7 +180,7 @@
 
 **Arguments:**
 
-(optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - one, A - all)* (def: `Single`)
+(optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
 
 **Examples:**
 
