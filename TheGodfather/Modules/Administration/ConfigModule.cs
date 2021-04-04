@@ -55,6 +55,7 @@ namespace TheGodfather.Modules.Administration
 
             gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync("q-setup-verbose", channel, false);
             gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync("q-setup-suggestions", channel, false);
+            gcfg.ActionHistoryEnabled = await ctx.WaitForBoolReplyAsync("q-setup-ah", channel, false);
 
             await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
             await this.SetupMuteRoleAsync(gcfg, ctx, channel);

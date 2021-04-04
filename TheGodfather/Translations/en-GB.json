@@ -1074,6 +1074,7 @@
   "q-setup-af-action": "Do you wish to change the default antiflood action ({0})?",
   "q-setup-af-cd": "Do you wish to change the default antiflood cooldown ({0}s)?",
   "q-setup-af-sens": "Do you wish to change the default antiflood sensitivity - number of flooders allowed before the action is triggered ({0})?",
+  "q-setup-ah": "Action history is a feature that automatically logs actions performed on members within the guild (warnings, mutes, kicks, bans, etc.). The history can be queried on a per-user basis and entries can be added/removed manually - something like an editable audit log. Do you wish to enable action history?",
   "q-setup-am": "Anti-mention is a feature that automatically punishes users that mention more than specified amount of channels/roles/users. Do you wish to enable mention protection?",
   "q-setup-am-action": "Do you wish to change the default anti-mention action ({0})?",
   "q-setup-am-sens": "Do you wish to change the default anti-mention sensitivity - total number of mentions allowed in a message before the action is triggered ({0})?",
