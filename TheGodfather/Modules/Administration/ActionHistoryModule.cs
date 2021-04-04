@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
@@ -15,8 +16,10 @@ using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("actionhistory")]
+    [Group("actionhistory"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("history", "ah")]
+    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class ActionHistoryModule : TheGodfatherServiceModule<ActionHistoryService>
     {
         #region actionhistory
@@ -164,7 +167,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ActionHistoryEntry> history = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!history.Any())
-                throw new CommandFailedException(ctx, "cmd-err-ah-none");
+                throw new CommandFailedException(ctx, "cmd-err-ah-none-match");
 
             var users = new Dictionary<ulong, DiscordUser>();
             foreach (ActionHistoryEntry e in history) {
