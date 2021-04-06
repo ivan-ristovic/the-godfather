@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration.Services
         public ActionHistoryService(DbContextBuilder dbb)
             : base(dbb) { }
 
-
+        
         public async Task LimitedAddAsync(ActionHistoryEntry entry)
         {
             await this.AddAsync(entry);

@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("actionhistory"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("history", "ah")]
-    [RequireGuild, RequireUserPermissions(Permissions.ManageGuild)]
+    [RequireGuild, RequireUserPermissions(Permissions.ViewAuditLog)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public sealed class ActionHistoryModule : TheGodfatherServiceModule<ActionHistoryService>
     {

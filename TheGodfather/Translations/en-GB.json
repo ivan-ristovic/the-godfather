@@ -725,7 +725,7 @@
   "evt-msg-del-bulk": "Bulk message delete occured",
   "evt-msg-reactions-clear": "Message reactions cleared",
   "evt-msg-upd": "Message updated",
-  "evt-nick-clear": "Nickname removed: {0}",
+  "evt-nick-clear": "Nickname removed",
   "evt-presence-upd": "Presence updated",
   "evt-rr-change": "Reaction roles changed",
   "evt-rr-clear": "All reaction roles have been unregistered.",
