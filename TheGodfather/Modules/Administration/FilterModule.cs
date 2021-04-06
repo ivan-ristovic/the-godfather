@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Administration
             });
 
             if (eb.Length > 0)
-                await ctx.FailAsync("evt-action-err", eb.ToString());
+                await ctx.FailAsync("fmt-action-err", eb.ToString());
             else
                 await ctx.InfoAsync(this.ModuleColor, "str-f-add");
         }
