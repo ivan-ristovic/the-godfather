@@ -19,6 +19,7 @@ namespace TheGodfather.Modules.Administration.Extensions
             emb.AddLocalizedTitleField("str-prefix", gcfg.Prefix ?? lcs.GetString(guild.Id, "str-default"), inline: true);
             emb.AddLocalizedTitleField("str-silent", gcfg.ReactionResponse, inline: true);
             emb.AddLocalizedTitleField("str-cmd-suggestions", gcfg.SuggestionsEnabled, inline: true);
+            emb.AddLocalizedTitleField("str-actionhistory", gcfg.ActionHistoryEnabled, inline: true);
 
             if (gcfg.LoggingEnabled) {
                 DiscordChannel? logchn = guild.GetChannel(gcfg.LogChannelId);

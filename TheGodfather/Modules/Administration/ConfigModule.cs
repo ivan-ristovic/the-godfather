@@ -469,6 +469,7 @@ namespace TheGodfather.Modules.Administration
         private async Task ApplySettingsAsync(CommandContext ctx, GuildConfig gcfg)
         {
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                cfg.ActionHistoryEnabled = gcfg.ActionHistoryEnabled;
                 cfg.AntifloodSettings = gcfg.AntifloodSettings;
                 cfg.AntiInstantLeaveSettings = gcfg.AntiInstantLeaveSettings;
                 cfg.BackupEnabled = gcfg.BackupEnabled;
