@@ -92,17 +92,17 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cfg-upd");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-lvlup-s", !enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField("str-lvlup-s", enable ? "str-on" : "str-off", inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, !enable ? "str-cfg-lvlup-on" : "str-cfg-lvlup-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-lvlup-on" : "str-cfg-lvlup-off");
         }
 
         [Command("levelup"), Priority(0)]
         public async Task LevelUpAsync(CommandContext ctx)
         {
             GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            await ctx.InfoAsync(this.ModuleColor, !gcfg.SilentLevelUpEnabled ? "str-cfg-lvlup-get-on" : "str-cfg-lvlup-get-off");
+            await ctx.InfoAsync(this.ModuleColor, gcfg.SilentLevelUpEnabled ? "str-cfg-lvlup-get-on" : "str-cfg-lvlup-get-off");
         }
         #endregion
 
