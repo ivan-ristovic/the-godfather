@@ -441,6 +441,12 @@
       [ "arg-chn-text" ]
     ]
   },
+  "config levelup": {
+    "usage": [
+      [],
+      [ "arg-bool" ]
+    ]
+  },
   "config linkfilter": {
     "usage": [
       []
