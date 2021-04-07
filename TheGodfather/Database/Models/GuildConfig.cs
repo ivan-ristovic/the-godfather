@@ -105,6 +105,9 @@ namespace TheGodfather.Database.Models
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }
 
+        [Column("silent_levelup_enabled")]
+        public bool SilentLevelUpEnabled { get; set; }
+
         [Column("action_history_enabled")]
         public bool ActionHistoryEnabled { get; set; }
 

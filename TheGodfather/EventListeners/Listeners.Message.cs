@@ -81,18 +81,19 @@ namespace TheGodfather.EventListeners
                     LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                     LevelRole? lr = await bot.Services.GetRequiredService<LevelRoleService>().GetAsync(e.Guild.Id, rank);
                     DiscordRole? levelRole = lr is { } ? e.Guild.GetRole(lr.RoleId) : null;
-                    XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
-                    string rankupStr;
                     if (levelRole is { }) {
-                        rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup-lr",
-                            e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention
-                        );
                         DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
                         await member.GrantRoleAsync(levelRole);
-                    } else {
-                        rankupStr = ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
                     }
-                    await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
+
+                    GuildConfig gcfg = await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
+                    if (!gcfg.SilentLevelUpEnabled) {
+                        XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
+                        string rankupStr = levelRole is { }
+                            ? ls.GetString(e.Guild.Id, "fmt-rankup-lr", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention)
+                            : ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
+                        await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
+                    }
                 }
             }
         }
@@ -290,7 +291,7 @@ namespace TheGodfather.EventListeners
                 LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                 try {
                     await msg.DeleteAsync(ls.GetString(msg.Channel.GuildId, "rsn-filter-match"));
-                    await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
+                    // await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
                 } catch {
                     await SendErrorReportAsync();
                 }

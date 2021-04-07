@@ -56,6 +56,7 @@ namespace TheGodfather.Modules.Administration
             gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync("q-setup-verbose", channel, false);
             gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync("q-setup-suggestions", channel, false);
             gcfg.ActionHistoryEnabled = await ctx.WaitForBoolReplyAsync("q-setup-ah", channel, false);
+            gcfg.SilentLevelUpEnabled = await ctx.WaitForBoolReplyAsync("q-setup-lvlup", channel, false);
 
             await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
             await this.SetupMuteRoleAsync(gcfg, ctx, channel);
@@ -78,6 +79,33 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region config level
+        [Command("levelup"), Priority(1)]
+        [Aliases("lvlup", "lvl")]
+        public async Task LevelUpAsync(CommandContext ctx,
+                                      [Description("desc-lvlup-s")] bool enable)
+        {
+            await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
+                cfg.SilentLevelUpEnabled = enable;
+            });
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.AddLocalizedField("str-lvlup-s", enable ? "str-on" : "str-off", inline: true);
+            });
+
+            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-lvlup-on" : "str-cfg-lvlup-off");
+        }
+
+        [Command("levelup"), Priority(0)]
+        public async Task LevelUpAsync(CommandContext ctx)
+        {
+            GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
+            await ctx.InfoAsync(this.ModuleColor, gcfg.SilentLevelUpEnabled ? "str-cfg-lvlup-get-on" : "str-cfg-lvlup-get-off");
+        }
+        #endregion
+
         #region config silent
         [Command("silent"), Priority(1)]
         [Aliases("reactionresponse", "silentresponse", "s", "rr")]
@@ -91,7 +119,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cfg-upd");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-silent", enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField("str-replies-s", enable ? "str-on" : "str-off", inline: true);
             });
 
             await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-silent-on" : "str-cfg-silent-off");
@@ -477,6 +505,7 @@ namespace TheGodfather.Modules.Administration
                 cfg.LeaveChannelId = gcfg.LeaveChannelId;
                 cfg.LeaveMessage = gcfg.LeaveMessage;
                 cfg.MuteRoleId = gcfg.MuteRoleId;
+                cfg.SilentLevelUpEnabled = gcfg.SilentLevelUpEnabled;
                 cfg.WelcomeChannelId = gcfg.WelcomeChannelId;
                 cfg.WelcomeMessage = gcfg.WelcomeMessage;
             });
