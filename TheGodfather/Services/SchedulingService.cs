@@ -23,15 +23,13 @@ namespace TheGodfather.Services
             try {
                 using TheGodfatherDbContext db = @this.dbb.CreateContext();
                 DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
-                var guildTasks = db.GuildTasks
-                    .AsQueryable()
+                var guildTasks = db.GuildTasks.AsQueryable()
                     .Where(t => t.ExecutionTime <= threshold)
                     .AsEnumerable()
                     .ToDictionary(t => t.Id, t => t);
                 RegisterTasks(guildTasks);
 
-                var reminders = db.Reminders
-                    .AsQueryable()
+                var reminders = db.Reminders.AsQueryable()
                     .Where(r => r.ExecutionTime <= threshold)
                     .AsEnumerable()
                     .ToDictionary(r => r.Id, t => t);

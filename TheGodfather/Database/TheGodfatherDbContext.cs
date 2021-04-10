@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Common;
 
@@ -93,6 +98,16 @@ namespace TheGodfather.Database
         protected override void OnModelCreating(ModelBuilder mb)
         {
             mb.HasDefaultSchema("gf");
+
+            if (this.Provider == DbProvider.Sqlite || this.Provider == DbProvider.SqliteInMemory) {
+                foreach (IMutableEntityType entityType in mb.Model.GetEntityTypes()) {
+                    IEnumerable<PropertyInfo> properties = entityType.ClrType.GetProperties()
+                        .Where(p => p.PropertyType == typeof(DateTimeOffset) || p.PropertyType == typeof(DateTimeOffset?))
+                        ;
+                    foreach (PropertyInfo? property in properties)
+                        mb.Entity(entityType.Name).Property(property.Name).HasConversion(new DateTimeOffsetToBinaryConverter());
+                }
+            }
 
             mb.Entity<ActionHistoryEntry>().HasKey(ahe => new { ahe.GuildIdDb, ahe.UserIdDb, ahe.Time });
             mb.Entity<AutoRole>().HasKey(ar => new { ar.GuildIdDb, ar.RoleIdDb });
