@@ -613,6 +613,7 @@ namespace TheGodfather.Modules.Owner
 
         #region restart
         [Command("restart")]
+        [Aliases("reboot")]
         [RequirePrivilegedUser]
         public Task RestartAsync(CommandContext ctx)
             => this.ExitAsync(ctx, 100);

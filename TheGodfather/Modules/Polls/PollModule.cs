@@ -15,6 +15,7 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
+    [Aliases("polls")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class PollModule : TheGodfatherServiceModule<ChannelEventService>
     {

@@ -141,7 +141,7 @@ namespace TheGodfather
                         : this.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id) ?? this.Config.CurrentConfiguration.Prefix;
                     return Task.FromResult(m.GetStringPrefixLength(p));
                 },
-                Services = this.Services
+                Services = this.Services,
             };
             IReadOnlyDictionary<int, CommandsNextExtension> cnext = await this.Client.UseCommandsNextAsync(cfg);
 

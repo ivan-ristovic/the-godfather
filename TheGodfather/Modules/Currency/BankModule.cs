@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Currency
         }
         #endregion
 
-        #region config currency
+        #region bank currency
         [Command("currency"), Priority(1)]
         [Aliases("setcurrency", "curr")]
         public async Task CurrencyAsync(CommandContext ctx,
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Currency
         public Task CurrencyAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-            return ctx.InfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
         }
         #endregion
 

@@ -38,15 +38,15 @@ namespace TheGodfather.Modules.Administration
         [Command("allow"), Priority(1)]
         [Aliases("only", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("desc-cr-allow")] string command,
-                                    [Description("desc-cr-chn")] params DiscordChannel[] channels)
-            => await this.AddRuleAsync(ctx, command, true, channels);
+                                    [Description("desc-cr-chn")] DiscordChannel channel,
+                                    [RemainingText, Description("desc-cr-allow")] string command)
+            => await this.AddRuleAsync(ctx, command, true, channel);
 
         [Command("allow"), Priority(0)]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("desc-cr-chn")] DiscordChannel channel,
-                                    [Description("desc-cr-allow")] string command)
-            => await this.AddRuleAsync(ctx, command, true, channel);
+                                    [Description("desc-cr-allow")] string command,
+                                    [Description("desc-cr-chn")] params DiscordChannel[] channels)
+            => await this.AddRuleAsync(ctx, command, true, channels);
         #endregion
 
         #region commandrules forbid
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
         {
             Command? cmd = ctx.CommandsNext.FindCommand(command, out _);
             if (cmd is null)
-                throw new CommandFailedException(ctx, "cmd-404", Formatter.InlineCode(Formatter.Strip(command)));
+                throw new CommandFailedException(ctx, "cmd-404", Formatter.Strip(command));
 
             IEnumerable<DiscordChannel> validChannels = channels.Where(c => c.Type == ChannelType.Text);
 

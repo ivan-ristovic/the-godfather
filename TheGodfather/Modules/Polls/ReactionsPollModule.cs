@@ -15,7 +15,7 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Polls
 {
     [Group("reactionspoll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
-    [Aliases("rpoll", "pollr", "voter")]
+    [Aliases("reactionspolls", "rpoll", "rpolls", "pollr", "voter")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public sealed class ReactionsPollModule : TheGodfatherServiceModule<ChannelEventService>
     {

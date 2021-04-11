@@ -23,7 +23,7 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Chickens
 {
     [Group("chicken"), Module(ModuleType.Chickens), NotBlocked]
-    [Aliases("cock", "hen", "chick", "coc", "cc")]
+    [Aliases("chickens", "cock", "hen", "chick", "coc", "cc")]
     [RequireGuild, Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class ChickenModule : TheGodfatherServiceModule<ChickenService>
     {
