@@ -8,7 +8,7 @@
 *Chicken management commands. If invoked without subcommands, prints out your chicken information.*
 
 **Aliases:**
-`cock, hen, chick, coc, cc`
+`chickens, cock, hen, chick, coc, cc`
 **Guild only.**
 
 **Overload 1:**

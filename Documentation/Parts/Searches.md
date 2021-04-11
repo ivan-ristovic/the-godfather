@@ -18,6 +18,26 @@
 
 ---
 
+## Group: cryptocurrency
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints cryptocurrency information (using CoinMarketCap API).*
+
+**Aliases:**
+`crypto`
+**Arguments:**
+
+[`string...`]: *Currency name*
+
+**Examples:**
+
+```xml
+!cryptocurrency Bitcoin
+```
+</p></details>
+
+---
+
 ## dog
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

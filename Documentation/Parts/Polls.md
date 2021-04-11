@@ -7,6 +7,8 @@
 
 *Starts a new poll in the current channel. You can also provide the time for the poll to run.*
 
+**Aliases:**
+`polls`
 **Guild only.**
 
 **Overload 2:**
@@ -60,7 +62,7 @@
 *Starts a new reactions poll in the current channel. You can also provide the time for the poll to run.*
 
 **Aliases:**
-`rpoll, pollr, voter`
+`reactionspolls, rpoll, rpolls, pollr, voter`
 **Guild only.**
 
 **Overload 2:**

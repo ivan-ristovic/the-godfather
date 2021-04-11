@@ -14,7 +14,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Overload 1:**
 
@@ -40,7 +40,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Arguments:**
 
@@ -67,7 +67,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Arguments:**
 
@@ -92,7 +92,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Arguments:**
 
@@ -117,7 +117,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Arguments:**
 
@@ -142,7 +142,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Arguments:**
 
@@ -167,7 +167,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Examples:**
 
@@ -188,7 +188,7 @@
 **Guild only.**
 
 **Requires user permissions:**
-`Manage guild`
+`View audit log`
 
 **Overload 1:**
 
@@ -1348,15 +1348,15 @@
 
 **Overload 1:**
 
-[`string`]: *Command or group to allow*
+[`channel`]: *Channel(s) affected by this action*
 
-[`channel...`]: *Channel(s) affected by this action*
+[`string...`]: *Command or group to allow*
 
 **Overload 0:**
 
-[`channel`]: *Channel(s) affected by this action*
-
 [`string`]: *Command or group to allow*
+
+[`channel...`]: *Channel(s) affected by this action*
 
 **Examples:**
 
@@ -2322,6 +2322,32 @@
 
 ```xml
 !config leave message #my-text-channel
+```
+</p></details>
+
+---
+
+### config levelup
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Configures member levelup notifications.*
+
+**Aliases:**
+`lvlup, lvl`
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Overload 1:**
+
+[`boolean`]: *Enable silent level ups?*
+
+**Examples:**
+
+```xml
+!config levelup
+!config levelup Yes/No
 ```
 </p></details>
 

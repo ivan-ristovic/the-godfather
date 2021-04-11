@@ -645,6 +645,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Restarts the bot.*
 
+**Aliases:**
+`reboot`
 **Privileged users only.**
 
 
