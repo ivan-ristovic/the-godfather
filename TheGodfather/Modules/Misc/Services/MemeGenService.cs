@@ -10,7 +10,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Misc.Services
 {
-    public class MemeGenService : TheGodfatherHttpService
+    public sealed class MemeGenService : TheGodfatherHttpService
     {
         public const string Provider = "memegen.link";
         private const string ApiEndpoint = "https://api.memegen.link";

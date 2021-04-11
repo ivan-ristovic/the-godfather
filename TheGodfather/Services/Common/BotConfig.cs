@@ -81,6 +81,9 @@ namespace TheGodfather.Services.Common
         [JsonProperty("key-imgur")]
         public string? ImgurKey { get; set; }
 
+        [JsonProperty("key-crypto")]
+        public string? CryptoKey { get; set; }
+
         [JsonProperty("logger-special-rules")]
         public List<SpecialLoggingRule> SpecialLoggerRules { get; set; } = new List<SpecialLoggingRule>();
 

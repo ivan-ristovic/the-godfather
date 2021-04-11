@@ -184,6 +184,7 @@
   "config welcome": "Configures member welcome messages.",
   "config welcome channel": "Enables welcome messages in specified channel.",
   "config welcome message": "Customizes welcome message.",
+  "cryptocurrency": "Prints cryptocurrency information (using CoinMarketCap API).",
   "deck": "Card deck commands. Group call opens a new shuffled deck in the current channel.",
   "deck draw": "Draws cards from the top of the deck.",
   "deck reset": "Opens a new shuffled deck in the current channel.",

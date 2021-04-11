@@ -8,7 +8,7 @@ namespace TheGodfather.Modules.Search.Services
 {
     public sealed class IpGeolocationService : TheGodfatherHttpService
     {
-        private  const string IpApiUrl = "http://ip-api.com/json";
+        private const string Endpoint = "http://ip-api.com/json";
 
         public override bool IsDisabled => false;
 
@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             try {
-                string response = await _http.GetStringAsync($"{IpApiUrl}/{ip}").ConfigureAwait(false);
+                string response = await _http.GetStringAsync($"{Endpoint}/{ip}").ConfigureAwait(false);
                 IpInfo data = JsonConvert.DeserializeObject<IpInfo>(response) ?? throw new JsonSerializationException();
                 return data;
             } catch {

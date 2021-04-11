@@ -27,6 +27,7 @@ namespace TheGodfather.Modules.Search.Services
             this.key = cfg.CurrentConfiguration.GoodreadsKey;
         }
 
+
         public async Task<GoodreadsSearchInfo?> SearchBooksAsync(string query)
         {
             if (this.IsDisabled)
