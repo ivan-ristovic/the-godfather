@@ -9,6 +9,9 @@
 
 **Aliases:**
 `cards`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -25,10 +28,9 @@
 
 **Aliases:**
 `take`
-**Arguments:**
 
-(optional) [`int`]: *Amount of cards to draw* (def: `1`)
-
+**Overload 0:**
+- (optional) [`int`]: *Amount of cards to draw* (def: `1`)
 **Examples:**
 
 ```xml
@@ -45,6 +47,9 @@
 
 **Aliases:**
 `new, opennew, open`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -61,6 +66,9 @@
 
 **Aliases:**
 `games, gm`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -79,6 +87,9 @@
 `animr, arace, ar, animalr, race`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -97,6 +108,9 @@
 `+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -115,14 +129,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -142,6 +153,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -160,10 +174,9 @@
 `c, gomoku, gobang`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`time span`]: *Time for a move* (def: `None`)
-
+**Overload 0:**
+- (optional) [`time span`]: *Time for a move* (def: `None`)
 **Examples:**
 
 ```xml
@@ -183,6 +196,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -201,14 +217,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -228,6 +241,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -246,10 +262,9 @@
 `connectfour, chain4, chainfour, c4, fourinarow, fourinaline, 4row, 4line, cfour`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`time span`]: *Time for a move* (def: `None`)
-
+**Overload 0:**
+- (optional) [`time span`]: *Time for a move* (def: `None`)
 **Examples:**
 
 ```xml
@@ -269,6 +284,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -287,14 +305,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -314,6 +329,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -332,10 +350,9 @@
 `fight, vs, d`
 **Guild only.**
 
-**Arguments:**
 
-[`member`]: *Member*
-
+**Overload 0:**
+- [`member`]: *Member*
 **Examples:**
 
 ```xml
@@ -355,6 +372,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -373,14 +393,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -400,6 +417,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -418,6 +438,9 @@
 `h, hang, hm`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -436,6 +459,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -454,14 +480,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -481,6 +504,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -497,6 +523,9 @@
 
 **Aliases:**
 `globalstats`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -513,14 +542,11 @@
 
 **Aliases:**
 `mines, ms`
-**Arguments:**
 
-(optional) [`int`]: *Rows* (def: `9`)
-
-(optional) [`int`]: *Columns* (def: `9`)
-
-(optional) [`int`]: *Bombs* (def: `10`)
-
+**Overload 0:**
+- (optional) [`int`]: *Rows* (def: `9`)
+- (optional) [`int`]: *Columns* (def: `9`)
+- (optional) [`int`]: *Bombs* (def: `10`)
 **Examples:**
 
 ```xml
@@ -538,6 +564,9 @@
 
 **Aliases:**
 `help, h, ruling, rule`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -556,6 +585,9 @@
 `nr, n, nunchi, numbers, numbersrace`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -574,6 +606,9 @@
 `+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -592,6 +627,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -610,14 +648,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -637,6 +672,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -655,10 +693,9 @@
 `reversi, oth, rev`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`time span`]: *Time for a move* (def: `None`)
-
+**Overload 0:**
+- (optional) [`time span`]: *Time for a move* (def: `None`)
 **Examples:**
 
 ```xml
@@ -678,6 +715,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -696,14 +736,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -723,6 +760,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -741,22 +781,17 @@
 `trivia, q`
 **Guild only.**
 
+
 **Overload 2:**
-
-[`int`]: *ID of the quiz category*
-
-(optional) [`int`]: *Amount of questions* (def: `10`)
-
-(optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
-
+- [`int`]: *ID of the quiz category*
+- (optional) [`int`]: *Amount of questions* (def: `10`)
+- (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 **Overload 1:**
-
-[`string`]: *ID of the quiz category*
-
-(optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
-
-(optional) [`int`]: *Amount of questions* (def: `10`)
-
+- [`string`]: *ID of the quiz category*
+- (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
+- (optional) [`int`]: *Amount of questions* (def: `10`)
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -777,10 +812,9 @@
 `capitaltowns`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`int`]: *Amount of questions* (def: `10`)
-
+**Overload 0:**
+- (optional) [`int`]: *Amount of questions* (def: `10`)
 **Examples:**
 
 ```xml
@@ -800,10 +834,9 @@
 `flags`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`int`]: *Amount of questions* (def: `10`)
-
+**Overload 0:**
+- (optional) [`int`]: *Amount of questions* (def: `10`)
 **Examples:**
 
 ```xml
@@ -823,14 +856,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -850,6 +880,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -866,6 +899,9 @@
 
 **Aliases:**
 `rockpaperscissors`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -882,6 +918,9 @@
 
 **Aliases:**
 `help, h, ruling, rule`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -900,6 +939,9 @@
 `rr, roulette, russianr`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -918,6 +960,9 @@
 `+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -936,14 +981,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -963,6 +1005,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -979,14 +1024,11 @@
 
 **Aliases:**
 `s, st`
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1006,10 +1048,9 @@
 `ttt`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`time span`]: *Time for a move* (def: `None`)
-
+**Overload 0:**
+- (optional) [`time span`]: *Time for a move* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1029,6 +1070,9 @@
 `help, h, ruling, rule`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -1047,14 +1091,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1074,6 +1115,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -1092,6 +1136,9 @@
 `tr, trace, typerace, typing, typingr`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -1110,6 +1157,9 @@
 `+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -1128,14 +1178,11 @@
 `s`
 **Guild only.**
 
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1155,6 +1202,9 @@
 `t, leaderboard`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml

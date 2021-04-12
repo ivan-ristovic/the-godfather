@@ -11,6 +11,9 @@
 `songs, song, tracks, track, audio, mu`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -29,10 +32,9 @@
 `fw, f, >, >>`
 **Guild only.**
 
-**Arguments:**
 
-[`time span...`]: *Forward amount*
-
+**Overload 0:**
+- [`time span...`]: *Forward amount*
 **Examples:**
 
 ```xml
@@ -51,6 +53,9 @@
 `i, player`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -69,6 +74,9 @@
 `ps`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -87,14 +95,11 @@
 `p, +, +=, add, a`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`URL`]: *Audio URL*
-
+- [`URL`]: *Audio URL*
 **Overload 0:**
-
-[`string...`]: *Search query*
-
+- [`string...`]: *Search query*
 **Examples:**
 
 ```xml
@@ -116,10 +121,9 @@
 
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *Audio URL*
-
+**Overload 0:**
+- [`string...`]: *Audio URL*
 **Examples:**
 
 ```xml
@@ -138,6 +142,9 @@
 `q, playlist`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -156,10 +163,9 @@
 `dequeue, delete, rm, del, d, -, -=`
 **Guild only.**
 
-**Arguments:**
 
-[`int`]: *Index (starting from 1)*
-
+**Overload 0:**
+- [`int`]: *Index (starting from 1)*
 **Examples:**
 
 ```xml
@@ -178,10 +184,9 @@
 `loop, l, rep, lp`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
-
+**Overload 0:**
+- (optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
 **Examples:**
 
 ```xml
@@ -198,6 +203,9 @@
 
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -216,6 +224,9 @@
 `res, replay`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -234,6 +245,9 @@
 `unpause, up, rs`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -252,10 +266,9 @@
 `bw, rw, <, <<`
 **Guild only.**
 
-**Arguments:**
 
-[`time span...`]: *Backward amount*
-
+**Overload 0:**
+- [`time span...`]: *Backward amount*
 **Examples:**
 
 ```xml
@@ -274,10 +287,9 @@
 `s`
 **Guild only.**
 
-**Arguments:**
 
-[`time span...`]: *Point to seek to*
-
+**Overload 0:**
+- [`time span...`]: *Point to seek to*
 **Examples:**
 
 ```xml
@@ -296,6 +308,9 @@
 `randomize, rng, sh`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -314,6 +329,9 @@
 `next, n, sk`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -330,6 +348,9 @@
 
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -348,10 +369,9 @@
 `vol, v`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`int`]: *Volume to set* (def: `100`)
-
+**Overload 0:**
+- (optional) [`int`]: *Volume to set* (def: `100`)
 **Examples:**
 
 ```xml
@@ -391,10 +411,8 @@
 **Privileged users only.**
 
 
-**Arguments:**
-
-(optional) [`channel...`]: *Voice channel* (def: `None`)
-
+**Overload 0:**
+- (optional) [`channel...`]: *Voice channel* (def: `None`)
 **Examples:**
 
 ```xml
@@ -416,6 +434,8 @@
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml

@@ -14,22 +14,16 @@
 **Privileged users only.**
 
 
+**Overload 3:**
+*None*
 **Overload 2:**
-
-[`channel...`]: *Entities to block*
-
+- [`channel...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`channel...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`channel...`]: *Entities to block*
 **Overload 0:**
-
-[`channel`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`channel`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -51,21 +45,13 @@
 
 
 **Overload 2:**
-
-[`channel...`]: *Entities to block*
-
+- [`channel...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`channel...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`channel...`]: *Entities to block*
 **Overload 0:**
-
-[`channel`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`channel`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -86,10 +72,8 @@
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`channel...`]: *Entities to unblock*
-
+**Overload 0:**
+- [`channel...`]: *Entities to unblock*
 **Examples:**
 
 ```xml
@@ -109,6 +93,8 @@
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -130,22 +116,16 @@
 **Privileged users only.**
 
 
+**Overload 3:**
+*None*
 **Overload 2:**
-
-[`guild...`]: *Entities to block*
-
+- [`guild...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`guild...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`guild...`]: *Entities to block*
 **Overload 0:**
-
-[`guild`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`guild`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -167,21 +147,13 @@
 
 
 **Overload 2:**
-
-[`guild...`]: *Entities to block*
-
+- [`guild...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`guild...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`guild...`]: *Entities to block*
 **Overload 0:**
-
-[`guild`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`guild`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -202,10 +174,8 @@
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`guild...`]: *Entities to unblock*
-
+**Overload 0:**
+- [`guild...`]: *Entities to unblock*
 **Examples:**
 
 ```xml
@@ -225,6 +195,8 @@
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -246,22 +218,16 @@
 **Privileged users only.**
 
 
+**Overload 3:**
+*None*
 **Overload 2:**
-
-[`user...`]: *Entities to block*
-
+- [`user...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`user...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`user...`]: *Entities to block*
 **Overload 0:**
-
-[`user`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`user`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -283,21 +249,13 @@
 
 
 **Overload 2:**
-
-[`user...`]: *Entities to block*
-
+- [`user...`]: *Entities to block*
 **Overload 1:**
-
-[`string`]: *Reason for the action*
-
-[`user...`]: *Entities to block*
-
+- [`string`]: *Reason for the action*
+- [`user...`]: *Entities to block*
 **Overload 0:**
-
-[`user`]: *Entities to block*
-
-[`string...`]: *Reason for the action*
-
+- [`user`]: *Entities to block*
+- [`string...`]: *Reason for the action*
 **Examples:**
 
 ```xml
@@ -318,10 +276,8 @@
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`user...`]: *Entities to unblock*
-
+**Overload 0:**
+- [`user...`]: *Entities to unblock*
 **Examples:**
 
 ```xml
@@ -341,6 +297,8 @@
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -361,6 +319,9 @@
 `cmds, cmd`
 **Owner-only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -379,10 +340,9 @@
 `register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *C# code snippet in a markdown code block*
-
+**Overload 0:**
+- [`string...`]: *C# code snippet in a markdown code block*
 **Examples:**
 
 ```xml
@@ -404,10 +364,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *Command name*
-
+**Overload 0:**
+- [`string...`]: *Command name*
 **Examples:**
 
 ```xml
@@ -426,6 +385,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -444,6 +406,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 **Aliases:**
 `admin, o`
+
 </p></details>
 
 ---
@@ -457,10 +420,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `ann`
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *Announcement message*
-
+**Overload 0:**
+- [`string...`]: *Announcement message*
 **Examples:**
 
 ```xml
@@ -479,10 +441,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `setavatar, setbotavatar, profilepic, a`
 **Owner-only.**
 
-**Arguments:**
 
-[`URL`]: *Image URL*
-
+**Overload 0:**
+- [`URL`]: *Image URL*
 **Examples:**
 
 ```xml
@@ -501,10 +462,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `sql, dbq, q, query`
 **Owner-only.**
 
+
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`string...`]: *SQL query*
-
+- [`string...`]: *SQL query*
 **Examples:**
 
 ```xml
@@ -523,10 +485,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `evaluate, compile, run, e, c, r, exec`
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *C# code snippet in a markdown code block*
-
+**Overload 0:**
+- [`string...`]: *C# code snippet in a markdown code block*
 **Examples:**
 
 ```xml
@@ -548,10 +509,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `gendocs, generatecommandslist, docs, cmdlist, gencmdlist, gencmds, gencmdslist`
 **Owner-only.**
 
-**Arguments:**
 
-(optional) [`string...`]: *Output folder* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string...`]: *Output folder* (def: `None`)
 **Examples:**
 
 ```xml
@@ -570,14 +530,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `leave, gtfo`
 **Owner-only.**
 
+
 **Overload 1:**
-
-[`guild...`]: *Guild names or IDs*
-
+- [`guild...`]: *Guild names or IDs*
 **Overload 0:**
-
-[`unsigned long...`]: *Guild names or IDs*
-
+- [`unsigned long...`]: *Guild names or IDs*
 **Examples:**
 
 ```xml
@@ -597,16 +554,12 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `getlog, remark, rem`
 **Owner-only.**
 
+
 **Overload 1:**
-
-(optional) [`boolean`]: *Bypass current bot configuration?* (def: `False`)
-
+- (optional) [`boolean`]: *Bypass current bot configuration?* (def: `False`)
 **Overload 0:**
-
-[`LogEventLevel`]: *Log event level*
-
-[`string...`]: *Log message*
-
+- [`LogEventLevel`]: *Log event level*
+- [`string...`]: *Log message*
 **Examples:**
 
 ```xml
@@ -627,10 +580,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `botname, setbotname, setname`
 **Owner-only.**
 
-**Arguments:**
 
-[`string...`]: *New name*
-
+**Overload 0:**
+- [`string...`]: *New name*
 **Examples:**
 
 ```xml
@@ -650,6 +602,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -669,14 +623,10 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`string`]: *`u` (User) or `c` (Channel)*
-
-[`unsigned long`]: *ID*
-
-[`string...`]: *Message to send*
-
+**Overload 0:**
+- [`string`]: *`u` (User) or `c` (Channel)*
+- [`unsigned long`]: *ID*
+- [`string...`]: *Message to send*
 **Examples:**
 
 ```xml
@@ -699,15 +649,10 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 1:**
-
-[`time span`]: *Time until shutdown*
-
-(optional) [`int`]: *Process exit code* (def: `0`)
-
+- [`time span`]: *Time until shutdown*
+- (optional) [`int`]: *Process exit code* (def: `0`)
 **Overload 0:**
-
-(optional) [`int`]: *Process exit code* (def: `0`)
-
+- (optional) [`int`]: *Process exit code* (def: `0`)
 **Examples:**
 
 ```xml
@@ -731,12 +676,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`member`]: *Member*
-
-[`string...`]: *Full command call with arguments*
-
+**Overload 0:**
+- [`member`]: *Member*
+- [`string...`]: *Full command call with arguments*
 **Examples:**
 
 ```xml
@@ -757,6 +699,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -773,6 +717,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 **Owner-only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -790,6 +737,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 **Privileged users only.**
 
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -810,10 +759,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `pu, privu, privuser, pusers, puser, pusr`
 **Owner-only.**
 
+
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`user...`]: *User(s)*
-
+- [`user...`]: *User(s)*
 **Examples:**
 
 ```xml
@@ -832,10 +782,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
-**Arguments:**
 
-[`user...`]: *User(s)*
-
+**Overload 0:**
+- [`user...`]: *User(s)*
 **Examples:**
 
 ```xml
@@ -854,10 +803,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
-**Arguments:**
 
-[`user...`]: *User(s)*
-
+**Overload 0:**
+- [`user...`]: *User(s)*
 **Examples:**
 
 ```xml
@@ -876,6 +824,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -896,12 +847,12 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `statuses, botstatus, activity, activities`
 **Owner-only.**
 
+
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-
-[`string...`]: *Bot status*
-
+- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- [`string...`]: *Bot status*
 **Examples:**
 
 ```xml
@@ -921,12 +872,10 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
-**Arguments:**
 
-[`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-
-[`string...`]: *Bot status*
-
+**Overload 0:**
+- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- [`string...`]: *Bot status*
 **Examples:**
 
 ```xml
@@ -945,10 +894,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
-**Arguments:**
 
-[`int...`]: *Bot status ID*
-
+**Overload 0:**
+- [`int...`]: *Bot status ID*
 **Examples:**
 
 ```xml
@@ -967,6 +915,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -985,16 +936,12 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `s`
 **Owner-only.**
 
+
 **Overload 1:**
-
-[`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-
-[`string...`]: *Bot status*
-
+- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- [`string...`]: *Bot status*
 **Overload 0:**
-
-[`int`]: *Bot status ID*
-
+- [`int`]: *Bot status ID*
 **Examples:**
 
 ```xml
@@ -1014,10 +961,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 `sr, setr, rotate`
 **Owner-only.**
 
-**Arguments:**
 
-(optional) [`boolean`]: *Enable?* (def: `True`)
-
+**Overload 0:**
+- (optional) [`boolean`]: *Enable?* (def: `True`)
 **Examples:**
 
 ```xml

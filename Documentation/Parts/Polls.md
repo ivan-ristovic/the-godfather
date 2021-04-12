@@ -11,22 +11,15 @@
 `polls`
 **Guild only.**
 
+
 **Overload 2:**
-
-[`time span`]: *Time for the poll to run*
-
-[`string...`]: *Poll question*
-
+- [`time span`]: *Time for the poll to run*
+- [`string...`]: *Poll question*
 **Overload 1:**
-
-[`string`]: *Poll question*
-
-[`time span`]: *Time for the poll to run*
-
+- [`string`]: *Poll question*
+- [`time span`]: *Time for the poll to run*
 **Overload 0:**
-
-[`string...`]: *Poll question*
-
+- [`string...`]: *Poll question*
 **Examples:**
 
 ```xml
@@ -47,6 +40,9 @@
 `end, cancel`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -65,22 +61,15 @@
 `reactionspolls, rpoll, rpolls, pollr, voter`
 **Guild only.**
 
+
 **Overload 2:**
-
-[`time span`]: *Time for the poll to run*
-
-[`string...`]: *Poll question*
-
+- [`time span`]: *Time for the poll to run*
+- [`string...`]: *Poll question*
 **Overload 1:**
-
-[`string`]: *Poll question*
-
-[`time span`]: *Time for the poll to run*
-
+- [`string`]: *Poll question*
+- [`time span`]: *Time for the poll to run*
 **Overload 0:**
-
-[`string...`]: *Poll question*
-
+- [`string...`]: *Poll question*
 **Examples:**
 
 ```xml
@@ -101,6 +90,9 @@
 `end, cancel`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -119,10 +111,9 @@
 `votefor, vf`
 **Guild only.**
 
-**Arguments:**
 
-[`int`]: *Option to vote for*
-
+**Overload 0:**
+- [`int`]: *Option to vote for*
 **Examples:**
 
 ```xml
@@ -141,6 +132,9 @@
 `c, reset`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml

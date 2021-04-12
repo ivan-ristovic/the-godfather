@@ -11,14 +11,11 @@
 `chickens, cock, hen, chick, coc, cc`
 **Guild only.**
 
-**Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 1:**
-
-[`string`]: *Chicken name*
-
+- (optional) [`member`]: *Member* (def: `None`)
+**Overload 1:**
+- [`string`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -39,14 +36,11 @@
 `gangattack`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`member`]: *Member*
-
+- [`member`]: *Member*
 **Overload 0:**
-
-[`string`]: *Chicken name*
-
+- [`string`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -66,6 +60,9 @@
 `h, halp, hlp, ha`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -84,6 +81,9 @@
 `+, compete, enter, j, <, <<`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -102,10 +102,9 @@
 `b, shop`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -124,10 +123,9 @@
 `a, extraterrestrial`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -146,10 +144,9 @@
 `d, def`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -168,6 +165,9 @@
 `ls, view`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -186,10 +186,9 @@
 `s, steroid, empowered`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -208,10 +207,9 @@
 `tr, train`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -230,10 +228,9 @@
 `wf, fed`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *Chicken name*
-
+**Overload 0:**
+- [`string...`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -252,14 +249,11 @@
 `f, duel, attack`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`member`]: *Member*
-
+- [`member`]: *Member*
 **Overload 0:**
-
-[`string`]: *Chicken name*
-
+- [`string`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -279,6 +273,9 @@
 `+hp, hp`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -297,14 +294,11 @@
 `information, stats`
 **Guild only.**
 
-**Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
 
 **Overload 1:**
-
-[`string`]: *Chicken name*
-
+- (optional) [`member`]: *Member* (def: `None`)
+**Overload 1:**
+- [`string`]: *Chicken name*
 **Examples:**
 
 ```xml
@@ -325,6 +319,9 @@
 `print, show, view, ls, l, p`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -343,10 +340,9 @@
 `rn, name`
 **Guild only.**
 
-**Arguments:**
 
-[`string...`]: *New name*
-
+**Overload 0:**
+- [`string...`]: *New name*
 **Examples:**
 
 ```xml
@@ -365,6 +361,9 @@
 `s`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -383,6 +382,9 @@
 `best, strongest`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -401,6 +403,9 @@
 `bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -419,6 +424,9 @@
 `tr, t, exercise`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -437,6 +445,9 @@
 `str, st, s`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -455,6 +466,9 @@
 `vit, vi, v`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -473,10 +487,11 @@
 `perks, upgrades, upg, u`
 **Guild only.**
 
+
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`int...`]: *Chicken upgrade ID(s) to buy*
-
+- [`int...`]: *Chicken upgrade ID(s) to buy*
 **Examples:**
 
 ```xml
@@ -495,6 +510,9 @@
 `print, show, view, ls, l, p`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -513,12 +531,10 @@
 `gangwar, battle`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`string`]: *Team 1 name* (def: `None`)
-
-(optional) [`string`]: *Team 2 name* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string`]: *Team 1 name* (def: `None`)
+- (optional) [`string`]: *Team 2 name* (def: `None`)
 **Examples:**
 
 ```xml
@@ -538,14 +554,11 @@
 `+, compete, enter, j, <, <<`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`int`]: *Team number to join*
-
+- [`int`]: *Team number to join*
 **Overload 0:**
-
-[`string...`]: *Team name to join*
-
+- [`string...`]: *Team name to join*
 **Examples:**
 
 ```xml

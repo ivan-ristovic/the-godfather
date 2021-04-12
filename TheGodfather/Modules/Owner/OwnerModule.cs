@@ -350,49 +350,53 @@ namespace TheGodfather.Modules.Owner
                     if (execChecks.Any(chk => chk is RequireOwnerAttribute))
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
-                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine().AppendLine();
+                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine();
 
                     if (perms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                        sb.Append('`').AppendJoin(", ", perms).Append('`').AppendLine().AppendLine();
+                        sb.Append('`').AppendJoin(", ", perms).Append('`').AppendLine();
                     }
                     if (uperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                        sb.Append('`').AppendJoin(", ", uperms).Append('`').AppendLine().AppendLine();
+                        sb.Append('`').AppendJoin(", ", uperms).Append('`').AppendLine();
                     }
                     if (bperms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                        sb.Append('`').AppendJoin(", ", bperms).Append('`').AppendLine().AppendLine();
+                        sb.Append('`').AppendJoin(", ", bperms).Append('`').AppendLine();
                     }
+                    sb.AppendLine();
 
                     foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
-                        if (!overload.Arguments.Any())
-                            continue;
+                        sb.AppendLine(Formatter.Bold($"Overload {overload.Priority}:"));
+                        if (overload.Arguments.Any()) {
+                            foreach (CommandArgument arg in overload.Arguments) {
+                                sb.Append("- ");
 
-                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority}:" : "Arguments:")).AppendLine();
-                        foreach (CommandArgument arg in overload.Arguments) {
-                            if (arg.IsOptional)
-                                sb.Append("(optional) ");
+                                if (arg.IsOptional)
+                                    sb.Append("(optional) ");
 
-                            sb.Append("[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
-                            if (arg.IsCatchAll)
-                                sb.Append("...");
-                            sb.Append("`]: *");
-                            if (string.IsNullOrWhiteSpace(arg.Description))
-                                sb.Append("No description provided.");
-                            else
-                                sb.Append(this.Localization.GetString(null, arg.Description));
-                            sb.Append('*');
-
-                            if (arg.IsOptional) {
-                                sb.Append(" (def: `");
-                                if (arg.DefaultValue is null)
-                                    sb.Append("None`)");
+                                sb.Append("[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
+                                if (arg.IsCatchAll)
+                                    sb.Append("...");
+                                sb.Append("`]: *");
+                                if (string.IsNullOrWhiteSpace(arg.Description))
+                                    sb.Append("No description provided.");
                                 else
-                                    sb.Append(arg.DefaultValue).Append("`)");
-                            }
+                                    sb.Append(this.Localization.GetString(null, arg.Description));
+                                sb.Append('*');
 
-                            sb.AppendLine().AppendLine();
+                                if (arg.IsOptional) {
+                                    sb.Append(" (def: `");
+                                    if (arg.DefaultValue is null)
+                                        sb.Append("None`)");
+                                    else
+                                        sb.Append(arg.DefaultValue).Append("`)");
+                                }
+
+                                sb.AppendLine();
+                            }
+                        } else {
+                            sb.AppendLine(Formatter.Italic("None"));
                         }
                     }
 

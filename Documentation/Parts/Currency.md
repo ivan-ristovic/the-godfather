@@ -11,10 +11,9 @@
 `$, $$, $$$`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`member`]: *Member* (def: `None`)
-
+**Overload 0:**
+- (optional) [`member`]: *Member* (def: `None`)
 **Examples:**
 
 ```xml
@@ -34,10 +33,9 @@
 `s, status, bal, money`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`member`]: *Member* (def: `None`)
-
+**Overload 0:**
+- (optional) [`member`]: *Member* (def: `None`)
 **Examples:**
 
 ```xml
@@ -57,10 +55,11 @@
 `setcurrency, curr`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`string`]: *New currency*
-
+- [`string`]: *New currency*
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -84,17 +83,11 @@
 
 
 **Overload 1:**
-
-[`member`]: *Member*
-
-[`long`]: *Amount*
-
+- [`member`]: *Member*
+- [`long`]: *Amount*
 **Overload 0:**
-
-[`long`]: *Amount*
-
-[`member`]: *Member*
-
+- [`long`]: *Amount*
+- [`member`]: *Member*
 **Examples:**
 
 ```xml
@@ -114,6 +107,9 @@
 `r, signup, activate`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -132,6 +128,9 @@
 `leaderboard, elite`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -150,6 +149,9 @@
 `globalleaderboard, globalelite, gtop, topg, globaltop`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -168,18 +170,13 @@
 `lend, tr`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`member`]: *Member*
-
-[`long`]: *Amount*
-
+- [`member`]: *Member*
+- [`long`]: *Amount*
 **Overload 0:**
-
-[`long`]: *Amount*
-
-[`member`]: *Member*
-
+- [`long`]: *Amount*
+- [`member`]: *Member*
 **Examples:**
 
 ```xml
@@ -202,12 +199,9 @@
 **Privileged users only.**
 
 
-**Arguments:**
-
-[`member`]: *Member*
-
-(optional) [`boolean`]: *Globally?* (def: `False`)
-
+**Overload 0:**
+- [`member`]: *Member*
+- (optional) [`boolean`]: *Globally?* (def: `False`)
 **Examples:**
 
 ```xml
@@ -225,6 +219,9 @@
 
 **Aliases:**
 `vegas, cs, cas`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -241,10 +238,9 @@
 
 **Aliases:**
 `bj`
-**Arguments:**
 
-(optional) [`int`]: *Bid amount* (def: `5`)
-
+**Overload 0:**
+- (optional) [`int`]: *Bid amount* (def: `5`)
 **Examples:**
 
 ```xml
@@ -261,10 +257,9 @@
 
 **Aliases:**
 `+, compete, enter, j, <<, <`
-**Arguments:**
 
-(optional) [`int`]: *Bid amount* (def: `5`)
-
+**Overload 0:**
+- (optional) [`int`]: *Bid amount* (def: `5`)
 **Examples:**
 
 ```xml
@@ -281,6 +276,9 @@
 
 **Aliases:**
 `help, h, ruling, rule, info`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -297,10 +295,9 @@
 
 **Aliases:**
 `poker, texasholdem, texas`
-**Arguments:**
 
-(optional) [`int`]: *Total balance for each user* (def: `1000`)
-
+**Overload 0:**
+- (optional) [`int`]: *Total balance for each user* (def: `1000`)
 **Examples:**
 
 ```xml
@@ -317,6 +314,9 @@
 
 **Aliases:**
 `+, compete, enter, j, <<, <`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -333,6 +333,9 @@
 
 **Aliases:**
 `help, h, ruling, rule`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -349,10 +352,9 @@
 
 **Aliases:**
 `lotto, bingo`
-**Arguments:**
 
-[`int...`]: *3 numbers*
-
+**Overload 0:**
+- [`int...`]: *3 numbers*
 **Examples:**
 
 ```xml
@@ -369,10 +371,9 @@
 
 **Aliases:**
 `+, compete, enter, j, <<, <`
-**Arguments:**
 
-[`int...`]: *3 numbers*
-
+**Overload 0:**
+- [`int...`]: *3 numbers*
 **Examples:**
 
 ```xml
@@ -389,6 +390,9 @@
 
 **Aliases:**
 `help, h, ruling, rule`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -405,14 +409,11 @@
 
 **Aliases:**
 `slotmachine`
+
 **Overload 1:**
-
-(optional) [`long`]: *Bid* (def: `5`)
-
+- (optional) [`long`]: *Bid* (def: `5`)
 **Overload 0:**
-
-[`string...`]: *Bid*
-
+- [`string...`]: *Bid*
 **Examples:**
 
 ```xml
@@ -429,14 +430,11 @@
 
 **Aliases:**
 `wof`
+
 **Overload 1:**
-
-(optional) [`long`]: *Bid* (def: `5`)
-
+- (optional) [`long`]: *Bid* (def: `5`)
 **Overload 0:**
-
-[`string...`]: *Bid*
-
+- [`string...`]: *Bid*
 **Examples:**
 
 ```xml
@@ -455,6 +453,7 @@
 `bet`
 **Guild only.**
 
+
 </p></details>
 
 ---
@@ -468,18 +467,13 @@
 `coin, flip`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`long`]: *Bid amount*
-
-[`string`]: *Heads/Tails*
-
+- [`long`]: *Bid amount*
+- [`string`]: *Heads/Tails*
 **Overload 0:**
-
-[`string`]: *Heads/Tails*
-
-(optional) [`long`]: *Bid amount* (def: `5`)
-
+- [`string`]: *Heads/Tails*
+- (optional) [`long`]: *Bid amount* (def: `5`)
 **Examples:**
 
 ```xml
@@ -499,12 +493,10 @@
 `roll, die`
 **Guild only.**
 
-**Arguments:**
 
-[`int`]: *Dice outcome (1-6)*
-
-(optional) [`long`]: *Bid amount* (def: `5`)
-
+**Overload 0:**
+- [`int`]: *Dice outcome (1-6)*
+- (optional) [`long`]: *Bid amount* (def: `5`)
 **Examples:**
 
 ```xml
@@ -523,6 +515,9 @@
 `store, mall`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -545,17 +540,11 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`long`]: *Item price*
-
-[`string...`]: *Item name*
-
+- [`long`]: *Item price*
+- [`string...`]: *Item name*
 **Overload 0:**
-
-[`string`]: *Item name*
-
-[`long`]: *Item price*
-
+- [`string`]: *Item name*
+- [`long`]: *Item price*
 **Examples:**
 
 ```xml
@@ -575,14 +564,11 @@
 `purchase, shutupandtakemymoney, b, p`
 **Guild only.**
 
-**Overload 1:**
-
-[`int...`]: *Item IDs*
 
 **Overload 1:**
-
-[`string`]: *Item name*
-
+- [`int...`]: *Item IDs*
+**Overload 1:**
+- [`string`]: *Item name*
 **Examples:**
 
 ```xml
@@ -605,10 +591,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`int...`]: *Item IDs to remove*
-
+**Overload 1:**
+- [`int...`]: *Item IDs to remove*
 **Examples:**
 
 ```xml
@@ -631,6 +615,8 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -649,6 +635,9 @@
 `print, show, view, ls, l, p`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -667,10 +656,9 @@
 `myitems, purchased, bought`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`member`]: *Member* (def: `None`)
-
+**Overload 0:**
+- (optional) [`member`]: *Member* (def: `None`)
 **Examples:**
 
 ```xml
@@ -690,10 +678,9 @@
 `return`
 **Guild only.**
 
-**Arguments:**
 
-[`int...`]: *Item IDs*
-
+**Overload 0:**
+- [`int...`]: *Item IDs*
 **Examples:**
 
 ```xml
@@ -712,6 +699,9 @@
 `job`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -728,6 +718,9 @@
 
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -746,6 +739,9 @@
 `prostitute`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml

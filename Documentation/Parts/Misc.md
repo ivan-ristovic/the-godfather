@@ -9,10 +9,9 @@
 
 **Aliases:**
 `8b`
-**Arguments:**
 
-[`string...`]: *A question for the Almighty 8Ball*
-
+**Overload 0:**
+- [`string...`]: *A question for the Almighty 8Ball*
 **Examples:**
 
 ```xml
@@ -35,29 +34,17 @@
 `Manage guild`
 
 **Overload 3:**
-
-[`user`]: *Birthday boy/girl*
-
+- [`user`]: *Birthday boy/girl*
 **Overload 2:**
-
-(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-
+- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 **Overload 1:**
-
-[`user`]: *Birthday boy/girl*
-
-[`channel`]: *Channel for birthday notifications*
-
-(optional) [`string`]: *Birthday date* (def: `None`)
-
+- [`user`]: *Birthday boy/girl*
+- [`channel`]: *Channel for birthday notifications*
+- (optional) [`string`]: *Birthday date* (def: `None`)
 **Overload 0:**
-
-[`user`]: *Birthday boy/girl*
-
-[`string`]: *Birthday date*
-
-(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-
+- [`user`]: *Birthday boy/girl*
+- [`string`]: *Birthday date*
+- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 **Examples:**
 
 ```xml
@@ -82,21 +69,13 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`user`]: *Birthday boy/girl*
-
-(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-
-(optional) [`string`]: *Birthday date* (def: `None`)
-
+- [`user`]: *Birthday boy/girl*
+- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+- (optional) [`string`]: *Birthday date* (def: `None`)
 **Overload 0:**
-
-[`user`]: *Birthday boy/girl*
-
-[`string`]: *Birthday date*
-
-(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-
+- [`user`]: *Birthday boy/girl*
+- [`string`]: *Birthday date*
+- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 **Examples:**
 
 ```xml
@@ -121,13 +100,9 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`user`]: *Birthday boy/girl*
-
+- [`user`]: *Birthday boy/girl*
 **Overload 0:**
-
-[`channel`]: *Channel for birthday notifications*
-
+- [`channel`]: *Channel for birthday notifications*
 **Examples:**
 
 ```xml
@@ -150,6 +125,8 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -172,13 +149,9 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`user`]: *Birthday boy/girl*
-
+- [`user`]: *Birthday boy/girl*
 **Overload 0:**
-
-(optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-
+- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 **Examples:**
 
 ```xml
@@ -201,6 +174,8 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -217,10 +192,9 @@
 
 **Aliases:**
 `coin, flip`
-**Arguments:**
 
-(optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
-
+**Overload 0:**
+- (optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
 **Examples:**
 
 ```xml
@@ -238,10 +212,9 @@
 
 **Aliases:**
 `die, roll`
-**Arguments:**
 
-(optional) [`int`]: *How many sides will the dice have?* (def: `6`)
-
+**Overload 0:**
+- (optional) [`int`]: *How many sides will the dice have?* (def: `6`)
 **Examples:**
 
 ```xml
@@ -261,10 +234,9 @@
 `give`
 **Guild only.**
 
-**Arguments:**
 
-[`role...`]: *Roles to add*
-
+**Overload 0:**
+- [`role...`]: *Roles to add*
 **Examples:**
 
 ```xml
@@ -287,10 +259,8 @@
 **Requires bot permissions:**
 `Manage nicknames`
 
-**Arguments:**
-
-[`string...`]: *New name*
-
+**Overload 0:**
+- [`string...`]: *New name*
 **Examples:**
 
 ```xml
@@ -312,10 +282,8 @@
 **Requires bot permissions:**
 `Manage roles`
 
-**Arguments:**
-
-[`role...`]: *Roles to add*
-
+**Overload 0:**
+- [`role...`]: *Roles to add*
 **Examples:**
 
 ```xml
@@ -332,14 +300,13 @@
 
 **Aliases:**
 `h, ?, ??, ???, man`
+
+**Overload 2:**
+*None*
 **Overload 1:**
-
-[`ModuleType`]: *Command module*
-
+- [`ModuleType`]: *Command module*
 **Overload 0:**
-
-[`string...`]: *Command name*
-
+- [`string...`]: *Command name*
 **Examples:**
 
 ```xml
@@ -358,14 +325,11 @@
 
 **Aliases:**
 `burn, ins, roast`
+
 **Overload 1:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Overload 0:**
-
-[`string...`]: *Insult target*
-
+- [`string...`]: *Insult target*
 **Examples:**
 
 ```xml
@@ -383,10 +347,9 @@
 
 **Aliases:**
 `getinvite, inv`
-**Arguments:**
 
-(optional) [`time span`]: *Invite expiry time* (def: `None`)
-
+**Overload 0:**
+- (optional) [`time span`]: *Invite expiry time* (def: `None`)
 **Examples:**
 
 ```xml
@@ -405,6 +368,8 @@
 **Requires permissions:**
 `Administrator`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -421,10 +386,9 @@
 
 **Aliases:**
 `l33t, 1337`
-**Arguments:**
 
-[`string...`]: *Text to repeat*
-
+**Overload 0:**
+- [`string...`]: *Text to repeat*
 **Examples:**
 
 ```xml
@@ -439,12 +403,10 @@
 
 *Prints a customizable GNU/Linux interjection.*
 
-**Arguments:**
 
-(optional) [`string`]: *Replacement string* (def: `None`)
-
-(optional) [`string`]: *Replacement string* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string`]: *Replacement string* (def: `None`)
+- (optional) [`string`]: *Replacement string* (def: `None`)
 **Examples:**
 
 ```xml
@@ -464,10 +426,11 @@
 `memes, mm`
 **Guild only.**
 
+
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`string...`]: *Meme name*
-
+- [`string...`]: *Meme name*
 **Examples:**
 
 ```xml
@@ -491,17 +454,11 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`string`]: *Meme name*
-
-(optional) [`URL`]: *Meme URL* (def: `None`)
-
+- [`string`]: *Meme name*
+- (optional) [`URL`]: *Meme URL* (def: `None`)
 **Overload 0:**
-
-[`URL`]: *Meme URL*
-
-[`string...`]: *Meme name*
-
+- [`URL`]: *Meme URL*
+- [`string...`]: *Meme name*
 **Examples:**
 
 ```xml
@@ -524,14 +481,10 @@
 **Requires permissions:**
 `Use embeds`
 
-**Arguments:**
-
-[`string`]: *Meme template*
-
-[`string`]: *Top text*
-
-[`string`]: *Bottom text*
-
+**Overload 0:**
+- [`string`]: *Meme template*
+- [`string`]: *Top text*
+- [`string`]: *Bottom text*
 **Examples:**
 
 ```xml
@@ -553,10 +506,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string...`]: *Meme name*
-
+**Overload 0:**
+- [`string...`]: *Meme name*
 **Examples:**
 
 ```xml
@@ -578,6 +529,8 @@
 **Requires user permissions:**
 `Administrator`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -596,6 +549,9 @@
 `print, show, view, ls, l, p`
 **Guild only.**
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -614,10 +570,9 @@
 `template, ts, t`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`string...`]: *Meme template* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string...`]: *Meme template* (def: `None`)
 **Examples:**
 
 ```xml
@@ -635,14 +590,11 @@
 
 **Aliases:**
 `size, length, manhood, dick, dicksize`
+
 **Overload 1:**
-
-[`member...`]: *Member(s)*
-
+- [`member...`]: *Member(s)*
 **Overload 0:**
-
-[`user...`]: *User(s)*
-
+- [`user...`]: *User(s)*
 **Examples:**
 
 ```xml
@@ -663,14 +615,11 @@
 `sizebros, lengthbros, manhoodbros, dickbros, cockbros`
 **Guild only.**
 
+
 **Overload 1:**
-
-[`member`]: *Member*
-
+- [`member`]: *Member*
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -686,6 +635,9 @@
 
 *Pings the bot.*
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -707,10 +659,8 @@
 **Requires permissions:**
 `Administrator`
 
-**Arguments:**
-
-(optional) [`string`]: *New command prefix* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string`]: *New command prefix* (def: `None`)
 **Examples:**
 
 ```xml
@@ -728,6 +678,7 @@
 
 **Aliases:**
 `rnd, rand`
+
 </p></details>
 
 ---
@@ -739,10 +690,9 @@
 
 **Aliases:**
 `select, choose`
-**Arguments:**
 
-[`string...`]: *Choice list (separated by comma)*
-
+**Overload 0:**
+- [`string...`]: *Choice list (separated by comma)*
 **Examples:**
 
 ```xml
@@ -759,10 +709,9 @@
 
 **Aliases:**
 `chooseuser`
-**Arguments:**
 
-(optional) [`role`]: *Role* (def: `None`)
-
+**Overload 0:**
+- (optional) [`role`]: *Role* (def: `None`)
 **Examples:**
 
 ```xml
@@ -780,14 +729,11 @@
 
 **Aliases:**
 `ranks, ranking, level, xp`
+
 **Overload 1:**
-
-(optional) [`member`]: *Member* (def: `None`)
-
+- (optional) [`member`]: *Member* (def: `None`)
 **Overload 0:**
-
-(optional) [`user`]: *User* (def: `None`)
-
+- (optional) [`user`]: *User* (def: `None`)
 **Examples:**
 
 ```xml
@@ -808,12 +754,9 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`short`]: *Rank*
-
-[`string...`]: *Rank name*
-
+**Overload 0:**
+- [`short`]: *Rank*
+- [`string...`]: *Rank name*
 **Examples:**
 
 ```xml
@@ -833,10 +776,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`short`]: *Rank*
-
+**Overload 0:**
+- [`short`]: *Rank*
 **Examples:**
 
 ```xml
@@ -853,6 +794,9 @@
 
 **Aliases:**
 `print, show, view, ls, l, p`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -867,6 +811,9 @@
 
 *Prints guild rank leaderboard*
 
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -883,6 +830,9 @@
 
 **Aliases:**
 `bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -903,13 +853,9 @@
 `Attach files`
 
 **Overload 1:**
-
-[`member...`]: *Member(s)*
-
+- [`member...`]: *Member(s)*
 **Overload 0:**
-
-[`user...`]: *User(s)*
-
+- [`user...`]: *User(s)*
 **Examples:**
 
 ```xml
@@ -926,10 +872,9 @@
 
 *Report an issue with the bot.*
 
-**Arguments:**
 
-[`string...`]: *Issue to report*
-
+**Overload 0:**
+- [`string...`]: *Issue to report*
 **Examples:**
 
 ```xml
@@ -948,10 +893,9 @@
 `take`
 **Guild only.**
 
-**Arguments:**
 
-[`role...`]: *Roles to remove*
-
+**Overload 0:**
+- [`role...`]: *Roles to remove*
 **Examples:**
 
 ```xml
@@ -973,10 +917,8 @@
 **Requires bot permissions:**
 `Manage roles`
 
-**Arguments:**
-
-[`role...`]: *Roles to remove*
-
+**Overload 0:**
+- [`role...`]: *Roles to remove*
 **Examples:**
 
 ```xml
@@ -993,10 +935,9 @@
 
 **Aliases:**
 `repeat, echo`
-**Arguments:**
 
-[`string...`]: *Text to repeat*
-
+**Overload 0:**
+- [`string...`]: *Text to repeat*
 **Examples:**
 
 ```xml
@@ -1015,10 +956,9 @@
 `sim`
 **Guild only.**
 
-**Arguments:**
 
-(optional) [`member`]: *Member* (def: `None`)
-
+**Overload 0:**
+- (optional) [`member`]: *Member* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1042,25 +982,17 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`boolean`]: *Enable?*
-
-[`emoji`]: *Emoji*
-
-[`channel`]: *Channel*
-
-(optional) [`int`]: *Sensitivity* (def: `None`)
-
+- [`boolean`]: *Enable?*
+- [`emoji`]: *Emoji*
+- [`channel`]: *Channel*
+- (optional) [`int`]: *Sensitivity* (def: `None`)
 **Overload 1:**
-
-[`boolean`]: *Enable?*
-
-[`channel`]: *Emoji*
-
-(optional) [`emoji`]: *Channel* (def: `None`)
-
-(optional) [`int`]: *Sensitivity* (def: `None`)
-
+- [`boolean`]: *Enable?*
+- [`channel`]: *Emoji*
+- (optional) [`emoji`]: *Channel* (def: `None`)
+- (optional) [`int`]: *Sensitivity* (def: `None`)
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -1085,10 +1017,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`channel`]: *Channel*
-
+**Overload 0:**
+- [`channel`]: *Channel*
 **Examples:**
 
 ```xml
@@ -1110,10 +1040,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-(optional) [`int`]: *Sensitivity* (def: `None`)
-
+**Overload 0:**
+- (optional) [`int`]: *Sensitivity* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1131,10 +1059,9 @@
 
 **Aliases:**
 `t`
-**Arguments:**
 
-(optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1153,10 +1080,8 @@
 **Requires permissions:**
 `Send TTS messages`
 
-**Arguments:**
-
-[`string...`]: *Text to repeat*
-
+**Overload 0:**
+- [`string...`]: *Text to repeat*
 **Examples:**
 
 ```xml
@@ -1173,10 +1098,9 @@
 
 **Aliases:**
 `unl33t`
-**Arguments:**
 
-[`string...`]: *Text to repeat*
-
+**Overload 0:**
+- [`string...`]: *Text to repeat*
 **Examples:**
 
 ```xml

@@ -9,6 +9,9 @@
 
 **Aliases:**
 `kitty, kitten`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -21,18 +24,40 @@
 ## Group: cryptocurrency
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Prints cryptocurrency information (using CoinMarketCap API).*
+*Prints information about the given currency (using CoinMarketCap API).*
 
 **Aliases:**
 `crypto`
-**Arguments:**
 
-[`string...`]: *Currency name*
-
+**Overload 1:**
+*None*
+**Overload 0:**
+- [`string...`]: *Currency name*
 **Examples:**
 
 ```xml
+!cryptocurrency
 !cryptocurrency Bitcoin
+```
+</p></details>
+
+---
+
+### cryptocurrency list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prints cryptocurrency information for most popular cryptocurrencies (using CoinMarketCap API).*
+
+**Aliases:**
+`print, show, view, ls, l, p`
+
+**Overload 0:**
+- (optional) [`int`]: *Index from which to list* (def: `0`)
+**Examples:**
+
+```xml
+!cryptocurrency list
+!cryptocurrency list 10
 ```
 </p></details>
 
@@ -45,6 +70,9 @@
 
 **Aliases:**
 `doge, puppy, pup`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -61,10 +89,9 @@
 
 **Aliases:**
 `giphy`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -81,6 +108,9 @@
 
 **Aliases:**
 `r, rand, rnd, rng`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -97,10 +127,9 @@
 
 **Aliases:**
 `t, tr, trend`
-**Arguments:**
 
-(optional) [`int`]: *Number of results* (def: `5`)
-
+**Overload 0:**
+- (optional) [`int`]: *Number of results* (def: `5`)
 **Examples:**
 
 ```xml
@@ -118,10 +147,9 @@
 
 **Aliases:**
 `gr`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -139,10 +167,9 @@
 
 **Aliases:**
 `books, b`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -160,10 +187,9 @@
 
 **Aliases:**
 `movies, series, serie, movie, film, cinema, omdb`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -178,10 +204,9 @@
 
 *Searches the database using the provided query as ID.*
 
-**Arguments:**
 
-[`string`]: *ID*
-
+**Overload 0:**
+- [`string`]: *ID*
 **Examples:**
 
 ```xml
@@ -198,10 +223,9 @@
 
 **Aliases:**
 `s, find`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -218,10 +242,9 @@
 
 **Aliases:**
 `t, name, n`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -238,18 +261,13 @@
 
 **Aliases:**
 `img, im, i`
+
 **Overload 1:**
-
-[`int`]: *Number of results*
-
-[`string...`]: *Subreddit*
-
+- [`int`]: *Number of results*
+- [`string...`]: *Subreddit*
 **Overload 0:**
-
-[`string`]: *Subreddit*
-
-(optional) [`int`]: *Number of results* (def: `1`)
-
+- [`string`]: *Subreddit*
+- (optional) [`int`]: *Number of results* (def: `1`)
 **Examples:**
 
 ```xml
@@ -267,18 +285,13 @@
 
 **Aliases:**
 `l, new, newest`
+
 **Overload 1:**
-
-[`int`]: *Number of results*
-
-[`string...`]: *Subreddit*
-
+- [`int`]: *Number of results*
+- [`string...`]: *Subreddit*
 **Overload 0:**
-
-[`string`]: *Subreddit*
-
-[`int`]: *Number of results*
-
+- [`string`]: *Subreddit*
+- [`int`]: *Number of results*
 **Examples:**
 
 ```xml
@@ -296,36 +309,22 @@
 
 **Aliases:**
 `t`
+
 **Overload 3:**
-
-[`TimeWindow`]: *Time window (day/month/week/year/all)*
-
-[`int`]: *Number of results*
-
-[`string...`]: *Subreddit*
-
+- [`TimeWindow`]: *Time window (day/month/week/year/all)*
+- [`int`]: *Number of results*
+- [`string...`]: *Subreddit*
 **Overload 2:**
-
-[`TimeWindow`]: *Time window (day/month/week/year/all)*
-
-[`string`]: *Subreddit*
-
-(optional) [`int`]: *Number of results* (def: `1`)
-
+- [`TimeWindow`]: *Time window (day/month/week/year/all)*
+- [`string`]: *Subreddit*
+- (optional) [`int`]: *Number of results* (def: `1`)
 **Overload 1:**
-
-[`int`]: *Number of results*
-
-[`TimeWindow`]: *Time window (day/month/week/year/all)*
-
-[`string...`]: *Subreddit*
-
+- [`int`]: *Number of results*
+- [`TimeWindow`]: *Time window (day/month/week/year/all)*
+- [`string...`]: *Subreddit*
 **Overload 0:**
-
-[`int`]: *Number of results*
-
-[`string...`]: *Subreddit*
-
+- [`int`]: *Number of results*
+- [`string...`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -344,10 +343,9 @@
 
 **Aliases:**
 `ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
-**Arguments:**
 
-[`IPAddress`]: *IP address*
-
+**Overload 0:**
+- [`IPAddress`]: *IP address*
 **Examples:**
 
 ```xml
@@ -364,6 +362,9 @@
 
 **Aliases:**
 `jokes, j`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -380,10 +381,9 @@
 
 **Aliases:**
 `s`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -400,6 +400,9 @@
 
 **Aliases:**
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -416,10 +419,9 @@
 
 **Aliases:**
 `worldnews`
-**Arguments:**
 
-(optional) [`string`]: *Topic* (def: `world`)
-
+**Overload 0:**
+- (optional) [`string`]: *Topic* (def: `world`)
 **Examples:**
 
 ```xml
@@ -436,10 +438,9 @@
 
 **Aliases:**
 `qotd, qod, quote, q`
-**Arguments:**
 
-(optional) [`string`]: *Topic* (def: `None`)
-
+**Overload 0:**
+- (optional) [`string`]: *Topic* (def: `None`)
 **Examples:**
 
 ```xml
@@ -456,10 +457,9 @@
 
 **Aliases:**
 `r`
-**Arguments:**
 
-(optional) [`string`]: *Subreddit* (def: `all`)
-
+**Overload 0:**
+- (optional) [`string`]: *Subreddit* (def: `all`)
 **Examples:**
 
 ```xml
@@ -477,10 +477,9 @@
 
 **Aliases:**
 `c`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -497,10 +496,9 @@
 
 **Aliases:**
 `g`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -517,10 +515,9 @@
 
 **Aliases:**
 `h`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -537,10 +534,9 @@
 
 **Aliases:**
 `n, newest, latest`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -557,10 +553,9 @@
 
 **Aliases:**
 `r`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -582,12 +577,9 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`channel`]: *Channel*
-
-[`string`]: *Subreddit*
-
+**Overload 1:**
+- [`channel`]: *Channel*
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -605,10 +597,9 @@
 
 **Aliases:**
 `t`
-**Arguments:**
 
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -630,10 +621,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string`]: *Subreddit*
-
+**Overload 0:**
+- [`string`]: *Subreddit*
 **Examples:**
 
 ```xml
@@ -650,10 +639,9 @@
 
 **Aliases:**
 `feed`
-**Arguments:**
 
-[`URL`]: *RSS feed URL*
-
+**Overload 0:**
+- [`URL`]: *RSS feed URL*
 **Examples:**
 
 ```xml
@@ -670,14 +658,11 @@
 
 **Aliases:**
 `s, st`
+
 **Overload 1:**
-
-[`unsigned long`]: *ID*
-
+- [`unsigned long`]: *ID*
 **Overload 0:**
-
-[`string...`]: *Username*
-
+- [`string...`]: *Username*
 **Examples:**
 
 ```xml
@@ -695,14 +680,11 @@
 
 **Aliases:**
 `g, gm, store`
+
 **Overload 1:**
-
-[`unsigned int`]: *ID*
-
+- [`unsigned int`]: *ID*
 **Overload 0:**
-
-[`string...`]: *Game name*
-
+- [`string...`]: *Game name*
 **Examples:**
 
 ```xml
@@ -720,14 +702,11 @@
 
 **Aliases:**
 `id, user, info`
+
 **Overload 1:**
-
-[`unsigned long`]: *ID*
-
+- [`unsigned long`]: *ID*
 **Overload 0:**
-
-[`string...`]: *Username*
-
+- [`string...`]: *Username*
 **Examples:**
 
 ```xml
@@ -745,10 +724,9 @@
 
 **Aliases:**
 `stickers`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -765,6 +743,9 @@
 
 **Aliases:**
 `r, rand, rnd, rng`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -781,10 +762,9 @@
 
 **Aliases:**
 `t, tr, trend`
-**Arguments:**
 
-(optional) [`int`]: *Number of results* (def: `5`)
-
+**Overload 0:**
+- (optional) [`int`]: *Number of results* (def: `5`)
 **Examples:**
 
 ```xml
@@ -802,10 +782,9 @@
 
 **Aliases:**
 `ud, urban, urbandictionary`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -822,10 +801,9 @@
 
 **Aliases:**
 `w`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -842,16 +820,12 @@
 
 **Aliases:**
 `f`
+
 **Overload 1:**
-
-[`int`]: *Amount of days*
-
-[`string...`]: *Query*
-
+- [`int`]: *Amount of days*
+- [`string...`]: *Query*
 **Overload 0:**
-
-[`string...`]: *Query*
-
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -868,10 +842,9 @@
 
 **Aliases:**
 `wiki`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -888,10 +861,9 @@
 
 **Aliases:**
 `s, find`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -908,10 +880,11 @@
 
 **Aliases:**
 `x`
+
 **Overload 1:**
-
-[`int`]: *ID*
-
+- [`int`]: *ID*
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -926,10 +899,9 @@
 
 *Returns a xkcd comic with given ID.*
 
-**Arguments:**
 
-(optional) [`int`]: *ID* (def: `None`)
-
+**Overload 0:**
+- (optional) [`int`]: *ID* (def: `None`)
 **Examples:**
 
 ```xml
@@ -946,6 +918,9 @@
 
 **Aliases:**
 `fresh, newest, l`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -962,6 +937,9 @@
 
 **Aliases:**
 `rnd, r, rand`
+
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -978,10 +956,9 @@
 
 **Aliases:**
 `y, yt, ytube`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -998,12 +975,10 @@
 
 **Aliases:**
 `s`
-**Arguments:**
 
-[`int`]: *Amount of results to fetch*
-
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`int`]: *Amount of results to fetch*
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -1020,10 +995,9 @@
 
 **Aliases:**
 `searchchannels, sc, searchc, channel`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -1040,10 +1014,9 @@
 
 **Aliases:**
 `searchplaylists, sp, searchp, playlist`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -1060,10 +1033,9 @@
 
 **Aliases:**
 `searchvideos, sv, searchv, video`
-**Arguments:**
 
-[`string...`]: *Query*
-
+**Overload 0:**
+- [`string...`]: *Query*
 **Examples:**
 
 ```xml
@@ -1084,49 +1056,27 @@
 `Manage guild`
 
 **Overload 5:**
-
-[`channel`]: *Channel for updates*
-
-[`URL`]: *YouTube channel/video URL*
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`channel`]: *Channel for updates*
+- [`URL`]: *YouTube channel/video URL*
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Overload 4:**
-
-[`URL`]: *YouTube channel/video URL*
-
-[`channel`]: *Channel for updates*
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`URL`]: *YouTube channel/video URL*
+- [`channel`]: *Channel for updates*
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Overload 3:**
-
-[`string`]: *YouTube username or channel ID*
-
-(optional) [`channel`]: *Channel for updates* (def: `None`)
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`string`]: *YouTube username or channel ID*
+- (optional) [`channel`]: *Channel for updates* (def: `None`)
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Overload 2:**
-
-[`channel`]: *Channel for updates*
-
-[`string`]: *YouTube username or channel ID*
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`channel`]: *Channel for updates*
+- [`string`]: *YouTube username or channel ID*
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Overload 1:**
-
-[`string`]: *YouTube username or channel ID*
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`string`]: *YouTube username or channel ID*
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Overload 0:**
-
-[`URL`]: *YouTube username or channel ID*
-
-(optional) [`string...`]: *Friendly name* (def: `None`)
-
+- [`URL`]: *YouTube username or channel ID*
+- (optional) [`string...`]: *Friendly name* (def: `None`)
 **Examples:**
 
 ```xml
@@ -1148,10 +1098,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string`]: *YouTube channel URL or friendly name*
-
+**Overload 0:**
+- [`string`]: *YouTube channel URL or friendly name*
 **Examples:**
 
 ```xml

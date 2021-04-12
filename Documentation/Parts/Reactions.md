@@ -15,18 +15,14 @@
 **Requires permissions:**
 `Manage guild`
 
+**Overload 2:**
+*None*
 **Overload 1:**
-
-[`emoji`]: *Emoji*
-
-[`string...`]: *Reaction triggers*
-
+- [`emoji`]: *Emoji*
+- [`string...`]: *Reaction triggers*
 **Overload 0:**
-
-[`string`]: *Reaction triggers*
-
-[`emoji`]: *Emoji*
-
+- [`string`]: *Reaction triggers*
+- [`emoji`]: *Emoji*
 **Examples:**
 
 ```xml
@@ -51,17 +47,11 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`emoji`]: *Emoji*
-
-[`string...`]: *Reaction triggers*
-
+- [`emoji`]: *Emoji*
+- [`string...`]: *Reaction triggers*
 **Overload 0:**
-
-[`string`]: *Reaction triggers*
-
-[`emoji`]: *Emoji*
-
+- [`string`]: *Reaction triggers*
+- [`emoji`]: *Emoji*
 **Examples:**
 
 ```xml
@@ -85,17 +75,11 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`emoji`]: *Emoji*
-
-[`string...`]: *Reaction triggers*
-
+- [`emoji`]: *Emoji*
+- [`string...`]: *Reaction triggers*
 **Overload 0:**
-
-[`string`]: *Reaction triggers*
-
-[`emoji`]: *Emoji*
-
+- [`string`]: *Reaction triggers*
+- [`emoji`]: *Emoji*
 **Examples:**
 
 ```xml
@@ -119,17 +103,11 @@
 `Manage guild`
 
 **Overload 2:**
-
-[`emoji`]: *Emoji*
-
+- [`emoji`]: *Emoji*
 **Overload 1:**
-
-[`int...`]: *Reaction IDs to remove*
-
+- [`int...`]: *Reaction IDs to remove*
 **Overload 0:**
-
-[`string...`]: *Reaction triggers*
-
+- [`string...`]: *Reaction triggers*
 **Examples:**
 
 ```xml
@@ -152,10 +130,11 @@
 
 **Requires permissions:**
 `Manage guild`
-
 **Requires user permissions:**
 `Administrator`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -177,10 +156,8 @@
 **Requires permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string...`]: *Reaction trigger*
-
+**Overload 0:**
+- [`string...`]: *Reaction trigger*
 **Examples:**
 
 ```xml
@@ -202,6 +179,8 @@
 **Requires permissions:**
 `Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -224,12 +203,11 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Overload 1:**
+*None*
 **Overload 0:**
-
-[`string`]: *Reaction trigger*
-
-[`string...`]: *Response*
-
+- [`string`]: *Reaction trigger*
+- [`string...`]: *Response*
 **Examples:**
 
 ```xml
@@ -252,12 +230,9 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string`]: *Reaction trigger*
-
-[`string...`]: *Response*
-
+**Overload 0:**
+- [`string`]: *Reaction trigger*
+- [`string...`]: *Response*
 **Examples:**
 
 ```xml
@@ -279,12 +254,9 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string`]: *Reaction trigger*
-
-[`string...`]: *Response*
-
+**Overload 0:**
+- [`string`]: *Reaction trigger*
+- [`string...`]: *Response*
 **Examples:**
 
 ```xml
@@ -307,13 +279,9 @@
 `Manage guild`
 
 **Overload 1:**
-
-[`int...`]: *Reaction IDs to remove*
-
+- [`int...`]: *Reaction IDs to remove*
 **Overload 0:**
-
-[`string...`]: *Reaction triggers*
-
+- [`string...`]: *Reaction triggers*
 **Examples:**
 
 ```xml
@@ -336,6 +304,8 @@
 **Requires user permissions:**
 `Administrator, Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
@@ -357,10 +327,8 @@
 **Requires user permissions:**
 `Manage guild`
 
-**Arguments:**
-
-[`string...`]: *Reaction trigger*
-
+**Overload 0:**
+- [`string...`]: *Reaction trigger*
 **Examples:**
 
 ```xml
@@ -382,6 +350,8 @@
 **Requires user permissions:**
 `Manage guild`
 
+**Overload 0:**
+*None*
 **Examples:**
 
 ```xml
