@@ -7,6 +7,7 @@
 
 *Retrieves a random cat image.*
 
+
 **Aliases:**
 `kitty, kitten`
 
@@ -27,6 +28,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Prints information about the given currency (using CoinMarketCap API).*
+
 
 **Aliases:**
 `crypto`
@@ -53,6 +55,7 @@
 
 *Prints cryptocurrency information for most popular cryptocurrencies (using CoinMarketCap API).*
 
+
 **Aliases:**
 `print, show, view, ls, l, p`
 
@@ -73,6 +76,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves a random dog image.*
+
 
 **Aliases:**
 `doge, puppy, pup`
@@ -95,6 +99,7 @@
 
 *GIPHY search commands. Group call searches GIPHY with given query and prints first result.*
 
+
 **Aliases:**
 `giphy`
 
@@ -114,6 +119,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Prints a random GIF.*
+
 
 **Aliases:**
 `r, rand, rnd, rng`
@@ -136,6 +142,7 @@
 
 *Prints a given amount of trending GIFs.*
 
+
 **Aliases:**
 `t, tr, trend`
 
@@ -156,6 +163,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Goodreads search commands. Group call searches books by title, author or ISBN.*
+
 
 **Aliases:**
 `gr`
@@ -178,6 +186,7 @@
 
 *Search Goodreads books by title, author or ISBN.*
 
+
 **Aliases:**
 `books, b`
 
@@ -198,6 +207,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Open Movie Database (IMDB) search commands. Group call searches the database using the provided query as title or ID.*
+
 
 **Aliases:**
 `movies, series, serie, movie, film, cinema, omdb`
@@ -237,6 +247,7 @@
 
 *Searches the database using the provided query as title or ID.*
 
+
 **Aliases:**
 `s, find`
 
@@ -257,6 +268,7 @@
 
 *Searches the database using the provided query as a title.*
 
+
 **Aliases:**
 `t, name, n`
 
@@ -276,6 +288,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Imgur search commands. Group call retrieves top ranked images from given subreddit for this day.*
+
 
 **Aliases:**
 `img, im, i`
@@ -303,6 +316,7 @@
 
 *Retrieves latest images from the given subreddit.*
 
+
 **Aliases:**
 `l, new, newest`
 
@@ -328,6 +342,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves top rated images from the given subreddit in the given timespan.*
+
 
 **Aliases:**
 `t`
@@ -367,6 +382,7 @@
 
 *Retrieves geolocation data for given IP.*
 
+
 **Aliases:**
 `ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
 
@@ -386,6 +402,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Joke searching commands. Group call returns a random joke.*
+
 
 **Aliases:**
 `jokes, j`
@@ -408,6 +425,7 @@
 
 *Searches for the joke containing the given query.*
 
+
 **Aliases:**
 `s`
 
@@ -427,6 +445,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Yo mama so...*
+
 
 **Aliases:**
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
@@ -449,6 +468,7 @@
 
 *Retrieves latest world news.*
 
+
 **Aliases:**
 `worldnews`
 
@@ -469,6 +489,7 @@
 
 *Retrieves the quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
 
+
 **Aliases:**
 `qotd, qod, quote, q`
 
@@ -488,6 +509,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Reddit search commands. Group call retrieves hottest posts from given sub.*
+
 
 **Aliases:**
 `r`
@@ -510,6 +532,7 @@
 
 *Retrieves controversial posts from given sub.*
 
+
 **Aliases:**
 `c`
 
@@ -529,6 +552,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves gilded posts from given sub.*
+
 
 **Aliases:**
 `g`
@@ -550,6 +574,7 @@
 
 *Retrieves hot posts from given sub.*
 
+
 **Aliases:**
 `h`
 
@@ -569,6 +594,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves newest posts from given sub.*
+
 
 **Aliases:**
 `n, newest, latest`
@@ -590,6 +616,7 @@
 
 *Retrieves rising posts from given sub.*
 
+
 **Aliases:**
 `r`
 
@@ -610,12 +637,13 @@
 
 *Subscribes to a given subreddit.*
 
-**Aliases:**
-`sub, follow`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`sub, follow`
 
 **Overload 1:**
 - \[`channel`\]: *Channel*
@@ -635,6 +663,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves top posts from given sub.*
+
 
 **Aliases:**
 `t`
@@ -656,12 +685,13 @@
 
 *Removes a subscription for given subreddit.*
 
-**Aliases:**
-`unfollow, unsub`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`unfollow, unsub`
 
 **Overload 0:**
 - \[`string`\]: *Subreddit*
@@ -679,6 +709,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Retrieves latest topics from given RSS feed URL.*
+
 
 **Aliases:**
 `feed`
@@ -699,6 +730,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Steam community commands. Group call searches Steam community profiles by ID or username (vanity URL).*
+
 
 **Aliases:**
 `s, st`
@@ -724,6 +756,7 @@
 
 *Searches Steam store by game ID or name.*
 
+
 **Aliases:**
 `g, gm, store`
 
@@ -747,6 +780,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Searches Steam community profiles by ID or username (vanity URL).*
+
 
 **Aliases:**
 `id, user, info`
@@ -772,6 +806,7 @@
 
 *GIPHY sticker search commands. Group call searches GIPHY with given query and prints first stricker result.*
 
+
 **Aliases:**
 `stickers`
 
@@ -791,6 +826,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Prints a random sticker.*
+
 
 **Aliases:**
 `r, rand, rnd, rng`
@@ -813,6 +849,7 @@
 
 *Prints a given amount of trending stickers.*
 
+
 **Aliases:**
 `t, tr, trend`
 
@@ -834,6 +871,7 @@
 
 *Urban Dictionary commands. Group call searches Urban Dictionary for a given query.*
 
+
 **Aliases:**
 `ud, urban, urbandictionary`
 
@@ -854,6 +892,7 @@
 
 *Weather search commands. Group call returns weather information for given query.*
 
+
 **Aliases:**
 `w`
 
@@ -873,6 +912,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Returns weather forecast for the given city and amount of days in advance.*
+
 
 **Aliases:**
 `f`
@@ -898,6 +938,7 @@
 
 *Wikipedia search commands. Group call searches Wikipedia with given query.*
 
+
 **Aliases:**
 `wiki`
 
@@ -918,6 +959,7 @@
 
 *Searches Wikipedia with given query.*
 
+
 **Aliases:**
 `s, find`
 
@@ -937,6 +979,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *xkcd search commands. Group call returns a random comic or, if an ID is provided, a comic with given ID.*
+
 
 **Aliases:**
 `x`
@@ -980,6 +1023,7 @@
 
 *Returns latest xkcd comic.*
 
+
 **Aliases:**
 `fresh, newest, l`
 
@@ -1000,6 +1044,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Returns random xkcd comic.*
+
 
 **Aliases:**
 `rnd, r, rand`
@@ -1022,6 +1067,7 @@
 
 *Youtube search commands. Group call searches YouTube for given query.*
 
+
 **Aliases:**
 `y, yt, ytube`
 
@@ -1041,6 +1087,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Searches YouTube for given query and returns given amount of results at most.*
+
 
 **Aliases:**
 `s`
@@ -1063,6 +1110,7 @@
 
 *Searches YouTube for given query and returns given amount of YouTube channels at most.*
 
+
 **Aliases:**
 `searchchannels, sc, searchc, channel`
 
@@ -1082,6 +1130,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Searches YouTube for given query and returns given amount of YouTube playlists at most.*
+
 
 **Aliases:**
 `searchplaylists, sp, searchp, playlist`
@@ -1103,6 +1152,7 @@
 
 *Searches YouTube for given query and returns given amount of YouTube videos at most.*
 
+
 **Aliases:**
 `searchvideos, sv, searchv, video`
 
@@ -1123,10 +1173,11 @@
 
 *Subscribes to a YouTube channel.*
 
-**Aliases:**
-`sub, follow`
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`sub, follow`
 
 **Overload 5:**
 - \[`channel`\]: *Channel for updates*
@@ -1172,10 +1223,11 @@
 
 *Removes registered YouTube subscription.*
 
-**Aliases:**
-`unfollow, unsub`
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`unfollow, unsub`
 
 **Overload 0:**
 - \[`string`\]: *YouTube channel URL or friendly name*

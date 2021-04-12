@@ -7,6 +7,7 @@
 
 *Do you ponder the mysteries of our world? Ask the Almighty 8Ball whatever you want! But beware, because the truth can sometimes hurt...*
 
+
 **Aliases:**
 `8b`
 
@@ -27,12 +28,13 @@
 
 *Birthday notifications commands. Group call either lists or adds a new birthday notification(s).*
 
-**Aliases:**
-`birthdays, bday, bd, bdays`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`birthdays, bday, bd, bdays`
 
 **Overload 3:**
 - \[`user`\]: *Birthday boy/girl*
@@ -66,12 +68,13 @@
 
 *Adds a new birthday notification for a given user in the given channel (defaults to current channel) at a given date (defaults to current date).*
 
-**Aliases:**
-`register, reg, a, +, +=, <<, <, <-, <=`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 1:**
 - \[`user`\]: *Birthday boy/girl*
@@ -99,12 +102,13 @@
 
 *Removes registered birthday notification(s) for a given user or in a given channels.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 1:**
 - \[`user`\]: *Birthday boy/girl*
@@ -127,12 +131,13 @@
 
 *Removes all registered birthday notification(s).*
 
-**Aliases:**
-`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
 
 **Overload 0:**
 
@@ -152,12 +157,13 @@
 
 *Lists birthday notifications for a given user or a given channel.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 1:**
 - \[`user`\]: *Birthday boy/girl*
@@ -180,12 +186,13 @@
 
 *Lists all birthday notifications for this guild.*
 
-**Aliases:**
-`printall, showall, lsa, la, pa`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`printall, showall, lsa, la, pa`
 
 **Overload 0:**
 
@@ -204,6 +211,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Flips a coin!*
+
 
 **Aliases:**
 `coin, flip`
@@ -226,6 +234,7 @@
 
 *Throws a dice!*
 
+
 **Aliases:**
 `die, roll`
 
@@ -247,10 +256,11 @@
 
 *Requests to grant the sender a certain object (role for example).*
 
-**Aliases:**
-`give`
 **Guild only.**
 
+
+**Aliases:**
+`give`
 
 **Overload 0:**
 - \[`role...`\]: *Roles to add*
@@ -270,12 +280,13 @@
 
 *Grants you a given nickname.*
 
-**Aliases:**
-`nick, name, n`
 **Guild only.**
 
 **Requires bot permissions:**
 `Manage nicknames`
+
+**Aliases:**
+`nick, name, n`
 
 **Overload 0:**
 - \[`string...`\]: *New name*
@@ -294,12 +305,13 @@
 
 *Grants you a role from this guild's self-assignable roles list.*
 
-**Aliases:**
-`roles, rl, r`
 **Guild only.**
 
 **Requires bot permissions:**
 `Manage roles`
+
+**Aliases:**
+`roles, rl, r`
 
 **Overload 0:**
 - \[`role...`\]: *Roles to add*
@@ -317,6 +329,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Shows the help embed.*
+
 
 **Aliases:**
 `h, ?, ??, ???, man`
@@ -347,6 +360,7 @@
 
 *Writes an insult targeting a user. Alternatively, you can provide text to use as insult target.*
 
+
 **Aliases:**
 `burn, ins, roast`
 
@@ -370,6 +384,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Get or create an instant invite link for the current guild.*
+
 
 **Aliases:**
 `getinvite, inv`
@@ -413,6 +428,7 @@
 
 *Wr1t3s g1v3n tEx7 1n p5EuDo 1337sp34k.*
 
+
 **Aliases:**
 `l33t, 1337`
 
@@ -453,10 +469,11 @@
 
 *Manipulate guild memes. Group call retrieves a meme from this guild's meme list by it's name or a random one if the name isn't provided.*
 
-**Aliases:**
-`memes, mm`
 **Guild only.**
 
+
+**Aliases:**
+`memes, mm`
 
 **Overload 1:**
 
@@ -480,12 +497,13 @@
 
 *Adds a new guild meme with a given name and an image (provided via URL or attachment).*
 
-**Aliases:**
-`register, reg, a, +, +=, <<, <, <-, <=`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 1:**
 - \[`string`\]: *Meme name*
@@ -510,12 +528,13 @@
 
 *Creates a new meme from template and top/bottom text(s).*
 
-**Aliases:**
-`maker, c, make, m`
 **Guild only.**
 
 **Requires permissions:**
 `Use embeds`
+
+**Aliases:**
+`maker, c, make, m`
 
 **Overload 0:**
 - \[`string`\]: *Meme template*
@@ -536,12 +555,13 @@
 
 *Removes a meme from guild meme list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`string...`\]: *Meme name*
@@ -560,12 +580,13 @@
 
 *Removes all guild memes.*
 
-**Aliases:**
-`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
 **Guild only.**
 
 **Requires user permissions:**
 `Administrator`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
 
 **Overload 0:**
 
@@ -585,10 +606,11 @@
 
 *Lists all guild memes.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Guild only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -608,10 +630,11 @@
 
 *Lists all available meme templates.*
 
-**Aliases:**
-`template, ts, t`
 **Guild only.**
 
+
+**Aliases:**
+`template, ts, t`
 
 **Overload 0:**
 - (optional) \[`string...`\]: *Meme template* (def: `None`)
@@ -630,6 +653,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *An accurate measurement.*
+
 
 **Aliases:**
 `size, length, manhood, dick, dicksize`
@@ -656,10 +680,11 @@
 
 *Finds members with same `penis` command result as the given user.*
 
-**Aliases:**
-`sizebros, lengthbros, manhoodbros, dickbros, cockbros`
 **Guild only.**
 
+
+**Aliases:**
+`sizebros, lengthbros, manhoodbros, dickbros, cockbros`
 
 **Overload 1:**
 - \[`member`\]: *Member*
@@ -701,12 +726,13 @@
 
 *Gets or sets command prefix.*
 
-**Aliases:**
-`setprefix, pref, setpref`
 **Guild only.**
 
 **Requires permissions:**
 `Administrator`
+
+**Aliases:**
+`setprefix, pref, setpref`
 
 **Overload 0:**
 - (optional) \[`string`\]: *New command prefix* (def: `None`)
@@ -726,6 +752,7 @@
 
 *Randomization commands - choices, raffles etc.*
 
+
 **Aliases:**
 `rnd, rand`
 
@@ -737,6 +764,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Chooses a random option from a comma separated option list.*
+
 
 **Aliases:**
 `select, choose`
@@ -758,6 +786,7 @@
 
 *Choose a user from the online members list optionally belonging to a given role.*
 
+
 **Aliases:**
 `chooseuser`
 
@@ -778,6 +807,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *User rank management. Group call prints user rank info.*
+
 
 **Aliases:**
 `ranks, ranking, level, xp`
@@ -803,10 +833,11 @@
 
 *Adds a custom name for a given rank in this guild.*
 
-**Aliases:**
-`register, rename, mv, newname, reg, a, +, +=, <<, <, <-, <=`
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`register, rename, mv, newname, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 0:**
 - \[`short`\]: *Rank*
@@ -826,10 +857,11 @@
 
 *Removes a custom name for a given rank in this guild.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`short`\]: *Rank*
@@ -847,6 +879,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print all customized rank names for this guild.*
+
 
 **Aliases:**
 `print, show, view, ls, l, p`
@@ -888,6 +921,7 @@
 
 *Prints global rank leaderboard*
 
+
 **Aliases:**
 `bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
 
@@ -909,10 +943,11 @@
 
 *A very accurate personality measurement.*
 
-**Aliases:**
-`score, graph, rating`
 **Requires bot permissions:**
 `Attach files`
+
+**Aliases:**
+`score, graph, rating`
 
 **Overload 1:**
 - \[`member...`\]: *Member(s)*
@@ -954,10 +989,11 @@
 
 *Requests to revoke a certain object (role for example) from the sender.*
 
-**Aliases:**
-`take`
 **Guild only.**
 
+
+**Aliases:**
+`take`
 
 **Overload 0:**
 - \[`role...`\]: *Roles to remove*
@@ -976,12 +1012,13 @@
 
 *Revokes a role from this guild's self-assignable roles list.*
 
-**Aliases:**
-`rl, r`
 **Guild only.**
 
 **Requires bot permissions:**
 `Manage roles`
+
+**Aliases:**
+`rl, r`
 
 **Overload 0:**
 - \[`role...`\]: *Roles to remove*
@@ -999,6 +1036,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Echo! Echo! Echo!*
+
 
 **Aliases:**
 `repeat, echo`
@@ -1020,10 +1058,11 @@
 
 *Simulates a message from another user.*
 
-**Aliases:**
-`sim`
 **Guild only.**
 
+
+**Aliases:**
+`sim`
 
 **Overload 0:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -1043,12 +1082,13 @@
 
 *Guild starboard commands. Starboard is a channel where member-voted messages will be saved. Something like pins however the starboard is not limited to one channel, has no limits on the number of starred messages, and it is automatically updated. If a message has more than a number of specified emoji reactions, it will be saved in the starboard. The number of reactions before saving is referred to as *sensitivity*, whereas the emoji is referred to as a *star* (star being the default emoji). Both are customziable. Group call shows current starboard information for the guild or enables/disables starboard in given channel and using given star emoji.*
 
-**Aliases:**
-`star, sb`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`star, sb`
 
 **Overload 1:**
 - \[`boolean`\]: *Enable?*
@@ -1083,12 +1123,13 @@
 
 *Sets starboard channel.*
 
-**Aliases:**
-`chn, setchannel, setchn, setc, location`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`chn, setchannel, setchn, setc, location`
 
 **Overload 0:**
 - \[`channel`\]: *Channel*
@@ -1107,12 +1148,13 @@
 
 *Gets or sets starboard sensitivity.*
 
-**Aliases:**
-`setsensitivity, setsens, sens, s`
 **Guild only.**
 
 **Requires user permissions:**
 `Manage guild`
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
 
 **Overload 0:**
 - (optional) \[`int`\]: *Sensitivity* (def: `None`)
@@ -1131,6 +1173,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Shows time in a given timezone or localized guild time if timezone is not provided.*
+
 
 **Aliases:**
 `t`
@@ -1172,6 +1215,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Attempts to translate message from leetspeak.*
+
 
 **Aliases:**
 `unl33t`

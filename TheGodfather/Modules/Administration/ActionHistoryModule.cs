@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
         public class ActionHistoryDeleteModule : TheGodfatherServiceModule<ActionHistoryService>
         {
             #region actionhistory delete
-            [GroupCommand, Priority(1)]
+            [GroupCommand]
             public Task DeleteAsync(CommandContext ctx,
                                    [RemainingText, Description("desc-users")] params DiscordUser[] users)
                 => this.DeleteUsersAsync(ctx, users);

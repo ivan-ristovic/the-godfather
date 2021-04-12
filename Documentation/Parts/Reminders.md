@@ -7,6 +7,7 @@
 
 *Manage reminders. Group call registers a new reminder after a specified timespan or lists registered reminders in the selected channel or DM.*
 
+
 **Aliases:**
 `reminders, reminder, todo, todolist, note`
 
@@ -47,6 +48,7 @@
 
 *Sends a reminder at the exact specified date and time. Specified date and/or time is relative to guild timezone setting, or UTC time if the command is invoked in DM.*
 
+
 **Aliases:**
 `when, @`
 
@@ -79,6 +81,7 @@
 
 *Lists all reminders before specified absolute or relative point in time.*
 
+
 **Aliases:**
 `due, b`
 
@@ -106,6 +109,7 @@
 
 *Lists all reminders due to given day of week.*
 
+
 **Aliases:**
 `nxt, n`
 
@@ -128,6 +132,7 @@
 
 *Lists all reminders due to tomorrow.*
 
+
 **Aliases:**
 `d`
 
@@ -148,6 +153,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Lists all reminders due to next week.*
+
 
 **Aliases:**
 `w`
@@ -170,6 +176,7 @@
 
 *Lists all reminders due to tomorrow.*
 
+
 **Aliases:**
 `tmrw, t, tomo`
 
@@ -190,6 +197,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Deletes reminders via ID.*
+
 
 **Aliases:**
 `-, remove, rm, del, -=, >, >>, unschedule`
@@ -214,6 +222,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Deletes all reminders in a given channel or your personal reminders if the channel is not specified.*
+
 
 **Aliases:**
 `removeall, rmrf, rma, clearall, clear, delall, da, cl, -a, --, >>>`
@@ -240,10 +249,11 @@
 
 *Sends a reminder in the current channel after the specified timespan.*
 
-**Aliases:**
-`reminders, reminder, todo, todolist, note`
 **Guild only.**
 
+
+**Aliases:**
+`reminders, reminder, todo, todolist, note`
 
 **Overload 1:**
 - \[`time span`\]: *Timespan until reminder*
@@ -309,6 +319,7 @@
 
 *Sends a reminder in the specified channel after the specified timespan.*
 
+
 **Aliases:**
 `reminders, reminder, todo, todolist, note`
 
@@ -341,6 +352,7 @@
 
 *Lists all active personal reminders or channel reminders.*
 
+
 **Aliases:**
 `print, show, view, ls, l, p`
 
@@ -365,6 +377,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Registers a repeating reminder.*
+
 
 **Aliases:**
 `newrep, +r, ar, +=r, <r, <<r`

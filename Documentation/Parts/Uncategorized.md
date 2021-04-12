@@ -7,12 +7,13 @@
 
 *Commands for adding feed subscriptions. The bot will send a message when the latest topic is changed. Group call subscribes the bot to the given RSS feed URL in given channel or lists active subscriptions for given channel. If channel is not provided, uses current channel.*
 
-**Aliases:**
-`sub, subscriptions, subscription`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`sub, subscriptions, subscription`
 
 **Overload 2:**
 - \[`channel`\]: *Channel for updates*
@@ -43,12 +44,13 @@
 
 *Lists active subscriptions for current channel.*
 
-**Aliases:**
-`ls, listsubs, listfeeds`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`ls, listsubs, listfeeds`
 
 **Overload 0:**
 - (optional) \[`channel`\]: *Channel for updates* (def: `None`)
@@ -68,12 +70,13 @@
 
 *Subscribes to a given subreddit.*
 
-**Aliases:**
-`r`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`r`
 
 **Overload 1:**
 - \[`channel`\]: *Channel for updates*
@@ -98,12 +101,13 @@
 
 *Subscribes to a given YouTube channel.*
 
-**Aliases:**
-`y, yt, ytube`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`y, yt, ytube`
 
 **Overload 2:**
 - \[`channel`\]: *Channel for updates*
@@ -135,12 +139,13 @@
 
 *Commands for removing feed subscriptions. Group call unsubscribes the bot from given feed by ID or friendly name.*
 
-**Aliases:**
-`unsub`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`unsub`
 
 **Overload 1:**
 - \[`int...`\]: *ID(s)*
@@ -163,12 +168,13 @@
 
 *Removes all subscriptions in given channel.*
 
-**Aliases:**
-`a`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`a`
 
 **Overload 0:**
 - (optional) \[`channel`\]: *Channel for updates* (def: `None`)
@@ -188,12 +194,13 @@
 
 *Unsubscribes from a reddit sub.*
 
-**Aliases:**
-`r`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`r`
 
 **Overload 0:**
 - \[`string`\]: *Subreddit*
@@ -212,12 +219,13 @@
 
 *Unsubscribes from a YouTube channel.*
 
-**Aliases:**
-`y, yt, ytube`
 **Guild only.**
 
 **Requires permissions:**
 `Manage guild`
+
+**Aliases:**
+`y, yt, ytube`
 
 **Overload 0:**
 - \[`string...`\]: *YouTube channel URL or friendly name*

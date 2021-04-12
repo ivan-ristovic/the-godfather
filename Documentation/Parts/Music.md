@@ -7,10 +7,11 @@
 
 *Music playback and queue management commands. Group call prints information about currently playing track.*
 
-**Aliases:**
-`songs, song, tracks, track, audio, mu`
 **Guild only.**
 
+
+**Aliases:**
+`songs, song, tracks, track, audio, mu`
 
 **Overload 0:**
 
@@ -30,10 +31,11 @@
 
 *Forwards the track playback by the specified amount.*
 
-**Aliases:**
-`fw, f, >, >>`
 **Guild only.**
 
+
+**Aliases:**
+`fw, f, >, >>`
 
 **Overload 0:**
 - \[`time span...`\]: *Forward amount*
@@ -52,10 +54,11 @@
 
 *Prints player information.*
 
-**Aliases:**
-`i, player`
 **Guild only.**
 
+
+**Aliases:**
+`i, player`
 
 **Overload 0:**
 
@@ -75,10 +78,11 @@
 
 *Toggles playback pause.*
 
-**Aliases:**
-`ps`
 **Guild only.**
 
+
+**Aliases:**
+`ps`
 
 **Overload 0:**
 
@@ -98,10 +102,11 @@
 
 *Play audio from given URL.*
 
-**Aliases:**
-`p, +, +=, add, a`
 **Guild only.**
 
+
+**Aliases:**
+`p, +, +=, add, a`
 
 **Overload 1:**
 - \[`URL`\]: *Audio URL*
@@ -124,12 +129,13 @@
 
 *Play local audio file.*
 
-**Aliases:**
-`pf, +f, +=f, addf, af`
 **Guild only.**
 
 **Owner-only.**
 
+
+**Aliases:**
+`pf, +f, +=f, addf, af`
 
 **Overload 0:**
 - \[`string...`\]: *Audio URL*
@@ -148,10 +154,11 @@
 
 *Prints the current playback queue.*
 
-**Aliases:**
-`q, playlist`
 **Guild only.**
 
+
+**Aliases:**
+`q, playlist`
 
 **Overload 0:**
 
@@ -171,10 +178,11 @@
 
 *Removes track with given index from the playback queue.*
 
-**Aliases:**
-`dequeue, delete, rm, del, d, -, -=`
 **Guild only.**
 
+
+**Aliases:**
+`dequeue, delete, rm, del, d, -, -=`
 
 **Overload 0:**
 - \[`int`\]: *Index (starting from 1)*
@@ -193,10 +201,11 @@
 
 *Sets repeat mode (none, single, all).*
 
-**Aliases:**
-`loop, l, rep, lp`
 **Guild only.**
 
+
+**Aliases:**
+`loop, l, rep, lp`
 
 **Overload 0:**
 - (optional) \[`RepeatMode`\]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
@@ -236,10 +245,11 @@
 
 *Restarts the current track.*
 
-**Aliases:**
-`res, replay`
 **Guild only.**
 
+
+**Aliases:**
+`res, replay`
 
 **Overload 0:**
 
@@ -259,10 +269,11 @@
 
 *Resumes playback.*
 
-**Aliases:**
-`unpause, up, rs`
 **Guild only.**
 
+
+**Aliases:**
+`unpause, up, rs`
 
 **Overload 0:**
 
@@ -282,10 +293,11 @@
 
 *Rewinds the track by the specified amount.*
 
-**Aliases:**
-`bw, rw, <, <<`
 **Guild only.**
 
+
+**Aliases:**
+`bw, rw, <, <<`
 
 **Overload 0:**
 - \[`time span...`\]: *Backward amount*
@@ -304,10 +316,11 @@
 
 *Seeks to a specified point in the track.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 0:**
 - \[`time span...`\]: *Point to seek to*
@@ -326,10 +339,11 @@
 
 *Toggles queue shuffling mode.*
 
-**Aliases:**
-`randomize, rng, sh`
 **Guild only.**
 
+
+**Aliases:**
+`randomize, rng, sh`
 
 **Overload 0:**
 
@@ -349,10 +363,11 @@
 
 *Skips the current track.*
 
-**Aliases:**
-`next, n, sk`
 **Guild only.**
 
+
+**Aliases:**
+`next, n, sk`
 
 **Overload 0:**
 
@@ -393,10 +408,11 @@
 
 *Sets playback volume.*
 
-**Aliases:**
-`vol, v`
 **Guild only.**
 
+
+**Aliases:**
+`vol, v`
 
 **Overload 0:**
 - (optional) \[`int`\]: *Volume to set* (def: `100`)
@@ -417,12 +433,13 @@
 
 *Voice channel bot commands.*
 
-**Aliases:**
-`v`
 **Guild only.**
 
 **Privileged users only.**
 
+
+**Aliases:**
+`v`
 
 </p></details>
 
@@ -433,12 +450,13 @@
 
 *Connects the bot to a voice channel.*
 
-**Aliases:**
-`c, con, conn`
 **Guild only.**
 
 **Privileged users only.**
 
+
+**Aliases:**
+`c, con, conn`
 
 **Overload 0:**
 - (optional) \[`channel...`\]: *Voice channel* (def: `None`)
@@ -457,12 +475,13 @@
 
 *Disconnects the bot from voice channels.*
 
-**Aliases:**
-`d, disconn, dc`
 **Guild only.**
 
 **Privileged users only.**
 
+
+**Aliases:**
+`d, disconn, dc`
 
 **Overload 0:**
 

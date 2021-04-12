@@ -9,10 +9,11 @@
 
 *Blocked channels control commands.*
 
-**Aliases:**
-`bc, blockedc, blockchannel, bchannels, bchannel, bchn`
 **Privileged users only.**
 
+
+**Aliases:**
+`bc, blockedc, blockchannel, bchannels, bchannel, bchn`
 
 **Overload 3:**
 
@@ -44,10 +45,11 @@
 
 *Blocks channels from interacting with the bot.*
 
-**Aliases:**
-`register, reg, a, +, +=, <<, <, <-, <=`
 **Privileged users only.**
 
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 2:**
 - \[`channel...`\]: *Entities to block*
@@ -75,10 +77,11 @@
 
 *Removes channels from bot block list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Privileged users only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`channel...`\]: *Entities to unblock*
@@ -97,10 +100,11 @@
 
 *Lists all blocked channels.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Privileged users only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -122,10 +126,11 @@
 
 *Blocked guilds control commands.*
 
-**Aliases:**
-`bg, blockedg, blockguild, bguilds, bguild, bgld`
 **Privileged users only.**
 
+
+**Aliases:**
+`bg, blockedg, blockguild, bguilds, bguild, bgld`
 
 **Overload 3:**
 
@@ -157,10 +162,11 @@
 
 *Blocks guilds from interacting with the bot.*
 
-**Aliases:**
-`register, reg, a, +, +=, <<, <, <-, <=`
 **Privileged users only.**
 
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 2:**
 - \[`guild...`\]: *Entities to block*
@@ -188,10 +194,11 @@
 
 *Removes guilds from bot block list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Privileged users only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`guild...`\]: *Entities to unblock*
@@ -210,10 +217,11 @@
 
 *Lists all blocked guilds.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Privileged users only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -235,10 +243,11 @@
 
 *Blocked users control commands.*
 
-**Aliases:**
-`bu, blockedu, blockuser, busers, buser, busr`
 **Privileged users only.**
 
+
+**Aliases:**
+`bu, blockedu, blockuser, busers, buser, busr`
 
 **Overload 3:**
 
@@ -270,10 +279,11 @@
 
 *Blocks users from interacting with the bot.*
 
-**Aliases:**
-`register, reg, a, +, +=, <<, <, <-, <=`
 **Privileged users only.**
 
+
+**Aliases:**
+`register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 2:**
 - \[`user...`\]: *Entities to block*
@@ -301,10 +311,11 @@
 
 *Removes users from bot block list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Privileged users only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`user...`\]: *Entities to unblock*
@@ -323,10 +334,11 @@
 
 *Lists all blocked users.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Privileged users only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -348,10 +360,11 @@
 
 *Bot command manipulation during runtime.*
 
-**Aliases:**
-`cmds, cmd`
 **Owner-only.**
 
+
+**Aliases:**
+`cmds, cmd`
 
 **Overload 0:**
 
@@ -371,10 +384,11 @@
 
 *Add a new bot command.*
 
-**Aliases:**
-`register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
 
 **Overload 0:**
 - \[`string...`\]: *C# code snippet in a markdown code block*
@@ -396,10 +410,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Deletes existing bot command.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`string...`\]: *Command name*
@@ -418,10 +433,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Lists all bot commands.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -443,6 +459,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Commands restricted to bot owner(s).*
 
+
 **Aliases:**
 `admin, o`
 
@@ -455,10 +472,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Send a message to all guilds the bot is in.*
 
-**Aliases:**
-`ann`
 **Owner-only.**
 
+
+**Aliases:**
+`ann`
 
 **Overload 0:**
 - \[`string...`\]: *Announcement message*
@@ -477,10 +495,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Sets the bot avatar.*
 
-**Aliases:**
-`setavatar, setbotavatar, profilepic, a`
 **Owner-only.**
 
+
+**Aliases:**
+`setavatar, setbotavatar, profilepic, a`
 
 **Overload 0:**
 - \[`URL`\]: *Image URL*
@@ -499,10 +518,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Queries the bot database using given SQL query or uploaded SQL file.*
 
-**Aliases:**
-`sql, dbq, q, query`
 **Owner-only.**
 
+
+**Aliases:**
+`sql, dbq, q, query`
 
 **Overload 1:**
 
@@ -525,10 +545,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Evaluates a snippet of C# code, in context.*
 
-**Aliases:**
-`evaluate, compile, run, e, c, r, exec`
 **Owner-only.**
 
+
+**Aliases:**
+`evaluate, compile, run, e, c, r, exec`
 
 **Overload 0:**
 - \[`string...`\]: *C# code snippet in a markdown code block*
@@ -550,10 +571,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Generates bot documentation in markdown ready for GitHub.*
 
-**Aliases:**
-`gendocs, generatecommandslist, docs, cmdlist, gencmdlist, gencmds, gencmdslist`
 **Owner-only.**
 
+
+**Aliases:**
+`gendocs, generatecommandslist, docs, cmdlist, gencmdlist, gencmds, gencmdslist`
 
 **Overload 0:**
 - (optional) \[`string...`\]: *Output folder* (def: `None`)
@@ -572,10 +594,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Generates bot documentation in markdown ready for GitHub.*
 
-**Aliases:**
-`leave, gtfo`
 **Owner-only.**
 
+
+**Aliases:**
+`leave, gtfo`
 
 **Overload 1:**
 - \[`guild...`\]: *Guild names or IDs*
@@ -598,10 +621,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Logs a given remark or uploads bot log file if remark is not given.*
 
-**Aliases:**
-`getlog, remark, rem`
 **Owner-only.**
 
+
+**Aliases:**
+`getlog, remark, rem`
 
 **Overload 1:**
 - (optional) \[`boolean`\]: *Bypass current bot configuration?* (def: `False`)
@@ -626,10 +650,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Sets the bot name.*
 
-**Aliases:**
-`botname, setbotname, setname`
 **Owner-only.**
 
+
+**Aliases:**
+`botname, setbotname, setname`
 
 **Overload 0:**
 - \[`string...`\]: *New name*
@@ -648,10 +673,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Restarts the bot.*
 
-**Aliases:**
-`reboot`
 **Privileged users only.**
 
+
+**Aliases:**
+`reboot`
 
 **Overload 0:**
 
@@ -671,10 +697,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Sends a message to user or channel.*
 
-**Aliases:**
-`send, s`
 **Privileged users only.**
 
+
+**Aliases:**
+`send, s`
 
 **Overload 0:**
 - \[`string`\]: *`u` (User) or `c` (Channel)*
@@ -697,10 +724,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Powers off the bot.*
 
-**Aliases:**
-`disable, poweroff, exit, quit`
 **Privileged users only.**
 
+
+**Aliases:**
+`disable, poweroff, exit, quit`
 
 **Overload 1:**
 - \[`time span`\]: *Time until shutdown*
@@ -725,12 +753,13 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Executes command as another user.*
 
-**Aliases:**
-`execas, as`
 **Guild only.**
 
 **Privileged users only.**
 
+
+**Aliases:**
+`execas, as`
 
 **Overload 0:**
 - \[`member`\]: *Member*
@@ -751,10 +780,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Toggle bot listening status.*
 
-**Aliases:**
-`ti`
 **Privileged users only.**
 
+
+**Aliases:**
+`ti`
 
 **Overload 0:**
 
@@ -818,10 +848,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Commands to manage privileged users. Privileged users have permissions to execute some sensitive bot commands.*
 
-**Aliases:**
-`pu, privu, privuser, pusers, puser, pusr`
 **Owner-only.**
 
+
+**Aliases:**
+`pu, privu, privuser, pusers, puser, pusr`
 
 **Overload 1:**
 
@@ -844,10 +875,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Adds given user(s) to privileged users list.*
 
-**Aliases:**
-`register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
 
 **Overload 0:**
 - \[`user...`\]: *User(s)*
@@ -866,10 +898,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Removes given user(s) from privileged users list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`user...`\]: *User(s)*
@@ -888,10 +921,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Lists all privileged users.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -913,10 +947,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Manipulates bot statuses. Group call either lists all statuses or adds a new status.*
 
-**Aliases:**
-`statuses, botstatus, activity, activities`
 **Owner-only.**
 
+
+**Aliases:**
+`statuses, botstatus, activity, activities`
 
 **Overload 1:**
 
@@ -941,10 +976,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Adds a new status to the status list.*
 
-**Aliases:**
-`register, reg, new, a, +, +=, <<, <, <-, <=`
 **Owner-only.**
 
+
+**Aliases:**
+`register, reg, new, a, +, +=, <<, <, <-, <=`
 
 **Overload 0:**
 - \[`ActivityType`\]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
@@ -964,10 +1000,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Removes a status from the status list.*
 
-**Aliases:**
-`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 **Owner-only.**
 
+
+**Aliases:**
+`unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
 **Overload 0:**
 - \[`int...`\]: *Bot status ID*
@@ -986,10 +1023,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Lists all currently registered statuses.*
 
-**Aliases:**
-`print, show, view, ls, l, p`
 **Owner-only.**
 
+
+**Aliases:**
+`print, show, view, ls, l, p`
 
 **Overload 0:**
 
@@ -1009,10 +1047,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Disables automatic rotation of bot statuses and sets the currents status by ID or explicit string until status rotation is enabled again.*
 
-**Aliases:**
-`s`
 **Owner-only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - \[`ActivityType`\]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
@@ -1036,10 +1075,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 *Enables or disables automatic rotation of bot statuses.*
 
-**Aliases:**
-`sr, setr, rotate`
 **Owner-only.**
 
+
+**Aliases:**
+`sr, setr, rotate`
 
 **Overload 0:**
 - (optional) \[`boolean`\]: *Enable?* (def: `True`)

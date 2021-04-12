@@ -7,6 +7,7 @@
 
 *Card deck commands. Group call opens a new shuffled deck in the current channel.*
 
+
 **Aliases:**
 `cards`
 
@@ -28,6 +29,7 @@
 
 *Draws cards from the top of the deck.*
 
+
 **Aliases:**
 `take`
 
@@ -47,6 +49,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Opens a new shuffled deck in the current channel.*
+
 
 **Aliases:**
 `new, opennew, open`
@@ -69,6 +72,7 @@
 
 *Game commands. Group call lists all available games.*
 
+
 **Aliases:**
 `games, gm`
 
@@ -90,10 +94,11 @@
 
 *Starts a new Animal Race game.*
 
-**Aliases:**
-`animr, arace, ar, animalr, race`
 **Guild only.**
 
+
+**Aliases:**
+`animr, arace, ar, animalr, race`
 
 **Overload 0:**
 
@@ -113,10 +118,11 @@
 
 *Joins a pending Animal Race game.*
 
-**Aliases:**
-`+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Aliases:**
+`+, compete, enter, j, <<, <`
 
 **Overload 0:**
 
@@ -136,10 +142,11 @@
 
 *Prints Animal Race game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -162,10 +169,11 @@
 
 *Prints Animal Race game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -185,10 +193,11 @@
 
 *Starts a new Caro game for two players. Each player makes a move by writing a pair of numbers representing coordinates in the grid where they wish to play. You can also specify the move time to make the game easier/harder.*
 
-**Aliases:**
-`c, gomoku, gobang`
 **Guild only.**
 
+
+**Aliases:**
+`c, gomoku, gobang`
 
 **Overload 0:**
 - (optional) \[`time span`\]: *Time for a move* (def: `None`)
@@ -208,10 +217,11 @@
 
 *Prints Caro game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -231,10 +241,11 @@
 
 *Prints Caro game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -257,10 +268,11 @@
 
 *Prints Caro game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -280,10 +292,11 @@
 
 *Starts a new Connect4 game for two players. Each player makes a move by writing a number representing a column in the grid where they wish to play. You can also specify the move time to make the game easier/harder.*
 
-**Aliases:**
-`connectfour, chain4, chainfour, c4, fourinarow, fourinaline, 4row, 4line, cfour`
 **Guild only.**
 
+
+**Aliases:**
+`connectfour, chain4, chainfour, c4, fourinarow, fourinaline, 4row, 4line, cfour`
 
 **Overload 0:**
 - (optional) \[`time span`\]: *Time for a move* (def: `None`)
@@ -303,10 +316,11 @@
 
 *Prints Connect4 game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -326,10 +340,11 @@
 
 *Prints Connect4 game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -352,10 +367,11 @@
 
 *Prints Connect4 game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -375,10 +391,11 @@
 
 *Starts a new Duel game for two players which I will commentate.*
 
-**Aliases:**
-`fight, vs, d`
 **Guild only.**
 
+
+**Aliases:**
+`fight, vs, d`
 
 **Overload 0:**
 - \[`member`\]: *Member*
@@ -398,10 +415,11 @@
 
 *Prints Duel game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -421,10 +439,11 @@
 
 *Prints Duel game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -447,10 +466,11 @@
 
 *Prints Duel game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -470,10 +490,11 @@
 
 *Starts a new Hangman game.*
 
-**Aliases:**
-`h, hang, hm`
 **Guild only.**
 
+
+**Aliases:**
+`h, hang, hm`
 
 **Overload 0:**
 
@@ -493,10 +514,11 @@
 
 *Prints Hangman game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -516,10 +538,11 @@
 
 *Prints Hangman game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -542,10 +565,11 @@
 
 *Prints Hangman game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -564,6 +588,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Prints global leaderboard for all games.*
+
 
 **Aliases:**
 `globalstats`
@@ -585,6 +610,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a new Minesweeper game.*
+
 
 **Aliases:**
 `mines, ms`
@@ -609,6 +635,7 @@
 
 *Prints Minesweeper game rules.*
 
+
 **Aliases:**
 `help, h, ruling, rule`
 
@@ -630,10 +657,11 @@
 
 *Starts a new Number Race game.*
 
-**Aliases:**
-`nr, n, nunchi, numbers, numbersrace`
 **Guild only.**
 
+
+**Aliases:**
+`nr, n, nunchi, numbers, numbersrace`
 
 **Overload 0:**
 
@@ -653,10 +681,11 @@
 
 *Joins a pending Number Race game.*
 
-**Aliases:**
-`+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Aliases:**
+`+, compete, enter, j, <<, <`
 
 **Overload 0:**
 
@@ -676,10 +705,11 @@
 
 *Prints Number Race rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -699,10 +729,11 @@
 
 *Prints Number Race game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -725,10 +756,11 @@
 
 *Prints Number Race game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -748,10 +780,11 @@
 
 *Starts a new Othello game for two players. Each player makes a move by writing a pair of numbers representing coordinates in the grid where they wish to play. You can also specify the move time to make the game easier/harder.*
 
-**Aliases:**
-`reversi, oth, rev`
 **Guild only.**
 
+
+**Aliases:**
+`reversi, oth, rev`
 
 **Overload 0:**
 - (optional) \[`time span`\]: *Time for a move* (def: `None`)
@@ -771,10 +804,11 @@
 
 *Prints Othello game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -794,10 +828,11 @@
 
 *Prints Othello game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -820,10 +855,11 @@
 
 *Prints Othello game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -843,10 +879,11 @@
 
 *Starts a Quiz! Group call lists available quiz categories.*
 
-**Aliases:**
-`trivia, q`
 **Guild only.**
 
+
+**Aliases:**
+`trivia, q`
 
 **Overload 2:**
 - \[`int`\]: *ID of the quiz category*
@@ -878,10 +915,11 @@
 
 *Starts a new country capitals Quiz!*
 
-**Aliases:**
-`capitaltowns`
 **Guild only.**
 
+
+**Aliases:**
+`capitaltowns`
 
 **Overload 0:**
 - (optional) \[`int`\]: *Amount of questions* (def: `10`)
@@ -901,10 +939,11 @@
 
 *Starts a new country flag Quiz!*
 
-**Aliases:**
-`flags`
 **Guild only.**
 
+
+**Aliases:**
+`flags`
 
 **Overload 0:**
 - (optional) \[`int`\]: *Amount of questions* (def: `10`)
@@ -924,10 +963,11 @@
 
 *Prints Quiz game stats.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -950,10 +990,11 @@
 
 *Prints Quiz game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -972,6 +1013,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a new rock-paper-scissors game against TheGodfather.*
+
 
 **Aliases:**
 `rockpaperscissors`
@@ -994,6 +1036,7 @@
 
 *Prints rock-paper-scissors game rules.*
 
+
 **Aliases:**
 `help, h, ruling, rule`
 
@@ -1015,10 +1058,11 @@
 
 *Starts a new Russian Roulette game.*
 
-**Aliases:**
-`rr, roulette, russianr`
 **Guild only.**
 
+
+**Aliases:**
+`rr, roulette, russianr`
 
 **Overload 0:**
 
@@ -1038,10 +1082,11 @@
 
 *Joins a pending Russian Roulette game.*
 
-**Aliases:**
-`+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Aliases:**
+`+, compete, enter, j, <<, <`
 
 **Overload 0:**
 
@@ -1061,10 +1106,11 @@
 
 *Prints Russian Roulette game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -1087,10 +1133,11 @@
 
 *Prints Russian Roulette game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -1109,6 +1156,7 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Prints game stats for a given user.*
+
 
 **Aliases:**
 `s, st`
@@ -1134,10 +1182,11 @@
 
 *Starts a new TicTacToe game for two players. Each player makes a move by writing a number representing a field where they wish to place their mark. You can also specify the move time to make the game easier/harder.*
 
-**Aliases:**
-`ttt`
 **Guild only.**
 
+
+**Aliases:**
+`ttt`
 
 **Overload 0:**
 - (optional) \[`time span`\]: *Time for a move* (def: `None`)
@@ -1157,10 +1206,11 @@
 
 *Prints TicTacToe game rules.*
 
-**Aliases:**
-`help, h, ruling, rule`
 **Guild only.**
 
+
+**Aliases:**
+`help, h, ruling, rule`
 
 **Overload 0:**
 
@@ -1180,10 +1230,11 @@
 
 *Prints TicTacToe game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -1206,10 +1257,11 @@
 
 *Prints TicTacToe game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 
@@ -1229,10 +1281,11 @@
 
 *Starts a new Typing Race game.*
 
-**Aliases:**
-`tr, trace, typerace, typing, typingr`
 **Guild only.**
 
+
+**Aliases:**
+`tr, trace, typerace, typing, typingr`
 
 **Overload 0:**
 
@@ -1252,10 +1305,11 @@
 
 *Joins a pending Typing Race game.*
 
-**Aliases:**
-`+, compete, enter, j, <<, <`
 **Guild only.**
 
+
+**Aliases:**
+`+, compete, enter, j, <<, <`
 
 **Overload 0:**
 
@@ -1275,10 +1329,11 @@
 
 *Prints Typing Race game stats for a given user.*
 
-**Aliases:**
-`s`
 **Guild only.**
 
+
+**Aliases:**
+`s`
 
 **Overload 1:**
 - (optional) \[`member`\]: *Member* (def: `None`)
@@ -1301,10 +1356,11 @@
 
 *Prints Typing Race game leaderboard.*
 
-**Aliases:**
-`t, leaderboard`
 **Guild only.**
 
+
+**Aliases:**
+`t, leaderboard`
 
 **Overload 0:**
 

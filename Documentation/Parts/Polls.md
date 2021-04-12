@@ -7,10 +7,11 @@
 
 *Starts a new poll in the current channel. You can also provide the time for the poll to run.*
 
-**Aliases:**
-`polls`
 **Guild only.**
 
+
+**Aliases:**
+`polls`
 
 **Overload 2:**
 - \[`time span`\]: *Time for the poll to run*
@@ -39,10 +40,11 @@
 
 *Stops a running poll.*
 
-**Aliases:**
-`end, cancel`
 **Guild only.**
 
+
+**Aliases:**
+`end, cancel`
 
 **Overload 0:**
 
@@ -62,10 +64,11 @@
 
 *Starts a new reactions poll in the current channel. You can also provide the time for the poll to run.*
 
-**Aliases:**
-`reactionspolls, rpoll, rpolls, pollr, voter`
 **Guild only.**
 
+
+**Aliases:**
+`reactionspolls, rpoll, rpolls, pollr, voter`
 
 **Overload 2:**
 - \[`time span`\]: *Time for the poll to run*
@@ -94,10 +97,11 @@
 
 *Stops a running reactions poll.*
 
-**Aliases:**
-`end, cancel`
 **Guild only.**
 
+
+**Aliases:**
+`end, cancel`
 
 **Overload 0:**
 
@@ -117,10 +121,11 @@
 
 *Manages voting in running polls. Group call registers a vote in the running poll for the option you entered.*
 
-**Aliases:**
-`votefor, vf`
 **Guild only.**
 
+
+**Aliases:**
+`votefor, vf`
 
 **Overload 0:**
 - \[`int`\]: *Option to vote for*
@@ -139,10 +144,11 @@
 
 *Manages voting in running polls. Group call registers a vote in the running poll for the option you entered.*
 
-**Aliases:**
-`c, reset`
 **Guild only.**
 
+
+**Aliases:**
+`c, reset`
 
 **Overload 0:**
 

@@ -313,11 +313,6 @@ namespace TheGodfather.Modules.Owner
 
                     sb.AppendLine(Formatter.Italic(this.Localization.GetCommandDescription(null, cmd.QualifiedName))).AppendLine();
 
-                    if (cmd.Aliases.Any()) {
-                        sb.AppendLine(Formatter.Bold("Aliases:"));
-                        sb.Append('`').AppendJoin(", ", cmd.Aliases).Append('`').AppendLine();
-                    }
-
                     IEnumerable<CheckBaseAttribute> execChecks = cmd.ExecutionChecks.AsEnumerable();
                     CommandGroup? parent = cmd.Parent;
                     while (parent is { }) {
@@ -365,6 +360,11 @@ namespace TheGodfather.Modules.Owner
                         sb.Append('`').AppendJoin(", ", bperms).Append('`').AppendLine();
                     }
                     sb.AppendLine();
+
+                    if (cmd.Aliases.Any()) {
+                        sb.AppendLine(Formatter.Bold("Aliases:"));
+                        sb.Append('`').AppendJoin(", ", cmd.Aliases).Append('`').AppendLine().AppendLine();
+                    }
 
                     foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
                         sb.AppendLine(Formatter.Bold($"Overload {overload.Priority}:"));
