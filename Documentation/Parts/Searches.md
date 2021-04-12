@@ -36,7 +36,7 @@
 *No arguments.*
 
 **Overload 0:**
-- [`string...`]: *Currency name*
+- \[`string...`\]: *Currency name*
 
 **Examples:**
 
@@ -57,7 +57,7 @@
 `print, show, view, ls, l, p`
 
 **Overload 0:**
-- (optional) [`int`]: *Index from which to list* (def: `0`)
+- (optional) \[`int`\]: *Index from which to list* (def: `0`)
 
 **Examples:**
 
@@ -99,7 +99,7 @@
 `giphy`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -140,7 +140,7 @@
 `t, tr, trend`
 
 **Overload 0:**
-- (optional) [`int`]: *Number of results* (def: `5`)
+- (optional) \[`int`\]: *Number of results* (def: `5`)
 
 **Examples:**
 
@@ -161,7 +161,7 @@
 `gr`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -182,7 +182,7 @@
 `books, b`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -203,7 +203,7 @@
 `movies, series, serie, movie, film, cinema, omdb`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -221,7 +221,7 @@
 
 
 **Overload 0:**
-- [`string`]: *ID*
+- \[`string`\]: *ID*
 
 **Examples:**
 
@@ -241,7 +241,7 @@
 `s, find`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -261,7 +261,7 @@
 `t, name, n`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -281,12 +281,12 @@
 `img, im, i`
 
 **Overload 1:**
-- [`int`]: *Number of results*
-- [`string...`]: *Subreddit*
+- \[`int`\]: *Number of results*
+- \[`string...`\]: *Subreddit*
 
 **Overload 0:**
-- [`string`]: *Subreddit*
-- (optional) [`int`]: *Number of results* (def: `1`)
+- \[`string`\]: *Subreddit*
+- (optional) \[`int`\]: *Number of results* (def: `1`)
 
 **Examples:**
 
@@ -307,12 +307,12 @@
 `l, new, newest`
 
 **Overload 1:**
-- [`int`]: *Number of results*
-- [`string...`]: *Subreddit*
+- \[`int`\]: *Number of results*
+- \[`string...`\]: *Subreddit*
 
 **Overload 0:**
-- [`string`]: *Subreddit*
-- [`int`]: *Number of results*
+- \[`string`\]: *Subreddit*
+- \[`int`\]: *Number of results*
 
 **Examples:**
 
@@ -333,23 +333,23 @@
 `t`
 
 **Overload 3:**
-- [`TimeWindow`]: *Time window (day/month/week/year/all)*
-- [`int`]: *Number of results*
-- [`string...`]: *Subreddit*
+- \[`TimeWindow`\]: *Time window (day/month/week/year/all)*
+- \[`int`\]: *Number of results*
+- \[`string...`\]: *Subreddit*
 
 **Overload 2:**
-- [`TimeWindow`]: *Time window (day/month/week/year/all)*
-- [`string`]: *Subreddit*
-- (optional) [`int`]: *Number of results* (def: `1`)
+- \[`TimeWindow`\]: *Time window (day/month/week/year/all)*
+- \[`string`\]: *Subreddit*
+- (optional) \[`int`\]: *Number of results* (def: `1`)
 
 **Overload 1:**
-- [`int`]: *Number of results*
-- [`TimeWindow`]: *Time window (day/month/week/year/all)*
-- [`string...`]: *Subreddit*
+- \[`int`\]: *Number of results*
+- \[`TimeWindow`\]: *Time window (day/month/week/year/all)*
+- \[`string...`\]: *Subreddit*
 
 **Overload 0:**
-- [`int`]: *Number of results*
-- [`string...`]: *Subreddit*
+- \[`int`\]: *Number of results*
+- \[`string...`\]: *Subreddit*
 
 **Examples:**
 
@@ -371,7 +371,7 @@
 `ipstack, geolocation, iplocation, iptracker, iptrack, trackip, iplocate, geoip`
 
 **Overload 0:**
-- [`IPAddress`]: *IP address*
+- \[`IPAddress`\]: *IP address*
 
 **Examples:**
 
@@ -412,7 +412,7 @@
 `s`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -453,7 +453,7 @@
 `worldnews`
 
 **Overload 0:**
-- (optional) [`string`]: *Topic* (def: `world`)
+- (optional) \[`string`\]: *Topic* (def: `world`)
 
 **Examples:**
 
@@ -473,7 +473,7 @@
 `qotd, qod, quote, q`
 
 **Overload 0:**
-- (optional) [`string`]: *Topic* (def: `None`)
+- (optional) \[`string`\]: *Topic* (def: `None`)
 
 **Examples:**
 
@@ -493,7 +493,7 @@
 `r`
 
 **Overload 0:**
-- (optional) [`string`]: *Subreddit* (def: `all`)
+- (optional) \[`string`\]: *Subreddit* (def: `all`)
 
 **Examples:**
 
@@ -514,7 +514,7 @@
 `c`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -534,7 +534,7 @@
 `g`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -554,7 +554,7 @@
 `h`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -574,7 +574,7 @@
 `n, newest, latest`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -594,7 +594,7 @@
 `r`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -618,8 +618,8 @@
 `Manage guild`
 
 **Overload 1:**
-- [`channel`]: *Channel*
-- [`string`]: *Subreddit*
+- \[`channel`\]: *Channel*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -640,7 +640,7 @@
 `t`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -664,7 +664,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -684,7 +684,7 @@
 `feed`
 
 **Overload 0:**
-- [`URL`]: *RSS feed URL*
+- \[`URL`\]: *RSS feed URL*
 
 **Examples:**
 
@@ -704,10 +704,10 @@
 `s, st`
 
 **Overload 1:**
-- [`unsigned long`]: *ID*
+- \[`unsigned long`\]: *ID*
 
 **Overload 0:**
-- [`string...`]: *Username*
+- \[`string...`\]: *Username*
 
 **Examples:**
 
@@ -728,10 +728,10 @@
 `g, gm, store`
 
 **Overload 1:**
-- [`unsigned int`]: *ID*
+- \[`unsigned int`\]: *ID*
 
 **Overload 0:**
-- [`string...`]: *Game name*
+- \[`string...`\]: *Game name*
 
 **Examples:**
 
@@ -752,10 +752,10 @@
 `id, user, info`
 
 **Overload 1:**
-- [`unsigned long`]: *ID*
+- \[`unsigned long`\]: *ID*
 
 **Overload 0:**
-- [`string...`]: *Username*
+- \[`string...`\]: *Username*
 
 **Examples:**
 
@@ -776,7 +776,7 @@
 `stickers`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -817,7 +817,7 @@
 `t, tr, trend`
 
 **Overload 0:**
-- (optional) [`int`]: *Number of results* (def: `5`)
+- (optional) \[`int`\]: *Number of results* (def: `5`)
 
 **Examples:**
 
@@ -838,7 +838,7 @@
 `ud, urban, urbandictionary`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -858,7 +858,7 @@
 `w`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -878,11 +878,11 @@
 `f`
 
 **Overload 1:**
-- [`int`]: *Amount of days*
-- [`string...`]: *Query*
+- \[`int`\]: *Amount of days*
+- \[`string...`\]: *Query*
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -902,7 +902,7 @@
 `wiki`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -922,7 +922,7 @@
 `s, find`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -942,7 +942,7 @@
 `x`
 
 **Overload 1:**
-- [`int`]: *ID*
+- \[`int`\]: *ID*
 
 **Overload 0:**
 
@@ -964,7 +964,7 @@
 
 
 **Overload 0:**
-- (optional) [`int`]: *ID* (def: `None`)
+- (optional) \[`int`\]: *ID* (def: `None`)
 
 **Examples:**
 
@@ -1026,7 +1026,7 @@
 `y, yt, ytube`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -1046,8 +1046,8 @@
 `s`
 
 **Overload 0:**
-- [`int`]: *Amount of results to fetch*
-- [`string...`]: *Query*
+- \[`int`\]: *Amount of results to fetch*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -1067,7 +1067,7 @@
 `searchchannels, sc, searchc, channel`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -1087,7 +1087,7 @@
 `searchplaylists, sp, searchp, playlist`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -1107,7 +1107,7 @@
 `searchvideos, sv, searchv, video`
 
 **Overload 0:**
-- [`string...`]: *Query*
+- \[`string...`\]: *Query*
 
 **Examples:**
 
@@ -1129,32 +1129,32 @@
 `Manage guild`
 
 **Overload 5:**
-- [`channel`]: *Channel for updates*
-- [`URL`]: *YouTube channel/video URL*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`channel`\]: *Channel for updates*
+- \[`URL`\]: *YouTube channel/video URL*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 4:**
-- [`URL`]: *YouTube channel/video URL*
-- [`channel`]: *Channel for updates*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`URL`\]: *YouTube channel/video URL*
+- \[`channel`\]: *Channel for updates*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 3:**
-- [`string`]: *YouTube username or channel ID*
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`string`\]: *YouTube username or channel ID*
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 2:**
-- [`channel`]: *Channel for updates*
-- [`string`]: *YouTube username or channel ID*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`channel`\]: *Channel for updates*
+- \[`string`\]: *YouTube username or channel ID*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 1:**
-- [`string`]: *YouTube username or channel ID*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`string`\]: *YouTube username or channel ID*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 0:**
-- [`URL`]: *YouTube username or channel ID*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`URL`\]: *YouTube username or channel ID*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Examples:**
 
@@ -1178,7 +1178,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string`]: *YouTube channel URL or friendly name*
+- \[`string`\]: *YouTube channel URL or friendly name*
 
 **Examples:**
 

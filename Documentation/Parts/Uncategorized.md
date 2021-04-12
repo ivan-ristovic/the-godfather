@@ -15,17 +15,17 @@
 `Manage guild`
 
 **Overload 2:**
-- [`channel`]: *Channel for updates*
-- [`URL`]: *RSS feed URL*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`channel`\]: *Channel for updates*
+- \[`URL`\]: *RSS feed URL*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 1:**
-- [`URL`]: *RSS feed URL*
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`URL`\]: *RSS feed URL*
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 0:**
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -51,7 +51,7 @@
 `Manage guild`
 
 **Overload 0:**
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -76,12 +76,12 @@
 `Manage guild`
 
 **Overload 1:**
-- [`channel`]: *Channel for updates*
-- [`string`]: *Subreddit*
+- \[`channel`\]: *Channel for updates*
+- \[`string`\]: *Subreddit*
 
 **Overload 0:**
-- [`string`]: *Subreddit*
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
+- \[`string`\]: *Subreddit*
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -106,18 +106,18 @@
 `Manage guild`
 
 **Overload 2:**
-- [`channel`]: *Channel for updates*
-- [`URL`]: *Channel where to send updates*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`channel`\]: *Channel for updates*
+- \[`URL`\]: *Channel where to send updates*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 1:**
-- [`URL`]: *Channel where to send updates*
-- [`channel`]: *Channel for updates*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`URL`\]: *Channel where to send updates*
+- \[`channel`\]: *Channel for updates*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Overload 0:**
-- [`URL`]: *Channel where to send updates*
-- (optional) [`string...`]: *Friendly name* (def: `None`)
+- \[`URL`\]: *Channel where to send updates*
+- (optional) \[`string...`\]: *Friendly name* (def: `None`)
 
 **Examples:**
 
@@ -143,10 +143,10 @@
 `Manage guild`
 
 **Overload 1:**
-- [`int...`]: *ID(s)*
+- \[`int...`\]: *ID(s)*
 
 **Overload 0:**
-- [`string...`]: *Friendly name*
+- \[`string...`\]: *Friendly name*
 
 **Examples:**
 
@@ -171,7 +171,7 @@
 `Manage guild`
 
 **Overload 0:**
-- (optional) [`channel`]: *Channel for updates* (def: `None`)
+- (optional) \[`channel`\]: *Channel for updates* (def: `None`)
 
 **Examples:**
 
@@ -196,7 +196,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string`]: *Subreddit*
+- \[`string`\]: *Subreddit*
 
 **Examples:**
 
@@ -220,7 +220,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string...`]: *YouTube channel URL or friendly name*
+- \[`string...`\]: *YouTube channel URL or friendly name*
 
 **Examples:**
 

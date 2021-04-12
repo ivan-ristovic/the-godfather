@@ -19,15 +19,15 @@
 *No arguments.*
 
 **Overload 2:**
-- [`channel...`]: *Entities to block*
+- \[`channel...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`channel...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`channel...`\]: *Entities to block*
 
 **Overload 0:**
-- [`channel`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`channel`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -50,15 +50,15 @@
 
 
 **Overload 2:**
-- [`channel...`]: *Entities to block*
+- \[`channel...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`channel...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`channel...`\]: *Entities to block*
 
 **Overload 0:**
-- [`channel`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`channel`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -81,7 +81,7 @@
 
 
 **Overload 0:**
-- [`channel...`]: *Entities to unblock*
+- \[`channel...`\]: *Entities to unblock*
 
 **Examples:**
 
@@ -132,15 +132,15 @@
 *No arguments.*
 
 **Overload 2:**
-- [`guild...`]: *Entities to block*
+- \[`guild...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`guild...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`guild...`\]: *Entities to block*
 
 **Overload 0:**
-- [`guild`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`guild`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -163,15 +163,15 @@
 
 
 **Overload 2:**
-- [`guild...`]: *Entities to block*
+- \[`guild...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`guild...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`guild...`\]: *Entities to block*
 
 **Overload 0:**
-- [`guild`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`guild`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -194,7 +194,7 @@
 
 
 **Overload 0:**
-- [`guild...`]: *Entities to unblock*
+- \[`guild...`\]: *Entities to unblock*
 
 **Examples:**
 
@@ -245,15 +245,15 @@
 *No arguments.*
 
 **Overload 2:**
-- [`user...`]: *Entities to block*
+- \[`user...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`user...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`user...`\]: *Entities to block*
 
 **Overload 0:**
-- [`user`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`user`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -276,15 +276,15 @@
 
 
 **Overload 2:**
-- [`user...`]: *Entities to block*
+- \[`user...`\]: *Entities to block*
 
 **Overload 1:**
-- [`string`]: *Reason for the action*
-- [`user...`]: *Entities to block*
+- \[`string`\]: *Reason for the action*
+- \[`user...`\]: *Entities to block*
 
 **Overload 0:**
-- [`user`]: *Entities to block*
-- [`string...`]: *Reason for the action*
+- \[`user`\]: *Entities to block*
+- \[`string...`\]: *Reason for the action*
 
 **Examples:**
 
@@ -307,7 +307,7 @@
 
 
 **Overload 0:**
-- [`user...`]: *Entities to unblock*
+- \[`user...`\]: *Entities to unblock*
 
 **Examples:**
 
@@ -377,7 +377,7 @@
 
 
 **Overload 0:**
-- [`string...`]: *C# code snippet in a markdown code block*
+- \[`string...`\]: *C# code snippet in a markdown code block*
 
 **Examples:**
 
@@ -402,7 +402,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`string...`]: *Command name*
+- \[`string...`\]: *Command name*
 
 **Examples:**
 
@@ -461,7 +461,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`string...`]: *Announcement message*
+- \[`string...`\]: *Announcement message*
 
 **Examples:**
 
@@ -483,7 +483,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`URL`]: *Image URL*
+- \[`URL`\]: *Image URL*
 
 **Examples:**
 
@@ -509,7 +509,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 *No arguments.*
 
 **Overload 0:**
-- [`string...`]: *SQL query*
+- \[`string...`\]: *SQL query*
 
 **Examples:**
 
@@ -531,7 +531,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`string...`]: *C# code snippet in a markdown code block*
+- \[`string...`\]: *C# code snippet in a markdown code block*
 
 **Examples:**
 
@@ -556,7 +556,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- (optional) [`string...`]: *Output folder* (def: `None`)
+- (optional) \[`string...`\]: *Output folder* (def: `None`)
 
 **Examples:**
 
@@ -578,10 +578,10 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 1:**
-- [`guild...`]: *Guild names or IDs*
+- \[`guild...`\]: *Guild names or IDs*
 
 **Overload 0:**
-- [`unsigned long...`]: *Guild names or IDs*
+- \[`unsigned long...`\]: *Guild names or IDs*
 
 **Examples:**
 
@@ -604,11 +604,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 1:**
-- (optional) [`boolean`]: *Bypass current bot configuration?* (def: `False`)
+- (optional) \[`boolean`\]: *Bypass current bot configuration?* (def: `False`)
 
 **Overload 0:**
-- [`LogEventLevel`]: *Log event level*
-- [`string...`]: *Log message*
+- \[`LogEventLevel`\]: *Log event level*
+- \[`string...`\]: *Log message*
 
 **Examples:**
 
@@ -632,7 +632,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`string...`]: *New name*
+- \[`string...`\]: *New name*
 
 **Examples:**
 
@@ -677,9 +677,9 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`string`]: *`u` (User) or `c` (Channel)*
-- [`unsigned long`]: *ID*
-- [`string...`]: *Message to send*
+- \[`string`\]: *`u` (User) or `c` (Channel)*
+- \[`unsigned long`\]: *ID*
+- \[`string...`\]: *Message to send*
 
 **Examples:**
 
@@ -703,11 +703,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 1:**
-- [`time span`]: *Time until shutdown*
-- (optional) [`int`]: *Process exit code* (def: `0`)
+- \[`time span`\]: *Time until shutdown*
+- (optional) \[`int`\]: *Process exit code* (def: `0`)
 
 **Overload 0:**
-- (optional) [`int`]: *Process exit code* (def: `0`)
+- (optional) \[`int`\]: *Process exit code* (def: `0`)
 
 **Examples:**
 
@@ -733,8 +733,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`member`]: *Member*
-- [`string...`]: *Full command call with arguments*
+- \[`member`\]: *Member*
+- \[`string...`\]: *Full command call with arguments*
 
 **Examples:**
 
@@ -828,7 +828,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 *No arguments.*
 
 **Overload 0:**
-- [`user...`]: *User(s)*
+- \[`user...`\]: *User(s)*
 
 **Examples:**
 
@@ -850,7 +850,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`user...`]: *User(s)*
+- \[`user...`\]: *User(s)*
 
 **Examples:**
 
@@ -872,7 +872,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`user...`]: *User(s)*
+- \[`user...`\]: *User(s)*
 
 **Examples:**
 
@@ -923,8 +923,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 *No arguments.*
 
 **Overload 0:**
-- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-- [`string...`]: *Bot status*
+- \[`ActivityType`\]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- \[`string...`\]: *Bot status*
 
 **Examples:**
 
@@ -947,8 +947,8 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-- [`string...`]: *Bot status*
+- \[`ActivityType`\]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- \[`string...`\]: *Bot status*
 
 **Examples:**
 
@@ -970,7 +970,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- [`int...`]: *Bot status ID*
+- \[`int...`\]: *Bot status ID*
 
 **Examples:**
 
@@ -1015,11 +1015,11 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 1:**
-- [`ActivityType`]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
-- [`string...`]: *Bot status*
+- \[`ActivityType`\]: *Activity type (Playing/Watching/Streaming/ListeningTo)*
+- \[`string...`\]: *Bot status*
 
 **Overload 0:**
-- [`int`]: *Bot status ID*
+- \[`int`\]: *Bot status ID*
 
 **Examples:**
 
@@ -1042,7 +1042,7 @@ public Task Test(CommandContext ctx) => ctx.RespondAsync("Hello");
 
 
 **Overload 0:**
-- (optional) [`boolean`]: *Enable?* (def: `True`)
+- (optional) \[`boolean`\]: *Enable?* (def: `True`)
 
 **Examples:**
 

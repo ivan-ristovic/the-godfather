@@ -20,12 +20,12 @@
 *No arguments.*
 
 **Overload 1:**
-- [`emoji`]: *Emoji*
-- [`string...`]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
+- \[`string...`\]: *Reaction triggers*
 
 **Overload 0:**
-- [`string`]: *Reaction triggers*
-- [`emoji`]: *Emoji*
+- \[`string`\]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
 
 **Examples:**
 
@@ -51,12 +51,12 @@
 `Manage guild`
 
 **Overload 1:**
-- [`emoji`]: *Emoji*
-- [`string...`]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
+- \[`string...`\]: *Reaction triggers*
 
 **Overload 0:**
-- [`string`]: *Reaction triggers*
-- [`emoji`]: *Emoji*
+- \[`string`\]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
 
 **Examples:**
 
@@ -81,12 +81,12 @@
 `Manage guild`
 
 **Overload 1:**
-- [`emoji`]: *Emoji*
-- [`string...`]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
+- \[`string...`\]: *Reaction triggers*
 
 **Overload 0:**
-- [`string`]: *Reaction triggers*
-- [`emoji`]: *Emoji*
+- \[`string`\]: *Reaction triggers*
+- \[`emoji`\]: *Emoji*
 
 **Examples:**
 
@@ -111,13 +111,13 @@
 `Manage guild`
 
 **Overload 2:**
-- [`emoji`]: *Emoji*
+- \[`emoji`\]: *Emoji*
 
 **Overload 1:**
-- [`int...`]: *Reaction IDs to remove*
+- \[`int...`\]: *Reaction IDs to remove*
 
 **Overload 0:**
-- [`string...`]: *Reaction triggers*
+- \[`string...`\]: *Reaction triggers*
 
 **Examples:**
 
@@ -170,7 +170,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string...`]: *Reaction trigger*
+- \[`string...`\]: *Reaction trigger*
 
 **Examples:**
 
@@ -224,8 +224,8 @@
 *No arguments.*
 
 **Overload 0:**
-- [`string`]: *Reaction trigger*
-- [`string...`]: *Response*
+- \[`string`\]: *Reaction trigger*
+- \[`string...`\]: *Response*
 
 **Examples:**
 
@@ -250,8 +250,8 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string`]: *Reaction trigger*
-- [`string...`]: *Response*
+- \[`string`\]: *Reaction trigger*
+- \[`string...`\]: *Response*
 
 **Examples:**
 
@@ -275,8 +275,8 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string`]: *Reaction trigger*
-- [`string...`]: *Response*
+- \[`string`\]: *Reaction trigger*
+- \[`string...`\]: *Response*
 
 **Examples:**
 
@@ -300,10 +300,10 @@
 `Manage guild`
 
 **Overload 1:**
-- [`int...`]: *Reaction IDs to remove*
+- \[`int...`\]: *Reaction IDs to remove*
 
 **Overload 0:**
-- [`string...`]: *Reaction triggers*
+- \[`string...`\]: *Reaction triggers*
 
 **Examples:**
 
@@ -353,7 +353,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string...`]: *Reaction trigger*
+- \[`string...`\]: *Reaction trigger*
 
 **Examples:**
 

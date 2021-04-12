@@ -36,7 +36,7 @@
 
 
 **Overload 0:**
-- [`time span...`]: *Forward amount*
+- \[`time span...`\]: *Forward amount*
 
 **Examples:**
 
@@ -104,10 +104,10 @@
 
 
 **Overload 1:**
-- [`URL`]: *Audio URL*
+- \[`URL`\]: *Audio URL*
 
 **Overload 0:**
-- [`string...`]: *Search query*
+- \[`string...`\]: *Search query*
 
 **Examples:**
 
@@ -132,7 +132,7 @@
 
 
 **Overload 0:**
-- [`string...`]: *Audio URL*
+- \[`string...`\]: *Audio URL*
 
 **Examples:**
 
@@ -177,7 +177,7 @@
 
 
 **Overload 0:**
-- [`int`]: *Index (starting from 1)*
+- \[`int`\]: *Index (starting from 1)*
 
 **Examples:**
 
@@ -199,7 +199,7 @@
 
 
 **Overload 0:**
-- (optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
+- (optional) \[`RepeatMode`\]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
 
 **Examples:**
 
@@ -288,7 +288,7 @@
 
 
 **Overload 0:**
-- [`time span...`]: *Backward amount*
+- \[`time span...`\]: *Backward amount*
 
 **Examples:**
 
@@ -310,7 +310,7 @@
 
 
 **Overload 0:**
-- [`time span...`]: *Point to seek to*
+- \[`time span...`\]: *Point to seek to*
 
 **Examples:**
 
@@ -399,7 +399,7 @@
 
 
 **Overload 0:**
-- (optional) [`int`]: *Volume to set* (def: `100`)
+- (optional) \[`int`\]: *Volume to set* (def: `100`)
 
 **Examples:**
 
@@ -441,7 +441,7 @@
 
 
 **Overload 0:**
-- (optional) [`channel...`]: *Voice channel* (def: `None`)
+- (optional) \[`channel...`\]: *Voice channel* (def: `None`)
 
 **Examples:**
 

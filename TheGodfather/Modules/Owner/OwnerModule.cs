@@ -375,10 +375,10 @@ namespace TheGodfather.Modules.Owner
                                 if (arg.IsOptional)
                                     sb.Append("(optional) ");
 
-                                sb.Append("[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
+                                sb.Append(@"\[`").Append(ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type));
                                 if (arg.IsCatchAll)
                                     sb.Append("...");
-                                sb.Append("`]: *");
+                                sb.Append(@"`\]: *");
                                 if (string.IsNullOrWhiteSpace(arg.Description))
                                     sb.Append("No description provided.");
                                 else

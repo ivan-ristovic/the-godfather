@@ -11,7 +11,7 @@
 `8b`
 
 **Overload 0:**
-- [`string...`]: *A question for the Almighty 8Ball*
+- \[`string...`\]: *A question for the Almighty 8Ball*
 
 **Examples:**
 
@@ -35,20 +35,20 @@
 `Manage guild`
 
 **Overload 3:**
-- [`user`]: *Birthday boy/girl*
+- \[`user`\]: *Birthday boy/girl*
 
 **Overload 2:**
-- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+- (optional) \[`channel`\]: *Channel for birthday notifications* (def: `None`)
 
 **Overload 1:**
-- [`user`]: *Birthday boy/girl*
-- [`channel`]: *Channel for birthday notifications*
-- (optional) [`string`]: *Birthday date* (def: `None`)
+- \[`user`\]: *Birthday boy/girl*
+- \[`channel`\]: *Channel for birthday notifications*
+- (optional) \[`string`\]: *Birthday date* (def: `None`)
 
 **Overload 0:**
-- [`user`]: *Birthday boy/girl*
-- [`string`]: *Birthday date*
-- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+- \[`user`\]: *Birthday boy/girl*
+- \[`string`\]: *Birthday date*
+- (optional) \[`channel`\]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -74,14 +74,14 @@
 `Manage guild`
 
 **Overload 1:**
-- [`user`]: *Birthday boy/girl*
-- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
-- (optional) [`string`]: *Birthday date* (def: `None`)
+- \[`user`\]: *Birthday boy/girl*
+- (optional) \[`channel`\]: *Channel for birthday notifications* (def: `None`)
+- (optional) \[`string`\]: *Birthday date* (def: `None`)
 
 **Overload 0:**
-- [`user`]: *Birthday boy/girl*
-- [`string`]: *Birthday date*
-- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+- \[`user`\]: *Birthday boy/girl*
+- \[`string`\]: *Birthday date*
+- (optional) \[`channel`\]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -107,10 +107,10 @@
 `Manage guild`
 
 **Overload 1:**
-- [`user`]: *Birthday boy/girl*
+- \[`user`\]: *Birthday boy/girl*
 
 **Overload 0:**
-- [`channel`]: *Channel for birthday notifications*
+- \[`channel`\]: *Channel for birthday notifications*
 
 **Examples:**
 
@@ -160,10 +160,10 @@
 `Manage guild`
 
 **Overload 1:**
-- [`user`]: *Birthday boy/girl*
+- \[`user`\]: *Birthday boy/girl*
 
 **Overload 0:**
-- (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+- (optional) \[`channel`\]: *Channel for birthday notifications* (def: `None`)
 
 **Examples:**
 
@@ -209,7 +209,7 @@
 `coin, flip`
 
 **Overload 0:**
-- (optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
+- (optional) \[`int`\]: *Reciprocal coinflip ratio* (def: `1`)
 
 **Examples:**
 
@@ -230,7 +230,7 @@
 `die, roll`
 
 **Overload 0:**
-- (optional) [`int`]: *How many sides will the dice have?* (def: `6`)
+- (optional) \[`int`\]: *How many sides will the dice have?* (def: `6`)
 
 **Examples:**
 
@@ -253,7 +253,7 @@
 
 
 **Overload 0:**
-- [`role...`]: *Roles to add*
+- \[`role...`\]: *Roles to add*
 
 **Examples:**
 
@@ -278,7 +278,7 @@
 `Manage nicknames`
 
 **Overload 0:**
-- [`string...`]: *New name*
+- \[`string...`\]: *New name*
 
 **Examples:**
 
@@ -302,7 +302,7 @@
 `Manage roles`
 
 **Overload 0:**
-- [`role...`]: *Roles to add*
+- \[`role...`\]: *Roles to add*
 
 **Examples:**
 
@@ -326,10 +326,10 @@
 *No arguments.*
 
 **Overload 1:**
-- [`ModuleType`]: *Command module*
+- \[`ModuleType`\]: *Command module*
 
 **Overload 0:**
-- [`string...`]: *Command name*
+- \[`string...`\]: *Command name*
 
 **Examples:**
 
@@ -351,10 +351,10 @@
 `burn, ins, roast`
 
 **Overload 1:**
-- (optional) [`user`]: *User* (def: `None`)
+- (optional) \[`user`\]: *User* (def: `None`)
 
 **Overload 0:**
-- [`string...`]: *Insult target*
+- \[`string...`\]: *Insult target*
 
 **Examples:**
 
@@ -375,7 +375,7 @@
 `getinvite, inv`
 
 **Overload 0:**
-- (optional) [`time span`]: *Invite expiry time* (def: `None`)
+- (optional) \[`time span`\]: *Invite expiry time* (def: `None`)
 
 **Examples:**
 
@@ -417,7 +417,7 @@
 `l33t, 1337`
 
 **Overload 0:**
-- [`string...`]: *Text to repeat*
+- \[`string...`\]: *Text to repeat*
 
 **Examples:**
 
@@ -435,8 +435,8 @@
 
 
 **Overload 0:**
-- (optional) [`string`]: *Replacement string* (def: `None`)
-- (optional) [`string`]: *Replacement string* (def: `None`)
+- (optional) \[`string`\]: *Replacement string* (def: `None`)
+- (optional) \[`string`\]: *Replacement string* (def: `None`)
 
 **Examples:**
 
@@ -463,7 +463,7 @@
 *No arguments.*
 
 **Overload 0:**
-- [`string...`]: *Meme name*
+- \[`string...`\]: *Meme name*
 
 **Examples:**
 
@@ -488,12 +488,12 @@
 `Manage guild`
 
 **Overload 1:**
-- [`string`]: *Meme name*
-- (optional) [`URL`]: *Meme URL* (def: `None`)
+- \[`string`\]: *Meme name*
+- (optional) \[`URL`\]: *Meme URL* (def: `None`)
 
 **Overload 0:**
-- [`URL`]: *Meme URL*
-- [`string...`]: *Meme name*
+- \[`URL`\]: *Meme URL*
+- \[`string...`\]: *Meme name*
 
 **Examples:**
 
@@ -518,9 +518,9 @@
 `Use embeds`
 
 **Overload 0:**
-- [`string`]: *Meme template*
-- [`string`]: *Top text*
-- [`string`]: *Bottom text*
+- \[`string`\]: *Meme template*
+- \[`string`\]: *Top text*
+- \[`string`\]: *Bottom text*
 
 **Examples:**
 
@@ -544,7 +544,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`string...`]: *Meme name*
+- \[`string...`\]: *Meme name*
 
 **Examples:**
 
@@ -614,7 +614,7 @@
 
 
 **Overload 0:**
-- (optional) [`string...`]: *Meme template* (def: `None`)
+- (optional) \[`string...`\]: *Meme template* (def: `None`)
 
 **Examples:**
 
@@ -635,10 +635,10 @@
 `size, length, manhood, dick, dicksize`
 
 **Overload 1:**
-- [`member...`]: *Member(s)*
+- \[`member...`\]: *Member(s)*
 
 **Overload 0:**
-- [`user...`]: *User(s)*
+- \[`user...`\]: *User(s)*
 
 **Examples:**
 
@@ -662,10 +662,10 @@
 
 
 **Overload 1:**
-- [`member`]: *Member*
+- \[`member`\]: *Member*
 
 **Overload 0:**
-- (optional) [`user`]: *User* (def: `None`)
+- (optional) \[`user`\]: *User* (def: `None`)
 
 **Examples:**
 
@@ -709,7 +709,7 @@
 `Administrator`
 
 **Overload 0:**
-- (optional) [`string`]: *New command prefix* (def: `None`)
+- (optional) \[`string`\]: *New command prefix* (def: `None`)
 
 **Examples:**
 
@@ -742,7 +742,7 @@
 `select, choose`
 
 **Overload 0:**
-- [`string...`]: *Choice list (separated by comma)*
+- \[`string...`\]: *Choice list (separated by comma)*
 
 **Examples:**
 
@@ -762,7 +762,7 @@
 `chooseuser`
 
 **Overload 0:**
-- (optional) [`role`]: *Role* (def: `None`)
+- (optional) \[`role`\]: *Role* (def: `None`)
 
 **Examples:**
 
@@ -783,10 +783,10 @@
 `ranks, ranking, level, xp`
 
 **Overload 1:**
-- (optional) [`member`]: *Member* (def: `None`)
+- (optional) \[`member`\]: *Member* (def: `None`)
 
 **Overload 0:**
-- (optional) [`user`]: *User* (def: `None`)
+- (optional) \[`user`\]: *User* (def: `None`)
 
 **Examples:**
 
@@ -809,8 +809,8 @@
 `Manage guild`
 
 **Overload 0:**
-- [`short`]: *Rank*
-- [`string...`]: *Rank name*
+- \[`short`\]: *Rank*
+- \[`string...`\]: *Rank name*
 
 **Examples:**
 
@@ -832,7 +832,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`short`]: *Rank*
+- \[`short`\]: *Rank*
 
 **Examples:**
 
@@ -915,10 +915,10 @@
 `Attach files`
 
 **Overload 1:**
-- [`member...`]: *Member(s)*
+- \[`member...`\]: *Member(s)*
 
 **Overload 0:**
-- [`user...`]: *User(s)*
+- \[`user...`\]: *User(s)*
 
 **Examples:**
 
@@ -938,7 +938,7 @@
 
 
 **Overload 0:**
-- [`string...`]: *Issue to report*
+- \[`string...`\]: *Issue to report*
 
 **Examples:**
 
@@ -960,7 +960,7 @@
 
 
 **Overload 0:**
-- [`role...`]: *Roles to remove*
+- \[`role...`\]: *Roles to remove*
 
 **Examples:**
 
@@ -984,7 +984,7 @@
 `Manage roles`
 
 **Overload 0:**
-- [`role...`]: *Roles to remove*
+- \[`role...`\]: *Roles to remove*
 
 **Examples:**
 
@@ -1004,7 +1004,7 @@
 `repeat, echo`
 
 **Overload 0:**
-- [`string...`]: *Text to repeat*
+- \[`string...`\]: *Text to repeat*
 
 **Examples:**
 
@@ -1026,7 +1026,7 @@
 
 
 **Overload 0:**
-- (optional) [`member`]: *Member* (def: `None`)
+- (optional) \[`member`\]: *Member* (def: `None`)
 
 **Examples:**
 
@@ -1051,16 +1051,16 @@
 `Manage guild`
 
 **Overload 1:**
-- [`boolean`]: *Enable?*
-- [`emoji`]: *Emoji*
-- [`channel`]: *Channel*
-- (optional) [`int`]: *Sensitivity* (def: `None`)
+- \[`boolean`\]: *Enable?*
+- \[`emoji`\]: *Emoji*
+- \[`channel`\]: *Channel*
+- (optional) \[`int`\]: *Sensitivity* (def: `None`)
 
 **Overload 1:**
-- [`boolean`]: *Enable?*
-- [`channel`]: *Emoji*
-- (optional) [`emoji`]: *Channel* (def: `None`)
-- (optional) [`int`]: *Sensitivity* (def: `None`)
+- \[`boolean`\]: *Enable?*
+- \[`channel`\]: *Emoji*
+- (optional) \[`emoji`\]: *Channel* (def: `None`)
+- (optional) \[`int`\]: *Sensitivity* (def: `None`)
 
 **Overload 0:**
 
@@ -1091,7 +1091,7 @@
 `Manage guild`
 
 **Overload 0:**
-- [`channel`]: *Channel*
+- \[`channel`\]: *Channel*
 
 **Examples:**
 
@@ -1115,7 +1115,7 @@
 `Manage guild`
 
 **Overload 0:**
-- (optional) [`int`]: *Sensitivity* (def: `None`)
+- (optional) \[`int`\]: *Sensitivity* (def: `None`)
 
 **Examples:**
 
@@ -1136,7 +1136,7 @@
 `t`
 
 **Overload 0:**
-- (optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
+- (optional) \[`string...`\]: *IANA/Windows/Rails timezone ID* (def: `None`)
 
 **Examples:**
 
@@ -1157,7 +1157,7 @@
 `Send TTS messages`
 
 **Overload 0:**
-- [`string...`]: *Text to repeat*
+- \[`string...`\]: *Text to repeat*
 
 **Examples:**
 
@@ -1177,7 +1177,7 @@
 `unl33t`
 
 **Overload 0:**
-- [`string...`]: *Text to repeat*
+- \[`string...`\]: *Text to repeat*
 
 **Examples:**
 
