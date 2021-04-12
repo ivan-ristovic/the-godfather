@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Search
             if (res.Quotes.USD.VolumeDay is { })
                 emb.AddLocalizedTitleField("str-crypto-volume-24h", $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", inline: true);
             emb.AddLocalizedTitleField("str-crypto-change", $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", inline: true);
-            emb.WithLocalizedFooter("fmt-last-updated-at", null, res.UpdatedAt.ToString(culture.DateTimeFormat));
+            emb.WithLocalizedFooter("fmt-last-updated-at", null, this.Localization.GetLocalizedTime(ctx.Guild.Id, res.UpdatedAt));
             
             return emb;
 

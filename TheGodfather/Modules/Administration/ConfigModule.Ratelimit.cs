@@ -45,15 +45,15 @@ namespace TheGodfather.Modules.Administration
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-rl-enabled");
+                        emb.WithLocalizedDescription("evt-rl-enable");
                         emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
                         emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-rl-disabled");
+                        emb.WithLocalizedDescription("evt-rl-disable");
                     }
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-rl-enabled" : "evt-rl-disabled");
+                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-rl-enable" : "evt-rl-disable");
             }
 
             [GroupCommand, Priority(2)]
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable)
-                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick);
+                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.TemporaryMute);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
