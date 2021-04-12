@@ -53,8 +53,11 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelCreated)]
         public static Task ChannelCreateBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
+            if (e.Channel.GuildId is null)
+                return Task.CompletedTask;
+
             LogExt.Debug(bot.GetId(e.Guild.Id), "Adding newly created channel to backup service: {Channel}, {Guild}", e.Channel, e.Guild);
-            return bot.Services.GetRequiredService<BackupService>().AddChannelAsync(e.Channel.GuildId, e.Channel.Id);
+            return bot.Services.GetRequiredService<BackupService>().AddChannelAsync(e.Channel.GuildId.Value, e.Channel.Id);
         }
 
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
@@ -76,7 +79,10 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ChannelDeleted)]
         public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
         {
-            bot.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId, e.Channel.Id);
+            if (e.Channel.GuildId is null)
+                return Task.CompletedTask;
+
+            bot.Services.GetRequiredService<BackupService>().RemoveChannel(e.Channel.GuildId.Value, e.Channel.Id);
             LogExt.Debug(bot.GetId(e.Guild.Id), "Removed channel from backup service: {Channel}, {Guild}", e.Channel, e.Guild);
             return Task.CompletedTask;
         }

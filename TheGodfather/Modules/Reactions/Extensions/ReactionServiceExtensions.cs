@@ -20,7 +20,10 @@ namespace TheGodfather.Modules.Reactions.Extensions
 
         public static async Task HandleEmojiReactionsAsync(this ReactionsService service, DiscordClient shard, DiscordMessage msg)
         {
-            ulong gid = msg.Channel.GuildId;
+            if (msg.Channel.GuildId is null)
+                return;
+
+            ulong gid = msg.Channel.GuildId.Value;
 
             EmojiReaction? er = service.FindMatchingEmojiReactions(gid, msg.Content)
                 .Shuffle()
@@ -39,7 +42,10 @@ namespace TheGodfather.Modules.Reactions.Extensions
 
         public static async Task HandleTextReactionsAsync(this ReactionsService service, DiscordMessage msg)
         {
-            TextReaction? tr = service.FindMatchingTextReaction(msg.Channel.GuildId, msg.Content);
+            if (msg.Channel.GuildId is null)
+                return;
+
+            TextReaction? tr = service.FindMatchingTextReaction(msg.Channel.GuildId.Value, msg.Content);
             if (tr is { } && tr.CanSend())
                 await msg.Channel.SendMessageAsync(tr.Response.Replace("%user%", msg.Author.Mention));
         }

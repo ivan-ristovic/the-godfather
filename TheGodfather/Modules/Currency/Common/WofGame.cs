@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.user = user;
             this.bid = bid;
-            this.gid = channel.GuildId;
+            this.gid = channel.GuildId ?? throw new ArgumentException("Channel is private");
             this.currency = currency;
             this.index = new SecureRandom().Next(_multipliers.Length);
             if (_image is null) {

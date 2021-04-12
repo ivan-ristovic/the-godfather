@@ -10,7 +10,10 @@ namespace TheGodfather.Modules.Administration.Extensions
     {
         public static Task BackupAsync(this BackupService bs, DiscordMessage msg)
         {
-            ulong gid = msg.Channel.GuildId;
+            if (msg.Channel.GuildId is null)
+                return Task.CompletedTask;
+
+            ulong gid = msg.Channel.GuildId.Value;
             ulong cid = msg.ChannelId;
 
             if (!bs.IsBackupEnabledFor(gid) || bs.IsChannelExempted(gid, cid))

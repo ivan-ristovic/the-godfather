@@ -22,25 +22,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-rc3" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-rc3" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-rc3" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-rc3" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-rc3" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0" />
     <PackageReference Include="GiphyDotNet" Version="2.0.0" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.51.0.2238" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.51.0.2288" />
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.9.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.5" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Npgsql" Version="5.0.3" />
+    <PackageReference Include="Npgsql" Version="5.0.4" />
     <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
       <PrivateAssets>all</PrivateAssets>

@@ -287,6 +287,9 @@ namespace TheGodfather.EventListeners
 
         private static async Task SanitizeFilteredMessage(TheGodfatherBot bot, DiscordMessage msg)
         {
+            if (msg.Channel.GuildId is null)
+                return;
+
             if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
                 LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                 try {
@@ -302,7 +305,7 @@ namespace TheGodfather.EventListeners
 
             async Task SendErrorReportAsync()
             {
-                if (LoggingService.IsLogEnabledForGuild(bot, msg.Channel.GuildId, out LoggingService? logService, out LocalizedEmbedBuilder? emb)) {
+                if (LoggingService.IsLogEnabledForGuild(bot, msg.Channel.GuildId.Value, out LoggingService? logService, out LocalizedEmbedBuilder? emb)) {
                     emb.WithColor(DiscordColor.Red);
                     emb.WithLocalizedDescription("err-f", msg.Channel.Mention);
                     await logService.LogAsync(msg.Channel.Guild, emb);
