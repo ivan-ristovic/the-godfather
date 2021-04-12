@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -31,7 +29,8 @@ namespace TheGodfather.Modules.Search.Services
         private readonly string? key;
         private readonly IMemoryCache cache;
         private readonly SemaphoreSlim sem;
-        private readonly ConcurrentDictionary<string, string> ids;
+        private readonly ConcurrentDictionary<string, string> names;
+        private readonly ConcurrentDictionary<string, string> symbols;
         private DateTimeOffset? lastUpdateTime;
 
 
@@ -43,7 +42,8 @@ namespace TheGodfather.Modules.Search.Services
                 SizeLimit = CurrencyPoolSize,
             });
             this.sem = new SemaphoreSlim(1, 1);
-            this.ids = new ConcurrentDictionary<string, string>();
+            this.names = new ConcurrentDictionary<string, string>();
+            this.symbols = new ConcurrentDictionary<string, string>();
         }
 
 
@@ -106,7 +106,8 @@ namespace TheGodfather.Modules.Search.Services
                 throw new SearchServiceException<CryptoResponseStatus>(response.Status.ErrorMessage, response.Status);
 
             foreach (CryptoResponseData currency in response.Data) {
-                this.ids.AddOrUpdate(currency.Name, currency.Id, (_, _) => currency.Id);
+                this.names.AddOrUpdate(currency.Name.ToLowerInvariant(), currency.Id, (_, _) => currency.Id);
+                this.symbols.AddOrUpdate(currency.Symbol.ToLowerInvariant(), currency.Id, (_, _) => currency.Id);
                 var cacheEntryOptions = new MemoryCacheEntryOptions {
                     Size = 1,
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(CacheExpirationTimeSeconds)
@@ -119,12 +120,15 @@ namespace TheGodfather.Modules.Search.Services
 
         private CryptoResponseData? InternalConsultCache(string currency)
         {
-            if (!this.ids.Any())
+            if (!this.names.Any())
                 return null;
 
-            string key = this.ids.Keys.MinBy(k => k.LevenshteinDistanceTo(currency));
+            if (this.symbols.TryGetValue(currency, out string? id))
+                return cache.Get<CryptoResponseData>(id);
+
+            string key = this.names.Keys.MinBy(k => k.LevenshteinDistanceTo(currency));
             return key.LevenshteinDistanceTo(currency) < 3
-                ? cache.Get<CryptoResponseData>(this.ids[key])
+                ? cache.Get<CryptoResponseData>(this.names[key])
                 : null;
         }
     }
