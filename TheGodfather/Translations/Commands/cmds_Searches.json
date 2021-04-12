@@ -6,7 +6,14 @@
   },
   "cryptocurrency": {
     "usage": [
+      [],
       [ "arg-crypto" ]
+    ]
+  },
+  "cryptocurrency list": {
+    "usage": [
+      [],
+      [ "arg-ten" ]
     ]
   },
   "dog": {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -17,11 +18,12 @@ namespace TheGodfather.Modules.Search.Services
 {
     public sealed class CryptoCurrencyService : TheGodfatherHttpService
     {
+        public const int CurrencyPoolSize = 500;
+
         private const string Endpoint = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
         private const string SlugUrl = "https://coinmarketcap.com/currencies/{0}";
         private const string CoinUrl = "https://s3.coinmarketcap.com/static/img/coins/128x128/{0}.png";
         private const string GraphUrl = "https://s3.coinmarketcap.com/generated/sparklines/web/7d/usd/{0}.png";
-        private const int CurrencyPoolSize = 500;
         private const int CacheExpirationTimeSeconds = 3600;
 
         public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
@@ -90,6 +92,41 @@ namespace TheGodfather.Modules.Search.Services
             }
 
             return null;
+        }
+
+        public async Task<IReadOnlyList<CryptoResponseData>?> GetAllAsync(int start = 0, int amount = 10)
+        {
+            if (this.IsDisabled)
+                return null;
+
+            var res = new List<CryptoResponseData>();
+
+            await this.sem.WaitAsync();
+            try {
+                if (lastUpdateTime is null || (DateTimeOffset.Now - lastUpdateTime.Value).TotalSeconds > CacheExpirationTimeSeconds)
+                    await this.InternalTryUpdateCacheAsync();
+
+                foreach (string id in this.names.OrderBy(kvp => kvp.Value).Select(kvp => kvp.Value).Skip(start).Take(amount)) {
+                    CryptoResponseData? data = this.cache.Get<CryptoResponseData>(id);
+                    if (data is not null)
+                        res.Add(data);
+                }
+            } catch (HttpRequestException e) {
+                Log.Error(e, "Failed to fetch crypto API JSON.");
+                throw new SearchServiceException<CryptoResponseStatus>(e.Message, new CryptoResponseStatus {
+                    ErrorCode = e.StatusCode is null ? 400 : (int)e.StatusCode,
+                    ErrorMessage = e.Message,
+                });
+            } catch (JsonSerializationException e) {
+                Log.Error(e, "Failed to deserialize crypto API JSON.");
+            } catch (SearchServiceException<CryptoResponseStatus> e) {
+                Log.Error(e, "Failed to retrieve crypto API data.");
+                throw;
+            } finally {
+                this.sem.Release();
+            }
+
+            return res;
         }
 
 

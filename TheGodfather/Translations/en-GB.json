@@ -604,6 +604,7 @@
   "desc-shop-name": "Item name",
   "desc-shop-price": "Item price",
   "desc-sql": "SQL query",
+  "desc-start-index": "Index from which to list",
   "desc-status": "Bot status",
   "desc-status-id": "Bot status ID",
   "desc-sub": "Subreddit",
