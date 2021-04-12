@@ -14,6 +14,7 @@
 
 **Overload 0:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -36,6 +37,7 @@
 
 **Overload 0:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -58,8 +60,11 @@
 
 **Overload 1:**
 - [`string`]: *New currency*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -85,9 +90,11 @@
 **Overload 1:**
 - [`member`]: *Member*
 - [`long`]: *Amount*
+
 **Overload 0:**
 - [`long`]: *Amount*
 - [`member`]: *Member*
+
 **Examples:**
 
 ```xml
@@ -109,7 +116,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -130,7 +139,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -151,7 +162,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -174,9 +187,11 @@
 **Overload 1:**
 - [`member`]: *Member*
 - [`long`]: *Amount*
+
 **Overload 0:**
 - [`long`]: *Amount*
 - [`member`]: *Member*
+
 **Examples:**
 
 ```xml
@@ -202,6 +217,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`boolean`]: *Globally?* (def: `False`)
+
 **Examples:**
 
 ```xml
@@ -221,7 +237,9 @@
 `vegas, cs, cas`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -241,6 +259,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Bid amount* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -260,6 +279,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Bid amount* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -278,7 +298,9 @@
 `help, h, ruling, rule, info`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -298,6 +320,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Total balance for each user* (def: `1000`)
+
 **Examples:**
 
 ```xml
@@ -316,7 +339,9 @@
 `+, compete, enter, j, <<, <`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -335,7 +360,9 @@
 `help, h, ruling, rule`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -355,6 +382,7 @@
 
 **Overload 0:**
 - [`int...`]: *3 numbers*
+
 **Examples:**
 
 ```xml
@@ -374,6 +402,7 @@
 
 **Overload 0:**
 - [`int...`]: *3 numbers*
+
 **Examples:**
 
 ```xml
@@ -392,7 +421,9 @@
 `help, h, ruling, rule`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -412,8 +443,10 @@
 
 **Overload 1:**
 - (optional) [`long`]: *Bid* (def: `5`)
+
 **Overload 0:**
 - [`string...`]: *Bid*
+
 **Examples:**
 
 ```xml
@@ -433,8 +466,10 @@
 
 **Overload 1:**
 - (optional) [`long`]: *Bid* (def: `5`)
+
 **Overload 0:**
 - [`string...`]: *Bid*
+
 **Examples:**
 
 ```xml
@@ -471,9 +506,11 @@
 **Overload 1:**
 - [`long`]: *Bid amount*
 - [`string`]: *Heads/Tails*
+
 **Overload 0:**
 - [`string`]: *Heads/Tails*
 - (optional) [`long`]: *Bid amount* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -497,6 +534,7 @@
 **Overload 0:**
 - [`int`]: *Dice outcome (1-6)*
 - (optional) [`long`]: *Bid amount* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -517,7 +555,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -542,9 +582,11 @@
 **Overload 1:**
 - [`long`]: *Item price*
 - [`string...`]: *Item name*
+
 **Overload 0:**
 - [`string`]: *Item name*
 - [`long`]: *Item price*
+
 **Examples:**
 
 ```xml
@@ -567,8 +609,10 @@
 
 **Overload 1:**
 - [`int...`]: *Item IDs*
+
 **Overload 1:**
 - [`string`]: *Item name*
+
 **Examples:**
 
 ```xml
@@ -593,6 +637,7 @@
 
 **Overload 1:**
 - [`int...`]: *Item IDs to remove*
+
 **Examples:**
 
 ```xml
@@ -616,7 +661,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -637,7 +684,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -659,6 +708,7 @@
 
 **Overload 0:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -681,6 +731,7 @@
 
 **Overload 0:**
 - [`int...`]: *Item IDs*
+
 **Examples:**
 
 ```xml
@@ -701,7 +752,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -720,7 +773,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -741,7 +796,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

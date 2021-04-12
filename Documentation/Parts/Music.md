@@ -13,7 +13,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -35,6 +37,7 @@
 
 **Overload 0:**
 - [`time span...`]: *Forward amount*
+
 **Examples:**
 
 ```xml
@@ -55,7 +58,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -76,7 +81,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -98,8 +105,10 @@
 
 **Overload 1:**
 - [`URL`]: *Audio URL*
+
 **Overload 0:**
 - [`string...`]: *Search query*
+
 **Examples:**
 
 ```xml
@@ -124,6 +133,7 @@
 
 **Overload 0:**
 - [`string...`]: *Audio URL*
+
 **Examples:**
 
 ```xml
@@ -144,7 +154,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -166,6 +178,7 @@
 
 **Overload 0:**
 - [`int`]: *Index (starting from 1)*
+
 **Examples:**
 
 ```xml
@@ -187,6 +200,7 @@
 
 **Overload 0:**
 - (optional) [`RepeatMode`]: *Repeat mode (0 - none, 1 - single, A - all)* (def: `Single`)
+
 **Examples:**
 
 ```xml
@@ -205,7 +219,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -226,7 +242,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -247,7 +265,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -269,6 +289,7 @@
 
 **Overload 0:**
 - [`time span...`]: *Backward amount*
+
 **Examples:**
 
 ```xml
@@ -290,6 +311,7 @@
 
 **Overload 0:**
 - [`time span...`]: *Point to seek to*
+
 **Examples:**
 
 ```xml
@@ -310,7 +332,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -331,7 +355,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -350,7 +376,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -372,6 +400,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Volume to set* (def: `100`)
+
 **Examples:**
 
 ```xml
@@ -413,6 +442,7 @@
 
 **Overload 0:**
 - (optional) [`channel...`]: *Voice channel* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -435,7 +465,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

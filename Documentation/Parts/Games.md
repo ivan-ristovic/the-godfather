@@ -11,7 +11,9 @@
 `cards`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -31,6 +33,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Amount of cards to draw* (def: `1`)
+
 **Examples:**
 
 ```xml
@@ -49,7 +52,9 @@
 `new, opennew, open`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -68,7 +73,9 @@
 `games, gm`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -89,7 +96,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -110,7 +119,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -132,8 +143,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -155,7 +168,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -177,6 +192,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Time for a move* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -198,7 +214,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -220,8 +238,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -243,7 +263,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -265,6 +287,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Time for a move* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -286,7 +309,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -308,8 +333,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -331,7 +358,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -353,6 +382,7 @@
 
 **Overload 0:**
 - [`member`]: *Member*
+
 **Examples:**
 
 ```xml
@@ -374,7 +404,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -396,8 +428,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -419,7 +453,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -440,7 +476,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -461,7 +499,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -483,8 +523,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -506,7 +548,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -525,7 +569,9 @@
 `globalstats`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -547,6 +593,7 @@
 - (optional) [`int`]: *Rows* (def: `9`)
 - (optional) [`int`]: *Columns* (def: `9`)
 - (optional) [`int`]: *Bombs* (def: `10`)
+
 **Examples:**
 
 ```xml
@@ -566,7 +613,9 @@
 `help, h, ruling, rule`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -587,7 +636,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -608,7 +659,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -629,7 +682,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -651,8 +706,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -674,7 +731,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -696,6 +755,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Time for a move* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -717,7 +777,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -739,8 +801,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -762,7 +826,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -786,12 +852,16 @@
 - [`int`]: *ID of the quiz category*
 - (optional) [`int`]: *Amount of questions* (def: `10`)
 - (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
+
 **Overload 1:**
 - [`string`]: *ID of the quiz category*
 - (optional) [`int`]: *Difficulty (0, 1, 2)* (def: `0`)
 - (optional) [`int`]: *Amount of questions* (def: `10`)
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -815,6 +885,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Amount of questions* (def: `10`)
+
 **Examples:**
 
 ```xml
@@ -837,6 +908,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Amount of questions* (def: `10`)
+
 **Examples:**
 
 ```xml
@@ -859,8 +931,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -882,7 +956,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -901,7 +977,9 @@
 `rockpaperscissors`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -920,7 +998,9 @@
 `help, h, ruling, rule`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -941,7 +1021,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -962,7 +1044,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -984,8 +1068,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1007,7 +1093,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1027,8 +1115,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1051,6 +1141,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Time for a move* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1072,7 +1163,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1094,8 +1187,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1117,7 +1212,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1138,7 +1235,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1159,7 +1258,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1181,8 +1282,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1204,7 +1307,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

@@ -18,8 +18,11 @@
 
 **Overload 1:**
 - [`user`]: *User*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -45,6 +48,7 @@
 **Overload 0:**
 - [`user`]: *User*
 - [`string...`]: *Reason for the action*
+
 **Examples:**
 
 ```xml
@@ -68,6 +72,7 @@
 
 **Overload 1:**
 - [`user...`]: *User(s)*
+
 **Examples:**
 
 ```xml
@@ -91,6 +96,7 @@
 
 **Overload 0:**
 - [`date and time`]: *When?*
+
 **Examples:**
 
 ```xml
@@ -114,6 +120,7 @@
 
 **Overload 0:**
 - [`date and time`]: *When?*
+
 **Examples:**
 
 ```xml
@@ -137,6 +144,7 @@
 
 **Overload 0:**
 - [`user...`]: *User(s)*
+
 **Examples:**
 
 ```xml
@@ -159,7 +167,9 @@
 `View audit log`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -183,8 +193,11 @@
 
 **Overload 1:**
 - [`user`]: *User*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -208,9 +221,12 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -235,6 +251,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -258,6 +275,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to remove*
+
 **Examples:**
 
 ```xml
@@ -280,7 +298,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -303,7 +323,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -327,6 +349,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel to view* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -367,6 +390,7 @@
 
 **Overload 0:**
 - [`string...`]: *Category name*
+
 **Examples:**
 
 ```xml
@@ -392,14 +416,17 @@
 - [`string`]: *Channel name*
 - (optional) [`channel`]: *Parent category* (def: `None`)
 - (optional) [`boolean`]: *NSFW?* (def: `False`)
+
 **Overload 1:**
 - [`string`]: *Channel name*
 - (optional) [`boolean`]: *NSFW?* (def: `False`)
 - (optional) [`channel`]: *Parent category* (def: `None`)
+
 **Overload 0:**
 - [`channel`]: *Parent category*
 - [`string`]: *Channel name*
 - (optional) [`boolean`]: *NSFW?* (def: `False`)
+
 **Examples:**
 
 ```xml
@@ -431,16 +458,19 @@
 - (optional) [`channel`]: *Parent category* (def: `None`)
 - (optional) [`int`]: *User limit* (def: `None`)
 - (optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *Voice channel name*
 - (optional) [`int`]: *User limit* (def: `None`)
 - (optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
 - (optional) [`channel`]: *Parent category* (def: `None`)
+
 **Overload 0:**
 - [`channel`]: *Parent category*
 - [`string`]: *Voice channel name*
 - (optional) [`int`]: *User limit* (def: `None`)
 - (optional) [`int`]: *Channel bitrate [8-128]* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -470,8 +500,10 @@
 **Overload 1:**
 - [`channel`]: *Channel to clone*
 - (optional) [`string...`]: *Channel to clone* (def: `None`)
+
 **Overload 0:**
 - (optional) [`string...`]: *Channel to clone* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -499,8 +531,10 @@
 **Overload 1:**
 - [`channel`]: *Channel to delete*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Reason for the action*
+
 **Examples:**
 
 ```xml
@@ -526,6 +560,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel to view* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -570,10 +605,12 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Bitrate*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Bitrate*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -600,12 +637,15 @@
 - [`channel`]: *Channel to modify*
 - [`string`]: *Name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *Name*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Reason for the action*
+
 **Examples:**
 
 ```xml
@@ -632,13 +672,16 @@
 - [`channel`]: *Channel to modify*
 - [`boolean`]: *Name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`boolean`]: *Name*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`boolean`]: *Reason for the action*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -664,9 +707,11 @@
 
 **Overload 1:**
 - [`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
+
 **Overload 0:**
 - [`string`]: *Reason for the action*
 - [`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
+
 **Examples:**
 
 ```xml
@@ -692,13 +737,16 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Position*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`int`]: *Position*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Position*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -725,13 +773,16 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -758,11 +809,14 @@
 - [`string`]: *Reason for the action*
 - [`channel`]: *Channel to modify*
 - [`string...`]: *Channel topic*
+
 **Overload 1:**
 - [`channel`]: *Channel to modify*
 - [`string...`]: *Channel topic*
+
 **Overload 0:**
 - [`string...`]: *Channel topic*
+
 **Examples:**
 
 ```xml
@@ -790,10 +844,12 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *User limit*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *User limit*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -820,10 +876,12 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Bitrate*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Bitrate*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -850,12 +908,15 @@
 - [`channel`]: *Channel to modify*
 - [`string`]: *Name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *Name*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Reason for the action*
+
 **Examples:**
 
 ```xml
@@ -884,13 +945,16 @@
 - [`channel`]: *Channel to modify*
 - [`boolean`]: *Name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`boolean`]: *Name*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`boolean`]: *Reason for the action*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -916,9 +980,11 @@
 
 **Overload 1:**
 - [`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
+
 **Overload 0:**
 - [`string`]: *Reason for the action*
 - [`channel...`]: *Channels to reorganize, including exactly one category to set as the parent*
+
 **Examples:**
 
 ```xml
@@ -944,13 +1010,16 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Position*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`int`]: *Position*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Position*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -977,13 +1046,16 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1010,11 +1082,14 @@
 - [`string`]: *Reason for the action*
 - [`channel`]: *Channel to modify*
 - [`string...`]: *Channel topic*
+
 **Overload 1:**
 - [`channel`]: *Channel to modify*
 - [`string...`]: *Channel topic*
+
 **Overload 0:**
 - [`string...`]: *Channel topic*
+
 **Examples:**
 
 ```xml
@@ -1042,10 +1117,12 @@
 - [`channel`]: *Channel to modify*
 - [`int`]: *User limit*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *User limit*
 - [`channel`]: *Channel to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1073,15 +1150,19 @@
 **Overload 3:**
 - (optional) [`member`]: *Member* (def: `None`)
 - (optional) [`channel`]: *Channel to modify* (def: `None`)
+
 **Overload 2:**
 - [`channel`]: *Channel to modify*
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 1:**
 - [`role`]: *Role*
 - (optional) [`channel`]: *Channel to modify* (def: `None`)
+
 **Overload 0:**
 - [`channel`]: *Channel to modify*
 - [`role`]: *Role*
+
 **Examples:**
 
 ```xml
@@ -1106,8 +1187,10 @@
 
 **Overload 1:**
 - (optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Command/Group full name*
+
 **Examples:**
 
 ```xml
@@ -1134,9 +1217,11 @@
 **Overload 1:**
 - [`channel`]: *Channel(s) affected by this action*
 - [`string...`]: *Command or group to allow*
+
 **Overload 0:**
 - [`string`]: *Command or group to allow*
 - [`channel...`]: *Channel(s) affected by this action*
+
 **Examples:**
 
 ```xml
@@ -1161,7 +1246,9 @@
 `Administrator`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1186,9 +1273,11 @@
 **Overload 0:**
 - [`string`]: *Command or group to forbid*
 - [`channel...`]: *Channel(s) affected by this action*
+
 **Overload 0:**
 - [`channel`]: *Channel(s) affected by this action*
 - [`string`]: *Command or group to forbid*
+
 **Examples:**
 
 ```xml
@@ -1214,8 +1303,10 @@
 
 **Overload 1:**
 - [`string...`]: *Command/Group full name*
+
 **Overload 0:**
 - (optional) [`channel`]: *Channel in which to search for active rules* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1240,7 +1331,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1264,8 +1357,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable action history?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1293,25 +1389,32 @@
 - [`short`]: *Sensitivity*
 - (optional) [`PunishmentAction`]: *Punishment action* (def: `Kick`)
 - (optional) [`time span`]: *Cooldown timespan* (def: `None`)
+
 **Overload 4:**
 - [`boolean`]: *Enable?*
 - [`PunishmentAction`]: *Punishment action*
 - (optional) [`short`]: *Sensitivity* (def: `5`)
 - (optional) [`time span`]: *Cooldown timespan* (def: `None`)
+
 **Overload 3:**
 - [`boolean`]: *Enable?*
 - [`PunishmentAction`]: *Punishment action*
 - (optional) [`time span`]: *Cooldown timespan* (def: `None`)
 - (optional) [`short`]: *Sensitivity* (def: `5`)
+
 **Overload 2:**
 - [`boolean`]: *Enable?*
 - [`time span`]: *Cooldown timespan*
 - (optional) [`PunishmentAction`]: *Punishment action* (def: `Kick`)
 - (optional) [`short`]: *Sensitivity* (def: `5`)
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1339,6 +1442,7 @@
 
 **Overload 0:**
 - (optional) [`Nullable`1`]: *Punishment action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1363,6 +1467,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Cooldown timespan* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1386,7 +1491,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1410,6 +1517,7 @@
 
 **Overload 0:**
 - (optional) [`short`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1436,14 +1544,19 @@
 - [`boolean`]: *Enable?*
 - [`short`]: *Sensitivity*
 - (optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
+
 **Overload 2:**
 - [`boolean`]: *Enable?*
 - [`PunishmentAction`]: *Punishment action*
 - (optional) [`short`]: *Sensitivity* (def: `5`)
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1470,6 +1583,7 @@
 
 **Overload 0:**
 - (optional) [`Nullable`1`]: *Punishment action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1494,10 +1608,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to exempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to exempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to exempt*
+
 **Examples:**
 
 ```xml
@@ -1522,7 +1639,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1546,6 +1665,7 @@
 
 **Overload 0:**
 - (optional) [`short`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1570,10 +1690,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to unexempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to unexempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to unexempt*
+
 **Examples:**
 
 ```xml
@@ -1601,14 +1724,19 @@
 - [`boolean`]: *Enable?*
 - [`short`]: *Sensitivity*
 - (optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
+
 **Overload 2:**
 - [`boolean`]: *Enable?*
 - [`PunishmentAction`]: *Punishment action*
 - (optional) [`short`]: *Sensitivity* (def: `5`)
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1635,6 +1763,7 @@
 
 **Overload 0:**
 - (optional) [`Nullable`1`]: *Punishment action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1659,10 +1788,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to exempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to exempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to exempt*
+
 **Examples:**
 
 ```xml
@@ -1687,7 +1819,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1711,6 +1845,7 @@
 
 **Overload 0:**
 - (optional) [`short`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1735,10 +1870,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to unexempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to unexempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to unexempt*
+
 **Examples:**
 
 ```xml
@@ -1764,8 +1902,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1789,7 +1930,9 @@
 `Administrator, Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1813,6 +1956,7 @@
 
 **Overload 0:**
 - [`channel...`]: *Channel(s) to exempt*
+
 **Examples:**
 
 ```xml
@@ -1836,6 +1980,7 @@
 
 **Overload 0:**
 - [`channel...`]: *Channel(s) to unexempt*
+
 **Examples:**
 
 ```xml
@@ -1859,8 +2004,11 @@
 
 **Overload 1:**
 - [`string`]: *New currency*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1887,10 +2035,14 @@
 **Overload 2:**
 - [`boolean`]: *Enable?*
 - [`short`]: *Sensitivity*
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1916,6 +2068,7 @@
 
 **Overload 0:**
 - (optional) [`short`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1939,7 +2092,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1964,8 +2119,11 @@
 **Overload 1:**
 - [`boolean`]: *Enable leave messages?*
 - (optional) [`channel`]: *Channel where to send leave messages* (def: `None`)
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1990,6 +2148,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel where to send leave messages* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2013,6 +2172,7 @@
 
 **Overload 0:**
 - [`string...`]: *Leave message*
+
 **Examples:**
 
 ```xml
@@ -2036,8 +2196,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable silent level ups?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2062,8 +2225,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2087,8 +2253,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2112,8 +2281,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2137,8 +2309,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2162,8 +2337,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2187,8 +2365,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2212,8 +2393,11 @@
 
 **Overload 1:**
 - [`string`]: *New locale*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2237,7 +2421,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2261,6 +2447,7 @@
 
 **Overload 0:**
 - [`string`]: *New locale*
+
 **Examples:**
 
 ```xml
@@ -2285,12 +2472,17 @@
 **Overload 3:**
 - [`boolean`]: *Enable?*
 - [`channel`]: *New locale*
+
 **Overload 2:**
 - [`channel`]: *New locale*
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2316,10 +2508,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to exempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to exempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to exempt*
+
 **Examples:**
 
 ```xml
@@ -2345,10 +2540,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to unexempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to unexempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to unexempt*
+
 **Examples:**
 
 ```xml
@@ -2374,6 +2572,7 @@
 
 **Overload 0:**
 - (optional) [`role`]: *New mute role* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2400,14 +2599,19 @@
 - [`boolean`]: *Enable?*
 - [`short`]: *Sensitivity*
 - (optional) [`PunishmentAction`]: *Punishment action* (def: `TemporaryMute`)
+
 **Overload 2:**
 - [`boolean`]: *Enable?*
 - [`PunishmentAction`]: *Punishment action*
 - (optional) [`short`]: *Sensitivity* (def: `5`)
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2434,6 +2638,7 @@
 
 **Overload 0:**
 - (optional) [`Nullable`1`]: *Punishment action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2458,10 +2663,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to exempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to exempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to exempt*
+
 **Examples:**
 
 ```xml
@@ -2486,7 +2694,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2510,6 +2720,7 @@
 
 **Overload 0:**
 - (optional) [`short`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2534,10 +2745,13 @@
 
 **Overload 2:**
 - [`member...`]: *User(s) to unexempt*
+
 **Overload 1:**
 - [`role...`]: *Role(s) to unexempt*
+
 **Overload 0:**
 - [`channel...`]: *Channel(s) to unexempt*
+
 **Examples:**
 
 ```xml
@@ -2562,7 +2776,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2586,6 +2802,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel where to execute the setup* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2610,8 +2827,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable silent replies?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2636,8 +2856,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable command suggestions?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2661,9 +2884,12 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string...`]: *IANA/Windows/Rails timezone ID*
+
 **Examples:**
 
 ```xml
@@ -2687,7 +2913,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2711,6 +2939,7 @@
 
 **Overload 0:**
 - (optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2734,7 +2963,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2757,7 +2988,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2781,6 +3014,7 @@
 
 **Overload 0:**
 - [`string...`]: *IANA/Windows/Rails timezone ID*
+
 **Examples:**
 
 ```xml
@@ -2804,8 +3038,11 @@
 
 **Overload 1:**
 - [`boolean`]: *Enable verbose replies?*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2831,8 +3068,11 @@
 **Overload 1:**
 - [`boolean`]: *Enable welcome messages?*
 - (optional) [`channel`]: *Channel where to send welcome messages* (def: `None`)
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -2857,6 +3097,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel where to send welcome messages* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2880,6 +3121,7 @@
 
 **Overload 0:**
 - [`string...`]: *Welcome message*
+
 **Examples:**
 
 ```xml
@@ -2902,9 +3144,12 @@
 `Manage emoji`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`emoji`]: *Emoji to view*
+
 **Examples:**
 
 ```xml
@@ -2931,15 +3176,19 @@
 **Overload 3:**
 - [`string`]: *Name for the emoji*
 - (optional) [`URL`]: *Emoji URL* (def: `None`)
+
 **Overload 2:**
 - [`URL`]: *Emoji URL*
 - [`string`]: *Name for the emoji*
+
 **Overload 1:**
 - [`string`]: *Name for the emoji*
 - [`emoji`]: *Emoji from another guild*
+
 **Overload 0:**
 - [`emoji`]: *Emoji from another guild*
 - (optional) [`string`]: *Name for the emoji* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2965,6 +3214,7 @@
 **Overload 0:**
 - [`emoji`]: *Emoji to delete*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -2989,6 +3239,7 @@
 
 **Overload 0:**
 - [`emoji`]: *Emoji to view*
+
 **Examples:**
 
 ```xml
@@ -3013,7 +3264,9 @@
 `Manage emoji`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 </p></details>
 
 ---
@@ -3034,10 +3287,12 @@
 - [`emoji`]: *Emoji to modify*
 - [`string`]: *Name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`string`]: *Name*
 - [`emoji`]: *Emoji to modify*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3060,9 +3315,12 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string...`]: *Filter patterns (regular expressions, case insensitive)*
+
 **Examples:**
 
 ```xml
@@ -3087,6 +3345,7 @@
 
 **Overload 0:**
 - [`string...`]: *Filter patterns (regular expressions, case insensitive)*
+
 **Examples:**
 
 ```xml
@@ -3110,8 +3369,10 @@
 
 **Overload 1:**
 - [`int...`]: *IDs of filters to remove*
+
 **Overload 0:**
 - [`string...`]: *Filters to remove*
+
 **Examples:**
 
 ```xml
@@ -3135,7 +3396,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3158,7 +3421,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3183,9 +3448,12 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string...`]: *Forbidden name patterns (regular expressions, case insensitive)*
+
 **Examples:**
 
 ```xml
@@ -3212,6 +3480,7 @@
 
 **Overload 0:**
 - [`string...`]: *Forbidden name patterns (regular expressions, case insensitive)*
+
 **Examples:**
 
 ```xml
@@ -3237,8 +3506,10 @@
 
 **Overload 1:**
 - [`int...`]: *IDs of forbidden names to remove*
+
 **Overload 0:**
 - [`string...`]: *Forbidden names to remove*
+
 **Examples:**
 
 ```xml
@@ -3264,7 +3535,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3289,7 +3562,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3310,7 +3585,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3333,7 +3610,9 @@
 `View audit log`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3357,8 +3636,11 @@
 
 **Overload 1:**
 - [`URL`]: *Icon URL*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3380,7 +3662,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3405,6 +3689,7 @@
 **Overload 0:**
 - (optional) [`int`]: *Amount of log entries to fetch* (def: `10`)
 - (optional) [`member`]: *Filter by member* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3426,7 +3711,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3454,25 +3741,33 @@
 - [`int`]: *Days of inactivity*
 - [`string`]: *Reason for the action*
 - [`role...`]: *Additional roles to prune*
+
 **Overload 5:**
 - [`string`]: *Reason for the action*
 - [`int`]: *Days of inactivity*
 - [`role...`]: *Additional roles to prune*
+
 **Overload 4:**
 - [`string`]: *Reason for the action*
 - [`role...`]: *Additional roles to prune*
+
 **Overload 3:**
 - [`int`]: *Days of inactivity*
 - [`role...`]: *Additional roles to prune*
+
 **Overload 2:**
 - [`int`]: *Days of inactivity*
 - [`role`]: *Additional roles to prune*
 - [`string...`]: *Reason for the action*
+
 **Overload 1:**
 - [`int`]: *Days of inactivity*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3498,6 +3793,7 @@
 
 **Overload 0:**
 - [`string...`]: *New name*
+
 **Examples:**
 
 ```xml
@@ -3524,11 +3820,15 @@
 **Overload 2:**
 - [`short`]: *Rank*
 - [`role`]: *Role to grant*
+
 **Overload 1:**
 - [`role`]: *Role to grant*
 - [`short`]: *Rank*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3557,9 +3857,11 @@
 **Overload 1:**
 - [`role`]: *Role to grant*
 - [`short`]: *Rank*
+
 **Overload 0:**
 - [`short`]: *Rank*
 - [`role`]: *Role to grant*
+
 **Examples:**
 
 ```xml
@@ -3586,8 +3888,10 @@
 
 **Overload 1:**
 - [`role...`]: *Roles to remove*
+
 **Overload 1:**
 - [`short...`]: *Ranks*
+
 **Examples:**
 
 ```xml
@@ -3613,7 +3917,9 @@
 `Manage roles`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3638,7 +3944,9 @@
 `Manage roles`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -3672,6 +3980,7 @@
 
 **Overload 0:**
 - (optional) [`message`]: *Discord message* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3697,6 +4006,7 @@
 **Overload 0:**
 - (optional) [`int`]: *Amount of messages to delete* (def: `1`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3724,6 +4034,7 @@
 - [`message`]: *Discord message*
 - (optional) [`int`]: *Amount of messages to delete* (def: `1`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3749,6 +4060,7 @@
 - [`message`]: *Discord message*
 - (optional) [`int`]: *Amount of messages to delete* (def: `1`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3774,10 +4086,12 @@
 - [`member`]: *Member*
 - (optional) [`int`]: *Amount of messages to delete* (def: `1`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Amount of messages to delete*
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3803,6 +4117,7 @@
 **Overload 0:**
 - (optional) [`message`]: *Discord message* (def: `None`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3828,10 +4143,12 @@
 - [`string`]: *Pattern (regular expression)*
 - (optional) [`int`]: *Amount of messages to delete* (def: `5`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`int`]: *Amount of messages to delete*
 - [`string`]: *Pattern (regular expression)*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3857,6 +4174,7 @@
 **Overload 0:**
 - (optional) [`message`]: *Discord message* (def: `None`)
 - (optional) [`time span`]: *Voting timespan* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3877,6 +4195,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel which pins to view* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3899,6 +4218,7 @@
 
 **Overload 0:**
 - (optional) [`message`]: *Discord message* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3921,8 +4241,10 @@
 
 **Overload 1:**
 - [`message`]: *Discord message*
+
 **Overload 0:**
 - (optional) [`int`]: *Index (starting from 1)* (def: `1`)
+
 **Examples:**
 
 ```xml
@@ -3945,6 +4267,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel which pins to remove* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -3972,11 +4295,15 @@
 **Overload 2:**
 - [`emoji`]: *Emoji*
 - [`role`]: *Role to grant*
+
 **Overload 1:**
 - [`role`]: *Role to grant*
 - [`emoji`]: *Emoji*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4005,9 +4332,11 @@
 **Overload 1:**
 - [`role`]: *Role to grant*
 - [`emoji`]: *Emoji*
+
 **Overload 0:**
 - [`emoji`]: *Emoji*
 - [`role`]: *Role to grant*
+
 **Examples:**
 
 ```xml
@@ -4034,8 +4363,10 @@
 
 **Overload 1:**
 - [`role...`]: *Roles to remove*
+
 **Overload 1:**
 - [`emoji...`]: *Ranks*
+
 **Examples:**
 
 ```xml
@@ -4061,7 +4392,9 @@
 `Manage roles`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4086,7 +4419,9 @@
 `Manage roles`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4108,8 +4443,11 @@
 
 **Overload 1:**
 - [`role`]: *Role*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4138,9 +4476,11 @@
 - (optional) [`boolean`]: *Hoisted (visible in online list)?* (def: `False`)
 - (optional) [`boolean`]: *Mentionable?* (def: `False`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`color`]: *Color (hex or RGB)*
 - [`string...`]: *New name*
+
 **Examples:**
 
 ```xml
@@ -4167,6 +4507,7 @@
 **Overload 0:**
 - [`role`]: *Role*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4190,6 +4531,7 @@
 
 **Overload 0:**
 - [`role`]: *Role*
+
 **Examples:**
 
 ```xml
@@ -4210,7 +4552,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4237,6 +4581,7 @@
 
 **Overload 0:**
 - [`role`]: *Role*
+
 **Examples:**
 
 ```xml
@@ -4262,10 +4607,12 @@
 - [`role`]: *Role*
 - [`color`]: *Color (hex or RGB)*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`color`]: *Color (hex or RGB)*
 - [`role`]: *Role*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4292,10 +4639,12 @@
 - [`role`]: *Role*
 - (optional) [`boolean`]: *Mentionable?* (def: `True`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`boolean`]: *Mentionable?*
 - [`role`]: *Role*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4322,9 +4671,11 @@
 - [`string`]: *New name*
 - [`role`]: *Role*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`role`]: *Role*
 - [`string...`]: *New name*
+
 **Examples:**
 
 ```xml
@@ -4351,10 +4702,12 @@
 - [`role`]: *Role*
 - (optional) [`boolean`]: *Hoisted (visible in online list)?* (def: `True`)
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`boolean`]: *Hoisted (visible in online list)?*
 - [`role`]: *Role*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4378,9 +4731,12 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -4405,6 +4761,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -4428,6 +4785,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to remove*
+
 **Examples:**
 
 ```xml
@@ -4450,7 +4808,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4473,7 +4833,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -4493,8 +4855,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4514,6 +4878,7 @@
 
 **Overload 0:**
 - [`user`]: *User*
+
 **Examples:**
 
 ```xml
@@ -4539,16 +4904,20 @@
 - [`user`]: *User*
 - [`int`]: *Delete messages in past number of days*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 2:**
 - [`member`]: *Member*
 - [`int`]: *Delete messages in past number of days*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`user`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4575,6 +4944,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4599,9 +4969,11 @@
 **Overload 1:**
 - [`member`]: *Member*
 - [`role...`]: *Roles to add*
+
 **Overload 0:**
 - [`role`]: *Role*
 - [`member`]: *Member*
+
 **Examples:**
 
 ```xml
@@ -4622,8 +4994,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4648,6 +5022,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4672,6 +5047,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4696,6 +5072,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4720,6 +5097,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4744,6 +5122,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4768,9 +5147,11 @@
 **Overload 1:**
 - [`member`]: *Member*
 - [`role...`]: *Roles to remove*
+
 **Overload 0:**
 - [`role`]: *Role*
 - [`member`]: *Member*
+
 **Examples:**
 
 ```xml
@@ -4796,6 +5177,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *New name* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4821,9 +5203,11 @@
 - [`member`]: *Member*
 - [`int`]: *Delete messages in past number of days*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4850,18 +5234,22 @@
 - [`time span`]: *Time span*
 - [`user`]: *User*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 2:**
 - [`member`]: *User*
 - [`time span`]: *Time span*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`time span`]: *Time span*
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`user`]: *User*
 - [`time span`]: *Time span*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4888,10 +5276,12 @@
 - [`time span`]: *Time span*
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`member`]: *User*
 - [`time span`]: *Time span*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4917,6 +5307,7 @@
 **Overload 1:**
 - [`user`]: *User*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4941,6 +5332,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4965,6 +5357,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -4989,6 +5382,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -5011,6 +5405,7 @@
 **Overload 0:**
 - [`member`]: *Member*
 - (optional) [`string...`]: *Warning message* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -5035,6 +5430,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel whose webhooks to show* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -5062,31 +5458,38 @@
 - [`channel`]: *Channel where to add the webhook*
 - [`string`]: *Webhook name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 5:**
 - [`URL`]: *Avatar URL*
 - [`string`]: *Webhook name*
 - [`channel`]: *Channel where to add the webhook*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 4:**
 - [`channel`]: *Channel where to add the webhook*
 - [`URL`]: *Avatar URL*
 - [`string`]: *Webhook name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 3:**
 - [`channel`]: *Channel where to add the webhook*
 - [`string`]: *Webhook name*
 - [`URL`]: *Avatar URL*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 2:**
 - [`string`]: *Webhook name*
 - [`URL`]: *Avatar URL*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 1:**
 - [`URL`]: *Avatar URL*
 - [`string`]: *Webhook name*
 - (optional) [`string...`]: *Reason for the action* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Webhook name*
+
 **Examples:**
 
 ```xml
@@ -5112,15 +5515,19 @@
 **Overload 3:**
 - [`channel`]: *Channel whose webhooks to delete*
 - [`string...`]: *Webhook name*
+
 **Overload 2:**
 - [`channel`]: *Channel whose webhooks to delete*
 - [`unsigned long`]: *ID*
+
 **Overload 1:**
 - [`string`]: *Webhook name*
 - (optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
+
 **Overload 0:**
 - [`unsigned long`]: *ID*
 - (optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -5147,8 +5554,10 @@
 
 **Overload 1:**
 - (optional) [`channel`]: *Channel whose webhooks to delete* (def: `None`)
+
 **Overload 0:**
 - [`channel...`]: *Channel whose webhooks to delete*
+
 **Examples:**
 
 ```xml
@@ -5173,6 +5582,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel whose webhooks to show* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -5196,7 +5606,9 @@
 `Manage webhooks`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

@@ -16,13 +16,17 @@
 `Manage guild`
 
 **Overload 2:**
-*None*
+
+*No arguments.*
+
 **Overload 1:**
 - [`emoji`]: *Emoji*
 - [`string...`]: *Reaction triggers*
+
 **Overload 0:**
 - [`string`]: *Reaction triggers*
 - [`emoji`]: *Emoji*
+
 **Examples:**
 
 ```xml
@@ -49,9 +53,11 @@
 **Overload 1:**
 - [`emoji`]: *Emoji*
 - [`string...`]: *Reaction triggers*
+
 **Overload 0:**
 - [`string`]: *Reaction triggers*
 - [`emoji`]: *Emoji*
+
 **Examples:**
 
 ```xml
@@ -77,9 +83,11 @@
 **Overload 1:**
 - [`emoji`]: *Emoji*
 - [`string...`]: *Reaction triggers*
+
 **Overload 0:**
 - [`string`]: *Reaction triggers*
 - [`emoji`]: *Emoji*
+
 **Examples:**
 
 ```xml
@@ -104,10 +112,13 @@
 
 **Overload 2:**
 - [`emoji`]: *Emoji*
+
 **Overload 1:**
 - [`int...`]: *Reaction IDs to remove*
+
 **Overload 0:**
 - [`string...`]: *Reaction triggers*
+
 **Examples:**
 
 ```xml
@@ -134,7 +145,9 @@
 `Administrator`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -158,6 +171,7 @@
 
 **Overload 0:**
 - [`string...`]: *Reaction trigger*
+
 **Examples:**
 
 ```xml
@@ -180,7 +194,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -204,10 +220,13 @@
 `Manage guild`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string`]: *Reaction trigger*
 - [`string...`]: *Response*
+
 **Examples:**
 
 ```xml
@@ -233,6 +252,7 @@
 **Overload 0:**
 - [`string`]: *Reaction trigger*
 - [`string...`]: *Response*
+
 **Examples:**
 
 ```xml
@@ -257,6 +277,7 @@
 **Overload 0:**
 - [`string`]: *Reaction trigger*
 - [`string...`]: *Response*
+
 **Examples:**
 
 ```xml
@@ -280,8 +301,10 @@
 
 **Overload 1:**
 - [`int...`]: *Reaction IDs to remove*
+
 **Overload 0:**
 - [`string...`]: *Reaction triggers*
+
 **Examples:**
 
 ```xml
@@ -305,7 +328,9 @@
 `Administrator, Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -329,6 +354,7 @@
 
 **Overload 0:**
 - [`string...`]: *Reaction trigger*
+
 **Examples:**
 
 ```xml
@@ -351,7 +377,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

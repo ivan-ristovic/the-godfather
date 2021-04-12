@@ -396,8 +396,9 @@ namespace TheGodfather.Modules.Owner
                                 sb.AppendLine();
                             }
                         } else {
-                            sb.AppendLine(Formatter.Italic("None"));
+                            sb.AppendLine().AppendLine(Formatter.Italic("No arguments."));
                         }
+                        sb.AppendLine();
                     }
 
                     if (cmd is not CommandGroup || (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)) {

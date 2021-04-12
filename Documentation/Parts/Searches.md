@@ -11,7 +11,9 @@
 `kitty, kitten`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -30,9 +32,12 @@
 `crypto`
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string...`]: *Currency name*
+
 **Examples:**
 
 ```xml
@@ -53,6 +58,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Index from which to list* (def: `0`)
+
 **Examples:**
 
 ```xml
@@ -72,7 +78,9 @@
 `doge, puppy, pup`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -92,6 +100,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -110,7 +119,9 @@
 `r, rand, rnd, rng`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -130,6 +141,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Number of results* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -150,6 +162,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -170,6 +183,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -190,6 +204,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -207,6 +222,7 @@
 
 **Overload 0:**
 - [`string`]: *ID*
+
 **Examples:**
 
 ```xml
@@ -226,6 +242,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -245,6 +262,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -265,9 +283,11 @@
 **Overload 1:**
 - [`int`]: *Number of results*
 - [`string...`]: *Subreddit*
+
 **Overload 0:**
 - [`string`]: *Subreddit*
 - (optional) [`int`]: *Number of results* (def: `1`)
+
 **Examples:**
 
 ```xml
@@ -289,9 +309,11 @@
 **Overload 1:**
 - [`int`]: *Number of results*
 - [`string...`]: *Subreddit*
+
 **Overload 0:**
 - [`string`]: *Subreddit*
 - [`int`]: *Number of results*
+
 **Examples:**
 
 ```xml
@@ -314,17 +336,21 @@
 - [`TimeWindow`]: *Time window (day/month/week/year/all)*
 - [`int`]: *Number of results*
 - [`string...`]: *Subreddit*
+
 **Overload 2:**
 - [`TimeWindow`]: *Time window (day/month/week/year/all)*
 - [`string`]: *Subreddit*
 - (optional) [`int`]: *Number of results* (def: `1`)
+
 **Overload 1:**
 - [`int`]: *Number of results*
 - [`TimeWindow`]: *Time window (day/month/week/year/all)*
 - [`string...`]: *Subreddit*
+
 **Overload 0:**
 - [`int`]: *Number of results*
 - [`string...`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -346,6 +372,7 @@
 
 **Overload 0:**
 - [`IPAddress`]: *IP address*
+
 **Examples:**
 
 ```xml
@@ -364,7 +391,9 @@
 `jokes, j`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -384,6 +413,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -402,7 +432,9 @@
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -422,6 +454,7 @@
 
 **Overload 0:**
 - (optional) [`string`]: *Topic* (def: `world`)
+
 **Examples:**
 
 ```xml
@@ -441,6 +474,7 @@
 
 **Overload 0:**
 - (optional) [`string`]: *Topic* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -460,6 +494,7 @@
 
 **Overload 0:**
 - (optional) [`string`]: *Subreddit* (def: `all`)
+
 **Examples:**
 
 ```xml
@@ -480,6 +515,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -499,6 +535,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -518,6 +555,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -537,6 +575,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -556,6 +595,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -580,6 +620,7 @@
 **Overload 1:**
 - [`channel`]: *Channel*
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -600,6 +641,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -623,6 +665,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -642,6 +685,7 @@
 
 **Overload 0:**
 - [`URL`]: *RSS feed URL*
+
 **Examples:**
 
 ```xml
@@ -661,8 +705,10 @@
 
 **Overload 1:**
 - [`unsigned long`]: *ID*
+
 **Overload 0:**
 - [`string...`]: *Username*
+
 **Examples:**
 
 ```xml
@@ -683,8 +729,10 @@
 
 **Overload 1:**
 - [`unsigned int`]: *ID*
+
 **Overload 0:**
 - [`string...`]: *Game name*
+
 **Examples:**
 
 ```xml
@@ -705,8 +753,10 @@
 
 **Overload 1:**
 - [`unsigned long`]: *ID*
+
 **Overload 0:**
 - [`string...`]: *Username*
+
 **Examples:**
 
 ```xml
@@ -727,6 +777,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -745,7 +796,9 @@
 `r, rand, rnd, rng`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -765,6 +818,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Number of results* (def: `5`)
+
 **Examples:**
 
 ```xml
@@ -785,6 +839,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -804,6 +859,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -824,8 +880,10 @@
 **Overload 1:**
 - [`int`]: *Amount of days*
 - [`string...`]: *Query*
+
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -845,6 +903,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -864,6 +923,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -883,8 +943,11 @@
 
 **Overload 1:**
 - [`int`]: *ID*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -902,6 +965,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *ID* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -920,7 +984,9 @@
 `fresh, newest, l`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -939,7 +1005,9 @@
 `rnd, r, rand`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -959,6 +1027,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -979,6 +1048,7 @@
 **Overload 0:**
 - [`int`]: *Amount of results to fetch*
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -998,6 +1068,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -1017,6 +1088,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -1036,6 +1108,7 @@
 
 **Overload 0:**
 - [`string...`]: *Query*
+
 **Examples:**
 
 ```xml
@@ -1059,24 +1132,30 @@
 - [`channel`]: *Channel for updates*
 - [`URL`]: *YouTube channel/video URL*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 4:**
 - [`URL`]: *YouTube channel/video URL*
 - [`channel`]: *Channel for updates*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 3:**
 - [`string`]: *YouTube username or channel ID*
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 2:**
 - [`channel`]: *Channel for updates*
 - [`string`]: *YouTube username or channel ID*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *YouTube username or channel ID*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 0:**
 - [`URL`]: *YouTube username or channel ID*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1100,6 +1179,7 @@
 
 **Overload 0:**
 - [`string`]: *YouTube channel URL or friendly name*
+
 **Examples:**
 
 ```xml

@@ -14,8 +14,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -39,8 +41,10 @@
 
 **Overload 1:**
 - [`member`]: *Member*
+
 **Overload 0:**
 - [`string`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -62,7 +66,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -83,7 +89,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -105,6 +113,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -126,6 +135,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -147,6 +157,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -167,7 +178,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -189,6 +202,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -210,6 +224,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -231,6 +246,7 @@
 
 **Overload 0:**
 - [`string...`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -252,8 +268,10 @@
 
 **Overload 1:**
 - [`member`]: *Member*
+
 **Overload 0:**
 - [`string`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -275,7 +293,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -297,8 +317,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 1:**
 - [`string`]: *Chicken name*
+
 **Examples:**
 
 ```xml
@@ -321,7 +343,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -343,6 +367,7 @@
 
 **Overload 0:**
 - [`string...`]: *New name*
+
 **Examples:**
 
 ```xml
@@ -363,7 +388,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -384,7 +411,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -405,7 +434,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -426,7 +457,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -447,7 +480,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -468,7 +503,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -489,9 +526,12 @@
 
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`int...`]: *Chicken upgrade ID(s) to buy*
+
 **Examples:**
 
 ```xml
@@ -512,7 +552,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -535,6 +577,7 @@
 **Overload 0:**
 - (optional) [`string`]: *Team 1 name* (def: `None`)
 - (optional) [`string`]: *Team 2 name* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -557,8 +600,10 @@
 
 **Overload 1:**
 - [`int`]: *Team number to join*
+
 **Overload 0:**
 - [`string...`]: *Team name to join*
+
 **Examples:**
 
 ```xml

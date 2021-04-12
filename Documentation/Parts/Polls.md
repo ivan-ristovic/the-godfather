@@ -15,11 +15,14 @@
 **Overload 2:**
 - [`time span`]: *Time for the poll to run*
 - [`string...`]: *Poll question*
+
 **Overload 1:**
 - [`string`]: *Poll question*
 - [`time span`]: *Time for the poll to run*
+
 **Overload 0:**
 - [`string...`]: *Poll question*
+
 **Examples:**
 
 ```xml
@@ -42,7 +45,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -65,11 +70,14 @@
 **Overload 2:**
 - [`time span`]: *Time for the poll to run*
 - [`string...`]: *Poll question*
+
 **Overload 1:**
 - [`string`]: *Poll question*
 - [`time span`]: *Time for the poll to run*
+
 **Overload 0:**
 - [`string...`]: *Poll question*
+
 **Examples:**
 
 ```xml
@@ -92,7 +100,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -114,6 +124,7 @@
 
 **Overload 0:**
 - [`int`]: *Option to vote for*
+
 **Examples:**
 
 ```xml
@@ -134,7 +145,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml

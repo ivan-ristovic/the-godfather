@@ -18,12 +18,15 @@
 - [`channel`]: *Channel for updates*
 - [`URL`]: *RSS feed URL*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 1:**
 - [`URL`]: *RSS feed URL*
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 0:**
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -49,6 +52,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -74,9 +78,11 @@
 **Overload 1:**
 - [`channel`]: *Channel for updates*
 - [`string`]: *Subreddit*
+
 **Overload 0:**
 - [`string`]: *Subreddit*
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -103,13 +109,16 @@
 - [`channel`]: *Channel for updates*
 - [`URL`]: *Channel where to send updates*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 1:**
 - [`URL`]: *Channel where to send updates*
 - [`channel`]: *Channel for updates*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Overload 0:**
 - [`URL`]: *Channel where to send updates*
 - (optional) [`string...`]: *Friendly name* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -135,8 +144,10 @@
 
 **Overload 1:**
 - [`int...`]: *ID(s)*
+
 **Overload 0:**
 - [`string...`]: *Friendly name*
+
 **Examples:**
 
 ```xml
@@ -161,6 +172,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel for updates* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -185,6 +197,7 @@
 
 **Overload 0:**
 - [`string`]: *Subreddit*
+
 **Examples:**
 
 ```xml
@@ -208,6 +221,7 @@
 
 **Overload 0:**
 - [`string...`]: *YouTube channel URL or friendly name*
+
 **Examples:**
 
 ```xml

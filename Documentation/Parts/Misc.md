@@ -12,6 +12,7 @@
 
 **Overload 0:**
 - [`string...`]: *A question for the Almighty 8Ball*
+
 **Examples:**
 
 ```xml
@@ -35,16 +36,20 @@
 
 **Overload 3:**
 - [`user`]: *Birthday boy/girl*
+
 **Overload 2:**
 - (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+
 **Overload 1:**
 - [`user`]: *Birthday boy/girl*
 - [`channel`]: *Channel for birthday notifications*
 - (optional) [`string`]: *Birthday date* (def: `None`)
+
 **Overload 0:**
 - [`user`]: *Birthday boy/girl*
 - [`string`]: *Birthday date*
 - (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -72,10 +77,12 @@
 - [`user`]: *Birthday boy/girl*
 - (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
 - (optional) [`string`]: *Birthday date* (def: `None`)
+
 **Overload 0:**
 - [`user`]: *Birthday boy/girl*
 - [`string`]: *Birthday date*
 - (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -101,8 +108,10 @@
 
 **Overload 1:**
 - [`user`]: *Birthday boy/girl*
+
 **Overload 0:**
 - [`channel`]: *Channel for birthday notifications*
+
 **Examples:**
 
 ```xml
@@ -126,7 +135,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -150,8 +161,10 @@
 
 **Overload 1:**
 - [`user`]: *Birthday boy/girl*
+
 **Overload 0:**
 - (optional) [`channel`]: *Channel for birthday notifications* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -175,7 +188,9 @@
 `Manage guild`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -195,6 +210,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Reciprocal coinflip ratio* (def: `1`)
+
 **Examples:**
 
 ```xml
@@ -215,6 +231,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *How many sides will the dice have?* (def: `6`)
+
 **Examples:**
 
 ```xml
@@ -237,6 +254,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -261,6 +279,7 @@
 
 **Overload 0:**
 - [`string...`]: *New name*
+
 **Examples:**
 
 ```xml
@@ -284,6 +303,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to add*
+
 **Examples:**
 
 ```xml
@@ -302,11 +322,15 @@
 `h, ?, ??, ???, man`
 
 **Overload 2:**
-*None*
+
+*No arguments.*
+
 **Overload 1:**
 - [`ModuleType`]: *Command module*
+
 **Overload 0:**
 - [`string...`]: *Command name*
+
 **Examples:**
 
 ```xml
@@ -328,8 +352,10 @@
 
 **Overload 1:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Overload 0:**
 - [`string...`]: *Insult target*
+
 **Examples:**
 
 ```xml
@@ -350,6 +376,7 @@
 
 **Overload 0:**
 - (optional) [`time span`]: *Invite expiry time* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -369,7 +396,9 @@
 `Administrator`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -389,6 +418,7 @@
 
 **Overload 0:**
 - [`string...`]: *Text to repeat*
+
 **Examples:**
 
 ```xml
@@ -407,6 +437,7 @@
 **Overload 0:**
 - (optional) [`string`]: *Replacement string* (def: `None`)
 - (optional) [`string`]: *Replacement string* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -428,9 +459,12 @@
 
 
 **Overload 1:**
-*None*
+
+*No arguments.*
+
 **Overload 0:**
 - [`string...`]: *Meme name*
+
 **Examples:**
 
 ```xml
@@ -456,9 +490,11 @@
 **Overload 1:**
 - [`string`]: *Meme name*
 - (optional) [`URL`]: *Meme URL* (def: `None`)
+
 **Overload 0:**
 - [`URL`]: *Meme URL*
 - [`string...`]: *Meme name*
+
 **Examples:**
 
 ```xml
@@ -485,6 +521,7 @@
 - [`string`]: *Meme template*
 - [`string`]: *Top text*
 - [`string`]: *Bottom text*
+
 **Examples:**
 
 ```xml
@@ -508,6 +545,7 @@
 
 **Overload 0:**
 - [`string...`]: *Meme name*
+
 **Examples:**
 
 ```xml
@@ -530,7 +568,9 @@
 `Administrator`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -551,7 +591,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -573,6 +615,7 @@
 
 **Overload 0:**
 - (optional) [`string...`]: *Meme template* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -593,8 +636,10 @@
 
 **Overload 1:**
 - [`member...`]: *Member(s)*
+
 **Overload 0:**
 - [`user...`]: *User(s)*
+
 **Examples:**
 
 ```xml
@@ -618,8 +663,10 @@
 
 **Overload 1:**
 - [`member`]: *Member*
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -637,7 +684,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -661,6 +710,7 @@
 
 **Overload 0:**
 - (optional) [`string`]: *New command prefix* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -693,6 +743,7 @@
 
 **Overload 0:**
 - [`string...`]: *Choice list (separated by comma)*
+
 **Examples:**
 
 ```xml
@@ -712,6 +763,7 @@
 
 **Overload 0:**
 - (optional) [`role`]: *Role* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -732,8 +784,10 @@
 
 **Overload 1:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Overload 0:**
 - (optional) [`user`]: *User* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -757,6 +811,7 @@
 **Overload 0:**
 - [`short`]: *Rank*
 - [`string...`]: *Rank name*
+
 **Examples:**
 
 ```xml
@@ -778,6 +833,7 @@
 
 **Overload 0:**
 - [`short`]: *Rank*
+
 **Examples:**
 
 ```xml
@@ -796,7 +852,9 @@
 `print, show, view, ls, l, p`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -813,7 +871,9 @@
 
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -832,7 +892,9 @@
 `bestglobally, globallystrongest, globaltop, topg, gtop, globalbest, bestglobal`
 
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -854,8 +916,10 @@
 
 **Overload 1:**
 - [`member...`]: *Member(s)*
+
 **Overload 0:**
 - [`user...`]: *User(s)*
+
 **Examples:**
 
 ```xml
@@ -875,6 +939,7 @@
 
 **Overload 0:**
 - [`string...`]: *Issue to report*
+
 **Examples:**
 
 ```xml
@@ -896,6 +961,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to remove*
+
 **Examples:**
 
 ```xml
@@ -919,6 +985,7 @@
 
 **Overload 0:**
 - [`role...`]: *Roles to remove*
+
 **Examples:**
 
 ```xml
@@ -938,6 +1005,7 @@
 
 **Overload 0:**
 - [`string...`]: *Text to repeat*
+
 **Examples:**
 
 ```xml
@@ -959,6 +1027,7 @@
 
 **Overload 0:**
 - (optional) [`member`]: *Member* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -986,13 +1055,17 @@
 - [`emoji`]: *Emoji*
 - [`channel`]: *Channel*
 - (optional) [`int`]: *Sensitivity* (def: `None`)
+
 **Overload 1:**
 - [`boolean`]: *Enable?*
 - [`channel`]: *Emoji*
 - (optional) [`emoji`]: *Channel* (def: `None`)
 - (optional) [`int`]: *Sensitivity* (def: `None`)
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -1019,6 +1092,7 @@
 
 **Overload 0:**
 - [`channel`]: *Channel*
+
 **Examples:**
 
 ```xml
@@ -1042,6 +1116,7 @@
 
 **Overload 0:**
 - (optional) [`int`]: *Sensitivity* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1062,6 +1137,7 @@
 
 **Overload 0:**
 - (optional) [`string...`]: *IANA/Windows/Rails timezone ID* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -1082,6 +1158,7 @@
 
 **Overload 0:**
 - [`string...`]: *Text to repeat*
+
 **Examples:**
 
 ```xml
@@ -1101,6 +1178,7 @@
 
 **Overload 0:**
 - [`string...`]: *Text to repeat*
+
 **Examples:**
 
 ```xml

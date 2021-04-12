@@ -14,17 +14,23 @@
 - [`time span`]: *Timespan until reminder*
 - [`channel`]: *Channel when to send the reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 3:**
 - [`channel`]: *Channel when to send the reminder*
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 2:**
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 1:**
 - [`channel`]: *Channel to list*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -48,13 +54,16 @@
 - [`date and time`]: *Localized due date*
 - [`channel`]: *Channel when to send the reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 1:**
 - [`channel`]: *Channel when to send the reminder*
 - [`date and time`]: *Localized due date*
 - [`string...`]: *Reminder contents*
+
 **Overload 0:**
 - [`date and time`]: *Localized due date*
 - [`string...`]: *Reminder contents*
+
 **Examples:**
 
 ```xml
@@ -76,9 +85,11 @@
 **Overload 1:**
 - [`date and time`]: *Localized due date*
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Overload 0:**
 - [`time span`]: *Localized due time*
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -101,6 +112,7 @@
 **Overload 0:**
 - [`DayOfWeek`]: *Day of week*
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -121,6 +133,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -141,6 +154,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -161,6 +175,7 @@
 
 **Overload 0:**
 - (optional) [`channel`]: *Channel to list* (def: `None`)
+
 **Examples:**
 
 ```xml
@@ -182,8 +197,10 @@
 **Overload 1:**
 - [`channel`]: *Channel whose reminders to remove*
 - [`int...`]: *ID(s)*
+
 **Overload 0:**
 - [`int...`]: *ID(s)*
+
 **Examples:**
 
 ```xml
@@ -203,8 +220,11 @@
 
 **Overload 1:**
 - [`channel`]: *Channel whose reminders to remove*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -228,8 +248,11 @@
 **Overload 1:**
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -250,6 +273,7 @@
 **Overload 0:**
 - [`date and time`]: *Localized due date*
 - [`string...`]: *Reminder contents*
+
 **Examples:**
 
 ```xml
@@ -270,6 +294,7 @@
 **Overload 0:**
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Examples:**
 
 ```xml
@@ -291,13 +316,16 @@
 - [`time span`]: *Timespan until reminder*
 - [`channel`]: *Channel when to send the reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 1:**
 - [`channel`]: *Channel when to send the reminder*
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 0:**
 - [`time span`]: *Timespan until reminder*
 - [`string...`]: *Reminder contents*
+
 **Examples:**
 
 ```xml
@@ -318,8 +346,11 @@
 
 **Overload 1:**
 - [`channel`]: *Channel to list*
+
 **Overload 0:**
-*None*
+
+*No arguments.*
+
 **Examples:**
 
 ```xml
@@ -342,13 +373,16 @@
 - [`time span`]: *Localized due date*
 - [`channel`]: *Channel when to send the reminder*
 - [`string...`]: *Reminder contents*
+
 **Overload 1:**
 - [`channel`]: *Channel when to send the reminder*
 - [`time span`]: *Localized due date*
 - [`string...`]: *Reminder contents*
+
 **Overload 0:**
 - [`time span`]: *Localized due date*
 - [`string...`]: *Reminder contents*
+
 **Examples:**
 
 ```xml
