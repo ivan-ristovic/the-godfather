@@ -230,6 +230,11 @@
       [ "arg-usr", "arg-usr", "arg-usr" ]
     ]
   },
+  "rip": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
   "report": {
     "usage": [
       [ "arg-report" ]

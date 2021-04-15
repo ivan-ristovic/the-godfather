@@ -235,6 +235,16 @@ namespace TheGodfather.Modules.Misc
             => this.InternalRateAsync(ctx, users);
         #endregion
 
+        #region rip
+        [Command("rip")]
+        [Aliases("restinpeace", "grave")]
+        [RequireBotPermissions(Permissions.AttachFiles)]
+        public Task RateAsync(CommandContext ctx,
+                             [Description("desc-user")] DiscordUser user,
+                             [RemainingText, Description("desc-rip")] string? desc = "RIP")
+            => this.InternalRipAsync(ctx, user, desc);
+        #endregion
+
         #region report
         [Command("report"), UsesInteractivity]
         [Cooldown(1, 3600, CooldownBucketType.User)]
@@ -391,7 +401,7 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            using Stream ms = this.Service.Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
+            using Stream ms = ctx.Services.GetRequiredService<ImagingService>().Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
             await ctx.RespondAsync(new DiscordMessageBuilder()
                 .WithFile("Rating.jpg", ms)
                 .WithEmbed(new DiscordEmbedBuilder {
@@ -399,6 +409,19 @@ namespace TheGodfather.Modules.Misc
                     Color = this.ModuleColor,
                 })
             );
+        }
+
+        private async Task InternalRipAsync(CommandContext ctx, DiscordUser user, string? desc)
+        {
+            if (user.IsCurrent) {
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                return;
+            }
+
+            ImagingService ims = ctx.Services.GetRequiredService<ImagingService>();
+            CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
+            using Stream ms = await ims.RipAsync(user.ToDiscriminatorString(), user.AvatarUrl, user.CreationTimestamp, desc, culture);
+            await ctx.RespondAsync(new DiscordMessageBuilder().WithFile("Grave.jpg", ms));
         }
         #endregion
     }

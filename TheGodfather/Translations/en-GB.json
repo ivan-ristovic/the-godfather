@@ -571,6 +571,7 @@
   "desc-punish-action": "Punishment action",
   "desc-query": "Query",
   "desc-ranks": "Ranks",
+  "desc-rip": "Text to put on the grave.",
   "desc-r-del-ids": "Reaction IDs to remove",
   "desc-regex": "Pattern (regular expression)",
   "desc-remind-chn": "Channel when to send the reminder",

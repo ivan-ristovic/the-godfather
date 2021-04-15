@@ -91,7 +91,7 @@ namespace TheGodfather.Services.Common
                     default:
                         throw new ArgumentException("Unknown saved task info type!", nameof(this.Job));
                 }
-                Log.Debug("Executed missed saved task of type: {SavedTaskType}", this.Job.GetType().ToString());
+                Log.Debug("Executed missed saved task of type: {SavedTaskType}", this.Job.GetType().Name);
             } catch (Exception e) {
                 Log.Debug(e, "Error while handling missed saved task");
             }

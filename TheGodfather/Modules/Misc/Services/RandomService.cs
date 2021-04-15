@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,14 +30,9 @@ namespace TheGodfather.Modules.Misc.Services
             "8b-q-05", "8b-q-06", "8b-q-07", "8b-q-08",
         }.ToImmutableArray();
 
-        private static readonly Brush[] _labelColors = new[] {
-            Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan
-        };
-
         public bool IsDisabled => false;
 
         private readonly SecureRandom rng;
-        private Bitmap? ratingChart;
         private ImmutableDictionary<char, string> leetAlphabet = new Dictionary<char, string>() {
             { 'a', "4@λ∂" },
             { 'b', "86ß"},
@@ -82,39 +76,23 @@ namespace TheGodfather.Modules.Misc.Services
                 { 's' , "s5" },
             }.ToImmutableDictionary();
             if (loadData)
-                this.LoadData("Resources");
+                this.TryLoadData("Resources");
         }
 
 
-        public void LoadData(string path)
+        public void TryLoadData(string path)
         {
-            LoadLeetAlphabet(Path.Combine(path, "leet_alphabet.json"));
-            LoadRatingChart(Path.Combine(path, "graph.png"));
-
-            void LoadLeetAlphabet(string alphabetPath)
-            {
-                try {
-                    Log.Debug("Loading leet alphabet from {Path}", alphabetPath);
-                    string json = File.ReadAllText(alphabetPath, Encoding.UTF8);
-                    Dictionary<char, string>? loadedLeetAlphabet = JsonConvert.DeserializeObject<Dictionary<char, string>>(json);
-                    if (loadedLeetAlphabet is null)
-                        throw new JsonSerializationException();
-                    this.leetAlphabet = loadedLeetAlphabet.ToImmutableDictionary();
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to load leet alphabet, path: {Path}", alphabetPath);
-                    throw;
-                }
-            }
-
-            void LoadRatingChart(string ratingPath)
-            {
-                try {
-                    Log.Debug("Loading rating chart from {Path}", ratingPath);
-                    this.ratingChart = new Bitmap(ratingPath);
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to load rating chart, path: {Path}", ratingPath);
-                    throw;
-                }
+            string alphabetPath = Path.Combine(path, "leet_alphabet.json");
+            try {
+                Log.Debug("Loading leet alphabet from {Path}", alphabetPath);
+                string json = File.ReadAllText(alphabetPath, Encoding.UTF8);
+                Dictionary<char, string>? loadedLeetAlphabet = JsonConvert.DeserializeObject<Dictionary<char, string>>(json);
+                if (loadedLeetAlphabet is null)
+                    throw new JsonSerializationException();
+                this.leetAlphabet = loadedLeetAlphabet.ToImmutableDictionary();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load leet alphabet, path: {Path}", alphabetPath);
+                throw;
             }
         }
 
@@ -155,36 +133,6 @@ namespace TheGodfather.Modules.Misc.Services
                 .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Distinct();
             return this.rng.ChooseRandomElement(options);
-        }
-
-        public Stream Rate(IEnumerable<(string Label, ulong Id)> users)
-        {
-            if (this.ratingChart is null)
-                throw new NotSupportedException("Rating is not supported if rating image is not found");
-
-            var ms = new MemoryStream();
-            var chart = new Bitmap(this.ratingChart);
-
-            using var g = Graphics.FromImage(chart);
-
-            int position = 0;
-            foreach ((string, ulong) user in users)
-                DrawUserRating(g, user, position++);
-
-            chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            ms.Position = 0;
-
-            return ms;
-
-
-            void DrawUserRating(Graphics graphics, (string Label, ulong Id) user, int pos)
-            {
-                int start_x = (int)(user.Id % (ulong)(chart.Width - 345)) + 100;
-                int start_y = (int)(user.Id % (ulong)(chart.Height - 90)) + 18;
-                graphics.FillEllipse(_labelColors[pos], start_x, start_y, 10, 10);
-                graphics.DrawString(user.Label, new Font("Arial", 13), _labelColors[pos], chart.Width - 220, pos * 30 + 20);
-                graphics.Flush();
-            }
         }
 
         public string GetRandomYesNoAnswer()
