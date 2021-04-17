@@ -34,8 +34,8 @@ namespace TheGodfather.Services
                         this.FallBackFonts.AddRange(fonts.InstallCollection(file));
                 }
 
-                this.RateFont = this.NotoSans.CreateFont(13, FontStyle.Bold);
-                this.RipFont = this.UniSans.CreateFont(13, FontStyle.Bold);
+                this.RateFont = this.NotoSans.CreateFont(20, FontStyle.Regular);
+                this.RipFont = this.UniSans.CreateFont(20, FontStyle.Bold);
             } else {
                 this.RateFont = fonts.CreateFont("Arial", 13);
                 this.RipFont = fonts.CreateFont("Arial", 13);
