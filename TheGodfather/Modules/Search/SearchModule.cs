@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
@@ -31,8 +32,24 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException(ctx, "cmd-err-image");
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = DiscordEmoji.FromName(ctx.Client, ":cat:"),
+                Description = Emojis.Animals.All[1],
                 ImageUrl = url,
+                Color = this.ModuleColor
+            });
+        }
+        #endregion
+
+        #region catfact
+        [Command("catfact")]
+        [Aliases("kittyfact", "kittenfact")]
+        public async Task RandomCatFactAsync(CommandContext ctx)
+        {
+            string? fact = await ctx.Services.GetRequiredService<CatFactsService>().GetFactAsync();
+            if (fact is null)
+                throw new CommandFailedException(ctx, "cmd-err-res-none");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{Emojis.Animals.All[1]} {fact}",
                 Color = this.ModuleColor
             });
         }

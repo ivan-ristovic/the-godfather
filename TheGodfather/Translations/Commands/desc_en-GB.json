@@ -56,6 +56,7 @@
   "casino slot": "Rolls a Slot Machine.",
   "casino wheeloffortune": "Rolls a Wheel of Fortune.",
   "cat": "Retrieves a random cat image.",
+  "catfact": "Retrieves a random cat fact.",
   "channel": "Channel administration commands. Group call prints channel information.",
   "channel add": "Channel creation commands.",
   "channel add category": "Creates a new channel category.",
