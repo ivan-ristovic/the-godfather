@@ -401,7 +401,7 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            using Stream ms = ctx.Services.GetRequiredService<ImagingService>().Rate(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
+            using Stream ms = await ctx.Services.GetRequiredService<ImagingService>().RateAsync(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
             await ctx.RespondAsync(new DiscordMessageBuilder()
                 .WithFile("Rating.jpg", ms)
                 .WithEmbed(new DiscordEmbedBuilder {

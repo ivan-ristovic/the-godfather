@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using Serilog;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using TheGodfather.Services;
-using Brushes = System.Drawing.Brushes;
+using Path = System.IO.Path;
+using SLBrush = SixLabors.ImageSharp.Drawing.Processing.SolidBrush;
 using SLColor = SixLabors.ImageSharp.Color;
 using SLImage = SixLabors.ImageSharp.Image;
 using SLPoint = SixLabors.ImageSharp.Point;
@@ -22,15 +24,22 @@ namespace TheGodfather.Modules.Misc.Services
 {
     public sealed class ImagingService : TheGodfatherHttpService
     {
-        private static readonly Brush[] _labelColors = new[] {
-            Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.Orange, Brushes.Pink, Brushes.Purple, Brushes.Gold, Brushes.Cyan
+        private static readonly IBrush[] _labelColors1 = new[] {
+            new SLBrush(SLColor.Red), 
+            new SLBrush(SLColor.Green), 
+            new SLBrush(SLColor.Blue), 
+            new SLBrush(SLColor.Orange), 
+            new SLBrush(SLColor.Pink), 
+            new SLBrush(SLColor.Purple), 
+            new SLBrush(SLColor.Gold), 
+            new SLBrush(SLColor.Cyan),
         };
 
 
         public override bool IsDisabled => false;
 
         private readonly FontsService fonts;
-        private Bitmap? ratingImage;
+        private byte[]? rateImage;
         private byte[]? graveImage;
 
 
@@ -44,20 +53,9 @@ namespace TheGodfather.Modules.Misc.Services
 
         public void TryLoadData(string path)
         {
-            this.ratingImage = LoadImage(Path.Combine(path, "graph.png"));
+            this.rateImage = LoadImageBytes(Path.Combine(path, "graph.png"));
             this.graveImage = LoadImageBytes(Path.Combine(path, "grave.png"));
 
-
-            static Bitmap LoadImage(string imagePath)
-            {
-                try {
-                    Log.Debug("Loading image from {Path}", imagePath);
-                    return new Bitmap(imagePath);
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to load image, path: {Path}", imagePath);
-                    throw;
-                }
-            }
 
             static byte[] LoadImageBytes(string imagePath)
             {
@@ -74,34 +72,28 @@ namespace TheGodfather.Modules.Misc.Services
             }
         }
 
-        public Stream Rate(IEnumerable<(string Label, ulong Id)> users)
+        public async Task<Stream> RateAsync(IEnumerable<(string Label, ulong Id)> users)
         {
-            if (this.ratingImage is null)
+            if (this.rateImage is null)
                 throw new NotSupportedException("Rating is not supported if rating image is not found");
 
-            var ms = new MemoryStream();
-            var chart = new Bitmap(this.ratingImage);
+            using SLImage img = SLImage.Load<Rgba32>(this.rateImage);
 
-            using var g = Graphics.FromImage(chart);
-
-            int position = 0;
-            foreach ((string, ulong) user in users)
-                DrawUserRating(g, user, position++);
-
-            chart.Save(ms, ImageFormat.Jpeg);
-            ms.Position = 0;
-
-            return ms;
-
-
-            void DrawUserRating(Graphics graphics, (string Label, ulong Id) user, int pos)
-            {
-                int start_x = (int)(user.Id % (ulong)(chart.Width - 345)) + 100;
-                int start_y = (int)(user.Id % (ulong)(chart.Height - 90)) + 18;
-                graphics.FillEllipse(_labelColors[pos], start_x, start_y, 10, 10);
-                graphics.DrawString(user.Label, new System.Drawing.Font("Arial", 13), _labelColors[pos], chart.Width - 220, pos * 30 + 20);
-                graphics.Flush();
+            int pos = 0;
+            foreach ((string label, ulong id) in users) {
+                int start_x = (int)(id % (ulong)(img.Width - 345)) + 100;
+                int start_y = (int)(id % (ulong)(img.Height - 90)) + 18;
+                img.Mutate(i => i
+                    .Draw(_labelColors1[pos], 10, new EllipsePolygon(start_x, start_y, 5, 5))
+                    .DrawText(label, this.fonts.RateFont, _labelColors1[pos], new SLPoint(img.Width - 220, pos * 30 + 20))
+                );
+                pos++;
             }
+
+            var ms = new MemoryStream();
+            await img.SaveAsJpegAsync(ms);
+            ms.Position = 0;
+            return ms;
         }
 
         public async Task<Stream> RipAsync(string name, string avatarUrl, DateTimeOffset date, string? desc = null, CultureInfo? culture = null)
@@ -109,7 +101,7 @@ namespace TheGodfather.Modules.Misc.Services
             if (this.graveImage is null)
                 throw new NotSupportedException("Rip is not supported if grave image is not found");
 
-            SLImage img = SLImage.Load<Rgba32>(this.graveImage);
+            using SLImage img = SLImage.Load<Rgba32>(this.graveImage);
             var textOpts = new TextGraphicsOptions() {
                 TextOptions = new TextOptions {
                     HorizontalAlignment = HorizontalAlignment.Center,
