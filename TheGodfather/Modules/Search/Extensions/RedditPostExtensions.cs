@@ -10,7 +10,7 @@ namespace TheGodfather.Modules.Search.Extensions
         public static LocalizedEmbedBuilder WithRedditPost(this LocalizedEmbedBuilder emb, RedditPost msg)
         {
             emb.WithTitle(msg.Title);
-            emb.WithDescription(Formatter.Strip(msg.MarkdownText));
+            emb.WithDescription(Formatter.Strip(msg.MarkdownText), unknown: false);
             if (Uri.TryCreate(msg.ThumbnailUrl, UriKind.Absolute, out Uri? uri))
                 emb.WithThumbnail(uri);
             emb.WithUrl(msg.Url);

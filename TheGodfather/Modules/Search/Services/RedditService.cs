@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Humanizer;
@@ -18,8 +16,7 @@ namespace TheGodfather.Modules.Search.Services
     public sealed class RedditService : TheGodfatherHttpService
     {
         private static readonly Regex _subPrefixRegex = new Regex("^/?r?/", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex _sanitizeRegex = new Regex("[^a-z0-9/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
+        private static readonly Regex _sanitizeRegex = new Regex("[^_a-z0-9/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public override bool IsDisabled => false;
 
@@ -36,7 +33,7 @@ namespace TheGodfather.Modules.Search.Services
                 return null;
 
             sub = $"/r/{_subPrefixRegex.Replace(sub, string.Empty).ToLowerInvariant()}";
-            string url = $"https://www.reddit.com{sub}/{category.Humanize(LetterCasing.LowerCase)}/.json";
+            string url = $"https://www.reddit.com{sub}/{category.Humanize(LetterCasing.LowerCase)}/.json?limit={limit}";
 
             try {
                 string json = await _http.GetStringAsync(url);
