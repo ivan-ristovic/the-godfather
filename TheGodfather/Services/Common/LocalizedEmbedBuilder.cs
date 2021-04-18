@@ -107,6 +107,12 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
+        public LocalizedEmbedBuilder WithThumbnail(Uri uri)
+        {
+            this.emb.WithThumbnail(uri);
+            return this;
+        }
+
         public LocalizedEmbedBuilder WithLocalizedFooter(string key, string? iconUrl, params object?[]? args)
         {
             string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, key, args));

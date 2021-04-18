@@ -1,16 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Exceptions;
+using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search
@@ -18,13 +21,13 @@ namespace TheGodfather.Modules.Search
     [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
     [Aliases("r")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public sealed class RedditModule : TheGodfatherServiceModule<RssFeedsService>
+    public sealed class RedditModule : TheGodfatherServiceModule<RedditService>
     {
         #region reddit
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-sub")] string sub = "all")
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Hot);
         #endregion
 
         #region reddit controversial
@@ -33,7 +36,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("c")]
         public Task ControversialAsync(CommandContext ctx,
                                       [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Controversial);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Controversial);
         #endregion
 
         #region reddit gilded
@@ -41,7 +44,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("g")]
         public Task GildedAsync(CommandContext ctx,
                                [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Gilded);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Gilded);
         #endregion
 
         #region reddit hot
@@ -49,7 +52,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("h")]
         public Task HotAsync(CommandContext ctx,
                             [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Hot);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Hot);
         #endregion
 
         #region reddit new
@@ -57,7 +60,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("n", "newest", "latest")]
         public Task NewAsync(CommandContext ctx,
                             [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.New);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.New);
         #endregion
 
         #region reddit rising
@@ -65,7 +68,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("r")]
         public Task RisingAsync(CommandContext ctx,
                                [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Rising);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Rising);
         #endregion
 
         #region reddit top
@@ -73,9 +76,9 @@ namespace TheGodfather.Modules.Search
         [Aliases("t")]
         public Task TopAsync(CommandContext ctx,
                             [Description("desc-sub")] string sub)
-            => this.SearchAndSendResultsAsync(ctx, sub, RedditCategory.Top);
+            => this.InternalSearchAsync(ctx, sub, RedditCategory.Top);
         #endregion
-
+        
         #region reddit subscribe
         [Command("subscribe"), Priority(1)]
         [Aliases("sub", "follow")]
@@ -91,7 +94,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
 
-            string? url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
+            string? url = this.Service.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
             if (url is null || rsub is null) {
                 if (rsub is null)
                     throw new CommandFailedException(ctx, "cmd-err-sub-format");
@@ -99,7 +102,7 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
             }
 
-            if (await this.Service.SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub))
+            if (await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub))
                 await ctx.InfoAsync(this.ModuleColor);
             else
                 await ctx.FailAsync("cmd-err-sub", url);
@@ -121,7 +124,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
 
-            string? url = RedditService.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
+            string? url = this.Service.GetFeedURLForSubreddit(sub, RedditCategory.New, out string? rsub);
             if (url is null || rsub is null) {
                 if (rsub is null)
                     throw new CommandFailedException(ctx, "cmd-err-sub-format");
@@ -129,54 +132,58 @@ namespace TheGodfather.Modules.Search
                     throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
             }
 
-            RssFeed? feed = await this.Service.GetByUrlAsync(url);
+            RssFeedsService rss = ctx.Services.GetRequiredService<RssFeedsService>();
+            RssFeed? feed = await rss.GetByUrlAsync(url);
             if (feed is null)
                 throw new CommandFailedException(ctx, "cmd-err-sub-not");
 
-            RssSubscription? s = await this.Service.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+            RssSubscription? s = await rss.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
             if (s is null)
                 throw new CommandFailedException(ctx, "cmd-err-sub-not");
 
-            await this.Service.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+            await rss.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion
-
+        
 
         #region internals
-        private Task SearchAndSendResultsAsync(CommandContext ctx, string sub, RedditCategory category)
+        private async Task<IEnumerable<RedditPost>> InternalRetrieveResultsAsync(CommandContext ctx, string sub, RedditCategory category)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-sub-none");
 
-            string? url = RedditService.GetFeedURLForSubreddit(sub, category, out string? rsub);
-            if (url is null || rsub is null) {
-                if (rsub is null)
-                    throw new CommandFailedException(ctx, "cmd-err-sub-format");
+            IEnumerable<RedditPost>? res;
+            try {
+                res = await this.Service.GetPostsAsync(sub, category);
+            } catch (SearchServiceException<RedditError> e) {
+                if (e.Details.ErrorCode == 404)
+                    throw new CommandFailedException(ctx, "cmd-err-sub-404", sub);
                 else
-                    throw new CommandFailedException(ctx, "cmd-err-sub-404", rsub);
+                    throw new CommandFailedException(ctx, "cmd-err-sub-fail-det", sub, e.Details.ErrorMessage);
             }
 
-            IReadOnlyList<SyndicationItem>? res = RssFeedsService.GetFeedResults(url);
             if (res is null)
-                throw new CommandFailedException(ctx, "cmd-err-sub-fail", rsub);
+                throw new CommandFailedException(ctx, "cmd-err-sub-format");
 
-            if (!res.Any())
-                return ctx.FailAsync("cmd-err-res-none");
+            return res;
+        }
 
-            return ctx.PaginateAsync(res, (emb, r) => {
-                emb.WithTitle(r.Title.Text);
-                emb.WithDescription(r.Summary, unknown: false);
-                emb.WithUrl(r.Links.First().Uri);
-                if (r.Content is TextSyndicationContent content) {
-                    string? url = RedditService.GetImageUrl(content);
-                    if (url is { })
-                        emb.WithImageUrl(url);
-                }
-                emb.AddLocalizedTitleField("str-author", r.Authors.First().Name, inline: true);
-                emb.WithLocalizedTimestamp(r.LastUpdatedTime);
-                return emb;
-            }, this.ModuleColor);
+        private async Task InternalSearchAsync(CommandContext ctx, string sub, RedditCategory category)
+        {
+            IEnumerable<RedditPost>? res = await this.InternalRetrieveResultsAsync(ctx, sub, category);
+
+            if (!ctx.Channel.IsNsfwOrNsfwName() && res.Any(p => p.IsNsfw)) {
+                await ctx.ImpInfoAsync(Emojis.Information, "cmd-err-sfw-only");
+                res = res.Where(p => !p.IsNsfw);
+            }
+
+            if (!res.Any()) {
+                await ctx.FailAsync("cmd-err-res-none");
+                return;
+            }
+
+            await ctx.PaginateAsync(res, (emb, r) => emb.WithColor(this.ModuleColor).WithRedditPost(r), this.ModuleColor);
         }
         #endregion
     }

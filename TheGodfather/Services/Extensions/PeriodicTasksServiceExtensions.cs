@@ -1,16 +1,22 @@
 ﻿using System.ServiceModel.Syndication;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services.Common;
 
 namespace TheGodfather.Services.Extensions
 {
     public static class PeriodicTasksServiceExtensions
     {
+        private static readonly Regex _urlRegex = new Regex(
+            "<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase
+        );
+
+
         public static async Task<bool> SendFeedUpdateAsync(TheGodfatherBot shard, RssSubscription sub, SyndicationItem latest)
         {
             DiscordChannel? chn;
@@ -30,7 +36,8 @@ namespace TheGodfather.Services.Extensions
             emb.WithLocalizedTimestamp(latest.LastUpdatedTime > latest.PublishDate ? latest.LastUpdatedTime : latest.PublishDate);
 
             if (latest.Content is TextSyndicationContent content) {
-                string? imageUrl = RedditService.GetImageUrl(content);
+                Match m = _urlRegex.Match(content.Text);
+                string? imageUrl = m.Success ? m.Groups[1].Value : null;
                 if (imageUrl is { })
                     emb.WithImageUrl(imageUrl);
             }
