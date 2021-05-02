@@ -9,22 +9,32 @@ namespace TheGodfather.Modules.Search.Extensions
     {
         public static LocalizedEmbedBuilder WithRedditPost(this LocalizedEmbedBuilder emb, RedditPost msg)
         {
-            emb.WithTitle(msg.Title);
+            if (msg.IsLocked)
+                emb.WithTitle($"[LOCKED] {msg.Title}");
+            else if (msg.IsArchived)
+                emb.WithTitle($"[ARCHIVED] {msg.Title}");
+            else if (msg.IsNsfw)
+                emb.WithTitle($"[NSFW] {msg.Title}");
+            else if (msg.IsPinned)
+                emb.WithTitle($"[PINNED] {msg.Title}");
+            else if (msg.IsSpoiler)
+                emb.WithTitle($"[SPOILER] {msg.Title}");
+            else
+                emb.WithTitle(msg.Title);
+
             emb.WithDescription(Formatter.Strip(msg.MarkdownText), unknown: false);
-            if (Uri.TryCreate(msg.ThumbnailUrl, UriKind.Absolute, out Uri? uri))
-                emb.WithThumbnail(uri);
+
+            if (string.Equals(msg.PostType, "image", StringComparison.InvariantCultureIgnoreCase) && Uri.TryCreate(msg.Url, UriKind.Absolute, out Uri? imageUri))
+                emb.WithImageUrl(imageUri);
+            else if (Uri.TryCreate(msg.ThumbnailUrl, UriKind.Absolute, out Uri? thumbnailUri))
+                emb.WithThumbnail(thumbnailUri);
             emb.WithUrl(msg.Url);
 
-            emb.AddLocalizedTitleField("str-type", msg.PostType, inline: true);
+            emb.AddLocalizedTitleField("str-type", msg.PostType, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-author", msg.Author, inline: true);
             emb.AddLocalizedTitleField("str-comments", msg.CommentCount, inline: true);
             emb.AddLocalizedTitleField("str-upvotes", msg.UpvoteCount, inline: true);
             emb.AddLocalizedTitleField("str-upvote-ratio", msg.UpvoteRatio, inline: true);
-            emb.AddLocalizedTitleField("str-archived", msg.IsArchived, inline: true);
-            emb.AddLocalizedTitleField("str-locked", msg.IsLocked, inline: true);
-            emb.AddLocalizedTitleField("str-nsfw", msg.IsNsfw, inline: true);
-            emb.AddLocalizedTitleField("str-pinned", msg.IsPinned, inline: true);
-            emb.AddLocalizedTitleField("str-spoiler", msg.IsSpoiler, inline: true);
             if (msg.AwardCount > 0)
                 emb.AddLocalizedTitleField("str-awards", msg.AwardCount, inline: true);
 
