@@ -58,11 +58,11 @@ namespace TheGodfather.Modules.Search.Services
             if (cid is { })
                 return cid.Value;
 
-            VideoId? vid = VideoId.TryParse(idOrUrl);
-            if (vid is { }) {
-                YoutubeExplode.Channels.Channel channel = await this.ytExplode.Channels.GetByVideoAsync(vid.Value);
-                return channel.Id;
-            }
+            //VideoId? vid = VideoId.TryParse(idOrUrl);
+            //if (vid is { }) {
+            //    YoutubeExplode.Channels.Channel channel = await this.ytExplode.Channels.GetByVideoAsync(vid.Value);
+            //    return channel.Id;
+            //}
 
             UserName? uid = UserName.TryParse(idOrUrl);
             if (uid is { }) {
