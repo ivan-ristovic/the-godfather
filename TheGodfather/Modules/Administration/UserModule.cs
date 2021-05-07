@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddLocalizedTitleField("str-flags-oauth", user.OAuthFlags?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-premium-type", user.PremiumType?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTitleField("str-email", user.Email, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-activity", user.Presence.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-activity", user.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
             });
 
 
