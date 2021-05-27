@@ -236,9 +236,15 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region rip
-        [Command("rip")]
+        [Command("rip"), Priority(1)]
         [Aliases("restinpeace", "grave")]
         [RequireBotPermissions(Permissions.AttachFiles)]
+        public Task RateAsync(CommandContext ctx,
+                             [Description("desc-member")] DiscordMember member,
+                             [RemainingText, Description("desc-rip")] string? desc = "RIP")
+            => this.InternalRipAsync(ctx, member, desc);
+
+        [Command("rip"), Priority(0)]
         public Task RateAsync(CommandContext ctx,
                              [Description("desc-user")] DiscordUser user,
                              [RemainingText, Description("desc-rip")] string? desc = "RIP")
