@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (this.Service.IsSafePattern(regex)) {
+                if (!this.Service.IsSafePattern(regex)) {
                     eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-unsafe", Formatter.InlineCode(regexString)));
                     continue;
                 }
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration
             });
 
             if (eb.Length > 0)
-                await ctx.FailAsync("evt-action-err", eb.ToString());
+                await ctx.FailAsync("fmt-err", eb.ToString());
             else
                 await ctx.InfoAsync(this.ModuleColor, "str-fn-add");
         }
