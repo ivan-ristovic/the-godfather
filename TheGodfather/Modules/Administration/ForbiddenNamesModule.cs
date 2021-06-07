@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-fn-add");
-                emb.AddLocalizedTitleField("str-fname-add", Formatter.BlockCode(addedPatterns.Select(p => p.ToString()).JoinWith()));
+                emb.AddLocalizedTitleField("str-fn-add", Formatter.BlockCode(addedPatterns.Select(p => p.ToString()).JoinWith()));
                 if (eb.Length > 0)
                     emb.AddLocalizedTitleField("str-err", eb);
             });
