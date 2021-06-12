@@ -119,6 +119,13 @@ namespace TheGodfather.EventListeners
                 return;
 
             emb.WithLocalizedTitle(DiscordEventType.GuildIntegrationsUpdated, "evt-gld-int-upd");
+            DiscordAuditLogIntegrationEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogIntegrationEntry>(AuditLogActionType.Ban);
+            if (entry is not null) {
+                emb.AddLocalizedPropertyChangeField("str-expire-behavior", entry.ExpireBehavior);
+                emb.AddLocalizedPropertyChangeField("str-expire-grace-period", entry.ExpireGracePeriod);
+                emb.AddFieldsFromAuditLogEntry(entry);
+            }
+
             await logService.LogAsync(e.Guild, emb);
         }
 
