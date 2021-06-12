@@ -503,6 +503,42 @@
 
 ---
 
+### channel bitrate
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Modifies voice channel bitrate.*
+
+**Guild only.**
+
+**Requires permissions:**
+`Manage channels`
+
+**Aliases:**
+`setbr, setbitr, setbrate, setb, br, setbitrate, bitr, brate`
+
+**Overload 2:**
+- \[`channel`\]: *Channel to modify*
+- \[`int`\]: *Bitrate*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 1:**
+- \[`int`\]: *Bitrate*
+- \[`channel`\]: *Channel to modify*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 0:**
+- (optional) \[`channel`\]: *Channel to modify* (def: `None`)
+
+**Examples:**
+
+```xml
+!channel bitrate My Voice Channel 128
+!channel bitrate 128 My Voice Channel Because I can!
+```
+</p></details>
+
+---
+
 ### channel clone
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -889,10 +925,10 @@
 
 ---
 
-### channel setbitrate
+### channel nsfw
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Modifies voice channel bitrate.*
+*Modifies channel's NSFW flag.*
 
 **Guild only.**
 
@@ -900,29 +936,37 @@
 `Manage channels`
 
 **Aliases:**
-`setbr, setbitr, setbrate, setb, br, bitrate, bitr, brate`
+`setnsfw`
+
+**Overload 3:**
+- \[`channel`\]: *Channel to modify*
+- \[`boolean`\]: *Name*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 2:**
+- \[`boolean`\]: *Name*
+- \[`channel`\]: *Channel to modify*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
-- \[`channel`\]: *Channel to modify*
-- \[`int`\]: *Bitrate*
+- \[`boolean`\]: *Reason for the action*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
-- \[`int`\]: *Bitrate*
-- \[`channel`\]: *Channel to modify*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+- (optional) \[`channel`\]: *Channel to modify* (def: `None`)
 
 **Examples:**
 
 ```xml
-!channel setbitrate My Voice Channel 128
-!channel setbitrate 128 My Voice Channel Because I can!
+!channel nsfw Yes/No
+!channel nsfw #my-text-channel Yes/No
+!channel nsfw Yes/No #my-text-channel Because I can!
 ```
 </p></details>
 
 ---
 
-### channel setname
+### channel rename
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Modifies channel name.*
@@ -933,7 +977,7 @@
 `Manage channels`
 
 **Aliases:**
-`settitle, rename, changename, rn, rnm, name, mv`
+`settitle, setname, changename, rn, rnm, name, mv`
 
 **Overload 2:**
 - \[`channel`\]: *Channel to modify*
@@ -951,48 +995,10 @@
 **Examples:**
 
 ```xml
-!channel setname new_name
-!channel setname #my-text-channel new_name
-!channel setname My Voice Channel SampleName
-!channel setname new_name #my-text-channel Because I can!
-```
-</p></details>
-
----
-
-### channel setnsfw
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Modifies channel's NSFW flag.*
-
-**Guild only.**
-
-**Requires permissions:**
-`Manage channels`
-
-**Aliases:**
-`nsfw`
-
-**Overload 2:**
-- \[`channel`\]: *Channel to modify*
-- \[`boolean`\]: *Name*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
-
-**Overload 1:**
-- \[`boolean`\]: *Name*
-- \[`channel`\]: *Channel to modify*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
-
-**Overload 0:**
-- \[`boolean`\]: *Reason for the action*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
-
-**Examples:**
-
-```xml
-!channel setnsfw Yes/No
-!channel setnsfw #my-text-channel Yes/No
-!channel setnsfw Yes/No #my-text-channel Because I can!
+!channel rename new_name
+!channel rename #my-text-channel new_name
+!channel rename My Voice Channel SampleName
+!channel rename new_name #my-text-channel Because I can!
 ```
 </p></details>
 
@@ -1064,7 +1070,7 @@
 
 ---
 
-### channel setslowmode
+### channel slowmode
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Modifies channel's slowmode settings.*
@@ -1075,36 +1081,39 @@
 `Manage channels`
 
 **Aliases:**
-`setratel, setrl, setrate, setratelimit, setslow, slowmode, slow, sm, setsmode, smode`
+`setratel, setrl, setrate, setratelimit, setslow, setslowmode, slow, sm, setsmode, smode`
 
-**Overload 2:**
+**Overload 3:**
 - \[`channel`\]: *Channel to modify*
 - \[`int`\]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 2:**
+- \[`int`\]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
+- \[`channel`\]: *Channel to modify*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 1:**
 - \[`int`\]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
-- \[`channel`\]: *Channel to modify*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
-- \[`int`\]: *Slowmode value, from set: [0, 5, 10, 15, 30, 45, 60, 75, 90, 120]*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+- (optional) \[`channel`\]: *Channel to modify* (def: `None`)
 
 **Examples:**
 
 ```xml
-!channel setslowmode #my-text-channel 10
-!channel setslowmode 10 My Voice Channel Because I can!
+!channel slowmode #my-text-channel 10
+!channel slowmode 10 My Voice Channel Because I can!
 ```
 </p></details>
 
 ---
 
-### channel settopic
+### channel topic
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Modifies channel's topic.*
+*Gets or sets the channel topic.*
 
 **Guild only.**
 
@@ -1112,32 +1121,36 @@
 `Manage channels`
 
 **Aliases:**
-`t, topic, sett, desc, setdesc, description, setdescription`
+`t, settopic, sett, desc, setdesc, description, setdescription`
 
-**Overload 2:**
+**Overload 3:**
 - \[`string`\]: *Reason for the action*
 - \[`channel`\]: *Channel to modify*
 - \[`string...`\]: *Channel topic*
 
-**Overload 1:**
+**Overload 2:**
 - \[`channel`\]: *Channel to modify*
 - \[`string...`\]: *Channel topic*
 
-**Overload 0:**
+**Overload 1:**
 - \[`string...`\]: *Channel topic*
+
+**Overload 0:**
+
+*No arguments.*
 
 **Examples:**
 
 ```xml
-!channel settopic My channel topic!
-!channel settopic #my-text-channel My channel topic!
-!channel settopic My channel topic! #my-text-channel Because I can!
+!channel topic My channel topic!
+!channel topic #my-text-channel My channel topic!
+!channel topic My channel topic! #my-text-channel Because I can!
 ```
 </p></details>
 
 ---
 
-### channel setuserlimit
+### channel userlimit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Modifies voice channel user limit.*
@@ -1148,23 +1161,26 @@
 `Manage channels`
 
 **Aliases:**
-`setul, setulimit, setlimit, setl, userlimit, ul, ulimig, userl`
+`setul, setulimit, setlimit, setl, setuserlimit, ul, ulimig, userl`
 
-**Overload 1:**
+**Overload 2:**
 - \[`channel`\]: *Channel to modify*
 - \[`int`\]: *User limit*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 1:**
+- \[`int`\]: *User limit*
+- \[`channel`\]: *Channel to modify*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 0:**
-- \[`int`\]: *User limit*
-- \[`channel`\]: *Channel to modify*
-- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+- (optional) \[`channel`\]: *Channel to modify* (def: `None`)
 
 **Examples:**
 
 ```xml
-!channel setuserlimit My Voice Channel 10
-!channel setuserlimit 10 My Voice Channel Because I can!
+!channel userlimit My Voice Channel 10
+!channel userlimit 10 My Voice Channel Because I can!
 ```
 </p></details>
 
@@ -5420,7 +5436,7 @@
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Overload 2:**
-- \[`member`\]: *User*
+- \[`member`\]: *Member*
 - \[`time span`\]: *Time span*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 

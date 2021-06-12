@@ -24,6 +24,28 @@
 
 ---
 
+## catfact
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random cat fact.*
+
+
+**Aliases:**
+`kittyfact, kittenfact`
+
+**Overload 0:**
+
+*No arguments.*
+
+**Examples:**
+
+```xml
+!catfact
+```
+</p></details>
+
+---
+
 ## Group: cryptocurrency
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

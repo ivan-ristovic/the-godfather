@@ -1032,6 +1032,34 @@
 
 ---
 
+## rip
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Rest in peace, user...*
+
+**Requires bot permissions:**
+`Attach files`
+
+**Aliases:**
+`restinpeace, grave`
+
+**Overload 1:**
+- \[`member`\]: *Member*
+- (optional) \[`string...`\]: *Text to put on the grave.* (def: `RIP`)
+
+**Overload 0:**
+- \[`user`\]: *User*
+- (optional) \[`string...`\]: *Text to put on the grave.* (def: `RIP`)
+
+**Examples:**
+
+```xml
+!rip @User
+```
+</p></details>
+
+---
+
 ## say
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
