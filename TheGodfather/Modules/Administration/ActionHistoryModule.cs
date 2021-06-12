@@ -7,6 +7,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using TheGodfather.Attributes;
+using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
@@ -150,7 +151,12 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithColor(this.ModuleColor);
-                foreach (ActionHistoryEntry e in history.OrderByDescending(e => e.Action).ThenByDescending(e => e.Time)) {
+                IEnumerable<ActionHistoryEntry> orderedHistory = history
+                    .OrderByDescending(e => e.Action)
+                    .ThenByDescending(e => e.Time)
+                    .Take(DiscordLimits.EmbedFieldLimit)
+                    ;
+                foreach (ActionHistoryEntry e in ) {
                     string title = e.Action.ToLocalizedKey();
                     string content = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-emb", 
                         this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
@@ -181,7 +187,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.PaginateAsync(history.OrderByDescending(e => e.Action).ThenByDescending(e => e.Time), (emb, e) => {
                 emb.WithLocalizedTitle(e.Action.ToLocalizedKey());
                 DiscordUser? user = users.GetValueOrDefault(e.UserId);
-                emb.WithDescription(user?.Mention ?? e.UserId.ToString());
+                emb.WithDescription(user?.ToDiscriminatorString() ?? e.UserId.ToString());
                 emb.AddLocalizedTitleField("str-notes", e.Notes, unknown: false);
                 emb.WithLocalizedTimestamp(e.Time, user?.AvatarUrl);
                 return emb;

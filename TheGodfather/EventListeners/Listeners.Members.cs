@@ -89,6 +89,25 @@ namespace TheGodfather.EventListeners
                 }
             }
 
+            if (gcfg.ActionHistoryEnabled) {
+                IReadOnlyList<ActionHistoryEntry> history = await bot.Services.GetRequiredService<ActionHistoryService>().GetAllAsync((e.Guild.Id, e.Member.Id));
+                if (history.Any()) {
+                    IEnumerable<ActionHistoryEntry> orderedHistory = history
+                        .OrderByDescending(e => e.Action)
+                        .ThenByDescending(e => e.Time)
+                        .Take(5)
+                        ;
+                    foreach (ActionHistoryEntry ahe in orderedHistory) {
+                        string title = ahe.Action.ToLocalizedKey();
+                        string content = ls.GetString(e.Guild.Id, "fmt-ah-emb",
+                            ls.GetLocalizedTimeString(e.Guild.Id, ahe.Time),
+                            ahe.Notes
+                        );
+                        emb.AddLocalizedTitleField(title, content);
+                    }
+                }
+            }
+
             await logService.LogAsync(e.Guild, emb);
 
 
