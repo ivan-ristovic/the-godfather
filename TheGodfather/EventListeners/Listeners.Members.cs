@@ -218,8 +218,8 @@ namespace TheGodfather.EventListeners
                     // TODO add pending membership screening
                     // TODO add nitro notifications
                     if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {   // FIXME order shouldn't matter
-                        string rolesBefore = e.RolesBefore.Select(r => r.Mention).Humanize(", ");
-                        string rolesAfter = e.RolesAfter.Select(r => r.Mention).Humanize(", ");
+                        string rolesBefore = e.RolesBefore.Where(r => r.Id != e.Guild.Id).Select(r => r.Mention).Humanize(", ");
+                        string rolesAfter = e.RolesAfter.Where(r => r.Id != e.Guild.Id).Select(r => r.Mention).Humanize(", ");
                         string noneStr = ls.GetString(e.Guild.Id, "str-none");
                         emb.AddLocalizedTitleField("str-roles-bef", string.IsNullOrWhiteSpace(rolesBefore) ? noneStr : rolesBefore, inline: true);
                         emb.AddLocalizedTitleField("str-roles-aft", string.IsNullOrWhiteSpace(rolesAfter) ? noneStr : rolesAfter, inline: true);
