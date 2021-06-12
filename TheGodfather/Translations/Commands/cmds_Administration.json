@@ -94,6 +94,12 @@
       [ "arg-chn-voice", "arg-chn-cat", "arg-ten", "arg-sbyte-max" ]
     ]
   },
+  "channel bitrate": {
+    "usage": [
+      [ "arg-chn-voice", "arg-sbyte-max" ],
+      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+    ]
+  },
   "channel clone": {
     "usage": [
       [ "arg-chn-text" ],
@@ -168,25 +174,19 @@
       [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
     ]
   },
-  "channel setbitrate": {
+  "channel nsfw": {
     "usage": [
-      [ "arg-chn-voice", "arg-sbyte-max" ],
-      [ "arg-sbyte-max", "arg-chn-voice", "arg-rsn" ]
+      [ "arg-bool" ],
+      [ "arg-chn-text", "arg-bool" ],
+      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
     ]
   },
-  "channel setname": {
+  "channel rename": {
     "usage": [
       [ "arg-name-small" ],
       [ "arg-chn-text", "arg-name-small" ],
       [ "arg-chn-voice", "arg-name" ],
       [ "arg-name-small", "arg-chn-text", "arg-rsn" ]
-    ]
-  },
-  "channel setnsfw": {
-    "usage": [
-      [ "arg-bool" ],
-      [ "arg-chn-text", "arg-bool" ],
-      [ "arg-bool", "arg-chn-text", "arg-rsn" ]
     ]
   },
   "channel setparent": {
@@ -200,20 +200,20 @@
       [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
     ]
   },
-  "channel setslowmode": {
+  "channel slowmode": {
     "usage": [
       [ "arg-chn-text", "arg-ten" ],
       [ "arg-ten", "arg-chn-voice", "arg-rsn" ]
     ]
   },
-  "channel settopic": {
+  "channel topic": {
     "usage": [
       [ "arg-topic" ],
       [ "arg-chn-text", "arg-topic" ],
       [ "arg-topic", "arg-chn-text", "arg-rsn" ]
     ]
   },
-  "channel setuserlimit": {
+  "channel userlimit": {
     "usage": [
       [ "arg-chn-voice", "arg-ten" ],
       [ "arg-ten", "arg-chn-voice", "arg-rsn" ]

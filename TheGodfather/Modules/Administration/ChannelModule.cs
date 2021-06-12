@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
 using TheGodfather.Attributes;
@@ -119,6 +120,28 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region channel bitrate
+        [Command("bitrate"), Priority(2)]
+        [Aliases("setbr", "setbitr", "setbrate", "setb", "br", "setbitrate", "bitr", "brate")]
+        public Task BitrateAsync(CommandContext ctx,
+                                [Description("desc-chn-mod")] DiscordChannel channel,
+                                [Description("str-bitrate")] int bitrate,
+                                [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetBitrateAsync(ctx, channel, bitrate, reason);
+
+        [Command("bitrate"), Priority(1)]
+        public Task BitrateAsync(CommandContext ctx,
+                                [Description("str-bitrate")] int bitrate,
+                                [Description("desc-chn-mod")] DiscordChannel channel,
+                                [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetBitrateAsync(ctx, channel, bitrate, reason);
+
+        [Command("bitrate"), Priority(0)]
+        public Task BitrateAsync(CommandContext ctx,
+                                [Description("desc-chn-mod")] DiscordChannel? channel = null)
+            => InternalGetOrSetBitrateAsync(ctx, channel ?? ctx.Channel, null, null);
+        #endregion
+
         #region channel clone
         [Command("clone"), Priority(1), UsesInteractivity]
         [Aliases("copy", "cp", "cln")]
@@ -215,14 +238,14 @@ namespace TheGodfather.Modules.Administration
                                           [Description("desc-chn-mod")] DiscordChannel channel,
                                           [Description("str-bitrate")] int bitrate,
                                           [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyBitrateAsync(ctx, channel, bitrate, reason);
+                => InternalGetOrSetBitrateAsync(ctx, channel, bitrate, reason);
 
             [Command("bitrate"), Priority(0)]
             public Task ModifyBitrateAsync(CommandContext ctx,
                                           [Description("str-bitrate")] int bitrate,
                                           [Description("desc-chn-mod")] DiscordChannel channel,
                                           [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyBitrateAsync(ctx, channel, bitrate, reason);
+                => InternalGetOrSetBitrateAsync(ctx, channel, bitrate, reason);
             #endregion
 
             #region channel modify userlimit
@@ -232,14 +255,14 @@ namespace TheGodfather.Modules.Administration
                                             [Description("desc-chn-mod")] DiscordChannel channel,
                                             [Description("str-user-limit")] int userlimit,
                                             [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyUserLimitAsync(ctx, channel, userlimit, reason);
+                => InternalGetOrSetUserLimitAsync(ctx, channel, userlimit, reason);
 
             [Command("userlimit"), Priority(0)]
             public Task ModifyUserLimitAsync(CommandContext ctx,
                                             [Description("str-user-limit")] int userlimit,
                                             [Description("desc-chn-mod")] DiscordChannel channel,
                                             [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyUserLimitAsync(ctx, channel, userlimit, reason);
+                => InternalGetOrSetUserLimitAsync(ctx, channel, userlimit, reason);
             #endregion
 
             #region channel modify name
@@ -249,19 +272,19 @@ namespace TheGodfather.Modules.Administration
                                        [Description("desc-chn-mod")] DiscordChannel channel,
                                        [Description("str-name")] string name,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyNameAsync(ctx, channel, name, reason);
+                => InternalSetNameAsync(ctx, channel, name, reason);
 
             [Command("name"), Priority(1)]
             public Task ModifyNameAsync(CommandContext ctx,
                                        [Description("str-name")] string name,
                                        [Description("desc-chn-mod")] DiscordChannel channel,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyNameAsync(ctx, channel, name, reason);
+                => InternalSetNameAsync(ctx, channel, name, reason);
 
             [Command("name"), Priority(0)]
             public Task ModifyNameAsync(CommandContext ctx,
                                        [RemainingText, Description("desc-rsn")] string name)
-                => InternalModifyNameAsync(ctx, ctx.Channel, name, null);
+                => InternalSetNameAsync(ctx, ctx.Channel, name, null);
             #endregion
 
             #region channel modify nsfw
@@ -270,20 +293,20 @@ namespace TheGodfather.Modules.Administration
                                        [Description("desc-chn-mod")] DiscordChannel channel,
                                        [Description("str-name")] bool nsfw,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyNsfwAsync(ctx, channel, nsfw, reason);
+                => InternalGetOrSetNsfwAsync(ctx, channel, nsfw, reason);
 
             [Command("nsfw"), Priority(1)]
             public Task ModifyNsfwAsync(CommandContext ctx,
                                        [Description("str-name")] bool nsfw,
                                        [Description("desc-chn-mod")] DiscordChannel channel,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyNsfwAsync(ctx, channel, nsfw, reason);
+                => InternalGetOrSetNsfwAsync(ctx, channel, nsfw, reason);
 
             [Command("nsfw"), Priority(0)]
             public Task ModifyNsfwAsync(CommandContext ctx,
                                        [Description("desc-rsn")] bool nsfw,
                                        [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifyNsfwAsync(ctx, ctx.Channel, nsfw, reason);
+                => InternalGetOrSetNsfwAsync(ctx, ctx.Channel, nsfw, reason);
             #endregion
 
             #region channel modify parent
@@ -291,13 +314,13 @@ namespace TheGodfather.Modules.Administration
             [Aliases("par")]
             public Task ModifyParentAsync(CommandContext ctx,
                                          [Description("desc-chn-parent-children")] params DiscordChannel[] channels)
-                => InternalModifyParentAsync(ctx, channels, null);
+                => InternalSetParentAsync(ctx, channels, null);
 
             [Command("parent"), Priority(0)]
             public Task ModifyParentAsync(CommandContext ctx,
                                          [Description("desc-rsn")] string reason,
                                          [Description("desc-chn-parent-children")] params DiscordChannel[] channels)
-                => InternalModifyParentAsync(ctx, channels, reason);
+                => InternalSetParentAsync(ctx, channels, reason);
             #endregion
 
             #region channel modify position
@@ -330,20 +353,20 @@ namespace TheGodfather.Modules.Administration
                                            [Description("desc-chn-mod")] DiscordChannel channel,
                                            [Description("desc-chn-slowmode")] int slowmode,
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifySlowmodeAsync(ctx, channel, slowmode, reason);
+                => InternalGetOrSetSlowmodeAsync(ctx, channel, slowmode, reason);
 
             [Command("slowmode"), Priority(1)]
             public Task ModifySlowmodeAsync(CommandContext ctx,
                                            [Description("desc-chn-slowmode")] int slowmode,
                                            [Description("desc-chn-mod")] DiscordChannel channel,
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifySlowmodeAsync(ctx, channel, slowmode, reason);
+                => InternalGetOrSetSlowmodeAsync(ctx, channel, slowmode, reason);
 
             [Command("slowmode"), Priority(0)]
             public Task ModifySlowmodeAsync(CommandContext ctx,
                                            [Description("desc-chn-slowmode")] int slowmode,
                                            [RemainingText, Description("desc-rsn")] string? reason = null)
-                => InternalModifySlowmodeAsync(ctx, ctx.Channel, slowmode, reason);
+                => InternalGetOrSetSlowmodeAsync(ctx, ctx.Channel, slowmode, reason);
             #endregion
 
             #region channel modify topic
@@ -354,99 +377,70 @@ namespace TheGodfather.Modules.Administration
                                         [Description("desc-rsn")] string reason,
                                         [Description("desc-chn-mod")] DiscordChannel channel,
                                         [RemainingText, Description("desc-chn-topic")] string topic)
-                => InternalModifyTopicsync(ctx, channel, topic, reason);
+                => InternalGetOrSetTopicAsync(ctx, channel, topic, reason);
 
             [Command("topic"), Priority(1)]
             public Task ModifyTopicAsync(CommandContext ctx,
                                         [Description("desc-chn-mod")] DiscordChannel channel,
                                         [RemainingText, Description("desc-chn-topic")] string topic)
-                => InternalModifyTopicsync(ctx, channel, topic, null);
+                => InternalGetOrSetTopicAsync(ctx, channel, topic, null);
 
             [Command("topic"), Priority(0)]
             public Task ModifyTopicAsync(CommandContext ctx,
                                         [RemainingText, Description("desc-chn-topic")] string topic)
-                => InternalModifyTopicsync(ctx, ctx.Channel, topic, null);
+                => InternalGetOrSetTopicAsync(ctx, ctx.Channel, topic, null);
             #endregion
         }
         #endregion
 
-        #region channel setbitrate
-        [Command("setbitrate"), Priority(1)]
-        [Aliases("setbr", "setbitr", "setbrate", "setb", "br", "bitrate", "bitr", "brate")]
-        public Task SetBitrateAsync(CommandContext ctx,
-                                   [Description("desc-chn-mod")] DiscordChannel channel,
-                                   [Description("str-bitrate")] int bitrate,
-                                   [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyBitrateAsync(ctx, channel, bitrate, reason);
+        #region channel nsfw
+        [Command("nsfw"), Priority(3)]
+        [Aliases("setnsfw")]
+        public Task NsfwAsync(CommandContext ctx,
+                             [Description("desc-chn-mod")] DiscordChannel channel,
+                             [Description("str-name")] bool nsfw,
+                             [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetNsfwAsync(ctx, channel, nsfw, reason);
 
-        [Command("setbitrate"), Priority(0)]
-        public Task SetBitrateAsync(CommandContext ctx,
-                                   [Description("str-bitrate")] int bitrate,
-                                   [Description("desc-chn-mod")] DiscordChannel channel,
-                                   [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyBitrateAsync(ctx, channel, bitrate, reason);
+        [Command("nsfw"), Priority(2)]
+        public Task NsfwAsync(CommandContext ctx,
+                             [Description("str-name")] bool nsfw,
+                             [Description("desc-chn-mod")] DiscordChannel channel,
+                             [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetNsfwAsync(ctx, channel, nsfw, reason);
+
+        [Command("nsfw"), Priority(1)]
+        public Task NsfwAsync(CommandContext ctx,
+                             [Description("desc-rsn")] bool nsfw,
+                             [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetNsfwAsync(ctx, ctx.Channel, nsfw, reason);
+
+        [Command("nsfw"), Priority(0)]
+        public Task NsfwAsync(CommandContext ctx,
+                             [Description("desc-chn-mod")] DiscordChannel? channel = null)
+            => InternalGetOrSetNsfwAsync(ctx, channel ?? ctx.Channel, null, null);
         #endregion
 
-        #region channel setuserlimit
-        [Command("setuserlimit"), Priority(1)]
-        [Aliases("setul", "setulimit", "setlimit", "setl", "userlimit", "ul", "ulimig", "userl")]
-        public Task SetUserLimitAsync(CommandContext ctx,
-                                     [Description("desc-chn-mod")] DiscordChannel channel,
-                                     [Description("str-user-limit")] int userlimit,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyUserLimitAsync(ctx, channel, userlimit, reason);
-
-        [Command("setuserlimit"), Priority(0)]
-        public Task SetUserLimitAsync(CommandContext ctx,
-                                     [Description("str-user-limit")] int userlimit,
-                                     [Description("desc-chn-mod")] DiscordChannel channel,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyUserLimitAsync(ctx, channel, userlimit, reason);
-        #endregion
-
-        #region channel setname
-        [Command("setname"), Priority(2)]
-        [Aliases("settitle", "rename", "changename", "rn", "rnm", "name", "mv")]
+        #region channel rename
+        [Command("rename"), Priority(2)]
+        [Aliases("settitle", "setname", "changename", "rn", "rnm", "name", "mv")]
         public Task RenameAsync(CommandContext ctx,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [Description("str-name")] string name,
                                [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyNameAsync(ctx, channel, name, reason);
+            => InternalSetNameAsync(ctx, channel, name, reason);
 
-        [Command("setname"), Priority(1)]
+        [Command("rename"), Priority(1)]
         public Task RenameAsync(CommandContext ctx,
                                [Description("str-name")] string name,
                                [Description("desc-chn-mod")] DiscordChannel channel,
                                [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyNameAsync(ctx, channel, name, reason);
+            => InternalSetNameAsync(ctx, channel, name, reason);
 
-        [Command("setname"), Priority(0)]
+        [Command("rename"), Priority(0)]
         public Task RenameAsync(CommandContext ctx,
                                [RemainingText, Description("desc-rsn")] string name)
-            => InternalModifyNameAsync(ctx, ctx.Channel, name, null);
-        #endregion
-
-        #region channel setnsfw
-        [Command("setnsfw"), Priority(2)]
-        [Aliases("nsfw")]
-        public Task SetNsfwAsync(CommandContext ctx,
-                                [Description("desc-chn-mod")] DiscordChannel channel,
-                                [Description("str-name")] bool nsfw,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyNsfwAsync(ctx, channel, nsfw, reason);
-
-        [Command("setnsfw"), Priority(1)]
-        public Task SetNsfwAsync(CommandContext ctx,
-                                [Description("str-name")] bool nsfw,
-                                [Description("desc-chn-mod")] DiscordChannel channel,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyNsfwAsync(ctx, channel, nsfw, reason);
-
-        [Command("setnsfw"), Priority(0)]
-        public Task SetNsfwAsync(CommandContext ctx,
-                                [Description("desc-rsn")] bool nsfw,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifyNsfwAsync(ctx, ctx.Channel, nsfw, reason);
+            => InternalSetNameAsync(ctx, ctx.Channel, name, null);
         #endregion
 
         #region channel setparent
@@ -454,13 +448,13 @@ namespace TheGodfather.Modules.Administration
         [Aliases("setpar", "parent", "par")]
         public Task ModifyParentAsync(CommandContext ctx,
                                      [Description("desc-chn-parent-children")] params DiscordChannel[] channels)
-            => InternalModifyParentAsync(ctx, channels, null);
+            => InternalSetParentAsync(ctx, channels, null);
 
         [Command("setparent"), Priority(0)]
         public Task ModifyParentAsync(CommandContext ctx,
                                      [Description("desc-rsn")] string reason,
                                      [Description("desc-chn-parent-children")] params DiscordChannel[] channels)
-            => InternalModifyParentAsync(ctx, channels, reason);
+            => InternalSetParentAsync(ctx, channels, reason);
         #endregion
 
         #region channel setposition
@@ -486,49 +480,79 @@ namespace TheGodfather.Modules.Administration
             => InternalModifyPositionAsync(ctx, ctx.Channel, position, reason);
         #endregion
 
-        #region channel setslowmode
-        [Command("setslowmode"), Priority(2)]
-        [Aliases("setratel", "setrl", "setrate", "setratelimit", "setslow", "slowmode", "slow", "sm", "setsmode", "smode")]
-        public Task SetSlowmodeAsync(CommandContext ctx,
-                                    [Description("desc-chn-mod")] DiscordChannel channel,
-                                    [Description("desc-chn-slowmode")] int slowmode,
-                                    [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifySlowmodeAsync(ctx, channel, slowmode, reason);
+        #region channel slowmode
+        [Command("slowmode"), Priority(3)]
+        [Aliases("setratel", "setrl", "setrate", "setratelimit", "setslow", "setslowmode", "slow", "sm", "setsmode", "smode")]
+        public Task SlowmodeAsync(CommandContext ctx,
+                                 [Description("desc-chn-mod")] DiscordChannel channel,
+                                 [Description("desc-chn-slowmode")] int slowmode,
+                                 [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetSlowmodeAsync(ctx, channel, slowmode, reason);
 
-        [Command("setslowmode"), Priority(1)]
-        public Task SetSlowmodeAsync(CommandContext ctx,
-                                    [Description("desc-chn-slowmode")] int slowmode,
-                                    [Description("desc-chn-mod")] DiscordChannel channel,
-                                    [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifySlowmodeAsync(ctx, channel, slowmode, reason);
+        [Command("slowmode"), Priority(2)]
+        public Task SlowmodeAsync(CommandContext ctx,
+                                 [Description("desc-chn-slowmode")] int slowmode,
+                                 [Description("desc-chn-mod")] DiscordChannel channel,
+                                 [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetSlowmodeAsync(ctx, channel, slowmode, reason);
 
-        [Command("setslowmode"), Priority(0)]
-        public Task SetSlowmodeAsync(CommandContext ctx,
-                                    [Description("desc-chn-slowmode")] int slowmode,
-                                    [RemainingText, Description("desc-rsn")] string? reason = null)
-            => InternalModifySlowmodeAsync(ctx, ctx.Channel, slowmode, reason);
+        [Command("slowmode"), Priority(1)]
+        public Task SlowmodeAsync(CommandContext ctx,
+                                 [Description("desc-chn-slowmode")] int slowmode,
+                                 [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetSlowmodeAsync(ctx, ctx.Channel, slowmode, reason);
+
+        [Command("slowmode"), Priority(0)]
+        public Task SlowmodeAsync(CommandContext ctx,
+                                 [Description("desc-chn-mod")] DiscordChannel? channel = null)
+            => InternalGetOrSetSlowmodeAsync(ctx, channel ?? ctx.Channel, null, null);
         #endregion
 
-        #region channel settopic
-        [Command("settopic"), Priority(2)]
-        [Aliases("t", "topic", "sett", "desc", "setdesc", "description", "setdescription")]
+        #region channel topic
+        [Command("topic"), Priority(3)]
+        [Aliases("t", "settopic", "sett", "desc", "setdesc", "description", "setdescription")]
+        public Task TopicAsync(CommandContext ctx,
+                              [Description("desc-rsn")] string reason,
+                              [Description("desc-chn-mod")] DiscordChannel channel,
+                              [RemainingText, Description("desc-chn-topic")] string topic)
+            => InternalGetOrSetTopicAsync(ctx, channel, topic, reason);
 
-        public Task SetTopicAsync(CommandContext ctx,
-                                 [Description("desc-rsn")] string reason,
-                                 [Description("desc-chn-mod")] DiscordChannel channel,
-                                 [RemainingText, Description("desc-chn-topic")] string topic)
-            => InternalModifyTopicsync(ctx, channel, topic, reason);
+        [Command("topic"), Priority(2)]
+        public Task TopicAsync(CommandContext ctx,
+                              [Description("desc-chn-mod")] DiscordChannel channel,
+                              [RemainingText, Description("desc-chn-topic")] string topic)
+            => InternalGetOrSetTopicAsync(ctx, channel, topic, null);
 
-        [Command("settopic"), Priority(1)]
-        public Task SetTopicAsync(CommandContext ctx,
-                                 [Description("desc-chn-mod")] DiscordChannel channel,
-                                 [RemainingText, Description("desc-chn-topic")] string topic)
-            => InternalModifyTopicsync(ctx, channel, topic, null);
+        [Command("topic"), Priority(1)]
+        public Task TopicAsync(CommandContext ctx,
+                              [RemainingText, Description("desc-chn-topic")] string topic)
+            => InternalGetOrSetTopicAsync(ctx, ctx.Channel, topic, null);
 
-        [Command("settopic"), Priority(0)]
-        public Task SetTopicAsync(CommandContext ctx,
-                                 [RemainingText, Description("desc-chn-topic")] string topic)
-            => InternalModifyTopicsync(ctx, ctx.Channel, topic, null);
+        [Command("topic"), Priority(0)]
+        public Task TopicAsync(CommandContext ctx)
+            => InternalGetOrSetTopicAsync(ctx, ctx.Channel, null, null);
+        #endregion
+
+        #region channel userlimit
+        [Command("userlimit"), Priority(2)]
+        [Aliases("setul", "setulimit", "setlimit", "setl", "setuserlimit", "ul", "ulimig", "userl")]
+        public Task UserLimitAsync(CommandContext ctx,
+                                  [Description("desc-chn-mod")] DiscordChannel channel,
+                                  [Description("str-user-limit")] int userlimit,
+                                  [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetUserLimitAsync(ctx, channel, userlimit, reason);
+
+        [Command("userlimit"), Priority(1)]
+        public Task UserLimitAsync(CommandContext ctx,
+                                  [Description("str-user-limit")] int userlimit,
+                                  [Description("desc-chn-mod")] DiscordChannel channel,
+                                  [RemainingText, Description("desc-rsn")] string? reason = null)
+            => InternalGetOrSetUserLimitAsync(ctx, channel, userlimit, reason);
+
+        [Command("userlimit"), Priority(0)]
+        public Task UserLimitAsync(CommandContext ctx,
+                                  [Description("desc-chn-mod")] DiscordChannel? channel = null)
+            => InternalGetOrSetUserLimitAsync(ctx, channel ?? ctx.Channel, null, null);
         #endregion
 
         #region channel viewperms
@@ -627,10 +651,20 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region internals
-        private static async Task InternalModifyBitrateAsync(CommandContext ctx, DiscordChannel channel, int bitrate, string? reason)
+        private static async Task InternalGetOrSetBitrateAsync(CommandContext ctx, DiscordChannel channel, int? bitrate, string? reason)
         {
             if (channel.Type != ChannelType.Voice)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-voice");
+
+            if (bitrate is null) {
+                CheckIfMemberIsAllowedToAccessChannel(ctx, channel);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-chn-bitrate", channel.Name);
+                    emb.WithDescription(channel.Bitrate);
+                    emb.WithColor(EmbColor);
+                });
+                return;
+            }
 
             CheckBitrate(ctx, bitrate);
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
@@ -641,10 +675,20 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-bitrate", Formatter.Bold(channel.Name), bitrate);
         }
 
-        private static async Task InternalModifyUserLimitAsync(CommandContext ctx, DiscordChannel channel, int userlimit, string? reason)
+        private static async Task InternalGetOrSetUserLimitAsync(CommandContext ctx, DiscordChannel channel, int? userlimit, string? reason)
         {
             if (channel.Type != ChannelType.Voice)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-voice");
+
+            if (userlimit is null) {
+                CheckIfMemberIsAllowedToAccessChannel(ctx, channel);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-chn-userlimit", channel.Name);
+                    emb.WithDescription(channel.UserLimit);
+                    emb.WithColor(EmbColor);
+                });
+                return;
+            }
 
             CheckUserLimit(ctx, userlimit);
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
@@ -655,7 +699,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-userlimit", Formatter.Bold(channel.Name), userlimit);
         }
 
-        private static async Task InternalModifyNameAsync(CommandContext ctx, DiscordChannel channel, string name, string? reason)
+        private static async Task InternalSetNameAsync(CommandContext ctx, DiscordChannel channel, string name, string? reason)
         {
             await CheckPotentialChannelNameAsync(ctx, name, textChannel: channel.Type == ChannelType.Text);
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
@@ -666,10 +710,20 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-name", Formatter.InlineCode(channel.Id.ToString()), name);
         }
 
-        private static async Task InternalModifyNsfwAsync(CommandContext ctx, DiscordChannel channel, bool nsfw, string? reason)
+        private static async Task InternalGetOrSetNsfwAsync(CommandContext ctx, DiscordChannel channel, bool? nsfw, string? reason)
         {
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+
+            if (nsfw is null) {
+                CheckIfMemberIsAllowedToAccessChannel(ctx, channel);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-chn-nsfw", channel.Name);
+                    emb.WithDescription(channel.IsNSFW);
+                    emb.WithColor(EmbColor);
+                });
+                return;
+            }
 
             if (channel.IsNSFW == nsfw)
                 return;
@@ -682,7 +736,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-nsfw", Formatter.Bold(channel.Name), nsfw);
         }
 
-        private static async Task InternalModifyParentAsync(CommandContext ctx, DiscordChannel[]? channels, string? reason)
+        private static async Task InternalSetParentAsync(CommandContext ctx, DiscordChannel[]? channels, string? reason)
         {
             DiscordChannel? parent = channels?.SingleOrDefault(c => c.IsCategory);
             if (parent is null)
@@ -723,12 +777,22 @@ namespace TheGodfather.Modules.Administration
             );
         }
 
-        private static async Task InternalModifySlowmodeAsync(CommandContext ctx, DiscordChannel channel, int slowmode, string? reason)
+        private static async Task InternalGetOrSetSlowmodeAsync(CommandContext ctx, DiscordChannel channel, int? slowmode, string? reason)
         {
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
-            if (slowmode is { } && !_ratelimitValues.Contains(slowmode))
+            if (slowmode is null) {
+                CheckIfMemberIsAllowedToAccessChannel(ctx, channel);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-chn-slowmode", channel.Name);
+                    emb.WithDescription(channel.PerUserRateLimit);
+                    emb.WithColor(EmbColor);
+                });
+                return;
+            }
+
+            if (slowmode is { } && !_ratelimitValues.Contains(slowmode.Value))
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-ratelimit", _ratelimitValues.JoinWith(", "));
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
@@ -739,13 +803,23 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-ratelimit", channel.Mention, slowmode);
         }
 
-        private static async Task InternalModifyTopicsync(CommandContext ctx, DiscordChannel channel, string topic, string? reason)
+        private static async Task InternalGetOrSetTopicAsync(CommandContext ctx, DiscordChannel channel, string? topic, string? reason)
         {
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
-            if (string.IsNullOrEmpty(topic))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-topic");
+            if (string.IsNullOrEmpty(topic)) {
+                CheckIfMemberIsAllowedToAccessChannel(ctx, channel);
+                await ctx.RespondWithLocalizedEmbedAsync(emb => {
+                    emb.WithLocalizedTitle("fmt-chn-topic", channel.Name);
+                    if (string.IsNullOrWhiteSpace(channel.Topic))
+                        emb.WithLocalizedDescription("str-none");
+                    else
+                        emb.WithDescription(Formatter.BlockCode(Formatter.Sanitize(channel.Topic)));
+                    emb.WithColor(EmbColor);
+                });
+                return;
+            }
 
             if (topic.Length > DiscordLimits.ChannelTopicLimit)
                 throw new CommandFailedException(ctx, "cmd-err-chn-topic-size", DiscordLimits.ChannelTopicLimit);
@@ -756,6 +830,12 @@ namespace TheGodfather.Modules.Administration
             }));
 
             await ctx.InfoAsync(EmbColor, "fmt-chn-mod-topic", channel.Mention, Formatter.Sanitize(Formatter.BlockCode(topic)));
+        }
+
+        private static void CheckIfMemberIsAllowedToAccessChannel(CommandContext ctx, DiscordChannel channel)
+        {
+            if (!channel.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
+                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.AccessChannels) });
         }
         #endregion
     }

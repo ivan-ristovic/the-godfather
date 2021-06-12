@@ -409,7 +409,7 @@ namespace TheGodfather.Modules.Administration
 
         [Command("tempban"), Priority(2)]
         public Task TempBanAsync(CommandContext ctx,
-                                [Description("desc-user")] DiscordMember member,
+                                [Description("desc-member")] DiscordMember member,
                                 [Description("desc-timespan")] TimeSpan timespan,
                                 [RemainingText, Description("desc-rsn")] string? reason = null)
             => this.TempBanAsync(ctx, timespan, member, reason);

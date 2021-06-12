@@ -72,7 +72,8 @@ namespace TheGodfather.Modules.Administration
 
             DiscordMember bot = ctx.Guild.CurrentMember;
             bool failed = false;
-            foreach (DiscordMember member in ctx.Guild.Members.Select(kvp => kvp.Value).Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
+            IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
+            foreach (DiscordMember member in members.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
                 Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
                 if (match is { }) {
                     try {
