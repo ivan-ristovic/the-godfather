@@ -29,6 +29,17 @@ namespace TheGodfather.EventListeners
             if (e.Guild is null)
                 return;
 
+            _ = LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb);
+            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+
+            if (e.Member.IsBot) {
+                LogExt.Debug(bot.GetId(e.Guild.Id), "Bot added to guild: {Member} {Guild}", e.Member, e.Guild);
+                emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-bot-add", e.Member);
+                AddMemberInfoToEmbed(emb, e.Member);
+                await logService.LogAsync(e.Guild, emb);
+                return;
+            }
+
             LogExt.Debug(bot.GetId(e.Guild.Id), "Member added: {Member} {Guild}", e.Member, e.Guild);
 
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
@@ -52,21 +63,7 @@ namespace TheGodfather.EventListeners
 
             await bot.Services.GetRequiredService<AutoRoleService>().GrantRolesAsync(bot, e.Guild, e.Member);
 
-            _ = LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb);
-            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-
-            emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
-            emb.WithThumbnail(e.Member.AvatarUrl);
-            emb.AddLocalizedTimestampField("str-regtime", e.Member.CreationTimestamp, inline: true);
-            emb.AddLocalizedTitleField("str-ahash", e.Member.AvatarHash, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-flags", e.Member.Flags?.Humanize(), inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-locale", e.Member.Locale, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-mfa", e.Member.MfaEnabled, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-flags-oauth", e.Member.OAuthFlags?.Humanize(LetterCasing.Sentence), inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-verified", e.Member.Verified, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType?.Humanize(), inline: true, unknown: false);
-            emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
-            emb.AddLocalizedTitleField("str-email", e.Member.Email, inline: true, unknown: false);
+            AddMemberInfoToEmbed(emb, e.Member);
 
             if (bot.Services.GetRequiredService<ForbiddenNamesService>().IsNameForbidden(e.Guild.Id, e.Member.DisplayName, out ForbiddenName? fname)) {
                 if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
@@ -93,6 +90,23 @@ namespace TheGodfather.EventListeners
             }
 
             await logService.LogAsync(e.Guild, emb);
+
+
+            static LocalizedEmbedBuilder AddMemberInfoToEmbed(LocalizedEmbedBuilder emb, DiscordMember member)
+            {
+                emb.WithThumbnail(member.AvatarUrl);
+                emb.AddLocalizedTimestampField("str-regtime", member.CreationTimestamp, inline: true);
+                emb.AddLocalizedTitleField("str-ahash", member.AvatarHash, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-flags", member.Flags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-locale", member.Locale, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-mfa", member.MfaEnabled, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-flags-oauth", member.OAuthFlags?.Humanize(LetterCasing.Sentence), inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-verified", member.Verified, inline: true, unknown: false);
+                emb.AddLocalizedTitleField("str-premium-type", member.PremiumType?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedTimestampField("str-premium-since", member.PremiumSince, inline: true);
+                emb.AddLocalizedTitleField("str-email", member.Email, inline: true, unknown: false);
+                return emb;
+            }
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]

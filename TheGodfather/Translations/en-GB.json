@@ -709,6 +709,7 @@
   "evt-gld-inv-add": "Invite created",
   "evt-gld-inv-del": "Invite deleted",
   "evt-gld-kick": "Member kicked",
+  "evt-gld-bot-add": "Bot added to guild",
   "evt-gld-mem-add": "New member",
   "evt-gld-mem-left": "Member left",
   "evt-gld-mem-upd": "Member updated",
