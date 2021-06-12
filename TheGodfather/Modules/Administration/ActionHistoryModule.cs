@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Administration
                     .ThenByDescending(e => e.Time)
                     .Take(DiscordLimits.EmbedFieldLimit)
                     ;
-                foreach (ActionHistoryEntry e in ) {
+                foreach (ActionHistoryEntry e in orderedHistory) {
                     string title = e.Action.ToLocalizedKey();
                     string content = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-emb", 
                         this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
