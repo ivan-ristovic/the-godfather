@@ -255,6 +255,7 @@ namespace TheGodfather.EventListeners
             emb.WithLocalizedTitle(DiscordEventType.MessageUpdated, "evt-msg-upd", desc: jumplink);
             emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
             emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
+            emb.AddLocalizedPropertyChangeField("str-pinned", e.MessageBefore?.Pinned, e.Message.Pinned);
 
             emb.AddLocalizedContentField(
                 "str-upd-bef",

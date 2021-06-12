@@ -101,13 +101,23 @@ namespace TheGodfather.EventListeners
             emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update");
             emb.AddLocalizedTitleField("str-chn", e.Channel.Mention);
 
-            IReadOnlyList<DiscordMessage> pinned = await e.Channel.GetPinnedMessagesAsync();
-            if (pinned.Any()) {
-                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned[0].JumpLink));
-                string content = string.IsNullOrWhiteSpace(pinned[0].Content) ? "<embed>" : pinned[0].Content;
-                emb.AddLocalizedTitleField("str-top-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
+            DiscordAuditLogMessagePinEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessagePinEntry>();
+            DiscordMessage? pinned = null;
+            if (entry is null) {
+                IReadOnlyList<DiscordMessage> pinnedMessages = await e.Channel.GetPinnedMessagesAsync();
+                pinned = pinnedMessages.FirstOrDefault();
+            } else {
+                pinned = entry.Message;
+                emb.AddInvocationFields(entry.UserResponsible);
+                emb.AddReason(entry.Reason);
             }
-            emb.AddLocalizedTimestampField("str-last-pin-timestamp", e.LastPinTimestamp);
+
+            if (pinned is not null) {
+                emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned.JumpLink));
+                string content = string.IsNullOrWhiteSpace(pinned.Content) ? "<embed>" : pinned.Content;
+                emb.AddLocalizedTitleField("str-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
+                emb.WithLocalizedTimestamp(pinned.Timestamp);
+            }
 
             await logService.LogAsync(e.Guild, emb);
         }
