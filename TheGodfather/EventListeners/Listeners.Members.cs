@@ -41,6 +41,7 @@ namespace TheGodfather.EventListeners
             }
 
             LogExt.Debug(bot.GetId(e.Guild.Id), "Member added: {Member} {Guild}", e.Member, e.Guild);
+            emb.WithLocalizedTitle(DiscordEventType.GuildMemberAdded, "evt-gld-mem-add", e.Member);
 
             GuildConfigService gcs = bot.Services.GetRequiredService<GuildConfigService>();
             GuildConfig gcfg = await gcs.GetConfigAsync(e.Guild.Id);
