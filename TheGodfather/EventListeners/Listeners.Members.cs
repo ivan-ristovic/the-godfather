@@ -289,7 +289,7 @@ namespace TheGodfather.EventListeners
 
             static void AddNicknameChangeField(LocalizedEmbedBuilder emb, string? nameBefore, string? nameAfter)
             {
-                if (string.IsNullOrWhiteSpace(nameAfter))
+                if (string.IsNullOrWhiteSpace(nameBefore))
                     emb.AddLocalizedTitleField("evt-nick-clear", nameBefore);
                 else
                     emb.AddLocalizedPropertyChangeField("str-name", nameBefore, nameAfter);
