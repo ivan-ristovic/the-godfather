@@ -248,7 +248,8 @@ namespace TheGodfather.EventListeners
             DiscordAuditLogEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEntry>();
             switch (entry) {
                 case null:
-                    AddNicknameChangeField(emb, e.NicknameBefore, e.NicknameAfter);
+                    if (e.NicknameBefore != e.NicknameAfter)
+                        AddNicknameChangeField(emb, e.NicknameBefore, e.NicknameAfter);
                     // TODO add pending membership screening
                     // TODO add nitro notifications
                     if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {   // FIXME order shouldn't matter
@@ -289,8 +290,8 @@ namespace TheGodfather.EventListeners
 
             static void AddNicknameChangeField(LocalizedEmbedBuilder emb, string? nameBefore, string? nameAfter)
             {
-                if (string.IsNullOrWhiteSpace(nameBefore))
-                    emb.AddLocalizedTitleField("evt-nick-clear", nameBefore);
+                if (string.IsNullOrWhiteSpace(nameAfter))
+                    emb.AddLocalizedTitleField("evt-nick-clear", string.IsNullOrWhiteSpace(nameBefore) ? null: Formatter.InlineCode(nameBefore));
                 else
                     emb.AddLocalizedPropertyChangeField("str-name", nameBefore, nameAfter);
             }
