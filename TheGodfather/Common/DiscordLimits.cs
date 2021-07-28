@@ -9,7 +9,7 @@
         public const int ChannelNameLimit = 100;
         public const int ChannelTopicLimit = 1024;
         public const int EmbedAuthorLimit = 256;
-        public const int EmbedDescriptionLimit = 2048;
+        public const int EmbedDescriptionLimit = 4096;
         public const int EmbedFieldLimit = 25;
         public const int EmbedFieldNameLimit = 256;
         public const int EmbedFieldValueLimit = 1024;
