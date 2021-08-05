@@ -124,7 +124,10 @@ namespace TheGodfather.Modules.Administration
                 if (!pattern.TryParseRegex(out Regex? regex) || regex is null)
                     throw new CommandFailedException(ctx, "cmd-err-regex");
 
-                IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, amount);
+                if (ctx.Channel.LastMessageId is null)
+                    return;
+
+                IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId.Value, amount);
                 IEnumerable<DiscordMessage> toDelete = msgs.Where(m => !string.IsNullOrWhiteSpace(m.Content) && regex.IsMatch(m.Content));
                 await ctx.Channel.DeleteMessagesAsync(toDelete, ctx.BuildInvocationDetailsString(reason));
             }
