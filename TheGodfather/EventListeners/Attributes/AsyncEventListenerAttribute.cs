@@ -46,6 +46,15 @@ namespace TheGodfather.EventListeners.Attributes
 
             #region Event hooking
             switch (this.EventType) {
+                case DiscordEventType.ApplicationCommandCreated:
+                    bot.Client.ApplicationCommandCreated += OnEventWithArgs;
+                    break;
+                case DiscordEventType.ApplicationCommandDeleted:
+                    bot.Client.ApplicationCommandDeleted += OnEventWithArgs;
+                    break;
+                case DiscordEventType.ApplicationCommandUpdated:
+                    bot.Client.ApplicationCommandUpdated += OnEventWithArgs;
+                    break;
                 case DiscordEventType.ChannelCreated:
                     bot.Client.ChannelCreated += OnEventWithArgs;
                     break;
@@ -116,6 +125,9 @@ namespace TheGodfather.EventListeners.Attributes
                     break;
                 case DiscordEventType.GuildRoleDeleted:
                     bot.Client.GuildRoleDeleted += OnEventWithArgs;
+                    break;
+                case DiscordEventType.GuildStickersUpdated:
+                    bot.Client.GuildStickersUpdated += OnEventWithArgs;
                     break;
                 case DiscordEventType.GuildUnavailable:
                     bot.Client.GuildUnavailable += OnEventWithArgs;

@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Command is null || e.Command.QualifiedName.StartsWith("help"))
                 return Task.CompletedTask;
+
             LogExt.Information(
                 bot.GetId(e.Context.Guild?.Id),
                 new[] { "Executed: {ExecutedCommand}", "{User}", "{Guild}", "{Channel}" },
@@ -163,6 +165,48 @@ namespace TheGodfather.EventListeners
             }
 
             return e.Context.RespondAsync(embed: emb.Build());
+        }
+
+        [AsyncEventListener(DiscordEventType.ApplicationCommandCreated)]
+        public static Task ApplicationCommandCreateEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
+        {
+            if (e.Command is null)
+                return Task.CompletedTask;
+
+            LogExt.Information(
+                bot.GetId(e.Guild?.Id),
+                new[] { "Command created for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
+                e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
+            );
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.ApplicationCommandDeleted)]
+        public static Task ApplicationCommandDeleteEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
+        {
+            if (e.Command is null)
+                return Task.CompletedTask;
+
+            LogExt.Information(
+                bot.GetId(e.Guild?.Id),
+                new[] { "Command deleted for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
+                e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
+            );
+            return Task.CompletedTask;
+        }
+
+        [AsyncEventListener(DiscordEventType.ApplicationCommandUpdated)]
+        public static Task ApplicationCommandUpdateEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
+        {
+            if (e.Command is null)
+                return Task.CompletedTask;
+
+            LogExt.Information(
+                bot.GetId(e.Guild?.Id),
+                new[] { "Command updated for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
+                e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
+            );
+            return Task.CompletedTask;
         }
     }
 }
