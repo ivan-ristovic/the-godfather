@@ -157,9 +157,9 @@ namespace TheGodfather.Modules.Misc
                 }
 
                 if (ctx.Guild is { } && ranks.TryGetValue(rank, out string? name))
-                    emb.AddField(user?.Username ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
+                    emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
                 else
-                    emb.AddField(user?.Username ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");
+                    emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");
 
             }
 
