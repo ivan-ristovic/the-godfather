@@ -28,6 +28,7 @@ namespace TheGodfather.EventListeners.Common
         GuildRoleCreated,
         GuildRoleDeleted,
         GuildRoleUpdated,
+        GuildStickersUpdated,
         GuildUnavailable,
         GuildUpdated,
         Heartbeated,
@@ -54,7 +55,7 @@ namespace TheGodfather.EventListeners.Common
         UserUpdated,
         VoiceServerUpdated,
         VoiceStateUpdated,
-        WebhooksUpdated
+        WebhooksUpdated,
         #endregion
     }
 
@@ -95,8 +96,9 @@ namespace TheGodfather.EventListeners.Common
                     return DiscordColor.SpringGreen;
                 #endregion
 
-                #region Emojis
+                #region Emojis & Stickers
                 case DiscordEventType.GuildEmojisUpdated:
+                case DiscordEventType.GuildStickersUpdated:
                     return DiscordColor.Yellow;
                 #endregion
 

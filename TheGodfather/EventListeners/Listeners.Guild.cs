@@ -67,7 +67,7 @@ namespace TheGodfather.EventListeners
             LogExt.Information(bot.GetId(e.Guild.Id), "Guild deleted {Guild}", e.Guild);
             return bot.Services.GetRequiredService<GuildConfigService>().UnregisterGuildAsync(e.Guild.Id);
         }
-
+        
         [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
         public static async Task GuildEmojisUpdateEventHandlerAsync(TheGodfatherBot bot, GuildEmojisUpdateEventArgs e)
         {
@@ -81,7 +81,7 @@ namespace TheGodfather.EventListeners
                     ? AuditLogActionType.EmojiDelete
                     : AuditLogActionType.EmojiUpdate;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-emoji-chn", desc: null, action);
+            emb.WithLocalizedTitle(DiscordEventType.GuildEmojisUpdated, "evt-gld-emoji-chn", desc: null, action);
 
             DiscordAuditLogEmojiEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEmojiEntry>(action);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
@@ -106,6 +106,55 @@ namespace TheGodfather.EventListeners
             if (entry is null) {
                 emb.AddLocalizedTitleField("evt-gld-emoji-bef", e.EmojisBefore?.Count, inline: true);
                 emb.AddLocalizedTitleField("evt-gld-emoji-aft", e.EmojisAfter?.Count, inline: true);
+            }
+
+            await logService.LogAsync(e.Guild, emb);
+        }
+
+        [AsyncEventListener(DiscordEventType.GuildStickersUpdated)]
+        public static async Task GuildStickersUpdateEventHandlerAsync(TheGodfatherBot bot, GuildStickersUpdateEventArgs e)
+        {
+            LogExt.Information(bot.GetId(e.Guild.Id), "Stickers updated {Guild}", e.Guild);
+            if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+                return;
+
+            AuditLogActionType action = e.StickersBefore.Count > e.StickersAfter.Count
+                ? AuditLogActionType.StickerCreate
+                : e.StickersAfter.Count < e.StickersBefore.Count
+                    ? AuditLogActionType.StickerDelete
+                    : AuditLogActionType.StickerUpdate;
+
+            emb.WithLocalizedTitle(DiscordEventType.GuildStickersUpdated, "evt-gld-sticker-chn", desc: null, action);
+
+            DiscordAuditLogStickerEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogStickerEntry>(action);
+            emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
+                if (ent.Target is null) {
+                    emb.WithLocalizedDescription("evt-gld-sticker-unk");
+                    return;
+                }
+                emb.WithThumbnail(ent.Target.StickerUrl);
+                switch (action) {
+                    case AuditLogActionType.StickerCreate:
+                        emb.AddLocalizedTitleField("evt-gld-sticker-add", ent.Target.Name, inline: true);
+                        break;
+                    case AuditLogActionType.StickerDelete:
+                        emb.AddLocalizedTitleField("evt-gld-sticker-del", ent.NameChange.Before, inline: true);
+                        break;
+                    case AuditLogActionType.StickerUpdate:
+                        emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-tags", ent.TagsChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-available", ent.AvailabilityChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-asset", ent.AssetChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-format", ent.FormatChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-type", ent.TypeChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField("str-desc", ent.DescriptionChange, inline: true);
+                        break;
+                }
+            });
+
+            if (entry is null) {
+                emb.AddLocalizedTitleField("evt-gld-emoji-bef", e.StickersBefore?.Count, inline: true);
+                emb.AddLocalizedTitleField("evt-gld-emoji-aft", e.StickersAfter?.Count, inline: true);
             }
 
             await logService.LogAsync(e.Guild, emb);
