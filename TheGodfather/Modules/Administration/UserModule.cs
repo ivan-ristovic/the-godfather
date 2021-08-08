@@ -260,7 +260,7 @@ namespace TheGodfather.Modules.Administration
 
         #region user mutevoice
         [Command("mutevoice")]
-        [Aliases("mv", "voicemute", "vmute", "mutev", "vm")]
+        [Aliases("mv", "voicemute", "vmute", "mutev", "vm", "gag")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteVoiceAsync(CommandContext ctx,
                                         [Description("desc-member")] DiscordMember member,
