@@ -208,5 +208,16 @@ namespace TheGodfather.EventListeners
             );
             return Task.CompletedTask;
         }
+
+        [AsyncEventListener(DiscordEventType.ComponentInteractionCreated)]
+        public static Task ComponentInteractionCreateEventHandlerAsync(TheGodfatherBot bot, ComponentInteractionCreateEventArgs e)
+        {
+            LogExt.Debug(
+                bot.GetId(e.Guild?.Id),
+                new[] { "Component interaction created: {Interaction}", "{User}", "{Guild}", "{Channel}", "{Message}", "{Values}" },
+                e.Interaction?.ToString() ?? "Unknown", e.User, e.Guild?.ToString() ?? "DM", e.Channel, e.Message, e.Values?.ToString() ?? "None"
+            );
+            return Task.CompletedTask;
+        }
     }
 }

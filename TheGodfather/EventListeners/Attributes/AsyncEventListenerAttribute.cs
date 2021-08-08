@@ -78,6 +78,9 @@ namespace TheGodfather.EventListeners.Attributes
                     foreach (CommandsNextExtension cnext in bot.CNext.Values)
                         cnext.CommandExecuted += OnEventWithArgs;
                     break;
+                case DiscordEventType.ComponentInteractionCreated:
+                    bot.Client.ComponentInteractionCreated += OnEventWithArgs;
+                    break;
                 case DiscordEventType.DmChannelDeleted:
                     bot.Client.DmChannelDeleted += OnEventWithArgs;
                     break;

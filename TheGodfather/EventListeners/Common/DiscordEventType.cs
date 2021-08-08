@@ -15,6 +15,7 @@ namespace TheGodfather.EventListeners.Common
         ClientErrored,
         CommandErrored,
         CommandExecuted,
+        ComponentInteractionCreated,
         DmChannelDeleted,
         GuildAvailable,
         GuildBanAdded,
