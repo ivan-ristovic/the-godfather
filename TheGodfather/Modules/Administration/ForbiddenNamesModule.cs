@@ -202,7 +202,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (!await this.Service.AddForbiddenNameAsync(ctx.Guild.Id, regex)) {
+                if (!await this.Service.AddForbiddenNameAsync(ctx.Guild.Id, regex, action)) {
                     eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-fn-dup", Formatter.InlineCode(regexString)));
                     continue;
                 }
@@ -217,10 +217,14 @@ namespace TheGodfather.Modules.Administration
                 Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
                 if (match is { }) {
                     try {
-                        await member.ModifyAsync(m => {
-                            m.Nickname = member.Id.ToString();
-                            m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, "rsn-fname-match", match);
-                        });
+                        if (action is { }) {
+                            await this.Service.PunishMemberAsync(ctx.Guild, member, action.Value);
+                        } else {
+                            await member.ModifyAsync(m => {
+                                m.Nickname = member.Id.ToString();
+                                m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, "rsn-fname-match", match);
+                            });
+                        }
                         if (!member.IsBot)
                             await member.SendMessageAsync(this.Localization.GetString(null, "dm-fname-match", Formatter.Italic(ctx.Guild.Name)));
                     } catch (UnauthorizedException) {
