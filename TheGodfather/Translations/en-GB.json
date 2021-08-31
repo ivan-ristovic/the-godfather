@@ -505,6 +505,7 @@
   "desc-filters-del": "Filters to remove",
   "desc-filters-del-ids": "IDs of filters to remove",
   "desc-filters-del-pattern": "Remove filters matching this pattern",
+  "desc-fname": "Forbidden name pattern (regular expression, case insensitive)",
   "desc-fnames": "Forbidden name patterns (regular expressions, case insensitive)",
   "desc-fnames-del": "Forbidden names to remove",
   "desc-fnames-del-ids": "IDs of forbidden names to remove",

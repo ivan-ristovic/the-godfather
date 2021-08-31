@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class ForbiddenNamesService : ITheGodfatherService
+    public sealed class ForbiddenNamesService : ProtectionService, ITheGodfatherService
     {
         private static ImmutableArray<ulong> _ids = new ulong[] {
             125649888611401728,
@@ -22,15 +23,13 @@ namespace TheGodfather.Modules.Administration.Services
             621356153163285419,
         }.ToImmutableArray();
 
-        public bool IsDisabled => false;
+        public override bool TryAddGuildToWatch(ulong gid) => true;
+        public override bool TryRemoveGuildFromWatch(ulong gid) => true;
+        public override void Dispose() { }
 
-        private readonly DbContextBuilder dbb;
 
-
-        public ForbiddenNamesService(DbContextBuilder dbb)
-        {
-            this.dbb = dbb;
-        }
+        public ForbiddenNamesService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
+            : base(dbb, ls, ss, gcs, "_gf: Forbidden name") { }
 
 
         public bool IsSafePattern(Regex regex)
@@ -54,14 +53,14 @@ namespace TheGodfather.Modules.Administration.Services
             return this.InternalGetForbiddenNamesForGuild(db, gid).ToList().AsReadOnly();
         }
 
-        public Task<bool> AddForbiddenNameAsync(ulong gid, string regexString)
+        public Task<bool> AddForbiddenNameAsync(ulong gid, string regexString, PunishmentAction? action = null)
         {
             return regexString.TryParseRegex(out Regex? regex)
-                ? this.AddForbiddenNameAsync(gid, regex)
+                ? this.AddForbiddenNameAsync(gid, regex, action)
                 : throw new ArgumentException($"Invalid regex string: {regexString}", nameof(regexString));
         }
 
-        public async Task<bool> AddForbiddenNameAsync(ulong gid, Regex? regex)
+        public async Task<bool> AddForbiddenNameAsync(ulong gid, Regex? regex, PunishmentAction? action = null)
         {
             if (regex is null)
                 return false;
@@ -76,6 +75,7 @@ namespace TheGodfather.Modules.Administration.Services
                     GuildId = gid,
                     RegexString = regexString,
                     RegexLazy = regex,
+                    ActionOverride = action,
                 };
                 db.ForbiddenNames.Add(fname);
                 await db.SaveChangesAsync();
@@ -83,15 +83,15 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings)
+        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings, PunishmentAction? action = null)
         {
-            bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r)));
+            bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r, action)));
             return res.All(r => r);
         }
 
-        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes)
+        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes, PunishmentAction? action = null)
         {
-            bool[] res = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r)));
+            bool[] res = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r, action)));
             return res.All(r => r);
         }
 

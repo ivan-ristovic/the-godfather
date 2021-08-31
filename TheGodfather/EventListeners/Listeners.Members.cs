@@ -66,7 +66,8 @@ namespace TheGodfather.EventListeners
 
             AddMemberInfoToEmbed(emb, e.Member);
 
-            if (bot.Services.GetRequiredService<ForbiddenNamesService>().IsNameForbidden(e.Guild.Id, e.Member.DisplayName, out ForbiddenName? fname)) {
+            ForbiddenNamesService fns = bot.Services.GetRequiredService<ForbiddenNamesService>();
+            if (fns.IsNameForbidden(e.Guild.Id, e.Member.DisplayName, out ForbiddenName? fname)) {
                 if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
                     LogExt.Debug(bot.GetId(e.Guild.Id), "Adding forbidden name entry to action history: {Member}, {Guild}", e.Member, e.Guild);
                     await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
@@ -78,10 +79,14 @@ namespace TheGodfather.EventListeners
                     });
                 }
                 try {
-                    await e.Member.ModifyAsync(m => {
-                        m.Nickname = e.Member.Id.ToString();
-                        m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname?.RegexString ?? "?");
-                    });
+                    if (fname?.ActionOverride is { }) {
+                        await fns.PunishMemberAsync(e.Guild, e.Member, fname.ActionOverride.Value);
+                    } else {
+                        await e.Member.ModifyAsync(m => {
+                            m.Nickname = e.Member.Id.ToString();
+                            m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname?.RegexString ?? "?");
+                        });
+                    }
                     emb.AddLocalizedTitleField("str-act-taken", "act-fname-match");
                     if (!e.Member.IsBot)
                         await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
@@ -215,10 +220,14 @@ namespace TheGodfather.EventListeners
                 ForbiddenNamesService fns = bot.Services.GetRequiredService<ForbiddenNamesService>();
                 if (fns.IsNameForbidden(e.Guild.Id, e.NicknameAfter, out ForbiddenName? fname) && fname is { }) {
                     try {
-                        await e.Member.ModifyAsync(m => {
-                            m.Nickname = e.Member.Id.ToString();
-                            m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
-                        });
+                        if (fname.ActionOverride is { }) {
+                            await fns.PunishMemberAsync(e.Guild, e.Member, fname.ActionOverride.Value);
+                        } else {
+                            await e.Member.ModifyAsync(m => {
+                                m.Nickname = e.Member.Id.ToString();
+                                m.AuditLogReason = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString);
+                            });
+                        }
                         renamed = true;
                         if (!e.Member.IsBot)
                             await e.Member.SendMessageAsync(ls.GetString(null, "dm-fname-match", Formatter.Italic(e.Guild.Name)));
