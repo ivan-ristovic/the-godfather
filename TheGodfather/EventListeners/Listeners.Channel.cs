@@ -196,7 +196,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField("evt-upd-position", fst.ChannelBefore.Position, lst.ChannelAfter.Position, inline: true);
                 emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", fst.ChannelBefore.PerUserRateLimit, lst.ChannelAfter.PerUserRateLimit, inline: true);
                 emb.AddLocalizedPropertyChangeField("evt-upd-type", fst.ChannelBefore.Type, lst.ChannelAfter.Type, inline: true);
-                if (!fst.ChannelBefore.Topic.Equals(lst.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase)) {
+                if (!fst.ChannelBefore.Topic?.Equals(lst.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase) ?? false) {
                     string before = Formatter.BlockCode(
                         Formatter.Strip(string.IsNullOrWhiteSpace(fst.ChannelBefore.Topic) ? " " : fst.ChannelBefore.Topic).Truncate(450, "...")
                     );
