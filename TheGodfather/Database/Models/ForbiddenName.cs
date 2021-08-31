@@ -26,7 +26,7 @@ namespace TheGodfather.Database.Models
         [Column("name_regex"), Required, MaxLength(NameLimit)]
         public string RegexString { get; set; } = null!;
 
-        [Column("action"), Required, MaxLength(NameLimit)]
+        [Column("action")]
         public PunishmentAction? ActionOverride { get; set; } = null;
 
         [NotMapped]

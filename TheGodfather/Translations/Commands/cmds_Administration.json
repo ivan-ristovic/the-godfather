@@ -720,7 +720,9 @@
   },
   "forbiddennames add": {
     "usage": [
-      [ "arg-regex" ]
+      [ "arg-regex" ],
+      [ "arg-punish-action", "arg-regex" ],
+      [ "arg-regex", "arg-regex" ]
     ]
   },
   "forbiddennames delete": {

@@ -3262,7 +3262,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `emojis, e`
@@ -3293,7 +3293,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `create, install, register, reg, a, +, +=, <<, <, <-, <=`
@@ -3332,7 +3332,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `unregister, uninstall, remove, rm, del, d, -, -=, >, >>, ->, =>`
@@ -3359,7 +3359,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `information, details, about, i`
@@ -3386,7 +3386,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `print, show, view, ls, l, p`
@@ -3407,7 +3407,7 @@
 **Guild only.**
 
 **Requires permissions:**
-`Manage emoji`
+`Manage emoji and stickers`
 
 **Aliases:**
 `edit, mod, e, m, rename, mv, setname`
@@ -3614,6 +3614,14 @@
 **Aliases:**
 `register, reg, a, +, +=, <<, <, <-, <=`
 
+**Overload 2:**
+- \[`PunishmentAction`\]: *Punishment action*
+- \[`string...`\]: *Forbidden name patterns (regular expressions, case insensitive)*
+
+**Overload 1:**
+- \[`string`\]: *Forbidden name pattern (regular expression, case insensitive)*
+- (optional) \[`Nullable`1`\]: *Punishment action* (def: `None`)
+
 **Overload 0:**
 - \[`string...`\]: *Forbidden name patterns (regular expressions, case insensitive)*
 
@@ -3621,6 +3629,8 @@
 
 ```xml
 !forbiddennames add regex?pattern+
+!forbiddennames add Kick regex?pattern+
+!forbiddennames add regex?pattern+ regex?pattern+
 ```
 </p></details>
 
@@ -5287,7 +5297,7 @@
 `Mute voice chat members`
 
 **Aliases:**
-`mv, voicemute, vmute, mutev, vm`
+`mv, voicemute, vmute, mutev, vm, gag`
 
 **Overload 0:**
 - \[`member`\]: *Member*
