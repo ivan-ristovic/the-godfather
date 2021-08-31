@@ -17,7 +17,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
 
         public ForbiddenNamesServiceTests()
         {
-            this.Service = new ForbiddenNamesService(TestDbProvider.Database);
+            this.Service = new ForbiddenNamesService(TestDbProvider.Database, null!, null!, null!);
             this.fnamesCount = new Dictionary<int, int>(
                 Enumerable.Range(0, MockData.Ids.Count)
                           .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
@@ -28,7 +28,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
         [SetUp]
         public void InitializeService()
         {
-            this.Service = new ForbiddenNamesService(TestDbProvider.Database);
+            this.Service = new ForbiddenNamesService(TestDbProvider.Database, null!, null!, null!);
         }
 
 
