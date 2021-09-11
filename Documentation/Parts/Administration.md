@@ -4469,12 +4469,34 @@
 `rr, reactionrole, reactroles, reactionrl, reactrole, reactr, reactrl, rrole`
 
 **Overload 2:**
+- \[`message`\]: *Message on which to monitor reactions*
 - \[`emoji`\]: *Emoji*
 - \[`role`\]: *Role to grant*
+
+**Overload 2:**
+- \[`emoji`\]: *Emoji*
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`role`\]: *Role to grant*
+
+**Overload 2:**
+- \[`emoji`\]: *Emoji*
+- \[`role`\]: *Role to grant*
+- (optional) \[`message`\]: *Message on which to monitor reactions* (def: `None`)
+
+**Overload 1:**
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`role`\]: *Role to grant*
+- \[`emoji`\]: *Emoji*
+
+**Overload 1:**
+- \[`role`\]: *Role to grant*
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`emoji`\]: *Emoji*
 
 **Overload 1:**
 - \[`role`\]: *Role to grant*
 - \[`emoji`\]: *Emoji*
+- (optional) \[`message`\]: *Message on which to monitor reactions* (def: `None`)
 
 **Overload 0:**
 
@@ -4486,6 +4508,10 @@
 !reactionroles
 !reactionroles @Role :emoji:
 !reactionroles :emoji: @Role
+!reactionroles @Role :emoji: 361119455792594954
+!reactionroles :emoji: @Role 361119455792594954
+!reactionroles 361119455792594954 @Role :emoji:
+!reactionroles 361119455792594954 :emoji: @Role
 ```
 </p></details>
 
@@ -4506,19 +4532,45 @@
 **Aliases:**
 `register, reg, a, +, +=, <<, <, <-, <=`
 
+**Overload 5:**
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`role`\]: *Role to grant*
+- \[`emoji`\]: *Emoji*
+
+**Overload 4:**
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`emoji`\]: *Emoji*
+- \[`role`\]: *Role to grant*
+
+**Overload 3:**
+- \[`role`\]: *Role to grant*
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`emoji`\]: *Emoji*
+
+**Overload 2:**
+- \[`emoji`\]: *Emoji*
+- \[`message`\]: *Message on which to monitor reactions*
+- \[`role`\]: *Role to grant*
+
 **Overload 1:**
 - \[`role`\]: *Role to grant*
 - \[`emoji`\]: *Emoji*
+- (optional) \[`message`\]: *Message on which to monitor reactions* (def: `None`)
 
 **Overload 0:**
 - \[`emoji`\]: *Emoji*
 - \[`role`\]: *Role to grant*
+- (optional) \[`message`\]: *Message on which to monitor reactions* (def: `None`)
 
 **Examples:**
 
 ```xml
 !reactionroles add @Role :emoji:
 !reactionroles add :emoji: @Role
+!reactionroles add @Role :emoji: 361119455792594954
+!reactionroles add :emoji: @Role 361119455792594954
+!reactionroles add 361119455792594954 @Role :emoji:
+!reactionroles add 361119455792594954 :emoji: @Role
 ```
 </p></details>
 
@@ -4539,17 +4591,25 @@
 **Aliases:**
 `unregister, remove, rm, del, d, -, -=, >, >>, ->, =>`
 
-**Overload 1:**
+**Overload 3:**
 - \[`role...`\]: *Roles to remove*
 
+**Overload 2:**
+- \[`emoji...`\]: *Emojis*
+
 **Overload 1:**
-- \[`emoji...`\]: *Ranks*
+- \[`message...`\]: *Discord message*
+
+**Overload 0:**
+- \[`channel...`\]: *Channel*
 
 **Examples:**
 
 ```xml
 !reactionroles delete @Role RoleName
 !reactionroles delete :emoji: emoji_name
+!reactionroles delete Sample message
+!reactionroles delete #my-text-channel
 ```
 </p></details>
 

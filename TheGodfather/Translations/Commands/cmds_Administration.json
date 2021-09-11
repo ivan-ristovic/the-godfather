@@ -899,19 +899,29 @@
     "usage": [
       [],
       [ "arg-role", "arg-emoji" ],
-      [ "arg-emoji", "arg-role" ]
+      [ "arg-emoji", "arg-role" ],
+      [ "arg-role", "arg-emoji", "arg-ulong" ],
+      [ "arg-emoji", "arg-role", "arg-ulong" ],
+      [ "arg-ulong", "arg-role", "arg-emoji" ],
+      [ "arg-ulong", "arg-emoji", "arg-role" ]
     ]
   },
   "reactionroles add": {
     "usage": [
       [ "arg-role", "arg-emoji" ],
-      [ "arg-emoji", "arg-role" ]
+      [ "arg-emoji", "arg-role" ],
+      [ "arg-role", "arg-emoji", "arg-ulong" ],
+      [ "arg-emoji", "arg-role", "arg-ulong" ],
+      [ "arg-ulong", "arg-role", "arg-emoji" ],
+      [ "arg-ulong", "arg-emoji", "arg-role" ]
     ]
   },
   "reactionroles delete": {
     "usage": [
       [ "arg-role", "arg-role-raw" ],
-      [ "arg-emoji", "arg-emoji-name" ]
+      [ "arg-emoji", "arg-emoji-name" ],
+      [ "arg-msg" ],
+      [ "arg-chn-text" ]
     ]
   },
   "reactionroles deleteall": {
