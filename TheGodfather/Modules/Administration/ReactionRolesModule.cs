@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Administration
                                   [Description("desc-role-grant")] DiscordRole role,
                                   [Description("desc-rr-msg")] DiscordMessage? msg = null)
         {
-            if (!ctx.Guild.Emojis.ContainsKey(emoji.Id))
+            if (emoji is DiscordEmoji gemoji && (!emoji.IsAvailable || !ctx.Guild.Emojis.ContainsKey(emoji.Id)))
                 throw new CommandFailedException(ctx, "cmd-err-rr-emoji-404");
 
             ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName(), msg?.ChannelId ?? 0, msg?.Id ?? 0);
