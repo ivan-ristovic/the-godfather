@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -24,15 +26,45 @@ namespace TheGodfather.Modules.Administration
         #region reactionroles
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-rr-msg")] DiscordMessage msg,
                                      [Description("desc-emoji")] DiscordEmoji emoji,
                                      [Description("desc-role-grant")] DiscordRole role)
-            => this.AddAsync(ctx, emoji, role);
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-rr-msg")] DiscordMessage msg,
+                                     [Description("desc-role-grant")] DiscordRole role,
+                                     [Description("desc-emoji")] DiscordEmoji emoji)
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [GroupCommand, Priority(2)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-emoji")] DiscordEmoji emoji,
+                                     [Description("desc-rr-msg")] DiscordMessage msg,
+                                     [Description("desc-role-grant")] DiscordRole role)
+            => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-role-grant")] DiscordRole role,
+                                     [Description("desc-rr-msg")] DiscordMessage msg,
                                      [Description("desc-emoji")] DiscordEmoji emoji)
-            => this.AddAsync(ctx, emoji, role);
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [GroupCommand, Priority(2)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-emoji")] DiscordEmoji emoji,
+                                     [Description("desc-role-grant")] DiscordRole role,
+                                     [Description("desc-rr-msg")] DiscordMessage? msg = null)
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-role-grant")] DiscordRole role,
+                                     [Description("desc-emoji")] DiscordEmoji emoji,
+                                     [Description("desc-rr-msg")] DiscordMessage? msg = null)
+            => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -40,28 +72,63 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region reactionroles add
-        [Command("add"), Priority(1)]
+        [Command("add"), Priority(5)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
+                            [Description("desc-rr-msg")] DiscordMessage msg,
                             [Description("desc-role-grant")] DiscordRole role,
                             [Description("desc-emoji")] DiscordEmoji emoji)
-            => this.AddAsync(ctx, emoji, role);
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [Command("add"), Priority(4)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("desc-rr-msg")] DiscordMessage msg,
+                            [Description("desc-emoji")] DiscordEmoji emoji,
+                            [Description("desc-role-grant")] DiscordRole role)
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [Command("add"), Priority(3)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("desc-role-grant")] DiscordRole role,
+                            [Description("desc-rr-msg")] DiscordMessage msg,
+                            [Description("desc-emoji")] DiscordEmoji emoji)
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [Command("add"), Priority(2)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("desc-emoji")] DiscordEmoji emoji,
+                            [Description("desc-rr-msg")] DiscordMessage msg,
+                            [Description("desc-role-grant")] DiscordRole role)
+            => this.AddAsync(ctx, emoji, role, msg);
+
+        [Command("add"), Priority(1)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("desc-role-grant")] DiscordRole role,
+                            [Description("desc-emoji")] DiscordEmoji emoji,
+                            [Description("desc-rr-msg")] DiscordMessage? msg = null)
+            => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(0)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("desc-emoji")] DiscordEmoji emoji,
-                                  [Description("desc-role-grant")] DiscordRole role)
+                                  [Description("desc-role-grant")] DiscordRole role,
+                                  [Description("desc-rr-msg")] DiscordMessage? msg = null)
         {
-            if (emoji is DiscordGuildEmoji && !ctx.Guild.Emojis.Select(kvp => kvp.Value).Contains(emoji))
+            if (!ctx.Guild.Emojis.ContainsKey(emoji.Id))
                 throw new CommandFailedException(ctx, "cmd-err-rr-emoji-404");
 
-            ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName());
+            ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName(), msg?.ChannelId ?? 0, msg?.Id ?? 0);
             if (rr is { })
                 throw new CommandFailedException(ctx, "cmd-err-rr");
+
+            if (msg is null)
+                await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, new[] { emoji.GetDiscordName() });
 
             await this.Service.AddAsync(new ReactionRole {
                 GuildId = ctx.Guild.Id,
                 Emoji = emoji.GetDiscordName(),
+                ChannelId = msg?.ChannelId ?? 0,
+                MessageId = msg?.Id ?? 0,
                 RoleId = role.Id,
             });
 
@@ -69,13 +136,19 @@ namespace TheGodfather.Modules.Administration
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-rr-change");
                 emb.AddLocalizedTitleField("str-rr-role", role.Mention, inline: true);
                 emb.AddLocalizedTitleField("str-rr-emoji", emoji, inline: true);
+                if (msg is { })
+                    emb.AddLocalizedTitleField("str-rr-msg", Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink), inline: true);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-add", role.Mention, emoji);
+
+            if (msg is { })
+                await ctx.InfoAsync(this.ModuleColor, "fmt-rr-add-m", role.Mention, emoji, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink));
+            else
+                await ctx.InfoAsync(this.ModuleColor, "fmt-rr-add", role.Mention, emoji);
         }
         #endregion
 
         #region reactionroles delete
-        [Command("delete"), Priority(1)]
+        [Command("delete"), Priority(3)]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
                                      [Description("desc-roles-del")] params DiscordRole[] roles)
@@ -95,16 +168,52 @@ namespace TheGodfather.Modules.Administration
             await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
         }
 
-        [Command("delete"), Priority(1)]
+        [Command("delete"), Priority(2)]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-ranks")] params DiscordEmoji[] emojis)
+                                     [Description("desc-emojis")] params DiscordEmoji[] emojis)
         {
             if (emojis is null || !emojis.Any()) {
                 await this.RemoveAllAsync(ctx);
                 return;
             }
 
-            int removed = await this.Service.RemoveAsync(ctx.Guild.Id, emojis.Select(e => e.GetDiscordName()));
+            int removed = await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, emojis.Select(e => e.GetDiscordName()));
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
+                emb.AddLocalizedTitleField("str-roles-rem", removed);
+            });
+            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+        }
+
+        [Command("delete"), Priority(1)]
+        public async Task RemoveAsync(CommandContext ctx,
+                                     [Description("desc-msg")] params DiscordMessage[] msgs)
+        {
+            if (msgs is null || !msgs.Any()) {
+                await this.RemoveAllAsync(ctx);
+                return;
+            }
+
+            int removed = await this.Service.RemoveByMessageAsync(ctx.Guild.Id, msgs.Select(m => (m.ChannelId, m.Id)));
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
+                emb.AddLocalizedTitleField("str-roles-rem", removed);
+            });
+            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+        }
+
+        [Command("delete"), Priority(0)]
+        public async Task RemoveAsync(CommandContext ctx,
+                                     [Description("desc-chn")] params DiscordChannel[] channels)
+        {
+            if (channels is null || !channels.Any()) {
+                await this.RemoveAllAsync(ctx);
+                return;
+            }
+
+            int removed = await this.Service.RemoveByChannelAsync(ctx.Guild.Id, channels.SelectIds());
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
@@ -133,36 +242,59 @@ namespace TheGodfather.Modules.Administration
         [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx)
         {
-            IReadOnlyList<ReactionRole> lrs = await this.Service.GetAllAsync(ctx.Guild.Id);
-            if (!lrs.Any()) {
+            IReadOnlyList<ReactionRole> rrs = await this.Service.GetAllAsync(ctx.Guild.Id);
+            if (!rrs.Any()) {
                 await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-rr-none");
                 return;
             }
 
-            var roles = lrs.Select(lr => (ReactionRole: lr, Role: ctx.Guild.GetRole(lr.RoleId))).ToList();
-            IEnumerable<string> toRemove = roles
+            var roles = rrs.Select(rr => (ReactionRole: rr, Role: ctx.Guild.GetRole(rr.RoleId))).ToList();
+            var toRemove = roles
                 .Where(kvp => kvp.Role is null)
                 .Select(kvp => kvp.ReactionRole.Emoji)
-                .Union(lrs.Select(e => e.Emoji).Except(ctx.Guild.Emojis.Values.Select(e => e.GetDiscordName())))
+                .Union(rrs.Select(rr => rr.Emoji).Except(ctx.Guild.Emojis.Values.Select(e => e.GetDiscordName())))
+                .ToList()
                 ;
 
             if (toRemove.Any()) {
-                await this.Service.RemoveAsync(ctx.Guild.Id, toRemove);
+                await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, toRemove);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-automanaged");
                         emb.AddLocalizedTitleField("str-roles-rem", roles.JoinWith());
                     },
                     addInvocationFields: false
                 );
             }
 
-            await ctx.PaginateAsync(
-                "str-rr",
-                roles.Where(kvp => !toRemove.Contains(kvp.ReactionRole.Emoji)).OrderBy(kvp => kvp.Role.Position),
-                kvp => $"{DiscordEmoji.FromName(ctx.Client, kvp.ReactionRole.Emoji)} | {kvp.Role.Mention}",
-                this.ModuleColor
-            );
+            var toPrint = roles
+                .Where(kvp => !toRemove.Contains(kvp.ReactionRole.Emoji))
+                .OrderBy(kvp => kvp.Role.Position)
+                .ToList();
+            if (!toPrint.Any()) {
+                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-rr-none");
+                return;
+            }
+
+            await ctx.PaginateAsync("str-rr", toPrint, FormatReactionRole, this.ModuleColor);
+
+
+            string FormatReactionRole((ReactionRole ReactionRole, DiscordRole Role) kvp)
+            {
+                var sb = new StringBuilder();
+                sb.Append(DiscordEmoji.FromName(ctx.Client, kvp.ReactionRole.Emoji));
+                sb.Append(" | ");
+                sb.Append(kvp.Role.Mention);
+                sb.Append(' ');
+                if (kvp.ReactionRole.MessageId != 0) {
+                    ulong gid = kvp.ReactionRole.GuildId;
+                    ulong cid = kvp.ReactionRole.ChannelId;
+                    ulong mid = kvp.ReactionRole.MessageId;
+                    var jumplink = new Uri($"https://discord.com/channels/{ gid }/{ cid }/{ mid }");
+                    sb.Append(Formatter.MaskedUrl("msg", jumplink));
+                }
+                return sb.ToString();
+            }
         }
         #endregion
     }

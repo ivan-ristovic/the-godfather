@@ -73,14 +73,26 @@ namespace TheGodfather.Database.Models
         [Column("emoji"), Required, MaxLength(EmojiNameLimit)]
         public string Emoji { get; set; } = null!;
 
+        [Column("cid")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long ChannelIdDb { get; set; }
+        [NotMapped]
+        public ulong ChannelId { get => (ulong)this.ChannelIdDb; set => this.ChannelIdDb = (long)value; }
+
+        [Column("mid")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long MessageIdDb { get; set; }
+        [NotMapped]
+        public ulong MessageId { get => (ulong)this.MessageIdDb; set => this.MessageIdDb = (long)value; }
+
 
         public bool Equals(ReactionRole? other)
-            => other is { } && this.GuildId == other.GuildId && this.Emoji == other.Emoji;
+            => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId && this.Emoji == other.Emoji;
 
         public override bool Equals(object? obj)
             => this.Equals(obj as ReactionRole);
 
         public override int GetHashCode()
-            => HashCode.Combine(this.GuildId, this.Emoji);
+            => HashCode.Combine(this.GuildId, this.ChannelId, this.MessageId, this.Emoji);
     }
 }

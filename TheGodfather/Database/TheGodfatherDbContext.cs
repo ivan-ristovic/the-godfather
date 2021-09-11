@@ -171,7 +171,7 @@ namespace TheGodfather.Database
             mb.Entity<LevelRole>().HasKey(lr => new { lr.GuildIdDb, lr.Rank });
             mb.Entity<Meme>().HasKey(m => new { m.GuildIdDb, m.Name });
             mb.Entity<PurchasedItem>().HasKey(i => new { i.ItemId, i.UserIdDb });
-            mb.Entity<ReactionRole>().HasKey(lr => new { lr.GuildIdDb, lr.Emoji });
+            mb.Entity<ReactionRole>().HasKey(rr => new { rr.GuildIdDb, rr.Emoji, rr.ChannelIdDb, rr.MessageIdDb });
             mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);
             mb.Entity<Reminder>().Property(r => r.RepeatIntervalDb).HasDefaultValue(TimeSpan.FromMilliseconds(-1));
             mb.Entity<RssSubscription>().HasKey(sub => new { sub.Id, sub.GuildIdDb, sub.ChannelIdDb });

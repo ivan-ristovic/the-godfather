@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -59,7 +61,7 @@ namespace TheGodfather.EventListeners
             }
 
             ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
-            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName());
+            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName(), e.Channel.Id, e.Message.Id);
             if (rr is { }) {
                 DiscordRole? role = e.Guild.GetRole(rr.RoleId);
                 if (role is { }) {
@@ -89,7 +91,7 @@ namespace TheGodfather.EventListeners
             }
 
             ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
-            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName());
+            ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName(), e.Channel.Id, e.Message.Id);
             if (rr is { }) {
                 DiscordRole? role = e.Guild.GetRole(rr.RoleId);
                 if (role is { }) {
