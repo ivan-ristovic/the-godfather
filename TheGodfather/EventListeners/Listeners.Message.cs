@@ -101,7 +101,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task MessageCreateProtectionHandlerAsync(TheGodfatherBot bot, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
+            if (e.Author.IsBot || e.Guild is null)
                 return;
 
             if (bot.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))

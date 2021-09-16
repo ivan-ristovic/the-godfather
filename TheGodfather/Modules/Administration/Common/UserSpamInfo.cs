@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration.Common
         }
 
 
-        public bool TryDecrementAllowedMessageCount(string newContent)
+        public bool TryDecrementAllowedMessageCount(string? newContent)
         {
             if (string.IsNullOrWhiteSpace(newContent))
                 newContent = "<NULL>";
