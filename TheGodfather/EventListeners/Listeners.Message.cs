@@ -213,6 +213,8 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedTitleField("str-embeds", e.Message.Embeds.Count, inline: true);
             if (e.Message.Reactions.Any())
                 emb.AddLocalizedTitleField("str-reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).JoinWith(" "), inline: true);
+            if (e.Message.Stickers.Any())
+                emb.AddLocalizedTitleField("str-stickers", e.Message.Stickers.JoinWith(), inline: true);
             if (e.Message.Attachments.Any())
                 emb.AddLocalizedTitleField("str-attachments", e.Message.Attachments.Select(a => a.ToMaskedUrl()).JoinWith(), inline: true);
             if (e.Message.CreationTimestamp is { })

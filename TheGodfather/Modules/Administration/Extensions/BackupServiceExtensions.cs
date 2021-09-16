@@ -42,6 +42,9 @@ namespace TheGodfather.Modules.Administration.Extensions
                 sb.AppendLine();
             }
 
+            foreach (DiscordMessageSticker sticker in msg.Stickers)
+                sb.Append("(S): ").Append(sticker.Name).Append(" (").Append(sticker.Type).Append("): ").AppendLine(sticker.StickerUrl);
+
             foreach (DiscordAttachment att in msg.Attachments)
                 sb.Append("(A): ").Append(att.FileName).Append(" (").Append(att.FileSize).Append("): ").AppendLine(att.Url);
 
