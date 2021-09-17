@@ -252,7 +252,8 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedPropertyChangeField("str-locale", e.GuildBefore.PreferredLocale, e.GuildAfter.PreferredLocale);
             emb.AddLocalizedPropertyChangeField("str-tier", e.GuildBefore.PremiumTier, e.GuildAfter.PremiumTier);
             emb.AddLocalizedPropertyChangeField("str-vanity-url", e.GuildBefore.VanityUrlCode, e.GuildAfter.VanityUrlCode);
-            emb.AddLocalizedPropertyChangeField("str-region", e.GuildBefore.VoiceRegion, e.GuildAfter.VoiceRegion);
+            // FIXME Remove the comment once D#+ issue is fixed
+            // emb.AddLocalizedPropertyChangeField("str-region", e.GuildBefore.VoiceRegion, e.GuildAfter.VoiceRegion);
             DiscordAuditLogGuildEntry? entry = await e.GuildAfter.GetLatestAuditLogEntryAsync<DiscordAuditLogGuildEntry>(AuditLogActionType.GuildUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
