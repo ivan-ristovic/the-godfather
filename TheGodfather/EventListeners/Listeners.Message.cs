@@ -284,7 +284,7 @@ namespace TheGodfather.EventListeners
 
 
             static string? FormatContent(DiscordMessage? msg)
-                => string.IsNullOrWhiteSpace(msg?.Content) ? null : Formatter.BlockCode(msg.Content.Truncate(700));
+                => string.IsNullOrWhiteSpace(msg?.Content) ? null : Formatter.BlockCode(Formatter.Strip(msg.Content.Truncate(700)));
         }
 
 

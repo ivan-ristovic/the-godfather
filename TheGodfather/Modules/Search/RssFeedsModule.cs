@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Search
 
                 IReadOnlyList<RssSubscription> subs = await this.Service.Subscriptions.GetAllAsync((ctx.Guild.Id, chn.Id));
                 if (!subs.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-subs-none", chn.Mention);
+                    throw new CommandFailedException(ctx, "cmd-err-subs-none", chn.Name);
 
                 await ctx.PaginateAsync(
                     "str-subs",
