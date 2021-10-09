@@ -48,7 +48,8 @@ namespace TheGodfather.EventListeners
 
             await Task.Delay(TimeSpan.FromSeconds(gcfg.AntiInstantLeaveSettings.Cooldown + 1));
 
-            if (e.Member.Guild is null)     // User left in meantime
+            DiscordMember? member = await e.Guild.GetMemberAsync(e.Member.Id);
+            if (member is null)     // User left/punished in meantime
                 return;
 
             DiscordChannel? wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
