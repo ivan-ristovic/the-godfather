@@ -102,7 +102,7 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-chn", e.Channel.Mention);
 
             DiscordAuditLogMessagePinEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessagePinEntry>();
-            DiscordMessage? pinned = null;
+            DiscordMessage? pinned;
             if (entry is null) {
                 IReadOnlyList<DiscordMessage> pinnedMessages = await e.Channel.GetPinnedMessagesAsync();
                 pinned = pinnedMessages.FirstOrDefault();
