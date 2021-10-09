@@ -123,13 +123,13 @@ namespace TheGodfather.Modules.Administration
             });
         }
 
-        private Task PrintRulesAsync(CommandContext ctx, DiscordChannel? chn = null, string? cmd = null, bool global = false)
+        private Task PrintRulesAsync(CommandContext ctx, DiscordChannel? chn = null, string? cmd = null, bool includeGlobalRules = false)
         {
             IEnumerable<CommandRule> crs = this.Service.GetRules(ctx.Guild.Id, cmd);
             if (chn is { })
                 crs = crs.Where(cr => cr.ChannelId == chn.Id);
-            else if (!global)
-                crs = crs.Where(cr => cr.ChannelId == 0);
+            else if (!includeGlobalRules)
+                crs = crs.Where(cr => cr.ChannelId != 0);
 
             return crs.Any()
                 ? ctx.PaginateAsync(
