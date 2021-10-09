@@ -1464,6 +1464,7 @@
   "str-max-age-s": "Max age (seconds)",
   "str-max-uses": "Max uses",
   "str-members": "Members",
+  "str-member-screening": "Screening update",
   "str-member-since": "Member since",
   "str-members-max": "Max members",
   "str-members-max-vid": "Max video channel users",

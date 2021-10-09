@@ -260,9 +260,10 @@ namespace TheGodfather.EventListeners
                 case null:
                     if (e.NicknameBefore != e.NicknameAfter)
                         AddNicknameChangeField(emb, e.NicknameBefore, e.NicknameAfter);
-                    // TODO add pending membership screening
-                    // TODO add nitro notifications
-                    if (!e.RolesBefore.SequenceEqual(e.RolesAfter)) {   // FIXME order shouldn't matter
+                    emb.AddLocalizedPropertyChangeField("str-member-screening", e.PendingBefore, e.PendingAfter, inline: true);
+                    emb.AddLocalizedTitleField("str-premium-type", e.Member.PremiumType?.Humanize(), inline: true, unknown: false);
+                    emb.AddLocalizedTimestampField("str-premium-since", e.Member.PremiumSince, inline: true);
+                    if (!e.RolesBefore.OrderBy(r => r.Id).SequenceEqual(e.RolesAfter.OrderBy(r => r.Id))) {
                         string rolesBefore = e.RolesBefore.Where(r => r.Id != e.Guild.Id).Select(r => r.Mention).Humanize(", ");
                         string rolesAfter = e.RolesAfter.Where(r => r.Id != e.Guild.Id).Select(r => r.Mention).Humanize(", ");
                         string noneStr = ls.GetString(e.Guild.Id, "str-none");
