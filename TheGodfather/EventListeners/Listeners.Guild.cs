@@ -292,14 +292,14 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncEventListener(DiscordEventType.InviteDeleted)]
-        public static async Task InviteDeletedEventHandlerAsync(TheGodfatherBot bot, InviteDeleteEventArgs e)
+        public static Task InviteDeletedEventHandlerAsync(TheGodfatherBot bot, InviteDeleteEventArgs e)
         {
             LogExt.Debug(bot.GetId(e.Guild.Id), "Guild invite deleted: {Invite} {Guild}", e.Invite, e.Guild);
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                return;
+                return Task.CompletedTask;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-            emb.WithLocalizedTitle(DiscordEventType.InviteDeleted, "evt-gld-inv-add", e.Channel);
+            emb.WithLocalizedTitle(DiscordEventType.InviteDeleted, "evt-gld-inv-del", e.Channel);
             emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
             emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);
             emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
@@ -307,7 +307,7 @@ namespace TheGodfather.EventListeners
             emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
             emb.AddLocalizedTitleField("str-created-by", e.Invite.Inviter?.Mention, inline: true, unknown: false);
             emb.AddLocalizedTitleField("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt));
-            await logService.LogAsync(e.Guild, emb);
+            return logService.LogAsync(e.Guild, emb);
         }
     }
 }
