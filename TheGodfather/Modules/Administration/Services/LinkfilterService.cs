@@ -109,10 +109,5 @@ namespace TheGodfather.Modules.Administration.Services
             emb.AddInvocationFields(e.Author, e.Channel);
             await this.ls.LogAsync(e.Guild, emb);
         }
-
-        public override void Dispose()
-        {
-
-        }
     }
 }

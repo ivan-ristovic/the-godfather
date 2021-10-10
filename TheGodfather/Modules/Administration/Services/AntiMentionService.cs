@@ -117,9 +117,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public override void Dispose()
-        {
-            this.refreshTimer.Dispose();
-        }
+        public override void Dispose() 
+            => this.refreshTimer.Dispose();
     }
 }

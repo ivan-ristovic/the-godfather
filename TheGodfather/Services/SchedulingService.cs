@@ -210,17 +210,6 @@ namespace TheGodfather.Services
             return reminders.AsReadOnly();
         }
 
-        public async Task<GuildTask?> FindPendingGuildTaskForUserAsync(ulong gid, ulong uid)
-        {
-            GuildTask? reminder;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                reminder = await db.GuildTasks
-                    .AsQueryable()
-                    .Where(r => r.GuildIdDb == (long)gid && r.UserIdDb == (long)uid)
-                    .FirstOrDefaultAsync();
-            }
-            return reminder;
-        }
 
         private async Task<bool> RegisterDbTaskAsync(ScheduledTask task)
         {

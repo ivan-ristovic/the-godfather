@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -50,9 +51,10 @@ namespace TheGodfather.Modules.Administration.Services
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, reason ?? this.reason);
+                        await this.LogPunishmentInCaseOfRejoinAsync(guild, member, type);
                         break;
                     case Punishment.Action.PermanentBan:
-                        await member.BanAsync(1, reason: reason ?? this.reason);
+                        await member.BanAsync(0, reason: reason ?? this.reason);
                         break;
                     case Punishment.Action.TemporaryBan:
                         await member.BanAsync(0, reason: reason ?? this.reason);
@@ -77,6 +79,7 @@ namespace TheGodfather.Modules.Administration.Services
                             Type = ScheduledTaskType.Unmute,
                         };
                         await this.ss.ScheduleAsync(gt);
+                        await this.LogPunishmentInCaseOfRejoinAsync(guild, member, type);
                         break;
                 }
             } catch (Exception e) {
@@ -89,6 +92,17 @@ namespace TheGodfather.Modules.Administration.Services
                     await this.ls.LogAsync(guild, emb.Build());
                 }
             }
+        }
+
+        public async Task<DiscordRole?> UnsafeGetMuteRoleAsync(DiscordGuild guild)
+        {
+            DiscordRole? muteRole = null;
+            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            GuildConfig gcfg = await this.gcs.GetConfigAsync(guild.Id);
+            muteRole = guild.GetRole(gcfg.MuteRoleId);
+            if (muteRole is null)
+                muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+            return muteRole;
         }
 
         public async Task<DiscordRole> GetOrCreateMuteRoleAsync(DiscordGuild guild)
@@ -137,9 +151,52 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
+        public async Task LogPunishmentInCaseOfRejoinAsync(DiscordGuild guild, DiscordMember member, Punishment.Action action)
+        {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                db.Punishments.Add(new Punishment {
+                    GuildId = guild.Id,
+                    UserId = member.Id,
+                    Type = action,
+                });
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public Task RemoveLoggedPunishmentInCaseOfRejoinAsync(DiscordGuild guild, DiscordMember member, Punishment.Action action)
+            => this.RemoveLoggedPunishmentInCaseOfRejoinAsync(new Punishment { GuildId = guild.Id, UserId = member.Id, Type = action });
+
+        public async Task RemoveLoggedPunishmentInCaseOfRejoinAsync(Punishment punishment)
+        {
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                db.Punishments.Remove(punishment);
+                await db.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> ReapplyLoggedPunishmentsIfNececaryAsync(DiscordGuild guild, DiscordMember member)
+        {
+            Punishment? punishment;
+            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+                List<Punishment> punishments = await db.Punishments
+                    .AsQueryable()
+                    .Where(p => p.GuildIdDb == (long)guild.Id && p.UserIdDb == (long)member.Id)
+                    .ToListAsync();
+                punishment = punishments.Any()
+                    ? punishments.Aggregate((p1, p2) => p1.Type > p2.Type ? p1 : p2)
+                    : null;
+            }
+
+            if (punishment is null)
+                return false;
+
+            await this.RemoveLoggedPunishmentInCaseOfRejoinAsync(punishment);
+            await this.PunishMemberAsync(guild, member, punishment.Type, reason: "_gf: Re-applied punishment due to rejoin");
+            return true;
+        }
 
         public abstract bool TryAddGuildToWatch(ulong gid);
         public abstract bool TryRemoveGuildFromWatch(ulong gid);
-        public abstract void Dispose();
+        public virtual void Dispose() { }
     }
 }

@@ -36,11 +36,11 @@ namespace TheGodfather.Database.Models
 
         public enum Action : byte
         {
-            PermanentMute,
-            TemporaryMute,
-            Kick,
-            TemporaryBan,
-            PermanentBan,
+            TemporaryMute = 0,
+            PermanentMute = 1,
+            Kick = 2,
+            TemporaryBan = 3,
+            PermanentBan = 4,
         }
     }
 }

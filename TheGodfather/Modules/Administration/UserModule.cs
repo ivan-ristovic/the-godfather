@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Group("user"), Module(ModuleType.Administration), NotBlocked]
     [Aliases("users", "u", "usr", "member", "mem")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public sealed class UserModule : TheGodfatherModule
+    public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
     {
         #region user
         [GroupCommand, Priority(1)]
@@ -208,7 +208,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException(ctx, "cmd-err-self-action");
 
             string name = member.ToString();
-            await member.RemoveAsync(reason: ctx.BuildInvocationDetailsString(reason));
+            await this.Service.PunishMemberAsync(ctx.Guild, member, Punishment.Action.Kick, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.ImpInfoAsync(this.ModuleColor, "fmt-kick", ctx.User.Mention, name);
         }
         #endregion
@@ -240,8 +240,7 @@ namespace TheGodfather.Modules.Administration
                                    [Description("desc-member")] DiscordMember member,
                                    [RemainingText, Description("desc-rsn")] string? reason = null)
         {
-            DiscordRole muteRole = await ctx.Services.GetRequiredService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
-            await member.GrantRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
+            await this.Service.PunishMemberAsync(ctx.Guild, member, Punishment.Action.PermanentMute, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
 
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
@@ -377,9 +376,9 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: 0, reason: ctx.BuildInvocationDetailsString(reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban", 
-                ctx.User.Mention, 
-                name, 
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban",
+                ctx.User.Mention,
+                name,
                 timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
                 this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
             );
@@ -440,18 +439,18 @@ namespace TheGodfather.Modules.Administration
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException(ctx, "cmd-err-temp-time");
 
-            await ctx.Services.GetRequiredService<AntispamService>().PunishMemberAsync(
+            await this.Service.PunishMemberAsync(
                 guild: ctx.Guild,
                 member: member,
                 type: Punishment.Action.TemporaryMute,
                 cooldown: timespan,
-                reason: ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute")
+                reason: ctx.BuildInvocationDetailsString(reason)
             );
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempmute", 
-                ctx.User.Mention, 
-                member.Mention, 
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tempmute",
+                ctx.User.Mention,
+                member.Mention,
                 timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
                 this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
             );
@@ -514,8 +513,9 @@ namespace TheGodfather.Modules.Administration
                                      [Description("desc-member")] DiscordMember member,
                                      [RemainingText, Description("desc-rsn")] string? reason = null)
         {
-            DiscordRole muteRole = await ctx.Services.GetRequiredService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+            DiscordRole muteRole = await this.Service.GetOrCreateMuteRoleAsync(ctx.Guild);
             await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
+            await this.Service.RemoveLoggedPunishmentInCaseOfRejoinAsync(ctx.Guild, member, Punishment.Action.PermanentMute);
             await ctx.InfoAsync(this.ModuleColor);
         }
         #endregion

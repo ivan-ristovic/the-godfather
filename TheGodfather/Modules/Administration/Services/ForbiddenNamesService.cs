@@ -24,7 +24,6 @@ namespace TheGodfather.Modules.Administration.Services
 
         public override bool TryAddGuildToWatch(ulong gid) => true;
         public override bool TryRemoveGuildFromWatch(ulong gid) => true;
-        public override void Dispose() { }
 
 
         public ForbiddenNamesService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)

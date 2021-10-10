@@ -53,7 +53,5 @@ namespace TheGodfather.Modules.Administration.Services
             await this.PunishMemberAsync(e.Guild, e.Member, Punishment.Action.PermanentBan);
             return true;
         }
-
-        public override void Dispose() { }
     }
 }

@@ -52,10 +52,5 @@ namespace TheGodfather.Modules.Administration.Services
             if (this.guildFloodUsers.ContainsKey(e.Guild.Id) && !this.guildFloodUsers[e.Guild.Id].TryRemove(e.Member))
                 throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
         }
-
-        public override void Dispose()
-        {
-
-        }
     }
 }

@@ -149,7 +149,7 @@ namespace TheGodfather.EventListeners
             if (gcfg.AntiInstantLeaveEnabled)
                 await shard.Services.GetRequiredService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
 
-            await shard.Services.GetRequiredService<ProtectionService>().ReapplyPunishmentIfNececaryAsync(e.Guild, e.Member);
+            await shard.Services.GetRequiredService<ProtectionService>().ReapplyLoggedPunishmentsIfNececaryAsync(e.Guild, e.Member);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
@@ -250,6 +250,13 @@ namespace TheGodfather.EventListeners
                     }
                 }
             }
+
+            ProtectionService ps = bot.Services.GetRequiredService<ProtectionService>();
+            DiscordRole? muteRole = await ps.UnsafeGetMuteRoleAsync(e.Guild);
+            if (e.RolesBefore.Contains(muteRole) && !e.RolesAfter.Contains(muteRole))
+                await ps.RemoveLoggedPunishmentInCaseOfRejoinAsync(e.Guild, e.Member, Punishment.Action.PermanentMute);
+            else if (!e.RolesBefore.Contains(muteRole) && e.RolesAfter.Contains(muteRole))
+                await ps.LogPunishmentInCaseOfRejoinAsync(e.Guild, e.Member, Punishment.Action.PermanentMute);
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
