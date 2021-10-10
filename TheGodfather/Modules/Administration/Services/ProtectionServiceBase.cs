@@ -154,12 +154,15 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task LogPunishmentInCaseOfRejoinAsync(DiscordGuild guild, DiscordMember member, Punishment.Action action)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.Punishments.Add(new Punishment {
-                    GuildId = guild.Id,
-                    UserId = member.Id,
-                    Type = action,
-                });
-                await db.SaveChangesAsync();
+                Punishment? existing = db.Punishments.Find((long)guild.Id, (long)member.Id, action);
+                if (existing is null) {
+                    db.Punishments.Add(new Punishment {
+                        GuildId = guild.Id,
+                        UserId = member.Id,
+                        Type = action,
+                    });
+                    await db.SaveChangesAsync();
+                }
             }
         }
 
@@ -169,8 +172,11 @@ namespace TheGodfather.Modules.Administration.Services
         public async Task RemoveLoggedPunishmentInCaseOfRejoinAsync(Punishment punishment)
         {
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                db.Punishments.Remove(punishment);
-                await db.SaveChangesAsync();
+                Punishment? existing = db.Punishments.Find(punishment.GuildIdDb, punishment.UserIdDb, punishment.Type);
+                if (existing is not null) {
+                    db.Punishments.Remove(punishment);
+                    await db.SaveChangesAsync();
+                }
             }
         }
 
