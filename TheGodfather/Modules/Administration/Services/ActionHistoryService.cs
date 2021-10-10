@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration.Services
             IReadOnlyList<ActionHistoryEntry> entries = await this.GetAllAsync((entry.GuildId, entry.UserId));
             if (entries.Count > MaxEntriesPerUser) {
                 var toRemove = entries
-                    .OrderByDescending(e => e.Action)
+                    .OrderByDescending(e => e.Type)
                     .ThenByDescending(e => e.Time)
                     .Skip(MaxEntriesPerUser)
                     .ToList()

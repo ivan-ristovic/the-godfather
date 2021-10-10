@@ -5,6 +5,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using TheGodfather.Common.Collections;
 using TheGodfather.Database;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
@@ -49,13 +50,10 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.guildNewMembers.ContainsKey(e.Guild.Id) || !this.guildNewMembers[e.Guild.Id].Contains(e.Member))
                 return false;
 
-            await this.PunishMemberAsync(e.Guild, e.Member, PunishmentAction.PermanentBan);
+            await this.PunishMemberAsync(e.Guild, e.Member, Punishment.Action.PermanentBan);
             return true;
         }
 
-        public override void Dispose()
-        {
-
-        }
+        public override void Dispose() { }
     }
 }

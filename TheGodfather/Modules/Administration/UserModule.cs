@@ -12,7 +12,6 @@ using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
@@ -248,7 +247,7 @@ namespace TheGodfather.Modules.Administration
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
                 LogExt.Debug(ctx, "Adding mute entry to action history: {Member}, {Guild}", member, ctx.Guild);
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.IndefiniteMute,
+                    Type = ActionHistoryEntry.Action.IndefiniteMute,
                     GuildId = ctx.Guild.Id,
                     Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, reason),
                     Time = DateTimeOffset.Now,
@@ -398,7 +397,7 @@ namespace TheGodfather.Modules.Administration
                 LogExt.Debug(ctx, "Adding tempban entry to action history: {Member}, {Guild}", user, ctx.Guild);
                 string timestamp = timespan.Humanize(2, this.Localization.GetGuildCulture(ctx.Guild.Id));
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.TemporaryBan,
+                    Type = ActionHistoryEntry.Action.TemporaryBan,
                     GuildId = ctx.Guild.Id,
                     Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
                     Time = DateTimeOffset.Now,
@@ -442,11 +441,11 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException(ctx, "cmd-err-temp-time");
 
             await ctx.Services.GetRequiredService<AntispamService>().PunishMemberAsync(
-                ctx.Guild,
-                member,
-                PunishmentAction.TemporaryMute,
-                timespan,
-                ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute")
+                guild: ctx.Guild,
+                member: member,
+                type: Punishment.Action.TemporaryMute,
+                cooldown: timespan,
+                reason: ctx.BuildInvocationDetailsString(reason ?? "_gf: Tempmute")
             );
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
@@ -461,7 +460,7 @@ namespace TheGodfather.Modules.Administration
                 LogExt.Debug(ctx, "Adding tempmute entry to action history: {Member}, {Guild}", member, ctx.Guild);
                 string timestamp = timespan.Humanize(2, this.Localization.GetGuildCulture(ctx.Guild.Id));
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.TemporaryMute,
+                    Type = ActionHistoryEntry.Action.TemporaryMute,
                     GuildId = ctx.Guild.Id,
                     Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
                     Time = DateTimeOffset.Now,
@@ -564,7 +563,7 @@ namespace TheGodfather.Modules.Administration
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
                 LogExt.Debug(ctx, "Adding warn to action history: {Member}, {Guild}", member, ctx.Guild);
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.Warning,
+                    Type = ActionHistoryEntry.Action.Warning,
                     GuildId = ctx.Guild.Id,
                     Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, msg),
                     Time = DateTimeOffset.Now,

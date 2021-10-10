@@ -7,8 +7,8 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common.Converters;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Extensions
@@ -71,7 +71,7 @@ namespace TheGodfather.Extensions
             return mctx.TimedOut ? null : mctx.Result.MentionedChannels.FirstOrDefault() ?? null;
         }
 
-        public static async Task<PunishmentAction?> WaitForPunishmentActionAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
+        public static async Task<Punishment.Action?> WaitForPunishmentActionAsync(this InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user)
         {
             var converter = new PunishmentActionConverter();
             InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(
@@ -79,7 +79,7 @@ namespace TheGodfather.Extensions
             );
 
             if (!mctx.TimedOut) {
-                new PunishmentActionConverter().TryConvert(mctx.Result.Content, out PunishmentAction action);
+                new PunishmentActionConverter().TryConvert(mctx.Result.Content, out Punishment.Action action);
                 return action;
             }
 

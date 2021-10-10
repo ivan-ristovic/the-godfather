@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Database
 {
@@ -38,6 +37,7 @@ namespace TheGodfather.Database
         public virtual DbSet<GuildTask> GuildTasks { get; protected set; }
         public virtual DbSet<LevelRole> LevelRoles { get; protected set; }
         public virtual DbSet<Meme> Memes { get; protected set; }
+        public virtual DbSet<Punishment> Punishments { get; protected set; }
         public virtual DbSet<PurchasableItem> PurchasableItems { get; protected set; }
         public virtual DbSet<PurchasedItem> PurchasedItems { get; protected set; }
         public virtual DbSet<PrivilegedUser> PrivilegedUsers { get; protected set; }
@@ -140,13 +140,13 @@ namespace TheGodfather.Database
             mb.Entity<GameStats>().Property(s => s.QuizWon).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.TicTacToeLost).HasDefaultValue(0);
             mb.Entity<GameStats>().Property(s => s.TicTacToeWon).HasDefaultValue(0);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(PunishmentAction.PermanentBan);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodAction).HasDefaultValue(Punishment.Action.PermanentBan);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodCooldown).HasDefaultValue(10);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntifloodSensitivity).HasDefaultValue(5);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveCooldown).HasDefaultValue(3);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntiInstantLeaveEnabled).HasDefaultValue(false);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(PunishmentAction.PermanentMute);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamAction).HasDefaultValue(Punishment.Action.PermanentMute);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.AntispamSensitivity).HasDefaultValue(5);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.Currency).HasDefaultValue(null);
@@ -161,7 +161,7 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.LinkfilterIpLoggersEnabled).HasDefaultValue(true);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.LinkfilterUrlShortenersEnabled).HasDefaultValue(true);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.Prefix).HasDefaultValue(null);
-            mb.Entity<GuildConfig>().Property(gcfg => gcfg.RatelimitAction).HasDefaultValue(PunishmentAction.TemporaryMute);
+            mb.Entity<GuildConfig>().Property(gcfg => gcfg.RatelimitAction).HasDefaultValue(Punishment.Action.TemporaryMute);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.RatelimitEnabled).HasDefaultValue(false);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.RatelimitSensitivity).HasDefaultValue(5);
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.ReactionResponse).HasDefaultValue(false);
@@ -170,6 +170,7 @@ namespace TheGodfather.Database
             mb.Entity<GuildConfig>().Property(gcfg => gcfg.WelcomeMessage).HasDefaultValue(null);
             mb.Entity<LevelRole>().HasKey(lr => new { lr.GuildIdDb, lr.Rank });
             mb.Entity<Meme>().HasKey(m => new { m.GuildIdDb, m.Name });
+            mb.Entity<Punishment>().HasKey(p => new { p.GuildIdDb, p.UserIdDb, p.Type });
             mb.Entity<PurchasedItem>().HasKey(i => new { i.ItemId, i.UserIdDb });
             mb.Entity<ReactionRole>().HasKey(rr => new { rr.GuildIdDb, rr.Emoji, rr.ChannelIdDb, rr.MessageIdDb });
             mb.Entity<Reminder>().Property(r => r.IsRepeating).HasDefaultValue(false);

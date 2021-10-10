@@ -26,7 +26,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                     GuildId = MockData.Ids[0],
                     AntifloodSettings = new AntifloodSettings {
                         Enabled = true,
-                        Action = PunishmentAction.Kick,
+                        Action = Punishment.Action.Kick,
                         Cooldown = 5,
                         Sensitivity = 4
                     },
@@ -156,7 +156,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 alter: async db => {
                     this.Service.LoadData();
                     await this.Service.ModifyConfigAsync(MockData.Ids[1], gcfg => gcfg.AntispamSettings = new AntispamSettings {
-                        Action = PunishmentAction.TemporaryBan,
+                        Action = Punishment.Action.TemporaryBan,
                         Enabled = true,
                         Sensitivity = 10
                     });
@@ -164,7 +164,7 @@ namespace TheGodfather.Tests.Modules.Administration.Services
                 verify: async db => {
                     GuildConfig gcfg = await db.Configs.FindAsync((long)MockData.Ids[1]);
                     Assert.That(gcfg.AntispamEnabled, Is.True);
-                    Assert.That(gcfg.AntispamAction, Is.EqualTo(PunishmentAction.TemporaryBan));
+                    Assert.That(gcfg.AntispamAction, Is.EqualTo(Punishment.Action.TemporaryBan));
                     Assert.That(gcfg.AntispamSensitivity, Is.EqualTo(10));
                 }
             );
@@ -366,8 +366,9 @@ namespace TheGodfather.Tests.Modules.Administration.Services
             LinkfilterSettings ls2 = second.LinkfilterSettings;
             if (ls1.BlockBooterWebsites != ls2.BlockBooterWebsites || ls1.BlockDiscordInvites != ls2.BlockDiscordInvites ||
                 ls1.BlockDisturbingWebsites != ls2.BlockDisturbingWebsites || ls1.BlockIpLoggingWebsites != ls2.BlockIpLoggingWebsites ||
-                ls1.BlockUrlShorteners != ls2.BlockUrlShorteners || ls1.Enabled != ls2.Enabled)
+                ls1.BlockUrlShorteners != ls2.BlockUrlShorteners || ls1.Enabled != ls2.Enabled) {
                 return false;
+            }
 
             RatelimitSettings rs1 = first.RatelimitSettings;
             RatelimitSettings rs2 = second.RatelimitSettings;

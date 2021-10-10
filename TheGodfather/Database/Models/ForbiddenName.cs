@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Database.Models
 {
@@ -27,7 +26,7 @@ namespace TheGodfather.Database.Models
         public string RegexString { get; set; } = null!;
 
         [Column("action")]
-        public PunishmentAction? ActionOverride { get; set; } = null;
+        public Punishment.Action? ActionOverride { get; set; } = null;
 
         [NotMapped]
         public Regex Regex => this.RegexLazy ??= this.RegexString.ToRegex(this.Options);

@@ -8,7 +8,6 @@ using DSharpPlus.Entities;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -36,26 +35,26 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentAction type, TimeSpan? cooldown = null, string? reason = null)
+        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, Punishment.Action type, TimeSpan? cooldown = null, string? reason = null)
         {
             Log.Debug("Punishing {Member} in guild {Guild} with action {ActionType} due to: {Reason}", member, guild, type, reason ?? this.reason);
             try {
                 DiscordRole muteRole;
                 GuildTask gt;
                 switch (type) {
-                    case PunishmentAction.Kick:
+                    case Punishment.Action.Kick:
                         await member.RemoveAsync(reason ?? this.reason);
                         break;
-                    case PunishmentAction.PermanentMute:
+                    case Punishment.Action.PermanentMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, reason ?? this.reason);
                         break;
-                    case PunishmentAction.PermanentBan:
+                    case Punishment.Action.PermanentBan:
                         await member.BanAsync(1, reason: reason ?? this.reason);
                         break;
-                    case PunishmentAction.TemporaryBan:
+                    case Punishment.Action.TemporaryBan:
                         await member.BanAsync(0, reason: reason ?? this.reason);
                         gt = new GuildTask {
                             ExecutionTime = DateTimeOffset.Now + (cooldown ?? TimeSpan.FromDays(1)),
@@ -65,7 +64,7 @@ namespace TheGodfather.Modules.Administration.Services
                         };
                         await this.ss.ScheduleAsync(gt);
                         break;
-                    case PunishmentAction.TemporaryMute:
+                    case Punishment.Action.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;

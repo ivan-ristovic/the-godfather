@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
@@ -53,14 +52,14 @@ namespace TheGodfather.Modules.Administration.Services
             return this.InternalGetForbiddenNamesForGuild(db, gid).ToList().AsReadOnly();
         }
 
-        public Task<bool> AddForbiddenNameAsync(ulong gid, string regexString, PunishmentAction? action = null)
+        public Task<bool> AddForbiddenNameAsync(ulong gid, string regexString, Punishment.Action? action = null)
         {
             return regexString.TryParseRegex(out Regex? regex)
                 ? this.AddForbiddenNameAsync(gid, regex, action)
                 : throw new ArgumentException($"Invalid regex string: {regexString}", nameof(regexString));
         }
 
-        public async Task<bool> AddForbiddenNameAsync(ulong gid, Regex? regex, PunishmentAction? action = null)
+        public async Task<bool> AddForbiddenNameAsync(ulong gid, Regex? regex, Punishment.Action? action = null)
         {
             if (regex is null)
                 return false;
@@ -83,13 +82,13 @@ namespace TheGodfather.Modules.Administration.Services
             }
         }
 
-        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings, PunishmentAction? action = null)
+        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings, Punishment.Action? action = null)
         {
             bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r, action)));
             return res.All(r => r);
         }
 
-        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes, PunishmentAction? action = null)
+        public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes, Punishment.Action? action = null)
         {
             bool[] res = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r, action)));
             return res.All(r => r);

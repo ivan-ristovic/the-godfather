@@ -26,7 +26,7 @@ namespace TheGodfather.Database.Models
         public ulong GuildId { get => (ulong)this.GuildIdDb; set => this.GuildIdDb = (long)value; }
 
         [Column("action"), Required]
-        public ActionType Action { get; set; }
+        public Action Type { get; set; }
 
         [Column("execution_time", TypeName = "timestamptz"), Required]
         public DateTimeOffset Time { get; set; }
@@ -38,16 +38,16 @@ namespace TheGodfather.Database.Models
 
 
         public bool Equals(ActionHistoryEntry? other)
-            => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Action == other.Action && this.Time == other.Time;
+            => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Type == other.Type && this.Time == other.Time;
 
         public override bool Equals(object? obj)
             => this.Equals(obj as ActionHistoryEntry);
 
         public override int GetHashCode()
-            => HashCode.Combine(this.UserId, this.GuildId, this.Action, this.Time);
+            => HashCode.Combine(this.UserId, this.GuildId, this.Type, this.Time);
 
 
-        public enum ActionType
+        public enum Action
         {
             ForbiddenName,
             TemporaryMute,

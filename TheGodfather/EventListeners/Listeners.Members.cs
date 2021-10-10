@@ -72,7 +72,7 @@ namespace TheGodfather.EventListeners
                 if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
                     LogExt.Debug(bot.GetId(e.Guild.Id), "Adding forbidden name entry to action history: {Member}, {Guild}", e.Member, e.Guild);
                     await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                        Action = ActionHistoryEntry.ActionType.ForbiddenName,
+                        Type = ActionHistoryEntry.Action.ForbiddenName,
                         GuildId = e.Guild.Id,
                         Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname?.RegexString ?? "?"),
                         Time = DateTimeOffset.Now,
@@ -100,12 +100,12 @@ namespace TheGodfather.EventListeners
                 IReadOnlyList<ActionHistoryEntry> history = await bot.Services.GetRequiredService<ActionHistoryService>().GetAllAsync((e.Guild.Id, e.Member.Id));
                 if (history.Any()) {
                     IEnumerable<ActionHistoryEntry> orderedHistory = history
-                        .OrderByDescending(e => e.Action)
+                        .OrderByDescending(e => e.Type)
                         .ThenByDescending(e => e.Time)
                         .Take(5)
                         ;
                     foreach (ActionHistoryEntry ahe in orderedHistory) {
-                        string title = ahe.Action.ToLocalizedKey();
+                        string title = ahe.Type.ToLocalizedKey();
                         string content = ls.GetString(e.Guild.Id, "fmt-ah-emb",
                             ls.GetLocalizedTimeString(e.Guild.Id, ahe.Time),
                             ahe.Notes
@@ -193,7 +193,7 @@ namespace TheGodfather.EventListeners
                 if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
                     LogExt.Debug(bot.GetId(e.Guild.Id), "Adding kick entry to action history: {Member}, {Guild}", e.Member, e.Guild);
                     await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                        Action = ActionHistoryEntry.ActionType.Kick,
+                        Type = ActionHistoryEntry.Action.Kick,
                         GuildId = e.Guild.Id,
                         Notes = ls.GetString(e.Guild.Id, "fmt-ah", entry.UserResponsible.Mention, entry.Reason),
                         Time = DateTimeOffset.Now,
@@ -241,7 +241,7 @@ namespace TheGodfather.EventListeners
                     if ((await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id)).ActionHistoryEnabled) {
                         LogExt.Debug(bot.GetId(e.Guild.Id), "Adding forbidden name entry to action history: {Member}, {Guild}", e.Member, e.Guild);
                         await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                            Action = ActionHistoryEntry.ActionType.ForbiddenName,
+                            Type = ActionHistoryEntry.Action.ForbiddenName,
                             GuildId = e.Guild.Id,
                             Notes = ls.GetString(e.Guild.Id, "rsn-fname-match", fname.RegexString),
                             Time = DateTimeOffset.Now,

@@ -13,7 +13,6 @@ using TheGodfather.Database.Models;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
 
@@ -40,14 +39,14 @@ namespace TheGodfather.Modules.Administration
         [Command("add"), Priority(2)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-punish-action")] PunishmentAction action,
+                            [Description("desc-punish-action")] Punishment.Action action,
                             [RemainingText, Description("desc-fnames")] params string[] names)
             => this.InternalAddAsync(ctx, action, names);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
                             [Description("desc-fname")] string name,
-                            [Description("desc-punish-action")] PunishmentAction? action = null)
+                            [Description("desc-punish-action")] Punishment.Action? action = null)
             => this.InternalAddAsync(ctx, action, new[] { name });
 
         [Command("add"), Priority(0)]
@@ -179,7 +178,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region internals
-        public async Task InternalAddAsync(CommandContext ctx, PunishmentAction? action, params string[] names)
+        public async Task InternalAddAsync(CommandContext ctx, Punishment.Action? action, params string[] names)
         {
             if (names is null || !names.Any())
                 throw new InvalidCommandUsageException(ctx, "cmd-err-fn-pat-none");

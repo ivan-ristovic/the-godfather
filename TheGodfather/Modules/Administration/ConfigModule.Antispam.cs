@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-enable")] bool enable,
                                                [Description("desc-sens")] short sens,
-                                               [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.TemporaryMute)
+                                               [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.TemporaryMute)
             {
                 if (sens is < AntispamSettings.MinSensitivity or > AntispamSettings.MaxSensitivity)
                     throw new CommandFailedException(ctx, "cmd-err-range-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
@@ -58,14 +58,14 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] PunishmentAction action,
+                                         [Description("desc-punish-action")] Punishment.Action action,
                                          [Description("desc-sens")] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable)
-                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.TemporaryMute);
+                => this.ExecuteGroupAsync(ctx, enable, 5, Punishment.Action.TemporaryMute);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
             [Command("action")]
             [Aliases("setaction", "setact", "act", "a")]
             public async Task SetActionAsync(CommandContext ctx,
-                                            [Description("desc-punish-action")] PunishmentAction? action = null)
+                                            [Description("desc-punish-action")] Punishment.Action? action = null)
             {
                 if (action is null) {
                     await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-as-action", gcfg.AntispamAction.Humanize()));

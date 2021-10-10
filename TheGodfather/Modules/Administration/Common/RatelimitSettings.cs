@@ -1,4 +1,5 @@
 ﻿using Humanizer;
+using TheGodfather.Database.Models;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Common
@@ -8,7 +9,7 @@ namespace TheGodfather.Modules.Administration.Common
         public const int MinSensitivity = 4;
         public const int MaxSensitivity = 10;
 
-        public PunishmentAction Action { get; set; } = PunishmentAction.TemporaryMute;
+        public Punishment.Action Action { get; set; } = Punishment.Action.TemporaryMute;
         public bool Enabled { get; set; } = false;
         public short Sensitivity { get; set; } = 5;
 

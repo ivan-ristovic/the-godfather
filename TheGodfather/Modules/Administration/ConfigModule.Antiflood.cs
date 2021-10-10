@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
+using TheGodfather.Database.Models;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
@@ -24,7 +25,7 @@ namespace TheGodfather.Modules.Administration
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("desc-enable")] bool enable,
                                                [Description("desc-sens")] short sens,
-                                               [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.Kick,
+                                               [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.Kick,
                                                [Description("desc-cooldown")] TimeSpan? cooldown = null)
             {
                 if (sens is < AntifloodSettings.MinSensitivity or > AntifloodSettings.MaxSensitivity)
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(4)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] PunishmentAction action,
+                                         [Description("desc-punish-action")] Punishment.Action action,
                                          [Description("desc-sens")] short sens = 5,
                                          [Description("desc-cooldown")] TimeSpan? cooldown = null)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand, Priority(3)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] PunishmentAction action,
+                                         [Description("desc-punish-action")] Punishment.Action action,
                                          [Description("desc-cooldown")] TimeSpan? cooldown = null,
                                          [Description("desc-sens")] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
@@ -79,14 +80,14 @@ namespace TheGodfather.Modules.Administration
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable,
                                          [Description("desc-cooldown")] TimeSpan? cooldown,
-                                         [Description("desc-punish-action")] PunishmentAction action = PunishmentAction.Kick,
+                                         [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.Kick,
                                          [Description("desc-sens")] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("desc-enable")] bool enable)
-                => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentAction.Kick, null);
+                => this.ExecuteGroupAsync(ctx, enable, 5, Punishment.Action.Kick, null);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx)
@@ -104,7 +105,7 @@ namespace TheGodfather.Modules.Administration
             [Command("action")]
             [Aliases("setaction", "setact", "act", "a")]
             public async Task SetActionAsync(CommandContext ctx,
-                                            [Description("desc-punish-action")] PunishmentAction? action = null)
+                                            [Description("desc-punish-action")] Punishment.Action? action = null)
             {
                 if (action is null) {
                     await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-action", gcfg.AntifloodAction.Humanize()));

@@ -1,9 +1,9 @@
 ﻿using System.Text.RegularExpressions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Database.Models;
 
 namespace TheGodfather.Common.Converters
 {
-    public class PunishmentActionConverter : BaseArgumentConverter<PunishmentAction>
+    public class PunishmentActionConverter : BaseArgumentConverter<Punishment.Action>
     {
         private static readonly Regex _pmRegex;
         private static readonly Regex _tmRegex;
@@ -22,21 +22,21 @@ namespace TheGodfather.Common.Converters
         }
 
 
-        public override bool TryConvert(string value, out PunishmentAction result)
+        public override bool TryConvert(string value, out Punishment.Action result)
         {
-            result = PunishmentAction.Kick;
+            result = Punishment.Action.Kick;
             bool parses = true;
 
             if (_kRegex.IsMatch(value))
-                result = PunishmentAction.Kick;
+                result = Punishment.Action.Kick;
             else if (_tbRegex.IsMatch(value))
-                result = PunishmentAction.TemporaryBan;
+                result = Punishment.Action.TemporaryBan;
             else if (_tmRegex.IsMatch(value))
-                result = PunishmentAction.TemporaryMute;
+                result = Punishment.Action.TemporaryMute;
             else if (_pbRegex.IsMatch(value))
-                result = PunishmentAction.PermanentBan;
+                result = Punishment.Action.PermanentBan;
             else if (_pmRegex.IsMatch(value))
-                result = PunishmentAction.PermanentMute;
+                result = Punishment.Action.PermanentMute;
             else
                 parses = false;
 

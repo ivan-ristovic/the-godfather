@@ -197,7 +197,7 @@ namespace TheGodfather.Database.Models
         }
 
         [Column("antiflood_action")]
-        public PunishmentAction AntifloodAction {
+        public Punishment.Action AntifloodAction {
             get => this.AntifloodSettings.Action;
             set => this.AntifloodSettings.Action = value;
         }
@@ -243,7 +243,7 @@ namespace TheGodfather.Database.Models
         }
 
         [Column("antispam_action")]
-        public PunishmentAction AntispamAction {
+        public Punishment.Action AntispamAction {
             get => this.AntispamSettings.Action;
             set => this.AntispamSettings.Action = value;
         }
@@ -266,7 +266,7 @@ namespace TheGodfather.Database.Models
         }
 
         [Column("antimention_action")]
-        public PunishmentAction AntiMentionAction {
+        public Punishment.Action AntiMentionAction {
             get => this.AntiMentionSettings.Action;
             set => this.AntiMentionSettings.Action = value;
         }
@@ -289,7 +289,7 @@ namespace TheGodfather.Database.Models
         }
 
         [Column("ratelimit_action")]
-        public PunishmentAction RatelimitAction {
+        public Punishment.Action RatelimitAction {
             get => this.RatelimitSettings.Action;
             set => this.RatelimitSettings.Action = value;
         }
@@ -304,7 +304,7 @@ namespace TheGodfather.Database.Models
 
         [NotMapped]
         public CachedGuildConfig CachedConfig {
-            get => new CachedGuildConfig {
+            get => new() {
                 AntispamSettings = this.AntispamSettings,
                 AntiMentionSettings = this.AntiMentionSettings,
                 Currency = this.Currency ?? CachedGuildConfig.DefaultCurrency,

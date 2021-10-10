@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException(ctx, "cmd-err-ah-note", ActionHistoryEntry.NoteLimit);
 
             await this.Service.LimitedAddAsync(new ActionHistoryEntry {
-                Action = ActionHistoryEntry.ActionType.CustomNote,
+                Type = ActionHistoryEntry.Action.CustomNote,
                 GuildId = ctx.Guild.Id,
                 Notes = notes,
                 Time = DateTimeOffset.Now,
@@ -152,12 +152,12 @@ namespace TheGodfather.Modules.Administration
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithColor(this.ModuleColor);
                 IEnumerable<ActionHistoryEntry> orderedHistory = history
-                    .OrderByDescending(e => e.Action)
+                    .OrderByDescending(e => e.Type)
                     .ThenByDescending(e => e.Time)
                     .Take(DiscordLimits.EmbedFieldLimit)
                     ;
                 foreach (ActionHistoryEntry e in orderedHistory) {
-                    string title = e.Action.ToLocalizedKey();
+                    string title = e.Type.ToLocalizedKey();
                     string content = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-emb", 
                         this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
                         e.Notes
@@ -184,8 +184,8 @@ namespace TheGodfather.Modules.Administration
                     users.Add(e.UserId, user);
             }
 
-            await ctx.PaginateAsync(history.OrderByDescending(e => e.Action).ThenByDescending(e => e.Time), (emb, e) => {
-                emb.WithLocalizedTitle(e.Action.ToLocalizedKey());
+            await ctx.PaginateAsync(history.OrderByDescending(e => e.Type).ThenByDescending(e => e.Time), (emb, e) => {
+                emb.WithLocalizedTitle(e.Type.ToLocalizedKey());
                 DiscordUser? user = users.GetValueOrDefault(e.UserId);
                 emb.WithDescription(user?.ToDiscriminatorString() ?? e.UserId.ToString());
                 emb.AddLocalizedTitleField("str-notes", e.Notes, unknown: false);

@@ -37,7 +37,7 @@ namespace TheGodfather.EventListeners
                 LogExt.Debug(bot.GetId(e.Guild.Id), "Adding ban entry to action history: {Member}, {Guild}", e.Member, e.Guild);
                 LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                 await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
-                    Action = ActionHistoryEntry.ActionType.PermanentBan,
+                    Type = ActionHistoryEntry.Action.PermanentBan,
                     GuildId = e.Guild.Id,
                     Notes = entry is null ? null : ls.GetString(e.Guild.Id, "fmt-ah", entry.UserResponsible.Mention, entry.Reason),
                     Time = DateTimeOffset.Now,
