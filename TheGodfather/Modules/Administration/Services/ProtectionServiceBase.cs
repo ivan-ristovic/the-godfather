@@ -196,7 +196,6 @@ namespace TheGodfather.Modules.Administration.Services
             if (punishment is null)
                 return false;
 
-            await this.RemoveLoggedPunishmentInCaseOfRejoinAsync(punishment);
             await this.PunishMemberAsync(guild, member, punishment.Type, reason: "_gf: Re-applied punishment due to rejoin");
             return true;
         }
