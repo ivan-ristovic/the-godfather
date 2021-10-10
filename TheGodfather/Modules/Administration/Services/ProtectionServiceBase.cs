@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Administration.Services
             using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 Punishment? existing = db.Punishments.Find(punishment.GuildIdDb, punishment.UserIdDb, punishment.Type);
                 if (existing is not null) {
-                    db.Punishments.Remove(punishment);
+                    db.Punishments.Remove(existing);
                     await db.SaveChangesAsync();
                 }
             }
