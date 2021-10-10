@@ -652,7 +652,7 @@ namespace TheGodfather.Migrations
                     b.Property<byte>("AntispamAction")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasDefaultValue((byte)1)
+                        .HasDefaultValue((byte)0)
                         .HasColumnName("antispam_action");
 
                     b.Property<bool>("AntispamEnabled")

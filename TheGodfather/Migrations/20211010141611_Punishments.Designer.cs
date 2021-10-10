@@ -10,7 +10,7 @@ using TheGodfather.Database;
 namespace TheGodfather.Migrations
 {
     [DbContext(typeof(TheGodfatherDbContext))]
-    [Migration("20211010134204_Punishments")]
+    [Migration("20211010141611_Punishments")]
     partial class Punishments
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -654,7 +654,7 @@ namespace TheGodfather.Migrations
                     b.Property<byte>("AntispamAction")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasDefaultValue((byte)1)
+                        .HasDefaultValue((byte)0)
                         .HasColumnName("antispam_action");
 
                     b.Property<bool>("AntispamEnabled")

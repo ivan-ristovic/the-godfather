@@ -17,17 +17,6 @@ namespace TheGodfather.Migrations
                 oldType: "smallint",
                 oldDefaultValue: (byte)1);
 
-            migrationBuilder.AlterColumn<byte>(
-                name: "antispam_action",
-                schema: "gf",
-                table: "guild_cfg",
-                type: "smallint",
-                nullable: false,
-                defaultValue: (byte)1,
-                oldClrType: typeof(byte),
-                oldType: "smallint",
-                oldDefaultValue: (byte)0);
-
             migrationBuilder.CreateTable(
                 name: "punishments",
                 schema: "gf",
@@ -59,17 +48,6 @@ namespace TheGodfather.Migrations
                 oldClrType: typeof(byte),
                 oldType: "smallint",
                 oldDefaultValue: (byte)0);
-
-            migrationBuilder.AlterColumn<byte>(
-                name: "antispam_action",
-                schema: "gf",
-                table: "guild_cfg",
-                type: "smallint",
-                nullable: false,
-                defaultValue: (byte)0,
-                oldClrType: typeof(byte),
-                oldType: "smallint",
-                oldDefaultValue: (byte)1);
         }
     }
 }
