@@ -9,7 +9,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class LinkfilterService : ProtectionService
+    public sealed class LinkfilterService : ProtectionServiceBase
     {
         public LinkfilterService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
             : base(dbb, ls, ss, gcs, "_gf: Linkfilter") { }

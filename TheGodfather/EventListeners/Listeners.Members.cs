@@ -148,6 +148,8 @@ namespace TheGodfather.EventListeners
 
             if (gcfg.AntiInstantLeaveEnabled)
                 await shard.Services.GetRequiredService<AntiInstantLeaveService>().HandleMemberJoinAsync(e, gcfg.AntiInstantLeaveSettings);
+
+            await shard.Services.GetRequiredService<ProtectionService>().ReapplyPunishmentIfNececaryAsync(e.Guild, e.Member);
         }
 
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]

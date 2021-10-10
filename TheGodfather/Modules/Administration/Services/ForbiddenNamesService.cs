@@ -12,7 +12,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class ForbiddenNamesService : ProtectionService, ITheGodfatherService
+    public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfatherService
     {
         private static ImmutableArray<ulong> _ids = new ulong[] {
             125649888611401728,

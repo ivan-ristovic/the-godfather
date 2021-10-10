@@ -17,7 +17,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class RatelimitService : ProtectionService
+    public sealed class RatelimitService : ProtectionServiceBase
     {
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>> guildExempts;
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>> guildRatelimitInfo;

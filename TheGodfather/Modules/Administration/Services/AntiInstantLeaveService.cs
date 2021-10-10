@@ -11,7 +11,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class AntiInstantLeaveService : ProtectionService
+    public sealed class AntiInstantLeaveService : ProtectionServiceBase
     {
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildNewMembers;
 

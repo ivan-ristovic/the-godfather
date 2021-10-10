@@ -105,7 +105,7 @@ namespace TheGodfather.Common
         public T? ChooseRandomEnumValue<T>() where T : Enum
         {
             Array v = Enum.GetValues(typeof(T));
-            return (T)v.GetValue(this.Next(v.Length));
+            return (T?)v.GetValue(this.Next(v.Length));
         }
     }
 }

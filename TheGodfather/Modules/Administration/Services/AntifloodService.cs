@@ -11,7 +11,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class AntifloodService : ProtectionService
+    public sealed class AntifloodService : ProtectionServiceBase
     {
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildFloodUsers;
 

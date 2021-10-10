@@ -304,7 +304,7 @@ namespace TheGodfather.Tests.Common.Converters
 
         private void AssertConvertSuccess<TConverter, TValue>(TConverter converter, string text, TValue expected) where TConverter : BaseArgumentConverter<TValue>
         {
-            Assert.That(converter.TryConvert(text, out TValue parsed), Is.True);
+            Assert.That(converter.TryConvert(text, out TValue? parsed), Is.True);
             Assert.That(parsed, Is.Not.Null);
             Assert.That(parsed, Is.EqualTo(expected));
         }

@@ -18,7 +18,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Administration.Services
 {
-    public sealed class AntiMentionService : ProtectionService
+    public sealed class AntiMentionService : ProtectionServiceBase
     {
         private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<ExemptedEntity>> guildExempts;
         private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserMentionInfo>> guildMentionInfo;
