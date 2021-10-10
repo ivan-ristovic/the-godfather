@@ -233,7 +233,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region user mute
-        [Command("mute")]
+        [Command("mute"), Priority(2)]
         [Aliases("m")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task MuteAsync(CommandContext ctx,
@@ -254,6 +254,20 @@ namespace TheGodfather.Modules.Administration
                 });
             }
         }
+
+        [Command("mute"), Priority(1)]
+        public Task MuteAsync(CommandContext ctx,
+                             [Description("desc-timespan")] TimeSpan timespan,
+                             [Description("desc-member")] DiscordMember member,
+                             [RemainingText, Description("desc-rsn")] string? reason = null)
+            => this.TempMuteAsync(ctx, timespan, member, reason);
+
+        [Command("mute"), Priority(0)]
+        public Task MuteAsync(CommandContext ctx,
+                             [Description("desc-user")] DiscordMember member,
+                             [Description("desc-timespan")] TimeSpan timespan,
+                             [RemainingText, Description("desc-rsn")] string? reason = null)
+            => this.TempMuteAsync(ctx, timespan, member, reason);
         #endregion
 
         #region user mutevoice

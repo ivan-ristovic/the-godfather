@@ -1060,7 +1060,9 @@
   },
   "user mute": {
     "usage": [
-      [ "arg-usr" ]
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-timespan-day" ],
+      [ "arg-timespan-day", "arg-usr" ]
     ]
   },
   "user mutevoice": {
