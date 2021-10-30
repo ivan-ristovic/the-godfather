@@ -10,6 +10,7 @@ using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
+using TheGodfather.Modules.Polls.Extensions;
 using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Polls

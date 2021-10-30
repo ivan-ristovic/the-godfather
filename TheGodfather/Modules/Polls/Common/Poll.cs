@@ -76,9 +76,15 @@ namespace TheGodfather.Modules.Polls.Common
                 );
             }
 
-            this.IsRunning = false;
-
             await this.Channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed(lcs));
+            try {
+                await msgHandle.DeleteAsync();
+                await Task.Delay(100);
+            } catch {
+                // ignored
+            }
+
+            this.IsRunning = false;
         }
 
         public bool CancelVote(ulong uid)

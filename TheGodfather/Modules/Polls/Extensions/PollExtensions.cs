@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Polls.Extensions
                 if (poll.TimeUntilEnd.TotalSeconds > 1)
                     emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl, localizedTime, $"{poll.TimeUntilEnd:hh\\:mm\\:ss}");
                 else
-                    emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl);
+                    emb.WithLocalizedFooter("fmt-poll-ended", poll.Initiator.AvatarUrl);
             }
 
             return emb.Build();
