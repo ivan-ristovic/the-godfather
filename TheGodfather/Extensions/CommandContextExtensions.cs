@@ -81,25 +81,6 @@ namespace TheGodfather.Extensions
             });
         }
 
-        public static async Task<List<string>?> WaitAndParsePollOptionsAsync(this CommandContext ctx, string separator = ";")
-        {
-            InteractivityService interactivity = ctx.Services.GetRequiredService<InteractivityService>();
-            interactivity.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
-
-            InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                xm => xm.Author == ctx.User && xm.Channel == ctx.Channel
-            );
-
-            if (!interactivity.RemovePendingResponse(ctx.Channel.Id, ctx.User.Id))
-                throw new ConcurrentOperationException("Failed to remove user from pending list");
-
-            return mctx.TimedOut
-                ? null
-                : mctx.Result.Content.Split(separator, StringSplitOptions.RemoveEmptyEntries)
-                .Distinct()
-                .ToList();
-        }
-
         public static Task PaginateAsync<T>(this CommandContext ctx, string key, IEnumerable<T> collection,
                                             Func<T, string> selector, DiscordColor? color = null, int pageSize = 10,
                                             params object?[]? args)
