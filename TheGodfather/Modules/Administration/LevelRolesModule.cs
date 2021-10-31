@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                        emb.AddLocalizedTitleField("str-roles-rem", roles.JoinWith());
+                        emb.AddLocalizedTitleField("str-roles-rem", missingRoleRanks.JoinWith());
                     },
                     addInvocationFields: false
                 );

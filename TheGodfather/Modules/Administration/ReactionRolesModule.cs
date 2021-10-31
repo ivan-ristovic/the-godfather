@@ -261,7 +261,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-automanaged");
-                        emb.AddLocalizedTitleField("str-roles-rem", roles.Select(FormatReactionRole).JoinWith());
+                        emb.AddLocalizedTitleField("str-roles-rem", toRemove.JoinWith(" "));
                     },
                     addInvocationFields: false
                 );
