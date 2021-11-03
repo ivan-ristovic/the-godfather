@@ -274,6 +274,12 @@
       []
     ]
   },
+  "starboard emoji": {
+    "usage": [
+      [],
+      [ "arg-emoji" ]
+    ]
+  },
   "starboard sensitivity": {
     "usage": [
       [],

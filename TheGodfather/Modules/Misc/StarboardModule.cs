@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     public sealed class StarboardModule : TheGodfatherServiceModule<StarboardService>
     {
         #region starboard
-        [GroupCommand, Priority(1)]
+        [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("desc-enable")] bool enable,
                                      [Description("desc-emoji")] DiscordEmoji emoji,
@@ -74,16 +74,36 @@ namespace TheGodfather.Modules.Misc
         #region starboard channel
         [Command("channel")]
         [Aliases("chn", "setchannel", "setchn", "setc", "location")]
-        public Task SetActionAsync(CommandContext ctx,
-                                  [Description("desc-chn")] DiscordChannel channel)
-            => this.InternalStarboardAsync(ctx, true, channel);
+        public async Task ChannelAsync(CommandContext ctx,
+                                      [Description("desc-chn")] DiscordChannel? channel = null)
+        {
+            if (channel is null) {
+                ulong cid = this.Service.GetStarboardChannel(ctx.Guild.Id);
+                channel = ctx.Guild.GetChannel(cid);
+                if (channel is null)
+                    throw new CommandFailedException(ctx, "cmd-err-sb-chn", cid);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Star, "evt-sb-shn", channel.Mention);
+                return;
+            }
+
+            this.PerformChannelChecks(ctx, channel);
+
+            await this.Service.SetStarboardChannelAsync(ctx.Guild.Id, channel.Id);
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-sb-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedDescription("evt-sb-chn", channel.Mention);
+            });
+
+            await ctx.InfoAsync(this.ModuleColor, "evt-sb-chn", channel.Mention);
+        }
         #endregion
 
         #region starboard sensitivity
         [Command("sensitivity")]
         [Aliases("setsensitivity", "setsens", "sens", "s")]
-        public async Task SetSensitivityAsync(CommandContext ctx,
-                                             [Description("desc-sens")] int? sens = null)
+        public async Task SensitivityAsync(CommandContext ctx,
+                                          [Description("desc-sens")] int? sens = null)
         {
             if (sens is null) {
                 sens = this.Service.GetStarboardSensitivity(ctx.Guild.Id);
@@ -96,7 +116,7 @@ namespace TheGodfather.Modules.Misc
 
             await this.Service.SetStarboardSensitivityAsync(ctx.Guild.Id, sens.Value);
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle("evt-sb-upd");
                 emb.WithColor(this.ModuleColor);
                 emb.WithLocalizedDescription("evt-sb-sens", sens.Value);
             });
@@ -105,14 +125,46 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region starboard emoji
+        [Command("emoji")]
+        [Aliases("e", "star")]
+        public async Task EmojiAsync(CommandContext ctx,
+                                    [Description("desc-emoji")] DiscordEmoji? emoji = null)
+        {
+            if (emoji is null) {
+                string star = this.Service.GetStarboardEmoji(ctx.Guild.Id);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Star, "evt-sb-emoji", star);
+                return;
+            }
+
+            string emojiStr = emoji.GetDiscordName();
+            await this.Service.SetStarboardEmojiAsync(ctx.Guild.Id, emojiStr);
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle("evt-sb-upd");
+                emb.WithColor(this.ModuleColor);
+                emb.WithLocalizedDescription("evt-sb-emoji", emojiStr);
+            });
+
+            await ctx.InfoAsync(this.ModuleColor, "evt-sb-emoji", emojiStr);
+        }
+        #endregion
+
 
         #region internals
+        private void PerformChannelChecks(CommandContext ctx, DiscordChannel chn)
+        {
+            if (chn.Type != ChannelType.Text)
+                throw new InvalidCommandUsageException(ctx, "cmd-err-sb-chn-type");
+        }
+
         private async Task InternalStarboardAsync(CommandContext ctx, bool enable, DiscordChannel channel, DiscordEmoji? emoji = null, int? sens = null)
         {
             if (enable)
                 await this.Service.ModifySettingsAsync(ctx.Guild.Id, channel.Id, emoji?.GetDiscordName(), sens);
             else
                 await this.Service.ModifySettingsAsync(ctx.Guild.Id, null);
+
+            this.PerformChannelChecks(ctx, channel);
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-sb-upd");

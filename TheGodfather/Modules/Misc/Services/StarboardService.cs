@@ -107,8 +107,20 @@ namespace TheGodfather.Modules.Misc.Services
         public int GetStarboardSensitivity(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
 
+        public string GetStarboardEmoji(ulong gid)
+            => this.gcs.GetCachedConfig(gid).StarboardEmoji ?? CachedGuildConfig.DefaultStarboardEmoji;
+
+        public ulong GetStarboardChannel(ulong gid)
+            => this.gcs.GetCachedConfig(gid).StarboardChannelId;
+
         public Task SetStarboardSensitivityAsync(ulong gid, int sens)
             => this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.StarboardSensitivity = sens);
+
+        public Task SetStarboardEmojiAsync(ulong gid, string emoji)
+            => this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.StarboardEmoji = emoji);
+
+        public Task SetStarboardChannelAsync(ulong gid, ulong cid)
+            => this.gcs.ModifyConfigAsync(gid, gcfg => gcfg.StarboardChannelId = cid);
 
         public int GetMinimumStarCount(ulong gid)
             => this.gcs.GetCachedConfig(gid).StarboardSensitivity;
@@ -120,7 +132,7 @@ namespace TheGodfather.Modules.Misc.Services
             => entities.Where(sm => sm.GuildIdDb == (long)grid);
 
         public override StarboardMessage EntityFactory(ulong grid, (ulong, ulong) id)
-            => new StarboardMessage { GuildId = grid, };
+            => new() { GuildId = grid };
 
         public override (ulong, ulong) EntityIdSelector(StarboardMessage entity)
             => (entity.ChannelId, entity.MessageId);
