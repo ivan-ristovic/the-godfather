@@ -111,6 +111,8 @@ namespace TheGodfather.Modules.Administration.Services
             ConcurrentDictionary<ulong, UserMentionInfo> gMentionInfo = this.guildMentionInfo[e.Guild.Id];
             UserMentionInfo mentionInfo = gMentionInfo.GetOrAdd(e.Author.Id, new UserMentionInfo(settings.Sensitivity));
             int count = (e.Message.MentionEveryone ? 1 : 0) + e.MentionedChannels.Count + e.MentionedRoles.Count + e.MentionedUsers.Count;
+            if (e.Message.Reference is { })
+                count = Math.Max(count - 1, 0);
             if (!mentionInfo.TryDecrementAllowedMentionCount(count)) {
                 await this.PunishMemberAsync(e.Guild, member, settings.Action);
                 mentionInfo.Reset();
