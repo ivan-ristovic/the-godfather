@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Reminders
                 this.ThrowIfDM(ctx, channel);
 
                 if (channel is { } && channel.Type != ChannelType.Text)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
                 IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
 

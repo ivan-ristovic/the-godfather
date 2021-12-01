@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Reminders
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.ManageGuild) });
 
             if (channel.Type != ChannelType.Text)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
             if (!await ctx.WaitForBoolReplyAsync("q-remind-rem-all-chn", args: channel.Mention))
                 return;
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Reminders
             this.ThrowIfDM(ctx, channel);
 
             if (channel.Type != ChannelType.Text)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
 
             IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
             IEnumerable<Reminder> orderedReminders = reminders
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Reminders
 
             if (channel is { }) {
                 if (channel.Type != ChannelType.Text)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-text");
+                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
                 if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
                     throw new CommandFailedException(ctx, "cmd-err-remind-perms", channel.Mention);
                 if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
