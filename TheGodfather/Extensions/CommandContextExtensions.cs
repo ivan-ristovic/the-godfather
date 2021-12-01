@@ -184,7 +184,7 @@ namespace TheGodfather.Extensions
                 try {
                     await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
-                    await InfoAsync(ctx, emoji, "str-done");
+                    await ImpInfoAsync(ctx, emoji, "str-done");
                 }
             } else {
                 LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
