@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -137,10 +138,10 @@ namespace TheGodfather.EventListeners
                     return;
             }
 
-            if (!bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _))
+            if (!bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out Filter? match))
                 return;
 
-            await SanitizeFilteredMessage(bot, e.Message);
+            await SanitizeFilteredMessage(bot, e.Message, match?.OnHitAction);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -240,8 +241,8 @@ namespace TheGodfather.EventListeners
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             FilteringService fs = bot.Services.GetRequiredService<FilteringService>();
-            if (!string.IsNullOrWhiteSpace(e.Message.Content) && fs.TextContainsFilter(e.Guild.Id, e.Message.Content, out _))
-                await SanitizeFilteredMessage(bot, e.Message);
+            if (!string.IsNullOrWhiteSpace(e.Message.Content) && fs.TextContainsFilter(e.Guild.Id, e.Message.Content, out Filter? match))
+                await SanitizeFilteredMessage(bot, e.Message, match?.OnHitAction);
 
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
@@ -288,23 +289,41 @@ namespace TheGodfather.EventListeners
         }
 
 
-        private static async Task SanitizeFilteredMessage(TheGodfatherBot bot, DiscordMessage msg)
+        private static async Task SanitizeFilteredMessage(TheGodfatherBot bot, DiscordMessage msg, Filter.Action? action)
         {
             if (msg.Channel.GuildId is null)
                 return;
 
-            if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
-                LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-                try {
-                    await msg.DeleteAsync(ls.GetString(msg.Channel.GuildId, "rsn-filter-match"));
-                    // await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
-                } catch {
-                    await SendErrorReportAsync();
-                }
-            } else {
-                await SendErrorReportAsync();
-            }
+            LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+            string reason = ls.GetString(msg.Channel.GuildId, "rsn-filter-match");
 
+            switch (action) {
+                case null:
+                case Filter.Action.DeleteMessage:
+                case Filter.Action.Sanitize:
+                    if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
+                        try {
+                            if (action.GetValueOrDefault(Filter.Action.DeleteMessage) == Filter.Action.DeleteMessage)
+                                await msg.DeleteAsync(reason);
+                            else
+                                await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
+                        } catch {
+                            await SendErrorReportAsync();
+                        }
+                    } else {
+                        await SendErrorReportAsync();
+                    }
+                    break;
+                default:
+                    DiscordMember? member = await msg.Channel.Guild.GetMemberAsync(msg.Author.Id);
+                    if (member is null)
+                        return;
+                    if (Enum.TryParse(action.ToString(), out Punishment.Action punishment))
+                        await bot.Services.GetRequiredService<ProtectionService>().PunishMemberAsync(msg.Channel.Guild, member, punishment, reason: reason);
+                    else
+                        LogExt.Warning(bot.GetId(msg.Channel.GuildId), "Failed to interpret filter on-hit action as a punishment: {FilterAction}", action);
+                    break;
+            }
 
             async Task SendErrorReportAsync()
             {

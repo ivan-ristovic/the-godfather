@@ -673,12 +673,14 @@
   "filter": {
     "usage": [
       [],
-      [ "arg-regex" ]
+      [ "arg-regex" ],
+      [ "arg-regex", "arg-filter-action" ],
     ]
   },
   "filter add": {
     "usage": [
-      [ "arg-regex" ]
+      [ "arg-regex" ],
+      [ "arg-regex", "arg-filter-action" ]
     ]
   },
   "filter delete": {

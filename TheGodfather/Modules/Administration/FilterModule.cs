@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Database.Models;
@@ -25,68 +26,34 @@ namespace TheGodfather.Modules.Administration
     public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
     {
         #region filter
-        [GroupCommand, Priority(0)]
+        [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("desc-punish-action")] Filter.Action action,
                                      [RemainingText, Description("desc-filters")] params string[] filters)
-            => this.AddAsync(ctx, filters);
+            => this.InternalAddAsync(ctx, filters, action);
 
         [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("desc-filters")] params string[] filters)
+            => this.InternalAddAsync(ctx, filters);
+
+        [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
             => this.ListAsync(ctx);
         #endregion
 
         #region filter add
-        [Command("add")]
+        [Command("add"), Priority(1)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-        public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("desc-filters")] params string[] filters)
-        {
-            if (filters is null || !filters.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-f-missing");
+        public Task AddAsync(CommandContext ctx,
+                            [Description("desc-punish-action")] Filter.Action action,
+                            [RemainingText, Description("desc-filters")] params string[] filters)
+            => this.InternalAddAsync(ctx, filters, action);
 
-            var eb = new StringBuilder();
-            foreach (string regexString in filters) {
-                if (regexString.Contains('%')) {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-%", Formatter.InlineCode(regexString)));
-                    continue;
-                }
-
-                if (regexString.Length is < 3 or > Filter.FilterLimit) {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
-                    continue;
-                }
-
-                if (ctx.Services.GetRequiredService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
-                    continue;
-                }
-
-                if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-invalid", Formatter.InlineCode(regexString)));
-                    continue;
-                }
-
-                if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
-                    continue;
-                }
-
-                if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex))
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
-            }
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
-                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).JoinWith());
-                if (eb.Length > 0)
-                    emb.AddLocalizedTitleField("str-errs", eb.ToString());
-            });
-
-            if (eb.Length > 0)
-                await ctx.FailAsync("fmt-action-err", eb.ToString());
-            else
-                await ctx.InfoAsync(this.ModuleColor, "str-f-add");
-        }
+        [Command("add"), Priority(0)]
+        public Task AddAsync(CommandContext ctx,
+                            [RemainingText, Description("desc-filters")] params string[] filters)
+            => this.InternalAddAsync(ctx, filters);
         #endregion
 
         #region filter delete
@@ -205,9 +172,63 @@ namespace TheGodfather.Modules.Administration
             return ctx.PaginateAsync(
                 "str-f",
                 fs.OrderBy(f => f.Id),
-                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
+                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)} | {f.OnHitAction.Humanize()}",
                 this.ModuleColor
             );
+        }
+        #endregion
+
+
+        #region internals
+        private async Task InternalAddAsync(CommandContext ctx, IEnumerable<string> filters, Filter.Action action = Filter.Action.DeleteMessage)
+        {
+            if (filters is null || !filters.Any()) {
+                await this.ListAsync(ctx);
+                return;
+            }
+
+            var eb = new StringBuilder();
+            foreach (string regexString in filters) {
+                if (regexString.Contains('%')) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-%", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (regexString.Length is < 3 or > Filter.FilterLimit) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-size", Formatter.InlineCode(regexString), Filter.FilterLimit));
+                    continue;
+                }
+
+                if (ctx.Services.GetRequiredService<ReactionsService>().GuildHasTextReaction(ctx.Guild.Id, regexString)) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-tr", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-invalid", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (ctx.CommandsNext.RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-err", Formatter.InlineCode(regexString)));
+                    continue;
+                }
+
+                if (!await this.Service.AddFilterAsync(ctx.Guild.Id, regex, action))
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, "cmd-err-f-dup", Formatter.InlineCode(regexString)));
+            }
+
+            await ctx.GuildLogAsync(emb => {
+                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
+                emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).JoinWith());
+                if (eb.Length > 0)
+                    emb.AddLocalizedTitleField("str-errs", eb.ToString());
+            });
+
+            if (eb.Length > 0)
+                await ctx.FailAsync("fmt-action-err", eb.ToString());
+            else
+                await ctx.InfoAsync(this.ModuleColor, "str-f-add");
         }
         #endregion
     }

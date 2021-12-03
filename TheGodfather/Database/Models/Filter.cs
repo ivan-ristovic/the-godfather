@@ -24,6 +24,9 @@ namespace TheGodfather.Database.Models
         [Column("trigger"), Required, MaxLength(FilterLimit)]
         public string RegexString { get; set; } = "";
 
+        [Column("action")]
+        public Action OnHitAction { get; set; } = Action.DeleteMessage;
+
         [NotMapped]
         public Regex Regex => this.RegexLazy ??= this.RegexString.ToRegex(this.Options);
 
@@ -35,5 +38,17 @@ namespace TheGodfather.Database.Models
 
 
         public virtual GuildConfig GuildConfig { get; set; } = null!;
+
+
+        public enum Action : byte
+        {
+            DeleteMessage = 0,
+            Sanitize = 1,
+            TemporaryMute = 2,
+            PermanentMute = 3,
+            Kick = 4,
+            TemporaryBan = 5,
+            PermanentBan = 6,
+        }
     }
 }

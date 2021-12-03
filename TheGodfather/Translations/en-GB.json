@@ -58,6 +58,7 @@
   "arg-emoji-url": "http://some-emoji-image/url",
   "arg-fifty": "50",
   "arg-file-mp3": "test.mp3",
+  "arg-filter-action": "Sanitize",
   "arg-five": "5",
   "arg-gld": "Some Guild",
   "arg-gnu": "GNU",

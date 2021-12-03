@@ -61,14 +61,14 @@ namespace TheGodfather.Modules.Administration.Services
         public IReadOnlyList<Filter> GetGuildFilters(ulong gid)
             => this.filters.TryGetValue(gid, out ConcurrentHashSet<Filter>? fs) ? fs.ToList() : (IReadOnlyList<Filter>)Array.Empty<Filter>();
 
-        public Task<bool> AddFilterAsync(ulong gid, string regexString)
+        public Task<bool> AddFilterAsync(ulong gid, string regexString, Filter.Action action)
         {
             return regexString.TryParseRegex(out Regex? regex)
-                ? this.AddFilterAsync(gid, regex)
+                ? this.AddFilterAsync(gid, regex, action)
                 : throw new ArgumentException($"Invalid regex string: {regexString}", nameof(regexString));
         }
 
-        public async Task<bool> AddFilterAsync(ulong gid, Regex? regex)
+        public async Task<bool> AddFilterAsync(ulong gid, Regex? regex, Filter.Action action)
         {
             if (regex is null)
                 return false;
@@ -84,15 +84,16 @@ namespace TheGodfather.Modules.Administration.Services
                 GuildId = gid,
                 RegexString = regexString,
                 RegexLazy = regex,
+                OnHitAction = action,
             };
             db.Filters.Add(filter);
             await db.SaveChangesAsync();
             return fs.Add(filter);
         }
 
-        public async Task<bool> AddFiltersAsync(ulong gid, IEnumerable<string> regexStrings)
+        public async Task<bool> AddFiltersAsync(ulong gid, IEnumerable<string> regexStrings, Filter.Action action)
         {
-            bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddFilterAsync(gid, r)));
+            bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddFilterAsync(gid, r, action)));
             return res.All(r => r);
         }
 
