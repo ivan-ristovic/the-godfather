@@ -221,6 +221,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
                 emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).JoinWith());
+                emb.AddLocalizedTitleField("evt-f-action", action.Humanize(), inline: true);
                 if (eb.Length > 0)
                     emb.AddLocalizedTitleField("str-errs", eb.ToString());
             });

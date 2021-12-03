@@ -695,6 +695,7 @@
   "evt-cr-clear": "All command rules have been removed",
   "evt-er-add": "Emoji reaction(s) added",
   "evt-er-del": "Emoji reaction(s) removed",
+  "evt-f-action": "On-Hit action",
   "evt-f-add": "Filter(s) added",
   "evt-f-del": "Filter(s) removed",
   "evt-f-del-all": "All guild filters have been removed",
