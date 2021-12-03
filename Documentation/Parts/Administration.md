@@ -1449,25 +1449,25 @@
 **Overload 5:**
 - \[`boolean`\]: *Enable?*
 - \[`short`\]: *Sensitivity*
-- (optional) \[`PunishmentAction`\]: *Punishment action* (def: `Kick`)
+- (optional) \[`Action`\]: *Punishment action* (def: `Kick`)
 - (optional) \[`time span`\]: *Cooldown timespan* (def: `None`)
 
 **Overload 4:**
 - \[`boolean`\]: *Enable?*
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 - (optional) \[`time span`\]: *Cooldown timespan* (def: `None`)
 
 **Overload 3:**
 - \[`boolean`\]: *Enable?*
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - (optional) \[`time span`\]: *Cooldown timespan* (def: `None`)
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 
 **Overload 2:**
 - \[`boolean`\]: *Enable?*
 - \[`time span`\]: *Cooldown timespan*
-- (optional) \[`PunishmentAction`\]: *Punishment action* (def: `Kick`)
+- (optional) \[`Action`\]: *Punishment action* (def: `Kick`)
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
@@ -1610,11 +1610,11 @@
 **Overload 3:**
 - \[`boolean`\]: *Enable?*
 - \[`short`\]: *Sensitivity*
-- (optional) \[`PunishmentAction`\]: *Punishment action* (def: `TemporaryMute`)
+- (optional) \[`Action`\]: *Punishment action* (def: `TemporaryMute`)
 
 **Overload 2:**
 - \[`boolean`\]: *Enable?*
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
@@ -1796,11 +1796,11 @@
 **Overload 3:**
 - \[`boolean`\]: *Enable?*
 - \[`short`\]: *Sensitivity*
-- (optional) \[`PunishmentAction`\]: *Punishment action* (def: `TemporaryMute`)
+- (optional) \[`Action`\]: *Punishment action* (def: `TemporaryMute`)
 
 **Overload 2:**
 - \[`boolean`\]: *Enable?*
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
@@ -2702,11 +2702,11 @@
 **Overload 3:**
 - \[`boolean`\]: *Enable?*
 - \[`short`\]: *Sensitivity*
-- (optional) \[`PunishmentAction`\]: *Punishment action* (def: `TemporaryMute`)
+- (optional) \[`Action`\]: *Punishment action* (def: `TemporaryMute`)
 
 **Overload 2:**
 - \[`boolean`\]: *Enable?*
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - (optional) \[`short`\]: *Sensitivity* (def: `5`)
 
 **Overload 1:**
@@ -3434,7 +3434,7 @@
 ## Group: filter
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Message filtering administration. Group call either lists all filters or adds a new filter for given regular expression(s).*
+*Message filtering administration. Group call either lists all filters or adds a new filter for given regular expression(s) and an optional action to perform when this filter (group) matches a message.*
 
 **Guild only.**
 
@@ -3444,18 +3444,23 @@
 **Aliases:**
 `f, filters, autodel`
 
-**Overload 1:**
+**Overload 2:**
+- \[`Action`\]: *Punishment action*
+- \[`string...`\]: *Filter patterns (regular expressions, case insensitive)*
 
-*No arguments.*
+**Overload 1:**
+- \[`string...`\]: *Filter patterns (regular expressions, case insensitive)*
 
 **Overload 0:**
-- \[`string...`\]: *Filter patterns (regular expressions, case insensitive)*
+
+*No arguments.*
 
 **Examples:**
 
 ```xml
 !filter
 !filter regex?pattern+
+!filter Sanitize regex?pattern+
 ```
 </p></details>
 
@@ -3464,7 +3469,7 @@
 ### filter add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Adds a new filter for given regular expression(s).*
+*Adds a new filter for given regular expression(s) and an optional action to perform when this filter (group) matches a message.*
 
 **Guild only.**
 
@@ -3474,6 +3479,10 @@
 **Aliases:**
 `register, reg, a, +, +=, <<, <, <-, <=`
 
+**Overload 1:**
+- \[`Action`\]: *Punishment action*
+- \[`string...`\]: *Filter patterns (regular expressions, case insensitive)*
+
 **Overload 0:**
 - \[`string...`\]: *Filter patterns (regular expressions, case insensitive)*
 
@@ -3481,6 +3490,7 @@
 
 ```xml
 !filter add regex?pattern+
+!filter add Sanitize regex?pattern+
 ```
 </p></details>
 
@@ -3489,7 +3499,7 @@
 ## Group: filter delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Removes filter(s) by ID, pattern or matching string.*
+*Removes filter(s) by ID, pattern or by string matching.*
 
 **Guild only.**
 
@@ -3615,7 +3625,7 @@
 `register, reg, a, +, +=, <<, <, <-, <=`
 
 **Overload 2:**
-- \[`PunishmentAction`\]: *Punishment action*
+- \[`Action`\]: *Punishment action*
 - \[`string...`\]: *Forbidden name patterns (regular expressions, case insensitive)*
 
 **Overload 1:**
@@ -5333,14 +5343,26 @@
 **Aliases:**
 `m`
 
-**Overload 0:**
+**Overload 2:**
 - \[`member`\]: *Member*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 1:**
+- \[`time span`\]: *Time span*
+- \[`member`\]: *Member*
+- (optional) \[`string...`\]: *Reason for the action* (def: `None`)
+
+**Overload 0:**
+- \[`member`\]: *User*
+- \[`time span`\]: *Time span*
 - (optional) \[`string...`\]: *Reason for the action* (def: `None`)
 
 **Examples:**
 
 ```xml
 !user mute @User
+!user mute @User 1d
+!user mute 1d @User
 ```
 </p></details>
 

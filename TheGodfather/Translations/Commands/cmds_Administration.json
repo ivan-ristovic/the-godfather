@@ -674,13 +674,13 @@
     "usage": [
       [],
       [ "arg-regex" ],
-      [ "arg-regex", "arg-filter-action" ],
+      [ "arg-filter-action", "arg-regex" ]
     ]
   },
   "filter add": {
     "usage": [
       [ "arg-regex" ],
-      [ "arg-regex", "arg-filter-action" ]
+      [ "arg-filter-action", "arg-regex" ]
     ]
   },
   "filter delete": {

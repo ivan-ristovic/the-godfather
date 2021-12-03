@@ -1118,7 +1118,7 @@
 **Aliases:**
 `star, sb`
 
-**Overload 1:**
+**Overload 2:**
 - \[`boolean`\]: *Enable?*
 - \[`emoji`\]: *Emoji*
 - \[`channel`\]: *Channel*
@@ -1149,7 +1149,7 @@
 ### starboard channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Sets starboard channel.*
+*Gets or sets starboard channel.*
 
 **Guild only.**
 
@@ -1160,12 +1160,38 @@
 `chn, setchannel, setchn, setc, location`
 
 **Overload 0:**
-- \[`channel`\]: *Channel*
+- (optional) \[`channel`\]: *Channel* (def: `None`)
 
 **Examples:**
 
 ```xml
 !starboard channel
+```
+</p></details>
+
+---
+
+### starboard emoji
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets starboard emoji.*
+
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`e, star`
+
+**Overload 0:**
+- (optional) \[`emoji`\]: *Emoji* (def: `None`)
+
+**Examples:**
+
+```xml
+!starboard emoji
+!starboard emoji :emoji:
 ```
 </p></details>
 
