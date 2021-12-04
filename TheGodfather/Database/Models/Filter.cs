@@ -43,12 +43,12 @@ namespace TheGodfather.Database.Models
         public enum Action : byte
         {
             Delete = 0,
-            SanitizeOnly = 1,
-            DeleteAndTemporaryMute = 2,
-            DeleteAndPermanentMute = 3,
-            DeleteAndKick = 4,
-            DeleteAndTemporaryBan = 5,
-            DeleteAndPermanentBan = 6,
+            Sanitize = 1,
+            TemporaryMute = 2,
+            PermanentMute = 3,
+            Kick = 4,
+            TemporaryBan = 5,
+            PermanentBan = 6,
         }
     }
 }

@@ -300,7 +300,7 @@ namespace TheGodfather.EventListeners
             if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
                 try {
                     await msg.DeleteAsync(reason);
-                    if (action.GetValueOrDefault(Filter.Action.Delete) == Filter.Action.SanitizeOnly)
+                    if (action.GetValueOrDefault(Filter.Action.Delete) == Filter.Action.Sanitize)
                         await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
                 } catch {
                     await SendErrorReportAsync();
@@ -309,14 +309,14 @@ namespace TheGodfather.EventListeners
                 await SendErrorReportAsync();
             }
 
-            if (action != Filter.Action.Delete && action != Filter.Action.SanitizeOnly) {
+            if (action != Filter.Action.Delete && action != Filter.Action.Sanitize) {
                 DiscordMember? member = await msg.Channel.Guild.GetMemberAsync(msg.Author.Id);
                 if (member is null)
                     return;
                 if (Enum.TryParse(action.ToString(), out Punishment.Action punishment))
                     await bot.Services.GetRequiredService<ProtectionService>().PunishMemberAsync(msg.Channel.Guild, member, punishment, reason: reason);
                 else
-                    LogExt.Warning(bot.GetId(msg.Channel.GuildId), "Failed to interpret filter on-hit action as a punishment: {FilterAction}", action);
+                    LogExt.Warning(bot.GetId(msg.Channel.GuildId), "Failed to interpret filter on-hit action as a punishment: {FilterAction}", action!);
             }
 
 

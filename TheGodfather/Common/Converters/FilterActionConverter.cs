@@ -25,7 +25,7 @@ namespace TheGodfather.Common.Converters
             if (_dRegex.IsMatch(value))
                 result = Filter.Action.Delete;
             else if (_sRegex.IsMatch(value))
-                result = Filter.Action.SanitizeOnly;
+                result = Filter.Action.Sanitize;
             else if (new PunishmentActionConverter().TryConvert(value, out Punishment.Action punishment))
                 parses = Enum.TryParse(punishment.ToString(), out result);
             else
