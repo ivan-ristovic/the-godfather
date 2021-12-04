@@ -299,10 +299,9 @@ namespace TheGodfather.EventListeners
 
             if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
                 try {
+                    await msg.DeleteAsync(reason);
                     if (action.GetValueOrDefault(Filter.Action.Delete) == Filter.Action.SanitizeOnly)
                         await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
-                    else
-                        await msg.DeleteAsync(reason);
                 } catch {
                     await SendErrorReportAsync();
                 }
