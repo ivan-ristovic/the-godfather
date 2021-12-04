@@ -19,13 +19,13 @@ namespace TheGodfather.Common.Converters
 
         public override bool TryConvert(string value, out Filter.Action result)
         {
-            result = Filter.Action.Kick;
+            result = Filter.Action.Delete;
             bool parses = true;
 
             if (_dRegex.IsMatch(value))
-                result = Filter.Action.DeleteMessage;
+                result = Filter.Action.Delete;
             else if (_sRegex.IsMatch(value))
-                result = Filter.Action.Sanitize;
+                result = Filter.Action.SanitizeOnly;
             else if (new PunishmentActionConverter().TryConvert(value, out Punishment.Action punishment))
                 parses = Enum.TryParse(punishment.ToString(), out result);
             else

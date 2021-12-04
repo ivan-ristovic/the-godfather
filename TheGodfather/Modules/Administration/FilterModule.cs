@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region internals
-        private async Task InternalAddAsync(CommandContext ctx, IEnumerable<string> filters, Filter.Action action = Filter.Action.DeleteMessage)
+        private async Task InternalAddAsync(CommandContext ctx, IEnumerable<string> filters, Filter.Action action = Filter.Action.Delete)
         {
             if (filters is null || !filters.Any()) {
                 await this.ListAsync(ctx);
