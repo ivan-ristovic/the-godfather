@@ -22,6 +22,8 @@ namespace TheGodfather.Services
             if (!fi.Exists) {
                 Console.WriteLine("Loading configuration failed!");
 
+                Directory.CreateDirectory("Resources");
+
                 json = JsonConvert.SerializeObject(new BotConfig(), Formatting.Indented);
                 using (FileStream fs = fi.Create())
                 using (var sw = new StreamWriter(stream: fs, utf8)) {
