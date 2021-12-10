@@ -263,6 +263,18 @@
       []
     ]
   },
+  "config tempmute": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
+  "config tempban": {
+    "usage": [
+      [],
+      [ "arg-timespan" ]
+    ]
+  },
   "config actionhistory": {
     "usage": [
       [],

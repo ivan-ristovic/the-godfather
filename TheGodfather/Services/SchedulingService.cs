@@ -140,8 +140,11 @@ namespace TheGodfather.Services
                     else
                         Log.Warning("Failed to remove guild task from task collection: {GuildTaskId}", task.Id);
                     using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                        db.GuildTasks.Remove(new GuildTask { Id = task.Id });
-                        await db.SaveChangesAsync();
+                        int removed = await db.GuildTasks.SafeRemoveRangeAsync(new[] { new GuildTask { Id = task.Id } }, gt => new object[] { gt.Id });
+                        if (removed > 0)
+                            await db.SaveChangesAsync();
+                        else
+                            Log.Warning("Failed to remove guild task from db: {GuildTaskId}", task.Id);
                     }
                     break;
                 case Reminder rem:
@@ -154,8 +157,11 @@ namespace TheGodfather.Services
                         Log.Warning("Failed to remove reminder from task collection: {ReminderId}", task.Id);
 
                     using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                        db.Reminders.Remove(new Reminder { Id = task.Id });
-                        await db.SaveChangesAsync();
+                        int removed = await db.Reminders.SafeRemoveRangeAsync(new[] { new Reminder { Id = task.Id } }, gt => new object[] { gt.Id });
+                        if (removed > 0)
+                            await db.SaveChangesAsync();
+                        else
+                            Log.Warning("Failed to remove reminder from db: {GuildTaskId}", task.Id);
                     }
                     break;
                 default:

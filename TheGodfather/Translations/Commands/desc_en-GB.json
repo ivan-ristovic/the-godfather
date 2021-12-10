@@ -175,6 +175,8 @@
   "config setup": "Starts an interactive wizard for configuring the guild settings.",
   "config silent": "Views or toggles silent reaction replies to command execution.",
   "config suggestions": "Views or toggles command suggestion setting when command name is not found.",
+  "config tempban": "Gets or sets the temporary ban cooldown time.",
+  "config tempmute": "Gets or sets the temporary mute cooldown time.",
   "config timezone": "Gets or sets current guild time zone.",
   "config timezone current": "Prints current guild time zone.",
   "config timezone info": "Prints information about given time zone.",

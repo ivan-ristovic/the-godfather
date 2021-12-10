@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TheGodfather.Common;
@@ -15,6 +16,11 @@ namespace TheGodfather.Database.Models
         public const int TimezoneIdLimit = 32;
         public const int CurrencyLimit = 32;
         public const int MemberUpdateMessageLimit = 128;
+
+        public const int MinTempMuteCooldown = 60;
+        public const int MaxTempMuteCooldown = 604800;
+        public const int MinTempBanCooldown = 60;
+        public const int MaxTempBanCooldown = 2592000;
 
         public virtual ICollection<ActionHistoryEntry> ActionHistory { get; set; }
         public virtual ICollection<AutoRole> AutoRoles { get; set; }
@@ -101,6 +107,16 @@ namespace TheGodfather.Database.Models
         public long MuteRoleIdDb { get; set; }
         [NotMapped]
         public ulong MuteRoleId { get => (ulong)this.MuteRoleIdDb; set => this.MuteRoleIdDb = (long)value; }
+
+        [Column("temp_mute_cooldown", TypeName = "interval")]
+        public TimeSpan? TempMuteCooldownDb { get; set; }
+        [NotMapped]
+        public TimeSpan TempMuteCooldown => this.TempMuteCooldownDb ?? TimeSpan.FromHours(8);
+
+        [Column("temp_ban_cooldown", TypeName = "interval")]
+        public TimeSpan? TempBanCooldownDb { get; set; }
+        [NotMapped]
+        public TimeSpan TempBanCooldown => this.TempBanCooldownDb ?? TimeSpan.FromDays(1);
 
         [Column("silent_response_enabled")]
         public bool ReactionResponse { get; set; }

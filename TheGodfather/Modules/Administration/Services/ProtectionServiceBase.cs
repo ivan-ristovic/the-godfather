@@ -58,8 +58,9 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                     case Punishment.Action.TemporaryBan:
                         await member.BanAsync(0, reason: reason ?? this.reason);
+                        TimeSpan tempBanTime = cooldown ?? (await this.gcs.GetConfigAsync(guild.Id)).TempBanCooldown;
                         gt = new GuildTask {
-                            ExecutionTime = DateTimeOffset.Now + (cooldown ?? TimeSpan.FromDays(1)),
+                            ExecutionTime = DateTimeOffset.Now + tempBanTime,
                             GuildId = guild.Id,
                             UserId = member.Id,
                             Type = ScheduledTaskType.Unban,
@@ -71,8 +72,9 @@ namespace TheGodfather.Modules.Administration.Services
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, reason ?? this.reason);
+                        TimeSpan tempMuteTime = cooldown ?? (await this.gcs.GetConfigAsync(guild.Id)).TempMuteCooldown;
                         gt = new GuildTask {
-                            ExecutionTime = DateTimeOffset.Now + (cooldown ?? TimeSpan.FromHours(1)),
+                            ExecutionTime = DateTimeOffset.Now + tempMuteTime,
                             GuildId = guild.Id,
                             RoleId = muteRole.Id,
                             UserId = member.Id,

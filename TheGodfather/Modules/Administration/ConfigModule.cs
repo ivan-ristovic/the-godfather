@@ -249,6 +249,46 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region config tempmute
+        [Command("tempmute")]
+        [Aliases("tm", "tmute", "tmpmute", "tmpm")]
+        public async Task GetOrSetMuteRoleCooldownAsync(CommandContext ctx,
+                                                       [Description("desc-cooldown")] TimeSpan? cooldown = null)
+        {
+            if (cooldown is null) {
+                GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
+                cooldown = cfg.TempMuteCooldown;
+            } else {
+                if (cooldown.Value.TotalSeconds is < GuildConfig.MinTempMuteCooldown or > GuildConfig.MaxTempMuteCooldown)
+                    throw new CommandFailedException(ctx, "cmd-err-range-cd", GuildConfig.MinTempMuteCooldown, GuildConfig.MaxTempMuteCooldown);
+
+                await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.TempMuteCooldownDb = cooldown);
+            }
+
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tm-cooldown", cooldown.Value.ToDurationString());
+        }
+        #endregion
+
+        #region config tempban
+        [Command("tempban")]
+        [Aliases("tb", "tban", "tmpban", "tmpb")]
+        public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
+                                               [Description("desc-cooldown")] TimeSpan? cooldown = null)
+        {
+            if (cooldown is null) {
+                GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
+                cooldown = cfg.TempMuteCooldown;
+            } else {
+                if (cooldown.Value.TotalSeconds is < GuildConfig.MinTempBanCooldown or > GuildConfig.MaxTempBanCooldown)
+                    throw new CommandFailedException(ctx, "cmd-err-range-cd", GuildConfig.MinTempBanCooldown, GuildConfig.MaxTempBanCooldown);
+
+                await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.TempBanCooldownDb = cooldown);
+            }
+
+            await ctx.InfoAsync(this.ModuleColor, "fmt-tb-cooldown", cooldown.Value.ToDurationString());
+        }
+        #endregion
+
         #region config reset
         [Command("reset"), UsesInteractivity]
         [Aliases("default", "def", "s", "rr")]
