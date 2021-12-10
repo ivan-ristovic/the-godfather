@@ -2984,6 +2984,58 @@
 
 ---
 
+### config tempban
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets the temporary ban cooldown time.*
+
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`tb, tban, tmpban, tmpb`
+
+**Overload 0:**
+- (optional) \[`time span`\]: *Cooldown timespan* (def: `None`)
+
+**Examples:**
+
+```xml
+!config tempban
+!config tempban 10s
+```
+</p></details>
+
+---
+
+### config tempmute
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets the temporary mute cooldown time.*
+
+**Guild only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`tm, tmute, tmpmute, tmpm`
+
+**Overload 0:**
+- (optional) \[`time span`\]: *Cooldown timespan* (def: `None`)
+
+**Examples:**
+
+```xml
+!config tempmute
+!config tempmute 10s
+```
+</p></details>
+
+---
+
 ## Group: config timezone
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
