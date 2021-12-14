@@ -252,7 +252,7 @@ namespace TheGodfather.Modules.Administration
             var toRemove = roles
                 .Where(kvp => kvp.Role is null)
                 .Select(kvp => kvp.ReactionRole.Emoji)
-                .Union(rrs.Select(rr => rr.Emoji).Except(ctx.Guild.Emojis.Values.Select(e => e.GetDiscordName())))
+                .Where(e => !DiscordEmoji.TryFromName(ctx.Client, e, out _))
                 .ToList()
                 ;
 
