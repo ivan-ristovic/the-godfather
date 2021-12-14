@@ -539,7 +539,7 @@ namespace TheGodfather.Modules.Owner
 
         #region sendmessage
         [Command("sendmessage")]
-        [Aliases("send", "s")]
+        [Aliases("send", "sendmsg", "s")]
         [RequirePrivilegedUser]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("desc-send")] string desc,
