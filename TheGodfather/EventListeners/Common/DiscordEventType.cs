@@ -73,6 +73,7 @@ namespace TheGodfather.EventListeners.Common
                 case DiscordEventType.ApplicationCommandCreated:
                 case DiscordEventType.ApplicationCommandDeleted:
                 case DiscordEventType.ApplicationCommandUpdated:
+                case DiscordEventType.ComponentInteractionCreated:
                     return DiscordColor.Sienna;
                 #endregion
 

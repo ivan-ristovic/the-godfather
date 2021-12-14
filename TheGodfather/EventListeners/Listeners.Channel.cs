@@ -223,7 +223,7 @@ namespace TheGodfather.EventListeners
 
             DiscordAuditLogWebhookEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogWebhookEntry>(AuditLogActionType.WebhookUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
-                emb.WithDescription(ent.Target);
+                emb.WithDescription($"{ent.Target.Name}, {ent.Target.ChannelId}");
                 emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
                 emb.AddLocalizedPropertyChangeField("str-ahash", ent.AvatarHashChange);
                 emb.AddLocalizedPropertyChangeField("str-chn", ent.ChannelChange);
