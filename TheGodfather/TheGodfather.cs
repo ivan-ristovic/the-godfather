@@ -19,7 +19,7 @@ namespace TheGodfather
         public static string ApplicationName { get; }
         public static string ApplicationVersion { get; }
 
-        internal static TheGodfatherBot? Bot { get; set; }
+        internal static TheGodfatherBot? Bot { get; private set; }
         private static PeriodicTasksService? PeriodicService { get; set; }
 
 
@@ -38,7 +38,7 @@ namespace TheGodfather
             try {
                 BotConfigService cfg = await LoadBotConfigAsync();
                 Log.Logger = LogExt.CreateLogger(cfg.CurrentConfiguration);
-                Log.Information("Logger created.");
+                Log.Information("Logger created");
 
                 DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
                 
@@ -74,18 +74,18 @@ namespace TheGodfather
         private static void PrintBuildInformation()
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
-            Console.WriteLine($"{ApplicationName} {ApplicationVersion} ({fileVersionInfo.FileVersion})");
+            Console.WriteLine($@"{ApplicationName} {ApplicationVersion} ({fileVersionInfo.FileVersion})");
             Console.WriteLine();
         }
 
         private static async Task<BotConfigService> LoadBotConfigAsync()
         {
-            Console.Write("Loading configuration... ");
+            Console.Write(@"Loading configuration... ");
 
             var cfg = new BotConfigService();
             await cfg.LoadConfigAsync();
 
-            Console.Write("\r");
+            Console.Write(@"\r");
             return cfg;
         }
 
@@ -95,14 +95,14 @@ namespace TheGodfather
             var dbb = new DbContextBuilder(cfg.CurrentConfiguration.DatabaseConfig);
 
             Log.Information("Testing database context creation");
-            using (TheGodfatherDbContext db = dbb.CreateContext()) {
-                IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
-                if (pendingMigrations.Any()) {
-                    Log.Information("Applying pending database migrations: {PendingDbMigrations}", pendingMigrations);
-                    await db.Database.MigrateAsync();
-                }
-            }
-
+            await using TheGodfatherDbContext db = dbb.CreateContext();
+            IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+            var mi = pendingMigrations.ToList();
+            if (!mi.Any()) 
+                return dbb;
+            
+            Log.Information("Applying pending database migrations: {PendingDbMigrations}", mi);
+            await db.Database.MigrateAsync();
             return dbb;
         }
 

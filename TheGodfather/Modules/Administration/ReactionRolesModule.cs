@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Administration
         public async Task RemoveAsync(CommandContext ctx,
                                      [Description("desc-roles-del")] params DiscordRole[] roles)
         {
-            if (roles is null || !roles.Any()) {
+            if (!roles.Any()) {
                 await this.RemoveAllAsync(ctx);
                 return;
             }
