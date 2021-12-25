@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TheGodfather.Services;
@@ -41,18 +43,11 @@ namespace TheGodfather.Modules.Search.Services
 
         private static async Task<string?> ReadResponseAsync(string url)
         {
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            request.Accept = "text/plain";
-
-            string? data = null;
-            using (WebResponse response = await request.GetResponseAsync().ConfigureAwait(false))
-            using (Stream stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream)) {
-                data = await reader.ReadToEndAsync().ConfigureAwait(false);
-            }
-
-            return data;
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("Accept", "text/plain");
+            HttpResponseMessage response = await _http.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

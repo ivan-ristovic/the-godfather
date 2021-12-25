@@ -25,8 +25,8 @@ namespace TheGodfather.Modules.Games.Services
 
         public async Task UpdateStatsAsync(ulong uid, Action<GameStats> action)
         {
-            using TheGodfatherDbContext db = this.dbb.CreateContext();
-            GameStats stats = await db.GameStats.FindAsync((long)uid);
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
+            GameStats? stats = await db.GameStats.FindAsync((long)uid);
             if (stats is null) {
                 stats = new GameStats { UserId = uid };
                 action(stats);

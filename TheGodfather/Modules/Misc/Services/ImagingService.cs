@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,6 +8,9 @@ using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using TheGodfather.Services;
@@ -53,17 +54,17 @@ namespace TheGodfather.Modules.Misc.Services
 
         public void TryLoadData(string path)
         {
-            this.rateImage = LoadImageBytes(Path.Combine(path, "graph.png"));
-            this.graveImage = LoadImageBytes(Path.Combine(path, "grave.png"));
+            this.rateImage = LoadImageBytes(Path.Combine(path, "graph.png"), PngFormat.Instance);
+            this.graveImage = LoadImageBytes(Path.Combine(path, "grave.png"), PngFormat.Instance);
 
 
-            static byte[] LoadImageBytes(string imagePath)
+            static byte[] LoadImageBytes(string imagePath, IImageFormat format)
             {
                 try {
                     Log.Debug("Loading image from {Path}", imagePath);
-                    using var image = new Bitmap(imagePath);
+                    using var image = Image.Load<Rgba32>(imagePath);
                     using var ms = new MemoryStream();
-                    image.Save(ms, ImageFormat.Jpeg);
+                    image.Save(ms, format);
                     return ms.ToArray();
                 } catch (Exception e) {
                     Log.Error(e, "Failed to load image, path: {Path}", imagePath);
@@ -142,18 +143,17 @@ namespace TheGodfather.Modules.Misc.Services
             {
                 try {
                     byte[] avatarBytes = await _http.GetByteArrayAsync(avatarUrl);
-                    using (var avatarImg = SLImage.Load<Rgba32>(avatarBytes)) {
-                        avatarImg.Mutate(i => i
-                            .Resize(new ResizeOptions {
-                                Size = new SLSize(85, 85),
-                                Mode = ResizeMode.Crop,
-                            })
-                            .Grayscale()
-                        );
-                        img.Mutate(i => i
-                            .DrawImage(avatarImg, new SLPoint(195, 150), new GraphicsOptions())
-                        );
-                    }
+                    using var avatarImg = SLImage.Load<Rgba32>(avatarBytes);
+                    avatarImg.Mutate(i => i
+                        .Resize(new ResizeOptions {
+                            Size = new SLSize(85, 85),
+                            Mode = ResizeMode.Crop,
+                        })
+                        .Grayscale()
+                    );
+                    img.Mutate(i => i
+                        .DrawImage(avatarImg, new SLPoint(195, 150), new GraphicsOptions())
+                    );
                 } catch (IOException) {
                     // ignored
                 }

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration.Common
 
                 this.msgs.Add(newContent);
                 if (this.msgs.Count > this.maxAmount) {
-                    string leastMatch = this.msgs.MaxBy(s => s.LevenshteinDistanceTo(newContent));
+                    string leastMatch = this.msgs.MaxBy(s => s.LevenshteinDistanceTo(newContent))!;
                     this.msgs.Remove(leastMatch);
                 }
 

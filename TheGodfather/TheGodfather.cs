@@ -5,11 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using TheGodfather.Database;
 using TheGodfather.Extensions;
+using TheGodfather.Generators;
 using TheGodfather.Services;
 
 namespace TheGodfather
@@ -85,7 +87,7 @@ namespace TheGodfather
             var cfg = new BotConfigService();
             await cfg.LoadConfigAsync();
 
-            Console.Write(@"\r");
+            Console.Write("\r");
             return cfg;
         }
 

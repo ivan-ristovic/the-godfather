@@ -28,10 +28,10 @@ namespace TheGodfather.Services
 
 
         public IEnumerable<TEntity> EntityFactory(IEnumerable<TEntityId> ids)
-            => ids.Select(id => this.EntityFactory(id));
+            => ids.Select(this.EntityFactory);
 
         public Task<int> AddAsync(params TEntityId[] ids)
-            => ids is { } ? this.AddAsync(idCollection: ids) : Task.FromResult(0);
+            => this.AddAsync(idCollection: ids);
 
         public Task<int> AddAsync(IEnumerable<TEntityId> idCollection)
             => this.AddAsync(collection: this.EntityFactory(idCollection));
@@ -42,22 +42,21 @@ namespace TheGodfather.Services
         public async Task<int> AddAsync(IEnumerable<TEntity> collection)
         {
             int added = 0;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                added = await this.DbSetSelector(db).SafeAddRangeAsync(
-                    collection,
-                    e => this.EntityPrimaryKeySelector(this.EntityIdSelector(e))
-                );
-                if (added > 0)
-                    await db.SaveChangesAsync();
-            }
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
+            added = await this.DbSetSelector(db).SafeAddRangeAsync(
+                collection,
+                e => this.EntityPrimaryKeySelector(this.EntityIdSelector(e))
+            );
+            if (added > 0)
+                await db.SaveChangesAsync();
             return added;
         }
 
         public Task<int> RemoveAsync(params TEntityId[] ids)
-            => ids is { } ? this.RemoveAsync(idCollection: ids) : Task.FromResult(0);
+            => this.RemoveAsync(idCollection: ids);
 
         public Task<int> RemoveAsync(IEnumerable<TEntityId> idCollection)
-            => this.RemoveAsync(collection: this.EntityFactory(idCollection));
+            => this.RemoveAsync(this.EntityFactory(idCollection));
 
         public Task<int> RemoveAsync(params TEntity[] entities)
             => this.RemoveAsync(collection: entities);
@@ -65,7 +64,7 @@ namespace TheGodfather.Services
         public async Task<int> RemoveAsync(IEnumerable<TEntity> collection)
         {
             int removed = 0;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+            await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 removed = await this.DbSetSelector(db).SafeRemoveRangeAsync(
                     collection,
                     e => this.EntityPrimaryKeySelector(this.EntityIdSelector(e))
@@ -78,7 +77,7 @@ namespace TheGodfather.Services
 
         public async Task ClearAsync()
         {
-            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
             DbSet<TEntity> set = this.DbSetSelector(db);
             set.RemoveRange(set);
             await db.SaveChangesAsync();
@@ -87,7 +86,7 @@ namespace TheGodfather.Services
         public async Task<bool> ContainsAsync(TEntityId id)
         {
             TEntity? entity = null;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext())
+            await using (TheGodfatherDbContext db = this.dbb.CreateContext())
                 entity = await this.DbSetSelector(db).FindAsync(this.EntityPrimaryKeySelector(id));
             return entity is { };
         }
@@ -107,15 +106,15 @@ namespace TheGodfather.Services
         public async Task<IReadOnlyList<TEntity>> GetAsync()
         {
             List<TEntity> res;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+            await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 res = await this.DbSetSelector(db).AsQueryable().ToListAsync();
             }
             return res.AsReadOnly();
         }
 
-        public async Task<TEntity> GetAsync(TEntityId id)
+        public async Task<TEntity?> GetAsync(TEntityId id)
         {
-            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
             return await this.DbSetSelector(db).FindAsync(this.EntityPrimaryKeySelector(id));
         }
     }
@@ -145,7 +144,7 @@ namespace TheGodfather.Services
             => ids.Select(id => this.EntityFactory(gid, id));
 
         public Task<int> AddAsync(TGroupId grid, params TEntityId[] ids)
-            => ids is { } ? this.AddAsync(grid, idCollection: ids) : Task.FromResult(0);
+            => this.AddAsync(grid, idCollection: ids);
 
         public Task<int> AddAsync(TGroupId grid, IEnumerable<TEntityId> idCollection)
             => this.AddAsync(this.EntityFactory(grid, idCollection));
@@ -156,19 +155,18 @@ namespace TheGodfather.Services
         public async Task<int> AddAsync(IEnumerable<TEntity> collection)
         {
             int added = 0;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                added = await this.DbSetSelector(db).SafeAddRangeAsync(
-                    collection,
-                    e => this.EntityPrimaryKeySelector(this.EntityGroupSelector(e), this.EntityIdSelector(e))
-                );
-                if (added > 0)
-                    await db.SaveChangesAsync();
-            }
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
+            added = await this.DbSetSelector(db).SafeAddRangeAsync(
+                collection,
+                e => this.EntityPrimaryKeySelector(this.EntityGroupSelector(e), this.EntityIdSelector(e))
+            );
+            if (added > 0)
+                await db.SaveChangesAsync();
             return added;
         }
 
         public Task<int> RemoveAsync(TGroupId grid, params TEntityId[] ids)
-            => ids is { } ? this.RemoveAsync(grid, idCollection: ids) : Task.FromResult(0);
+            => this.RemoveAsync(grid, idCollection: ids);
 
         public Task<int> RemoveAsync(TGroupId grid, IEnumerable<TEntityId> idCollection)
             => this.RemoveAsync(this.EntityFactory(grid, idCollection));
@@ -179,20 +177,19 @@ namespace TheGodfather.Services
         public async Task<int> RemoveAsync(IEnumerable<TEntity> collection)
         {
             int removed = 0;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                removed = await this.DbSetSelector(db).SafeRemoveRangeAsync(
-                    collection,
-                    e => this.EntityPrimaryKeySelector(this.EntityGroupSelector(e), this.EntityIdSelector(e))
-                );
-                if (removed > 0)
-                    await db.SaveChangesAsync();
-            }
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
+            removed = await this.DbSetSelector(db).SafeRemoveRangeAsync(
+                collection,
+                e => this.EntityPrimaryKeySelector(this.EntityGroupSelector(e), this.EntityIdSelector(e))
+            );
+            if (removed > 0)
+                await db.SaveChangesAsync();
             return removed;
         }
 
         public async Task ClearAsync(TGroupId grid)
         {
-            using TheGodfatherDbContext db = this.dbb.CreateContext();
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
             DbSet<TEntity> set = this.DbSetSelector(db);
             set.RemoveRange(this.GroupSelector(set, grid));
             await db.SaveChangesAsync();
@@ -201,7 +198,7 @@ namespace TheGodfather.Services
         public async Task<bool> ContainsAsync(TGroupId grid, TEntityId id)
         {
             TEntity? entity = null;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext())
+            await using (TheGodfatherDbContext db = this.dbb.CreateContext())
                 entity = await this.DbSetSelector(db).FindAsync(this.EntityPrimaryKeySelector(grid, id));
             return entity is { };
         }
@@ -222,7 +219,7 @@ namespace TheGodfather.Services
         public async Task<IReadOnlyList<TEntity>> GetAllAsync(TGroupId grid)
         {
             List<TEntity> res;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
+            await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                 DbSet<TEntity> set = this.DbSetSelector(db);
                 res = await this.GroupSelector(set, grid).ToListAsync();
             }
@@ -231,12 +228,9 @@ namespace TheGodfather.Services
 
         public async Task<TEntity?> GetAsync(TGroupId grid, TEntityId entityId)
         {
-            TEntity? res = null;
-            using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-                DbSet<TEntity> set = this.DbSetSelector(db);
-                res = await set.FindAsync(this.EntityPrimaryKeySelector(grid, entityId));
-            }
-            return res;
+            await using TheGodfatherDbContext db = this.dbb.CreateContext();
+            DbSet<TEntity> set = this.DbSetSelector(db);
+            return await set.FindAsync(this.EntityPrimaryKeySelector(grid, entityId));
         }
     }
 }

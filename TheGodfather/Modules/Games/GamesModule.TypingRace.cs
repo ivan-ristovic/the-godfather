@@ -29,14 +29,14 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is RussianRouletteGame)
+                    if (this.Service.GetEventInChannel(ctx.Channel.Id) is TypingRaceGame)
                         await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException(ctx, "cmd-err-evt-dup");
                     return;
                 }
 
-                var game = new TypingRaceGame(ctx.Client.GetInteractivity(), ctx.Channel);
+                var game = new TypingRaceGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Services.GetRequiredService<FontsService>());
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-game-tr-start", TypingRaceGame.MaxParticipants);

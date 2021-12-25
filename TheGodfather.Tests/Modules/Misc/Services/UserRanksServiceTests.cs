@@ -84,19 +84,19 @@ namespace TheGodfather.Tests.Modules.Misc.Services
             this.Service.ChangeXp(MockData.Ids[0], MockData.Ids[2]);
 
             await TestDbProvider.AlterAndVerifyAsync(
-                alter: db => this.Service.Sync(),
+                alter: _ => this.Service.Sync(),
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(3).Items);
-                    XpCount u1 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
-                    XpCount u2 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
-                    XpCount u3 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
+                    XpCount? u1 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
+                    XpCount? u2 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
+                    XpCount? u3 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
                     Assert.That(db.XpCounts.Find((long)MockData.Ids[0], 123451234512345), Is.Null);
                     Assert.That(u1, Is.Not.Null);
                     Assert.That(u2, Is.Not.Null);
                     Assert.That(u3, Is.Not.Null);
-                    Assert.That(u1.Xp, Is.EqualTo(2));
-                    Assert.That(u2.Xp, Is.EqualTo(9));
-                    Assert.That(u3.Xp, Is.EqualTo(1));
+                    Assert.That(u1!.Xp, Is.EqualTo(2));
+                    Assert.That(u2!.Xp, Is.EqualTo(9));
+                    Assert.That(u3!.Xp, Is.EqualTo(1));
                     return Task.CompletedTask;
                 }
             );
@@ -128,7 +128,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     this.Service.LoadData();
                     return Task.CompletedTask;
                 },
-                alter: db => {
+                alter: _ => {
                     this.Service.ChangeXp(MockData.Ids[0], MockData.Ids[1]);
                     this.Service.ChangeXp(MockData.Ids[1], MockData.Ids[1]);
                     this.Service.ChangeXp(MockData.Ids[2], MockData.Ids[1]);
@@ -137,22 +137,22 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                 },
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(5).Items);
-                    XpCount u00 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
-                    XpCount u01 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
-                    XpCount u11 = db.XpCounts.Find((long)MockData.Ids[1], (long)MockData.Ids[1]);
-                    XpCount u21 = db.XpCounts.Find((long)MockData.Ids[2], (long)MockData.Ids[1]);
-                    XpCount u02 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
+                    XpCount? u00 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
+                    XpCount? u01 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
+                    XpCount? u11 = db.XpCounts.Find((long)MockData.Ids[1], (long)MockData.Ids[1]);
+                    XpCount? u21 = db.XpCounts.Find((long)MockData.Ids[2], (long)MockData.Ids[1]);
+                    XpCount? u02 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
                     Assert.That(db.XpCounts.Find((long)MockData.Ids[0], 123451234512345), Is.Null);
                     Assert.That(u00, Is.Not.Null);
                     Assert.That(u01, Is.Not.Null);
                     Assert.That(u11, Is.Not.Null);
                     Assert.That(u21, Is.Not.Null);
                     Assert.That(u02, Is.Not.Null);
-                    Assert.That(u00.Xp, Is.EqualTo(5));
-                    Assert.That(u01.Xp, Is.EqualTo(6));
-                    Assert.That(u11.Xp, Is.EqualTo(2));
-                    Assert.That(u21.Xp, Is.EqualTo(1));
-                    Assert.That(u02.Xp, Is.EqualTo(1));
+                    Assert.That(u00!.Xp, Is.EqualTo(5));
+                    Assert.That(u01!.Xp, Is.EqualTo(6));
+                    Assert.That(u11!.Xp, Is.EqualTo(2));
+                    Assert.That(u21!.Xp, Is.EqualTo(1));
+                    Assert.That(u02!.Xp, Is.EqualTo(1));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[0], MockData.Ids[0]), Is.EqualTo(5));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[0], MockData.Ids[1]), Is.EqualTo(6));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[1], MockData.Ids[1]), Is.EqualTo(2));
@@ -189,7 +189,7 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                     this.Service.LoadData();
                     return Task.CompletedTask;
                 },
-                alter: async db => {
+                alter: async _ => {
                     this.Service.ChangeXp(MockData.Ids[0], MockData.Ids[1]);
                     this.Service.ChangeXp(MockData.Ids[0], MockData.Ids[2]);
                     await this.Service.Sync();
@@ -206,22 +206,22 @@ namespace TheGodfather.Tests.Modules.Misc.Services
                 },
                 verify: db => {
                     Assert.That(db.XpCounts, Has.Exactly(5).Items);
-                    XpCount u00 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
-                    XpCount u01 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
-                    XpCount u11 = db.XpCounts.Find((long)MockData.Ids[1], (long)MockData.Ids[1]);
-                    XpCount u21 = db.XpCounts.Find((long)MockData.Ids[2], (long)MockData.Ids[1]);
-                    XpCount u02 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
+                    XpCount? u00 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[0]);
+                    XpCount? u01 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[1]);
+                    XpCount? u11 = db.XpCounts.Find((long)MockData.Ids[1], (long)MockData.Ids[1]);
+                    XpCount? u21 = db.XpCounts.Find((long)MockData.Ids[2], (long)MockData.Ids[1]);
+                    XpCount? u02 = db.XpCounts.Find((long)MockData.Ids[0], (long)MockData.Ids[2]);
                     Assert.That(db.XpCounts.Find((long)MockData.Ids[0], 123451234512345), Is.Null);
                     Assert.That(u00, Is.Not.Null);
                     Assert.That(u01, Is.Not.Null);
                     Assert.That(u11, Is.Not.Null);
                     Assert.That(u21, Is.Not.Null);
                     Assert.That(u02, Is.Not.Null);
-                    Assert.That(u00.Xp, Is.EqualTo(5));
-                    Assert.That(u01.Xp, Is.EqualTo(8));
-                    Assert.That(u11.Xp, Is.EqualTo(2));
-                    Assert.That(u21.Xp, Is.EqualTo(1));
-                    Assert.That(u02.Xp, Is.EqualTo(3));
+                    Assert.That(u00!.Xp, Is.EqualTo(5));
+                    Assert.That(u01!.Xp, Is.EqualTo(8));
+                    Assert.That(u11!.Xp, Is.EqualTo(2));
+                    Assert.That(u21!.Xp, Is.EqualTo(1));
+                    Assert.That(u02!.Xp, Is.EqualTo(3));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[0], MockData.Ids[0]), Is.EqualTo(5));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[0], MockData.Ids[1]), Is.EqualTo(8));
                     Assert.That(this.Service.GetUserXp(MockData.Ids[1], MockData.Ids[1]), Is.EqualTo(2));

@@ -7,8 +7,8 @@ namespace TheGodfather.Services
     public sealed class FontsService : ITheGodfatherService
     {
         public bool IsDisabled => false;
-        public FontFamily? UniSans { get; }
-        public FontFamily? NotoSans { get; }
+        public FontFamily? UniSansFamily { get; }
+        public FontFamily? NotoSansFamily { get; }
         public Font RateFont { get; }
         public Font RipFont { get; }
         public List<FontFamily> FallBackFonts { get; }
@@ -22,8 +22,8 @@ namespace TheGodfather.Services
 
             if (loadData) {
                 string fontDir = Path.Combine("Resources", "fonts");
-                this.NotoSans = fonts.Install(Path.Combine(fontDir, "NotoSans-Bold.ttf"));
-                this.UniSans = fonts.Install(Path.Combine(fontDir, "Uni Sans.ttf"));
+                this.NotoSansFamily = fonts.Install(Path.Combine(fontDir, "NotoSans-Bold.ttf"));
+                this.UniSansFamily = fonts.Install(Path.Combine(fontDir, "Uni Sans.ttf"));
 
                 this.FallBackFonts = new List<FontFamily>();
 
@@ -34,8 +34,8 @@ namespace TheGodfather.Services
                         this.FallBackFonts.AddRange(fonts.InstallCollection(file));
                 }
 
-                this.RateFont = this.NotoSans.CreateFont(20, FontStyle.Regular);
-                this.RipFont = this.UniSans.CreateFont(20, FontStyle.Bold);
+                this.RateFont = this.NotoSansFamily.CreateFont(20, FontStyle.Regular);
+                this.RipFont = this.UniSansFamily.CreateFont(20, FontStyle.Bold);
             } else {
                 this.RateFont = fonts.CreateFont("Arial", 13);
                 this.RipFont = fonts.CreateFont("Arial", 13);

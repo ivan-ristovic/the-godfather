@@ -59,6 +59,7 @@ namespace TheGodfather.Database
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         public TheGodfatherDbContext(DbProvider provider, string connectionString)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             this.Provider = provider;
             this.ConnectionString = connectionString;
         }
@@ -66,6 +67,7 @@ namespace TheGodfather.Database
         public TheGodfatherDbContext(DbProvider provider, string connectionString, DbContextOptions<TheGodfatherDbContext> options)
             : base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             this.Provider = provider;
             this.ConnectionString = connectionString;
         }

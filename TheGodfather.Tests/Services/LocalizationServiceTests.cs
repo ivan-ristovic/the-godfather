@@ -55,8 +55,9 @@ namespace TheGodfather.Tests.Services
         {
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
-                    gcfg.Locale = this.SrLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[1]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
                 },
                 alter: db => {
@@ -76,15 +77,17 @@ namespace TheGodfather.Tests.Services
         {
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg;
+                    GuildConfig? gcfg;
 
                     gcfg = db.Configs.Find((long)MockData.Ids[0]);
-                    gcfg.TimezoneId = null;
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.TimezoneId = null;
                     gcfg.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
 
                     gcfg = db.Configs.Find((long)MockData.Ids[1]);
-                    gcfg.TimezoneId = "UTC";
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.TimezoneId = "UTC";
                     gcfg.Locale = "en-US";
                     db.Configs.Update(gcfg);
                 },
@@ -112,8 +115,9 @@ namespace TheGodfather.Tests.Services
         {
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
-                    gcfg.Locale = this.SrLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[1]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
                 },
                 alter: db => {
@@ -148,8 +152,9 @@ namespace TheGodfather.Tests.Services
 
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
-                    gcfg.Locale = this.SrLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[1]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
                 },
                 alter: db => {
@@ -179,15 +184,18 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], this.EnLocale), Is.True);
                 },
                 verify: db => {
-                    Assert.That(db.Configs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[0]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    Assert.That(gcfg!.Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );
 
             await TestDbProvider.SetupAlterAndVerifyAsync(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[0]);
-                    gcfg.Locale = this.EnLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[0]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.EnLocale;
                     db.Configs.Update(gcfg);
                     return db.SaveChangesAsync();
                 },
@@ -197,7 +205,9 @@ namespace TheGodfather.Tests.Services
                     Assert.That(await this.Service.SetGuildLocaleAsync(MockData.Ids[0], "non-existing-locale"), Is.False);
                 },
                 verify: db => {
-                    Assert.That(db.Configs.Find((long)MockData.Ids[0]).Locale, Is.EqualTo(this.EnLocale));
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[0]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    Assert.That(gcfg!.Locale, Is.EqualTo(this.EnLocale));
                     return Task.CompletedTask;
                 }
             );

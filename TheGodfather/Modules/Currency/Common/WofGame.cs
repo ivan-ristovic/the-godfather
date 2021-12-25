@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,16 +7,19 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using Humanizer;
 using Serilog;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using TheGodfather.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace TheGodfather.Modules.Currency.Common
 {
     public class WofGame : BaseChannelGame
     {
-        private static Bitmap? _image = null;
-        private static readonly ImmutableArray<float> _multipliers = new float[] {
+        private static Image[]? _images;
+        private static readonly ImmutableArray<float> _multipliers = new[] {
             2.4f, 0.3f, 1.7f, 0.5f, 1.2f, 0.1f, 0.2f, 1.5f
         }.ToImmutableArray();
 
@@ -32,19 +34,6 @@ namespace TheGodfather.Modules.Currency.Common
         private readonly DiscordUser user;
 
 
-        private static Bitmap RotateWheel(Bitmap b, float angle)
-        {
-            var rotated = new Bitmap(b.Width, b.Height);
-            using (var g = Graphics.FromImage(rotated)) {
-                g.TranslateTransform((float)b.Width / 2, (float)b.Height / 2);
-                g.RotateTransform(angle);
-                g.TranslateTransform(-(float)b.Width / 2, -(float)b.Height / 2);
-                g.DrawImage(b, new Point(0, 0));
-            }
-            return rotated;
-        }
-
-
         public WofGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid, string currency)
             : base(interactivity, channel)
         {
@@ -53,11 +42,14 @@ namespace TheGodfather.Modules.Currency.Common
             this.gid = channel.GuildId ?? throw new ArgumentException("Channel is private");
             this.currency = currency;
             this.index = new SecureRandom().Next(_multipliers.Length);
-            if (_image is null) {
+            if (_images is null) {
                 try {
-                    _image = new Bitmap("Resources/wof.png");
+                    _images = new Image[8];
+                    for (int i = 0; i < _images.Length; i++) {
+                        _images[i] = Image.Load($"Resources/wof/wof{i}.png");
+                    }
                 } catch (FileNotFoundException e) {
-                    Log.Error("Wheel of fortune image is missing from the server!", e);
+                    Log.Error(e, "Wheel of fortune image(s) missing from the server!");
                 }
             }
         }
@@ -65,14 +57,14 @@ namespace TheGodfather.Modules.Currency.Common
 
         public override async Task RunAsync(LocalizationService lcs)
         {
-            if (_image is null)
+            if (_images is null)
                 return;
 
             CultureInfo culture = lcs.GetGuildCulture(this.gid);
             try {
-                using Bitmap wof = RotateWheel(_image, this.index * -45);
-                using var ms = new MemoryStream();
-                wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                Image wof = _images[this.index];
+                await using var ms = new MemoryStream();
+                await wof.SaveAsync(ms, PngFormat.Instance);
                 ms.Position = 0;
                 await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
                     .WithFile("wof.png", ms)
@@ -82,7 +74,7 @@ namespace TheGodfather.Modules.Currency.Common
                     })
                 );
             } catch (Exception e) {
-                Log.Error("Failed to process wheel of fortune image!", e);
+                Log.Error(e, "Failed to process wheel of fortune image!");
             }
         }
     }

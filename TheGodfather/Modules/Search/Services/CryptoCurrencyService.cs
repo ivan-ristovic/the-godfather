@@ -163,9 +163,9 @@ namespace TheGodfather.Modules.Search.Services
             if (this.symbols.TryGetValue(currency, out string? id))
                 return cache.Get<CryptoResponseData>(id);
 
-            string key = this.names.Keys.MinBy(k => k.LevenshteinDistanceTo(currency));
-            return key.LevenshteinDistanceTo(currency) < 3
-                ? cache.Get<CryptoResponseData>(this.names[key])
+            string minKey = this.names.Keys.MinBy(k => k.LevenshteinDistanceTo(currency)) ?? "";
+            return minKey.LevenshteinDistanceTo(currency) < 3
+                ? cache.Get<CryptoResponseData>(this.names[minKey])
                 : null;
         }
     }

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+        <LangVersion>latestmajor</LangVersion>        
+        <Nullable>enable</Nullable>
+      <IncludeBuildOutput>false</IncludeBuildOutput>
+      <RootNamespace>TheGodfather.Translations</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Humanizer.Core" Version="2.13.14" PrivateAssets="All" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" PrivateAssets="All" GeneratePathProperty="true" />
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
+    
+    <Target Name="GetDependencyTargetPaths">
+      <ItemGroup>
+        <TargetPathWithTargetPlatformMoniker Include="$(PKGNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" IncludeRuntimeDependency="false" />
+      </ItemGroup>
+    </Target>
+
+</Project>

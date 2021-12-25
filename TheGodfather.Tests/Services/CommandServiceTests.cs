@@ -37,16 +37,17 @@ namespace TheGodfather.Tests.Services
         {
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[0]);
-                    gcfg.Locale = this.EnLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[0]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.EnLocale;
                     db.Configs.Update(gcfg);
                 },
-                alter: db => {
+                alter: _ => {
                     this.Configs.LoadData();
                     this.Localization.LoadData(this.ValidTestDataPath);
                     this.Service.LoadData(this.ValidTestDataPath);
                 },
-                verify: db => {
+                verify: _ => {
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @User" }));
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Member Reason reason" }));
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @User" }));
@@ -60,16 +61,17 @@ namespace TheGodfather.Tests.Services
 
             TestDbProvider.SetupAlterAndVerify(
                 setup: db => {
-                    GuildConfig gcfg = db.Configs.Find((long)MockData.Ids[1]);
-                    gcfg.Locale = this.SrLocale;
+                    GuildConfig? gcfg = db.Configs.Find((long)MockData.Ids[1]);
+                    Assert.That(gcfg, Is.Not.Null);
+                    gcfg!.Locale = this.SrLocale;
                     db.Configs.Update(gcfg);
                 },
-                alter: db => {
+                alter: _ => {
                     this.Configs.LoadData();
                     this.Localization.LoadData(this.ValidTestDataPath);
                     this.Service.LoadData(this.ValidTestDataPath);
                 },
-                verify: db => {
+                verify: _ => {
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1"), Is.EqualTo(new[] { "!cmd1", "!cmd1 @User" }));
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd2"), Is.EqualTo(new[] { "!cmd2", "!cmd2 @Member Reason reason" }));
                     Assert.That(this.Service.GetCommandUsageExamples(MockData.Ids[0], "cmd1 subcommand"), Is.EqualTo(new[] { "!cmd1 subcommand", "!cmd1 subcommand @User" }));

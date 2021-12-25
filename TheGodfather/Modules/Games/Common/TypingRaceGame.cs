@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +9,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
@@ -42,24 +47,12 @@ namespace TheGodfather.Modules.Games.Common
             return new string(text.Select(c => _replacements.TryGetValue(c, out char tmp) ? tmp : c).ToArray());
         }
 
-        private static Image RenderText(string text)
+        private static Image<Rgba32> RenderText(string text, Font font)
         {
-            SizeF textSize;
-            using var font = new Font(FontFamily.GenericSansSerif, 40);
-
-            using (Image dummyImg = new Bitmap(1, 1)) {
-                using var g = Graphics.FromImage(dummyImg);
-                textSize = g.MeasureString(text, font);
-            }
-
-            Image img = new Bitmap((int)textSize.Width / 3, 4*(int)textSize.Height);
-            using (var g = Graphics.FromImage(img)) {
-                g.Clear(Color.White);
-                using Brush textBrush = new SolidBrush(Color.Black);
-                g.DrawString(text, font, textBrush, new RectangleF(0, 0, img.Width, img.Height));
-                g.Save();
-            }
-
+            FontRectangle size = TextMeasurer.Measure(text, new RendererOptions(font) { WrappingWidth = 500 });
+            var img = new Image<Rgba32>(Configuration.Default, (int)size.Width, (int)size.Height * 2, Color.White);
+            var opts = new TextGraphicsOptions(new GraphicsOptions(), new TextOptions() { WrapTextWidth = 500 });
+            img.Mutate(ctx => ctx.DrawText(opts, text, font, Color.Black, PointF.Empty));
             return img;
         }
 
@@ -68,25 +61,29 @@ namespace TheGodfather.Modules.Games.Common
         public int ParticipantCount => this.results.Count;
 
         private readonly ConcurrentDictionary<DiscordUser, int> results;
+        private readonly FontsService fonts;
 
 
-        public TypingRaceGame(InteractivityExtension interactivity, DiscordChannel channel)
+        public TypingRaceGame(InteractivityExtension interactivity, DiscordChannel channel, FontsService fonts)
            : base(interactivity, channel)
         {
             this.results = new ConcurrentDictionary<DiscordUser, int>();
+            this.fonts = fonts;
         }
 
 
         public override async Task RunAsync(LocalizationService lcs)
         {
+            this.Started = true;
+            
             string? quote = await QuoteService.GetRandomQuoteAsync();
             if (quote is null)
                 throw new InvalidOperationException("Failed to fetch quote for Typing Race game");
 
             quote = PrepareText(quote);
-            using (Image image = RenderText(quote)) {
-                using var ms = new MemoryStream();
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            using (Image image = RenderText(quote, this.fonts.RateFont)) {
+                await using var ms = new MemoryStream();
+                await image.SaveAsync(ms, PngFormat.Instance);
                 ms.Position = 0;
                 await this.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile("typing-challenge.png", ms));
             }
@@ -98,27 +95,31 @@ namespace TheGodfather.Modules.Games.Common
                     int errors = quote.LevenshteinDistanceTo(PrepareText(msg.Content.Trim().ToLowerInvariant()));
                     if (errors > MistakeThreshold)
                         return false;
-                    this.results.AddOrUpdate(msg.Author, errors, (k, v) => Math.Min(errors, v));
+                    this.results.AddOrUpdate(msg.Author, errors, (_, v) => Math.Min(errors, v));
                     return errors == 0;
                 },
                 TimeSpan.FromSeconds(60)
             );
 
-            var ordered = this.results.OrderBy(kvp => kvp.Value).Where(kvp => kvp.Value < 50).Take(10).ToList();
+            var ordered = this.results
+                .OrderBy(kvp => kvp.Value)
+                .Where(kvp => kvp.Value < 50)
+                .Take(10)
+                .ToList();
             if (ordered.Any())
                 await this.Channel.SendMessageAsync(embed: this.EmbedResults(lcs, ordered));
 
-            this.Winner = ordered.First().Key;
+            this.Winner = ordered.FirstOrDefault().Key;
         }
 
         public bool AddParticipant(DiscordUser user)
             => this.results.TryAdd(user, int.MaxValue);
 
-        public DiscordEmbed EmbedResults(LocalizationService lcs, IEnumerable<KeyValuePair<DiscordUser, int>> results)
+        public DiscordEmbed EmbedResults(LocalizationService lcs, IEnumerable<KeyValuePair<DiscordUser, int>> finalResults)
         {
             var sb = new StringBuilder();
 
-            foreach ((DiscordUser user, int result) in results)
+            foreach ((DiscordUser user, int result) in finalResults)
                 sb.AppendLine(lcs.GetString(this.Channel.GuildId, "fmt-game-tr-errors", user.Mention, result));
 
             var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
