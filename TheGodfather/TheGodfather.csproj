@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -25,10 +25,6 @@
     <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix).$(VersionSuffix)</Version>
     <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Translations\en-GB.json" />
-  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latestmajor</LangVersion>
@@ -130,4 +126,9 @@
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather.Generators\TheGodfather.Generators.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Translations\en-GB.json" />
+  </ItemGroup>
+
 </Project>

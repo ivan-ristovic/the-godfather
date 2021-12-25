@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latestmajor</LangVersion>        
         <Nullable>enable</Nullable>
-      <IncludeBuildOutput>false</IncludeBuildOutput>
-      <RootNamespace>TheGodfather.Translations</RootNamespace>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
 
     <ItemGroup>

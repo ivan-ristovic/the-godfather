@@ -1,0 +1,223 @@
+{
+  "blockedchannels": {
+    "usage": [
+      [],
+      [ "arg-chn-text" ]
+    ]
+  },
+  "blockedchannels add": {
+    "usage": [
+      [ "arg-chn-text" ],
+      [ "arg-chn-text", "arg-rsn" ]
+    ]
+  },
+  "blockedchannels delete": {
+    "usage": [
+      [ "arg-chn-text" ]
+    ]
+  },
+  "blockedchannels list": {
+    "usage": [
+      []
+    ]
+  },
+  "blockedguilds": {
+    "usage": [
+      [],
+      [ "arg-gld" ]
+    ]
+  },
+  "blockedguilds add": {
+    "usage": [
+      [ "arg-gld" ],
+      [ "arg-gld", "arg-rsn" ]
+    ]
+  },
+  "blockedguilds delete": {
+    "usage": [
+      [ "arg-gld" ]
+    ]
+  },
+  "blockedguilds list": {
+    "usage": [
+      []
+    ]
+  },
+  "blockedusers": {
+    "usage": [
+      [],
+      [ "arg-usr" ]
+    ]
+  },
+  "blockedusers add": {
+    "usage": [
+      [ "arg-usr" ],
+      [ "arg-usr", "arg-rsn" ]
+    ]
+  },
+  "blockedusers delete": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "blockedusers list": {
+    "usage": [
+      []
+    ]
+  },
+  "commands": {
+    "usage": [
+      []
+    ]
+  },
+  "commands add": {
+    "usage": [
+      [ "arg-code" ]
+    ]
+  },
+  "commands delete": {
+    "usage": [
+      [ "arg-cmd" ]
+    ]
+  },
+  "commands list": {
+    "usage": [
+      []
+    ]
+  },
+  "owner announce": {
+    "usage": [
+      [ "arg-announcement" ]
+    ]
+  },
+  "owner avatar": {
+    "usage": [
+      [ "arg-url-image" ]
+    ]
+  },
+  "owner dbquery": {
+    "usage": [
+      [ "arg-sql" ]
+    ]
+  },
+  "owner eval": {
+    "usage": [
+      [ "arg-code" ]
+    ]
+  },
+  "owner generatecommandlist": {
+    "usage": [
+      []
+    ]
+  },
+  "owner leaveguilds": {
+    "usage": [
+      [ "arg-gld" ],
+      [ "arg-ulong" ]
+    ]
+  },
+  "owner log": {
+    "usage": [
+      [],
+      [ "arg-level" ],
+      [ "arg-string" ]
+    ]
+  },
+  "owner name": {
+    "usage": [
+      [ "arg-name" ]
+    ]
+  },
+  "owner restart": {
+    "usage": [
+      []
+    ]
+  },
+  "owner sendmessage": {
+    "usage": [
+      [ "arg-send-uc" ],
+      [ "arg-ulong" ],
+      [ "arg-msg" ]
+    ]
+  },
+  "owner shutdown": {
+    "usage": [
+      [],
+      [ "arg-timespan", "arg-five" ],
+      [ "arg-timespan" ]
+    ]
+  },
+  "owner sudo": {
+    "usage": [
+      [ "arg-mem" ],
+      [ "arg-cmd" ]
+    ]
+  },
+  "owner toggleignore": {
+    "usage": [
+      []
+    ]
+  },
+  "owner update": {
+    "usage": [
+      []
+    ]
+  },
+  "owner uptime": {
+    "usage": [
+      []
+    ]
+  },
+  "privilegedusers": {
+    "usage": [
+      []
+    ]
+  },
+  "privilegedusers add": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "privilegedusers delete": {
+    "usage": [
+      [ "arg-usr" ]
+    ]
+  },
+  "privilegedusers list": {
+    "usage": [
+      []
+    ]
+  },
+  "status": {
+    "usage": [
+      [],
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "status add": {
+    "usage": [
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "status delete": {
+    "usage": [
+      [ "arg-five" ]
+    ]
+  },
+  "status list": {
+    "usage": [
+      []
+    ]
+  },
+  "status set": {
+    "usage": [
+      [ "arg-five" ],
+      [ "arg-activity", "arg-status" ]
+    ]
+  },
+  "status setrotation": {
+    "usage": [
+      [ "arg-bool" ]
+    ]
+  }
+}

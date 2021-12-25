@@ -12,7 +12,7 @@ using Serilog;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Generators;
+using TheGodfather.Translations;
 using TimeZoneConverter;
 
 namespace TheGodfather.Services
@@ -175,7 +175,7 @@ namespace TheGodfather.Services
         public string GetLocalizedTimeString(ulong? gid, DateTimeOffset? dt = null, string format = "g", bool unknown = false)
         {
             if (unknown && dt is null)
-                return this.GetString(gid, "str-404");
+                return this.GetString(gid, TranslationKey.NotFound);
             CachedGuildConfig gcfg = this.gcs.GetCachedConfig(gid);
             return this.GetLocalizedTime(gid, dt).ToString(format, gcfg.Culture);
         }
