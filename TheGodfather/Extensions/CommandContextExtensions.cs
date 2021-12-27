@@ -13,6 +13,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Extensions
 {
@@ -42,48 +43,47 @@ namespace TheGodfather.Extensions
         {
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
             if (string.IsNullOrWhiteSpace(reason))
-                reason = ls.GetString(ctx.Guild?.Id, "rsn-none");
-            return ls.GetString(ctx.Guild?.Id, "fmt-invocation-details", ctx.User, reason, ctx.Channel);
+                reason = ls.GetString(ctx.Guild?.Id, TranslationKey.rsn_none);
+            return ls.GetString(ctx.Guild?.Id,  TranslationKey.fmt_invocation_details(ctx.User, reason, ctx.Channel));
         }
 
         public static Task InfoAsync(this CommandContext ctx, DiscordColor color)
-            => InternalInformAsync(ctx, null, null, false, color, null);
+            => InternalInformAsync(ctx, null, null, false, color);
 
-        public static Task InfoAsync(this CommandContext ctx, string? key = null, params object?[]? args)
-            => InternalInformAsync(ctx, null, key, false, null, args);
+        public static Task InfoAsync(this CommandContext ctx, TranslationKey? key = null)
+            => InternalInformAsync(ctx, null, key, false, null);
 
-        public static Task InfoAsync(this CommandContext ctx, DiscordColor color, string key, params object?[]? args)
-            => InternalInformAsync(ctx, null, key, false, color, args);
+        public static Task InfoAsync(this CommandContext ctx, DiscordColor color, TranslationKey key)
+            => InternalInformAsync(ctx, null, key, false, color);
 
-        public static Task InfoAsync(this CommandContext ctx, DiscordEmoji emoji, string key, params object?[]? args)
-            => InternalInformAsync(ctx, emoji, key, false, null, args);
+        public static Task InfoAsync(this CommandContext ctx, DiscordEmoji emoji, TranslationKey key)
+            => InternalInformAsync(ctx, emoji, key, false, null);
 
-        public static Task InfoAsync(this CommandContext ctx, DiscordColor color, DiscordEmoji emoji, string key, params object?[]? args)
-            => InternalInformAsync(ctx, emoji, key, false, color, args);
+        public static Task InfoAsync(this CommandContext ctx, DiscordColor color, DiscordEmoji emoji, TranslationKey key)
+            => InternalInformAsync(ctx, emoji, key, false, color);
 
-        public static Task ImpInfoAsync(this CommandContext ctx, string? key = null, params object?[]? args)
-            => InternalInformAsync(ctx, null, key, true, null, args);
+        public static Task ImpInfoAsync(this CommandContext ctx, TranslationKey? key = null)
+            => InternalInformAsync(ctx, null, key, true, null);
 
-        public static Task ImpInfoAsync(this CommandContext ctx, DiscordColor color, string key, params object?[]? args)
-            => InternalInformAsync(ctx, null, key, true, color, args);
+        public static Task ImpInfoAsync(this CommandContext ctx, DiscordColor color, TranslationKey key)
+            => InternalInformAsync(ctx, null, key, true, color);
 
-        public static Task ImpInfoAsync(this CommandContext ctx, DiscordEmoji emoji, string key, params object?[]? args)
-            => InternalInformAsync(ctx, emoji, key, true, null, args);
+        public static Task ImpInfoAsync(this CommandContext ctx, DiscordEmoji emoji, TranslationKey key)
+            => InternalInformAsync(ctx, emoji, key, true, null);
 
-        public static Task ImpInfoAsync(this CommandContext ctx, DiscordColor color, DiscordEmoji emoji, string key, params object?[]? args)
-            => InternalInformAsync(ctx, emoji, key, true, color, args);
+        public static Task ImpInfoAsync(this CommandContext ctx, DiscordColor color, DiscordEmoji emoji, TranslationKey key)
+            => InternalInformAsync(ctx, emoji, key, true, color);
 
-        public static Task FailAsync(this CommandContext ctx, string key, params object[]? args)
+        public static Task FailAsync(this CommandContext ctx, TranslationKey key)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.X} {ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key, args)}",
+                Description = $"{Emojis.X} {ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key)}",
                 Color = DiscordColor.IndianRed
             });
         }
 
-        public static Task PaginateAsync<T>(this CommandContext ctx, string key, IEnumerable<T> collection,
-                                            Func<T, string> selector, DiscordColor? color = null, int pageSize = 10,
-                                            params object?[]? args)
+        public static Task PaginateAsync<T>(this CommandContext ctx, TranslationKey key, IEnumerable<T> collection,
+                                            Func<T, string> selector, DiscordColor? color = null, int pageSize = 10)
         {
             T[] arr = collection.ToArray();
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
@@ -91,7 +91,7 @@ namespace TheGodfather.Extensions
             var pages = new List<Page>();
             int pageCount = (arr.Length - 1) / pageSize + 1;
             int from = 0;
-            string title = ls.GetString(ctx.Guild?.Id, key, args);
+            string title = ls.GetString(ctx.Guild?.Id, key);
             for (int i = 1; i <= pageCount; i++) {
                 int to = from + pageSize > arr.Length ? arr.Length : from + pageSize;
                 pages.Add(new Page(embed: new DiscordEmbedBuilder {
@@ -99,7 +99,7 @@ namespace TheGodfather.Extensions
                     Description = arr[from..to].Select(selector).JoinWith(),
                     Color = color ?? DiscordColor.Black,
                     Footer = new DiscordEmbedBuilder.EmbedFooter {
-                        Text = ls.GetString(ctx.Guild?.Id, "fmt-page-footer", from + 1, to, arr.Length, i, pageCount),
+                        Text = ls.GetString(ctx.Guild?.Id, TranslationKey.fmt_page_footer(from + 1, to, arr.Length, i, pageCount)),
                     }
                 }));
                 from += pageSize;
@@ -119,7 +119,7 @@ namespace TheGodfather.Extensions
             IEnumerable<Page> pages = collection
                 .Select((e, i) => {
                     var emb = new LocalizedEmbedBuilder(ls, ctx.Guild?.Id);
-                    emb.WithLocalizedFooter("fmt-page-footer-single", null, i + 1, count);
+                    emb.WithLocalizedFooter(TranslationKey.fmt_page_footer_single(i + 1, count), null);
                     emb.WithColor(color ?? DiscordColor.Black);
                     emb = formatter(emb, e);
                     return new Page { Embed = emb.Build() };
@@ -130,14 +130,13 @@ namespace TheGodfather.Extensions
                 : ctx.Channel.SendMessageAsync(content: pages.Single().Content, embed: pages.Single().Embed);
         }
 
-        public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string key, DiscordChannel? channel = null,
-                                                             bool reply = true, params object[]? args)
+        public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, TranslationKey key, DiscordChannel? channel = null, bool reply = true)
         {
             channel ??= ctx.Channel;
             LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.Question} {ls.GetString(ctx.Guild?.Id, key, args)} (y/n)",
+                Description = $"{Emojis.Question} {ls.GetString(ctx.Guild?.Id, key)} (y/n)",
                 Color = DiscordColor.Yellow
             });
 
@@ -145,15 +144,12 @@ namespace TheGodfather.Extensions
                 return true;
 
             if (reply)
-                await channel.InformFailureAsync(ls.GetString(ctx.Guild?.Id, "str-aborting"));
+                await channel.InformFailureAsync(ls.GetString(ctx.Guild?.Id, TranslationKey.str_aborting));
 
             return false;
         }
 
-        public static async Task<DiscordMessage?> WaitForDmReplyAsync(this CommandContext ctx,
-                                                                      DiscordDmChannel dm,
-                                                                      DiscordUser user,
-                                                                      TimeSpan? waitInterval = null)
+        public static async Task<DiscordMessage?> WaitForDmReplyAsync(this CommandContext ctx, DiscordDmChannel dm, DiscordUser user, TimeSpan? waitInterval = null)
         {
             InteractivityExtension interactivity = ctx.Client.GetInteractivity();
             InteractivityService interactivityService = ctx.Services.GetRequiredService<InteractivityService>();
@@ -175,8 +171,8 @@ namespace TheGodfather.Extensions
         }
 
 
-        private static async Task InternalInformAsync(this CommandContext ctx, DiscordEmoji? emoji = null, string? key = null,
-                                                      bool important = true, DiscordColor? color = null, params object?[]? args)
+        private static async Task InternalInformAsync(this CommandContext ctx, DiscordEmoji? emoji = null, TranslationKey? key = null,
+                                                      bool important = true, DiscordColor? color = null)
         {
             emoji ??= Emojis.CheckMarkSuccess;
             ulong gid = ctx.Guild?.Id ?? 0;
@@ -184,17 +180,16 @@ namespace TheGodfather.Extensions
                 try {
                     await ctx.Message.CreateReactionAsync(Emojis.CheckMarkSuccess);
                 } catch (NotFoundException) {
-                    await ImpInfoAsync(ctx, emoji, "str-done");
+                    await ImpInfoAsync(ctx, emoji, TranslationKey.str_done);
                 }
             } else {
                 LocalizationService ls = ctx.Services.GetRequiredService<LocalizationService>();
-                string response = ls.GetString(gid, string.IsNullOrWhiteSpace(key) ? "str-done" : key, args);
+                string response = ls.GetString(gid, key ?? TranslationKey.str_done);
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{emoji} {response}",
                     Color = color ?? DiscordColor.Green,
                 });
             }
         }
-
     }
 }
