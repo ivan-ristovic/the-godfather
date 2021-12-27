@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DSharpPlus.Entities;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {
@@ -12,7 +13,7 @@ namespace TheGodfather.Modules.Administration.Extensions
                 DiscordRole? role = guild.GetRole(rid);
                 if (role is { }) {
                     await LoggingService.TryExecuteWithReportAsync(
-                        shard, guild, member.GrantRoleAsync(role), "rep-role-403", "rep-role-404",
+                        shard, guild, member.GrantRoleAsync(role), TranslationKey.rep_role_403, TranslationKey.rep_role_404,
                         code404action: () => service.RemoveAsync(guild.Id, rid)
                     );
                 } else {

@@ -39,14 +39,14 @@ namespace TheGodfather.Modules.Misc
                 emb.WithColor(this.ModuleColor);
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithThumbnail(user.AvatarUrl);
-                emb.AddLocalizedTitleField("str-xp", rs.GetUserXp(ctx.Guild.Id, user.Id), inline: true);
+                emb.AddLocalizedField("str-xp", rs.GetUserXp(ctx.Guild.Id, user.Id), inline: true);
                 if (ctx.Guild is { }) {
                     short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
                     XpRank? rankInfo = ctx.Guild is { } ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
-                    emb.AddLocalizedTitleField("str-rank", rank, inline: true);
-                    emb.AddLocalizedTitleField("str-xp-next", UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), inline: true);
+                    emb.AddLocalizedField("str-rank", rank, inline: true);
+                    emb.AddLocalizedField("str-xp-next", UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), inline: true);
                     if (rankInfo is { })
-                        emb.AddLocalizedTitleField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
+                        emb.AddLocalizedField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
                     else
                         emb.AddLocalizedField("str-rank", "str-rank-noname", inline: true);
                 }

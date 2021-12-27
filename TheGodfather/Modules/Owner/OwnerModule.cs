@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Owner
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddLocalizedTitleField("fmt-eval-err", Formatter.BlockCode(d.GetMessage()),
+                    emb.AddLocalizedField("fmt-eval-err", Formatter.BlockCode(d.GetMessage()),
                         titleArgs: new object[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character }
                     );
                 }
@@ -244,13 +244,13 @@ namespace TheGodfather.Modules.Owner
                 emb.WithLocalizedTitle("str-eval-succ");
                 emb.WithColor(this.ModuleColor);
                 if (res.ReturnValue is { }) {
-                    emb.AddLocalizedTitleField("str-result", res.ReturnValue, false);
-                    emb.AddLocalizedTitleField("str-result-type", res.ReturnValue.GetType(), true);
+                    emb.AddLocalizedField("str-result", res.ReturnValue, false);
+                    emb.AddLocalizedField("str-result-type", res.ReturnValue.GetType(), true);
                 } else {
                     emb.AddLocalizedField("str-result", "str-eval-value-none", inline: true);
                 }
-                emb.AddLocalizedTitleField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
-                emb.AddLocalizedTitleField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
             }
 
             await UpdateOrRespondAsync();
@@ -643,9 +643,9 @@ namespace TheGodfather.Modules.Owner
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithLocalizedTitle("str-uptime-info");
                 emb.WithDescription($"{TheGodfather.ApplicationName} {TheGodfather.ApplicationVersion}");
-                emb.AddLocalizedTitleField("str-shard", $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
-                emb.AddLocalizedTitleField("str-uptime-bot", processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
-                emb.AddLocalizedTitleField("str-uptime-socket", socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedField("str-shard", $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
+                emb.AddLocalizedField("str-uptime-bot", processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedField("str-uptime-socket", socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
                 emb.WithColor(this.ModuleColor);
             });
         }

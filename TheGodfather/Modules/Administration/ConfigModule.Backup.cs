@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Administration
                         emb.WithLocalizedTitle("str-backup");
                         emb.WithLocalizedDescription(gcfg.BackupEnabled ? "str-enabled" : "str-disabled");
                         emb.WithColor(this.ModuleColor);
-                        emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true, unknown: false);
+                        emb.AddLocalizedField("str-exempts", exemptString, inline: true, unknown: false);
                     });
                 });
             }

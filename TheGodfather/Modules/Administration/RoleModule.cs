@@ -81,14 +81,14 @@ namespace TheGodfather.Modules.Administration
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(role.Name);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-pos", role.Position, inline: true);
-                emb.AddLocalizedTitleField("str-color", role.Color, inline: true);
-                emb.AddLocalizedTitleField("str-id", role.Id, inline: true);
-                emb.AddLocalizedTitleField("str-mention", role.IsMentionable, inline: true);
-                emb.AddLocalizedTitleField("str-hoist", role.IsHoisted, inline: true);
-                emb.AddLocalizedTitleField("str-managed", role.IsManaged, inline: true);
+                emb.AddLocalizedField("str-pos", role.Position, inline: true);
+                emb.AddLocalizedField("str-color", role.Color, inline: true);
+                emb.AddLocalizedField("str-id", role.Id, inline: true);
+                emb.AddLocalizedField("str-mention", role.IsMentionable, inline: true);
+                emb.AddLocalizedField("str-hoist", role.IsHoisted, inline: true);
+                emb.AddLocalizedField("str-managed", role.IsManaged, inline: true);
                 emb.AddLocalizedTimestampField("str-created-at", role.CreationTimestamp, inline: true);
-                emb.AddLocalizedTitleField("str-perms", role.Permissions.ToPermissionString(), inline: true);
+                emb.AddLocalizedField("str-perms", role.Permissions.ToPermissionString(), inline: true);
             });
         }
         #endregion

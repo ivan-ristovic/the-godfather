@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
                 if (r.Links.Any())
                     emb.WithUrl(r.Links.First().Uri);
                 if (r.Authors.Any())
-                    emb.AddLocalizedTitleField("str-author", r.Authors.First().Name, inline: true, unknown: false);
+                    emb.AddLocalizedField("str-author", r.Authors.First().Name, inline: true, unknown: false);
                 emb.WithLocalizedTimestamp(r.LastUpdatedTime);
                 return emb;
             }, this.ModuleColor);

@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Chickens
                     emb.WithLocalizedTitle("str-chicken-types");
                     emb.WithColor(this.ModuleColor);
                     foreach (((ChickenType type, ChickenStats stats), int i) in Chicken.StartingStats.Select((kvp, i) => (kvp, i)))
-                        emb.AddLocalizedTitleField($"str-chicken-type-{i}", stats, titleArgs: new object[] { Chicken.Price(type), gcfg.Currency });
+                        emb.AddLocalizedField($"str-chicken-type-{i}", stats, titleArgs: new object[] { Chicken.Price(type), gcfg.Currency });
                 });
             }
             #endregion

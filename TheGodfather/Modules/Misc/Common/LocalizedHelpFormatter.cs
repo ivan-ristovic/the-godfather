@@ -64,9 +64,9 @@ namespace TheGodfather.Modules.Misc.Common
             }
 
             if (cmd.Aliases?.Any() ?? false)
-                this.emb.AddLocalizedTitleField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).JoinWith(", "), inline: true);
+                this.emb.AddLocalizedField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).JoinWith(", "), inline: true);
 
-            this.emb.AddLocalizedTitleField("str-category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
+            this.emb.AddLocalizedField("str-category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
             IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks
                 .Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Misc.Common
 
             string pstr = pb.ToString();
             if (!string.IsNullOrWhiteSpace(pstr))
-                this.emb.AddLocalizedTitleField("str-perms-req", pstr);
+                this.emb.AddLocalizedField("str-perms-req", pstr);
 
             if (cmd.Overloads?.Any() ?? false) {
                 foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
@@ -128,16 +128,16 @@ namespace TheGodfather.Modules.Misc.Common
 
                     string args = ab.Length > 0 ? ab.ToString() : this.GetS("str-args-none");
                     if (cmd.Overloads.Count > 1)
-                        this.emb.AddLocalizedTitleField("str-overload", args, inline: true, titleArgs: overload.Priority);
+                        this.emb.AddLocalizedField("str-overload", args, inline: true, titleArgs: overload.Priority);
                     else
-                        this.emb.AddLocalizedTitleField("str-args", args, inline: true);
+                        this.emb.AddLocalizedField("str-args", args, inline: true);
                 }
             }
 
             if (cmd is CommandGroup { IsExecutableWithoutSubcommands: false })
                 return this;
 
-            this.emb.AddLocalizedTitleField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
+            this.emb.AddLocalizedField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
             return this;
         }
 
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Misc.Common
         {
             if (subcommands.Any()) {
                 string title = string.IsNullOrWhiteSpace(this.name) ? "str-cmds" : "str-subcmds";
-                this.emb.AddLocalizedTitleField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).JoinWith(", "));
+                this.emb.AddLocalizedField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).JoinWith(", "));
             }
             return this;
         }

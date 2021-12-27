@@ -42,14 +42,14 @@ namespace TheGodfather.Modules.Search
                 emb.WithTitle(r.Book.Title);
                 emb.WithThumbnail(r.Book.ImageUrl);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-author", r.Book.Author.Name, inline: true);
-                emb.AddLocalizedTitleField("str-rating", r.AverageRating, inline: true);
-                emb.AddLocalizedTitleField("str-books-count", r.BooksCount, inline: true);
+                emb.AddLocalizedField("str-author", r.Book.Author.Name, inline: true);
+                emb.AddLocalizedField("str-rating", r.AverageRating, inline: true);
+                emb.AddLocalizedField("str-books-count", r.BooksCount, inline: true);
                 if (DateTimeOffset.TryParse($"{r.PublicationDayString}.{r.PublicationMonthString}.{r.PublicationYearString}", out DateTimeOffset dt))
-                    emb.AddLocalizedTitleField("str-published", dt.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)), inline: true);
-                emb.AddLocalizedTitleField("str-work-id", r.Id, inline: true);
-                emb.AddLocalizedTitleField("str-book-id", r.Book.Id, inline: true);
-                emb.AddLocalizedTitleField("str-reviews", r.TextReviewsCount, inline: true);
+                    emb.AddLocalizedField("str-published", dt.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)), inline: true);
+                emb.AddLocalizedField("str-work-id", r.Id, inline: true);
+                emb.AddLocalizedField("str-book-id", r.Book.Id, inline: true);
+                emb.AddLocalizedField("str-reviews", r.TextReviewsCount, inline: true);
                 emb.WithLocalizedFooter("str-footer-gr", null, res.QueryTime);
                 return emb;
             });

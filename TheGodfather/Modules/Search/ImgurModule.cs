@@ -124,10 +124,10 @@ namespace TheGodfather.Modules.Search
                     emb.WithDescription(img.Description, unknown: false);
                     emb.WithImageUrl(img.Link);
                     emb.WithLocalizedTimestamp(img.DateTime);
-                    emb.AddLocalizedTitleField("str-views", img.Views, inline: true);
-                    emb.AddLocalizedTitleField("str-score", img.Score, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-votes", $"{img.Points ?? 0} pts | {img.Ups ?? 0} ⬆️ {img.Downs ?? 0} ⬇️", inline: true);
-                    emb.AddLocalizedTitleField("str-comments", img.CommentCount, inline: true, unknown: false);
+                    emb.AddLocalizedField("str-views", img.Views, inline: true);
+                    emb.AddLocalizedField("str-score", img.Score, inline: true, unknown: false);
+                    emb.AddLocalizedField("str-votes", $"{img.Points ?? 0} pts | {img.Ups ?? 0} ⬆️ {img.Downs ?? 0} ⬇️", inline: true);
+                    emb.AddLocalizedField("str-comments", img.CommentCount, inline: true, unknown: false);
                 } else if (r is GalleryAlbum album) {
                     if ((album.Nsfw ?? false) & !ctx.Channel.IsNsfwOrNsfwName())
                         throw new CommandFailedException(ctx, "cmd-err-nsfw");
@@ -135,10 +135,10 @@ namespace TheGodfather.Modules.Search
                     emb.WithDescription(album.Description, unknown: false);
                     emb.WithImageUrl(album.Link);
                     emb.WithLocalizedTimestamp(album.DateTime);
-                    emb.AddLocalizedTitleField("str-views", album.Views, inline: true);
-                    emb.AddLocalizedTitleField("str-score", album.Score, inline: true, unknown: false);
-                    emb.AddLocalizedTitleField("str-votes", $"{album.Points ?? 0} pts | {album.Ups ?? 0} ⬆️ {album.Downs ?? 0} ⬇️", inline: true);
-                    emb.AddLocalizedTitleField("str-comments", album.CommentCount, inline: true, unknown: false);
+                    emb.AddLocalizedField("str-views", album.Views, inline: true);
+                    emb.AddLocalizedField("str-score", album.Score, inline: true, unknown: false);
+                    emb.AddLocalizedField("str-votes", $"{album.Points ?? 0} pts | {album.Ups ?? 0} ⬆️ {album.Downs ?? 0} ⬇️", inline: true);
+                    emb.AddLocalizedField("str-comments", album.CommentCount, inline: true, unknown: false);
                 } else {
                     throw new CommandFailedException(ctx, "cmd-err-imgur");
                 }

@@ -42,12 +42,12 @@ namespace TheGodfather.Modules.Games.Common
                 emb.WithLocalizedTitle("fmt-game-quiz-q", i + 1);
                 emb.WithDescription(Formatter.Bold(question.Content));
                 emb.WithColor(DiscordColor.Teal);
-                emb.AddLocalizedTitleField("str-category", question.Category, inline: false);
+                emb.AddLocalizedField("str-category", question.Category, inline: false);
 
                 var answers = new List<string>(question.IncorrectAnswers) { question.CorrectAnswer }.Shuffle().ToList();
 
                 foreach ((string answer, int index) in answers.Select((a, i) => (a, i)))
-                    emb.AddLocalizedTitleField("fmt-game-quiz-a", answer, inline: true, titleArgs: index + 1);
+                    emb.AddLocalizedField("fmt-game-quiz-a", answer, inline: true, titleArgs: index + 1);
 
                 var options = Emojis.Numbers.All.Skip(1).Take(4).ToList();
                 DiscordMessage msg = await this.Channel.SendMessageAsync(embed: emb.Build());

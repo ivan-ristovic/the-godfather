@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-del-all");
-                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                emb.AddLocalizedField("str-count", removed, inline: true);
             });
 
             await ctx.InfoAsync(this.ModuleColor, "str-f-del-all", removed);
@@ -221,9 +221,9 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-f-add");
                 emb.WithDescription(filters.Select(rgx => Formatter.InlineCode(rgx)).JoinWith());
-                emb.AddLocalizedTitleField("evt-f-action", action.Humanize(), inline: true);
+                emb.AddLocalizedField("evt-f-action", action.Humanize(), inline: true);
                 if (eb.Length > 0)
-                    emb.AddLocalizedTitleField("str-errs", eb.ToString());
+                    emb.AddLocalizedField("str-errs", eb.ToString());
             });
 
             if (eb.Length > 0)

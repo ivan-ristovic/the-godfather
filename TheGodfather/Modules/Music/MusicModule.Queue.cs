@@ -30,9 +30,9 @@ namespace TheGodfather.Modules.Music
             return ctx.PaginateAsync(this.Player.Queue, (emb, s) => {
                 emb.WithLocalizedTitle("str-music-queue");
                 emb.WithDescription(Formatter.Bold(Formatter.Sanitize(s.Track.Title)));
-                emb.AddLocalizedTitleField("str-author", s.Track.Author, inline: true);
-                emb.AddLocalizedTitleField("str-duration", s.Track.Length.ToDurationString(), inline: true);
-                emb.AddLocalizedTitleField("str-requested-by", s.RequestedBy?.Mention, inline: true);
+                emb.AddLocalizedField("str-author", s.Track.Author, inline: true);
+                emb.AddLocalizedField("str-duration", s.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedField("str-requested-by", s.RequestedBy?.Mention, inline: true);
                 return emb;
             }, this.ModuleColor);
         }

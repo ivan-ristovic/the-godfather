@@ -76,17 +76,17 @@ namespace TheGodfather.Modules.Search
             emb.WithColor(DiscordColor.Yellow);
             emb.WithUrl(this.Service.GetUrl(info.IMDbId));
 
-            emb.AddLocalizedTitleField("str-type", info.Type, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-year", info.Year, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-id", info.IMDbId, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-genre", info.Genre, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-rel-date", info.ReleaseDate, inline: true, unknown: false);
+            emb.AddLocalizedField("str-type", info.Type, inline: true, unknown: false);
+            emb.AddLocalizedField("str-year", info.Year, inline: true, unknown: false);
+            emb.AddLocalizedField("str-id", info.IMDbId, inline: true, unknown: false);
+            emb.AddLocalizedField("str-genre", info.Genre, inline: true, unknown: false);
+            emb.AddLocalizedField("str-rel-date", info.ReleaseDate, inline: true, unknown: false);
             emb.AddLocalizedField("str-score", "fmt-rating-imdb", inline: true, contentArgs: new[] { info.IMDbRating, info.IMDbVotes });
-            emb.AddLocalizedTitleField("str-rating", info.Rated, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-duration", info.Duration, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-writer", info.Writer, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-director", info.Director, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-actors", info.Actors, inline: true, unknown: false);
+            emb.AddLocalizedField("str-rating", info.Rated, inline: true, unknown: false);
+            emb.AddLocalizedField("str-duration", info.Duration, inline: true, unknown: false);
+            emb.AddLocalizedField("str-writer", info.Writer, inline: true, unknown: false);
+            emb.AddLocalizedField("str-director", info.Director, inline: true, unknown: false);
+            emb.AddLocalizedField("str-actors", info.Actors, inline: true, unknown: false);
             if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
                 emb.WithThumbnail(info.Poster);
 

@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency.Extensions
                 foreach ((DiscordEmoji e, int m) in _emoji.Zip(SlotMachineRoll.Multipliers))
                     sb.Append(e).Append(Formatter.InlineCode($" x{m} "));
 
-                emb.AddLocalizedTitleField("str-multipliers", sb);
+                emb.AddLocalizedField("str-multipliers", sb);
 
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 CultureInfo culture = ctx.Services.GetRequiredService<LocalizationService>().GetGuildCulture(ctx.Guild.Id);

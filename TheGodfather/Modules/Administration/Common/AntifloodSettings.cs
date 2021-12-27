@@ -1,10 +1,10 @@
 ﻿using Humanizer;
 using TheGodfather.Database.Models;
-using TheGodfather.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Common
 {
-    public sealed class AntifloodSettings
+    public sealed class AntifloodSettings : ISettings
     {
         public const int MinCooldown = 5;
         public const int MaxCooldown = 60;
@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Common
         public short Sensitivity { get; set; } = 5;
 
 
-        public string ToEmbedFieldString(ulong gid, LocalizationService lcs)
-            => this.Enabled ? lcs.GetString(gid, "fmt-settings-af", this.Sensitivity, this.Cooldown, this.Action.Humanize()) : lcs.GetString(gid, "str-off");
+        public TranslationKey ToEmbedFieldString()
+            => this.Enabled ? TranslationKey.fmt_settings_af(this.Sensitivity, this.Cooldown, this.Action.Humanize()) : TranslationKey.str_off;
     }
 }

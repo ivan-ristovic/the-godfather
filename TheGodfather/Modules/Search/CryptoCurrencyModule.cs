@@ -80,11 +80,11 @@ namespace TheGodfather.Modules.Search
             emb.WithThumbnail(this.Service.GetCoinUrl(res));
             emb.WithUrl(this.Service.GetSlugUrl(res));
             emb.WithImageUrl(this.Service.GetWeekGraphUrl(res));
-            emb.AddLocalizedTitleField("str-crypto-market-cap", $"{FormatAmount(res.Quotes.USD.MarketCap)}$", inline: true);
-            emb.AddLocalizedTitleField("str-crypto-price", $"{FormatAmount(res.Quotes.USD.Price)}$", inline: true);
+            emb.AddLocalizedField("str-crypto-market-cap", $"{FormatAmount(res.Quotes.USD.MarketCap)}$", inline: true);
+            emb.AddLocalizedField("str-crypto-price", $"{FormatAmount(res.Quotes.USD.Price)}$", inline: true);
             if (res.Quotes.USD.VolumeDay is { })
-                emb.AddLocalizedTitleField("str-crypto-volume-24h", $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", inline: true);
-            emb.AddLocalizedTitleField("str-crypto-change", $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", inline: true);
+                emb.AddLocalizedField("str-crypto-volume-24h", $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", inline: true);
+            emb.AddLocalizedField("str-crypto-change", $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", inline: true);
             emb.WithLocalizedFooter("fmt-last-updated-at", null, this.Localization.GetLocalizedTime(ctx.Guild.Id, res.UpdatedAt));
             
             return emb;

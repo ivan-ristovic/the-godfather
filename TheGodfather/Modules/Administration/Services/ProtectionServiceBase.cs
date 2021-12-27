@@ -89,8 +89,8 @@ namespace TheGodfather.Modules.Administration.Services
                 if (this.ls.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb)) {
                     emb.WithLocalizedTitle("err-punish-failed");
                     emb.WithColor(DiscordColor.Red);
-                    emb.AddLocalizedTitleField("str-user", member);
-                    emb.AddLocalizedTitleField("str-rsn", reason ?? this.reason);
+                    emb.AddLocalizedField("str-user", member);
+                    emb.AddLocalizedField("str-rsn", reason ?? this.reason);
                     await this.ls.LogAsync(guild, emb.Build());
                 }
             }

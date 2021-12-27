@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                         }
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
-                            emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
+                            emb.AddLocalizedField("str-exempts", exemptString, inline: true);
                     })
                 );
             }

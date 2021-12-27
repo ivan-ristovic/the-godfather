@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Administration
             string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ar-change");
-                emb.AddLocalizedTitleField("str-roles-add", roleStr);
+                emb.AddLocalizedField("str-roles-add", roleStr);
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roleStr);
         }
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Administration
             string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
-                emb.AddLocalizedTitleField("str-roles-rem", roleStr);
+                emb.AddLocalizedField("str-roles-rem", roleStr);
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roleStr);
         }
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
-                        emb.AddLocalizedTitleField("str-roles-rem", missingRoles.JoinWith());
+                        emb.AddLocalizedField("str-roles-rem", missingRoles.JoinWith());
                     },
                     addInvocationFields: false
                 );

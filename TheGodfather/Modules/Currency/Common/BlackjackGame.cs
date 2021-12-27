@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Currency.Common
             emb.WithDescription(sb);
 
             if (!this.gameOver)
-                emb.AddLocalizedTitleField("str-casino-blackjack-hit", toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, "str-house"));
+                emb.AddLocalizedField("str-casino-blackjack-hit", toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, "str-house"));
 
             return msg.ModifyAsync(embed: emb.Build());
         }

@@ -261,12 +261,12 @@ namespace TheGodfather.Modules.Reminders
                     emb.WithLocalizedTitle("fmt-remind-chn", chn.Name);
 
                 emb.WithDescription(r.Message);
-                emb.AddLocalizedTitleField("str-id", r.Id, inline: true);
+                emb.AddLocalizedField("str-id", r.Id, inline: true);
                 if (r.IsRepeating)
-                    emb.AddLocalizedTitleField("str-repeating", r.RepeatInterval.Humanize(culture: culture), inline: true);
+                    emb.AddLocalizedField("str-repeating", r.RepeatInterval.Humanize(culture: culture), inline: true);
 
                 if (r.TimeUntilExecution < TimeSpan.FromDays(1))
-                    emb.AddLocalizedTitleField("str-executes-in", r.TimeUntilExecution.Humanize(3, culture: culture, minUnit: TimeUnit.Second), inline: true);
+                    emb.AddLocalizedField("str-executes-in", r.TimeUntilExecution.Humanize(3, culture: culture, minUnit: TimeUnit.Second), inline: true);
                 else
                     emb.AddLocalizedTimestampField("str-exec-time", r.ExecutionTime, inline: true);
 

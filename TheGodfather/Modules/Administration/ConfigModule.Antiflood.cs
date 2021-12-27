@@ -49,9 +49,9 @@ namespace TheGodfather.Modules.Administration
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
                         emb.WithLocalizedDescription("evt-af-enable");
-                        emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
-                        emb.AddLocalizedTitleField("str-cooldown", settings.Cooldown, inline: true);
-                        emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
+                        emb.AddLocalizedField("str-sensitivity", settings.Sensitivity, inline: true);
+                        emb.AddLocalizedField("str-cooldown", settings.Cooldown, inline: true);
+                        emb.AddLocalizedField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
                         emb.WithLocalizedDescription("evt-af-disable");
                     }

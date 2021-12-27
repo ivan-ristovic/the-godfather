@@ -8,6 +8,7 @@ using Serilog;
 using TheGodfather.Common;
 using TheGodfather.Database.Models;
 using TheGodfather.Extensions;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Services.Common
 {
@@ -84,8 +85,8 @@ namespace TheGodfather.Services.Common
                             );
                             break;
                         }
-                        await channel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, "fmt-remind-miss",
-                            this.lcs.GetLocalizedTimeString(channel.GuildId, rem.ExecutionTime), rem.Message
+                        await channel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red,
+                            TranslationKey.fmt_remind_miss(this.lcs.GetLocalizedTimeString(channel.GuildId, rem.ExecutionTime), rem.Message)
                         );
                         break;
                     default:
@@ -113,7 +114,7 @@ namespace TheGodfather.Services.Common
                 DiscordUser user = this.async.Execute(client.GetUserAsync(rem.UserId));
 
                 this.async.Execute(
-                    channel.LocalizedEmbedAsync(this.lcs, Emojis.AlarmClock, DiscordColor.Green, "fmt-remind-exec", user.Mention, rem.Message)
+                    channel.LocalizedEmbedAsync(this.lcs, Emojis.AlarmClock, DiscordColor.Green, TranslationKey.fmt_remind_exec(user.Mention, rem.Message))
                 );
             } catch (UnauthorizedException) {
                 // Do nothing, user has disabled DM in meantime

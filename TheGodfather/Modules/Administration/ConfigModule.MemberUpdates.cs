@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-memupd-wc", wchn.Mention, inline: true);
+                    emb.AddLocalizedField("str-memupd-wc", wchn.Mention, inline: true);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-wc", wchn.Mention);
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-memupd-wm", message, inline: true);
+                    emb.AddLocalizedField("str-memupd-wm", message, inline: true);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-wm", message);
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-memupd-lc", lchn.Mention, inline: true);
+                    emb.AddLocalizedField("str-memupd-lc", lchn.Mention, inline: true);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-lc", lchn.Mention);
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-cfg-upd");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-memupd-lm", message, inline: true);
+                    emb.AddLocalizedField("str-memupd-lm", message, inline: true);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-lm", message);

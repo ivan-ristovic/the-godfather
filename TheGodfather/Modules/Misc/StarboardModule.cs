@@ -62,11 +62,11 @@ namespace TheGodfather.Modules.Misc
                 emb.WithColor(this.ModuleColor);
                 emb.WithLocalizedTitle("str-starboard");
                 emb.AddLocalizedField("str-status", cid == 0 ? "str-disabled" : "str-enabled", inline: true);
-                emb.AddLocalizedTitleField("str-chn", starChn?.Mention, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-star", starEmoji, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-sensitivity", this.Service.GetStarboardSensitivity(ctx.Guild.Id), inline: true);
-                emb.AddLocalizedTitleField("str-starmsgs", totalMsgs, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-stars-total", totalStars, inline: true, unknown: false);
+                emb.AddLocalizedField("str-chn", starChn?.Mention, inline: true, unknown: false);
+                emb.AddLocalizedField("str-star", starEmoji, inline: true, unknown: false);
+                emb.AddLocalizedField("str-sensitivity", this.Service.GetStarboardSensitivity(ctx.Guild.Id), inline: true);
+                emb.AddLocalizedField("str-starmsgs", totalMsgs, inline: true, unknown: false);
+                emb.AddLocalizedField("str-stars-total", totalStars, inline: true, unknown: false);
             });
         }
         #endregion
@@ -170,9 +170,9 @@ namespace TheGodfather.Modules.Misc
                 emb.WithLocalizedTitle("evt-sb-upd");
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedField("str-status", emoji is null ? "str-disabled" : "str-enabled", inline: true);
-                emb.AddLocalizedTitleField("str-chn", channel.Mention, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-star", emoji ?? Emojis.Star, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-sensitivity", this.Service.GetStarboardSensitivity(ctx.Guild.Id), inline: true);
+                emb.AddLocalizedField("str-chn", channel.Mention, inline: true, unknown: false);
+                emb.AddLocalizedField("str-star", emoji ?? Emojis.Star, inline: true, unknown: false);
+                emb.AddLocalizedField("str-sensitivity", this.Service.GetStarboardSensitivity(ctx.Guild.Id), inline: true);
             });
 
             await this.ExecuteGroupAsync(ctx);

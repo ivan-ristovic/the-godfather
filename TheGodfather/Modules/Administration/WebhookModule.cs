@@ -221,9 +221,9 @@ namespace TheGodfather.Modules.Administration
                         emb.WithDescription($"||{wh.BuildUrlString()}||");
                         emb.WithColor(this.ModuleColor);
                         emb.WithThumbnail(wh.AvatarUrl);
-                        emb.AddLocalizedTitleField("str-id", wh.Id, inline: true);
-                        emb.AddLocalizedTitleField("str-name", wh.Name, inline: true);
-                        emb.AddLocalizedTitleField("str-token", $"||{wh.Token}||");
+                        emb.AddLocalizedField("str-id", wh.Id, inline: true);
+                        emb.AddLocalizedField("str-name", wh.Name, inline: true);
+                        emb.AddLocalizedField("str-token", $"||{wh.Token}||");
                         await dm.SendMessageAsync(embed: emb.Build());
                     } else {
                         await ctx.FailAsync("err-dm-fail");

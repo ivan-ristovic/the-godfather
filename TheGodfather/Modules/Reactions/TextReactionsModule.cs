@@ -73,8 +73,8 @@ namespace TheGodfather.Modules.Reactions
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-tr-del");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-ids", ids.JoinWith(", "), inline: true);
-                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                    emb.AddLocalizedField("str-ids", ids.JoinWith(", "), inline: true);
+                    emb.AddLocalizedField("str-count", removed, inline: true);
                 });
             }
         }
@@ -120,8 +120,8 @@ namespace TheGodfather.Modules.Reactions
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-tr-del");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith(), inline: true);
-                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                emb.AddLocalizedField("str-triggers", validTriggers.JoinWith(), inline: true);
+                emb.AddLocalizedField("str-count", removed, inline: true);
             });
         }
         #endregion
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Reactions
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-tr-del");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                    emb.AddLocalizedField("str-count", removed, inline: true);
                 });
             }
         }
@@ -166,8 +166,8 @@ namespace TheGodfather.Modules.Reactions
                 emb.WithLocalizedTitle("str-tr-matching");
                 emb.WithDescription(Formatter.InlineCode(tr.Triggers.JoinWith(" | ")));
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-id", tr.Id, inline: true);
-                emb.AddLocalizedTitleField("str-response", tr.Response, inline: true);
+                emb.AddLocalizedField("str-id", tr.Id, inline: true);
+                emb.AddLocalizedField("str-response", tr.Response, inline: true);
             });
         }
         #endregion
@@ -223,9 +223,9 @@ namespace TheGodfather.Modules.Reactions
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-tr-add");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-response", response, inline: true);
-                emb.AddLocalizedTitleField("str-count", 1, inline: true);
-                emb.AddLocalizedTitleField("str-trigger", trigger);
+                emb.AddLocalizedField("str-response", response, inline: true);
+                emb.AddLocalizedField("str-count", 1, inline: true);
+                emb.AddLocalizedField("str-trigger", trigger);
             });
         }
         #endregion

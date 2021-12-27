@@ -46,8 +46,8 @@ namespace TheGodfather.Modules.Administration
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
                         emb.WithLocalizedDescription("evt-rl-enable");
-                        emb.AddLocalizedTitleField("str-sensitivity", settings.Sensitivity, inline: true);
-                        emb.AddLocalizedTitleField("str-punish-action", settings.Action.Humanize(), inline: true);
+                        emb.AddLocalizedField("str-sensitivity", settings.Sensitivity, inline: true);
+                        emb.AddLocalizedField("str-punish-action", settings.Action.Humanize(), inline: true);
                     } else {
                         emb.WithLocalizedDescription("evt-rl-disable");
                     }
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
                         emb.WithDescription(gcfg.RatelimitSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
-                            emb.AddLocalizedTitleField("str-exempts", exemptString, inline: true);
+                            emb.AddLocalizedField("str-exempts", exemptString, inline: true);
                     });
                 });
             }

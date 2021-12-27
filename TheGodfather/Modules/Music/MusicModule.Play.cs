@@ -106,8 +106,8 @@ namespace TheGodfather.Modules.Music
                     emb.WithColor(this.ModuleColor);
                     emb.WithLocalizedTitle("fmt-music-add", Emojis.Headphones);
                     emb.WithDescription(Formatter.Bold(Formatter.Sanitize(title)));
-                    emb.AddLocalizedTitleField("str-author", author, inline: true);
-                    emb.AddLocalizedTitleField("str-duration", track.Length.ToDurationString(), inline: true);
+                    emb.AddLocalizedField("str-author", author, inline: true);
+                    emb.AddLocalizedField("str-duration", track.Length.ToDurationString(), inline: true);
                 });
             }
         }

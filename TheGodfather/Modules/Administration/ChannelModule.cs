@@ -212,14 +212,14 @@ namespace TheGodfather.Modules.Administration
                 emb.WithColor(this.ModuleColor);
                 if (!string.IsNullOrWhiteSpace(channel.Topic))
                     emb.WithDescription(Formatter.Italic(Formatter.Strip(channel.Topic)));
-                emb.AddLocalizedTitleField("str-chn-type", channel.Type, inline: true);
-                emb.AddLocalizedTitleField("str-nsfw", channel.IsNSFW, inline: true);
-                emb.AddLocalizedTitleField("str-pos", channel.Position, inline: true);
-                emb.AddLocalizedTitleField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
+                emb.AddLocalizedField("str-chn-type", channel.Type, inline: true);
+                emb.AddLocalizedField("str-nsfw", channel.IsNSFW, inline: true);
+                emb.AddLocalizedField("str-pos", channel.Position, inline: true);
+                emb.AddLocalizedField("str-ratelimit", channel.PerUserRateLimit, inline: true, unknown: false);
                 if (channel.Type == ChannelType.Voice) {
-                    emb.AddLocalizedTitleField("str-bitrate", channel.Bitrate, inline: true);
+                    emb.AddLocalizedField("str-bitrate", channel.Bitrate, inline: true);
                     if (channel.UserLimit > 0)
-                        emb.AddLocalizedTitleField("str-user-limit", channel.UserLimit, inline: true);
+                        emb.AddLocalizedField("str-user-limit", channel.UserLimit, inline: true);
                 }
                 emb.AddLocalizedTimestampField("str-created-at", channel.CreationTimestamp, inline: true);
             });
@@ -599,7 +599,7 @@ namespace TheGodfather.Modules.Administration
                 emb.WithLocalizedTitle("fmt-chn-perms", role.Mention, channel);
                 emb.WithColor(this.ModuleColor);
                 if (ow is { }) {
-                    emb.AddLocalizedTitleField("str-allowed", ow.Allowed.ToPermissionString())
+                    emb.AddLocalizedField("str-allowed", ow.Allowed.ToPermissionString())
                        .AddLocalizedTitleField("str-denied", ow.Denied.ToPermissionString());
                 } else {
                     emb.WithLocalizedDescription("fmt-chn-ow-none", role.Permissions.ToPermissionString());

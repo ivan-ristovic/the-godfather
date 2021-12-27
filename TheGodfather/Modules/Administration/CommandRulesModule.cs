@@ -117,9 +117,9 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-cr-change");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-cmd", command, inline: true);
-                emb.AddLocalizedTitleField("str-allowed", allow, inline: true);
-                emb.AddLocalizedTitleField("str-chns", channels.Select(c => c.Mention).JoinWith(" "), inline: false);
+                emb.AddLocalizedField("str-cmd", command, inline: true);
+                emb.AddLocalizedField("str-allowed", allow, inline: true);
+                emb.AddLocalizedField("str-chns", channels.Select(c => c.Mention).JoinWith(" "), inline: false);
             });
         }
 

@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Administration.Services
             emb.WithLocalizedTitle("evt-lf-triggered");
             emb.WithDescription(desc);
             if (match is { } && match.Matched is { })
-                emb.AddLocalizedTitleField("str-matched", match.Matched);
+                emb.AddLocalizedField("str-matched", match.Matched);
             emb.WithColor(DiscordColor.Red);
             emb.AddInvocationFields(e.Author, e.Channel);
             await this.ls.LogAsync(e.Guild, emb);

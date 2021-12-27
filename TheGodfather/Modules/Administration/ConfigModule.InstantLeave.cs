@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
                         emb.WithLocalizedDescription("evt-il-enabled");
-                        emb.AddLocalizedTitleField("str-cooldown", settings.Cooldown, inline: true);
+                        emb.AddLocalizedField("str-cooldown", settings.Cooldown, inline: true);
                     } else {
                         emb.WithLocalizedDescription("evt-il-disabled");
                     }

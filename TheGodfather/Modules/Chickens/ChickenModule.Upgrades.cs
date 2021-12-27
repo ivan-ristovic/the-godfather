@@ -86,9 +86,9 @@ namespace TheGodfather.Modules.Chickens
 
                 await ctx.PaginateAsync(upgrades.OrderBy(u => u.Cost), (emb, u) => {
                     emb.WithTitle(u.Name);
-                    emb.AddLocalizedTitleField("str-id", u.Id, inline: true);
-                    emb.AddLocalizedTitleField("str-cost", $"{u.Cost:n0}", inline: true);
-                    emb.AddLocalizedTitleField("str-cost", $"+{u.Modifier}{u.UpgradesStat.Humanize(LetterCasing.AllCaps)}", inline: true);
+                    emb.AddLocalizedField("str-id", u.Id, inline: true);
+                    emb.AddLocalizedField("str-cost", $"{u.Cost:n0}", inline: true);
+                    emb.AddLocalizedField("str-cost", $"+{u.Modifier}{u.UpgradesStat.Humanize(LetterCasing.AllCaps)}", inline: true);
                     return emb;
                 }, this.ModuleColor);
             }

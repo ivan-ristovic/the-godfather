@@ -62,8 +62,8 @@ namespace TheGodfather.Modules.Search
                 emb.WithDescription(r.Caption, unknown: false);
                 emb.WithColor(this.ModuleColor);
                 emb.WithImageUrl(r.Images.DownsizedLarge.Url);
-                emb.AddLocalizedTitleField("str-posted-by", r.Username, inline: true);
-                emb.AddLocalizedTitleField("str-rating", r.Rating, inline: true);
+                emb.AddLocalizedField("str-posted-by", r.Username, inline: true);
+                emb.AddLocalizedField("str-rating", r.Rating, inline: true);
                 if (DateTimeOffset.TryParse(r.TrendingDatetime, out DateTimeOffset dt))
                     emb.WithLocalizedTimestamp(dt);
                 emb.WithUrl(r.Url);
@@ -125,8 +125,8 @@ namespace TheGodfather.Modules.Search
                 emb.WithDescription(r.Caption, unknown: false);
                 emb.WithColor(this.ModuleColor);
                 emb.WithImageUrl(r.Images.DownsizedLarge.Url);
-                emb.AddLocalizedTitleField("str-posted-by", r.Username, inline: true);
-                emb.AddLocalizedTitleField("str-rating", r.Rating, inline: true);
+                emb.AddLocalizedField("str-posted-by", r.Username, inline: true);
+                emb.AddLocalizedField("str-rating", r.Rating, inline: true);
                 if (DateTimeOffset.TryParse(r.TrendingDatetime, out DateTimeOffset dt))
                     emb.WithLocalizedTimestamp(dt);
                 emb.WithUrl(r.Url);

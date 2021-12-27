@@ -118,10 +118,10 @@ namespace TheGodfather.Modules.Administration
                 emb.WithDescription($"{gemoji.GetDiscordName()} ({gemoji.Id})");
                 emb.WithThumbnail(gemoji.Url);
 
-                emb.AddLocalizedTitleField("str-created-by", gemoji.User?.ToDiscriminatorString(), inline: true);
-                emb.AddLocalizedTitleField("str-animated", gemoji.IsAnimated, inline: true);
-                emb.AddLocalizedTitleField("str-managed", gemoji.IsManaged, inline: true);
-                emb.AddLocalizedTitleField("str-url", gemoji.Url);
+                emb.AddLocalizedField("str-created-by", gemoji.User?.ToDiscriminatorString(), inline: true);
+                emb.AddLocalizedField("str-animated", gemoji.IsAnimated, inline: true);
+                emb.AddLocalizedField("str-managed", gemoji.IsManaged, inline: true);
+                emb.AddLocalizedField("str-url", gemoji.Url);
                 emb.AddLocalizedTimestampField("str-created-at", gemoji.CreationTimestamp);
 
                 await ctx.RespondAsync(embed: emb.Build());

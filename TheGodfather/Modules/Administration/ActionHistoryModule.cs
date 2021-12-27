@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ah-add");
                 emb.WithDescription(user.ToDiscriminatorString());
-                emb.AddLocalizedTitleField("str-notes", notes, unknown: false);
+                emb.AddLocalizedField("str-notes", notes, unknown: false);
             });
             await ctx.InfoAsync(this.ModuleColor);
         }
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-ah-del");
-                    emb.AddLocalizedTitleField("str-count", removed);
+                    emb.AddLocalizedField("str-count", removed);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "str-ah-del", removed);
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-ah-del");
-                    emb.AddLocalizedTitleField("str-count", removed);
+                    emb.AddLocalizedField("str-count", removed);
                 });
 
                 await ctx.InfoAsync(this.ModuleColor, "str-ah-del", removed);
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
                         this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
                         e.Notes
                     );
-                    emb.AddLocalizedTitleField(title, content);
+                    emb.AddLocalizedField(title, content);
                 }
                 emb.WithThumbnail(user.AvatarUrl);
             });
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Administration
                 emb.WithLocalizedTitle(e.Type.ToLocalizedKey());
                 DiscordUser? user = users.GetValueOrDefault(e.UserId);
                 emb.WithDescription(user?.ToDiscriminatorString() ?? e.UserId.ToString());
-                emb.AddLocalizedTitleField("str-notes", e.Notes, unknown: false);
+                emb.AddLocalizedField("str-notes", e.Notes, unknown: false);
                 emb.WithLocalizedTimestamp(e.Time, user?.AvatarUrl);
                 return emb;
             }, this.ModuleColor);

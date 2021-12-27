@@ -85,16 +85,16 @@ namespace TheGodfather.Modules.Search
                 emb.AddLocalizedTimestampField("str-member-since", summary.AccountCreatedDate, inline: true);
 
                 if (summary.UserStatus != UserStatus.Offline)
-                    emb.AddLocalizedTitleField("str-status", summary.UserStatus.Humanize(LetterCasing.Sentence), inline: true);
+                    emb.AddLocalizedField("str-status", summary.UserStatus.Humanize(LetterCasing.Sentence), inline: true);
                 else if (summary.LastLoggedOffDate.Year > 1000)
                     emb.AddLocalizedTimestampField("str-last-seen", summary.LastLoggedOffDate, inline: true);
 
-                emb.AddLocalizedTitleField("str-id", model.SteamID, inline: true);
-                emb.AddLocalizedTitleField("str-playing", summary.PlayingGameName, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-location", model.Location, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-real-name", model.RealName, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-rating", model.SteamRating, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-headline", model.Headline, unknown: false);
+                emb.AddLocalizedField("str-id", model.SteamID, inline: true);
+                emb.AddLocalizedField("str-playing", summary.PlayingGameName, inline: true, unknown: false);
+                emb.AddLocalizedField("str-location", model.Location, inline: true, unknown: false);
+                emb.AddLocalizedField("str-real-name", model.RealName, inline: true, unknown: false);
+                emb.AddLocalizedField("str-rating", model.SteamRating, inline: true, unknown: false);
+                emb.AddLocalizedField("str-headline", model.Headline, unknown: false);
 
                 // TODO
                 // emb.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
@@ -110,9 +110,9 @@ namespace TheGodfather.Modules.Search
                 }
 
                 if (model.MostPlayedGames.Any())
-                    emb.AddLocalizedTitleField("str-most-played", model.MostPlayedGames.Take(5).Select(g => g.Name).JoinWith(", "));
+                    emb.AddLocalizedField("str-most-played", model.MostPlayedGames.Take(5).Select(g => g.Name).JoinWith(", "));
 
-                emb.AddLocalizedTitleField("str-trade-ban", model.TradeBanState, inline: true, unknown: false);
+                emb.AddLocalizedField("str-trade-ban", model.TradeBanState, inline: true, unknown: false);
             });
         }
 
@@ -126,11 +126,11 @@ namespace TheGodfather.Modules.Search
                 emb.WithDescription(res.ShortDescription);
                 emb.WithUrl(this.Service.GetGameStoreUrl(res.SteamAppId));
                 emb.WithThumbnail(res.HeaderImage);
-                emb.AddLocalizedTitleField("str-metacritic", res.Metacritic?.Score, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-price", res.PriceOverview?.FinalFormatted, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-release-date", res.ReleaseDate?.Date, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-devs", res.Developers.JoinWith(", "), inline: true);
-                emb.AddLocalizedTitleField("str-genres", res.Genres.Select(g => g.Description).JoinWith(", "));
+                emb.AddLocalizedField("str-metacritic", res.Metacritic?.Score, inline: true, unknown: false);
+                emb.AddLocalizedField("str-price", res.PriceOverview?.FinalFormatted, inline: true, unknown: false);
+                emb.AddLocalizedField("str-release-date", res.ReleaseDate?.Date, inline: true, unknown: false);
+                emb.AddLocalizedField("str-devs", res.Developers.JoinWith(", "), inline: true);
+                emb.AddLocalizedField("str-genres", res.Genres.Select(g => g.Description).JoinWith(", "));
                 emb.WithFooter(res.Website, null);
             });
         }

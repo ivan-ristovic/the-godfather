@@ -137,21 +137,21 @@ namespace TheGodfather.Modules.Administration
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedTimestampField("str-regtime", member.CreationTimestamp, inline: true);
                 emb.AddLocalizedTimestampField("str-joined-at", member.JoinedAt, inline: true);
-                emb.AddLocalizedTitleField("str-id", member.Id, inline: true);
-                emb.AddLocalizedTitleField("str-hierarchy", member.Hierarchy, inline: true);
-                emb.AddLocalizedTitleField("str-status", ToPresenceString(member.Presence), inline: true);
-                emb.AddLocalizedTitleField("str-ahash", member.AvatarHash, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-verified", member.Verified, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags", member.Flags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-locale", member.Locale, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-mfa", member.MfaEnabled, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags-oauth", member.OAuthFlags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-premium-type", member.PremiumType?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-id", member.Id, inline: true);
+                emb.AddLocalizedField("str-hierarchy", member.Hierarchy, inline: true);
+                emb.AddLocalizedField("str-status", ToPresenceString(member.Presence), inline: true);
+                emb.AddLocalizedField("str-ahash", member.AvatarHash, inline: true, unknown: false);
+                emb.AddLocalizedField("str-verified", member.Verified, inline: true, unknown: false);
+                emb.AddLocalizedField("str-flags", member.Flags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-locale", member.Locale, inline: true, unknown: false);
+                emb.AddLocalizedField("str-mfa", member.MfaEnabled, inline: true, unknown: false);
+                emb.AddLocalizedField("str-flags-oauth", member.OAuthFlags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-premium-type", member.PremiumType?.Humanize(), inline: true, unknown: false);
                 emb.AddLocalizedTimestampField("str-premium-since", member.PremiumSince, inline: true);
-                emb.AddLocalizedTitleField("str-email", member.Email, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-activity", member.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-email", member.Email, inline: true, unknown: false);
+                emb.AddLocalizedField("str-activity", member.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
                 if (member.Roles.Any())
-                    emb.AddLocalizedTitleField("str-roles", member.Roles.Select(r => r.Mention).JoinWith(", "));
+                    emb.AddLocalizedField("str-roles", member.Roles.Select(r => r.Mention).JoinWith(", "));
             });
 
 
@@ -173,17 +173,17 @@ namespace TheGodfather.Modules.Administration
                 emb.WithThumbnail(user.AvatarUrl);
                 emb.WithColor(this.ModuleColor);
                 emb.AddLocalizedTimestampField("str-regtime", user.CreationTimestamp, inline: true);
-                emb.AddLocalizedTitleField("str-id", user.Id, inline: true);
-                emb.AddLocalizedTitleField("str-status", ToPresenceString(user.Presence), inline: true);
-                emb.AddLocalizedTitleField("str-ahash", user.AvatarHash, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-verified", user.Verified, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags", user.Flags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-locale", user.Locale, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-mfa", user.MfaEnabled, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-flags-oauth", user.OAuthFlags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-premium-type", user.PremiumType?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-email", user.Email, inline: true, unknown: false);
-                emb.AddLocalizedTitleField("str-activity", user.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-id", user.Id, inline: true);
+                emb.AddLocalizedField("str-status", ToPresenceString(user.Presence), inline: true);
+                emb.AddLocalizedField("str-ahash", user.AvatarHash, inline: true, unknown: false);
+                emb.AddLocalizedField("str-verified", user.Verified, inline: true, unknown: false);
+                emb.AddLocalizedField("str-flags", user.Flags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-locale", user.Locale, inline: true, unknown: false);
+                emb.AddLocalizedField("str-mfa", user.MfaEnabled, inline: true, unknown: false);
+                emb.AddLocalizedField("str-flags-oauth", user.OAuthFlags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-premium-type", user.PremiumType?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField("str-email", user.Email, inline: true, unknown: false);
+                emb.AddLocalizedField("str-activity", user.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
             });
 
 

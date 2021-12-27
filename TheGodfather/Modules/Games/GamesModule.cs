@@ -60,47 +60,47 @@ namespace TheGodfather.Modules.Games
 
                 topStats = await this.Service.GetTopAnimalRaceStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildAnimalRaceStatsString());
-                emb.AddLocalizedTitleField("str-game-top-ar", top, inline: true);
+                emb.AddLocalizedField("str-game-top-ar", top, inline: true);
 
                 topStats = await this.Service.GetTopCaroStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
-                emb.AddLocalizedTitleField("str-game-top-caro", top, inline: true);
+                emb.AddLocalizedField("str-game-top-caro", top, inline: true);
 
                 topStats = await this.Service.GetTopConnect4StatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildConnect4StatsString());
-                emb.AddLocalizedTitleField("str-game-top-c4", top, inline: true);
+                emb.AddLocalizedField("str-game-top-c4", top, inline: true);
 
                 topStats = await this.Service.GetTopDuelStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
-                emb.AddLocalizedTitleField("str-game-top-duel", top, inline: true);
+                emb.AddLocalizedField("str-game-top-duel", top, inline: true);
 
                 topStats = await this.Service.GetTopHangmanStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildHangmanStatsString());
-                emb.AddLocalizedTitleField("str-game-top-hm", top, inline: true);
+                emb.AddLocalizedField("str-game-top-hm", top, inline: true);
 
                 topStats = await this.Service.GetTopNumberRaceStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildNumberRaceStatsString());
-                emb.AddLocalizedTitleField("str-game-top-nr", top, inline: true);
+                emb.AddLocalizedField("str-game-top-nr", top, inline: true);
 
                 topStats = await this.Service.GetTopTypingRaceStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTypingRaceStatsString());
-                emb.AddLocalizedTitleField("str-game-top-tr", top, inline: true);
+                emb.AddLocalizedField("str-game-top-tr", top, inline: true);
 
                 topStats = await this.Service.GetTopRussianRouletteStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildRussianRouletteStatsString());
-                emb.AddLocalizedTitleField("str-game-top-rr", top, inline: true);
+                emb.AddLocalizedField("str-game-top-rr", top, inline: true);
 
                 topStats = await this.Service.GetTopOthelloStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildOthelloStatsString());
-                emb.AddLocalizedTitleField("str-game-top-ot", top, inline: true);
+                emb.AddLocalizedField("str-game-top-ot", top, inline: true);
 
                 topStats = await this.Service.GetTopQuizStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildQuizStatsString());
-                emb.AddLocalizedTitleField("str-game-top-quiz", top, inline: true);
+                emb.AddLocalizedField("str-game-top-quiz", top, inline: true);
 
                 topStats = await this.Service.GetTopTicTacToeStatsAsync();
                 top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildTicTacToeStatsString());
-                emb.AddLocalizedTitleField("str-game-top-ttt", top, inline: true);
+                emb.AddLocalizedField("str-game-top-ttt", top, inline: true);
             });
         }
         #endregion
@@ -126,17 +126,17 @@ namespace TheGodfather.Modules.Games
                 if (stats is null) {
                     emb.WithLocalizedDescription("str-game-stats-none");
                 } else {
-                    emb.AddLocalizedTitleField("str-game-stats-duel", stats.BuildDuelStatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-ttt", stats.BuildTicTacToeStatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-c4", stats.BuildConnect4StatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-caro", stats.BuildCaroStatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-ot", stats.BuildOthelloStatsString());
-                    emb.AddLocalizedTitleField("str-game-stats-nr", stats.BuildNumberRaceStatsString(), inline: true);
-                    emb.AddLocalizedTitleField("str-game-stats-quiz", stats.BuildQuizStatsString(), inline: true);
-                    emb.AddLocalizedTitleField("str-game-stats-ar", stats.BuildAnimalRaceStatsString(), inline: true);
-                    emb.AddLocalizedTitleField("str-game-stats-rr", stats.BuildRussianRouletteStatsString(), inline: true);
-                    emb.AddLocalizedTitleField("str-game-stats-tr", stats.BuildTypingRaceStatsString(), inline: true);
-                    emb.AddLocalizedTitleField("str-game-stats-hm", stats.BuildHangmanStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-duel", stats.BuildDuelStatsString());
+                    emb.AddLocalizedField("str-game-stats-ttt", stats.BuildTicTacToeStatsString());
+                    emb.AddLocalizedField("str-game-stats-c4", stats.BuildConnect4StatsString());
+                    emb.AddLocalizedField("str-game-stats-caro", stats.BuildCaroStatsString());
+                    emb.AddLocalizedField("str-game-stats-ot", stats.BuildOthelloStatsString());
+                    emb.AddLocalizedField("str-game-stats-nr", stats.BuildNumberRaceStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-quiz", stats.BuildQuizStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-ar", stats.BuildAnimalRaceStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-rr", stats.BuildRussianRouletteStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-tr", stats.BuildTypingRaceStatsString(), inline: true);
+                    emb.AddLocalizedField("str-game-stats-hm", stats.BuildHangmanStatsString(), inline: true);
                 }
             });
         }

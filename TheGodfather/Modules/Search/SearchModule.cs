@@ -85,11 +85,11 @@ namespace TheGodfather.Modules.Search
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(info.Ip);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-location", $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
-                emb.AddLocalizedTitleField("str-location-exact", $"({info.Latitude} , {info.Longitude})", inline: true);
-                emb.AddLocalizedTitleField("str-isp", info.Isp, inline: true);
-                emb.AddLocalizedTitleField("str-org", info.Organization, inline: true);
-                emb.AddLocalizedTitleField("str-as", info.As, inline: true);
+                emb.AddLocalizedField("str-location", $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
+                emb.AddLocalizedField("str-location-exact", $"({info.Latitude} , {info.Longitude})", inline: true);
+                emb.AddLocalizedField("str-isp", info.Isp, inline: true);
+                emb.AddLocalizedField("str-org", info.Organization, inline: true);
+                emb.AddLocalizedField("str-as", info.As, inline: true);
                 emb.WithLocalizedFooter("fmt-powered-by", null, "ip-api");
             });
         }

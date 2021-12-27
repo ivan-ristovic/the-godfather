@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Currency.Common
             emb.WithDescription(sb);
 
             if (!this.gameOver && toMove is { })
-                emb.AddLocalizedTitleField("str-casino-holdem-call", toMove.User.Mention);
+                emb.AddLocalizedField("str-casino-holdem-call", toMove.User.Mention);
 
             return msg.ModifyAsync(embed: emb.Build());
         }

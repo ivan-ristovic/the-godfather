@@ -165,8 +165,8 @@ namespace TheGodfather.Modules.Search
                 if (r.Snippet.Thumbnails is { })
                     emb.WithThumbnail(r.Snippet.Thumbnails.Default__.Url);
 
-                emb.AddLocalizedTitleField("str-chn", r.Snippet.ChannelTitle, inline: true);
-                emb.AddLocalizedTitleField("str-published", r.Snippet.PublishedAt, inline: true);
+                emb.AddLocalizedField("str-chn", r.Snippet.ChannelTitle, inline: true);
+                emb.AddLocalizedField("str-published", r.Snippet.PublishedAt, inline: true);
 
                 string? url = this.Service.GetUrlForResourceId(r.Id);
                 if (url is { })

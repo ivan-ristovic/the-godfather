@@ -67,8 +67,8 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-lr-change");
-                emb.AddLocalizedTitleField("str-lr-role", role.Mention, inline: true);
-                emb.AddLocalizedTitleField("str-lr-rank", rank, inline: true);
+                emb.AddLocalizedField("str-lr-role", role.Mention, inline: true);
+                emb.AddLocalizedField("str-lr-rank", rank, inline: true);
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-lr-add", role.Mention, rank);
         }
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                emb.AddLocalizedTitleField("str-roles-rem", removed);
+                emb.AddLocalizedField("str-roles-rem", removed);
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-lr-rem", removed);
         }
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                emb.AddLocalizedTitleField("str-roles-rem", removed);
+                emb.AddLocalizedField("str-roles-rem", removed);
             });
             await ctx.InfoAsync(this.ModuleColor, "fmt-lr-rem", removed);
         }
@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.GuildLogAsync(
                     emb => {
                         emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                        emb.AddLocalizedTitleField("str-roles-rem", missingRoleRanks.JoinWith());
+                        emb.AddLocalizedField("str-roles-rem", missingRoleRanks.JoinWith());
                     },
                     addInvocationFields: false
                 );

@@ -1,10 +1,10 @@
 ﻿using Humanizer;
 using TheGodfather.Database.Models;
-using TheGodfather.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Common
 {
-    public sealed class RatelimitSettings
+    public sealed class RatelimitSettings : ISettings
     {
         public const int MinSensitivity = 4;
         public const int MaxSensitivity = 10;
@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Administration.Common
         public short Sensitivity { get; set; } = 5;
 
 
-        public string ToEmbedFieldString(ulong gid, LocalizationService lcs)
-            => this.Enabled ? lcs.GetString(gid, "fmt-settings-rl", this.Sensitivity, this.Action.Humanize()) : lcs.GetString(gid, "str-off");
+        public TranslationKey ToEmbedFieldString()
+            => this.Enabled ? TranslationKey.fmt_settings_am(this.Sensitivity, this.Action.Humanize()) : TranslationKey.str_off;
     }
 }

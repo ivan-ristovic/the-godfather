@@ -92,8 +92,8 @@ namespace TheGodfather.Modules.Reactions
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-er-del");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-emoji", emoji, inline: true);
-                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                    emb.AddLocalizedField("str-emoji", emoji, inline: true);
+                    emb.AddLocalizedField("str-count", removed, inline: true);
                 });
             }
         }
@@ -116,8 +116,8 @@ namespace TheGodfather.Modules.Reactions
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-er-del");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-ids", ids.JoinWith(", "), inline: true);
-                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                    emb.AddLocalizedField("str-ids", ids.JoinWith(", "), inline: true);
+                    emb.AddLocalizedField("str-count", removed, inline: true);
                 });
             }
         }
@@ -163,8 +163,8 @@ namespace TheGodfather.Modules.Reactions
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-er-del");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith(), inline: true);
-                emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                emb.AddLocalizedField("str-triggers", validTriggers.JoinWith(), inline: true);
+                emb.AddLocalizedField("str-count", removed, inline: true);
             });
         }
         #endregion
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Reactions
                 await ctx.GuildLogAsync(emb => {
                     emb.WithLocalizedTitle("evt-er-del");
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedTitleField("str-count", removed, inline: true);
+                    emb.AddLocalizedField("str-count", removed, inline: true);
                 });
             }
         }
@@ -279,9 +279,9 @@ namespace TheGodfather.Modules.Reactions
             await ctx.GuildLogAsync(emb => {
                 emb.WithLocalizedTitle("evt-er-add");
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTitleField("str-reaction", emoji, inline: true);
-                emb.AddLocalizedTitleField("str-count", added, inline: true);
-                emb.AddLocalizedTitleField("str-triggers", validTriggers.JoinWith());
+                emb.AddLocalizedField("str-reaction", emoji, inline: true);
+                emb.AddLocalizedField("str-count", added, inline: true);
+                emb.AddLocalizedField("str-triggers", validTriggers.JoinWith());
             });
         }
         #endregion

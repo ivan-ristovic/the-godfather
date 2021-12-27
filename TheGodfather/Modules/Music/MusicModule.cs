@@ -69,9 +69,9 @@ namespace TheGodfather.Modules.Music
                 emb.WithLocalizedTitle("str-music-queue");
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Bold(Formatter.Sanitize(song.Track.Title)));
-                emb.AddLocalizedTitleField("str-author", song.Track.Author, inline: true);
-                emb.AddLocalizedTitleField("str-duration", song.Track.Length.ToDurationString(), inline: true);
-                emb.AddLocalizedTitleField("str-requested-by", song.RequestedBy?.Mention, inline: true);
+                emb.AddLocalizedField("str-author", song.Track.Author, inline: true);
+                emb.AddLocalizedField("str-duration", song.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedField("str-requested-by", song.RequestedBy?.Mention, inline: true);
             });
         }
         #endregion
@@ -96,10 +96,10 @@ namespace TheGodfather.Modules.Music
                 emb.WithLocalizedTitle("str-music-player");
                 emb.WithColor(this.ModuleColor);
                 var totalQueueTime = TimeSpan.FromSeconds(this.Player.Queue.Sum(s => s.Track.Length.TotalSeconds));
-                emb.AddLocalizedTitleField("str-music-shuffled", this.Player.IsShuffled, inline: true);
-                emb.AddLocalizedTitleField("str-music-mode", this.Player.RepeatMode, inline: true);
-                emb.AddLocalizedTitleField("str-music-vol", $"{this.Player.Volume}%", inline: true);
-                emb.AddLocalizedTitleField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()})", inline: true);
+                emb.AddLocalizedField("str-music-shuffled", this.Player.IsShuffled, inline: true);
+                emb.AddLocalizedField("str-music-mode", this.Player.RepeatMode, inline: true);
+                emb.AddLocalizedField("str-music-vol", $"{this.Player.Volume}%", inline: true);
+                emb.AddLocalizedField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()})", inline: true);
             });
         }
         #endregion
