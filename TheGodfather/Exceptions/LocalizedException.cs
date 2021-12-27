@@ -2,6 +2,7 @@
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Exceptions
 {
@@ -16,40 +17,28 @@ namespace TheGodfather.Exceptions
             this.LocalizedMessage = rawMessage;
         }
 
-        protected LocalizedException(CommandContext ctx, params object?[]? args)
-            : base("err-loc")
+        protected LocalizedException(CommandContext ctx, TranslationKey key)
+            : base()
         {
-            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id, "err-loc", args);
+            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id, key);
         }
 
-        protected LocalizedException(CommandContext ctx, string key, params object?[]? args)
-            : base(key)
+        protected LocalizedException(CommandContext ctx, Exception inner, TranslationKey key)
+            : base(null, inner)
         {
-            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id, key, args);
+            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id, key);
         }
 
-        protected LocalizedException(CommandContext ctx, Exception inner, string key, params object?[]? args)
-            : base(key, inner)
+        protected LocalizedException(LocalizationService lcs, ulong? gid, TranslationKey key)
+            : base()
         {
-            this.LocalizedMessage = ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id, key, args);
+            this.LocalizedMessage = lcs.GetString(gid, key);
         }
 
-        protected LocalizedException(LocalizationService lcs, ulong? gid, params object?[]? args)
-            : base("err-loc")
+        protected LocalizedException(LocalizationService lcs, ulong? gid, Exception inner, TranslationKey key)
+            : base(null, inner)
         {
-            this.LocalizedMessage = lcs.GetString(gid, "err-loc", args);
-        }
-
-        protected LocalizedException(LocalizationService lcs, ulong? gid, string key, params object?[]? args)
-            : base(key)
-        {
-            this.LocalizedMessage = lcs.GetString(gid, key, args);
-        }
-
-        protected LocalizedException(LocalizationService lcs, ulong? gid, Exception inner, string key, params object?[]? args)
-            : base(key, inner)
-        {
-            this.LocalizedMessage = lcs.GetString(gid, key, args);
+            this.LocalizedMessage = lcs.GetString(gid, key);
         }
     }
 }

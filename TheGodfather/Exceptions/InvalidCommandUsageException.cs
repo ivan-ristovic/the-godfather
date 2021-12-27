@@ -1,17 +1,18 @@
 ﻿using System;
 using DSharpPlus.CommandsNext;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Exceptions
 {
     public class InvalidCommandUsageException : LocalizedException
     {
-        public InvalidCommandUsageException(CommandContext ctx, params object[]? args)
-            : base(ctx, "cmd-inv-usage", args) { }
+        public InvalidCommandUsageException(CommandContext ctx)
+            : base(ctx, TranslationKey.cmd_err_inv_usage) { }
 
-        public InvalidCommandUsageException(CommandContext ctx, string key, params object[]? args)
-            : base(ctx, key, args) { }
+        public InvalidCommandUsageException(CommandContext ctx, TranslationKey key)
+            : base(ctx, key) { }
 
-        public InvalidCommandUsageException(CommandContext ctx, Exception inner, string key, params object[]? args)
-            : base(ctx, key, inner, args) { }
+        public InvalidCommandUsageException(CommandContext ctx, Exception inner, TranslationKey key)
+            : base(ctx, inner, key) { }
     }
 }
