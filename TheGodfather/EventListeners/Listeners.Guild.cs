@@ -10,6 +10,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.EventListeners
 {
@@ -25,7 +26,7 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb) && !gcfg.ActionHistoryEnabled)
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-ban-add");
+            emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, TranslationKey.evt_gld_ban_add);
 
             DiscordAuditLogBanEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogBanEntry>(AuditLogActionType.Ban);
             emb.WithDescription(e.Member);
@@ -39,7 +40,7 @@ namespace TheGodfather.EventListeners
                 await bot.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                     Type = ActionHistoryEntry.Action.PermanentBan,
                     GuildId = e.Guild.Id,
-                    Notes = entry is null ? null : ls.GetString(e.Guild.Id, "fmt-ah", entry.UserResponsible.Mention, entry.Reason),
+                    Notes = entry is null ? null : ls.GetString(e.Guild.Id, TranslationKey.fmt_ah(entry.UserResponsible.Mention, entry.Reason)),
                     Time = DateTimeOffset.Now,
                     UserId = e.Member.Id,
                 });
@@ -53,7 +54,7 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, "evt-gld-ban-del");
+            emb.WithLocalizedTitle(DiscordEventType.GuildBanAdded, TranslationKey.evt_gld_ban_del);
 
             DiscordAuditLogBanEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogBanEntry>(AuditLogActionType.Unban);
             emb.WithDescription(e.Member);
@@ -81,31 +82,31 @@ namespace TheGodfather.EventListeners
                     ? AuditLogActionType.EmojiDelete
                     : AuditLogActionType.EmojiUpdate;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildEmojisUpdated, "evt-gld-emoji-chn", desc: null, action);
+            emb.WithLocalizedTitle(DiscordEventType.GuildEmojisUpdated, TranslationKey.evt_gld_emoji_chn(action));
 
             DiscordAuditLogEmojiEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogEmojiEntry>(action);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 if (ent.Target is null) {
-                    emb.WithLocalizedDescription("evt-gld-emoji-unk");
+                    emb.WithLocalizedDescription(TranslationKey.evt_gld_emoji_unk);
                     return;
                 }
                 emb.WithThumbnail(ent.Target.Url);
                 switch (action) {
                     case AuditLogActionType.EmojiCreate:
-                        emb.AddLocalizedTitleField("evt-gld-emoji-add", ent.Target.Name, inline: true);
+                        emb.AddLocalizedField(TranslationKey.evt_gld_emoji_add, ent.Target.Name, inline: true);
                         break;
                     case AuditLogActionType.EmojiDelete:
-                        emb.AddLocalizedTitleField("evt-gld-emoji-del", ent.NameChange.Before, inline: true);
+                        emb.AddLocalizedField(TranslationKey.evt_gld_emoji_del, ent.NameChange.Before, inline: true);
                         break;
                     case AuditLogActionType.EmojiUpdate:
-                        emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, ent.NameChange, inline: true);
                         break;
                 }
             });
 
             if (entry is null) {
-                emb.AddLocalizedTitleField("evt-gld-emoji-bef", e.EmojisBefore?.Count, inline: true);
-                emb.AddLocalizedTitleField("evt-gld-emoji-aft", e.EmojisAfter?.Count, inline: true);
+                emb.AddLocalizedField(TranslationKey.evt_gld_emoji_bef, e.EmojisBefore?.Count, inline: true);
+                emb.AddLocalizedField(TranslationKey.evt_gld_emoji_aft, e.EmojisAfter?.Count, inline: true);
             }
 
             await logService.LogAsync(e.Guild, emb);
@@ -124,37 +125,37 @@ namespace TheGodfather.EventListeners
                     ? AuditLogActionType.StickerDelete
                     : AuditLogActionType.StickerUpdate;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildStickersUpdated, "evt-gld-sticker-chn", desc: null, action);
+            emb.WithLocalizedTitle(DiscordEventType.GuildStickersUpdated, TranslationKey.evt_gld_sticker_chn(action));
 
             DiscordAuditLogStickerEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogStickerEntry>(action);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 if (ent.Target is null) {
-                    emb.WithLocalizedDescription("evt-gld-sticker-unk");
+                    emb.WithLocalizedDescription(TranslationKey.evt_gld_sticker_unk);
                     return;
                 }
                 emb.WithThumbnail(ent.Target.StickerUrl);
                 switch (action) {
                     case AuditLogActionType.StickerCreate:
-                        emb.AddLocalizedTitleField("evt-gld-sticker-add", ent.Target.Name, inline: true);
+                        emb.AddLocalizedField(TranslationKey.evt_gld_sticker_add, ent.Target.Name, inline: true);
                         break;
                     case AuditLogActionType.StickerDelete:
-                        emb.AddLocalizedTitleField("evt-gld-sticker-del", ent.NameChange.Before, inline: true);
+                        emb.AddLocalizedField(TranslationKey.evt_gld_sticker_del, ent.NameChange.Before, inline: true);
                         break;
                     case AuditLogActionType.StickerUpdate:
-                        emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-tags", ent.TagsChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-available", ent.AvailabilityChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-asset", ent.AssetChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-format", ent.FormatChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-type", ent.TypeChange, inline: true);
-                        emb.AddLocalizedPropertyChangeField("str-desc", ent.DescriptionChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, ent.NameChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_tags, ent.TagsChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_available, ent.AvailabilityChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_asset, ent.AssetChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_format, ent.FormatChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_type, ent.TypeChange, inline: true);
+                        emb.AddLocalizedPropertyChangeField(TranslationKey.str_desc, ent.DescriptionChange, inline: true);
                         break;
                 }
             });
 
             if (entry is null) {
-                emb.AddLocalizedTitleField("evt-gld-emoji-bef", e.StickersBefore?.Count, inline: true);
-                emb.AddLocalizedTitleField("evt-gld-emoji-aft", e.StickersAfter?.Count, inline: true);
+                emb.AddLocalizedField(TranslationKey.evt_gld_emoji_bef, e.StickersBefore?.Count, inline: true);
+                emb.AddLocalizedField(TranslationKey.evt_gld_emoji_aft, e.StickersAfter?.Count, inline: true);
             }
 
             await logService.LogAsync(e.Guild, emb);
@@ -167,11 +168,11 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildIntegrationsUpdated, "evt-gld-int-upd");
+            emb.WithLocalizedTitle(DiscordEventType.GuildIntegrationsUpdated, TranslationKey.evt_gld_int_upd);
             DiscordAuditLogIntegrationEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogIntegrationEntry>(AuditLogActionType.Ban);
             if (entry is not null) {
-                emb.AddLocalizedPropertyChangeField("str-expire-behavior", entry.ExpireBehavior);
-                emb.AddLocalizedPropertyChangeField("str-expire-grace-period", entry.ExpireGracePeriod);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_expire_behavior, entry.ExpireBehavior);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_expire_grace_period, entry.ExpireGracePeriod);
                 emb.AddFieldsFromAuditLogEntry(entry);
             }
 
@@ -185,8 +186,8 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-gld-role-add", e.Role);
-            emb.AddLocalizedPropertyChangeField("str-managed", false, e.Role?.IsManaged ?? false, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_gld_role_add, e.Role);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_managed, false, e.Role?.IsManaged ?? false, inline: true);
 
             DiscordAuditLogRoleUpdateEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleCreate);
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -200,7 +201,7 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-gld-role-del", e.Role);
+            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_gld_role_del, e.Role);
 
             DiscordAuditLogRoleUpdateEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleDelete);
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -215,18 +216,18 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleUpdated, "evt-gld-role-upd", e.RoleBefore);
-            emb.AddLocalizedPropertyChangeField("evt-upd-name", e.RoleBefore.Name, e.RoleAfter.Name);
-            emb.AddLocalizedPropertyChangeField("evt-upd-color", e.RoleBefore.Color, e.RoleAfter.Color);
-            emb.AddLocalizedPropertyChangeField("evt-upd-hoist", e.RoleBefore.IsHoisted, e.RoleAfter.IsHoisted);
-            emb.AddLocalizedPropertyChangeField("evt-upd-managed", e.RoleBefore.IsManaged, e.RoleAfter.IsManaged);
-            emb.AddLocalizedPropertyChangeField("evt-upd-mention", e.RoleBefore.IsMentionable, e.RoleAfter.IsMentionable);
-            emb.AddLocalizedPropertyChangeField("evt-upd-position", e.RoleBefore.Position, e.RoleAfter.Position);
+            emb.WithLocalizedTitle(DiscordEventType.GuildRoleUpdated, TranslationKey.evt_gld_role_upd, e.RoleBefore);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_name, e.RoleBefore.Name, e.RoleAfter.Name);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_color, e.RoleBefore.Color, e.RoleAfter.Color);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_hoist, e.RoleBefore.IsHoisted, e.RoleAfter.IsHoisted);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_managed, e.RoleBefore.IsManaged, e.RoleAfter.IsManaged);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_mention, e.RoleBefore.IsMentionable, e.RoleAfter.IsMentionable);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_position, e.RoleBefore.Position, e.RoleAfter.Position);
 
             DiscordAuditLogRoleUpdateEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 // TODO use permissions_new once it is implemented in D#+
-                emb.AddLocalizedTitleField("str-perms", ent.PermissionChange?.After, inline: false, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_perms, ent.PermissionChange?.After, inline: false, unknown: false);
             });
 
             await logService.LogAsync(e.Guild, emb);
@@ -239,32 +240,32 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.GuildBefore.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
             
-            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-gld-upd");
+            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_gld_upd);
 
-            emb.AddLocalizedPropertyChangeField("str-afktime", e.GuildBefore.AfkTimeout, e.GuildAfter.AfkTimeout);
-            emb.AddLocalizedPropertyChangeField("str-banner", e.GuildBefore.BannerUrl, e.GuildAfter.BannerUrl);
-            emb.AddLocalizedPropertyChangeField("str-boosters", e.GuildBefore.PremiumSubscriptionCount, e.GuildAfter.PremiumSubscriptionCount);
-            emb.AddLocalizedPropertyChangeField("str-notifications", e.GuildBefore.DefaultMessageNotifications, e.GuildAfter.DefaultMessageNotifications);
-            emb.AddLocalizedPropertyChangeField("str-desc", e.GuildBefore.Description, e.GuildAfter.Description);
-            emb.AddLocalizedPropertyChangeField("str-discovery-url", e.GuildBefore.DiscoverySplashUrl, e.GuildAfter.DiscoverySplashUrl);
-            emb.AddLocalizedPropertyChangeField("str-nsfw", e.GuildBefore.ExplicitContentFilter, e.GuildAfter.ExplicitContentFilter);
-            emb.AddLocalizedPropertyChangeField("str-icon", e.GuildBefore.IconUrl, e.GuildAfter.IconUrl);
-            emb.AddLocalizedPropertyChangeField("str-locale", e.GuildBefore.PreferredLocale, e.GuildAfter.PreferredLocale);
-            emb.AddLocalizedPropertyChangeField("str-tier", e.GuildBefore.PremiumTier, e.GuildAfter.PremiumTier);
-            emb.AddLocalizedPropertyChangeField("str-vanity-url", e.GuildBefore.VanityUrlCode, e.GuildAfter.VanityUrlCode);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_afktime, e.GuildBefore.AfkTimeout, e.GuildAfter.AfkTimeout);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_banner, e.GuildBefore.BannerUrl, e.GuildAfter.BannerUrl);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_boosters, e.GuildBefore.PremiumSubscriptionCount, e.GuildAfter.PremiumSubscriptionCount);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_notifications, e.GuildBefore.DefaultMessageNotifications, e.GuildAfter.DefaultMessageNotifications);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_desc, e.GuildBefore.Description, e.GuildAfter.Description);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_discovery_url, e.GuildBefore.DiscoverySplashUrl, e.GuildAfter.DiscoverySplashUrl);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_nsfw, e.GuildBefore.ExplicitContentFilter, e.GuildAfter.ExplicitContentFilter);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_icon, e.GuildBefore.IconUrl, e.GuildAfter.IconUrl);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_locale, e.GuildBefore.PreferredLocale, e.GuildAfter.PreferredLocale);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_tier, e.GuildBefore.PremiumTier, e.GuildAfter.PremiumTier);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_vanity_url, e.GuildBefore.VanityUrlCode, e.GuildAfter.VanityUrlCode);
             // FIXME Remove the comment once D#+ issue is fixed
-            // emb.AddLocalizedPropertyChangeField("str-region", e.GuildBefore.VoiceRegion, e.GuildAfter.VoiceRegion);
+            // emb.AddLocalizedPropertyChangeField(TranslationKey.str_region, e.GuildBefore.VoiceRegion, e.GuildAfter.VoiceRegion);
             DiscordAuditLogGuildEntry? entry = await e.GuildAfter.GetLatestAuditLogEntryAsync<DiscordAuditLogGuildEntry>(AuditLogActionType.GuildUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
-                emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
-                emb.AddLocalizedPropertyChangeField("str-afkchn", ent.AfkChannelChange);
-                emb.AddLocalizedPropertyChangeField("str-embchn", ent.EmbedChannelChange);
-                emb.AddLocalizedPropertyChangeField("str-mfa", ent.MfaLevelChange);
-                emb.AddLocalizedPropertyChangeField("str-owner", ent.OwnerChange);
-                emb.AddLocalizedPropertyChangeField("str-region", ent.RegionChange);
-                emb.AddLocalizedPropertyChangeField("str-splash", ent.SplashChange);
-                emb.AddLocalizedPropertyChangeField("str-syschn", ent.SystemChannelChange);
-                emb.AddLocalizedPropertyChangeField("str-verlvl", ent.VerificationLevelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, ent.NameChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_afkchn, ent.AfkChannelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_embchn, ent.EmbedChannelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_mfa, ent.MfaLevelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_owner, ent.OwnerChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_region, ent.RegionChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_splash, ent.SplashChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_syschn, ent.SystemChannelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_verlvl, ent.VerificationLevelChange);
             }, errReport: false);
 
             await logService.LogAsync(e.GuildAfter, emb);
@@ -280,12 +281,12 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return Task.CompletedTask;
 
-            emb.WithLocalizedTitle(DiscordEventType.InviteCreated, "evt-gld-inv-add", e.Channel);
-            emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
-            emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);
-            emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
-            emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
-            emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.InviteCreated, TranslationKey.evt_gld_inv_add, e.Channel);
+            emb.AddLocalizedField(TranslationKey.str_code, e.Invite.Code, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_revoked, e.Invite.IsRevoked, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_temporary, e.Invite.IsTemporary, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_max_age_s, e.Invite.MaxAge, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_max_uses, e.Invite.MaxUses, inline: true);
             if (e.Invite.Inviter is { })
                 emb.AddInvocationFields(e.Invite.Inviter, e.Channel);
             return logService.LogAsync(e.Guild, emb);
@@ -299,14 +300,14 @@ namespace TheGodfather.EventListeners
                 return Task.CompletedTask;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-            emb.WithLocalizedTitle(DiscordEventType.InviteDeleted, "evt-gld-inv-del", e.Channel);
-            emb.AddLocalizedTitleField("str-code", e.Invite.Code, inline: true);
-            emb.AddLocalizedTitleField("str-revoked", e.Invite.IsRevoked, inline: true);
-            emb.AddLocalizedTitleField("str-temporary", e.Invite.IsTemporary, inline: true);
-            emb.AddLocalizedTitleField("str-max-age-s", e.Invite.MaxAge, inline: true);
-            emb.AddLocalizedTitleField("str-max-uses", e.Invite.MaxUses, inline: true);
-            emb.AddLocalizedTitleField("str-created-by", e.Invite.Inviter?.Mention, inline: true, unknown: false);
-            emb.AddLocalizedTitleField("str-created-at", ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt));
+            emb.WithLocalizedTitle(DiscordEventType.InviteDeleted, TranslationKey.evt_gld_inv_del, e.Channel);
+            emb.AddLocalizedField(TranslationKey.str_code, e.Invite.Code, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_revoked, e.Invite.IsRevoked, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_temporary, e.Invite.IsTemporary, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_max_age_s, e.Invite.MaxAge, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_max_uses, e.Invite.MaxUses, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_created_by, e.Invite.Inviter?.Mention, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_created_at, ls.GetLocalizedTimeString(e.Guild.Id, e.Invite.CreatedAt));
             return logService.LogAsync(e.Guild, emb);
         }
     }

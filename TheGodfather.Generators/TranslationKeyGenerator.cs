@@ -31,8 +31,8 @@ public class TranslationKeyGenerator : ISourceGenerator
         using var stringWriter = new StringWriter();
         using var sw = new IndentedTextWriter(stringWriter);
             
-        sw.WriteLine(@"
-#nullable enable
+        sw.WriteLine(@"#nullable enable
+
 using System;
         
 namespace TheGodfather.Translations;
@@ -53,7 +53,8 @@ public readonly partial struct TranslationKey
     }
 
 ");
-
+        sw.Indent++;
+        
         foreach (KeyValuePair<string, string> property in properties) {
             MatchCollection matches = _placeholderRegex.Matches(property.Value);
 

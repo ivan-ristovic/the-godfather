@@ -21,6 +21,7 @@ using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Extensions;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Services
 {
@@ -263,7 +264,7 @@ namespace TheGodfather.Services
                             } catch {
                                 LoggingService ls = bot.Services.GetRequiredService<LoggingService>();
                                 if (ls.IsLogEnabledFor(gid, out LocalizedEmbedBuilder emb)) {
-                                    emb.WithLocalizedDescription("err-starboard-fail");
+                                    emb.WithLocalizedDescription(TranslationKey.err_starboard_fail);
                                     async.Execute(ls.LogAsync(message.Channel.Guild, emb));
                                 }
                             }

@@ -6,6 +6,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using TheGodfather.Common;
 using TheGodfather.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Extensions
 {
@@ -19,14 +20,14 @@ namespace TheGodfather.Extensions
             });
         }
 
-        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, string key, params object?[]? args)
-            => LocalizedEmbedAsync(channel, lcs, null, null, key, args);
+        public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, TranslationKey key)
+            => LocalizedEmbedAsync(channel, lcs, null, null, key);
 
         public static Task<DiscordMessage> LocalizedEmbedAsync(this DiscordChannel channel, LocalizationService lcs, DiscordEmoji? icon, DiscordColor? color, 
-                                                               string key, params object?[]? args)
+                                                               TranslationKey key)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{icon ?? ""} {lcs.GetString(channel.GuildId, key, args)}",
+                Description = $"{icon ?? ""} {lcs.GetString(channel.GuildId, key)}",
                 Color = color ?? DiscordColor.Green
             });
         }

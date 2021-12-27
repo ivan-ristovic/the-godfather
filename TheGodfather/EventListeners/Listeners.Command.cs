@@ -23,6 +23,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.EventListeners
 {
@@ -66,14 +67,14 @@ namespace TheGodfather.EventListeners
 
             ulong gid = e.Context.Guild?.Id ?? 0;
             var emb = new LocalizedEmbedBuilder(lcs, gid);
-            emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-err", desc: null, e.Command?.QualifiedName ?? "");
+            emb.WithLocalizedTitle(DiscordEventType.CommandErrored, TranslationKey.cmd_err(e.Command?.QualifiedName ?? ""));
 
             switch (ex) {
                 case CommandNotFoundException cne:
                     if (!bot.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(gid).SuggestionsEnabled)
                         return e.Context.Message.CreateReactionAsync(Emojis.Question);
 
-                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-404", desc: null, cne.CommandName);
+                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, TranslationKey.cmd_404(cne.CommandName));
 
                     CommandService cs = bot.Services.GetRequiredService<CommandService>();
                     IEnumerable<KeyValuePair<string, Command>> similarCommands = bot.Commands
@@ -85,7 +86,7 @@ namespace TheGodfather.EventListeners
                         .Take(3);
 
                     if (similarCommands.Any()) {
-                        emb.WithLocalizedDescription("q-did-you-mean");
+                        emb.WithLocalizedDescription(TranslationKey.q_did_you_mean);
                         foreach ((string cname, Command cmd) in similarCommands)
                             emb.AddField($"{cmd.QualifiedName} ({cname})", cs.GetCommandDescription(gid, cmd.QualifiedName));
                     }
@@ -93,7 +94,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case InvalidCommandUsageException icue:
                     emb.WithDescription(icue.LocalizedMessage);
-                    emb.WithLocalizedFooter("fmt-help-cmd", iconUrl: null, e.Command?.QualifiedName ?? "");
+                    emb.WithLocalizedFooter(TranslationKey.fmt_help_cmd(e.Command?.QualifiedName ?? ""), iconUrl: null);
                     break;
                 case ArgumentException _:
                 case TargetInvocationException _:
@@ -104,43 +105,43 @@ namespace TheGodfather.EventListeners
                     CommandContext fctx = cnext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
                     return cnext.ExecuteCommandAsync(fctx);
                 case ConcurrentOperationException coex:
-                    emb.WithLocalizedDescription("err-concurrent");
+                    emb.WithLocalizedDescription(TranslationKey.err_concurrent);
                     break;
                 case BadRequestException brex:
-                    emb.WithLocalizedDescription("cmd-err-bad-req", brex.JsonMessage);
+                    emb.WithLocalizedDescription(TranslationKey.cmd_err_bad_req(brex.JsonMessage));
                     break;
                 case NotFoundException nfe:
-                    emb.WithLocalizedDescription("cmd-err-404", nfe.JsonMessage);
+                    emb.WithLocalizedDescription(TranslationKey.cmd_err_404(nfe.JsonMessage));
                     break;
                 case FormatException nfe:
-                    emb.WithLocalizedDescription("cmd-err-loc");
+                    emb.WithLocalizedDescription(TranslationKey.cmd_err_loc);
                     break;
                 case LocalizedException lex:
                     emb.WithDescription(lex.LocalizedMessage);
                     break;
                 case ChecksFailedException cfex:
-                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "cmd-chk", desc: null, e.Command?.QualifiedName ?? "?");
+                    emb.WithLocalizedTitle(DiscordEventType.CommandErrored, TranslationKey.cmd_chk(e.Command?.QualifiedName ?? "?"));
                     var sb = new StringBuilder();
                     switch (cfex.FailedChecks[0]) {
                         case CooldownAttribute _:
                             return Task.CompletedTask;
                         case UsesInteractivityAttribute _:
-                            sb.AppendLine(lcs.GetString(gid, "cmd-chk-inter"));
+                            sb.AppendLine(lcs.GetString(gid, TranslationKey.cmd_chk_inter));
                             break;
                         default:
                             foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
                                 string line = attr switch {
-                                    RequirePermissionsAttribute p => lcs.GetString(gid, "cmd-chk-perms", p.Permissions.ToPermissionString()),
-                                    RequireUserPermissionsAttribute up => lcs.GetString(gid, "cmd-chk-perms-usr", up.Permissions.ToPermissionString()),
-                                    RequireOwnerOrPermissionsAttribute op => lcs.GetString(gid, "cmd-chk-perms-usr", op.Permissions.ToPermissionString()),
-                                    RequireBotPermissionsAttribute bp => lcs.GetString(gid, "cmd-chk-perms-bot", bp.Permissions.ToPermissionString()),
-                                    RequirePrivilegedUserAttribute _ => lcs.GetString(gid, "cmd-chk-perms-priv"),
-                                    RequireOwnerAttribute _ => lcs.GetString(gid, "cmd-chk-perms-own"),
-                                    RequireNsfwAttribute _ => lcs.GetString(gid, "cmd-chk-perms-nsfw"),
-                                    RequirePrefixesAttribute pattr => lcs.GetString(gid, "cmd-chk-perms-pfix", pattr.Prefixes.Humanize(", ")),
-                                    RequireGuildAttribute _ => lcs.GetString(gid, "cmd-chk-perms-guild"),
-                                    RequireDirectMessageAttribute _ => lcs.GetString(gid, "cmd-chk-perms-dm"),
-                                    _ => lcs.GetString(gid, "cmd-chk-perms-attr", attr),
+                                    RequirePermissionsAttribute p => lcs.GetString(gid, TranslationKey.cmd_chk_perms(p.Permissions.ToPermissionString())),
+                                    RequireUserPermissionsAttribute up => lcs.GetString(gid, TranslationKey.cmd_chk_perms_usr(up.Permissions.ToPermissionString())),
+                                    RequireOwnerOrPermissionsAttribute op => lcs.GetString(gid, TranslationKey.cmd_chk_perms_usr(op.Permissions.ToPermissionString())),
+                                    RequireBotPermissionsAttribute bp => lcs.GetString(gid, TranslationKey.cmd_chk_perms_bot(bp.Permissions.ToPermissionString())),
+                                    RequirePrivilegedUserAttribute _ => lcs.GetString(gid, TranslationKey.cmd_chk_perms_priv),
+                                    RequireOwnerAttribute _ => lcs.GetString(gid, TranslationKey.cmd_chk_perms_own),
+                                    RequireNsfwAttribute _ => lcs.GetString(gid, TranslationKey.cmd_chk_perms_nsfw),
+                                    RequirePrefixesAttribute pattr => lcs.GetString(gid, TranslationKey.cmd_chk_perms_pfix(pattr.Prefixes.Humanize(", "))),
+                                    RequireGuildAttribute _ => lcs.GetString(gid, TranslationKey.cmd_chk_perms_guild),
+                                    RequireDirectMessageAttribute _ => lcs.GetString(gid, TranslationKey.cmd_chk_dm),
+                                    _ => lcs.GetString(gid, TranslationKey.cmd_chk_attr(attr)),
                                 };
                                 sb.Append("- ").AppendLine(line);
                             }
@@ -149,13 +150,13 @@ namespace TheGodfather.EventListeners
                     emb.WithDescription(sb.ToString());
                     break;
                 case UnauthorizedException _:
-                    emb.WithLocalizedDescription("cmd-err-403");
+                    emb.WithLocalizedDescription(TranslationKey.cmd_err_403);
                     break;
                 case TaskCanceledException tcex:
                     return Task.CompletedTask;
                 case NpgsqlException _:
                 case DbUpdateException _:
-                    emb.WithLocalizedDescription("err-db");
+                    emb.WithLocalizedDescription(TranslationKey.err_db);
                     break;
                 case CommandCancelledException:
                     break;

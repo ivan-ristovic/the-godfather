@@ -89,31 +89,6 @@ namespace TheGodfather.Services
             }
         }
 
-        public string GetString(ulong? gid, string key, params object?[]? args)
-        {
-            this.AssertIsDataLoaded();
-
-            if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException(nameof(key));
-
-            string locale = this.GetGuildLocale(gid);
-            if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string>? localeStrings)) {
-                if (!localeStrings.TryGetValue(key, out string? response)) {
-                    Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key)} Please report this.");
-                }
-                if (!localeStrings.TryGetValue("str-404", out string? str404)) {
-                    Log.Error("Failed to find string for {Key} in locale {Locale}", "str-404", locale);
-                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode("str-404")} Please report this.");
-                }
-                IEnumerable<object> margs = args?.Select(a => a is null ? str404 : a) ?? Enumerable.Empty<object>();
-                return string.Format(response, margs.ToArray()).Trim();
-            } else {
-                Log.Error("Guild {GuildId} has unknown locale {Locale}", gid, locale);
-                throw new LocalizationException($"Locale not found for guild {gid}");
-            }
-        }
-        
         public string GetString(ulong? gid, TranslationKey key)
         {
             this.AssertIsDataLoaded();

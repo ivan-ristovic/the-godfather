@@ -6,6 +6,7 @@ using DSharpPlus.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Database.Models;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Services.Extensions
 {
@@ -43,8 +44,8 @@ namespace TheGodfather.Services.Extensions
             }
 
             if (!string.IsNullOrWhiteSpace(sub.Name))
-                emb.AddLocalizedTitleField("str-from", sub.Name);
-            emb.AddLocalizedTitleField("str-content", sub.Feed.LastPostUrl);
+                emb.AddLocalizedField(TranslationKey.str_from, sub.Name);
+            emb.AddLocalizedField(TranslationKey.str_content, sub.Feed.LastPostUrl);
 
             await chn.SendMessageAsync(embed: emb.Build());
             return true;

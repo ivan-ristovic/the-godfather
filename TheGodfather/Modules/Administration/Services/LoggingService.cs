@@ -13,6 +13,7 @@ using TheGodfather.EventListeners.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -31,34 +32,32 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
         public static async Task TryExecuteWithReportAsync(TheGodfatherBot shard, DiscordGuild guild, Task action,
-                                                           string code403Key, string code404Key,
-                                                           string[]? code403args = null, string[]? code404args = null,
+                                                           TranslationKey code403Key, TranslationKey code404Key,
                                                            Func<Task>? code403action = null, Func<Task>? code404action = null)
         {
             try {
                 await action;
             } catch (UnauthorizedException) {
-                await AwaitSilentAsync(ReportAsync(shard, guild, code403Key, code403args));
+                await AwaitSilentAsync(ReportAsync(shard, guild, code403Key));
                 await AwaitSilentAsync(code403action);
             } catch (NotFoundException) {
-                await AwaitSilentAsync(ReportAsync(shard, guild, code404Key, code404args));
+                await AwaitSilentAsync(ReportAsync(shard, guild, code404Key));
                 await AwaitSilentAsync(code404action);
             }
         }
 
         public static async Task<T?> TryExecuteWithReportAsync<T>(TheGodfatherBot shard, DiscordGuild guild, Task<T> action,
-                                                                  string code403Key, string code404Key, string[]?
-                                                                  code403args = null, string[]? code404args = null,
+                                                                  TranslationKey code403Key, TranslationKey code404Key,
                                                                   Func<Task>? code403action = null, Func<Task>? code404action = null)
             where T : class
         {
             try {
                 return await action;
             } catch (UnauthorizedException) {
-                await AwaitSilentAsync(ReportAsync(shard, guild, code403Key, code403args));
+                await AwaitSilentAsync(ReportAsync(shard, guild, code403Key));
                 await AwaitSilentAsync(code403action);
             } catch (NotFoundException) {
-                await AwaitSilentAsync(ReportAsync(shard, guild, code404Key, code404args));
+                await AwaitSilentAsync(ReportAsync(shard, guild, code404Key));
                 await AwaitSilentAsync(code404action);
             }
 
@@ -66,11 +65,11 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private static Task ReportAsync(TheGodfatherBot shard, DiscordGuild guild, string key, string[]? args)
+        private static Task ReportAsync(TheGodfatherBot shard, DiscordGuild guild, TranslationKey msg)
         {
             return !IsLogEnabledForGuild(shard, guild.Id, out LoggingService logService, out _)
                 ? Task.CompletedTask
-                : logService.ReportAsync(guild, key, args);
+                : logService.ReportAsync(guild, msg);
         }
 
         private static async Task AwaitSilentAsync(Task? task)
@@ -133,34 +132,32 @@ namespace TheGodfather.Modules.Administration.Services
             => new LocalizedEmbedBuilder(this.lcs, gid);
 
         public async Task TryExecuteWithReportAsync(DiscordGuild guild, Task action,
-                                                    string code403Key, string code404Key,
-                                                    string[]? code403args = null, string[]? code404args = null,
+                                                    TranslationKey code403Key, TranslationKey code404Key,
                                                     Func<Task>? code403action = null, Func<Task>? code404action = null)
         {
             try {
                 await action;
             } catch (UnauthorizedException) {
-                await AwaitSilentAsync(this.ReportAsync(guild, code403Key, code403args));
+                await AwaitSilentAsync(this.ReportAsync(guild, code403Key));
                 await AwaitSilentAsync(code403action);
             } catch (NotFoundException) {
-                await AwaitSilentAsync(this.ReportAsync(guild, code404Key, code404args));
+                await AwaitSilentAsync(this.ReportAsync(guild, code404Key));
                 await AwaitSilentAsync(code404action);
             }
         }
 
         public async Task<T?> TryExecuteWithReportAsync<T>(DiscordGuild guild, Task<T> action,
-                                                           string code403Key, string code404Key, string[]?
-                                                           code403args = null, string[]? code404args = null,
+                                                           TranslationKey code403Key, TranslationKey code404Key,
                                                            Func<Task>? code403action = null, Func<Task>? code404action = null)
             where T : class
         {
             try {
                 return await action;
             } catch (UnauthorizedException) {
-                await AwaitSilentAsync(this.ReportAsync(guild, code403Key, code403args));
+                await AwaitSilentAsync(this.ReportAsync(guild, code403Key));
                 await AwaitSilentAsync(code403action);
             } catch (NotFoundException) {
-                await AwaitSilentAsync(this.ReportAsync(guild, code404Key, code404args));
+                await AwaitSilentAsync(this.ReportAsync(guild, code404Key));
                 await AwaitSilentAsync(code404action);
             }
 
@@ -192,12 +189,12 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        private Task ReportAsync(DiscordGuild guild, string key, string[]? args)
+        private Task ReportAsync(DiscordGuild guild, TranslationKey str)
         {
             if (!this.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb))
                 return Task.CompletedTask;
-            emb.WithLocalizedTitle(DiscordEventType.CommandErrored, "str-err");
-            emb.WithLocalizedDescription(key, args);
+            emb.WithLocalizedTitle(DiscordEventType.CommandErrored, TranslationKey.str_err);
+            emb.WithLocalizedDescription(str);
             return this.LogAsync(guild, emb);
         }
     }

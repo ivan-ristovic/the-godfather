@@ -7,6 +7,7 @@ using Humanizer;
 using TheGodfather.Attributes;
 using TheGodfather.Common;
 using TheGodfather.EventListeners.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Services.Common
 {
@@ -39,37 +40,37 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedTitle(string title, params object?[]? args)
+        public LocalizedEmbedBuilder WithLocalizedTitle(TranslationKey title)
         {
-            string localizedTitle = this.lcs.GetString(this.gid, title, args);
+            string localizedTitle = this.lcs.GetString(this.gid, title);
             this.WithTitle(localizedTitle);
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, params object?[]? args)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, TranslationKey title)
         {
             this.WithColor(type.ToDiscordColor());
-            return this.WithLocalizedTitle(title, args);
+            return this.WithLocalizedTitle(title);
         }
 
-        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, string title, object? desc, params object?[]? titleArgs)
+        public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, TranslationKey title, object? desc)
         {
-            this.WithLocalizedTitle(type, title, titleArgs);
+            this.WithLocalizedTitle(type, title);
             if (desc is { })
                 this.WithDescription(desc);
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, string title, string desc, object?[]? titleArgs = null, object?[]? descArgs = null)
+        public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, TranslationKey title, TranslationKey desc)
         {
-            this.WithLocalizedTitle(type, title, titleArgs);
-            this.WithLocalizedDescription(desc, descArgs);
+            this.WithLocalizedTitle(type, title);
+            this.WithLocalizedDescription(desc);
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedDescription(string desc, params object?[]? args)
+        public LocalizedEmbedBuilder WithLocalizedDescription(TranslationKey desc)
         {
-            string localizedDesc = this.lcs.GetString(this.gid, desc, args);
+            string localizedDesc = this.lcs.GetString(this.gid, desc);
             this.emb.WithDescription(this.TruncateToFitEmbedDescription(localizedDesc));
             return this;
         }
@@ -78,7 +79,7 @@ namespace TheGodfather.Services.Common
         {
             string? objStr = obj?.ToString();
             if (unknown) {
-                string localized404 = this.lcs.GetString(this.gid, "str-404");
+                string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
                 string desc = string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr;
                 this.emb.WithDescription(this.TruncateToFitEmbedDescription(desc));
             } else {
@@ -113,9 +114,9 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder WithLocalizedFooter(string key, string? iconUrl, params object?[]? args)
+        public LocalizedEmbedBuilder WithLocalizedFooter(TranslationKey footer, string? iconUrl)
         {
-            string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, key, args));
+            string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, footer));
             this.emb.WithFooter(localizedText, iconUrl);
             return this;
         }
@@ -156,12 +157,12 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedTitleField(string title, object? obj, bool inline = false, bool unknown = true, params object?[]? titleArgs)
+        public LocalizedEmbedBuilder AddLocalizedField(TranslationKey title, object? obj, bool inline = false, bool unknown = true)
         {
             string? objStr = obj?.ToString();
-            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
+            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
             if (unknown) {
-                string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, "str-404"));
+                string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, TranslationKey.NotFound));
                 this.emb.AddField(localizedTitle, string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr, inline);
             } else {
                 if (!string.IsNullOrWhiteSpace(objStr))
@@ -170,45 +171,37 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedContentField(string title, string content, bool inline = false, params object?[]? contentArgs)
+        public LocalizedEmbedBuilder AddLocalizedField(TranslationKey title, TranslationKey content, bool inline = false)
         {
             string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
-            string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
-            this.emb.AddField(localizedTitle, localizedContent, inline);
-            return this;
-        }
-
-        public LocalizedEmbedBuilder AddLocalizedField(string title, string content, bool inline = false, object?[]? titleArgs = null, object?[]? contentArgs = null)
-        {
-            string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title, titleArgs));
-            string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content, contentArgs));
+            string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content));
             this.emb.AddField(localizedTitle, localizedContent, inline);
             return this;
         }
 
         public LocalizedEmbedBuilder AddInsufficientAuditLogPermissionsField()
-            => this.AddLocalizedField("str-err", "err-audit-log-no-perms");
+            => this.AddLocalizedField(TranslationKey.str_err, TranslationKey.err_audit_log_no_perms);
 
         public LocalizedEmbedBuilder AddInvocationFields(CommandContext ctx)
             => this.AddInvocationFields(ctx.User, ctx.Channel);
 
         public LocalizedEmbedBuilder AddInvocationFields(DiscordUser user, DiscordChannel? channel = null)
         {
-            this.AddLocalizedTitleField("evt-usr-responsible", user.Mention, inline: true);
+            this.AddLocalizedField(TranslationKey.evt_usr_responsible, user.Mention, inline: true);
             if (channel is { })
-                this.AddLocalizedTitleField("evt-invoke-loc", channel.Mention, inline: true);
+                this.AddLocalizedField(TranslationKey.evt_invoke_loc, channel.Mention, inline: true);
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedTimestampField(string title, DateTimeOffset? timestamp, bool inline = false, params object?[]? args)
+        public LocalizedEmbedBuilder AddLocalizedTimestampField(TranslationKey title, DateTimeOffset? timestamp, bool inline = false)
         {
             if (timestamp is { })
-                this.AddLocalizedTitleField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp), inline, true, args);
+                this.AddLocalizedField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp), inline);
             return this;
         }
 
         public LocalizedEmbedBuilder AddReason(string? reason)
-            => reason is null ? this : this.AddLocalizedTitleField("str-rsn", reason);
+            => reason is null ? this : this.AddLocalizedField(TranslationKey.str_rsn, reason);
 
         public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T>? action = null, bool errReport = true) where T : DiscordAuditLogEntry
         {
@@ -225,35 +218,35 @@ namespace TheGodfather.Services.Common
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(string title, PropertyChange<T>? propertyChange, bool inline = true, params object?[]? args)
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(TranslationKey title, PropertyChange<T>? propertyChange, bool inline = true)
         {
             if (propertyChange is { }) {
                 if (!Equals(propertyChange.Before, propertyChange.After)) {
                     if (propertyChange.After is bool aft) {
-                        this.AddLocalizedField(title, aft ? "str-true" : "str-false", inline, titleArgs: args);
+                        this.AddLocalizedField(title, aft ? TranslationKey.str_true : TranslationKey.str_false, inline);
                     } else {
-                        string localized404 = this.lcs.GetString(this.gid, "str-404");
+                        string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
                         string beforeStr = this.TruncateToFitHalfFieldValue(propertyChange.Before?.ToString() ?? localized404);
                         string afterStr = this.TruncateToFitHalfFieldValue(propertyChange.After?.ToString() ?? localized404);
-                        string localizedContent = this.lcs.GetString(this.gid, "fmt-from-to", beforeStr, afterStr);
-                        this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, false, args);
+                        string localizedContent = this.lcs.GetString(this.gid, TranslationKey.fmt_from_to(beforeStr, afterStr));
+                        this.AddLocalizedField(title, Formatter.InlineCode(localizedContent), inline, false);
                     }
                 }
             }
             return this;
         }
 
-        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(string title, object? before, object? after, bool inline = true, params object?[]? args)
+        public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(TranslationKey title, object? before, object? after, bool inline = true)
         {
             if (!Equals(before, after)) {
                 if (after is bool aft) {
-                    this.AddLocalizedField(title, aft ? "str-true" : "str-false", inline, titleArgs: args);
+                    this.AddLocalizedField(title, aft ? TranslationKey.str_true : TranslationKey.str_false, inline);
                 } else {
-                    string localized404 = this.lcs.GetString(this.gid, "str-404");
+                    string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
                     string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
                     string afterStr = this.TruncateToFitHalfFieldValue(after?.ToString() ?? localized404);
-                    string localizedContent = this.lcs.GetString(this.gid, "fmt-from-to", beforeStr, afterStr);
-                    this.AddLocalizedTitleField(title, Formatter.InlineCode(localizedContent), inline, false, args);
+                    string localizedContent = this.lcs.GetString(this.gid, TranslationKey.fmt_from_to(beforeStr, afterStr));
+                    this.AddLocalizedField(title, Formatter.InlineCode(localizedContent), inline, false);
                 }
             }
             return this;

@@ -16,6 +16,7 @@ using TheGodfather.Modules.Misc.Services;
 using TheGodfather.Modules.Owner.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.EventListeners
 {
@@ -41,10 +42,10 @@ namespace TheGodfather.EventListeners
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
             
-            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);
-            emb.WithLocalizedTitle(DiscordEventType.MessageReactionsCleared, "evt-msg-reactions-clear", desc: jumplink);
-            emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
-            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
+            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, TranslationKey.str_jumplink), e.Message.JumpLink);
+            emb.WithLocalizedTitle(DiscordEventType.MessageReactionsCleared, TranslationKey.evt_msg_reactions_clear, desc: jumplink);
+            emb.AddLocalizedField(TranslationKey.str_location, e.Channel.Mention, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_author, e.Message.Author?.Mention, inline: true);
             return logService.LogAsync(e.Channel.Guild, emb);
         }
 

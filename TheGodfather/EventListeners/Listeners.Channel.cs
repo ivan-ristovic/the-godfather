@@ -14,6 +14,7 @@ using TheGodfather.EventListeners.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.EventListeners
 {
@@ -41,8 +42,8 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, "evt-chn-create", e.Channel);
-            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelCreated, TranslationKey.evt_chn_create, e.Channel);
+            emb.AddLocalizedField(TranslationKey.str_chn_type, e.Channel?.Type, inline: true);
 
             DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelCreate);
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -67,8 +68,8 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, "evt-chn-delete", e.Channel);
-            emb.AddLocalizedTitleField("str-chn-type", e.Channel?.Type, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelDeleted, TranslationKey.evt_chn_delete, e.Channel);
+            emb.AddLocalizedField(TranslationKey.str_chn_type, e.Channel?.Type, inline: true);
 
             DiscordAuditLogChannelEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogChannelEntry>(AuditLogActionType.ChannelDelete);
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -98,8 +99,8 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-pins-update");
-            emb.AddLocalizedTitleField("str-chn", e.Channel.Mention);
+            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, TranslationKey.evt_chn_pins_update);
+            emb.AddLocalizedField(TranslationKey.str_chn, e.Channel.Mention);
 
             DiscordAuditLogMessagePinEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessagePinEntry>();
             DiscordMessage? pinned;
@@ -115,7 +116,7 @@ namespace TheGodfather.EventListeners
             if (pinned is not null) {
                 emb.WithDescription(Formatter.MaskedUrl("Jumplink", pinned.JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.Content) ? "<embed>" : pinned.Content;
-                emb.AddLocalizedTitleField("str-pin-content", Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
+                emb.AddLocalizedField(TranslationKey.str_pin_content, Formatter.BlockCode(Formatter.Strip(content.Truncate(900))));
                 emb.WithLocalizedTimestamp(pinned.Timestamp);
             }
 
@@ -143,19 +144,19 @@ namespace TheGodfather.EventListeners
             if ((e.ChannelAfter.ParentId is { } && _channelUpdates.ContainsKey(e.ChannelAfter.ParentId.Value)) || updatesBefore < upds.Count)
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, "evt-chn-update");
+            emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, TranslationKey.evt_chn_update);
 
             DiscordAuditLogEntry? entry = await e.Guild.GetRecentAuditLogEntryAsync();
             if (entry is DiscordAuditLogChannelEntry centry) {
                 Log.Verbose("Retrieved channel update information from audit log");
                 emb.WithDescription(centry?.Target?.ToString() ?? e.ChannelBefore.ToString());
                 emb.AddFieldsFromAuditLogEntry(centry, (emb, ent) => {
-                    emb.AddLocalizedPropertyChangeField("evt-upd-name", ent.NameChange, inline: false);
-                    emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", ent.NsfwChange);
-                    emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", ent.BitrateChange);
-                    emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", ent.PerUserRateLimitChange);
-                    emb.AddLocalizedPropertyChangeField("evt-upd-type", ent.TypeChange);
-                    emb.AddLocalizedTitleField("evt-chn-ow-change", ent.OverwriteChange?.After?.Count, unknown: false);
+                    emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_name, ent.NameChange, inline: false);
+                    emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_nsfw, ent.NsfwChange);
+                    emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_bitrate, ent.BitrateChange);
+                    emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_ratelimit, ent.PerUserRateLimitChange);
+                    emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_type, ent.TypeChange);
+                    emb.AddLocalizedField(TranslationKey.evt_chn_ow_change, ent.OverwriteChange?.After?.Count, unknown: false);
                     if (ent.TopicChange is { }) {
                         string before = Formatter.BlockCode(
                             Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
@@ -163,7 +164,7 @@ namespace TheGodfather.EventListeners
                         string after = Formatter.BlockCode(
                             Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.After) ? " " : ent.TopicChange.After).Truncate(450, "...")
                         );
-                        emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
+                        emb.AddLocalizedField(TranslationKey.evt_chn_topic_change, TranslationKey.fmt_from_to_block(before, after), false);
                     }
                 });
             } else if (entry is DiscordAuditLogOverwriteEntry owentry) {
@@ -176,26 +177,26 @@ namespace TheGodfather.EventListeners
                 try {
                     DiscordMember? member = owentry.Target.Type == OverwriteType.Member ? await owentry.Target.GetMemberAsync() : null;
                     DiscordRole? role = owentry.Target.Type == OverwriteType.Role ? await owentry.Target.GetRoleAsync() : null;
-                    emb.AddLocalizedTitleField("evt-invoke-target", member?.Mention ?? role?.Mention, inline: true);
+                    emb.AddLocalizedField(TranslationKey.evt_invoke_target, member?.Mention ?? role?.Mention, inline: true);
                     if (owentry.AllowChange is { })
-                        emb.AddLocalizedTitleField("str-allowed", owentry.Target.Allowed.ToPermissionString(), inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_allowed, owentry.Target.Allowed.ToPermissionString(), inline: true);
                     if (owentry.DenyChange is { })
-                        emb.AddLocalizedTitleField("str-denied", owentry.Target.Denied.ToPermissionString(), inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_denied, owentry.Target.Denied.ToPermissionString(), inline: true);
                 } catch {
                     Log.Verbose("Failed to retrieve permission overwrite target");
-                    emb.AddLocalizedTitleField("evt-invoke-target", owentry.Target?.Id, inline: true);
+                    emb.AddLocalizedField(TranslationKey.evt_invoke_target, owentry.Target?.Id, inline: true);
                 }
                 emb.AddInvocationFields(owentry.UserResponsible);
             } else {
-                emb.AddLocalizedTitleField("str-chn", e.ChannelBefore, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_chn, e.ChannelBefore, inline: true);
                 ChannelUpdateEventArgs fst = upds.First();
                 ChannelUpdateEventArgs lst = upds.Last();
-                emb.AddLocalizedPropertyChangeField("evt-upd-name", fst.ChannelBefore.Name, lst.ChannelAfter.Name, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-nsfw", fst.ChannelBefore.IsNSFW, lst.ChannelAfter.IsNSFW, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-bitrate", fst.ChannelBefore.Bitrate, lst.ChannelAfter.Bitrate, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-position", fst.ChannelBefore.Position, lst.ChannelAfter.Position, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-ratelimit", fst.ChannelBefore.PerUserRateLimit, lst.ChannelAfter.PerUserRateLimit, inline: true);
-                emb.AddLocalizedPropertyChangeField("evt-upd-type", fst.ChannelBefore.Type, lst.ChannelAfter.Type, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_name, fst.ChannelBefore.Name, lst.ChannelAfter.Name, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_nsfw, fst.ChannelBefore.IsNSFW, lst.ChannelAfter.IsNSFW, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_bitrate, fst.ChannelBefore.Bitrate, lst.ChannelAfter.Bitrate, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_position, fst.ChannelBefore.Position, lst.ChannelAfter.Position, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_ratelimit, fst.ChannelBefore.PerUserRateLimit, lst.ChannelAfter.PerUserRateLimit, inline: true);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_type, fst.ChannelBefore.Type, lst.ChannelAfter.Type, inline: true);
                 if (!fst.ChannelBefore.Topic?.Equals(lst.ChannelAfter.Topic, StringComparison.InvariantCultureIgnoreCase) ?? false) {
                     string before = Formatter.BlockCode(
                         Formatter.Strip(string.IsNullOrWhiteSpace(fst.ChannelBefore.Topic) ? " " : fst.ChannelBefore.Topic).Truncate(450, "...")
@@ -203,7 +204,7 @@ namespace TheGodfather.EventListeners
                     string after = Formatter.BlockCode(
                         Formatter.Strip(string.IsNullOrWhiteSpace(lst.ChannelAfter.Topic) ? " " : lst.ChannelAfter.Topic).Truncate(450, "...")
                     );
-                    emb.AddLocalizedField("evt-chn-topic-change", "fmt-from-to-block", false, null, new[] { before, after });
+                    emb.AddLocalizedField(TranslationKey.evt_chn_topic_change, TranslationKey.fmt_from_to_block(before, after), false);
                 }
                 emb.AddInsufficientAuditLogPermissionsField();
             }
@@ -219,15 +220,15 @@ namespace TheGodfather.EventListeners
             if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.WebhooksUpdated, "evt-gld-wh-upd", e.Channel);
+            emb.WithLocalizedTitle(DiscordEventType.WebhooksUpdated, TranslationKey.evt_gld_wh_upd, e.Channel);
 
             DiscordAuditLogWebhookEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogWebhookEntry>(AuditLogActionType.WebhookUpdate);
             emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
                 emb.WithDescription($"{ent.Target.Name}, {ent.Target.ChannelId}");
-                emb.AddLocalizedPropertyChangeField("str-name", ent.NameChange);
-                emb.AddLocalizedPropertyChangeField("str-ahash", ent.AvatarHashChange);
-                emb.AddLocalizedPropertyChangeField("str-chn", ent.ChannelChange);
-                emb.AddLocalizedPropertyChangeField("str-type", ent.TypeChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, ent.NameChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_ahash, ent.AvatarHashChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_chn, ent.ChannelChange);
+                emb.AddLocalizedPropertyChangeField(TranslationKey.str_type, ent.TypeChange);
             });
 
             await logService.LogAsync(e.Guild, emb);

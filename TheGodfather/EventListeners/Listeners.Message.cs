@@ -21,6 +21,7 @@ using TheGodfather.Modules.Reactions.Extensions;
 using TheGodfather.Modules.Reactions.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.EventListeners
 {
@@ -38,8 +39,8 @@ namespace TheGodfather.EventListeners
             if (LoggingService.IsChannelExempted(bot, e.Guild, e.Channel, out GuildConfigService gcs))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.MessagesBulkDeleted, "evt-msg-del-bulk", e.Channel);
-            emb.AddLocalizedTitleField("str-count", e.Messages.Count, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.MessagesBulkDeleted, TranslationKey.evt_msg_del_bulk, e.Channel);
+            emb.AddLocalizedField(TranslationKey.str_count, e.Messages.Count, inline: true);
             using var ms = new MemoryStream();
             using var sw = new StreamWriter(ms);
             foreach (DiscordMessage msg in e.Messages) {
@@ -91,8 +92,8 @@ namespace TheGodfather.EventListeners
                     if (!gcfg.SilentLevelUpEnabled) {
                         XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
                         string rankupStr = levelRole is { }
-                            ? ls.GetString(e.Guild.Id, "fmt-rankup-lr", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention)
-                            : ls.GetString(e.Guild.Id, "fmt-rankup", e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/");
+                            ? ls.GetString(e.Guild.Id, TranslationKey.fmt_rankup_lr(e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention))
+                            : ls.GetString(e.Guild.Id, TranslationKey.fmt_rankup(e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/"));
                         await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                     }
                 }
@@ -184,9 +185,9 @@ namespace TheGodfather.EventListeners
             if (e.Message.Author == bot.Client.CurrentUser && bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
                 return;
 
-            emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, "evt-msg-del");
-            emb.AddLocalizedTitleField("str-chn", e.Channel.Mention, inline: true);
-            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
+            emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, TranslationKey.evt_msg_del);
+            emb.AddLocalizedField(TranslationKey.str_chn, e.Channel.Mention, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_author, e.Message.Author?.Mention, inline: true);
 
             DiscordAuditLogMessageEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
             if (entry is { }) {
@@ -203,23 +204,23 @@ namespace TheGodfather.EventListeners
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
                 string sanitizedContent = Formatter.BlockCode(Formatter.Strip(e.Message.Content.Truncate(1000)));
-                emb.AddLocalizedTitleField("str-content", sanitizedContent);
+                emb.AddLocalizedField(TranslationKey.str_content, sanitizedContent);
                 if (bot.Services.GetRequiredService<FilteringService>().TextContainsFilter(e.Guild.Id, e.Message.Content, out _)) {
                     LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-                    emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, "rsn-filter-match")));
+                    emb.WithDescription(Formatter.Italic(ls.GetString(e.Guild.Id, TranslationKey.rsn_filter_match)));
                 }
             }
 
             if (e.Message.Embeds.Any())
-                emb.AddLocalizedTitleField("str-embeds", e.Message.Embeds.Count, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_embeds, e.Message.Embeds.Count, inline: true);
             if (e.Message.Reactions.Any())
-                emb.AddLocalizedTitleField("str-reactions", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).JoinWith(" "), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_reactions, e.Message.Reactions.Select(r => r.Emoji.GetDiscordName()).JoinWith(" "), inline: true);
             if (e.Message.Stickers.Any())
-                emb.AddLocalizedTitleField("str-stickers", e.Message.Stickers.JoinWith(), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_stickers, e.Message.Stickers.JoinWith(), inline: true);
             if (e.Message.Attachments.Any())
-                emb.AddLocalizedTitleField("str-attachments", e.Message.Attachments.Select(a => a.ToMaskedUrl()).JoinWith(), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_attachments, e.Message.Attachments.Select(a => a.ToMaskedUrl()).JoinWith(), inline: true);
             if (e.Message.CreationTimestamp is { })
-                emb.AddLocalizedTimestampField("str-created-at", e.Message.CreationTimestamp, inline: true);
+                emb.AddLocalizedTimestampField(TranslationKey.str_created_at, e.Message.CreationTimestamp, inline: true);
 
             await logService.LogAsync(e.Channel.Guild, emb);
         }
@@ -254,31 +255,33 @@ namespace TheGodfather.EventListeners
             if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
                 return;
 
-            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, "str-jumplink"), e.Message.JumpLink);
-            emb.WithLocalizedTitle(DiscordEventType.MessageUpdated, "evt-msg-upd", desc: jumplink);
-            emb.AddLocalizedTitleField("str-location", e.Channel.Mention, inline: true);
-            emb.AddLocalizedTitleField("str-author", e.Message.Author?.Mention, inline: true);
-            emb.AddLocalizedPropertyChangeField("str-pinned", e.MessageBefore?.Pinned, e.Message.Pinned);
+            string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, TranslationKey.str_jumplink), e.Message.JumpLink);
+            emb.WithLocalizedTitle(DiscordEventType.MessageUpdated, TranslationKey.evt_msg_upd, desc: jumplink);
+            emb.AddLocalizedField(TranslationKey.str_location, e.Channel.Mention, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_author, e.Message.Author?.Mention, inline: true);
+            emb.AddLocalizedPropertyChangeField(TranslationKey.str_pinned, e.MessageBefore?.Pinned, e.Message.Pinned);
 
-            emb.AddLocalizedContentField(
-                "str-upd-bef",
-                "fmt-msg-cre",
-                inline: false,
-                ls.GetLocalizedTimeString(e.Guild.Id, e.Message.CreationTimestamp, unknown: true),
-                e.MessageBefore?.Embeds?.Count ?? 0,
-                e.MessageBefore?.Reactions?.Count ?? 0,
-                e.MessageBefore?.Attachments?.Count ?? 0,
-                FormatContent(e.MessageBefore)
+            emb.AddLocalizedField(
+                TranslationKey.str_upd_bef,
+                TranslationKey.fmt_msg_cre(
+                    ls.GetLocalizedTimeString(e.Guild.Id, e.Message.CreationTimestamp, unknown: true),
+                    e.MessageBefore?.Embeds?.Count ?? 0,
+                    e.MessageBefore?.Reactions?.Count ?? 0,
+                    e.MessageBefore?.Attachments?.Count ?? 0,
+                    FormatContent(e.MessageBefore)
+                ),
+                inline: false
             );
-            emb.AddLocalizedContentField(
-                "str-upd-aft",
-                "fmt-msg-upd",
-                inline: true,
-                ls.GetLocalizedTimeString(e.Guild.Id, e.Message.EditedTimestamp, unknown: true),
-                e.Message.Embeds?.Count ?? 0,
-                e.Message.Reactions?.Count ?? 0,
-                e.Message.Attachments?.Count ?? 0,
-                FormatContent(e.Message)
+            emb.AddLocalizedField(
+                TranslationKey.str_upd_aft,
+                TranslationKey.fmt_msg_upd(
+                    ls.GetLocalizedTimeString(e.Guild.Id, e.Message.EditedTimestamp, unknown: true),
+                    e.Message.Embeds?.Count ?? 0,
+                    e.Message.Reactions?.Count ?? 0,
+                    e.Message.Attachments?.Count ?? 0,
+                    FormatContent(e.Message)
+                ),
+                inline: true
             );
 
             await logService.LogAsync(e.Channel.Guild, emb);
@@ -295,13 +298,13 @@ namespace TheGodfather.EventListeners
                 return;
 
             LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-            string reason = ls.GetString(msg.Channel.GuildId, "rsn-filter-match");
+            string reason = ls.GetString(msg.Channel.GuildId, TranslationKey.rsn_filter_match);
 
             if (msg.Channel.PermissionsFor(msg.Channel.Guild.CurrentMember).HasFlag(Permissions.ManageMessages)) {
                 try {
                     await msg.DeleteAsync(reason);
                     if (action.GetValueOrDefault(Filter.Action.Delete) == Filter.Action.Sanitize)
-                        await msg.Channel.LocalizedEmbedAsync(ls, "fmt-filter", msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content)));
+                        await msg.Channel.LocalizedEmbedAsync(ls, TranslationKey.fmt_filter(msg.Author.Mention, Formatter.Spoiler(Formatter.Strip(msg.Content))));
                 } catch {
                     await SendErrorReportAsync();
                 }
@@ -324,7 +327,7 @@ namespace TheGodfather.EventListeners
             {
                 if (LoggingService.IsLogEnabledForGuild(bot, msg.Channel.GuildId.Value, out LoggingService? logService, out LocalizedEmbedBuilder? emb)) {
                     emb.WithColor(DiscordColor.Red);
-                    emb.WithLocalizedDescription("err-f", msg.Channel.Mention);
+                    emb.WithLocalizedDescription(TranslationKey.err_f(msg.Channel.Mention));
                     await logService.LogAsync(msg.Channel.Guild, emb);
                 }
             }

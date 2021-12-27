@@ -1,21 +1,22 @@
 ﻿using TheGodfather.Database.Models;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Extensions
 {
     public static class ActionHistoryEntryExtensions
     {
-        public static string ToLocalizedKey(this ActionHistoryEntry.Action actionType)
+        public static TranslationKey ToLocalizedKey(this ActionHistoryEntry.Action actionType)
         {
             return actionType switch {
-                ActionHistoryEntry.Action.CustomNote => "str-aht-cn",
-                ActionHistoryEntry.Action.ForbiddenName => "str-aht-fn",
-                ActionHistoryEntry.Action.TemporaryMute => "str-aht-tm",
-                ActionHistoryEntry.Action.IndefiniteMute => "str-aht-pm",
-                ActionHistoryEntry.Action.Kick => "str-aht-k",
-                ActionHistoryEntry.Action.TemporaryBan => "str-aht-tb",
-                ActionHistoryEntry.Action.PermanentBan => "str-aht-pb",
-                ActionHistoryEntry.Action.Warning => "str-aht-w",
-                _ => "str-404",
+                ActionHistoryEntry.Action.CustomNote => TranslationKey.str_aht_cn,
+                ActionHistoryEntry.Action.ForbiddenName => TranslationKey.str_aht_fn,
+                ActionHistoryEntry.Action.TemporaryMute => TranslationKey.str_aht_tm,
+                ActionHistoryEntry.Action.IndefiniteMute => TranslationKey.str_aht_pm,
+                ActionHistoryEntry.Action.Kick => TranslationKey.str_aht_k,
+                ActionHistoryEntry.Action.TemporaryBan => TranslationKey.str_aht_tb,
+                ActionHistoryEntry.Action.PermanentBan => TranslationKey.str_aht_pb,
+                ActionHistoryEntry.Action.Warning => TranslationKey.str_aht_w,
+                _ => TranslationKey.str_404,
             };
         }
     }
