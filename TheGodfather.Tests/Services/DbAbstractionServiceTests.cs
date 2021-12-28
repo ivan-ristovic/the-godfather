@@ -430,7 +430,6 @@ public sealed class DbAbstractionService3Tests : ITheGodfatherServiceTest<Concre
             async _ => {
                 foreach (ulong gid in MockData.Ids) {
                     Assert.That(await this.Service.AddAsync(gid), Is.Zero);
-                    Assert.That(await this.Service.AddAsync(gid, null!), Is.Zero);
                     Assert.That(await this.Service.AddAsync(gid, Array.Empty<ulong>()), Is.Zero);
                     Assert.That(await this.Service.AddAsync(gid, Enumerable.Empty<ulong>()), Is.Zero);
                 }
@@ -515,7 +514,6 @@ public sealed class DbAbstractionService3Tests : ITheGodfatherServiceTest<Concre
                 bef = db.AutoRoles.Count();
                 foreach (ulong gid in MockData.Ids) {
                     Assert.That(await this.Service.RemoveAsync(gid), Is.Zero);
-                    Assert.That(await this.Service.RemoveAsync(gid, null!), Is.Zero);
                     Assert.That(await this.Service.RemoveAsync(gid, Array.Empty<ulong>()), Is.Zero);
                     Assert.That(await this.Service.RemoveAsync(gid, Enumerable.Empty<ulong>()), Is.Zero);
                 }
