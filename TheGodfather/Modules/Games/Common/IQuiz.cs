@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using DSharpPlus.Entities;
-using TheGodfather.Common;
+﻿using DSharpPlus.Entities;
 
-namespace TheGodfather.Modules.Games.Common
+namespace TheGodfather.Modules.Games.Common;
+
+public interface IQuiz : IChannelEvent
 {
-    public interface IQuiz : IChannelEvent
-    {
-        int NumberOfQuestions { get; }
-        bool IsTimeoutReached { get; }
-        IReadOnlyDictionary<DiscordUser, int> Results { get; }
-    }
+    int NumberOfQuestions { get; }
+    bool IsTimeoutReached { get; }
+    IReadOnlyDictionary<DiscordUser, int> Results { get; }
 }

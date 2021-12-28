@@ -1,8 +1,6 @@
-﻿using TheGodfather.Services;
+﻿namespace TheGodfather.Tests;
 
-namespace TheGodfather.Tests;
-
-public interface ITheGodfatherServiceTest<T> where T : ITheGodfatherService
+public interface ITheGodfatherServiceTest<out T> where T : ITheGodfatherService
 {
     T Service { get; }
 

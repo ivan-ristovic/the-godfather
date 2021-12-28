@@ -1,14 +1,12 @@
-﻿using System.Threading.Tasks;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 
-namespace TheGodfather.Extensions
+namespace TheGodfather.Extensions;
+
+internal static class DiscordUserExtensions
 {
-    internal static class DiscordUserExtensions
-    {
-        public static async Task<bool> IsMemberOfAsync(this DiscordUser user, DiscordGuild guild)
-            => await guild.GetMemberSilentAsync(user.Id) is { };
+    public static async Task<bool> IsMemberOfAsync(this DiscordUser user, DiscordGuild guild)
+        => await guild.GetMemberSilentAsync(user.Id) is { };
 
-        public static string ToDiscriminatorString(this DiscordUser user)
-            => $"{user.Username}#{user.Discriminator}";
-    }
+    public static string ToDiscriminatorString(this DiscordUser user)
+        => $"{user.Username}#{user.Discriminator}";
 }

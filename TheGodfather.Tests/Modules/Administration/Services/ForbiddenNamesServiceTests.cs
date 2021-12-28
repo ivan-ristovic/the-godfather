@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -34,7 +32,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
     public void GetGuildForbiddenNamesTests()
     {
         TestDbProvider.Verify(
-            db => {
+            _ => {
                 foreach (ulong id in MockData.Ids)
                     Assert.That(this.Service.GetGuildForbiddenNames(id), Is.Empty);
             }
@@ -79,7 +77,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
 
         TestDbProvider.SetupAndVerify(
             db => this.AddMockForbiddenNames(db),
-            db => {
+            _ => {
                 IsForbidden(MockData.Ids[0], "cat", true);
                 IsForbidden(MockData.Ids[0], "doG.", true);
                 IsForbidden(MockData.Ids[0], "what a nice Cat, indeed.", true);
@@ -443,7 +441,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
             );
 
             await TestDbProvider.AlterAndVerifyAsync(
-                async db => {
+                async _ => {
                     Assert.That(await this.Service.RemoveForbiddenNamesAsync(MockData.Ids[0]), Is.Zero);
                 },
                 db => {
@@ -501,7 +499,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
             );
 
             await TestDbProvider.AlterAndVerifyAsync(
-                async db => Assert.That(await this.Service.RemoveForbiddenNamesAsync(MockData.Ids[0]), Is.Zero),
+                async _ => Assert.That(await this.Service.RemoveForbiddenNamesAsync(MockData.Ids[0]), Is.Zero),
                 db => {
                     Assert.That(db.ForbiddenNames, Is.Empty);
                     for (int i = 0; i < MockData.Ids.Count; i++)

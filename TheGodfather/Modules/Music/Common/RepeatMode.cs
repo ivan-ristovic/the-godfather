@@ -1,9 +1,8 @@
-﻿namespace TheGodfather.Modules.Music.Common
+﻿namespace TheGodfather.Modules.Music.Common;
+
+public enum RepeatMode
 {
-    public enum RepeatMode
-    {
-        None,
-        Single,
-        All,
-    }
+    None,
+    Single,
+    All
 }

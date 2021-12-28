@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -36,7 +34,7 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
             Assert.That(this.Service.GetGuildFilters(id), Is.Empty);
 
         TestDbProvider.AlterAndVerify(
-            db => this.Service.LoadData(),
+            _ => this.Service.LoadData(),
             db => {
                 for (int i = 0; i < MockData.Ids.Count; i++)
                     this.AssertGuildFilterCount(db, i, 0);
@@ -45,7 +43,7 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
 
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockFilters(db),
-            db => this.Service.LoadData(),
+            _ => this.Service.LoadData(),
             db => {
                 this.AssertGuildFilterCount(db, 0, 5);
                 this.AssertGuildFilterCount(db, 1, 3);
@@ -77,8 +75,8 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
 
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockFilters(db),
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 ContainsFilter(MockData.Ids[0], "cat", true);
                 ContainsFilter(MockData.Ids[0], "doG.", true);
                 ContainsFilter(MockData.Ids[0], "what a nice Cat, indeed.", true);
@@ -467,7 +465,7 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
             );
 
             await TestDbProvider.AlterAndVerifyAsync(
-                async db => {
+                async _ => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0]), Is.Zero);
                 },
@@ -525,7 +523,7 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
             );
 
             await TestDbProvider.AlterAndVerifyAsync(
-                async db => {
+                async _ => {
                     this.Service.LoadData();
                     Assert.That(await this.Service.RemoveFiltersAsync(MockData.Ids[0]), Is.Zero);
                 },

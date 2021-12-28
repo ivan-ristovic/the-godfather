@@ -60,7 +60,8 @@ public readonly partial struct TranslationKey
             MatchCollection matches = _placeholderRegex.Matches(property.Value);
 
             int argc = 0;
-            foreach (Match m in matches) argc = Math.Max(argc, int.Parse(m.Groups["num"].Value) + 1);
+            foreach (Match m in matches) 
+                argc = Math.Max(argc, int.Parse(m.Groups["num"].Value) + 1);
 
             var typedParamStrings = new List<string>();
             string paramStrings = string.Empty;
@@ -73,11 +74,9 @@ public readonly partial struct TranslationKey
             if (argc > 0)
                 args = $"({string.Join(", ", typedParamStrings)})";
 
-            if (property.Key.StartsWith("desc-"))
-                sw.WriteLine($"public const string {SanitizeName(property.Key)} = \"{property.Key}\";");
-            else
-                sw.WriteLine(
-                    $"public static TranslationKey {SanitizeName(property.Key)}{args} => new(\"{property.Key}\"{paramStrings});");
+            sw.WriteLine(property.Key.StartsWith("desc-")
+                ? $"public const string {SanitizeName(property.Key)} = \"{property.Key}\";"
+                : $"public static TranslationKey {SanitizeName(property.Key)}{args} => new(\"{property.Key}\"{paramStrings});");
         }
 
         sw.Indent--;

@@ -1,10 +1,9 @@
 ﻿using DSharpPlus.Entities;
 
-namespace TheGodfather.Extensions
+namespace TheGodfather.Extensions;
+
+internal static class DiscordWebhookExtensions
 {
-    internal static class DiscordWebhookExtensions
-    {
-        public static string BuildUrlString(this DiscordWebhook wh)
-            => $"https://discordapp.com/api/webhooks/{ wh.ChannelId }/{ wh.Token }"; 
-    }
+    public static string BuildUrlString(this DiscordWebhook wh)
+        => $"https://discordapp.com/api/webhooks/{ wh.ChannelId }/{ wh.Token }"; 
 }

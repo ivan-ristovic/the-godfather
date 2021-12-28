@@ -1,12 +1,11 @@
-﻿namespace TheGodfather.Modules.Search.Common
+﻿namespace TheGodfather.Modules.Search.Common;
+
+public enum RedditCategory
 {
-    public enum RedditCategory
-    {
-        Hot,
-        New,
-        Rising,
-        Controversial,
-        Top,
-        Gilded
-    }
+    Hot,
+    New,
+    Rising,
+    Controversial,
+    Top,
+    Gilded
 }

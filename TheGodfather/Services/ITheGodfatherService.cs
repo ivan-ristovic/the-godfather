@@ -1,7 +1,6 @@
-﻿namespace TheGodfather.Services
+﻿namespace TheGodfather.Services;
+
+public interface ITheGodfatherService
 {
-    public interface ITheGodfatherService
-    {
-        bool IsDisabled { get; }
-    }
+    bool IsDisabled { get; }
 }

@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using TheGodfather.Common;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 
@@ -29,8 +26,8 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
         Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Is.Empty);
 
         TestDbProvider.AlterAndVerify(
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 for (int i = 0; i < MockData.Ids.Count; i++)
                     AssertGuildReactionCount(i, 0);
             }
@@ -42,7 +39,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
             },
-            db => {
+            _ => {
                 for (int i = 0; i < MockData.Ids.Count; i++)
                     AssertGuildReactionCount(i, this.erCount[i]);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[1]);
@@ -74,8 +71,8 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
     {
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockReactions(db),
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 AssertFindReactionsCount(0, "HAHAHA", 0);
                 AssertFindReactionsCount(0, "abbbbbbbbbbbbbc", 1);
                 AssertFindReactionsCount(0, "This is not a test.", 1);
@@ -414,7 +411,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.LoadData();
                 Assert.That(
                     await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(),
@@ -511,7 +508,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.LoadData();
                 Assert.That(
                     await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName()),

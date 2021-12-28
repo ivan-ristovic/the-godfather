@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -28,8 +26,8 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
 
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockData(db),
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 Assert.That(this.Service.IsChannelBlocked(MockData.Ids[0]));
                 Assert.That(this.Service.IsChannelBlocked(MockData.Ids[1]));
                 Assert.That(this.Service.IsChannelBlocked(MockData.Ids[2]));
@@ -56,13 +54,13 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            db => {
+            _ => {
                 this.Service.LoadData();
                 return Task.CompletedTask;
             },
-            async db => {
-                ulong[] bcExpected = new[] {MockData.Ids[0], MockData.Ids[1], MockData.Ids[2]};
-                ulong[] buExpected = new[] {MockData.Ids[0], MockData.Ids[4], MockData.Ids[5]};
+            async _ => {
+                ulong[] bcExpected = {MockData.Ids[0], MockData.Ids[1], MockData.Ids[2]};
+                ulong[] buExpected = {MockData.Ids[0], MockData.Ids[4], MockData.Ids[5]};
                 Assert.That(this.Service.BlockedChannels, Is.EquivalentTo(bcExpected));
                 Assert.That(this.Service.BlockedUsers, Is.EquivalentTo(buExpected));
                 IReadOnlyList<BlockedChannel> bchns = await this.Service.GetBlockedChannelsAsync();
@@ -78,7 +76,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
     public async Task BlockAsyncTests()
     {
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.BlockChannelAsync(MockData.Ids[0]), Is.True);
                 Assert.That(await this.Service.BlockChannelAsync(MockData.Ids[1], "Because I can!"), Is.True);
@@ -94,7 +92,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.BlockChannelAsync(MockData.Ids[0]), Is.True);
                 Assert.That(await this.Service.BlockChannelAsync(MockData.Ids[1], "Because I can!"), Is.True);
@@ -110,7 +108,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(
                     await this.Service.BlockChannelsAsync(new[] {MockData.Ids[0], MockData.Ids[1]}, "Because I can!"),
@@ -127,7 +125,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(
                     await this.Service.BlockChannelsAsync(new[] {MockData.Ids[0], MockData.Ids[0]}, "Because I can!"),
@@ -148,7 +146,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(
                     await this.Service.BlockChannelsAsync(new[] {MockData.Ids[0], MockData.Ids[0]}, "Because I can!"),
@@ -173,7 +171,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[1]), Is.True);
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[2]), Is.True);
@@ -195,7 +193,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[0]), Is.True);
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[3]), Is.False);
@@ -215,7 +213,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelsAsync(new[] {MockData.Ids[0], MockData.Ids[1]}),
                     Is.EqualTo(2));
@@ -235,7 +233,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelsAsync(new[] {MockData.Ids[0], MockData.Ids[0]}),
                     Is.EqualTo(1));
@@ -254,7 +252,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 this.AddMockData(db);
                 return Task.CompletedTask;
             },
-            async db => {
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[0]), Is.True);
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[0]), Is.False);
@@ -270,8 +268,8 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
         );
 
         await TestDbProvider.SetupAlterAndVerifyAsync(
-            db => Task.CompletedTask,
-            async db => {
+            _ => Task.CompletedTask,
+            async _ => {
                 this.Service.Sync();
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[0]), Is.False);
                 Assert.That(await this.Service.UnblockChannelAsync(MockData.Ids[1]), Is.False);
@@ -282,7 +280,7 @@ public sealed class BlockingServiceTests : ITheGodfatherServiceTest<BlockingServ
                 Assert.That(await this.Service.UnblockUsersAsync(new[] {MockData.Ids[1], MockData.Ids[2]}), Is.Zero);
                 Assert.That(await this.Service.UnblockUsersAsync(new[] {MockData.Ids[4], MockData.Ids[5]}), Is.Zero);
             },
-            db => Task.CompletedTask
+            _ => Task.CompletedTask
         );
     }
 

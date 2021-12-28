@@ -1,38 +1,35 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using TheGodfather.EventListeners.Attributes;
 
-namespace TheGodfather.EventListeners
+namespace TheGodfather.EventListeners;
+
+internal static partial class Listeners
 {
-    internal static partial class Listeners
+    public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; } = Enumerable.Empty<ListenerMethod>();
+
+    public static void FindAndRegister(TheGodfatherBot shard)
     {
-        public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; } = Enumerable.Empty<ListenerMethod>();
+        ListenerMethods =
+            from t in Assembly.GetExecutingAssembly().GetTypes()
+            from m in t.GetMethods()
+            let a = m.GetCustomAttribute(typeof(AsyncEventListenerAttribute), true)
+            where a is { }
+            select new ListenerMethod(m, (AsyncEventListenerAttribute)a);
 
-        public static void FindAndRegister(TheGodfatherBot shard)
-        {
-            ListenerMethods =
-                from t in Assembly.GetExecutingAssembly().GetTypes()
-                from m in t.GetMethods()
-                let a = m.GetCustomAttribute(typeof(AsyncEventListenerAttribute), inherit: true)
-                where a is { }
-                select new ListenerMethod(m, (AsyncEventListenerAttribute)a);
-
-            foreach (ListenerMethod lm in ListenerMethods)
-                lm.Attribute.Register(shard, lm.Method);
-        }
+        foreach (ListenerMethod lm in ListenerMethods)
+            lm.Attribute.Register(shard, lm.Method);
     }
+}
 
 
-    internal sealed class ListenerMethod
+internal sealed class ListenerMethod
+{
+    public MethodInfo Method { get; }
+    public AsyncEventListenerAttribute Attribute { get; }
+
+    public ListenerMethod(MethodInfo mi, AsyncEventListenerAttribute attr)
     {
-        public MethodInfo Method { get; }
-        public AsyncEventListenerAttribute Attribute { get; }
-
-        public ListenerMethod(MethodInfo mi, AsyncEventListenerAttribute attr)
-        {
-            this.Method = mi;
-            this.Attribute = attr;
-        }
+        this.Method = mi;
+        this.Attribute = attr;
     }
 }

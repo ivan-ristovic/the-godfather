@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -28,7 +25,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
     public void IsBlockedTests()
     {
         TestDbProvider.Verify(
-            db => {
+            _ => {
                 foreach (ulong gid in MockData.Ids)
                 foreach (ulong id in MockData.Ids) {
                     Assert.That(this.Service.IsBlocked("a", gid, id, null), Is.False);
@@ -39,7 +36,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
 
         TestDbProvider.SetupAndVerify(
             db => this.AddMockRules(db),
-            db => {
+            _ => {
                 this.AssertIsBlocked(MockData.Ids[0], "a", blocked: new[] {MockData.Ids[0], MockData.Ids[2]});
                 this.AssertIsBlocked(MockData.Ids[0], "b", blocked: MockData.Ids);
                 this.AssertIsBlocked(MockData.Ids[0], "c", new[] {MockData.Ids[0]});
@@ -79,7 +76,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
     public void GetRulesTests()
     {
         TestDbProvider.Verify(
-            db => {
+            _ => {
                 foreach (ulong gid in MockData.Ids)
                     Assert.That(this.Service.GetRules(gid), Is.Empty);
             }
@@ -87,7 +84,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
 
         TestDbProvider.SetupAndVerify(
             db => this.AddMockRules(db),
-            db => {
+            _ => {
                 Assert.That(this.Service.GetRules(MockData.Ids[0]), Has.Exactly(11).Items);
                 Assert.That(this.Service.GetRules(MockData.Ids[0], "a"), Has.Exactly(2).Items);
                 Assert.That(this.Service.GetRules(MockData.Ids[0], "b"), Has.Exactly(1).Items);
@@ -123,7 +120,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
 
         await TestDbProvider.AlterAndVerifyAsync(
             _ => this.Service.AddRuleAsync(MockData.Ids[0], "a", true, MockData.Ids[1]),
-            db => {
+            _ => {
                 this.AssertIsBlocked(MockData.Ids[0], "a", new[] {MockData.Ids[1]});
                 return Task.CompletedTask;
             }
@@ -146,8 +143,8 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
 
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockRules(db),
-            db => Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(MockData.Ids[0])),
-            db => {
+            _ => Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(MockData.Ids[0])),
+            _ => {
                 Assert.That(this.Service.GetRules(MockData.Ids[0]), Is.Empty);
                 Assert.That(this.Service.GetRules(MockData.Ids[1]), Is.Not.Empty);
                 Assert.That(this.Service.GetRules(MockData.Ids[2]), Is.Not.Empty);
@@ -156,7 +153,7 @@ public sealed class CommandRulesServiceTests : ITheGodfatherServiceTest<CommandR
 
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockRules(db),
-            db => {
+            _ => {
                 foreach (ulong gid in MockData.Ids) {
                     Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));
                     Assert.DoesNotThrowAsync(() => this.Service.ClearAsync(gid));

@@ -1,9 +1,6 @@
-using TheGodfather.Translations;
+namespace TheGodfather.Modules.Administration.Common;
 
-namespace TheGodfather.Modules.Administration.Common
+public interface ISettings
 {
-    public interface ISettings
-    {
-        TranslationKey ToEmbedFieldString();
-    }
+    TranslationKey ToEmbedFieldString();
 }

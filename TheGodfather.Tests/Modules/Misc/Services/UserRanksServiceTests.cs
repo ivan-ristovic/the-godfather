@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheGodfather.Database.Models;
-using TheGodfather.Misc.Services;
+using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfather.Tests.Modules.Misc.Services;
 
@@ -103,11 +102,7 @@ public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksSe
     public async Task FilledDatabaseSyncTests() =>
         await TestDbProvider.SetupAlterAndVerifyAsync(
             db => {
-                db.XpCounts.AddRange(new[] {
-                    new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[0]},
-                    new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[1]},
-                    new XpCount {Xp = 1, GuildId = MockData.Ids[1], UserId = MockData.Ids[1]}
-                });
+                db.XpCounts.AddRange(new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[0]}, new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[1]}, new XpCount {Xp = 1, GuildId = MockData.Ids[1], UserId = MockData.Ids[1]});
                 db.SaveChanges();
                 this.Service.LoadData();
                 return Task.CompletedTask;
@@ -150,11 +145,7 @@ public sealed class UserRanksServiceTests : ITheGodfatherServiceTest<UserRanksSe
     public async Task RepetitiveSyncTests() =>
         await TestDbProvider.SetupAlterAndVerifyAsync(
             db => {
-                db.XpCounts.AddRange(new[] {
-                    new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[0]},
-                    new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[1]},
-                    new XpCount {Xp = 1, GuildId = MockData.Ids[1], UserId = MockData.Ids[1]}
-                });
+                db.XpCounts.AddRange(new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[0]}, new XpCount {Xp = 5, GuildId = MockData.Ids[0], UserId = MockData.Ids[1]}, new XpCount {Xp = 1, GuildId = MockData.Ids[1], UserId = MockData.Ids[1]});
                 db.SaveChanges();
                 this.Service.LoadData();
                 return Task.CompletedTask;

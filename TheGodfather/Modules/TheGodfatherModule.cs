@@ -1,22 +1,19 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using TheGodfather.Attributes;
-using TheGodfather.Services;
 
-namespace TheGodfather.Modules
+namespace TheGodfather.Modules;
+
+public abstract class TheGodfatherModule : BaseCommandModule
 {
-    public abstract class TheGodfatherModule : BaseCommandModule
-    {
-        public LocalizationService Localization { get; set; }
-        public DiscordColor ModuleColor { get; }
+    public LocalizationService Localization { get; set; }
+    public DiscordColor ModuleColor { get; }
 
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        protected TheGodfatherModule()
+    protected TheGodfatherModule()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        {
-            var moduleAttr = ModuleAttribute.AttachedTo(this.GetType());
-            this.ModuleColor = moduleAttr?.Module.ToDiscordColor() ?? DiscordColor.Green;
-        }
+    {
+        var moduleAttr = ModuleAttribute.AttachedTo(this.GetType());
+        this.ModuleColor = moduleAttr.Module.ToDiscordColor();
     }
 }

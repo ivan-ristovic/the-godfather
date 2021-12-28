@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace TheGodfather.Exceptions;
 
-namespace TheGodfather.Exceptions
+public sealed class BotUninitializedException : Exception
 {
-    public sealed class BotUninitializedException : Exception
-    {
-        public BotUninitializedException()
-            : base("Cannot retrieve this property since bot has not been started") { }
-    }
+    public BotUninitializedException()
+        : base("Cannot retrieve this property since bot has not been started") { }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
-using TheGodfather.Common;
 
 namespace TheGodfather.Tests.Common;
 
@@ -21,11 +18,11 @@ public class SecureRandomTests
     {
         Assert.That(() => this.rng.NextBool(0), Throws.InstanceOf<ArgumentOutOfRangeException>());
         Assert.That(() => this.rng.NextBool(-1), Throws.InstanceOf<ArgumentOutOfRangeException>());
-        Assert.That(() => this.rng.NextBool(1), Throws.Nothing);
+        Assert.That(() => this.rng.NextBool(), Throws.Nothing);
 
-        bool[] values = new[] {true, false};
+        bool[] values = {true, false};
         this.TryGenerateAll(values, () => this.rng.NextBool());
-        this.TryGenerateAll(values, () => this.rng.NextBool(1));
+        this.TryGenerateAll(values, () => this.rng.NextBool());
         this.TryGenerateAll(values, () => this.rng.NextBool(2));
         this.TryGenerateAll(values, () => this.rng.NextBool(3));
     }

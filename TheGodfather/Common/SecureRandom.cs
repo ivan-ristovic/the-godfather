@@ -1,111 +1,107 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
-namespace TheGodfather.Common
+namespace TheGodfather.Common;
+
+public sealed class SecureRandom : IDisposable
 {
-    public sealed class SecureRandom : IDisposable
+    private readonly RandomNumberGenerator rng;
+
+
+    public SecureRandom()
     {
-        private readonly RandomNumberGenerator rng;
+        this.rng = RandomNumberGenerator.Create();
+    }
+
+    ~SecureRandom()
+    {
+        this.rng.Dispose();
+    }
 
 
-        public SecureRandom()
-        {
-            this.rng = RandomNumberGenerator.Create();
-        }
+    public void Dispose()
+        => this.rng.Dispose();
 
-        ~SecureRandom()
-        {
-            this.rng.Dispose();
-        }
+    public bool NextBool(int trueRatio = 1)
+    {
+        if (trueRatio <= 0)
+            throw new ArgumentOutOfRangeException(nameof(trueRatio), "Ratio must be positive.");
 
+        return this.Next() % (trueRatio + 1) > 0;
+    }
 
-        public void Dispose()
-            => this.rng.Dispose();
+    public byte[] GetBytes(int count)
+    {
+        if (count <= 0)
+            throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
 
-        public bool NextBool(int trueRatio = 1)
-        {
-            if (trueRatio <= 0)
-                throw new ArgumentOutOfRangeException(nameof(trueRatio), "Ratio must be positive.");
+        byte[] bytes = new byte[count];
+        this.rng.GetBytes(bytes);
+        return bytes;
+    }
 
-            return this.Next() % (trueRatio + 1) > 0;
-        }
+    public void GetBytes(int count, out byte[] bytes)
+    {
+        if (count <= 0)
+            throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
 
-        public byte[] GetBytes(int count)
-        {
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
+        bytes = new byte[count];
+        this.rng.GetBytes(bytes);
+    }
 
-            byte[] bytes = new byte[count];
-            this.rng.GetBytes(bytes);
-            return bytes;
-        }
+    public byte GetU8()
+        => this.GetBytes(1)[0];
 
-        public void GetBytes(int count, out byte[] bytes)
-        {
-            if (count <= 0)
-                throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
+    public sbyte GetS8()
+        => (sbyte)this.GetBytes(1)[0];
 
-            bytes = new byte[count];
-            this.rng.GetBytes(bytes);
-        }
+    public ushort GetU16()
+        => BitConverter.ToUInt16(this.GetBytes(2), 0);
 
-        public byte GetU8()
-            => this.GetBytes(1)[0];
+    public short GetS16()
+        => BitConverter.ToInt16(this.GetBytes(2), 0);
 
-        public sbyte GetS8()
-            => (sbyte)this.GetBytes(1)[0];
+    public uint GetU32()
+        => BitConverter.ToUInt32(this.GetBytes(4), 0);
 
-        public ushort GetU16()
-            => BitConverter.ToUInt16(this.GetBytes(2), 0);
+    public int GetS32()
+        => BitConverter.ToInt32(this.GetBytes(4), 0);
 
-        public short GetS16()
-            => BitConverter.ToInt16(this.GetBytes(2), 0);
+    public ulong GetU64()
+        => BitConverter.ToUInt64(this.GetBytes(8), 0);
 
-        public uint GetU32()
-            => BitConverter.ToUInt32(this.GetBytes(4), 0);
+    public long GetS64()
+        => BitConverter.ToInt64(this.GetBytes(8), 0);
 
-        public int GetS32()
-            => BitConverter.ToInt32(this.GetBytes(4), 0);
+    public int Next()
+        => this.Next(0, int.MaxValue);
 
-        public ulong GetU64()
-            => BitConverter.ToUInt64(this.GetBytes(8), 0);
+    public int Next(int max)
+        => this.Next(0, max);
 
-        public long GetS64()
-            => BitConverter.ToInt64(this.GetBytes(8), 0);
+    public int Next(int min, int max)
+    {
+        if (max <= min)
+            throw new ArgumentOutOfRangeException(nameof(max), "Maximum needs to be greater than minimum.");
 
-        public int Next()
-            => this.Next(0, int.MaxValue);
+        int offset = 0;
+        if (min < 0)
+            offset = -min;
 
-        public int Next(int max)
-            => this.Next(0, max);
+        min += offset;
+        max += offset;
 
-        public int Next(int min, int max)
-        {
-            if (max <= min)
-                throw new ArgumentOutOfRangeException(nameof(max), "Maximum needs to be greater than minimum.");
+        return Math.Abs(this.GetS32()) % (max - min) + min - offset;
+    }
 
-            int offset = 0;
-            if (min < 0)
-                offset = -min;
+    public T ChooseRandomElement<T>(IEnumerable<T> collection)
+        => collection.ElementAt(this.Next(collection.Count()));
 
-            min += offset;
-            max += offset;
+    public char ChooseRandomChar(string str)
+        => str[this.Next(0, str.Length)];
 
-            return Math.Abs(this.GetS32()) % (max - min) + min - offset;
-        }
-
-        public T ChooseRandomElement<T>(IEnumerable<T> collection)
-            => collection.ElementAt(this.Next(collection.Count()));
-
-        public char ChooseRandomChar(string str)
-            => str[this.Next(0, str.Length)];
-
-        public T? ChooseRandomEnumValue<T>() where T : Enum
-        {
-            Array v = Enum.GetValues(typeof(T));
-            return (T?)v.GetValue(this.Next(v.Length));
-        }
+    public T? ChooseRandomEnumValue<T>() where T : Enum
+    {
+        Array v = Enum.GetValues(typeof(T));
+        return (T?)v.GetValue(this.Next(v.Length));
     }
 }

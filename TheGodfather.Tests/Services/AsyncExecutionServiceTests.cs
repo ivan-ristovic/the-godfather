@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using NUnit.Framework;
-using TheGodfather.Services;
 
 namespace TheGodfather.Tests.Services;
 
@@ -119,13 +116,13 @@ public sealed class AsyncExecutionServiceTests : ITheGodfatherServiceTest<AsyncE
     public void TestCancellationAsync()
     {
         using (var cts = new CancellationTokenSource()) {
-            _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
+            _ = Task.Delay(100).ContinueWith(_ => cts.Cancel());
             Assert.That(() => this.Service.Execute(Task.Delay(500, cts.Token)),
                 Throws.InstanceOf<TaskCanceledException>());
         }
 
         using (var cts = new CancellationTokenSource()) {
-            _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
+            _ = Task.Delay(100).ContinueWith(_ => cts.Cancel());
             Assert.That(() => this.Service.Execute(Task.Delay(-1, cts.Token)),
                 Throws.InstanceOf<TaskCanceledException>());
         }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
@@ -27,8 +25,8 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         Assert.That(this.Service.GetGuildTextReactions(MockData.Ids[0]), Is.Empty);
 
         TestDbProvider.AlterAndVerify(
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 for (int i = 0; i < MockData.Ids.Count; i++)
                     AssertGuildReactionCount(i, 0);
             }
@@ -40,7 +38,7 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateTextReactionCount(db);
                 this.Service.LoadData();
             },
-            db => {
+            _ => {
                 for (int i = 0; i < MockData.Ids.Count; i++)
                     AssertGuildReactionCount(i, this.trCount[i]);
                 IReadOnlyCollection<TextReaction> trs = this.Service.GetGuildTextReactions(MockData.Ids[1]);
@@ -69,8 +67,8 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
     {
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockReactions(db),
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 AssertFindReaction(0, "HAHAHA", false);
                 AssertFindReaction(0, "This is not a test.", true);
                 AssertFindReaction(0, "Ha abc ha", true);
@@ -103,8 +101,8 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
     {
         TestDbProvider.SetupAlterAndVerify(
             db => this.AddMockReactions(db),
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"), Is.True);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"), Is.True);
@@ -124,8 +122,8 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         TestDbProvider.AlterAndVerify(
-            db => this.Service.LoadData(),
-            db => {
+            _ => this.Service.LoadData(),
+            _ => {
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "abc"), Is.False);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.False);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "trigger me"), Is.False);
@@ -143,8 +141,8 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            db => this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "response", false),
-            db => {
+            _ => this.Service.AddTextReactionAsync(MockData.Ids[0], "test", "response", false),
+            _ => {
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "teSt"), Is.True);
                 Assert.That(this.Service.GuildHasTextReaction(MockData.Ids[0], "test"), Is.True);
@@ -199,7 +197,7 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.LoadData();
                 Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig", "h3h3", false), Is.True);
                 Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[1], "trig", "h3h3", false), Is.True);
@@ -219,7 +217,7 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.LoadData();
                 Assert.That(await this.Service.AddTextReactionAsync(MockData.Ids[0], "trig+ered", "h3h3", true),
                     Is.True);
@@ -248,7 +246,7 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         );
 
         await TestDbProvider.AlterAndVerifyAsync(
-            async db => {
+            async _ => {
                 this.Service.LoadData();
                 Assert.That(
                     await this.Service.AddTextReactionAsync(MockData.Ids[0], @"test(ing)?\ regex(es)?", "response",
@@ -540,27 +538,27 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[0],
             Response = "response1",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "abc"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "abc"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[0],
             Response = "response2",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "test"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "test"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[0],
             Response = "response3",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "trigger me"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "trigger me"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[0],
             Response = "response4",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "y u do dis"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "y u do dis"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[0],
             Response = "response5",
-            DbTriggers = new HashSet<TextReactionTrigger>() {
+            DbTriggers = new HashSet<TextReactionTrigger> {
                 new() {Trigger = "pls"}, new() {Trigger = "kill"}, new() {Trigger = "me"}
             }
         });
@@ -568,28 +566,28 @@ public sealed class TextReactionsServiceTests : ReactionsServiceTestsBase
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[1],
             Response = "response12",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "y u do dis"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "y u do dis"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[1],
             Response = "response23",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "rick"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "rick"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[1],
             Response = "response34",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "astley"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "astley"}}
         });
 
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[3],
             Response = "response1",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "test"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "test"}}
         });
         db.TextReactions.Add(new TextReaction {
             GuildId = MockData.Ids[3],
             Response = "response2",
-            DbTriggers = new HashSet<TextReactionTrigger>() {new() {Trigger = "test(ing)?"}}
+            DbTriggers = new HashSet<TextReactionTrigger> {new() {Trigger = "test(ing)?"}}
         });
     }
 
